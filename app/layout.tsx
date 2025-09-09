@@ -22,14 +22,18 @@ export const viewport = {
 
 async function enableMocking() {
   if (process.env.NODE_ENV === 'development') {
-    if (typeof window === 'undefined') {
-      // Server-side
-      const { server } = await import('../mocks/server');
-      server.listen();
-    } else {
-      // Client-side
-      const { worker } = await import('../mocks/browser');
-      worker.start();
+    try {
+      if (typeof window === 'undefined') {
+        // Server-side
+        const { server } = await import('../lib/msw/server');
+        server.listen({ onUnhandledRequest: 'bypass' });
+      } else {
+        // Client-side
+        const { worker } = await import('../lib/msw/browser');
+        worker.start({ onUnhandledRequest: 'bypass' });
+      }
+    } catch (error) {
+      console.log('MSW not initialized:', error);
     }
   }
 }

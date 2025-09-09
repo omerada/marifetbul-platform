@@ -1,19 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, Search, Bell, User } from 'lucide-react';
+import { Menu, X, Search, Bell, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { useAuthStore } from '@/lib/store';
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, isAuthenticated, logout, refreshAuth } = useAuthStore();
 
-  // Mock authentication state - will be replaced with real auth
-  const [isAuthenticated] = useState(false);
-  // const [userType] = useState<'freelancer' | 'employer' | null>(null);
+  // Refresh auth on component mount
+  useEffect(() => {
+    refreshAuth();
+  }, [refreshAuth]);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -71,14 +79,20 @@ export function Header() {
                 <Button variant="ghost" size="sm">
                   <Bell className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="sm">
-                  <User className="h-4 w-4" />
-                </Button>
+                <div className="relative">
+                  <Button variant="ghost" size="sm">
+                    <User className="h-4 w-4" />
+                    <span className="ml-2">{user?.firstName}</span>
+                  </Button>
+                </div>
                 <Link href="/dashboard">
                   <Button variant="primary" size="sm">
                     Dashboard
                   </Button>
                 </Link>
+                <Button variant="ghost" size="sm" onClick={handleLogout}>
+                  <LogOut className="h-4 w-4" />
+                </Button>
               </>
             ) : (
               <>
@@ -153,6 +167,9 @@ export function Header() {
             <div className="space-y-2 border-t border-gray-200 pt-4">
               {isAuthenticated ? (
                 <>
+                  <div className="mb-3 text-center text-sm text-gray-600">
+                    Hoş geldin, {user?.firstName}
+                  </div>
                   <Link
                     href="/dashboard"
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -167,6 +184,9 @@ export function Header() {
                     </Button>
                     <Button variant="ghost" size="sm">
                       <User className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={handleLogout}>
+                      <LogOut className="h-4 w-4" />
                     </Button>
                   </div>
                 </>
