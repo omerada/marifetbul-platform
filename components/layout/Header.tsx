@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, X, Search, Bell, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { useAuthStore } from '@/lib/store';
+import useAuthStore from '@/lib/store/auth';
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

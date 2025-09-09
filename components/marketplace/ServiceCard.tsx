@@ -23,16 +23,16 @@ export function ServiceCard({
   className,
 }: ServiceCardProps) {
   const formatPrice = (price: number) => {
-    return `$${price.toLocaleString()}`;
+    return `₺${price.toLocaleString('tr-TR')}`;
   };
 
   const formatDeliveryTime = (days: number) => {
-    if (days === 1) return '1 day';
-    if (days < 7) return `${days} days`;
+    if (days === 1) return '1 gün';
+    if (days < 7) return `${days} gün`;
     const weeks = Math.floor(days / 7);
     const remainingDays = days % 7;
-    if (remainingDays === 0) return `${weeks} week${weeks > 1 ? 's' : ''}`;
-    return `${weeks}w ${remainingDays}d`;
+    if (remainingDays === 0) return `${weeks} hafta`;
+    return `${weeks}h ${remainingDays}g`;
   };
 
   return (
@@ -114,7 +114,7 @@ export function ServiceCard({
             ))}
             {service.features.length > 3 && (
               <p className="text-xs text-gray-500">
-                +{service.features.length - 3} more features
+                +{service.features.length - 3} daha fazla özellik
               </p>
             )}
           </div>
@@ -126,9 +126,9 @@ export function ServiceCard({
                 <Clock className="mr-1 h-3 w-3" />
                 {formatDeliveryTime(service.deliveryTime)}
               </span>
-              <span>{service.orders} orders</span>
+              <span>{service.orders} sipariş</span>
             </div>
-            <span>{service.reviews} reviews</span>
+            <span>{service.reviews} değerlendirme</span>
           </div>
 
           {/* Price and Action */}
@@ -149,7 +149,7 @@ export function ServiceCard({
                     onAddToCart(service);
                   }}
                 >
-                  Add to Cart
+                  Sepete Ekle
                 </Button>
               )}
               <Button
@@ -159,7 +159,7 @@ export function ServiceCard({
                   onViewDetails?.(service);
                 }}
               >
-                View Details
+                Detayları Gör
               </Button>
             </div>
           </div>

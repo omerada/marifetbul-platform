@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/layout';
 import { Card, CardHeader, CardContent, Loading } from '@/components/ui';
-import { useAuthStore } from '@/lib/store';
+import useAuthStore from '@/lib/store/auth';
 import { User, Briefcase, Star, TrendingUp } from 'lucide-react';
 
 export default function DashboardPage() {

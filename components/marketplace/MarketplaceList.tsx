@@ -98,7 +98,7 @@ export function MarketplaceList({
           onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          Previous
+          Önceki
         </Button>
 
         {pages.map((page) => (
@@ -118,7 +118,7 @@ export function MarketplaceList({
           onClick={() => setCurrentPage(currentPage + 1)}
           disabled={currentPage === pagination.totalPages}
         >
-          Next
+          Sonraki
         </Button>
       </div>
     );
@@ -129,7 +129,7 @@ export function MarketplaceList({
       {/* Header with Mode Toggle */}
       <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
         <div className="flex items-center space-x-4">
-          <h1 className="text-2xl font-bold text-gray-900">Marketplace</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Pazar Yeri</h1>
 
           {/* Mode Toggle */}
           <div className="flex items-center rounded-lg bg-gray-100 p-1">
@@ -142,7 +142,7 @@ export function MarketplaceList({
               }`}
             >
               <Briefcase className="mr-2 h-4 w-4" />
-              Jobs
+              İş İlanları
             </button>
             <button
               onClick={() => handleModeToggle('services')}
@@ -153,7 +153,7 @@ export function MarketplaceList({
               }`}
             >
               <Package className="mr-2 h-4 w-4" />
-              Services
+              Hizmetler
             </button>
           </div>
         </div>
@@ -164,7 +164,7 @@ export function MarketplaceList({
             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
             <Input
               type="text"
-              placeholder={`Search ${mode}...`}
+              placeholder={`${mode === 'jobs' ? 'İş ilanları' : 'Hizmetler'} ara...`}
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
               className="w-64 pl-10"
@@ -176,7 +176,7 @@ export function MarketplaceList({
             className="flex items-center"
           >
             <Filter className="mr-2 h-4 w-4" />
-            Filters
+            Filtreler
           </Button>
         </div>
       </div>
@@ -184,11 +184,11 @@ export function MarketplaceList({
       {/* Filters Panel */}
       {showFilters && (
         <div className="rounded-lg bg-gray-50 p-6">
-          <h3 className="mb-4 text-lg font-semibold text-gray-900">Filters</h3>
+          <h3 className="mb-4 text-lg font-semibold text-gray-900">Filtreler</h3>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <Input
               type="text"
-              placeholder="Category"
+              placeholder="Kategori"
               value={
                 mode === 'jobs'
                   ? jobFilters.category || ''
@@ -209,7 +209,7 @@ export function MarketplaceList({
             {mode === 'jobs' && (
               <Input
                 type="text"
-                placeholder="Location"
+                placeholder="Konum"
                 value={jobFilters.location || ''}
                 onChange={(e) => {
                   setJobFilters({ ...jobFilters, location: e.target.value });
@@ -219,7 +219,7 @@ export function MarketplaceList({
             )}
             <Input
               type="text"
-              placeholder="Skills"
+              placeholder="Yetenekler"
               value={mode === 'jobs' ? jobFilters.skills?.[0] || '' : ''}
               onChange={(e) => {
                 if (mode === 'jobs') {
@@ -246,10 +246,10 @@ export function MarketplaceList({
       {error && (
         <div className="py-12 text-center">
           <p className="text-red-600">
-            Failed to load {mode}. Please try again.
+            {mode === 'jobs' ? 'İş ilanları' : 'Hizmetler'} yüklenemedi. Lütfen tekrar deneyin.
           </p>
           <Button className="mt-4" onClick={() => window.location.reload()}>
-            Retry
+            Tekrar Dene
           </Button>
         </div>
       )}
@@ -300,11 +300,10 @@ export function MarketplaceList({
                 )}
               </div>
               <h3 className="mb-2 text-lg font-semibold text-gray-900">
-                No {mode} found
+                {mode === 'jobs' ? 'İş ilanı bulunamadı' : 'Hizmet bulunamadı'}
               </h3>
               <p className="text-gray-600">
-                Try adjusting your search or filters to find what you&apos;re
-                looking for.
+                Filtreleri değiştirmeyi veya daha genel arama terimlerini denemeyi deneyin.
               </p>
             </div>
           )}

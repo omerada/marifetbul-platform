@@ -6,21 +6,22 @@ import {
   PaginatedResponse,
   ApiResponse,
   Employer,
+  Freelancer,
 } from '@/types';
 
 // Mock employer data
 const mockEmployer: Employer = {
   id: 'employer-1',
-  email: 'employer@example.com',
+  email: 'isveren@example.com',
   firstName: 'Fatma',
   lastName: 'Kaya',
   userType: 'employer',
   avatar: '/avatars/employer-1.jpg',
-  location: 'Ankara, Turkey',
+  location: 'Ankara, Türkiye',
   createdAt: new Date('2024-01-01').toISOString(),
   updatedAt: new Date('2024-01-01').toISOString(),
-  companyName: 'Tech Solutions Ltd.',
-  industry: 'Technology',
+  companyName: 'Teknoloji Çözümleri Ltd.',
+  industry: 'Teknoloji',
   totalSpent: 15000,
   activeJobs: 3,
   completedJobs: 12,
@@ -28,20 +29,44 @@ const mockEmployer: Employer = {
   totalReviews: 15,
 };
 
-// Mock data - Jobs
+// Mock freelancer data
+const mockFreelancer: Freelancer = {
+  id: 'freelancer-1',
+  email: 'freelancer@example.com',
+  firstName: 'Ahmet',
+  lastName: 'Yılmaz',
+  userType: 'freelancer',
+  avatar: '/avatars/freelancer-1.jpg',
+  location: 'İstanbul, Türkiye',
+  createdAt: new Date('2024-01-01').toISOString(),
+  updatedAt: new Date('2024-01-01').toISOString(),
+  title: 'Full Stack Geliştirici',
+  skills: ['React', 'Node.js', 'TypeScript', 'Next.js'],
+  hourlyRate: 50,
+  experience: 'expert',
+  rating: 4.9,
+  totalReviews: 127,
+  totalEarnings: 45000,
+  completedJobs: 89,
+  responseTime: '2 saat',
+  availability: 'available',
+  portfolio: [],
+};
+
+// Mock data - İş İlanları (Türkçe)
 const mockJobs: Job[] = [
   {
     id: '1',
-    title: 'React.js Developer Wanted',
+    title: 'React.js Geliştirici Aranıyor',
     description:
-      'Looking for an experienced React developer to build a modern e-commerce platform. Must have experience with Next.js, TypeScript, and Tailwind CSS.',
-    category: 'Web Development',
-    subcategory: 'Frontend Development',
+      'Modern bir e-ticaret platformu geliştirmek için deneyimli React geliştirici arıyoruz. Next.js, TypeScript ve Tailwind CSS deneyimi gereklidir. Responsive tasarım ve performans optimizasyonu konularında uzman olan adaylar tercih edilecektir.',
+    category: 'Web Geliştirme',
+    subcategory: 'Frontend Geliştirme',
     budget: { type: 'fixed', amount: 3500 },
-    timeline: '2-3 months',
+    timeline: '2-3 ay',
     skills: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
     experienceLevel: 'intermediate',
-    location: 'Remote',
+    location: 'Uzaktan',
     isRemote: true,
     status: 'open',
     employerId: 'employer-1',
@@ -52,16 +77,16 @@ const mockJobs: Job[] = [
   },
   {
     id: '2',
-    title: 'Mobile App UI/UX Design',
+    title: 'Mobil Uygulama UI/UX Tasarımı',
     description:
-      'Need a talented designer to create stunning UI/UX for our mobile application. The app is for food delivery service.',
-    category: 'Design',
-    subcategory: 'UI/UX Design',
+      'Yemek sipariş uygulaması için modern ve kullanıcı dostu UI/UX tasarımı yapılacaktır. Figma ve Adobe XD bilgisi gereklidir. Material Design ve iOS Human Interface Guidelines hakkında bilgi sahibi olunmalıdır.',
+    category: 'Tasarım',
+    subcategory: 'UI/UX Tasarım',
     budget: { type: 'fixed', amount: 2200 },
-    timeline: '4-6 weeks',
-    skills: ['Figma', 'Adobe XD', 'UI/UX Design', 'Mobile Design'],
+    timeline: '4-6 hafta',
+    skills: ['Figma', 'Adobe XD', 'UI/UX Tasarım', 'Mobil Tasarım'],
     experienceLevel: 'expert',
-    location: 'Istanbul, Turkey',
+    location: 'İstanbul, Türkiye',
     isRemote: false,
     status: 'open',
     employerId: 'employer-1',
@@ -72,16 +97,16 @@ const mockJobs: Job[] = [
   },
   {
     id: '3',
-    title: 'Content Writer for Tech Blog',
+    title: 'Teknoloji Blogu İçerik Yazarı',
     description:
-      'Seeking a skilled content writer to create engaging articles about latest technology trends, AI, and software development.',
-    category: 'Writing',
-    subcategory: 'Content Writing',
+      'En son teknoloji trendleri, yapay zeka ve yazılım geliştirme konularında ilgi çekici makaleler yazacak deneyimli içerik yazarı arıyoruz. SEO bilgisi ve teknik konuları sade dille anlatabilme yeteneği gereklidir.',
+    category: 'Yazarlık',
+    subcategory: 'İçerik Yazarlığı',
     budget: { type: 'hourly', amount: 25, maxAmount: 40 },
-    timeline: '1-2 months',
-    skills: ['Content Writing', 'SEO', 'Tech Writing', 'Research'],
+    timeline: '1-2 ay',
+    skills: ['İçerik Yazarlığı', 'SEO', 'Teknik Yazarlık', 'Araştırma'],
     experienceLevel: 'intermediate',
-    location: 'Remote',
+    location: 'Uzaktan',
     isRemote: true,
     status: 'open',
     employerId: 'employer-1',
@@ -90,50 +115,66 @@ const mockJobs: Job[] = [
     createdAt: new Date('2024-01-13').toISOString(),
     updatedAt: new Date('2024-01-13').toISOString(),
   },
+  {
+    id: '4',
+    title: 'E-ticaret Sitesi Backend Geliştirme',
+    description:
+      'Node.js ve MongoDB kullanarak e-ticaret sitesi backend API geliştirme projesi. Ödeme sistemleri entegrasyonu, envanter yönetimi ve kullanıcı yönetimi modülleri geliştirilecektir.',
+    category: 'Web Geliştirme',
+    subcategory: 'Backend Geliştirme',
+    budget: { type: 'fixed', amount: 4800 },
+    timeline: '3-4 ay',
+    skills: ['Node.js', 'MongoDB', 'Express.js', 'API Geliştirme'],
+    experienceLevel: 'expert',
+    location: 'Uzaktan',
+    isRemote: true,
+    status: 'open',
+    employerId: 'employer-1',
+    employer: mockEmployer,
+    proposalsCount: 6,
+    createdAt: new Date('2024-01-12').toISOString(),
+    updatedAt: new Date('2024-01-12').toISOString(),
+  },
+  {
+    id: '5',
+    title: 'WordPress Plugin Geliştirme',
+    description:
+      'WooCommerce entegreli özel WordPress plugin geliştirme. Plugin, özel ürün filtreleme ve arama özelliklerine sahip olacaktır. PHP ve JavaScript bilgisi gereklidir.',
+    category: 'Web Geliştirme',
+    subcategory: 'WordPress Geliştirme',
+    budget: { type: 'fixed', amount: 1800 },
+    timeline: '3-4 hafta',
+    skills: ['WordPress', 'PHP', 'WooCommerce', 'JavaScript'],
+    experienceLevel: 'intermediate',
+    location: 'Uzaktan',
+    isRemote: true,
+    status: 'open',
+    employerId: 'employer-1',
+    employer: mockEmployer,
+    proposalsCount: 10,
+    createdAt: new Date('2024-01-11').toISOString(),
+    updatedAt: new Date('2024-01-11').toISOString(),
+  },
 ];
 
-// Mock freelancer data
-const mockFreelancer = {
-  id: 'freelancer-1',
-  email: 'freelancer@example.com',
-  firstName: 'Ahmet',
-  lastName: 'Yılmaz',
-  userType: 'freelancer' as const,
-  avatar: '/avatars/freelancer-1.jpg',
-  location: 'Istanbul, Turkey',
-  createdAt: new Date('2024-01-01').toISOString(),
-  updatedAt: new Date('2024-01-01').toISOString(),
-  title: 'Full Stack Developer',
-  skills: ['React', 'Node.js', 'TypeScript', 'Next.js'],
-  hourlyRate: 50,
-  experience: 'expert' as const,
-  rating: 4.9,
-  totalReviews: 127,
-  totalEarnings: 45000,
-  completedJobs: 89,
-  responseTime: '2 hours',
-  availability: 'available' as const,
-  portfolio: [],
-};
-
-// Mock data - Service Packages
+// Mock data - Hizmet Paketleri (Türkçe)
 const mockPackages: ServicePackage[] = [
   {
     id: '1',
-    title: 'Professional Website Development',
+    title: 'Profesyonel Web Sitesi Geliştirme',
     description:
-      'I will create a modern, responsive website using React and Next.js. Perfect for businesses looking to establish their online presence.',
-    category: 'Web Development',
-    subcategory: 'Frontend Development',
+      'React ve Next.js kullanarak modern, responsive web sitesi oluşturacağım. İşletmenizin online varlığını güçlendirmek için mükemmel çözüm.',
+    category: 'Web Geliştirme',
+    subcategory: 'Frontend Geliştirme',
     price: 1500,
     deliveryTime: 14,
     revisions: 3,
     features: [
-      'Responsive Design',
-      'SEO Optimization',
-      'Admin Panel',
-      'Contact Forms',
-      'Performance Optimization',
+      'Responsive Tasarım',
+      'SEO Optimizasyonu',
+      'Yönetim Paneli',
+      'İletişim Formları',
+      'Performans Optimizasyonu',
     ],
     freelancerId: 'freelancer-1',
     freelancer: mockFreelancer,
@@ -147,20 +188,20 @@ const mockPackages: ServicePackage[] = [
   },
   {
     id: '2',
-    title: 'Logo Design & Brand Identity',
+    title: 'Logo Tasarım & Marka Kimliği',
     description:
-      'I will design a unique logo and complete brand identity for your business. Get a professional look that stands out.',
-    category: 'Design',
-    subcategory: 'Logo Design',
+      'İşletmeniz için benzersiz logo ve eksiksiz marka kimliği tasarlayacağım. Öne çıkan profesyonel görünüm elde edin.',
+    category: 'Tasarım',
+    subcategory: 'Logo Tasarım',
     price: 300,
     deliveryTime: 5,
     revisions: 5,
     features: [
-      'Logo Design',
-      'Brand Guidelines',
-      'Business Card Design',
-      'Letterhead Design',
-      'Social Media Kit',
+      'Logo Tasarımı',
+      'Marka Rehberi',
+      'Kartvizit Tasarımı',
+      'Antetli Kağıt Tasarımı',
+      'Sosyal Medya Kiti',
     ],
     freelancerId: 'freelancer-1',
     freelancer: mockFreelancer,
@@ -174,20 +215,20 @@ const mockPackages: ServicePackage[] = [
   },
   {
     id: '3',
-    title: 'SEO Article Writing',
+    title: 'SEO Optimizeli Makale Yazımı',
     description:
-      'I will write SEO-optimized articles that rank high on Google. Perfect for blogs, websites, and content marketing.',
-    category: 'Writing',
-    subcategory: 'SEO Writing',
+      'Google\'da yüksek sıralamada yer alan SEO optimizeli makaleler yazacağım. Blog, web sitesi ve içerik pazarlama için mükemmel.',
+    category: 'Yazarlık',
+    subcategory: 'SEO Yazarlık',
     price: 50,
     deliveryTime: 3,
     revisions: 2,
     features: [
-      '1000 Words',
-      'Keyword Research',
-      'Meta Description',
-      'SEO Optimization',
-      'Plagiarism Free',
+      '1000 Kelime',
+      'Anahtar Kelime Araştırması',
+      'Meta Açıklama',
+      'SEO Optimizasyonu',
+      'Özgün İçerik',
     ],
     freelancerId: 'freelancer-1',
     freelancer: mockFreelancer,
@@ -199,9 +240,36 @@ const mockPackages: ServicePackage[] = [
     updatedAt: new Date('2024-01-12').toISOString(),
     images: ['/images/seo-writing-1.jpg'],
   },
+  {
+    id: '4',
+    title: 'Mobil Uygulama Tasarımı',
+    description:
+      'iOS ve Android için modern ve kullanıcı dostu mobil uygulama arayüzü tasarlayacağım. Figma\'da hazır prototipler dahil.',
+    category: 'Tasarım',
+    subcategory: 'Mobil Tasarım',
+    price: 800,
+    deliveryTime: 10,
+    revisions: 3,
+    features: [
+      'iOS ve Android Tasarım',
+      'Figma Prototipleri',
+      'Kullanıcı Deneyimi',
+      'Material Design',
+      'Animasyon Rehberi',
+    ],
+    freelancerId: 'freelancer-1',
+    freelancer: mockFreelancer,
+    orders: 67,
+    rating: 4.9,
+    reviews: 45,
+    isActive: true,
+    createdAt: new Date('2024-01-03').toISOString(),
+    updatedAt: new Date('2024-01-10').toISOString(),
+    images: ['/images/mobile-design-1.jpg', '/images/mobile-design-2.jpg'],
+  },
 ];
 
-// Mock data - Users
+// Mock data - Kullanıcılar
 const mockUsers: User[] = [
   {
     id: 'freelancer-1',
@@ -210,18 +278,18 @@ const mockUsers: User[] = [
     lastName: 'Yılmaz',
     userType: 'freelancer',
     avatar: '/avatars/freelancer-1.jpg',
-    location: 'Istanbul, Turkey',
+    location: 'İstanbul, Türkiye',
     createdAt: new Date('2024-01-01').toISOString(),
     updatedAt: new Date('2024-01-01').toISOString(),
   },
   {
     id: 'employer-1',
-    email: 'employer@example.com',
+    email: 'isveren@example.com',
     firstName: 'Fatma',
     lastName: 'Kaya',
     userType: 'employer',
     avatar: '/avatars/employer-1.jpg',
-    location: 'Ankara, Turkey',
+    location: 'Ankara, Türkiye',
     createdAt: new Date('2024-01-01').toISOString(),
     updatedAt: new Date('2024-01-01').toISOString(),
   },
@@ -288,7 +356,7 @@ function createPaginatedResponse<
 }
 
 // Helper function to create API response
-function createApiResponse<T>(data: T, message = 'Success'): ApiResponse<T> {
+function createApiResponse<T>(data: T, message = 'Başarılı'): ApiResponse<T> {
   return {
     success: true,
     data,
@@ -305,11 +373,14 @@ export const handlers = [
       password: string;
     };
 
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     const user = mockUsers.find((u) => u.email === email);
 
-    if (!user || password !== 'password') {
+    if (!user || password !== 'password123') {
       return HttpResponse.json(
-        { success: false, message: 'Invalid credentials' },
+        { success: false, error: 'E-posta veya şifre hatalı' },
         { status: 401 }
       );
     }
@@ -321,6 +392,86 @@ export const handlers = [
         user,
         token,
       })
+    );
+  }),
+
+  http.post('/api/auth/register', async ({ request }) => {
+    const { email, firstName, lastName, userType } = (await request.json()) as {
+      email: string;
+      password: string;
+      firstName: string;
+      lastName: string;
+      userType: 'freelancer' | 'employer';
+    };
+
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // Check if user already exists
+    const existingUser = mockUsers.find((u) => u.email === email);
+    if (existingUser) {
+      return HttpResponse.json(
+        { success: false, error: 'Bu e-posta adresi zaten kullanılıyor' },
+        { status: 400 }
+      );
+    }
+
+    // Create new user
+    const newUser: User = {
+      id: `user-${Date.now()}`,
+      email,
+      firstName,
+      lastName,
+      userType,
+      avatar: `/avatars/default-${userType}.jpg`,
+      location: 'Türkiye',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Add to mock users array
+    mockUsers.push(newUser);
+
+    const token = `mock-token-${newUser.id}`;
+
+    return HttpResponse.json(
+      createApiResponse({
+        user: newUser,
+        token,
+      })
+    );
+  }),
+
+  http.get('/api/auth/me', ({ request }) => {
+    const authHeader = request.headers.get('Authorization');
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { success: false, error: 'Yetkisiz erişim' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const userId = token.replace('mock-token-', '');
+    
+    const user = mockUsers.find((u) => u.id === userId);
+    
+    if (!user) {
+      return HttpResponse.json(
+        { success: false, error: 'Geçersiz token' },
+        { status: 401 }
+      );
+    }
+
+    return HttpResponse.json(
+      createApiResponse({ user })
+    );
+  }),
+
+  http.post('/api/auth/logout', () => {
+    return HttpResponse.json(
+      createApiResponse(null, 'Başarıyla çıkış yapıldı')
     );
   }),
 
@@ -345,7 +496,7 @@ export const handlers = [
 
     if (!job) {
       return HttpResponse.json(
-        { success: false, message: 'Job not found' },
+        { success: false, message: 'İş ilanı bulunamadı' },
         { status: 404 }
       );
     }
@@ -399,7 +550,7 @@ export const handlers = [
 
     if (!package_) {
       return HttpResponse.json(
-        { success: false, message: 'Package not found' },
+        { success: false, message: 'Hizmet paketi bulunamadı' },
         { status: 404 }
       );
     }
@@ -445,7 +596,7 @@ export const handlers = [
   // Error handler for unmatched routes
   http.all('*', () => {
     return HttpResponse.json(
-      { success: false, message: 'API endpoint not found' },
+      { success: false, message: 'API endpoint bulunamadı' },
       { status: 404 }
     );
   }),

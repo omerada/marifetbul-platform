@@ -21,10 +21,10 @@ export function JobCard({
 }: JobCardProps) {
   const formatBudget = (budget: Job['budget']) => {
     if (budget.type === 'fixed') {
-      return `$${budget.amount.toLocaleString()}`;
+      return `₺${budget.amount.toLocaleString('tr-TR')}`;
     } else {
-      const maxAmount = budget.maxAmount ? `-$${budget.maxAmount}` : '';
-      return `$${budget.amount}${maxAmount}/hr`;
+      const maxAmount = budget.maxAmount ? `-₺${budget.maxAmount.toLocaleString('tr-TR')}` : '';
+      return `₺${budget.amount.toLocaleString('tr-TR')}${maxAmount}/saat`;
     }
   };
 
@@ -35,14 +35,14 @@ export function JobCard({
       (now.getTime() - date.getTime()) / (1000 * 60 * 60)
     );
 
-    if (diffInHours < 1) return 'Just now';
-    if (diffInHours < 24) return `${diffInHours}h ago`;
+    if (diffInHours < 1) return 'Şimdi';
+    if (diffInHours < 24) return `${diffInHours} saat önce`;
 
     const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}d ago`;
+    if (diffInDays < 7) return `${diffInDays} gün önce`;
 
     const diffInWeeks = Math.floor(diffInDays / 7);
-    return `${diffInWeeks}w ago`;
+    return `${diffInWeeks} hafta önce`;
   };
 
   return (
@@ -63,7 +63,7 @@ export function JobCard({
               </span>
               <span className="flex items-center">
                 <MapPin className="mr-1 h-4 w-4" />
-                {job.isRemote ? 'Remote' : job.location}
+                {job.isRemote ? 'Uzaktan' : job.location}
               </span>
             </div>
           </div>
@@ -92,7 +92,7 @@ export function JobCard({
           ))}
           {job.skills.length > 4 && (
             <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-              +{job.skills.length - 4} more
+              +{job.skills.length - 4} daha
             </span>
           )}
         </div>
@@ -102,7 +102,7 @@ export function JobCard({
           <div className="flex items-center space-x-4 text-sm text-gray-600">
             <span className="flex items-center">
               <User className="mr-1 h-4 w-4" />
-              {job.proposalsCount} proposals
+              {job.proposalsCount} teklif
             </span>
             <span className="flex items-center">
               <Star className="mr-1 h-4 w-4 fill-current text-yellow-400" />
@@ -123,7 +123,7 @@ export function JobCard({
                   onSaveJob(job);
                 }}
               >
-                Save
+                Kaydet
               </Button>
             )}
             <Button
@@ -133,7 +133,7 @@ export function JobCard({
                 onViewDetails?.(job);
               }}
             >
-              View Details
+              Detayları Gör
             </Button>
           </div>
         </div>

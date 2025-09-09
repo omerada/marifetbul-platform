@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { MSWProvider } from '@/components/providers/MSWProvider';
+import { AuthProvider } from '@/components/providers/AuthProvider';
 import './globals.css';
 
 const inter = Inter({
@@ -20,26 +22,6 @@ export const viewport = {
   initialScale: 1,
 };
 
-async function enableMocking() {
-  if (process.env.NODE_ENV === 'development') {
-    try {
-      if (typeof window === 'undefined') {
-        // Server-side
-        const { server } = await import('../lib/msw/server');
-        server.listen({ onUnhandledRequest: 'bypass' });
-      } else {
-        // Client-side
-        const { worker } = await import('../lib/msw/browser');
-        worker.start({ onUnhandledRequest: 'bypass' });
-      }
-    } catch (error) {
-      console.log('MSW not initialized:', error);
-    }
-  }
-}
-
-enableMocking();
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -50,7 +32,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} h-full bg-gray-50 font-sans antialiased`}
       >
-        {children}
+        <MSWProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </MSWProvider>
       </body>
     </html>
   );

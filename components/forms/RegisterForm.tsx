@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, User, Building } from 'lucide-react';
 
 import { Button, Input, Card } from '@/components/ui';
-import { useAuthStore } from '@/lib/store';
+import useAuthStore from '@/lib/store/auth';
 import { registerSchema, type RegisterFormData } from '@/lib/validations/auth';
 
 export function RegisterForm() {
