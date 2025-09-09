@@ -2,12 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, Search, Bell, User, LogOut } from 'lucide-react';
+import {
+  Menu,
+  X,
+  Search,
+  Bell,
+  User,
+  LogOut,
+  UserCircle,
+  Settings,
+  ChevronDown,
+} from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import useAuthStore from '@/lib/store/auth';
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { user, isAuthenticated, logout, refreshAuth } = useAuthStore();
 
   // Refresh auth on component mount
@@ -80,19 +91,58 @@ export function Header() {
                   <Bell className="h-4 w-4" />
                 </Button>
                 <div className="relative">
-                  <Button variant="ghost" size="sm">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                    className="flex items-center"
+                  >
                     <User className="h-4 w-4" />
                     <span className="ml-2">{user?.firstName}</span>
+                    <ChevronDown className="ml-1 h-3 w-3" />
                   </Button>
+
+                  {/* User Dropdown Menu */}
+                  {isUserMenuOpen && (
+                    <div className="absolute right-0 z-50 mt-2 w-48 rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+                      <Link
+                        href={`/profile/${user?.id}`}
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <UserCircle className="mr-2 h-4 w-4" />
+                        Profilimi Görüntüle
+                      </Link>
+                      <Link
+                        href="/profile/edit"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <Settings className="mr-2 h-4 w-4" />
+                        Profili Düzenle
+                      </Link>
+                      <Link
+                        href="/dashboard"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        Dashboard
+                      </Link>
+                      <hr className="my-1" />
+                      <button
+                        onClick={() => {
+                          setIsUserMenuOpen(false);
+                          handleLogout();
+                        }}
+                        className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Çıkış Yap
+                      </button>
+                    </div>
+                  )}
                 </div>
-                <Link href="/dashboard">
-                  <Button variant="primary" size="sm">
-                    Dashboard
-                  </Button>
-                </Link>
-                <Button variant="ghost" size="sm" onClick={handleLogout}>
-                  <LogOut className="h-4 w-4" />
-                </Button>
               </>
             ) : (
               <>

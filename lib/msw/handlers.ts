@@ -595,6 +595,51 @@ export const handlers = [
     return HttpResponse.json(createApiResponse(newPackage));
   }),
 
+  // User Profile Endpoints
+  http.get('/api/users/:id', async ({ params }) => {
+    const { id } = params;
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    const user = mockUsers.find((u) => u.id === id);
+
+    if (!user) {
+      return HttpResponse.json(
+        { success: false, error: 'Kullanıcı bulunamadı' },
+        { status: 404 }
+      );
+    }
+
+    return HttpResponse.json(createApiResponse(user));
+  }),
+
+  http.put('/api/users/:id', async ({ params, request }) => {
+    const { id } = params;
+    const updateData = (await request.json()) as Partial<User>;
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const userIndex = mockUsers.findIndex((u) => u.id === id);
+
+    if (userIndex === -1) {
+      return HttpResponse.json(
+        { success: false, error: 'Kullanıcı bulunamadı' },
+        { status: 404 }
+      );
+    }
+
+    // Update user data
+    mockUsers[userIndex] = {
+      ...mockUsers[userIndex],
+      ...updateData,
+      updatedAt: new Date().toISOString(),
+    };
+
+    return HttpResponse.json(createApiResponse(mockUsers[userIndex]));
+  }),
+
   // Error handler for unmatched routes
   http.all('*', () => {
     return HttpResponse.json(
