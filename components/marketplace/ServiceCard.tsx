@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { ServicePackage } from '@/types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -9,7 +10,6 @@ import Image from 'next/image';
 
 interface ServiceCardProps {
   service: ServicePackage;
-  onViewDetails?: (service: ServicePackage) => void;
   onAddToCart?: (service: ServicePackage) => void;
   onSaveService?: (service: ServicePackage) => void;
   className?: string;
@@ -17,7 +17,6 @@ interface ServiceCardProps {
 
 export function ServiceCard({
   service,
-  onViewDetails,
   onAddToCart,
   onSaveService,
   className,
@@ -152,15 +151,16 @@ export function ServiceCard({
                   Sepete Ekle
                 </Button>
               )}
-              <Button
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onViewDetails?.(service);
-                }}
-              >
-                Detayları Gör
-              </Button>
+              <Link href={`/packages/${service.id}`}>
+                <Button
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  Detayları Gör
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

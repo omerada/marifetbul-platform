@@ -44,6 +44,8 @@ export interface Employer extends User {
   completedJobs: number;
   rating: number;
   totalReviews: number;
+  reviewsCount: number;
+  totalJobs: number;
 }
 
 export interface PortfolioItem {
@@ -68,6 +70,7 @@ export interface Job {
     maxAmount?: number; // For hourly jobs
   };
   timeline: string;
+  duration?: string; // Project duration estimate
   skills: string[];
   experienceLevel: 'beginner' | 'intermediate' | 'expert';
   location?: string;

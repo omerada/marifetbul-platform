@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { Job } from '@/types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -8,22 +9,18 @@ import { Clock, MapPin, User, Star } from 'lucide-react';
 
 interface JobCardProps {
   job: Job;
-  onViewDetails?: (job: Job) => void;
   onSaveJob?: (job: Job) => void;
   className?: string;
 }
 
-export function JobCard({
-  job,
-  onViewDetails,
-  onSaveJob,
-  className,
-}: JobCardProps) {
+export function JobCard({ job, onSaveJob, className }: JobCardProps) {
   const formatBudget = (budget: Job['budget']) => {
     if (budget.type === 'fixed') {
       return `₺${budget.amount.toLocaleString('tr-TR')}`;
     } else {
-      const maxAmount = budget.maxAmount ? `-₺${budget.maxAmount.toLocaleString('tr-TR')}` : '';
+      const maxAmount = budget.maxAmount
+        ? `-₺${budget.maxAmount.toLocaleString('tr-TR')}`
+        : '';
       return `₺${budget.amount.toLocaleString('tr-TR')}${maxAmount}/saat`;
     }
   };
@@ -126,15 +123,16 @@ export function JobCard({
                 Kaydet
               </Button>
             )}
-            <Button
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onViewDetails?.(job);
-              }}
-            >
-              Detayları Gör
-            </Button>
+            <Link href={`/jobs/${job.id}`}>
+              <Button
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                Detayları Gör
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

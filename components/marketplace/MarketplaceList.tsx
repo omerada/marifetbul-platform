@@ -184,7 +184,9 @@ export function MarketplaceList({
       {/* Filters Panel */}
       {showFilters && (
         <div className="rounded-lg bg-gray-50 p-6">
-          <h3 className="mb-4 text-lg font-semibold text-gray-900">Filtreler</h3>
+          <h3 className="mb-4 text-lg font-semibold text-gray-900">
+            Filtreler
+          </h3>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <Input
               type="text"
@@ -246,7 +248,8 @@ export function MarketplaceList({
       {error && (
         <div className="py-12 text-center">
           <p className="text-red-600">
-            {mode === 'jobs' ? 'İş ilanları' : 'Hizmetler'} yüklenemedi. Lütfen tekrar deneyin.
+            {mode === 'jobs' ? 'İş ilanları' : 'Hizmetler'} yüklenemedi. Lütfen
+            tekrar deneyin.
           </p>
           <Button className="mt-4" onClick={() => window.location.reload()}>
             Tekrar Dene
@@ -263,7 +266,6 @@ export function MarketplaceList({
                 <JobCard
                   key={job.id}
                   job={job}
-                  onViewDetails={(job) => handleJobAction('view', job)}
                   onSaveJob={(job) => handleJobAction('save', job)}
                 />
               ))}
@@ -274,9 +276,6 @@ export function MarketplaceList({
                 <ServiceCard
                   key={service.id}
                   service={service}
-                  onViewDetails={(service) =>
-                    handleServiceAction('view', service)
-                  }
                   onAddToCart={(service) =>
                     handleServiceAction('cart', service)
                   }
@@ -303,7 +302,8 @@ export function MarketplaceList({
                 {mode === 'jobs' ? 'İş ilanı bulunamadı' : 'Hizmet bulunamadı'}
               </h3>
               <p className="text-gray-600">
-                Filtreleri değiştirmeyi veya daha genel arama terimlerini denemeyi deneyin.
+                Filtreleri değiştirmeyi veya daha genel arama terimlerini
+                denemeyi deneyin.
               </p>
             </div>
           )}
