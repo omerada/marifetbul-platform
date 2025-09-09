@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/layout';
 import { Card, CardHeader, CardContent, Loading } from '@/components/ui';
 import useAuthStore from '@/lib/store/auth';
-import { 
-  DashboardStats, 
-  QuickActions, 
-  ActivityTimeline, 
-  DashboardCharts 
+import {
+  DashboardStats,
+  QuickActions,
+  ActivityTimeline,
+  DashboardCharts,
 } from '@/components/features';
 import {
   Calendar,
@@ -68,15 +68,15 @@ export default function DashboardPage() {
                 </p>
               </div>
               <div className="flex items-center space-x-3">
-                <button className="flex items-center gap-2 px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
+                <button className="flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50">
                   <Calendar className="h-4 w-4" />
                   Takvim
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
+                <button className="flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50">
                   <Bell className="h-4 w-4" />
                   Bildirimler
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
+                <button className="flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50">
                   <Settings className="h-4 w-4" />
                   Ayarlar
                 </button>
@@ -93,11 +93,11 @@ export default function DashboardPage() {
           </div>
 
           {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {/* Left Column - Charts */}
-            <div className="lg:col-span-2 space-y-8">
+            <div className="space-y-8 lg:col-span-2">
               <DashboardCharts user={user} />
-              
+
               {/* Quick Actions */}
               <QuickActions user={user} />
             </div>
@@ -105,7 +105,7 @@ export default function DashboardPage() {
             {/* Right Column - Activity */}
             <div className="space-y-8">
               <ActivityTimeline user={user} />
-              
+
               {/* Help Card */}
               <Card>
                 <CardContent>
@@ -114,13 +114,14 @@ export default function DashboardPage() {
                       <HelpCircle className="h-5 w-5 text-blue-600" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-sm font-medium text-gray-900 mb-2">
+                      <h3 className="mb-2 text-sm font-medium text-gray-900">
                         Yardıma mı ihtiyacınız var?
                       </h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        Platform hakkında sorularınız varsa yardım merkezimizi ziyaret edin.
+                      <p className="mb-4 text-sm text-gray-600">
+                        Platform hakkında sorularınız varsa yardım merkezimizi
+                        ziyaret edin.
                       </p>
-                      <button className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
+                      <button className="rounded-md border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50">
                         Yardım Merkezi
                       </button>
                     </div>

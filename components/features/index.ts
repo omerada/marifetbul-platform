@@ -9,3 +9,10 @@ export { DashboardStats } from './DashboardStats';
 export { QuickActions } from './QuickActions';
 export { ActivityTimeline } from './ActivityTimeline';
 export { DashboardCharts } from './DashboardCharts';
+
+// Mobile & Touch Optimization
+export { MobileFilters } from './MobileFilters';
+export { MobileNavigation } from './MobileNavigation';
+export { MobileDashboard } from './MobileDashboard';
+export { MobileLayout } from './MobileLayout';
+export { TouchJobCard, TouchServiceCard } from './TouchCards';

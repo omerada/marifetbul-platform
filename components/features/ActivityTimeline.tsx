@@ -17,7 +17,15 @@ import {
 
 interface Activity {
   id: string;
-  type: 'message' | 'payment' | 'project_update' | 'review' | 'proposal' | 'milestone' | 'job_posted' | 'profile_view';
+  type:
+    | 'message'
+    | 'payment'
+    | 'project_update'
+    | 'review'
+    | 'proposal'
+    | 'milestone'
+    | 'job_posted'
+    | 'profile_view';
   title: string;
   description: string;
   timestamp: string;
@@ -42,8 +50,8 @@ export function ActivityTimeline({ user }: ActivityTimelineProps) {
       try {
         setLoading(true);
         // Mock API call
-        await new Promise(resolve => setTimeout(resolve, 600));
-        
+        await new Promise((resolve) => setTimeout(resolve, 600));
+
         if (user.userType === 'freelancer') {
           setActivities([
             {
@@ -52,15 +60,16 @@ export function ActivityTimeline({ user }: ActivityTimelineProps) {
               title: 'Yeni mesaj aldınız',
               description: 'Ahmet Yılmaz size bir mesaj gönderdi.',
               timestamp: '2 dakika önce',
-              user: { name: 'Ahmet Yılmaz' }
+              user: { name: 'Ahmet Yılmaz' },
             },
             {
               id: '2',
               type: 'proposal',
               title: 'Teklifiniz kabul edildi',
-              description: 'E-ticaret web sitesi projeniz için teklifiniz onaylandı.',
+              description:
+                'E-ticaret web sitesi projeniz için teklifiniz onaylandı.',
               timestamp: '1 saat önce',
-              amount: 2500
+              amount: 2500,
             },
             {
               id: '3',
@@ -68,7 +77,7 @@ export function ActivityTimeline({ user }: ActivityTimelineProps) {
               title: 'Ödeme alındı',
               description: 'Logo tasarım projesi için ödemenizi aldınız.',
               timestamp: '3 saat önce',
-              amount: 750
+              amount: 750,
             },
             {
               id: '4',
@@ -77,22 +86,23 @@ export function ActivityTimeline({ user }: ActivityTimelineProps) {
               description: 'Mobil uygulama projesi için 5 yıldız aldınız.',
               timestamp: '1 gün önce',
               rating: 5,
-              user: { name: 'Zehra Kaya' }
+              user: { name: 'Zehra Kaya' },
             },
             {
               id: '5',
               type: 'milestone',
               title: 'Proje tamamlandı',
-              description: 'Web sitesi geliştirme projesi başarıyla teslim edildi.',
-              timestamp: '2 gün önce'
+              description:
+                'Web sitesi geliştirme projesi başarıyla teslim edildi.',
+              timestamp: '2 gün önce',
             },
             {
               id: '6',
               type: 'profile_view',
               title: 'Profil görüntülendi',
               description: '12 yeni kişi profilinizi görüntüledi.',
-              timestamp: '3 gün önce'
-            }
+              timestamp: '3 gün önce',
+            },
           ]);
         } else {
           setActivities([
@@ -100,8 +110,9 @@ export function ActivityTimeline({ user }: ActivityTimelineProps) {
               id: '1',
               type: 'proposal',
               title: 'Yeni teklifler',
-              description: 'Mobil uygulama projeniz için 8 yeni teklif aldınız.',
-              timestamp: '1 saat önce'
+              description:
+                'Mobil uygulama projeniz için 8 yeni teklif aldınız.',
+              timestamp: '1 saat önce',
             },
             {
               id: '2',
@@ -109,21 +120,21 @@ export function ActivityTimeline({ user }: ActivityTimelineProps) {
               title: 'Yeni mesaj',
               description: 'Mehmet Can size bir mesaj gönderdi.',
               timestamp: '2 saat önce',
-              user: { name: 'Mehmet Can' }
+              user: { name: 'Mehmet Can' },
             },
             {
               id: '3',
               type: 'job_posted',
               title: 'İş ilanı yayınlandı',
               description: 'Logo tasarım projesi başarıyla yayınlandı.',
-              timestamp: '5 saat önce'
+              timestamp: '5 saat önce',
             },
             {
               id: '4',
               type: 'project_update',
               title: 'Proje güncellendi',
               description: 'Web sitesi projesi %75 tamamlandı.',
-              timestamp: '1 gün önce'
+              timestamp: '1 gün önce',
             },
             {
               id: '5',
@@ -131,17 +142,18 @@ export function ActivityTimeline({ user }: ActivityTimelineProps) {
               title: 'Ödeme yapıldı',
               description: 'E-ticaret projesi için ödeme gerçekleştirildi.',
               timestamp: '2 gün önce',
-              amount: 3200
+              amount: 3200,
             },
             {
               id: '6',
               type: 'review',
               title: 'Değerlendirme yaptınız',
-              description: 'Ayşe Demir için 5 yıldızlı değerlendirme bıraktınız.',
+              description:
+                'Ayşe Demir için 5 yıldızlı değerlendirme bıraktınız.',
               timestamp: '3 gün önce',
               rating: 5,
-              user: { name: 'Ayşe Demir' }
-            }
+              user: { name: 'Ayşe Demir' },
+            },
           ]);
         }
       } catch (error) {
@@ -203,17 +215,19 @@ export function ActivityTimeline({ user }: ActivityTimelineProps) {
   if (loading) {
     return (
       <Card className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">Son Aktiviteler</h3>
+        <div className="mb-6 flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900">
+            Son Aktiviteler
+          </h3>
         </div>
         <div className="space-y-4">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="flex items-start space-x-3 animate-pulse">
+            <div key={i} className="flex animate-pulse items-start space-x-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200"></div>
               <div className="flex-1 space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+                <div className="h-4 w-3/4 rounded bg-gray-200"></div>
+                <div className="h-3 w-1/2 rounded bg-gray-200"></div>
+                <div className="h-3 w-1/4 rounded bg-gray-200"></div>
               </div>
             </div>
           ))}
@@ -224,45 +238,56 @@ export function ActivityTimeline({ user }: ActivityTimelineProps) {
 
   return (
     <Card className="p-6">
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900">Son Aktiviteler</h3>
-        <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+        <button className="text-sm font-medium text-blue-600 hover:text-blue-800">
           Tümünü Gör
         </button>
       </div>
 
       <div className="space-y-4">
         {activities.map((activity, index) => (
-          <div key={activity.id} className="flex items-start space-x-3 group">
-            <div className={`flex h-10 w-10 items-center justify-center rounded-full ${getActivityBgColor(activity.type)} group-hover:scale-110 transition-transform`}>
+          <div key={activity.id} className="group flex items-start space-x-3">
+            <div
+              className={`flex h-10 w-10 items-center justify-center rounded-full ${getActivityBgColor(activity.type)} transition-transform group-hover:scale-110`}
+            >
               {getActivityIcon(activity.type)}
             </div>
-            
-            <div className="flex-1 min-w-0">
+
+            <div className="min-w-0 flex-1">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">{activity.title}</p>
-                  <p className="text-sm text-gray-600 mt-1">{activity.description}</p>
-                  
-                  <div className="flex items-center space-x-4 mt-2">
-                    <span className="text-xs text-gray-500">{activity.timestamp}</span>
-                    
+                  <p className="text-sm font-medium text-gray-900">
+                    {activity.title}
+                  </p>
+                  <p className="mt-1 text-sm text-gray-600">
+                    {activity.description}
+                  </p>
+
+                  <div className="mt-2 flex items-center space-x-4">
+                    <span className="text-xs text-gray-500">
+                      {activity.timestamp}
+                    </span>
+
                     {activity.user && (
                       <span className="text-xs text-gray-500">
                         {activity.user.name}
                       </span>
                     )}
-                    
+
                     {activity.amount && (
                       <span className="text-xs font-medium text-green-600">
                         ₺{activity.amount.toLocaleString('tr-TR')}
                       </span>
                     )}
-                    
+
                     {activity.rating && (
                       <div className="flex items-center space-x-1">
                         {[...Array(activity.rating)].map((_, i) => (
-                          <Star key={i} className="h-3 w-3 fill-current text-yellow-400" />
+                          <Star
+                            key={i}
+                            className="h-3 w-3 fill-current text-yellow-400"
+                          />
                         ))}
                       </div>
                     )}
@@ -270,16 +295,16 @@ export function ActivityTimeline({ user }: ActivityTimelineProps) {
                 </div>
               </div>
             </div>
-            
+
             {index < activities.length - 1 && (
-              <div className="absolute left-8 mt-12 w-px h-8 bg-gray-200"></div>
+              <div className="absolute left-8 mt-12 h-8 w-px bg-gray-200"></div>
             )}
           </div>
         ))}
       </div>
 
-      <div className="mt-6 pt-4 border-t border-gray-200">
-        <button className="w-full text-sm text-gray-600 hover:text-gray-800 font-medium py-2">
+      <div className="mt-6 border-t border-gray-200 pt-4">
+        <button className="w-full py-2 text-sm font-medium text-gray-600 hover:text-gray-800">
           Daha Fazla Aktivite Göster
         </button>
       </div>
