@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { MSWProvider } from '@/components/providers/MSWProvider';
 import { AuthProvider } from '@/components/providers/AuthProvider';
+import { ToastContainer } from '@/components/ui/Toast';
 import './globals.css';
 
 const inter = Inter({
@@ -33,7 +34,10 @@ export default function RootLayout({
         className={`${inter.variable} h-full bg-gray-50 font-sans antialiased`}
       >
         <MSWProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            {children}
+            <ToastContainer />
+          </AuthProvider>
         </MSWProvider>
       </body>
     </html>

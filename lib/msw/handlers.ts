@@ -9,6 +9,7 @@ import {
   Freelancer,
   Message,
   Conversation,
+  Notification,
 } from '@/types';
 
 // Mock employer data
@@ -1067,6 +1068,123 @@ export const handlers = [
       return HttpResponse.json(createApiResponse({ success: true }));
     }
   ),
+
+  // NOTIFICATION SYSTEM ENDPOINTS
+
+  // Get all notifications for current user
+  http.get('/api/notifications', async ({ request }) => {
+    const authHeader = request.headers.get('Authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { success: false, error: 'Yetkisiz erişim' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const userId = token.replace('mock-token-', '');
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // Mock notifications
+    const notifications: Notification[] = [
+      {
+        id: 'notif-1',
+        userId,
+        type: 'message_received',
+        title: 'Yeni Mesaj',
+        message: 'Fatma Kaya sizinle yeni bir mesaj gönderdi',
+        isRead: false,
+        createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 min ago
+        actionUrl: '/messages/conv-1',
+      },
+      {
+        id: 'notif-2',
+        userId,
+        type: 'proposal_received',
+        title: 'Yeni Teklif',
+        message: 'React projesi için yeni bir teklif aldınız',
+        isRead: false,
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
+        actionUrl: '/jobs/1',
+      },
+      {
+        id: 'notif-3',
+        userId,
+        type: 'job_completed',
+        title: 'Proje Tamamlandı',
+        message: 'Logo tasarım projeniz başarıyla tamamlandı',
+        isRead: true,
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
+        actionUrl: '/jobs/2',
+      },
+    ];
+
+    return HttpResponse.json(createApiResponse(notifications));
+  }),
+
+  // Mark notification as read
+  http.patch('/api/notifications/:id/read', async ({ params, request }) => {
+    const authHeader = request.headers.get('Authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { success: false, error: 'Yetkisiz erişim' },
+        { status: 401 }
+      );
+    }
+
+    const notificationId = params.id as string;
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    // In a real app, would update notification in database
+    console.log(`Mock: Marked notification ${notificationId} as read`);
+
+    return HttpResponse.json(createApiResponse({ success: true }));
+  }),
+
+  // Mark all notifications as read
+  http.patch('/api/notifications/mark-all-read', async ({ request }) => {
+    const authHeader = request.headers.get('Authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { success: false, error: 'Yetkisiz erişim' },
+        { status: 401 }
+      );
+    }
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    return HttpResponse.json(createApiResponse({ success: true }));
+  }),
+
+  // Delete notification
+  http.delete('/api/notifications/:id', async ({ params, request }) => {
+    const authHeader = request.headers.get('Authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { success: false, error: 'Yetkisiz erişim' },
+        { status: 401 }
+      );
+    }
+
+    const notificationId = params.id as string;
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // In a real app, would delete notification from database
+    console.log(`Mock: Deleted notification ${notificationId}`);
+
+    return HttpResponse.json(createApiResponse({ success: true }));
+  }),
 
   // Error handler for unmatched routes
   http.all('*', () => {

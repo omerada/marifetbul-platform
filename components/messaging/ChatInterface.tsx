@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { User, Message } from '@/types';
-import { Card, Button, Loading } from '@/components/ui';
+import { User, Message, FileAttachment } from '@/types';
+import { Card, Button, Loading, FileUpload } from '@/components/ui';
 import {
   useConversation,
   useMessages,
@@ -21,9 +21,16 @@ import {
   Smile,
   CheckCircle2,
   Eye,
+  X,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import {
+  ALLOWED_FILE_TYPES,
+  formatFileSize,
+  getFileIcon,
+} from '@/lib/utils/fileUpload';
+import { useToast } from '@/hooks/useNotifications';
 
 interface ChatInterfaceProps {
   conversationId: string;
@@ -34,6 +41,7 @@ export function ChatInterface({
   conversationId,
   currentUser,
 }: ChatInterfaceProps) {
+  const toast = useToast();
   const { conversation, isLoading: conversationLoading } =
     useConversation(conversationId);
   const {
@@ -44,6 +52,8 @@ export function ChatInterface({
   const { sendMessage, markAsRead, isLoading: sendingMessage } = useMessaging();
 
   const [messageText, setMessageText] = useState('');
+  const [showFileUpload, setShowFileUpload] = useState(false);
+  const [pendingFiles, setPendingFiles] = useState<FileAttachment[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -74,11 +84,17 @@ export function ChatInterface({
   }, [messageText]);
 
   const handleSendMessage = async () => {
-    if (!messageText.trim() || sendingMessage) return;
+    if ((!messageText.trim() && pendingFiles.length === 0) || sendingMessage)
+      return;
 
     try {
-      await sendMessage(conversationId, messageText.trim());
+      // For now, we'll send the message with text only
+      // In a real implementation, files would be included in the message
+      const content = messageText.trim() || '[Dosya gönderildi]';
+      await sendMessage(conversationId, content);
+
       setMessageText('');
+      setPendingFiles([]);
       refreshMessages();
 
       // Reset textarea height
@@ -87,8 +103,22 @@ export function ChatInterface({
       }
     } catch (error) {
       console.error('Failed to send message:', error);
-      // TODO: Show error toast
+      toast.error('Mesaj gönderilemedi', 'Lütfen tekrar deneyin');
     }
+  };
+
+  const handleFilesUploaded = (files: FileAttachment[]) => {
+    setPendingFiles((prev) => [...prev, ...files]);
+    setShowFileUpload(false);
+  };
+
+  const handleRemoveFile = (fileId: string) => {
+    setPendingFiles((prev) => prev.filter((f) => f.id !== fileId));
+  };
+
+  const handleFileUploadError = (error: string) => {
+    console.error('File upload error:', error);
+    toast.error('Dosya yükleme hatası', error);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -239,8 +269,59 @@ export function ChatInterface({
       {/* Message Input */}
       <div className="border-t border-gray-200 bg-white">
         <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
+          {/* Pending Files */}
+          {pendingFiles.length > 0 && (
+            <div className="mb-3 space-y-2">
+              <p className="text-sm font-medium text-gray-700">
+                Eklenecek dosyalar:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {pendingFiles.map((file) => (
+                  <div
+                    key={file.id}
+                    className="flex items-center space-x-2 rounded-md bg-gray-100 px-3 py-2"
+                  >
+                    <span className="text-sm">{getFileIcon(file.type)}</span>
+                    <span className="max-w-[150px] truncate text-sm text-gray-700">
+                      {file.name}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {formatFileSize(file.size)}
+                    </span>
+                    <button
+                      onClick={() => handleRemoveFile(file.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* File Upload Area */}
+          {showFileUpload && (
+            <div className="mb-3">
+              <FileUpload
+                onFilesUploaded={handleFilesUploaded}
+                onError={handleFileUploadError}
+                options={{
+                  allowedTypes: ALLOWED_FILE_TYPES.all,
+                  maxFiles: 3,
+                  multiple: true,
+                }}
+              />
+            </div>
+          )}
+
           <div className="flex items-end space-x-3">
-            <Button variant="ghost" size="sm" className="mb-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mb-2"
+              onClick={() => setShowFileUpload(!showFileUpload)}
+            >
               <Paperclip className="h-4 w-4" />
             </Button>
 
@@ -262,7 +343,10 @@ export function ChatInterface({
 
             <Button
               onClick={handleSendMessage}
-              disabled={!messageText.trim() || sendingMessage}
+              disabled={
+                (!messageText.trim() && pendingFiles.length === 0) ||
+                sendingMessage
+              }
               className="mb-2"
             >
               {sendingMessage ? (

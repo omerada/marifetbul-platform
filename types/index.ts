@@ -153,9 +153,18 @@ export interface Message {
   senderId: string;
   sender: User;
   content: string;
-  attachments?: string[];
+  attachments?: FileAttachment[];
   isRead: boolean;
   createdAt: string;
+}
+
+export interface FileAttachment {
+  id: string;
+  name: string;
+  url: string;
+  type: string; // MIME type
+  size: number; // File size in bytes
+  uploadedAt: string;
 }
 
 export interface Conversation {
