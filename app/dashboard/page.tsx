@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/layout';
-import { Card, CardHeader, CardContent, Loading } from '@/components/ui';
+import { Card, CardContent, Loading } from '@/components/ui';
 import useAuthStore from '@/lib/store/auth';
 import {
   DashboardStats,
@@ -16,10 +16,6 @@ import {
   Bell,
   Settings,
   HelpCircle,
-  Briefcase,
-  Star,
-  TrendingUp,
-  User,
 } from 'lucide-react';
 
 export default function DashboardPage() {

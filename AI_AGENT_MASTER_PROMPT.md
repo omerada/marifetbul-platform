@@ -42,28 +42,7 @@ TEMEL DOKÜMANTASYON:
 
 ## MEVCUT GÖREV
 
-[BURAYA SPESIFIK GÖREV YAZACAKSINIZ - ÖRNEKLER:]
-
-### ÖRNEK GÖREV 1: Project Foundation
-GÖREV: "Proje foundation'ını kur - Phase 1.1'i tamamla"
-
-### ÖRNEK GÖREV 2: Authentication System
-GÖREV: "Authentication sistemini geliştir - Phase 1.2'yi tamamla"
-
-### ÖRNEK GÖREV 3: Marketplace Development
-GÖREV: "Hibrit marketplace'i geliştir - Phase 2.1'i tamamla"
-
-### ÖRNEK GÖREV 4: Detail Pages
-GÖREV: "Detail pages ve interactions - Phase 2.2'yi tamamla"
-
-### ÖRNEK GÖREV 5: User Profiles
-GÖREV: "User profile system - Phase 2.3'ü tamamla"
-
-### ÖRNEK GÖREV 6: Dashboard System
-GÖREV: "Smart dashboard system - Phase 3.1'i tamamla"
-
-### ÖRNEK GÖREV 7: Mobile Polish
-GÖREV: "Mobile optimization ve polish - Phase 3.2'yi tamamla"
+Mevcut proje durumunu ve dökümantasyonları analiz et. Geliştirme olarak nerede kaldıysak oradan geliştirme işlemlerine devam et.
 
 ## DEVELOPMENT RULES
 
@@ -144,85 +123,6 @@ FEATURE COMPLETION:
 
 Şimdi [GÖREV] kısmında belirtilen görevi dokümantasyonu takip ederek tamamla. Adım adım ilerle ve kaliteli kod üret.
 ```
-
----
-
-## 🔧 SPESIFIK GÖREV PROMPT ÖRNEKLERI
-
-### Foundation Setup Prompt:
-
-```
-GÖREV: Proje foundation'ını kur
-
-Dokümantasyon referansları:
-- docs/06-setup-guide.md - Setup adımları
-- docs/01-frontend-architecture.md - Proje yapısı
-- docs/05-component-structure.md - Component library
-
-Adımlar:
-1. Next.js 14 projesi kur
-2. TypeScript + Tailwind yapılandır
-3. Base UI components oluştur (Button, Input, Card)
-4. Layout structure kur
-5. MSW mock API setup
-6. Development environment hazırla
-
-Beklenen çıktı: Çalışan development server ve temel component library
-```
-
-### Authentication Development Prompt:
-
-```
-GÖREV: Authentication sistemini geliştir
-
-Referans dokümantasyon:
-- docs/02-user-flows-screens.md (Authentication bölümü)
-- docs/03-mock-api-services.md (Auth endpoints)
-- docs/08-advanced-page-structure.md (Landing page)
-
-Features:
-1. /login ve /register sayfaları
-2. Form validation (React Hook Form + Zod)
-3. Zustand auth store
-4. Protected routes
-5. User type selection (Freelancer/Employer)
-6. JWT persistence
-
-Test scenarios:
-- Registration flow çalışıyor
-- Login redirect to dashboard
-- Protected routes blocking unauthorized
-- Token persistence working
-```
-
-### Marketplace Development Prompt:
-
-```
-GÖREV: Hibrit marketplace sistemini geliştir
-
-Referans dokümantasyon:
-- docs/08-advanced-page-structure.md (Marketplace section)
-- docs/03-mock-api-services.md (Jobs & Packages endpoints)
-- docs/07-mock-data-examples.md (Mock data)
-
-Features:
-1. /marketplace ana sayfası
-2. Services ⟷ Jobs toggle interface
-3. Responsive card layouts
-4. Advanced filtering
-5. Search functionality
-6. Infinite scroll
-7. Mobile optimization
-
-Layout requirements:
-- Desktop: Sidebar + Grid
-- Mobile: Stack + Bottom sheet filters
-- Smooth transitions
-- Loading states
-```
-
----
-
 ## 📱 DEVELOPMENT WORKFLOW
 
 ### Her Görev İçin Workflow:
@@ -256,41 +156,3 @@ Layout requirements:
    □ Document limitations
    □ Plan next steps
 ```
-
----
-
-## 🎯 ÖRNEK KULLANIM
-
-### İlk Görev Başlatma:
-
-```
-[MASTER PROMPT'U KOPYALA]
-
-GÖREV: Marifeto projesinin foundation'ını kur
-
-Phase 1.1'i tamamla:
-- Next.js 14 setup
-- Base UI components
-- Mock API kurulumu
-- Development environment
-
-Dokümantasyonu takip ederek adım adım ilerle.
-```
-
-### Sonraki Görevler:
-
-```
-[MASTER PROMPT'U KOPYALA]
-
-GÖREV: Authentication sistemini geliştir
-
-Bir önceki görevi tamamladım. Şimdi Phase 1.2'yi geliştir:
-- Login/Register sayfaları
-- Auth state management
-- Protected routes
-- User type selection
-
-Mevcut codebase'i analiz ederek devam et.
-```
-
-Bu master prompt ile AI agent'a Marifeto projesinin tüm development sürecini yaptırabilirsiniz. Her görev için spesifik talimatlar vererek iterative olarak ilerleyebilirsiniz.

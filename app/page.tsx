@@ -54,7 +54,7 @@ export default function HomePage() {
                   <Button
                     variant="outline"
                     size="lg"
-                    className="w-full border-white text-white hover:bg-white hover:text-blue-600 sm:w-auto"
+                    className="w-full border-white bg-transparent text-white hover:bg-white hover:text-blue-600 sm:w-auto"
                   >
                     Ücretsiz Üye Ol
                   </Button>
@@ -67,22 +67,22 @@ export default function HomePage() {
               <div className="bg-opacity-10 border-opacity-20 rounded-2xl border border-white bg-white p-8 backdrop-blur-sm">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="text-center">
-                    <div className="text-3xl font-bold">50K+</div>
+                    <div className="text-3xl font-bold text-white">50K+</div>
                     <div className="text-blue-200">Aktif Uzman</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold">25K+</div>
+                    <div className="text-3xl font-bold text-white">25K+</div>
                     <div className="text-blue-200">Tamamlanan Proje</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold">4.9</div>
+                    <div className="text-3xl font-bold text-white">4.9</div>
                     <div className="flex items-center justify-center text-blue-200">
-                      <Star className="mr-1 h-4 w-4 fill-current" />
+                      <Star className="mr-1 h-4 w-4 fill-yellow-400 text-yellow-400" />
                       Ortalama Puan
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold">99%</div>
+                    <div className="text-3xl font-bold text-white">99%</div>
                     <div className="text-blue-200">Müşteri Memnuniyeti</div>
                   </div>
                 </div>

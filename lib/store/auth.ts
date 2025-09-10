@@ -62,6 +62,9 @@ const useAuthStore = create<AuthState>()(
           const data: LoginResponse = await response.json();
 
           if (data.success && data.data) {
+            // Set cookie for middleware
+            document.cookie = `marifeto-auth-token=${data.data.token}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
+
             set({
               user: data.data.user,
               token: data.data.token,
@@ -99,6 +102,9 @@ const useAuthStore = create<AuthState>()(
           const result: LoginResponse = await response.json();
 
           if (result.success && result.data) {
+            // Set cookie for middleware
+            document.cookie = `marifeto-auth-token=${result.data.token}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
+
             set({
               user: result.data.user,
               token: result.data.token,
@@ -122,6 +128,10 @@ const useAuthStore = create<AuthState>()(
 
       // Logout action
       logout: () => {
+        // Clear cookie
+        document.cookie =
+          'marifeto-auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
         set({
           user: null,
           token: null,

@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Marifeto - Freelancer & İşveren Platformu
 
-## Getting Started
+Modern bir freelancer ve işveren buluşma platformu. React, Next.js 14, TypeScript ve Tailwind CSS ile geliştirildi.
 
-First, run the development server:
+## 🚀 Canlı Demo
+
+**Vercel Deployment:** https://marifeto.vercel.app
+
+## 📋 Özellikler
+
+- ✅ **Hibrit Platform**: Freelancer ve işveren için tek uygulama
+- ✅ **Modern UI/UX**: Responsive, mobile-first tasarım
+- ✅ **Authentication**: Güvenli giriş/kayıt sistemi
+- ✅ **Dashboard**: Kullanıcı tipine özel dashboard'lar
+- ✅ **Marketplace**: İş ilanları ve hizmet paketleri
+- ✅ **Protected Routes**: Middleware tabanlı koruma
+- ✅ **Type Safety**: TypeScript strict mode
+- ✅ **State Management**: Zustand store
+- ✅ **Form Validation**: React Hook Form + Zod
+
+## 🛠️ Teknoloji Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Headless UI
+- **State Management**: Zustand
+- **Form Handling**: React Hook Form + Zod Validation
+- **Data Fetching**: SWR
+- **Mock API**: MSW (Mock Service Worker)
+- **Icons**: Lucide React
+- **Deployment**: Vercel
+
+## 🏃‍♂️ Hızlı Başlangıç
+
+### Gereksinimler
+
+- Node.js 18+
+- npm 8+
+
+### Kurulum
 
 ```bash
+# Repository'yi klonlayın
+git clone https://github.com/omerada/marifet.git
+cd marifet
+
+# Dependencies'leri yükleyin
+npm install
+
+# Development server'ı başlatın
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📱 Demo Hesapları
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Freelancer
+- **E-posta**: freelancer@example.com
+- **Şifre**: password123
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### İşveren
+- **E-posta**: isveren@example.com
+- **Şifre**: password123
