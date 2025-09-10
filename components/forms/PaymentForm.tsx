@@ -8,6 +8,7 @@ import {
   validateCardNumber,
   validateExpiryDate,
   validateCVV,
+  validateBillingAddress,
   formatCardNumber,
   formatExpiryDate,
   processPayment,
@@ -68,25 +69,24 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
       newErrors.cardholderName = 'Kart sahibi adı gerekli';
     }
 
-    // Billing address validation
-    if (!billingAddress.fullName.trim()) {
-      newErrors.fullName = 'Ad soyad gerekli';
+    // Billing address validation using utility
+    const addressValidation = validateBillingAddress(billingAddress);
+    if (!addressValidation.valid) {
+      // Map validation errors to form field errors
+      addressValidation.errors.forEach((error) => {
+        if (error.includes('Ad soyad')) newErrors.fullName = error;
+        if (error.includes('E-posta')) newErrors.email = error;
+        if (error.includes('Adres')) newErrors.address = error;
+        if (error.includes('Şehir')) newErrors.city = error;
+        if (error.includes('İl/Bölge')) newErrors.state = error;
+        if (error.includes('Posta kodu')) newErrors.postalCode = error;
+        if (error.includes('Ülke')) newErrors.country = error;
+      });
     }
 
-    if (!billingAddress.email.trim()) {
-      newErrors.email = 'E-posta gerekli';
-    }
-
-    if (!billingAddress.addressLine1.trim()) {
-      newErrors.address = 'Adres gerekli';
-    }
-
-    if (!billingAddress.city.trim()) {
-      newErrors.city = 'Şehir gerekli';
-    }
-
-    if (!billingAddress.postalCode.trim()) {
-      newErrors.postalCode = 'Posta kodu gerekli';
+    // Email validation
+    if (billingAddress.email && !billingAddress.email.includes('@')) {
+      newErrors.email = 'Geçersiz e-posta adresi';
     }
 
     setErrors(newErrors);

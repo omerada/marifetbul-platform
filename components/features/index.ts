@@ -22,6 +22,7 @@ export { MobileDashboard } from './MobileDashboard';
 export { MobileLayout } from './MobileLayout';
 export { MobileMarketplace } from './MobileMarketplace';
 export { MobileFiltersSheet } from './MobileFiltersSheet';
+export { default as MobileFiltersSheetDefault } from './MobileFiltersSheet';
 export { TouchJobCard, TouchServiceCard } from './TouchCards';
 
 // Advanced Features

@@ -289,7 +289,7 @@ export function AnimatedInteractions({
         )}
       </Card>
 
-      {/* Micro-interactions Demo */}
+      {/* Micro-interactions */}
       <Card className="p-6">
         <h3 className="mb-4 text-lg font-semibold">Mikro Etkileşimler</h3>
 

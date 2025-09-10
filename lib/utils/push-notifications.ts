@@ -7,7 +7,8 @@ export class PushNotificationManager {
   private static instance: PushNotificationManager;
   private swRegistration: ServiceWorkerRegistration | null = null;
   private publicVapidKey =
-    'BM8YECrNvBEQqGNMwf0TBL7TdCNz7TgPj8Qhc3k1n2PxYvZlCK8rKJI9SQJ1HFt2Bc7YxOGMp1s3ZL9rF4K3qA8'; // Demo key
+    process.env.NEXT_PUBLIC_VAPID_KEY ||
+    'BM8YECrNvBEQqGNMwf0TBL7TdCNz7TgPj8Qhc3k1n2PxYvZlCK8rKJI9SQJ1HFt2Bc7YxOGMp1s3ZL9rF4K3qA8'; // Fallback key
 
   private constructor() {}
 

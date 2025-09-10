@@ -22,7 +22,7 @@ import {
   MousePointer,
 } from 'lucide-react';
 
-export default function AdvancedFeaturesDemo() {
+export default function AdvancedFeaturesPage() {
   const { jobs } = useJobs();
   const [searchResults, setSearchResults] = useState<(Job | ServicePackage)[]>(
     []
@@ -39,7 +39,7 @@ export default function AdvancedFeaturesDemo() {
         <div className="text-center">
           <h1 className="mb-2 flex items-center justify-center gap-2 text-3xl font-bold">
             <Sparkles className="h-8 w-8 text-yellow-500" />
-            Gelişmiş Özellikler Demo
+            Gelişmiş Özellikler
           </h1>
           <p className="mx-auto max-w-2xl text-gray-600">
             Marifet platformunun yeni gelişmiş özelliklerini keşfedin. Gelişmiş

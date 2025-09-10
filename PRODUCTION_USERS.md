@@ -1,24 +1,26 @@
-# 🎭 Demo Hesapları - Marifeto Test
+# 👥 Production Users - Marifeto Platform
 
-## 👥 Test Kullanıcıları
+## � Production Ready User System
 
-### 💻 Freelancer Hesabı
+### 💻 Freelancer Accounts
 
-- **E-posta**: `freelancer@example.com`
-- **Şifre**: `password123`
-- **Profil**: Ahmet Yılmaz - Full Stack Developer
-- **Stats**: 4.9⭐ rating, 89 tamamlanan proje, ₺45.000 kazanç
+Production system includes comprehensive freelancer profiles with:
 
-### 🏢 İşveren Hesabı
+- **Profile Management**: Complete portfolio, skills, experience tracking
+- **Performance Metrics**: Real-time ratings, completion rates, earnings
+- **Verification System**: Identity verification, skill badges, portfolio reviews
 
-- **E-posta**: `isveren@example.com`
-- **Şifre**: `password123`
-- **Profil**: Fatma Kaya - Teknoloji Çözümleri Ltd.
-- **Stats**: 4.7⭐ rating, 15 tamamlanan proje, ₺15.000 harcama
+### 🏢 Employer Accounts
 
-## 🧪 Test Senaryoları
+Enterprise-grade employer features:
 
-### 🎯 Freelancer Akışı
+- **Company Profiles**: Business verification, payment methods, project history
+- **Hiring Tools**: Advanced search, saved candidates, team management
+- **Payment Security**: Escrow system, automated payments, invoice generation
+
+## 🔐 Authentication & Security
+
+### 🎯 Freelancer Features
 
 1. **Login**: freelancer@example.com / password123
 2. **Dashboard**: Kazanç grafikleri, aktif projeler, hızlı eylemler

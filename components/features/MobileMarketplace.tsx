@@ -4,7 +4,10 @@ import React, { useState } from 'react';
 import { Search, Filter, Grid, List } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { MobileFiltersSheet } from './MobileFiltersSheet';
+import MobileFiltersSheet, {
+  defaultMobileFilters,
+  type FilterSection,
+} from './MobileFiltersSheet';
 import { JobCard } from '@/components/marketplace/JobCard';
 import { ServiceCard } from '@/components/marketplace/ServiceCard';
 import { useJobs } from '@/hooks/useJobs';
@@ -24,57 +27,53 @@ export function MobileMarketplace({
   const [mode, setMode] = useState<MarketplaceMode>(initialMode);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [searchQuery, setSearchQuery] = useState('');
-  const [filters, setFilters] = useState<Record<string, string>>({});
+  const [filters, setFilters] = useState(defaultMobileFilters);
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Mock filter options
-  const filterOptions = {
-    categories: [
-      { id: '1', label: 'Web Geliştirme', value: 'web-development' },
-      { id: '2', label: 'Mobil Geliştirme', value: 'mobile-development' },
-      { id: '3', label: 'Tasarım', value: 'design' },
-      { id: '4', label: 'Yazarlık', value: 'writing' },
-      { id: '5', label: 'Pazarlama', value: 'marketing' },
-    ],
-    locations: [
-      { id: '1', label: 'İstanbul', value: 'istanbul' },
-      { id: '2', label: 'Ankara', value: 'ankara' },
-      { id: '3', label: 'İzmir', value: 'izmir' },
-      { id: '4', label: 'Uzaktan', value: 'remote' },
-    ],
-    skills: [
-      { id: '1', label: 'React', value: 'react' },
-      { id: '2', label: 'Node.js', value: 'nodejs' },
-      { id: '3', label: 'TypeScript', value: 'typescript' },
-      { id: '4', label: 'Figma', value: 'figma' },
-      { id: '5', label: 'SEO', value: 'seo' },
-    ],
-    experienceLevels: [
-      { id: '1', label: 'Başlangıç', value: 'beginner' },
-      { id: '2', label: 'Orta', value: 'intermediate' },
-      { id: '3', label: 'Uzman', value: 'expert' },
-    ],
-    budgetRanges: [
-      { id: '1', label: '₺0 - ₺500', value: '0-500' },
-      { id: '2', label: '₺500 - ₺1.500', value: '500-1500' },
-      { id: '3', label: '₺1.500 - ₺5.000', value: '1500-5000' },
-      { id: '4', label: '₺5.000+', value: '5000+' },
-    ],
+  // Convert FilterSection[] to simple filter object for API calls
+  const convertFiltersToApiFormat = (
+    filterSections: FilterSection[]
+  ): Record<string, string> => {
+    const apiFilters: Record<string, string> = {};
+
+    filterSections.forEach((section) => {
+      if (section.type === 'multiselect' || section.type === 'radio') {
+        const selectedOptions = section.options?.filter((opt) => opt.selected);
+        if (selectedOptions && selectedOptions.length > 0) {
+          apiFilters[section.id] = selectedOptions
+            .map((opt) => opt.id)
+            .join(',');
+        }
+      } else if (
+        section.type === 'range' &&
+        section.value &&
+        typeof section.value === 'object'
+      ) {
+        if (section.value.min)
+          apiFilters[`${section.id}_min`] = section.value.min;
+        if (section.value.max)
+          apiFilters[`${section.id}_max`] = section.value.max;
+      }
+    });
+
+    return apiFilters;
   };
+
+  const apiFilters = convertFiltersToApiFormat(filters);
 
   // Data fetching
   const {
     jobs,
     pagination: jobsPagination,
     isLoading: jobsLoading,
-  } = useJobs(currentPage, 12, { ...filters, search: searchQuery });
+  } = useJobs(currentPage, 12, { ...apiFilters, search: searchQuery });
 
   const {
     packages,
     pagination: packagesPagination,
     isLoading: packagesLoading,
-  } = usePackages(currentPage, 12, { ...filters, search: searchQuery });
+  } = usePackages(currentPage, 12, { ...apiFilters, search: searchQuery });
 
   const isLoading = mode === 'jobs' ? jobsLoading : packagesLoading;
   const data = mode === 'jobs' ? jobs : packages;
@@ -85,12 +84,35 @@ export function MobileMarketplace({
     setCurrentPage(1);
   };
 
-  const handleApplyFilters = (newFilters: Record<string, string>) => {
+  const handleApplyFilters = (newFilters: FilterSection[]) => {
     setFilters(newFilters);
     setCurrentPage(1);
   };
 
-  const activeFiltersCount = Object.keys(filters).length;
+  const getActiveFiltersCount = (filterSections: FilterSection[]): number => {
+    return filterSections.reduce((count, section) => {
+      if (section.type === 'multiselect' || section.type === 'radio') {
+        return (
+          count + (section.options?.filter((opt) => opt.selected).length || 0)
+        );
+      }
+      if (
+        section.type === 'range' &&
+        section.value &&
+        typeof section.value === 'object'
+      ) {
+        return count + (section.value.min || section.value.max ? 1 : 0);
+      }
+      return count;
+    }, 0);
+  };
+
+  const handleClearAllFilters = () => {
+    setFilters(defaultMobileFilters);
+    setCurrentPage(1);
+  };
+
+  const activeFiltersCount = getActiveFiltersCount(filters);
 
   return (
     <div className="min-h-screen bg-gray-50 lg:hidden">
@@ -247,7 +269,7 @@ export function MobileMarketplace({
                 <button
                   onClick={() => {
                     setSearchQuery('');
-                    setFilters({});
+                    setFilters(defaultMobileFilters);
                     setCurrentPage(1);
                   }}
                   className="text-sm font-medium text-blue-600"
@@ -278,9 +300,9 @@ export function MobileMarketplace({
         isOpen={showFilters}
         onClose={() => setShowFilters(false)}
         onApplyFilters={handleApplyFilters}
-        filterOptions={filterOptions}
-        currentFilters={filters}
-        mode={mode}
+        onClearAll={handleClearAllFilters}
+        filters={filters}
+        resultCount={data?.length || 0}
       />
     </div>
   );

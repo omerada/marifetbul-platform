@@ -23,7 +23,7 @@ interface FilterOption {
   selected?: boolean;
 }
 
-interface FilterSection {
+export interface FilterSection {
   id: string;
   title: string;
   type: 'multiselect' | 'range' | 'radio' | 'search';
@@ -259,7 +259,7 @@ function AccordionSection({
   );
 }
 
-export default function MobileFiltersSheet({
+export function MobileFiltersSheet({
   isOpen,
   onClose,
   filters: initialFilters,
@@ -470,3 +470,6 @@ export const defaultMobileFilters: FilterSection[] = [
     ],
   },
 ];
+
+// Default export
+export default MobileFiltersSheet;

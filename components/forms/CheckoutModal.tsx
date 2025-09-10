@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { PaymentForm } from '@/components/forms/PaymentForm';
 import { formatCurrency } from '@/lib/utils/payment';
-import { Order, ServicePackage, Job, User } from '@/types';
+import { Order, ServicePackage, Job } from '@/types';
 import Image from 'next/image';
 
 interface CheckoutModalProps {
