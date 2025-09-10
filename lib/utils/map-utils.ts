@@ -265,7 +265,7 @@ export class GeolocationService {
 
   // Check if geolocation is supported
   static isSupported(): boolean {
-    return 'geolocation' in navigator;
+    return typeof window !== 'undefined' && 'geolocation' in navigator;
   }
 
   // Get current position
@@ -316,7 +316,7 @@ export class GeolocationService {
 
     this.callbacks.push(callback);
 
-    if (this.watchId === null) {
+    if (this.watchId === null && typeof navigator !== 'undefined') {
       this.watchId = navigator.geolocation.watchPosition(
         (position) => {
           const coordinates: Coordinates = {
@@ -346,7 +346,11 @@ export class GeolocationService {
       this.callbacks = [];
     }
 
-    if (this.callbacks.length === 0 && this.watchId !== null) {
+    if (
+      this.callbacks.length === 0 &&
+      this.watchId !== null &&
+      typeof navigator !== 'undefined'
+    ) {
       navigator.geolocation.clearWatch(this.watchId);
       this.watchId = null;
     }

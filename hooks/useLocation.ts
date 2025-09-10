@@ -116,7 +116,7 @@ export const useGeolocation = (options: UseLocationOptions = {}) => {
     getCurrentPosition,
     watchPosition,
     clearWatch,
-    isSupported: 'geolocation' in navigator,
+    isSupported: typeof window !== 'undefined' && 'geolocation' in navigator,
   };
 };
 

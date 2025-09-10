@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { JobFilters } from '@/types';
+import type { JobFilters as JobFiltersType } from '@/types';
 import { Button, Input, Card } from '@/components/ui';
 import {
   Filter,
@@ -15,8 +15,8 @@ import {
 } from 'lucide-react';
 
 interface JobFiltersComponentProps {
-  filters: JobFilters;
-  onFiltersChange: (filters: JobFilters) => void;
+  filters: JobFiltersType;
+  onFiltersChange: (filters: JobFiltersType) => void;
   isVisible: boolean;
   onToggleVisibility: () => void;
 }
@@ -111,7 +111,7 @@ export function JobFiltersComponent({
   isVisible,
   onToggleVisibility,
 }: JobFiltersComponentProps) {
-  const [localFilters, setLocalFilters] = useState<JobFilters>(filters);
+  const [localFilters, setLocalFilters] = useState<JobFiltersType>(filters);
   const [selectedSkills, setSelectedSkills] = useState<string[]>(
     filters.skills || []
   );
@@ -123,8 +123,8 @@ export function JobFiltersComponent({
   }, [filters]);
 
   const handleFilterChange = (
-    key: keyof JobFilters,
-    value: JobFilters[keyof JobFilters]
+    key: keyof JobFiltersType,
+    value: JobFiltersType[keyof JobFiltersType]
   ) => {
     const newFilters = { ...localFilters, [key]: value };
     setLocalFilters(newFilters);
@@ -144,7 +144,7 @@ export function JobFiltersComponent({
   };
 
   const handleClearFilters = () => {
-    const clearedFilters: JobFilters = {
+    const clearedFilters: JobFiltersType = {
       search: '',
       category: '',
       subcategory: '',
@@ -152,7 +152,7 @@ export function JobFiltersComponent({
       budgetMax: undefined,
       budgetType: undefined,
       experienceLevel: undefined,
-      location: '',
+      location: [],
       isRemote: undefined,
       skills: [],
     };
@@ -417,3 +417,6 @@ export function JobFiltersComponent({
     </div>
   );
 }
+
+// Export as JobFilters for compatibility
+export const JobFilters = JobFiltersComponent;

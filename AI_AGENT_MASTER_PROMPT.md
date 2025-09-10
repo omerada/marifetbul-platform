@@ -30,15 +30,12 @@ PROJE YAKLAŞIMI:
 
 TEMEL DOKÜMANTASYON:
 1. README.md - Proje overview
-2. docs/01-frontend-architecture.md - Tech stack ve yapı
-3. docs/02-user-flows-screens.md - UX/UI spesifikasyonları
-4. docs/03-mock-api-services.md - API endpoints
-5. docs/05-component-structure.md - Component tasarımı
-6. docs/06-setup-guide.md - Kurulum rehberi
-7. docs/07-mock-data-examples.md - Test verileri
-8. docs/08-advanced-page-structure.md - Hibrit sayfa yapısı
-9. docs/09-ai-agent-instructions.md - AI development guidelines
-10. docs/04-ai-optimized-development-plan.md - Sprint planı
+2. docs/02-user-flows-screens.md - UX/UI spesifikasyonları
+3. docs/03-mock-api-services.md - API endpoints
+4. docs/05-component-structure.md - Component tasarımı
+5. docs/08-advanced-page-structure.md - Hibrit sayfa yapısı
+6. docs/09-ai-agent-instructions.md - AI development guidelines
+7. docs/04-ai-optimized-development-plan.md - Sprint planı
 
 ## MEVCUT GÖREV
 
@@ -123,6 +120,7 @@ FEATURE COMPLETION:
 
 Şimdi [GÖREV] kısmında belirtilen görevi dokümantasyonu takip ederek tamamla. Adım adım ilerle ve kaliteli kod üret.
 ```
+
 ## 📱 DEVELOPMENT WORKFLOW
 
 ### Her Görev İçin Workflow:

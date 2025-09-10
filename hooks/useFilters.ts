@@ -25,7 +25,7 @@ export function useJobFilters(initialFilters: JobFilters = {}) {
       budgetMax: undefined,
       budgetType: undefined,
       experienceLevel: undefined,
-      location: '',
+      location: [],
       isRemote: undefined,
       skills: [],
     };

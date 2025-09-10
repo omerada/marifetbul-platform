@@ -317,11 +317,14 @@ export interface JobFilters {
   budgetMin?: number;
   budgetMax?: number;
   budgetType?: 'fixed' | 'hourly';
+  jobType?: 'fixed' | 'hourly';
   experienceLevel?: 'beginner' | 'intermediate' | 'expert';
-  location?: string;
+  location?: string[];
   isRemote?: boolean;
   skills?: string[];
   search?: string;
+  deadline?: 'urgent' | 'week' | 'month' | 'flexible';
+  sort?: 'newest' | 'budget' | 'proposals' | 'rating';
 }
 
 export interface PackageFilters {

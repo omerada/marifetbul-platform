@@ -41,6 +41,7 @@ export function useJobs(page = 1, limit = 10, filters: JobFilters = {}) {
     isLoading,
     error,
     mutate,
+    refetch: mutate,
   };
 }
 

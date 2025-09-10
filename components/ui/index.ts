@@ -7,3 +7,5 @@ export { Tooltip } from './Tooltip';
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs';
 export { default as FileUpload } from './FileUpload';
 export { ToastContainer } from './ToastContainer';
+export { Textarea } from './Textarea';
+export { Badge } from './Badge';
