@@ -64,26 +64,38 @@ export default function HomePage() {
 
             {/* Hero Image/Stats */}
             <div className="relative">
-              <div className="bg-opacity-10 border-opacity-20 rounded-2xl border border-white bg-white p-8 backdrop-blur-sm">
+              <div className="rounded-2xl border border-white/20 bg-white/10 p-8 shadow-lg backdrop-blur-sm">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-white">50K+</div>
-                    <div className="text-blue-200">Aktif Uzman</div>
+                    <div className="text-3xl font-bold text-white drop-shadow-sm">
+                      50K+
+                    </div>
+                    <div className="font-medium text-blue-100">Aktif Uzman</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-white">25K+</div>
-                    <div className="text-blue-200">Tamamlanan Proje</div>
+                    <div className="text-3xl font-bold text-white drop-shadow-sm">
+                      25K+
+                    </div>
+                    <div className="font-medium text-blue-100">
+                      Tamamlanan Proje
+                    </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-white">4.9</div>
-                    <div className="flex items-center justify-center text-blue-200">
-                      <Star className="mr-1 h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    <div className="text-3xl font-bold text-white drop-shadow-sm">
+                      4.9
+                    </div>
+                    <div className="flex items-center justify-center font-medium text-blue-100">
+                      <Star className="mr-1 h-4 w-4 fill-yellow-400 text-yellow-400 drop-shadow-sm" />
                       Ortalama Puan
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-white">99%</div>
-                    <div className="text-blue-200">Müşteri Memnuniyeti</div>
+                    <div className="text-3xl font-bold text-white drop-shadow-sm">
+                      99%
+                    </div>
+                    <div className="font-medium text-blue-100">
+                      Müşteri Memnuniyeti
+                    </div>
                   </div>
                 </div>
               </div>
