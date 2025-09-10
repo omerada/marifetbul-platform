@@ -142,3 +142,16 @@ export function useAnnouncer() {
     LiveRegion,
   };
 }
+
+// Main accessibility hook export
+export function useAccessibility() {
+  const focusTrap = useFocusTrap();
+  const skipToContent = useSkipToContent();
+  const announcer = useAnnouncer();
+
+  return {
+    focusTrap,
+    skipToContent,
+    announcer,
+  };
+}

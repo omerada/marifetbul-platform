@@ -18,3 +18,10 @@ export { MobileLayout } from './MobileLayout';
 export { MobileMarketplace } from './MobileMarketplace';
 export { MobileFiltersSheet } from './MobileFiltersSheet';
 export { TouchJobCard, TouchServiceCard } from './TouchCards';
+
+// Advanced Features
+export { AdvancedSearch } from './AdvancedSearch';
+export { NotificationCenter } from './NotificationCenter';
+export { AnimatedInteractions } from './AnimatedInteractions';
+export { AnalyticsDashboard } from './AnalyticsDashboard';
+export { PWAManager } from './PWAManager';

@@ -242,3 +242,19 @@ export function checkPerformanceBudget(metrics: PerformanceMetrics) {
 
   return warnings;
 }
+
+// Main performance hook export
+export function usePerformance() {
+  const performanceMetrics = usePerformanceMonitoring();
+  const pageLoadTime = usePageLoadTime();
+  const memoryUsage = useMemoryUsage();
+  const networkStatus = useNetworkStatus();
+
+  return {
+    performanceMetrics,
+    pageLoadTime,
+    memoryUsage,
+    networkStatus,
+    checkBudget: () => checkPerformanceBudget(performanceMetrics),
+  };
+}
