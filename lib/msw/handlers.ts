@@ -1471,4 +1471,402 @@ export const handlers = [
       settings: updatedSettings,
     });
   }),
+
+  // Location and Map API handlers
+  http.get('/api/location/search', ({ request }) => {
+    const url = new URL(request.url);
+    const lat = parseFloat(url.searchParams.get('lat') || '0');
+    const lng = parseFloat(url.searchParams.get('lng') || '0');
+    const radius = parseFloat(url.searchParams.get('radius') || '10');
+    const type = url.searchParams.get('type');
+    const category = url.searchParams.get('category');
+    const query = url.searchParams.get('q') || '';
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const limit = parseInt(url.searchParams.get('limit') || '20');
+
+    // Mock location-based search results
+    const mockResults = [
+      {
+        id: '1',
+        type: 'job',
+        title: 'Web Geliştirici',
+        description:
+          'Modern web uygulamaları geliştirmek için deneyimli React geliştiricisi arıyoruz.',
+        budget: { min: 5000, max: 8000, currency: 'TRY' },
+        deadline: '2024-12-30',
+        skills: ['React', 'TypeScript', 'Node.js'],
+        location: {
+          id: 'loc-1',
+          name: 'Çankaya',
+          address: 'Çankaya, Ankara',
+          city: 'Ankara',
+          state: 'Ankara',
+          country: 'Türkiye',
+          coordinates: { latitude: 39.9208, longitude: 32.8541 },
+          type: 'district' as const,
+        },
+        coordinates: { latitude: 39.9208, longitude: 32.8541 },
+        distance: 2.5,
+        employer: {
+          id: 'emp-1',
+          name: 'TechCorp',
+          rating: 4.8,
+          avatar: '/avatars/company-1.jpg',
+        },
+      },
+      {
+        id: '2',
+        type: 'service',
+        title: 'Logo Tasarımı',
+        description:
+          'Profesyonel logo tasarım hizmeti. Markanıza özel yaratıcı çözümler.',
+        price: { amount: 500, currency: 'TRY' },
+        rating: 4.9,
+        reviewCount: 45,
+        category: 'Grafik Tasarım',
+        location: {
+          id: 'loc-2',
+          name: 'Kızılay',
+          address: 'Kızılay, Çankaya, Ankara',
+          city: 'Ankara',
+          state: 'Ankara',
+          country: 'Türkiye',
+          coordinates: { latitude: 39.9199, longitude: 32.8543 },
+          type: 'neighborhood' as const,
+        },
+        coordinates: { latitude: 39.9199, longitude: 32.8543 },
+        distance: 1.8,
+        freelancer: {
+          id: 'free-1',
+          name: 'Ahmet Yılmaz',
+          rating: 4.9,
+          avatar: '/avatars/freelancer-1.jpg',
+        },
+      },
+      {
+        id: '3',
+        type: 'freelancer',
+        name: 'Zeynep Demir',
+        title: 'UI/UX Tasarımcı',
+        description: 'Kullanıcı deneyimi odaklı modern tasarımlar yapıyorum.',
+        skills: ['Figma', 'Adobe XD', 'Sketch', 'Prototyping'],
+        hourlyRate: { amount: 150, currency: 'TRY' },
+        rating: 4.7,
+        reviewCount: 32,
+        location: {
+          id: 'loc-3',
+          name: 'Bahçelievler',
+          address: 'Bahçelievler, Ankara',
+          city: 'Ankara',
+          state: 'Ankara',
+          country: 'Türkiye',
+          coordinates: { latitude: 39.94, longitude: 32.82 },
+          type: 'district' as const,
+        },
+        coordinates: { latitude: 39.94, longitude: 32.82 },
+        distance: 3.2,
+        avatar: '/avatars/freelancer-2.jpg',
+        completedJobs: 28,
+        responseTime: '2 saat',
+      },
+      {
+        id: '4',
+        type: 'job',
+        title: 'Mobil Uygulama Geliştirme',
+        description:
+          'iOS ve Android platformları için cross-platform mobil uygulama geliştirme.',
+        budget: { min: 15000, max: 25000, currency: 'TRY' },
+        deadline: '2025-02-15',
+        skills: ['React Native', 'Flutter', 'Firebase'],
+        location: {
+          id: 'loc-4',
+          name: 'Bilkent',
+          address: 'Bilkent, Çankaya, Ankara',
+          city: 'Ankara',
+          state: 'Ankara',
+          country: 'Türkiye',
+          coordinates: { latitude: 39.8681, longitude: 32.7489 },
+          type: 'neighborhood' as const,
+        },
+        coordinates: { latitude: 39.8681, longitude: 32.7489 },
+        distance: 8.5,
+        employer: {
+          id: 'emp-2',
+          name: 'Innovation Labs',
+          rating: 4.6,
+          avatar: '/avatars/company-2.jpg',
+        },
+      },
+    ];
+
+    // Filter by type if specified
+    let filteredResults = mockResults;
+    if (type) {
+      filteredResults = filteredResults.filter(
+        (result) => result.type === type
+      );
+    }
+
+    // Filter by category if specified
+    if (category) {
+      filteredResults = filteredResults.filter(
+        (result) =>
+          result.type === 'service' &&
+          (result as { category?: string }).category === category
+      );
+    }
+
+    // Filter by query if specified
+    if (query) {
+      const queryLower = query.toLowerCase();
+      filteredResults = filteredResults.filter(
+        (result) =>
+          result.title.toLowerCase().includes(queryLower) ||
+          result.description.toLowerCase().includes(queryLower)
+      );
+    }
+
+    // Sort by distance if coordinates provided
+    if (lat && lng) {
+      filteredResults = filteredResults.sort((a, b) => {
+        const distanceA = Math.sqrt(
+          Math.pow(a.coordinates.latitude - lat, 2) +
+            Math.pow(a.coordinates.longitude - lng, 2)
+        );
+        const distanceB = Math.sqrt(
+          Math.pow(b.coordinates.latitude - lat, 2) +
+            Math.pow(b.coordinates.longitude - lng, 2)
+        );
+        return distanceA - distanceB;
+      });
+
+      // Update distance calculations
+      filteredResults = filteredResults.map((result) => ({
+        ...result,
+        distance:
+          Math.sqrt(
+            Math.pow(result.coordinates.latitude - lat, 2) +
+              Math.pow(result.coordinates.longitude - lng, 2)
+          ) * 111, // Rough km conversion
+      }));
+
+      // Filter by radius if specified
+      if (radius) {
+        filteredResults = filteredResults.filter(
+          (result) => result.distance <= radius
+        );
+      }
+    }
+
+    // Pagination
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedResults = filteredResults.slice(startIndex, endIndex);
+
+    return HttpResponse.json({
+      success: true,
+      results: paginatedResults,
+      total: filteredResults.length,
+      page,
+      limit,
+      hasMore: endIndex < filteredResults.length,
+      bounds: {
+        north:
+          Math.max(...paginatedResults.map((r) => r.coordinates.latitude)) +
+          0.01,
+        south:
+          Math.min(...paginatedResults.map((r) => r.coordinates.latitude)) -
+          0.01,
+        east:
+          Math.max(...paginatedResults.map((r) => r.coordinates.longitude)) +
+          0.01,
+        west:
+          Math.min(...paginatedResults.map((r) => r.coordinates.longitude)) -
+          0.01,
+      },
+    });
+  }),
+
+  http.get('/api/location/geocode', ({ request }) => {
+    const url = new URL(request.url);
+    const address = url.searchParams.get('address');
+
+    if (!address) {
+      return HttpResponse.json(
+        { success: false, error: 'Address parameter required' },
+        { status: 400 }
+      );
+    }
+
+    // Mock geocoding responses
+    const mockGeocode: Record<
+      string,
+      {
+        success: boolean;
+        results: Array<{
+          coordinates: { latitude: number; longitude: number };
+          formattedAddress: string;
+          components: { city: string; state?: string; country: string };
+        }>;
+      }
+    > = {
+      ankara: {
+        success: true,
+        results: [
+          {
+            coordinates: { latitude: 39.9334, longitude: 32.8597 },
+            formattedAddress: 'Ankara, Türkiye',
+            components: {
+              city: 'Ankara',
+              state: 'Ankara',
+              country: 'Türkiye',
+            },
+          },
+        ],
+      },
+      istanbul: {
+        success: true,
+        results: [
+          {
+            coordinates: { latitude: 41.0082, longitude: 28.9784 },
+            formattedAddress: 'İstanbul, Türkiye',
+            components: {
+              city: 'İstanbul',
+              state: 'İstanbul',
+              country: 'Türkiye',
+            },
+          },
+        ],
+      },
+      izmir: {
+        success: true,
+        results: [
+          {
+            coordinates: { latitude: 38.4192, longitude: 27.1287 },
+            formattedAddress: 'İzmir, Türkiye',
+            components: {
+              city: 'İzmir',
+              state: 'İzmir',
+              country: 'Türkiye',
+            },
+          },
+        ],
+      },
+    };
+
+    const searchKey = address.toLowerCase().trim();
+    const result = mockGeocode[searchKey];
+
+    if (result) {
+      return HttpResponse.json(result);
+    }
+
+    return HttpResponse.json({
+      success: true,
+      results: [],
+    });
+  }),
+
+  http.get('/api/location/reverse-geocode', ({ request }) => {
+    const url = new URL(request.url);
+    const lat = parseFloat(url.searchParams.get('lat') || '0');
+    const lng = parseFloat(url.searchParams.get('lng') || '0');
+
+    if (!lat || !lng) {
+      return HttpResponse.json(
+        { success: false, error: 'Latitude and longitude parameters required' },
+        { status: 400 }
+      );
+    }
+
+    // Mock reverse geocoding
+    const cities = [
+      { name: 'Ankara', lat: 39.9334, lng: 32.8597 },
+      { name: 'İstanbul', lat: 41.0082, lng: 28.9784 },
+      { name: 'İzmir', lat: 38.4192, lng: 27.1287 },
+      { name: 'Bursa', lat: 40.1826, lng: 29.0665 },
+      { name: 'Antalya', lat: 36.8969, lng: 30.7133 },
+    ];
+
+    let closestCity = cities[0];
+    let minDistance = Math.sqrt(
+      Math.pow(lat - closestCity.lat, 2) + Math.pow(lng - closestCity.lng, 2)
+    );
+
+    cities.forEach((city) => {
+      const distance = Math.sqrt(
+        Math.pow(lat - city.lat, 2) + Math.pow(lng - city.lng, 2)
+      );
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestCity = city;
+      }
+    });
+
+    return HttpResponse.json({
+      success: true,
+      result: {
+        formattedAddress: `${closestCity.name}, Türkiye`,
+        components: {
+          city: closestCity.name,
+          country: 'Türkiye',
+        },
+        coordinates: { latitude: lat, longitude: lng },
+      },
+    });
+  }),
+
+  http.get('/api/location/nearby', ({ request }) => {
+    const url = new URL(request.url);
+    const lat = parseFloat(url.searchParams.get('lat') || '0');
+    const lng = parseFloat(url.searchParams.get('lng') || '0');
+    const radius = parseFloat(url.searchParams.get('radius') || '5');
+    const type = url.searchParams.get('type') || 'all';
+
+    // Mock nearby locations
+    const nearbyLocations = [
+      {
+        id: 'poi-1',
+        name: 'Kızılay Metro İstasyonu',
+        type: 'transit',
+        coordinates: { latitude: 39.9199, longitude: 32.8543 },
+        distance: 0.5,
+        address: 'Kızılay, Çankaya, Ankara',
+      },
+      {
+        id: 'poi-2',
+        name: 'Armada AVM',
+        type: 'shopping',
+        coordinates: { latitude: 39.9, longitude: 32.85 },
+        distance: 1.2,
+        address: 'Söğütözü, Çankaya, Ankara',
+      },
+      {
+        id: 'poi-3',
+        name: 'Bilkent Üniversitesi',
+        type: 'education',
+        coordinates: { latitude: 39.8681, longitude: 32.7489 },
+        distance: 8.5,
+        address: 'Bilkent, Çankaya, Ankara',
+      },
+    ];
+
+    // Filter by distance
+    const filtered = nearbyLocations.filter(
+      (location) => location.distance <= radius
+    );
+
+    // Filter by type if specified
+    const typeFiltered =
+      type === 'all'
+        ? filtered
+        : filtered.filter((location) => location.type === type);
+
+    return HttpResponse.json({
+      success: true,
+      results: typeFiltered,
+      center: { latitude: lat, longitude: lng },
+      radius,
+    });
+  }),
 ];

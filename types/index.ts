@@ -528,3 +528,110 @@ export interface CheckoutFormData {
   notes?: string;
   agreeToTerms: boolean;
 }
+
+// Location and Map Types
+export interface Coordinates {
+  latitude: number;
+  longitude: number;
+}
+
+export interface LocationData {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  postalCode?: string;
+  coordinates: Coordinates;
+  type: 'city' | 'district' | 'neighborhood' | 'custom';
+  parentLocation?: string;
+}
+
+export interface LocationSearchResult {
+  id: string;
+  displayName: string;
+  address: string;
+  coordinates: Coordinates;
+  distance?: number; // Distance in kilometers from search point
+  relevanceScore?: number;
+}
+
+export interface MapMarker {
+  id: string;
+  position: Coordinates;
+  title: string;
+  description?: string;
+  type: 'job' | 'freelancer' | 'service' | 'user';
+  data: Job | ServicePackage | User;
+  icon?: string;
+  color?: string;
+}
+
+export interface MapBounds {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+}
+
+export interface MapViewport {
+  center: Coordinates;
+  zoom: number;
+  bounds?: MapBounds;
+}
+
+export interface LocationFilter {
+  coordinates?: Coordinates;
+  radius?: number; // Radius in kilometers
+  city?: string;
+  state?: string;
+  country?: string;
+  bounds?: MapBounds;
+}
+
+export interface GeolocationSettings {
+  enabled: boolean;
+  accuracy: 'high' | 'medium' | 'low';
+  timeout: number; // milliseconds
+  maximumAge: number; // milliseconds
+  fallbackLocation?: Coordinates;
+}
+
+export interface LocationSearchParams {
+  query?: string;
+  coordinates?: Coordinates;
+  radius?: number;
+  bounds?: MapBounds;
+  types?: string[];
+  type?: string;
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  page?: number;
+  limit?: number;
+  language?: string;
+}
+
+// Extended Job and Service types with location
+export interface JobWithLocation extends Omit<Job, 'location'> {
+  location?: LocationData;
+  locationString?: string; // Keep the original location field as locationString
+  allowRemote?: boolean;
+  preferredRadius?: number; // in kilometers
+}
+
+export interface ServicePackageWithLocation extends ServicePackage {
+  serviceLocation?: LocationData;
+  serviceRadius?: number; // Service area radius in kilometers
+  allowRemote?: boolean;
+  travelFee?: number; // Additional fee for travel
+}
+
+export interface FreelancerWithLocation extends Omit<Freelancer, 'location'> {
+  location?: string; // Keep original location field
+  baseLocation?: LocationData;
+  serviceAreas?: LocationData[];
+  maxTravelDistance?: number; // in kilometers
+  travelRate?: number; // per kilometer
+}

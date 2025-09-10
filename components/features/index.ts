@@ -33,3 +33,8 @@ export { PushNotificationToggle } from './PushNotificationToggle';
 export { AnimatedInteractions } from './AnimatedInteractions';
 export { AnalyticsDashboard } from './AnalyticsDashboard';
 export { PWAManager } from './PWAManager';
+
+// Location & Map Features
+export { LocationPicker } from './LocationPicker';
+export { LocationSearch } from './LocationSearch';
+export { MapView } from './MapView';
