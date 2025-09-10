@@ -37,6 +37,156 @@ body {
   box-shadow: 0 0 0 2px var(--tw-ring-color);
 }
 
+/* Enhanced Transitions for Hibrit System */
+.marketplace-view-transition {
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.content-slide-enter {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.content-slide-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 0.3s ease-out-quart;
+}
+
+.content-slide-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.content-slide-exit-active {
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: all 0.3s ease-out-quart;
+}
+
+/* Toggle Button Animation */
+.toggle-button {
+  transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.toggle-button:hover {
+  transform: scale(1.02);
+}
+
+.toggle-button.active {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px 0 rgba(59, 130, 246, 0.4);
+}
+
+/* Hero Section Animations */
+.hero-content {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.hero-search {
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.hero-buttons {
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+/* Staggered Animation for Cards */
+.staggered-fade-in {
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.staggered-fade-in:nth-child(1) {
+  animation-delay: 0s;
+}
+.staggered-fade-in:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.staggered-fade-in:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.staggered-fade-in:nth-child(4) {
+  animation-delay: 0.3s;
+}
+.staggered-fade-in:nth-child(5) {
+  animation-delay: 0.4s;
+}
+.staggered-fade-in:nth-child(6) {
+  animation-delay: 0.5s;
+}
+
+/* Smooth Scale Animation for Interactive Elements */
+.interactive-scale {
+  transition: transform 0.2s ease-out;
+}
+
+.interactive-scale:hover {
+  transform: scale(1.02);
+}
+
+.interactive-scale:active {
+  transform: scale(0.98);
+}
+
+/* Enhanced Dropdown Animations */
+.dropdown-enter {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+}
+
+.dropdown-enter-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: all 0.2s ease-out;
+}
+
+.dropdown-exit {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.dropdown-exit-active {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.15s ease-in;
+}
+
+/* Loading Skeleton Animation */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Glowing Effect for Focus States */
+.glow-focus:focus {
+  box-shadow:
+    0 0 0 3px rgba(59, 130, 246, 0.3),
+    0 0 20px 0 rgba(59, 130, 246, 0.2);
+}
+
+/* Enhanced Mobile Touch States */
+@media (max-width: 768px) {
+  .touch-feedback {
+    transition: all 0.1s ease-out;
+  }
+
+  .touch-feedback:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+}
+
 /* Custom animations */
 @keyframes fadeIn {
   from {
@@ -44,6 +194,17 @@ body {
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -58,10 +219,83 @@ body {
   }
 }
 
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes bounceSoft {
+  0%,
+  20%,
+  53%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40%,
+  43% {
+    transform: translateY(-8px);
+  }
+  70% {
+    transform: translateY(-4px);
+  }
+  90% {
+    transform: translateY(-2px);
+  }
+}
+
 .animate-fade-in {
   animation: fadeIn 0.5s ease-in-out;
 }
 
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
 .animate-slide-up {
   animation: slideUp 0.3s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.4s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.4s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+.animate-bounce-soft {
+  animation: bounceSoft 0.6s ease-out;
 }

@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Menu,
   X,
-  Search,
   Bell,
   User,
   LogOut,
@@ -15,10 +15,12 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { UniversalSearch } from '@/components/features';
 import useAuthStore from '@/lib/store/auth';
 import { useUnreadCount } from '@/hooks/useMessages';
 
 export function Header() {
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { user, isAuthenticated, logout, refreshAuth } = useAuthStore();
@@ -38,6 +40,22 @@ export function Header() {
     setIsMobileMenuOpen(false);
   };
 
+  const handleSearch = (query: string, type?: string) => {
+    const params = new URLSearchParams();
+    params.set('q', query);
+
+    if (type === 'services') {
+      params.set('view', 'services');
+    } else if (type === 'jobs') {
+      params.set('view', 'jobs');
+    } else {
+      // Default to mixed search
+      params.set('view', 'jobs');
+    }
+
+    router.push(`/marketplace?${params.toString()}`);
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,13 +73,13 @@ export function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden items-center space-x-8 md:flex">
             <Link
-              href="/marketplace"
+              href="/marketplace?view=jobs"
               className="font-medium text-gray-700 transition-colors hover:text-blue-600"
             >
               İş İlanları
             </Link>
             <Link
-              href="/packages"
+              href="/marketplace?view=services"
               className="font-medium text-gray-700 transition-colors hover:text-blue-600"
             >
               Hizmetler
@@ -74,16 +92,13 @@ export function Header() {
             </Link>
           </nav>
 
-          {/* Search Bar (Desktop) */}
+          {/* Universal Search Bar (Desktop) */}
           <div className="mx-8 hidden max-w-lg flex-1 lg:flex">
-            <div className="relative w-full">
-              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
-              <input
-                type="text"
-                placeholder="İş, hizmet veya uzman ara..."
-                className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+            <UniversalSearch
+              onSearch={handleSearch}
+              placeholder="İş, hizmet veya uzman ara..."
+              className="w-full"
+            />
           </div>
 
           {/* Desktop Auth */}
@@ -189,29 +204,26 @@ export function Header() {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="border-t border-gray-200 py-4 md:hidden">
-            {/* Mobile Search */}
+            {/* Mobile Universal Search */}
             <div className="mb-4">
-              <div className="relative">
-                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="İş, hizmet veya uzman ara..."
-                  className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <UniversalSearch
+                onSearch={handleSearch}
+                placeholder="İş, hizmet veya uzman ara..."
+                className="w-full"
+              />
             </div>
 
             {/* Mobile Navigation */}
             <nav className="mb-4 space-y-2">
               <Link
-                href="/marketplace"
+                href="/marketplace?view=jobs"
                 className="block rounded-md px-3 py-2 text-gray-700 transition-colors hover:bg-blue-50 hover:text-blue-600"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 İş İlanları
               </Link>
               <Link
-                href="/packages"
+                href="/marketplace?view=services"
                 className="block rounded-md px-3 py-2 text-gray-700 transition-colors hover:bg-blue-50 hover:text-blue-600"
                 onClick={() => setIsMobileMenuOpen(false)}
               >

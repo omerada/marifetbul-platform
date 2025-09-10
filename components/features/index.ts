@@ -26,6 +26,7 @@ export { TouchJobCard, TouchServiceCard } from './TouchCards';
 
 // Advanced Features
 export { AdvancedSearch } from './AdvancedSearch';
+export { UniversalSearch } from './UniversalSearch';
 export { NotificationCenter } from './NotificationCenter';
 export { NotificationModal } from './NotificationModal';
 export { NotificationSettingsPanel } from './NotificationSettings';
