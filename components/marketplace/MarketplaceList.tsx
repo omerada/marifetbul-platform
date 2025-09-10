@@ -1,20 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Job, ServicePackage, JobFilters, PackageFilters } from '@/types';
+import { Job, ServicePackage } from '@/types';
 import { useJobs } from '@/hooks/useJobs';
 import { usePackages } from '@/hooks/usePackages';
 import { useJobFilters, usePackageFilters } from '@/hooks/useFilters';
-import {
-  JobFiltersComponent,
-  PackageFiltersComponent,
-} from '@/components/filters';
 import { JobCard } from './JobCard';
 import { ServiceCard } from './ServiceCard';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
 import { Loading } from '@/components/ui/Loading';
-import { Search, Briefcase, Package } from 'lucide-react';
+import { Briefcase, Package } from 'lucide-react';
 
 type MarketplaceMode = 'jobs' | 'services';
 
@@ -27,13 +22,12 @@ export function MarketplaceList({
   initialMode = 'jobs',
   className,
 }: MarketplaceListProps) {
-  const [mode, setMode] = useState<MarketplaceMode>(initialMode);
+  const mode = initialMode;
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
 
   // Advanced filters hooks
-  const jobFiltersHook = useJobFilters({ search: searchQuery });
-  const packageFiltersHook = usePackageFilters({ search: searchQuery });
+  const jobFiltersHook = useJobFilters({});
+  const packageFiltersHook = usePackageFilters({});
 
   // Data fetching with filters
   const {
@@ -53,46 +47,6 @@ export function MarketplaceList({
   const isLoading = mode === 'jobs' ? jobsLoading : packagesLoading;
   const error = mode === 'jobs' ? jobsError : packagesError;
   const pagination = mode === 'jobs' ? jobsPagination : packagesPagination;
-
-  const activeFiltersHook =
-    mode === 'jobs' ? jobFiltersHook : packageFiltersHook;
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    setCurrentPage(1);
-
-    // Update filters with search query
-    if (mode === 'jobs') {
-      jobFiltersHook.updateFilters({
-        ...jobFiltersHook.filters,
-        search: query,
-      });
-    } else {
-      packageFiltersHook.updateFilters({
-        ...packageFiltersHook.filters,
-        search: query,
-      });
-    }
-  };
-
-  const handleModeToggle = (newMode: MarketplaceMode) => {
-    setMode(newMode);
-    setCurrentPage(1);
-    setSearchQuery('');
-    // Reset filters when switching modes
-    jobFiltersHook.clearFilters();
-    packageFiltersHook.clearFilters();
-  };
-
-  const handleJobFiltersChange = (newFilters: JobFilters) => {
-    jobFiltersHook.updateFilters({ ...newFilters, search: searchQuery });
-    setCurrentPage(1);
-  };
-
-  const handlePackageFiltersChange = (newFilters: PackageFilters) => {
-    packageFiltersHook.updateFilters({ ...newFilters, search: searchQuery });
-    setCurrentPage(1);
-  };
 
   const handleJobAction = (action: string, job: Job) => {
     console.log(`${action} job:`, job.id);
@@ -159,78 +113,6 @@ export function MarketplaceList({
 
   return (
     <div className={`space-y-6 ${className}`}>
-      {/* Header with Mode Toggle */}
-      <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
-        <div className="flex items-center space-x-4">
-          <h1 className="text-2xl font-bold text-gray-900">Pazar Yeri</h1>
-
-          {/* Mode Toggle */}
-          <div className="flex items-center rounded-lg bg-gray-100 p-1">
-            <button
-              onClick={() => handleModeToggle('jobs')}
-              className={`flex items-center rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                mode === 'jobs'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <Briefcase className="mr-2 h-4 w-4" />
-              İş İlanları
-            </button>
-            <button
-              onClick={() => handleModeToggle('services')}
-              className={`flex items-center rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                mode === 'services'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <Package className="mr-2 h-4 w-4" />
-              Hizmetler
-            </button>
-          </div>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
-            <Input
-              type="text"
-              placeholder={`${mode === 'jobs' ? 'İş ilanları' : 'Hizmetler'} ara...`}
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="w-64 pl-10"
-            />
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => activeFiltersHook.toggleFiltersVisibility()}
-            className="flex items-center"
-          >
-            <Search className="mr-2 h-4 w-4" />
-            Filtreler
-          </Button>
-        </div>
-      </div>
-
-      {/* Advanced Filters */}
-      {mode === 'jobs' ? (
-        <JobFiltersComponent
-          filters={jobFiltersHook.filters}
-          onFiltersChange={handleJobFiltersChange}
-          isVisible={jobFiltersHook.isFiltersVisible}
-          onToggleVisibility={jobFiltersHook.toggleFiltersVisibility}
-        />
-      ) : (
-        <PackageFiltersComponent
-          filters={packageFiltersHook.filters}
-          onFiltersChange={handlePackageFiltersChange}
-          isVisible={packageFiltersHook.isFiltersVisible}
-          onToggleVisibility={packageFiltersHook.toggleFiltersVisibility}
-        />
-      )}
-
       {/* Loading State */}
       {isLoading && (
         <div className="flex justify-center py-12">

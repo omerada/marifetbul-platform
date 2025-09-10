@@ -12,9 +12,6 @@ import {
   Filter,
   Briefcase,
   Package,
-  Users,
-  Star,
-  TrendingUp,
   MapPin,
   Clock,
 } from 'lucide-react';
@@ -70,265 +67,138 @@ function MarketplaceContent() {
     router.push(`/marketplace?${params.toString()}`, { scroll: false });
   };
 
-  const stats = [
-    {
-      icon: Briefcase,
-      label: 'Aktif İş İlanı',
-      value: '1,247',
-      trend: '+12%',
-    },
-    {
-      icon: Package,
-      label: 'Hizmet Paketi',
-      value: '3,891',
-      trend: '+8%',
-    },
-    {
-      icon: Users,
-      label: 'Aktif Freelancer',
-      value: '8,456',
-      trend: '+15%',
-    },
-    {
-      icon: Star,
-      label: 'Ortalama Puan',
-      value: '4.8',
-      trend: '+0.1',
-    },
-  ];
-
   return (
     <AppLayout>
       <div className="min-h-screen bg-gray-50">
-        {/* Hero Section */}
-        <section className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-          <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h1 className="mb-4 text-3xl font-bold lg:text-4xl">
-                {activeTab === 'jobs' ? 'İş İlanları' : 'Hizmet Paketleri'}
-              </h1>
-              <p className="mb-8 text-xl text-blue-100">
-                {activeTab === 'jobs'
-                  ? 'Yeteneklerinize uygun işler bulun ve teklif verin'
-                  : 'Profesyonel hizmetler satın alın ve projelerinizi tamamlayın'}
-              </p>
-
-              {/* Search Bar */}
-              <div className="mx-auto max-w-2xl">
-                <Card className="bg-white p-2 shadow-xl">
-                  <div className="flex flex-col gap-2 sm:flex-row">
-                    <div className="relative flex-1">
-                      <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
-                      <Input
-                        type="text"
-                        placeholder={`${activeTab === 'jobs' ? 'İş ara' : 'Hizmet ara'}...`}
-                        value={searchQuery}
-                        onChange={(e) => handleSearchChange(e.target.value)}
-                        className="border-0 pl-10 focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <Button size="lg" className="px-8">
-                      Ara
-                    </Button>
-                  </div>
-                </Card>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Stats Section */}
+        {/* Simplified Header */}
         <section className="border-b bg-white">
-          <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-              {stats.map((stat, index) => (
-                <Card
-                  key={index}
-                  className="transform p-6 text-center transition-transform hover:scale-105"
-                >
-                  <div className="mb-3 flex justify-center">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                      <stat.icon className="h-6 w-6 text-blue-600" />
-                    </div>
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm text-gray-600">{stat.label}</div>
-                  <div className="mt-1 flex items-center justify-center text-xs text-green-600">
-                    <TrendingUp className="mr-1 h-3 w-3" />
-                    {stat.trend}
-                  </div>
-                </Card>
-              ))}
+          <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+            {/* Title and Description */}
+            <div className="mb-6 text-center">
+              <h1 className="mb-2 text-2xl font-bold text-gray-900">
+                Pazar Yeri
+              </h1>
+              <p className="text-gray-600">
+                İş ilanları ve hizmet paketlerini keşfedin
+              </p>
             </div>
-          </div>
-        </section>
 
-        {/* Enhanced Navigation Tabs with Smooth Transitions */}
-        <section className="sticky top-0 z-30 border-b bg-white shadow-sm">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between">
-              <div className="flex space-x-8">
-                <button
-                  onClick={() => handleTabChange('jobs')}
-                  className={`border-b-2 px-1 py-4 text-sm font-medium transition-all duration-300 ${
-                    activeTab === 'jobs'
-                      ? 'scale-105 transform border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  }`}
-                >
-                  <Briefcase className="mr-2 inline h-5 w-5" />
-                  İş İlanları
-                  <span className="ml-2 rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-600">
-                    1,247
-                  </span>
-                </button>
-                <button
-                  onClick={() => handleTabChange('services')}
-                  className={`border-b-2 px-1 py-4 text-sm font-medium transition-all duration-300 ${
-                    activeTab === 'services'
-                      ? 'scale-105 transform border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  }`}
-                >
-                  <Package className="mr-2 inline h-5 w-5" />
-                  Hizmet Paketleri
-                  <span className="ml-2 rounded-full bg-green-100 px-2 py-1 text-xs text-green-600">
-                    3,891
-                  </span>
-                </button>
-              </div>
-
-              {/* Cross-Promotion Quick Access */}
-              <div className="hidden items-center space-x-4 lg:flex">
-                <span className="text-sm text-gray-500">
-                  {activeTab === 'jobs'
-                    ? 'Hizmet mi arıyorsun?'
-                    : 'İş mi arıyorsun?'}
-                </span>
+            {/* Unified Search Bar */}
+            <div className="mx-auto max-w-xl">
+              <div className="relative">
+                <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="İş veya hizmet ara..."
+                  value={searchQuery}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  className="pr-20 pl-10"
+                />
                 <Button
-                  variant="outline"
                   size="sm"
-                  onClick={() =>
-                    handleTabChange(activeTab === 'jobs' ? 'services' : 'jobs')
-                  }
-                  className="text-sm"
+                  className="absolute top-1/2 right-2 -translate-y-1/2"
                 >
-                  {activeTab === 'jobs'
-                    ? 'Hizmetlere Bak'
-                    : 'İş İlanlarına Bak'}
+                  Ara
                 </Button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Main Content with Smooth Transitions */}
+        {/* Main Content */}
         <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
           {isMobile ? (
             <MobileMarketplace initialMode={activeTab} />
           ) : (
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
-              {/* Enhanced Filters Sidebar */}
+              {/* Simplified Filters Sidebar */}
               <div className="lg:col-span-1">
-                <Card className="sticky top-24 p-6">
+                <Card className="sticky top-6 p-6">
                   <div className="mb-4 flex items-center gap-2">
                     <Filter className="h-5 w-5" />
                     <h3 className="font-semibold">Filtreler</h3>
                   </div>
 
-                  {/* Context-Aware Filters */}
                   <div className="space-y-6">
-                    {activeTab === 'jobs' ? (
-                      <>
-                        <div>
-                          <h4 className="mb-3 text-sm font-medium text-gray-900">
-                            Proje Bütçesi
-                          </h4>
-                          <div className="space-y-3">
-                            <Input
-                              type="number"
-                              placeholder="Min (₺)"
-                              className="w-full"
-                            />
-                            <Input
-                              type="number"
-                              placeholder="Max (₺)"
-                              className="w-full"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <h4 className="mb-3 text-sm font-medium text-gray-900">
-                            Proje Süresi
-                          </h4>
-                          <div className="space-y-2">
-                            <label className="flex items-center gap-2">
-                              <input type="checkbox" className="rounded" />
-                              <Clock className="h-4 w-4 text-gray-400" />
-                              <span className="text-sm">1-3 gün</span>
-                            </label>
-                            <label className="flex items-center gap-2">
-                              <input type="checkbox" className="rounded" />
-                              <Clock className="h-4 w-4 text-gray-400" />
-                              <span className="text-sm">1 hafta</span>
-                            </label>
-                            <label className="flex items-center gap-2">
-                              <input type="checkbox" className="rounded" />
-                              <Clock className="h-4 w-4 text-gray-400" />
-                              <span className="text-sm">1 ay+</span>
-                            </label>
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div>
-                          <h4 className="mb-3 text-sm font-medium text-gray-900">
-                            Fiyat Aralığı
-                          </h4>
-                          <div className="space-y-2">
-                            <label className="flex items-center gap-2">
-                              <input type="checkbox" className="rounded" />
-                              <span className="text-sm">₺50 - ₺500</span>
-                            </label>
-                            <label className="flex items-center gap-2">
-                              <input type="checkbox" className="rounded" />
-                              <span className="text-sm">₺500 - ₺2.000</span>
-                            </label>
-                            <label className="flex items-center gap-2">
-                              <input type="checkbox" className="rounded" />
-                              <span className="text-sm">₺2.000+</span>
-                            </label>
-                          </div>
-                        </div>
-                        <div>
-                          <h4 className="mb-3 text-sm font-medium text-gray-900">
-                            Teslimat Süresi
-                          </h4>
-                          <div className="space-y-2">
-                            <label className="flex items-center gap-2">
-                              <input type="checkbox" className="rounded" />
-                              <Clock className="h-4 w-4 text-gray-400" />
-                              <span className="text-sm">24 saat</span>
-                            </label>
-                            <label className="flex items-center gap-2">
-                              <input type="checkbox" className="rounded" />
-                              <Clock className="h-4 w-4 text-gray-400" />
-                              <span className="text-sm">3 gün</span>
-                            </label>
-                            <label className="flex items-center gap-2">
-                              <input type="checkbox" className="rounded" />
-                              <Clock className="h-4 w-4 text-gray-400" />
-                              <span className="text-sm">1 hafta</span>
-                            </label>
-                          </div>
-                        </div>
-                      </>
-                    )}
+                    {/* Content Type Filter */}
+                    <div>
+                      <h4 className="mb-3 text-sm font-medium text-gray-900">
+                        İçerik Türü
+                      </h4>
+                      <div className="flex flex-col space-y-1">
+                        <button
+                          onClick={() => handleTabChange('jobs')}
+                          className={`flex items-center rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 ${
+                            activeTab === 'jobs'
+                              ? 'bg-blue-600 text-white shadow-sm'
+                              : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+                          }`}
+                        >
+                          <Briefcase className="mr-2 h-4 w-4" />
+                          İş İlanları
+                        </button>
+                        <button
+                          onClick={() => handleTabChange('services')}
+                          className={`flex items-center rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 ${
+                            activeTab === 'services'
+                              ? 'bg-blue-600 text-white shadow-sm'
+                              : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+                          }`}
+                        >
+                          <Package className="mr-2 h-4 w-4" />
+                          Hizmetler
+                        </button>
+                      </div>
+                    </div>
 
-                    {/* Common Filters */}
+                    {/* Budget/Price Filter */}
+                    <div>
+                      <h4 className="mb-3 text-sm font-medium text-gray-900">
+                        {activeTab === 'jobs'
+                          ? 'Proje Bütçesi'
+                          : 'Fiyat Aralığı'}
+                      </h4>
+                      <div className="space-y-3">
+                        <Input
+                          type="number"
+                          placeholder="Min (₺)"
+                          className="w-full"
+                        />
+                        <Input
+                          type="number"
+                          placeholder="Max (₺)"
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Duration Filter */}
+                    <div>
+                      <h4 className="mb-3 text-sm font-medium text-gray-900">
+                        {activeTab === 'jobs'
+                          ? 'Proje Süresi'
+                          : 'Teslimat Süresi'}
+                      </h4>
+                      <div className="space-y-2">
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" className="rounded" />
+                          <Clock className="h-4 w-4 text-gray-400" />
+                          <span className="text-sm">1-3 gün</span>
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" className="rounded" />
+                          <Clock className="h-4 w-4 text-gray-400" />
+                          <span className="text-sm">1 hafta</span>
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" className="rounded" />
+                          <Clock className="h-4 w-4 text-gray-400" />
+                          <span className="text-sm">1 ay+</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Location Filter */}
                     <div>
                       <h4 className="mb-3 text-sm font-medium text-gray-900">
                         Konum
@@ -351,51 +221,34 @@ function MarketplaceContent() {
                         </label>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Recommended Content (Cross-Pollination) */}
-                  <div className="mt-8 rounded-lg bg-gray-50 p-4">
-                    <h4 className="mb-3 text-sm font-medium text-gray-900">
-                      {activeTab === 'jobs'
-                        ? 'Popüler Hizmetler'
-                        : 'Trend İş İlanları'}
-                    </h4>
-                    <div className="space-y-2">
-                      <button className="w-full rounded-md bg-white px-3 py-2 text-left text-sm hover:bg-gray-100">
-                        {activeTab === 'jobs'
-                          ? 'Logo Tasarım'
-                          : 'Web Geliştirme İşi'}
-                      </button>
-                      <button className="w-full rounded-md bg-white px-3 py-2 text-left text-sm hover:bg-gray-100">
-                        {activeTab === 'jobs'
-                          ? 'SEO Optimizasyon'
-                          : 'Mobil App İşi'}
-                      </button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="mt-2 w-full"
-                        onClick={() =>
-                          handleTabChange(
-                            activeTab === 'jobs' ? 'services' : 'jobs'
-                          )
-                        }
-                      >
-                        Tümünü Gör
-                      </Button>
+                    {/* Quick Stats */}
+                    <div className="mt-8 rounded-lg bg-gray-50 p-4">
+                      <h4 className="mb-3 text-sm font-medium text-gray-900">
+                        İstatistikler
+                      </h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Toplam:</span>
+                          <span className="font-medium">
+                            {activeTab === 'jobs' ? '1,247' : '3,891'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Bu hafta:</span>
+                          <span className="font-medium text-green-600">
+                            +{activeTab === 'jobs' ? '52' : '128'}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </Card>
               </div>
 
-              {/* Results with Smooth Content Switching */}
+              {/* Results */}
               <div className="lg:col-span-3">
-                <div className="transition-all duration-300 ease-in-out">
-                  <MarketplaceList
-                    initialMode={activeTab}
-                    key={activeTab} // Force re-render for smooth transition
-                  />
-                </div>
+                <MarketplaceList initialMode={activeTab} key={activeTab} />
               </div>
             </div>
           )}

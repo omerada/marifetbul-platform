@@ -22,7 +22,7 @@ export default function HomePage() {
 
   const contentByUserType = {
     freelancer: {
-      title: 'Yeteneklerini Paraya Çevir',
+      title: 'Yetenek Kazan',
       subtitle: 'Freelancer olarak projeler bul, para kazan, özgür çalış',
       searchPlaceholder: 'Hangi alanda çalışmak istiyorsun?',
       ctaPrimary: 'Freelancer Ol',
@@ -37,7 +37,7 @@ export default function HomePage() {
       ],
     },
     employer: {
-      title: 'Projeni Hayata Geçir',
+      title: 'Proje Başlat',
       subtitle: 'İşveren olarak uzman freelancerları bul, projeleri tamamla',
       searchPlaceholder: 'Hangi hizmeti arıyorsun?',
       ctaPrimary: 'İş Ver',
@@ -93,8 +93,12 @@ export default function HomePage() {
               {/* Dynamic Content */}
               <div className="hero-content">
                 <h1 className="text-4xl leading-tight font-bold lg:text-6xl">
-                  <span className="block">{currentContent.title}</span>
-                  <span className="block text-blue-200">Marifeto ile</span>
+                  <span className="block whitespace-nowrap">
+                    {currentContent.title}
+                  </span>
+                  <span className="block whitespace-nowrap text-blue-200">
+                    Marifeto ile
+                  </span>
                 </h1>
                 <p className="mt-4 text-xl leading-relaxed text-blue-100">
                   {currentContent.subtitle}
