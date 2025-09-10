@@ -7,6 +7,8 @@ import {
   ApiResponse,
   Employer,
   Freelancer,
+  Message,
+  Conversation,
 } from '@/types';
 
 // Mock employer data
@@ -66,6 +68,7 @@ const mockJobs: Job[] = [
     subcategory: 'Frontend Geliştirme',
     budget: { type: 'fixed', amount: 3500 },
     timeline: '2-3 ay',
+    duration: '2-3 ay',
     skills: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
     experienceLevel: 'intermediate',
     location: 'Uzaktan',
@@ -86,6 +89,7 @@ const mockJobs: Job[] = [
     subcategory: 'UI/UX Tasarım',
     budget: { type: 'fixed', amount: 2200 },
     timeline: '4-6 hafta',
+    duration: '1-2 ay',
     skills: ['Figma', 'Adobe XD', 'UI/UX Tasarım', 'Mobil Tasarım'],
     experienceLevel: 'expert',
     location: 'İstanbul, Türkiye',
@@ -96,66 +100,6 @@ const mockJobs: Job[] = [
     proposalsCount: 8,
     createdAt: new Date('2024-01-14').toISOString(),
     updatedAt: new Date('2024-01-14').toISOString(),
-  },
-  {
-    id: '3',
-    title: 'Teknoloji Blogu İçerik Yazarı',
-    description:
-      'En son teknoloji trendleri, yapay zeka ve yazılım geliştirme konularında ilgi çekici makaleler yazacak deneyimli içerik yazarı arıyoruz. SEO bilgisi ve teknik konuları sade dille anlatabilme yeteneği gereklidir.',
-    category: 'Yazarlık',
-    subcategory: 'İçerik Yazarlığı',
-    budget: { type: 'hourly', amount: 25, maxAmount: 40 },
-    timeline: '1-2 ay',
-    skills: ['İçerik Yazarlığı', 'SEO', 'Teknik Yazarlık', 'Araştırma'],
-    experienceLevel: 'intermediate',
-    location: 'Uzaktan',
-    isRemote: true,
-    status: 'open',
-    employerId: 'employer-1',
-    employer: mockEmployer,
-    proposalsCount: 15,
-    createdAt: new Date('2024-01-13').toISOString(),
-    updatedAt: new Date('2024-01-13').toISOString(),
-  },
-  {
-    id: '4',
-    title: 'E-ticaret Sitesi Backend Geliştirme',
-    description:
-      'Node.js ve MongoDB kullanarak e-ticaret sitesi backend API geliştirme projesi. Ödeme sistemleri entegrasyonu, envanter yönetimi ve kullanıcı yönetimi modülleri geliştirilecektir.',
-    category: 'Web Geliştirme',
-    subcategory: 'Backend Geliştirme',
-    budget: { type: 'fixed', amount: 4800 },
-    timeline: '3-4 ay',
-    skills: ['Node.js', 'MongoDB', 'Express.js', 'API Geliştirme'],
-    experienceLevel: 'expert',
-    location: 'Uzaktan',
-    isRemote: true,
-    status: 'open',
-    employerId: 'employer-1',
-    employer: mockEmployer,
-    proposalsCount: 6,
-    createdAt: new Date('2024-01-12').toISOString(),
-    updatedAt: new Date('2024-01-12').toISOString(),
-  },
-  {
-    id: '5',
-    title: 'WordPress Plugin Geliştirme',
-    description:
-      'WooCommerce entegreli özel WordPress plugin geliştirme. Plugin, özel ürün filtreleme ve arama özelliklerine sahip olacaktır. PHP ve JavaScript bilgisi gereklidir.',
-    category: 'Web Geliştirme',
-    subcategory: 'WordPress Geliştirme',
-    budget: { type: 'fixed', amount: 1800 },
-    timeline: '3-4 hafta',
-    skills: ['WordPress', 'PHP', 'WooCommerce', 'JavaScript'],
-    experienceLevel: 'intermediate',
-    location: 'Uzaktan',
-    isRemote: true,
-    status: 'open',
-    employerId: 'employer-1',
-    employer: mockEmployer,
-    proposalsCount: 10,
-    createdAt: new Date('2024-01-11').toISOString(),
-    updatedAt: new Date('2024-01-11').toISOString(),
   },
 ];
 
@@ -215,60 +159,6 @@ const mockPackages: ServicePackage[] = [
     updatedAt: new Date('2024-01-14').toISOString(),
     images: ['/images/logo-design-1.jpg', '/images/logo-design-2.jpg'],
   },
-  {
-    id: '3',
-    title: 'SEO Optimizeli Makale Yazımı',
-    description:
-      "Google'da yüksek sıralamada yer alan SEO optimizeli makaleler yazacağım. Blog, web sitesi ve içerik pazarlama için mükemmel.",
-    category: 'Yazarlık',
-    subcategory: 'SEO Yazarlık',
-    price: 50,
-    deliveryTime: 3,
-    revisions: 2,
-    features: [
-      '1000 Kelime',
-      'Anahtar Kelime Araştırması',
-      'Meta Açıklama',
-      'SEO Optimizasyonu',
-      'Özgün İçerik',
-    ],
-    freelancerId: 'freelancer-1',
-    freelancer: mockFreelancer,
-    orders: 234,
-    rating: 4.7,
-    reviews: 89,
-    isActive: true,
-    createdAt: new Date('2024-01-05').toISOString(),
-    updatedAt: new Date('2024-01-12').toISOString(),
-    images: ['/images/seo-writing-1.jpg'],
-  },
-  {
-    id: '4',
-    title: 'Mobil Uygulama Tasarımı',
-    description:
-      "iOS ve Android için modern ve kullanıcı dostu mobil uygulama arayüzü tasarlayacağım. Figma'da hazır prototipler dahil.",
-    category: 'Tasarım',
-    subcategory: 'Mobil Tasarım',
-    price: 800,
-    deliveryTime: 10,
-    revisions: 3,
-    features: [
-      'iOS ve Android Tasarım',
-      'Figma Prototipleri',
-      'Kullanıcı Deneyimi',
-      'Material Design',
-      'Animasyon Rehberi',
-    ],
-    freelancerId: 'freelancer-1',
-    freelancer: mockFreelancer,
-    orders: 67,
-    rating: 4.9,
-    reviews: 45,
-    isActive: true,
-    createdAt: new Date('2024-01-03').toISOString(),
-    updatedAt: new Date('2024-01-10').toISOString(),
-    images: ['/images/mobile-design-1.jpg', '/images/mobile-design-2.jpg'],
-  },
 ];
 
 // Mock data - Kullanıcılar
@@ -295,7 +185,203 @@ const mockUsers: User[] = [
     createdAt: new Date('2024-01-01').toISOString(),
     updatedAt: new Date('2024-01-01').toISOString(),
   },
+  {
+    id: 'employer-2',
+    email: 'zeynep@example.com',
+    firstName: 'Zeynep',
+    lastName: 'Demir',
+    userType: 'employer',
+    avatar: '/avatars/employer-2.jpg',
+    location: 'İzmir, Türkiye',
+    createdAt: new Date('2024-01-01').toISOString(),
+    updatedAt: new Date('2024-01-01').toISOString(),
+  },
+  {
+    id: 'employer-3',
+    email: 'mehmet@example.com',
+    firstName: 'Mehmet',
+    lastName: 'Özkan',
+    userType: 'employer',
+    avatar: '/avatars/employer-3.jpg',
+    location: 'Ankara, Türkiye',
+    createdAt: new Date('2024-01-01').toISOString(),
+    updatedAt: new Date('2024-01-01').toISOString(),
+  },
 ];
+
+// Mock Messages & Conversations Data
+const mockConversations: Conversation[] = [
+  {
+    id: 'conv-1',
+    participants: [mockUsers[0], mockUsers[1]], // freelancer-1, employer-1
+    lastMessage: {
+      id: 'msg-5',
+      conversationId: 'conv-1',
+      senderId: 'employer-1',
+      sender: mockUsers[1],
+      content:
+        'Mükemmel! Hemen başlayabilirsiniz. Hangi bilgilere ihtiyacınız var?',
+      isRead: false,
+      createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5 minutes ago
+    },
+    unreadCount: 2,
+    jobId: '1',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
+    updatedAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+  },
+  {
+    id: 'conv-2',
+    participants: [mockUsers[0], mockUsers[2]], // freelancer-1, employer-2
+    lastMessage: {
+      id: 'msg-8',
+      conversationId: 'conv-2',
+      senderId: 'freelancer-1',
+      sender: mockUsers[0],
+      content: 'Tasarım revizelerini tamamladım. İnceleyebilirsiniz.',
+      isRead: true,
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
+    },
+    unreadCount: 0,
+    packageId: '2',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
+    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+  },
+  {
+    id: 'conv-3',
+    participants: [mockUsers[0], mockUsers[3]], // freelancer-1, employer-3
+    lastMessage: {
+      id: 'msg-12',
+      conversationId: 'conv-3',
+      senderId: 'employer-3',
+      sender: mockUsers[3],
+      content: 'Teşekkürler, proje harika oldu!',
+      isRead: true,
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(), // 3 days ago
+    },
+    unreadCount: 0,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(), // 1 week ago
+    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
+  },
+];
+
+const mockMessages: Record<string, Message[]> = {
+  'conv-1': [
+    {
+      id: 'msg-1',
+      conversationId: 'conv-1',
+      senderId: 'employer-1',
+      sender: mockUsers[1],
+      content: 'Merhaba Ahmet! React projesi için teklifinizi inceledim.',
+      isRead: true,
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+    },
+    {
+      id: 'msg-2',
+      conversationId: 'conv-1',
+      senderId: 'freelancer-1',
+      sender: mockUsers[0],
+      content: 'Merhaba Fatma Hanım! Teklifimi incelediğiniz için teşekkürler.',
+      isRead: true,
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 23).toISOString(),
+    },
+    {
+      id: 'msg-3',
+      conversationId: 'conv-1',
+      senderId: 'freelancer-1',
+      sender: mockUsers[0],
+      content:
+        'Projeyi 2 hafta içinde teslim edebilirim. Responsive tasarım ve performans optimizasyonu dahil.',
+      isRead: true,
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 23).toISOString(),
+    },
+    {
+      id: 'msg-4',
+      conversationId: 'conv-1',
+      senderId: 'employer-1',
+      sender: mockUsers[1],
+      content: 'Süre uygun. SEO optimizasyonu da ekleyebilir misiniz?',
+      isRead: true,
+      createdAt: new Date(Date.now() - 1000 * 60 * 10).toISOString(),
+    },
+    {
+      id: 'msg-5',
+      conversationId: 'conv-1',
+      senderId: 'employer-1',
+      sender: mockUsers[1],
+      content:
+        'Mükemmel! Hemen başlayabilirsiniz. Hangi bilgilere ihtiyacınız var?',
+      isRead: false,
+      createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+    },
+  ],
+  'conv-2': [
+    {
+      id: 'msg-6',
+      conversationId: 'conv-2',
+      senderId: 'employer-2',
+      sender: mockUsers[2],
+      content: 'Logo tasarımlarını gördüm, çok beğendim!',
+      isRead: true,
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
+    },
+    {
+      id: 'msg-7',
+      conversationId: 'conv-2',
+      senderId: 'freelancer-1',
+      sender: mockUsers[0],
+      content: 'Teşekkürler! Küçük bir revizyon istediğinizi belirtmiştiniz.',
+      isRead: true,
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
+    },
+    {
+      id: 'msg-8',
+      conversationId: 'conv-2',
+      senderId: 'freelancer-1',
+      sender: mockUsers[0],
+      content: 'Tasarım revizelerini tamamladım. İnceleyebilirsiniz.',
+      isRead: true,
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+    },
+  ],
+  'conv-3': [
+    {
+      id: 'msg-9',
+      conversationId: 'conv-3',
+      senderId: 'employer-3',
+      sender: mockUsers[3],
+      content: 'Mobil uygulamanın son halini test ettim.',
+      isRead: true,
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
+    },
+    {
+      id: 'msg-10',
+      conversationId: 'conv-3',
+      senderId: 'freelancer-1',
+      sender: mockUsers[0],
+      content: 'Nasıl buldunuz? Herhangi bir sorun var mı?',
+      isRead: true,
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6).toISOString(),
+    },
+    {
+      id: 'msg-11',
+      conversationId: 'conv-3',
+      senderId: 'employer-3',
+      sender: mockUsers[3],
+      content: 'Her şey mükemmel çalışıyor. Performans da harika.',
+      isRead: true,
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4).toISOString(),
+    },
+    {
+      id: 'msg-12',
+      conversationId: 'conv-3',
+      senderId: 'employer-3',
+      sender: mockUsers[3],
+      content: 'Teşekkürler, proje harika oldu!',
+      isRead: true,
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
+    },
+  ],
+};
 
 // Helper function to create paginated response
 function createPaginatedResponse<
@@ -444,6 +530,31 @@ export const handlers = [
     );
   }),
 
+  http.get('/api/users/me', ({ request }) => {
+    const authHeader = request.headers.get('Authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { success: false, error: 'Yetkisiz erişim' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const userId = token.replace('mock-token-', '');
+
+    const user = mockUsers.find((u) => u.id === userId);
+
+    if (!user) {
+      return HttpResponse.json(
+        { success: false, error: 'Geçersiz token' },
+        { status: 401 }
+      );
+    }
+
+    return HttpResponse.json(createApiResponse(user));
+  }),
+
   http.get('/api/auth/me', ({ request }) => {
     const authHeader = request.headers.get('Authorization');
 
@@ -471,7 +582,7 @@ export const handlers = [
 
   http.post('/api/auth/logout', () => {
     return HttpResponse.json(
-      createApiResponse(null, 'Başarıyla çıkış yapıldı')
+      createApiResponse(null as null, 'Başarıyla çıkış yapıldı')
     );
   }),
 
@@ -592,6 +703,370 @@ export const handlers = [
     mockPackages.unshift(newPackage);
     return HttpResponse.json(createApiResponse(newPackage));
   }),
+
+  // User Profile Endpoints
+  http.get('/api/users/:id', async ({ params }) => {
+    const { id } = params;
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    const user = mockUsers.find((u) => u.id === id);
+
+    if (!user) {
+      return HttpResponse.json(
+        { success: false, error: 'Kullanıcı bulunamadı' },
+        { status: 404 }
+      );
+    }
+
+    return HttpResponse.json(createApiResponse(user));
+  }),
+
+  http.put('/api/users/:id', async ({ params, request }) => {
+    const { id } = params;
+    const updateData = (await request.json()) as Partial<User>;
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const userIndex = mockUsers.findIndex((u) => u.id === id);
+
+    if (userIndex === -1) {
+      return HttpResponse.json(
+        { success: false, error: 'Kullanıcı bulunamadı' },
+        { status: 404 }
+      );
+    }
+
+    // Update user data
+    mockUsers[userIndex] = {
+      ...mockUsers[userIndex],
+      ...updateData,
+      updatedAt: new Date().toISOString(),
+    };
+
+    return HttpResponse.json(createApiResponse(mockUsers[userIndex]));
+  }),
+
+  // MESSAGING SYSTEM ENDPOINTS
+
+  // Get all conversations for current user
+  http.get('/api/conversations', async ({ request }) => {
+    const authHeader = request.headers.get('Authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { success: false, error: 'Yetkisiz erişim' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const userId = token.replace('mock-token-', '');
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // Filter conversations where user is a participant
+    const userConversations = mockConversations
+      .filter((conv) => conv.participants.some((p: User) => p.id === userId))
+      .sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+
+    return HttpResponse.json(createApiResponse(userConversations));
+  }),
+
+  // Get specific conversation
+  http.get('/api/conversations/:id', async ({ params, request }) => {
+    const authHeader = request.headers.get('Authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { success: false, error: 'Yetkisiz erişim' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const userId = token.replace('mock-token-', '');
+    const conversationId = params.id as string;
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    const conversation = mockConversations.find(
+      (conv) =>
+        conv.id === conversationId &&
+        conv.participants.some((p: User) => p.id === userId)
+    );
+
+    if (!conversation) {
+      return HttpResponse.json(
+        { success: false, error: 'Konuşma bulunamadı' },
+        { status: 404 }
+      );
+    }
+
+    return HttpResponse.json(createApiResponse(conversation));
+  }),
+
+  // Get messages for a conversation
+  http.get('/api/conversations/:id/messages', async ({ params, request }) => {
+    const authHeader = request.headers.get('Authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { success: false, error: 'Yetkisiz erişim' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const userId = token.replace('mock-token-', '');
+    const conversationId = params.id as string;
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // Check if user has access to this conversation
+    const conversation = mockConversations.find(
+      (conv) =>
+        conv.id === conversationId &&
+        conv.participants.some((p: User) => p.id === userId)
+    );
+
+    if (!conversation) {
+      return HttpResponse.json(
+        { success: false, error: 'Yetkisiz erişim' },
+        { status: 403 }
+      );
+    }
+
+    const messages = mockMessages[conversationId] || [];
+
+    // Sort messages by creation date
+    const sortedMessages = messages.sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+
+    return HttpResponse.json(createApiResponse(sortedMessages));
+  }),
+
+  // Send a new message
+  http.post('/api/conversations/:id/messages', async ({ params, request }) => {
+    const authHeader = request.headers.get('Authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { success: false, error: 'Yetkisiz erişim' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const userId = token.replace('mock-token-', '');
+    const conversationId = params.id as string;
+
+    const { content } = (await request.json()) as {
+      content: string;
+    };
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Check if user has access to this conversation
+    const conversation = mockConversations.find(
+      (conv) =>
+        conv.id === conversationId &&
+        conv.participants.some((p: User) => p.id === userId)
+    );
+
+    if (!conversation) {
+      return HttpResponse.json(
+        { success: false, error: 'Yetkisiz erişim' },
+        { status: 403 }
+      );
+    }
+
+    const sender = mockUsers.find((u) => u.id === userId);
+    if (!sender) {
+      return HttpResponse.json(
+        { success: false, error: 'Kullanıcı bulunamadı' },
+        { status: 404 }
+      );
+    }
+
+    // Create new message
+    const newMessage: Message = {
+      id: `msg-${Date.now()}`,
+      conversationId,
+      senderId: userId,
+      sender,
+      content: content.trim(),
+      isRead: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    // Add message to mock data
+    if (!mockMessages[conversationId]) {
+      mockMessages[conversationId] = [];
+    }
+    mockMessages[conversationId].push(newMessage);
+
+    // Update conversation's last message and timestamp
+    const convIndex = mockConversations.findIndex(
+      (c) => c.id === conversationId
+    );
+    if (convIndex !== -1) {
+      mockConversations[convIndex].lastMessage = newMessage;
+      mockConversations[convIndex].updatedAt = new Date().toISOString();
+
+      // Update unread count for other participants
+      const otherParticipant = conversation.participants.find(
+        (p: User) => p.id !== userId
+      );
+      if (otherParticipant) {
+        mockConversations[convIndex].unreadCount += 1;
+      }
+    }
+
+    return HttpResponse.json(createApiResponse(newMessage));
+  }),
+
+  // Create new conversation
+  http.post('/api/conversations', async ({ request }) => {
+    const authHeader = request.headers.get('Authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { success: false, error: 'Yetkisiz erişim' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const userId = token.replace('mock-token-', '');
+
+    const { participantId, jobId, packageId, initialMessage } =
+      (await request.json()) as {
+        participantId: string;
+        jobId?: string;
+        packageId?: string;
+        initialMessage?: string;
+      };
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    const currentUser = mockUsers.find((u) => u.id === userId);
+    const participant = mockUsers.find((u) => u.id === participantId);
+
+    if (!currentUser || !participant) {
+      return HttpResponse.json(
+        { success: false, error: 'Kullanıcı bulunamadı' },
+        { status: 404 }
+      );
+    }
+
+    // Check if conversation already exists between these users
+    const existingConversation = mockConversations.find(
+      (conv) =>
+        conv.participants.length === 2 &&
+        conv.participants.some((p: User) => p.id === userId) &&
+        conv.participants.some((p: User) => p.id === participantId) &&
+        (!jobId || conv.jobId === jobId) &&
+        (!packageId || conv.packageId === packageId)
+    );
+
+    if (existingConversation) {
+      return HttpResponse.json(createApiResponse(existingConversation));
+    }
+
+    // Create new conversation
+    const newConversation: Conversation = {
+      id: `conv-${Date.now()}`,
+      participants: [currentUser, participant],
+      unreadCount: 0,
+      jobId,
+      packageId,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    // If initial message provided, create it
+    if (initialMessage?.trim()) {
+      const firstMessage: Message = {
+        id: `msg-${Date.now()}`,
+        conversationId: newConversation.id,
+        senderId: userId,
+        sender: currentUser,
+        content: initialMessage.trim(),
+        isRead: false,
+        createdAt: new Date().toISOString(),
+      };
+
+      mockMessages[newConversation.id] = [firstMessage];
+      newConversation.lastMessage = firstMessage;
+      newConversation.unreadCount = 1;
+    }
+
+    mockConversations.unshift(newConversation);
+
+    return HttpResponse.json(createApiResponse(newConversation));
+  }),
+
+  // Mark messages as read
+  http.patch(
+    '/api/conversations/:id/mark-read',
+    async ({ params, request }) => {
+      const authHeader = request.headers.get('Authorization');
+
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return HttpResponse.json(
+          { success: false, error: 'Yetkisiz erişim' },
+          { status: 401 }
+        );
+      }
+
+      const token = authHeader.replace('Bearer ', '');
+      const userId = token.replace('mock-token-', '');
+      const conversationId = params.id as string;
+
+      // Simulate network delay
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      // Check if user has access to this conversation
+      const convIndex = mockConversations.findIndex(
+        (conv) =>
+          conv.id === conversationId &&
+          conv.participants.some((p: User) => p.id === userId)
+      );
+
+      if (convIndex === -1) {
+        return HttpResponse.json(
+          { success: false, error: 'Yetkisiz erişim' },
+          { status: 403 }
+        );
+      }
+
+      // Mark all messages as read for this user
+      const messages = mockMessages[conversationId] || [];
+      messages.forEach((message) => {
+        if (message.senderId !== userId) {
+          message.isRead = true;
+        }
+      });
+
+      // Reset unread count for this user
+      mockConversations[convIndex].unreadCount = 0;
+
+      return HttpResponse.json(createApiResponse({ success: true }));
+    }
+  ),
 
   // Error handler for unmatched routes
   http.all('*', () => {
