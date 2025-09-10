@@ -1,65 +1,49 @@
-# Marifeto - Freelancer & İşveren Platformu
+# Marifeto - AI Agent Geliştirme Projesi
 
-Modern bir freelancer ve işveren buluşma platformu. React, Next.js 14, TypeScript ve Tailwind CSS ile geliştirildi.
+## 🎯 Proje Özeti
 
-## 🚀 Canlı Demo
+"Marifeto" - Freelancer ve İşveren eşleştirme platformu (Bionluk + Armut hibrit model)
 
-**Vercel Deployment:** https://marifeto.vercel.app
+### 🚀 Temel Özellikler
 
-## 📋 Özellikler
+- **Freelancer Modu**: Hizmet paketi oluşturma ve yönetimi
+- **İşveren Modu**: İş ilanı açma ve teklif toplama
+- **Hibrit Görüntüleme**: Tek platformda hem freelancer hem işveren content'i
+- **Akıllı Sayfa Yönlendirme**: Kullanıcı tipine göre optimize edilmiş deneyim
+- **Mobil-First Responsive Tasarım**
+- **Mock API Tabanlı Geliştirme** (Backend sonradan entegre edilecek)
 
-- ✅ **Hibrit Platform**: Freelancer ve işveren için tek uygulama
-- ✅ **Modern UI/UX**: Responsive, mobile-first tasarım
-- ✅ **Authentication**: Güvenli giriş/kayıt sistemi
-- ✅ **Dashboard**: Kullanıcı tipine özel dashboard'lar
-- ✅ **Marketplace**: İş ilanları ve hizmet paketleri
-- ✅ **Protected Routes**: Middleware tabanlı koruma
-- ✅ **Type Safety**: TypeScript strict mode
-- ✅ **State Management**: Zustand store
-- ✅ **Form Validation**: React Hook Form + Zod
+### 🔮 Gelecek Özellikler (Backend Gerekli)
 
-## 🛠️ Teknoloji Stack
+- AI destekli eşleşme
+- Rozet/Puan sistemi
+- Escrow ödeme sistemi
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **UI Components**: Headless UI
-- **State Management**: Zustand
-- **Form Handling**: React Hook Form + Zod Validation
-- **Data Fetching**: SWR
-- **Mock API**: MSW (Mock Service Worker)
-- **Icons**: Lucide React
-- **Deployment**: Vercel
+---
 
-## 🏃‍♂️ Hızlı Başlangıç
+## 📚 AI Agent Geliştirme Dokümantasyonu
 
-### Gereksinimler
+### 🏗️ Mimari ve Yapı
 
-- Node.js 18+
-- npm 8+
+1. [Frontend Mimari Planı](docs/01-frontend-architecture.md) - Teknoloji stack ve proje yapısı
+2. [Component Yapısı](docs/05-component-structure.md) - Tasarım sistemi ve UI kütüphanesi
+3. [Kurulum Rehberi](docs/06-setup-guide.md) - Step-by-step setup
 
-### Kurulum
+### 🎨 Kullanıcı Deneyimi
 
-```bash
-# Repository'yi klonlayın
-git clone https://github.com/omerada/marifet.git
-cd marifet
+4. [Kullanıcı Akışları & Ekranlar](docs/02-user-flows-screens.md) - Detaylı UX/UI spesifikasyonları
+5. [Gelişmiş Sayfa Yapısı](docs/08-advanced-page-structure.md) - Hibrit görüntüleme sistemi
 
-# Dependencies'leri yükleyin
-npm install
+### 🔗 API ve Veri
 
-# Development server'ı başlatın
-npm run dev
-```
+6. [Mock API Servisleri](docs/03-mock-api-services.md) - Endpoint'ler ve veri yapıları
+7. [Mock Data Örnekleri](docs/07-mock-data-examples.md) - Test verileri
 
-Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
+### 📅 Geliştirme Süreci
 
-## 📱 Demo Hesapları
+8. [Part-Part Geliştirme Planı](docs/04-development-plan.md) - Sprint planı ve görevler
+9. [AI Agent Talimatları](docs/09-ai-agent-instructions.md) - Geliştirme promptları
 
-### Freelancer
-- **E-posta**: freelancer@example.com
-- **Şifre**: password123
+### ⚡ Hızlı Başlangıç
 
-### İşveren
-- **E-posta**: isveren@example.com
-- **Şifre**: password123
+10. [Quick Start Guide](QUICK_START.md) - Özet bilgiler
