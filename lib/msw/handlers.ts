@@ -1176,4 +1176,299 @@ export const handlers = [
       message: 'Profil başarıyla güncellendi',
     });
   }),
+
+  // Push notification handlers
+  http.post('/api/push/subscribe', async ({ request }) => {
+    const subscription = (await request.json()) as unknown;
+
+    // Simulate processing delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // Simulate random failures (1% chance)
+    if (Math.random() < 0.01) {
+      return HttpResponse.json(
+        { success: false, message: 'Abonelik sırasında bir hata oluştu' },
+        { status: 500 }
+      );
+    }
+
+    console.log('Push subscription:', subscription);
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Push bildirim aboneliği başarılı',
+      subscriptionId: `sub-${Date.now()}`,
+    });
+  }),
+
+  http.delete('/api/push/unsubscribe', async ({ request }) => {
+    const body = (await request.json()) as { subscriptionId?: string };
+    const { subscriptionId } = body;
+
+    // Simulate processing delay
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Push bildirim aboneliğinden çıkıldı',
+      subscriptionId,
+    });
+  }),
+
+  http.post('/api/push/send', async ({ request }) => {
+    const notificationData = (await request.json()) as unknown;
+
+    // Simulate processing delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Simulate random failures (2% chance)
+    if (Math.random() < 0.02) {
+      return HttpResponse.json(
+        { success: false, message: 'Bildirim gönderimi başarısız' },
+        { status: 500 }
+      );
+    }
+
+    console.log('Sending notification:', notificationData);
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Bildirim başarıyla gönderildi',
+      notificationId: `notif-${Date.now()}`,
+      sentAt: new Date().toISOString(),
+    });
+  }),
+
+  http.get('/api/notifications', async ({ request }) => {
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const limit = parseInt(url.searchParams.get('limit') || '10');
+    const type = url.searchParams.get('type');
+
+    // Mock notifications data
+    const mockNotifications = [
+      {
+        id: 'notif-1',
+        type: 'job_application',
+        title: 'Yeni İş Başvurusu',
+        message: 'Web sitesi geliştirme projenize yeni bir başvuru var',
+        isRead: false,
+        createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 minutes ago
+        actionUrl: '/jobs/1',
+        metadata: { jobId: '1', applicantId: 'freelancer-1' },
+      },
+      {
+        id: 'notif-2',
+        type: 'payment_received',
+        title: 'Ödeme Alındı',
+        message: '2,500 TL tutarında ödeme hesabınıza yatırıldı',
+        isRead: true,
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
+        actionUrl: '/dashboard/payments',
+        metadata: { amount: 2500, paymentId: 'pay-123' },
+      },
+      {
+        id: 'notif-3',
+        type: 'order_update',
+        title: 'Sipariş Güncellendi',
+        message: 'Logo tasarım siparişiniz revizyon aşamasında',
+        isRead: false,
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(), // 6 hours ago
+        actionUrl: '/orders/ord-456',
+        metadata: { orderId: 'ord-456', status: 'revision' },
+      },
+      {
+        id: 'notif-4',
+        type: 'system_announcement',
+        title: 'Sistem Duyurusu',
+        message: 'Platformda yeni özellikler eklendi. Hemen keşfedin!',
+        isRead: true,
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
+        actionUrl: '/announcements',
+        metadata: { announcementId: 'ann-789' },
+      },
+      {
+        id: 'notif-5',
+        type: 'message_received',
+        title: 'Yeni Mesaj',
+        message: 'Proje detayları hakkında size mesaj gönderildi',
+        isRead: false,
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
+        actionUrl: '/messages/conv-123',
+        metadata: { conversationId: 'conv-123', senderId: 'user-456' },
+      },
+    ];
+
+    // Filter by type if provided
+    const filteredNotifications = type
+      ? mockNotifications.filter((n) => n.type === type)
+      : mockNotifications;
+
+    // Paginate
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedNotifications = filteredNotifications.slice(
+      startIndex,
+      endIndex
+    );
+
+    // Simulate processing delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        notifications: paginatedNotifications,
+        pagination: {
+          page,
+          limit,
+          total: filteredNotifications.length,
+          totalPages: Math.ceil(filteredNotifications.length / limit),
+          hasNext: endIndex < filteredNotifications.length,
+          hasPrevious: page > 1,
+        },
+      },
+    });
+  }),
+
+  http.patch('/api/notifications/:notificationId/read', async ({ params }) => {
+    const { notificationId } = params;
+
+    // Simulate processing delay
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Bildirim okundu olarak işaretlendi',
+      notificationId,
+    });
+  }),
+
+  http.post(
+    '/api/notifications/:notificationId/clicked',
+    async ({ params, request }) => {
+      const { notificationId } = params;
+      const body = (await request.json()) as {
+        action?: string;
+        timestamp?: number;
+      };
+      const { action, timestamp } = body;
+
+      // Simulate processing delay
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      return HttpResponse.json({
+        success: true,
+        message: 'Bildirim tıklanması kaydedildi',
+        notificationId,
+        action,
+        timestamp,
+      });
+    }
+  ),
+
+  http.post(
+    '/api/notifications/:notificationId/dismissed',
+    async ({ params, request }) => {
+      const { notificationId } = params;
+      const body = (await request.json()) as { timestamp?: number };
+      const { timestamp } = body;
+
+      // Simulate processing delay
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      return HttpResponse.json({
+        success: true,
+        message: 'Bildirim kapatılması kaydedildi',
+        notificationId,
+        timestamp,
+      });
+    }
+  ),
+
+  http.get('/api/notifications/sync', async () => {
+    // Mock offline notifications that need to be synced
+    const offlineNotifications = [
+      {
+        id: 'offline-notif-1',
+        title: 'Çevrimdışı Bildirim',
+        message: 'İnternet bağlantınız kesildiğinde gelen bildirim',
+        icon: '/icons/notification-icon.png',
+        url: '/dashboard',
+        tag: 'offline-sync',
+      },
+    ];
+
+    // Simulate processing delay
+    await new Promise((resolve) => setTimeout(resolve, 400));
+
+    return HttpResponse.json({
+      success: true,
+      notifications: offlineNotifications,
+    });
+  }),
+
+  http.get('/api/notifications/settings', async () => {
+    // Mock notification settings
+    const mockSettings = {
+      browser: {
+        enabled: true,
+        jobApplications: true,
+        messages: true,
+        payments: true,
+        orderUpdates: true,
+        systemAnnouncements: false,
+      },
+      email: {
+        enabled: true,
+        jobApplications: true,
+        messages: false,
+        payments: true,
+        orderUpdates: true,
+        systemAnnouncements: true,
+      },
+      sms: {
+        enabled: false,
+        jobApplications: false,
+        messages: false,
+        payments: true,
+        orderUpdates: false,
+        systemAnnouncements: false,
+      },
+      quietHours: {
+        enabled: true,
+        startTime: '22:00',
+        endTime: '08:00',
+      },
+    };
+
+    // Simulate processing delay
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    return HttpResponse.json({
+      success: true,
+      settings: mockSettings,
+    });
+  }),
+
+  http.patch('/api/notifications/settings', async ({ request }) => {
+    const updatedSettings = await request.json();
+
+    // Simulate processing delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // Simulate random failures (1% chance)
+    if (Math.random() < 0.01) {
+      return HttpResponse.json(
+        { success: false, message: 'Ayarlar güncellenemedi' },
+        { status: 500 }
+      );
+    }
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Bildirim ayarları güncellendi',
+      settings: updatedSettings,
+    });
+  }),
 ];

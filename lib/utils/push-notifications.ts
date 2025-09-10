@@ -6,7 +6,8 @@
 export class PushNotificationManager {
   private static instance: PushNotificationManager;
   private swRegistration: ServiceWorkerRegistration | null = null;
-  private publicVapidKey = 'BM8YECrNvBEQqGNMwf0TBL7TdCNz7TgPj8Qhc3k1n2PxYvZlCK8rKJI9SQJ1HFt2Bc7YxOGMp1s3ZL9rF4K3qA8'; // Demo key
+  private publicVapidKey =
+    'BM8YECrNvBEQqGNMwf0TBL7TdCNz7TgPj8Qhc3k1n2PxYvZlCK8rKJI9SQJ1HFt2Bc7YxOGMp1s3ZL9rF4K3qA8'; // Demo key
 
   private constructor() {}
 
@@ -48,7 +49,7 @@ export class PushNotificationManager {
   // Bildirim izni isteme
   async requestPermission(): Promise<NotificationPermission> {
     const permission = await this.checkPermission();
-    
+
     if (permission === 'granted') {
       return 'granted';
     }
@@ -79,7 +80,9 @@ export class PushNotificationManager {
     try {
       const subscription = await this.swRegistration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(this.publicVapidKey) as BufferSource
+        applicationServerKey: this.urlBase64ToUint8Array(
+          this.publicVapidKey
+        ) as BufferSource,
       });
 
       return subscription;
@@ -90,7 +93,9 @@ export class PushNotificationManager {
   }
 
   // Subscription'ı sunucuya kaydetme
-  async subscribeToPush(userId: string): Promise<{ success: boolean; error?: string }> {
+  async subscribeToPush(
+    userId: string
+  ): Promise<{ success: boolean; error?: string }> {
     try {
       const permission = await this.requestPermission();
       if (permission !== 'granted') {
@@ -111,32 +116,38 @@ export class PushNotificationManager {
         body: JSON.stringify({
           userId,
           subscription: subscription.toJSON(),
-          userAgent: navigator.userAgent
+          userAgent: navigator.userAgent,
         }),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        return { success: false, error: error.message || 'Subscription kayıt hatası' };
+        return {
+          success: false,
+          error: error.message || 'Subscription kayıt hatası',
+        };
       }
 
       return { success: true };
     } catch (error) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Beklenmeyen hata' 
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Beklenmeyen hata',
       };
     }
   }
 
   // Subscription'ı kaldırma
-  async unsubscribeFromPush(userId: string): Promise<{ success: boolean; error?: string }> {
+  async unsubscribeFromPush(
+    userId: string
+  ): Promise<{ success: boolean; error?: string }> {
     try {
       if (!this.swRegistration) {
         return { success: true }; // Zaten subscription yok
       }
 
-      const subscription = await this.swRegistration.pushManager.getSubscription();
+      const subscription =
+        await this.swRegistration.pushManager.getSubscription();
       if (subscription) {
         await subscription.unsubscribe();
       }
@@ -157,15 +168,18 @@ export class PushNotificationManager {
 
       return { success: true };
     } catch (error) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Beklenmeyen hata' 
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Beklenmeyen hata',
       };
     }
   }
 
   // Subscription durumu kontrolü
-  async getSubscriptionStatus(): Promise<{ isSubscribed: boolean; subscription?: PushSubscription }> {
+  async getSubscriptionStatus(): Promise<{
+    isSubscribed: boolean;
+    subscription?: PushSubscription;
+  }> {
     try {
       if (!this.swRegistration) {
         await this.registerServiceWorker();
@@ -175,10 +189,11 @@ export class PushNotificationManager {
         return { isSubscribed: false };
       }
 
-      const subscription = await this.swRegistration.pushManager.getSubscription();
+      const subscription =
+        await this.swRegistration.pushManager.getSubscription();
       return {
         isSubscribed: !!subscription,
-        subscription: subscription || undefined
+        subscription: subscription || undefined,
       };
     } catch (error) {
       console.error('Subscription durumu kontrol hatası:', error);
@@ -187,7 +202,11 @@ export class PushNotificationManager {
   }
 
   // Test bildirimi gönderme
-  async sendTestNotification(title: string, message: string, options?: NotificationOptions): Promise<void> {
+  async sendTestNotification(
+    title: string,
+    message: string,
+    options?: NotificationOptions
+  ): Promise<void> {
     const permission = await this.checkPermission();
     if (permission !== 'granted') {
       throw new Error('Bildirim izni verilmedi');
@@ -198,43 +217,52 @@ export class PushNotificationManager {
       badge: '/icons/badge-icon.png',
       tag: 'test-notification',
       requireInteraction: false,
-      ...options
+      ...options,
     };
 
     new Notification(title, {
       body: message,
-      ...defaultOptions
+      ...defaultOptions,
     });
   }
 
   // Bildirim ayarlarını güncelleme
-  async updateNotificationSettings(userId: string, settings: Partial<Record<string, unknown>>): Promise<{ success: boolean; error?: string }> {
+  async updateNotificationSettings(
+    userId: string,
+    settings: Partial<Record<string, unknown>>
+  ): Promise<{ success: boolean; error?: string }> {
     try {
-      const response = await fetch(`/api/users/${userId}/notification-settings`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(settings),
-      });
+      const response = await fetch(
+        `/api/users/${userId}/notification-settings`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(settings),
+        }
+      );
 
       if (!response.ok) {
         const error = await response.json();
-        return { success: false, error: error.message || 'Ayar güncelleme hatası' };
+        return {
+          success: false,
+          error: error.message || 'Ayar güncelleme hatası',
+        };
       }
 
       return { success: true };
     } catch (error) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Beklenmeyen hata' 
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Beklenmeyen hata',
       };
     }
   }
 
   // Utility: Base64 to Uint8Array conversion
   private urlBase64ToUint8Array(base64String: string): Uint8Array {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
     const base64 = (base64String + padding)
       .replace(/\-/g, '+')
       .replace(/_/g, '/');
@@ -248,20 +276,87 @@ export class PushNotificationManager {
     return outputArray;
   }
 
+  // Static utility methods
+  static isSupported(): boolean {
+    return (
+      'serviceWorker' in navigator &&
+      'PushManager' in window &&
+      'Notification' in window &&
+      'fetch' in window
+    );
+  }
+
+  static async isSubscribed(): Promise<boolean> {
+    if (!PushNotificationManager.isSupported()) {
+      return false;
+    }
+
+    try {
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (!registration) return false;
+
+      const subscription = await registration.pushManager.getSubscription();
+      return !!subscription;
+    } catch (error) {
+      console.error('Abonelik durumu kontrol edilemedi:', error);
+      return false;
+    }
+  }
+
+  static async requestPermission(): Promise<NotificationPermission> {
+    if (!('Notification' in window)) {
+      return 'denied';
+    }
+
+    if (Notification.permission === 'default') {
+      return await Notification.requestPermission();
+    }
+
+    return Notification.permission;
+  }
+
+  static async subscribe(
+    userId: string = 'default'
+  ): Promise<PushSubscription | null> {
+    const instance = PushNotificationManager.getInstance();
+    const result = await instance.subscribeToPush(userId);
+
+    if (result.success) {
+      // Get the actual subscription
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (registration) {
+        return await registration.pushManager.getSubscription();
+      }
+    }
+
+    return null;
+  }
+
+  static async unsubscribe(userId: string = 'default'): Promise<boolean> {
+    const instance = PushNotificationManager.getInstance();
+    const result = await instance.unsubscribeFromPush(userId);
+    return result.success;
+  }
+
   // Bildirim API'sine erişim
   static getNotificationAPI() {
     return {
       // Bildirimleri listeleme
       async getNotifications(userId: string, page = 1, limit = 20) {
-        const response = await fetch(`/api/notifications?userId=${userId}&page=${page}&limit=${limit}`);
+        const response = await fetch(
+          `/api/notifications?userId=${userId}&page=${page}&limit=${limit}`
+        );
         return response.json();
       },
 
       // Bildirimi okundu olarak işaretleme
       async markAsRead(notificationId: string) {
-        const response = await fetch(`/api/notifications/${notificationId}/read`, {
-          method: 'PATCH'
-        });
+        const response = await fetch(
+          `/api/notifications/${notificationId}/read`,
+          {
+            method: 'PATCH',
+          }
+        );
         return response.json();
       },
 
@@ -272,7 +367,7 @@ export class PushNotificationManager {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ userId })
+          body: JSON.stringify({ userId }),
         });
         return response.json();
       },
@@ -280,7 +375,7 @@ export class PushNotificationManager {
       // Bildirim silme
       async deleteNotification(notificationId: string) {
         const response = await fetch(`/api/notifications/${notificationId}`, {
-          method: 'DELETE'
+          method: 'DELETE',
         });
         return response.json();
       },
@@ -292,10 +387,10 @@ export class PushNotificationManager {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ userId, ...data })
+          body: JSON.stringify({ userId, ...data }),
         });
         return response.json();
-      }
+      },
     };
   }
 }

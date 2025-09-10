@@ -211,7 +211,7 @@ export interface NotificationSettings {
   quietHours: {
     enabled: boolean;
     start: string; // HH:mm format
-    end: string;   // HH:mm format
+    end: string; // HH:mm format
   };
   updatedAt: string;
 }

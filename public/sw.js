@@ -1,4 +1,4 @@
-self.addEventListener('push', function(event) {
+self.addEventListener('push', function (event) {
   console.log('Push event received:', event);
 
   if (!event.data) {
@@ -25,28 +25,26 @@ self.addEventListener('push', function(event) {
       url: data.url || data.actionUrl || '/',
       notificationId: data.notificationId,
       userId: data.userId,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     },
     actions: data.actions || [
       {
         action: 'view',
         title: 'Görüntüle',
-        icon: '/icons/view-icon.png'
+        icon: '/icons/view-icon.png',
       },
       {
         action: 'dismiss',
         title: 'Kapat',
-        icon: '/icons/close-icon.png'
-      }
-    ]
+        icon: '/icons/close-icon.png',
+      },
+    ],
   };
 
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
+  event.waitUntil(self.registration.showNotification(data.title, options));
 });
 
-self.addEventListener('notificationclick', function(event) {
+self.addEventListener('notificationclick', function (event) {
   console.log('Notification click received:', event);
 
   event.notification.close();
@@ -62,20 +60,22 @@ self.addEventListener('notificationclick', function(event) {
   const urlToOpen = data.url || '/';
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
-      // Check if there's already a window/tab open with the target URL
-      for (let i = 0; i < clientList.length; i++) {
-        const client = clientList[i];
-        if (client.url === urlToOpen && 'focus' in client) {
-          return client.focus();
+    clients
+      .matchAll({ type: 'window', includeUncontrolled: true })
+      .then(function (clientList) {
+        // Check if there's already a window/tab open with the target URL
+        for (let i = 0; i < clientList.length; i++) {
+          const client = clientList[i];
+          if (client.url === urlToOpen && 'focus' in client) {
+            return client.focus();
+          }
         }
-      }
 
-      // If no existing window/tab, open a new one
-      if (clients.openWindow) {
-        return clients.openWindow(urlToOpen);
-      }
-    })
+        // If no existing window/tab, open a new one
+        if (clients.openWindow) {
+          return clients.openWindow(urlToOpen);
+        }
+      })
   );
 
   // Mark notification as clicked if notificationId exists
@@ -87,15 +87,15 @@ self.addEventListener('notificationclick', function(event) {
       },
       body: JSON.stringify({
         action: action || 'click',
-        timestamp: Date.now()
-      })
-    }).catch(function(error) {
+        timestamp: Date.now(),
+      }),
+    }).catch(function (error) {
       console.error('Error tracking notification click:', error);
     });
   }
 });
 
-self.addEventListener('notificationclose', function(event) {
+self.addEventListener('notificationclose', function (event) {
   console.log('Notification closed:', event);
 
   const data = event.notification.data;
@@ -108,26 +108,26 @@ self.addEventListener('notificationclose', function(event) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        timestamp: Date.now()
-      })
-    }).catch(function(error) {
+        timestamp: Date.now(),
+      }),
+    }).catch(function (error) {
       console.error('Error tracking notification dismissal:', error);
     });
   }
 });
 
 // Background sync for offline notifications
-self.addEventListener('sync', function(event) {
+self.addEventListener('sync', function (event) {
   if (event.tag === 'background-sync-notifications') {
     event.waitUntil(
       fetch('/api/notifications/sync')
-        .then(function(response) {
+        .then(function (response) {
           return response.json();
         })
-        .then(function(data) {
+        .then(function (data) {
           if (data.notifications && data.notifications.length > 0) {
             // Show offline notifications that were queued
-            data.notifications.forEach(function(notification) {
+            data.notifications.forEach(function (notification) {
               self.registration.showNotification(notification.title, {
                 body: notification.message,
                 icon: notification.icon || '/icons/notification-icon.png',
@@ -136,13 +136,13 @@ self.addEventListener('sync', function(event) {
                 data: {
                   url: notification.url || '/',
                   notificationId: notification.id,
-                  timestamp: Date.now()
-                }
+                  timestamp: Date.now(),
+                },
               });
             });
           }
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.error('Background sync failed:', error);
         })
     );
@@ -150,24 +150,24 @@ self.addEventListener('sync', function(event) {
 });
 
 // Install event
-self.addEventListener('install', function(event) {
+self.addEventListener('install', function () {
   console.log('Service Worker installing');
   self.skipWaiting();
 });
 
 // Activate event
-self.addEventListener('activate', function(event) {
+self.addEventListener('activate', function (event) {
   console.log('Service Worker activating');
-  event.waitUntil(
-    self.clients.claim()
-  );
+  event.waitUntil(self.clients.claim());
 });
 
 // Handle background sync registration
-self.addEventListener('message', function(event) {
+self.addEventListener('message', function (event) {
   if (event.data && event.data.type === 'SYNC_NOTIFICATIONS') {
-    self.registration.sync.register('background-sync-notifications').catch(function(error) {
-      console.error('Background sync registration failed:', error);
-    });
+    self.registration.sync
+      .register('background-sync-notifications')
+      .catch(function (error) {
+        console.error('Background sync registration failed:', error);
+      });
   }
 });
