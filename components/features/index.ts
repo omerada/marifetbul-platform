@@ -9,6 +9,11 @@ export { DashboardStats } from './DashboardStats';
 export { QuickActions } from './QuickActions';
 export { ActivityTimeline } from './ActivityTimeline';
 export { DashboardCharts } from './DashboardCharts';
+export { PaymentHistory } from './PaymentHistory';
+export { AvatarUpload } from './AvatarUpload';
+export { ProfileAvatarSection } from './ProfileAvatarSection';
+export { AvatarGallery } from './AvatarGallery';
+export { AvatarModal } from './AvatarModal';
 
 // Mobile & Touch Optimization
 export { MobileFilters } from './MobileFilters';

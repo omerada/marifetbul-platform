@@ -9,7 +9,6 @@ import {
   Freelancer,
   Message,
   Conversation,
-  Notification,
 } from '@/types';
 
 // Mock employer data
@@ -1069,128 +1068,112 @@ export const handlers = [
     }
   ),
 
-  // NOTIFICATION SYSTEM ENDPOINTS
-
-  // Get all notifications for current user
-  http.get('/api/notifications', async ({ request }) => {
-    const authHeader = request.headers.get('Authorization');
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return HttpResponse.json(
-        { success: false, error: 'Yetkisiz erişim' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    const userId = token.replace('mock-token-', '');
-
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    // Mock notifications
-    const notifications: Notification[] = [
-      {
-        id: 'notif-1',
-        userId,
-        type: 'message_received',
-        title: 'Yeni Mesaj',
-        message: 'Fatma Kaya sizinle yeni bir mesaj gönderdi',
-        isRead: false,
-        createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 min ago
-        actionUrl: '/messages/conv-1',
-      },
-      {
-        id: 'notif-2',
-        userId,
-        type: 'proposal_received',
-        title: 'Yeni Teklif',
-        message: 'React projesi için yeni bir teklif aldınız',
-        isRead: false,
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
-        actionUrl: '/jobs/1',
-      },
-      {
-        id: 'notif-3',
-        userId,
-        type: 'job_completed',
-        title: 'Proje Tamamlandı',
-        message: 'Logo tasarım projeniz başarıyla tamamlandı',
-        isRead: true,
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
-        actionUrl: '/jobs/2',
-      },
-    ];
-
-    return HttpResponse.json(createApiResponse(notifications));
-  }),
-
-  // Mark notification as read
-  http.patch('/api/notifications/:id/read', async ({ params, request }) => {
-    const authHeader = request.headers.get('Authorization');
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return HttpResponse.json(
-        { success: false, error: 'Yetkisiz erişim' },
-        { status: 401 }
-      );
-    }
-
-    const notificationId = params.id as string;
-
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 200));
-
-    // In a real app, would update notification in database
-    console.log(`Mock: Marked notification ${notificationId} as read`);
-
-    return HttpResponse.json(createApiResponse({ success: true }));
-  }),
-
-  // Mark all notifications as read
-  http.patch('/api/notifications/mark-all-read', async ({ request }) => {
-    const authHeader = request.headers.get('Authorization');
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return HttpResponse.json(
-        { success: false, error: 'Yetkisiz erişim' },
-        { status: 401 }
-      );
-    }
-
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    return HttpResponse.json(createApiResponse({ success: true }));
-  }),
-
-  // Delete notification
-  http.delete('/api/notifications/:id', async ({ params, request }) => {
-    const authHeader = request.headers.get('Authorization');
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return HttpResponse.json(
-        { success: false, error: 'Yetkisiz erişim' },
-        { status: 401 }
-      );
-    }
-
-    const notificationId = params.id as string;
-
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    // In a real app, would delete notification from database
-    console.log(`Mock: Deleted notification ${notificationId}`);
-
-    return HttpResponse.json(createApiResponse({ success: true }));
-  }),
-
   // Error handler for unmatched routes
   http.all('*', () => {
     return HttpResponse.json(
       { success: false, message: 'API endpoint bulunamadı' },
       { status: 404 }
     );
+  }),
+
+  // Avatar upload endpoints
+  http.post('/api/upload/avatar', async ({ request }) => {
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
+    const userId = formData.get('userId') as string;
+
+    if (!file) {
+      return HttpResponse.json(
+        { success: false, message: 'Dosya bulunamadı' },
+        { status: 400 }
+      );
+    }
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      return HttpResponse.json(
+        {
+          success: false,
+          message:
+            'Geçersiz dosya formatı. Sadece JPEG, PNG ve WebP desteklenir.',
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      return HttpResponse.json(
+        { success: false, message: "Dosya boyutu 5MB'dan büyük olamaz" },
+        { status: 400 }
+      );
+    }
+
+    // Simulate processing delay
+    await new Promise((resolve) =>
+      setTimeout(resolve, 1000 + Math.random() * 2000)
+    );
+
+    // Simulate random failures (5% chance)
+    if (Math.random() < 0.05) {
+      return HttpResponse.json(
+        { success: false, message: 'Yükleme sırasında bir hata oluştu' },
+        { status: 500 }
+      );
+    }
+
+    // Generate mock avatar URL
+    const timestamp = Date.now();
+    const avatarUrl = `/uploads/avatars/${userId}/${timestamp}-${file.name}`;
+
+    return HttpResponse.json({
+      success: true,
+      url: avatarUrl,
+      filename: file.name,
+      size: file.size,
+      type: file.type,
+    });
+  }),
+
+  http.delete('/api/upload/avatar/:userId', async () => {
+    // Simulate processing delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Avatar başarıyla silindi',
+    });
+  }),
+
+  // User update endpoint
+  http.patch('/api/users/:userId', async ({ params, request }) => {
+    const { userId } = params;
+    const updateData = (await request.json()) as Record<string, unknown>;
+
+    // Simulate processing delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Simulate random failures (2% chance)
+    if (Math.random() < 0.02) {
+      return HttpResponse.json(
+        { success: false, message: 'Güncelleme sırasında bir hata oluştu' },
+        { status: 500 }
+      );
+    }
+
+    // Return updated user data
+    const updatedUser = {
+      id: userId,
+      ...updateData,
+      updatedAt: new Date().toISOString(),
+    };
+
+    return HttpResponse.json({
+      success: true,
+      user: updatedUser,
+      message: 'Profil başarıyla güncellendi',
+    });
   }),
 ];

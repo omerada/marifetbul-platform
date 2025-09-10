@@ -6,3 +6,4 @@ export { ErrorFallback } from './ErrorFallback';
 export { Tooltip } from './Tooltip';
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs';
 export { default as FileUpload } from './FileUpload';
+export { ToastContainer } from './ToastContainer';

@@ -139,12 +139,81 @@ export interface Notification {
     | 'proposal_accepted'
     | 'job_completed'
     | 'review_received'
-    | 'message_received';
+    | 'message_received'
+    | 'payment_received'
+    | 'order_update'
+    | 'system_announcement';
   title: string;
   message: string;
   isRead: boolean;
   createdAt: string;
   actionUrl?: string;
+  metadata?: Record<string, unknown>;
+}
+
+// Push Notification types
+export interface PushNotificationData {
+  title: string;
+  message: string;
+  icon?: string;
+  badge?: string;
+  url?: string;
+  actions?: NotificationAction[];
+  tag?: string;
+  requireInteraction?: boolean;
+  silent?: boolean;
+}
+
+export interface NotificationAction {
+  action: string;
+  title: string;
+  icon?: string;
+}
+
+export interface PushSubscription {
+  id: string;
+  userId: string;
+  endpoint: string;
+  keys: {
+    p256dh: string;
+    auth: string;
+  };
+  userAgent?: string;
+  isActive: boolean;
+  createdAt: string;
+  lastUsed?: string;
+}
+
+export interface NotificationSettings {
+  userId: string;
+  browser: {
+    enabled: boolean;
+    proposals: boolean;
+    messages: boolean;
+    payments: boolean;
+    orders: boolean;
+    system: boolean;
+  };
+  email: {
+    enabled: boolean;
+    proposals: boolean;
+    messages: boolean;
+    payments: boolean;
+    orders: boolean;
+    system: boolean;
+    digest: 'never' | 'daily' | 'weekly';
+  };
+  sms: {
+    enabled: boolean;
+    urgent: boolean;
+    payments: boolean;
+  };
+  quietHours: {
+    enabled: boolean;
+    start: string; // HH:mm format
+    end: string;   // HH:mm format
+  };
+  updatedAt: string;
 }
 
 export interface Message {
@@ -300,4 +369,162 @@ export interface EmployerStats {
   totalProposals: number;
   averageRating: number;
   savedFreelancers: number;
+}
+
+// Payment System Types
+export interface PaymentMethod {
+  id: string;
+  type: 'credit_card' | 'debit_card' | 'paypal' | 'bank_transfer';
+  name: string;
+  cardNumber?: string; // Masked card number (e.g., "**** **** **** 1234")
+  expiryDate?: string;
+  cardHolderName?: string;
+  isDefault: boolean;
+  isValid: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaymentIntent {
+  id: string;
+  amount: number;
+  currency: 'TRY' | 'USD' | 'EUR';
+  description: string;
+  status: 'pending' | 'processing' | 'succeeded' | 'failed' | 'canceled';
+  paymentMethodId: string;
+  userId: string;
+  jobId?: string;
+  packageId?: string;
+  orderId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaymentCard {
+  cardNumber: string;
+  expiryMonth: string;
+  expiryYear: string;
+  cvv: string;
+  cardHolderName: string;
+  billingAddress?: BillingAddress;
+}
+
+export interface BillingAddress {
+  fullName: string;
+  email: string;
+  phone?: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
+export interface Order {
+  id: string;
+  userId: string;
+  user: User;
+  packageId?: string;
+  package?: ServicePackage;
+  jobId?: string;
+  job?: Job;
+  amount: number;
+  subtotal: number;
+  tax: number;
+  discount: number;
+  total: number;
+  currency: 'TRY' | 'USD' | 'EUR';
+  status: 'pending' | 'processing' | 'completed' | 'canceled' | 'refunded';
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
+  paymentMethodId?: string;
+  paymentMethod?: PaymentMethod;
+  notes?: string;
+  deliverables?: string[];
+  deadlineDate?: string;
+  completedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Invoice {
+  id: string;
+  orderId: string;
+  order: Order;
+  invoiceNumber: string;
+  issueDate: string;
+  dueDate: string;
+  amount: number;
+  tax: number;
+  totalAmount: number;
+  currency: 'TRY' | 'USD' | 'EUR';
+  status: 'draft' | 'sent' | 'paid' | 'overdue' | 'canceled';
+  billingAddress: BillingAddress;
+  items: InvoiceItem[];
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface InvoiceItem {
+  id: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+}
+
+export interface Wallet {
+  id: string;
+  userId: string;
+  balance: number;
+  currency: 'TRY' | 'USD' | 'EUR';
+  frozenAmount: number; // Dondurulan miktar (pending işlemler için)
+  totalEarnings: number;
+  totalSpent: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Transaction {
+  id: string;
+  walletId: string;
+  type:
+    | 'deposit'
+    | 'withdrawal'
+    | 'payment'
+    | 'refund'
+    | 'commission'
+    | 'bonus';
+  amount: number;
+  currency: 'TRY' | 'USD' | 'EUR';
+  status: 'pending' | 'completed' | 'failed' | 'canceled';
+  description: string;
+  referenceId?: string; // Order, job, or payment ID
+  fees?: number;
+  netAmount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Payment Form Types
+export interface PaymentFormData {
+  amount: number;
+  currency: 'TRY' | 'USD' | 'EUR';
+  paymentMethodId?: string;
+  saveCard?: boolean;
+  cardData?: PaymentCard;
+  billingAddress?: BillingAddress;
+  notes?: string;
+}
+
+export interface CheckoutFormData {
+  packageId?: string;
+  jobId?: string;
+  amount: number;
+  currency: 'TRY' | 'USD' | 'EUR';
+  paymentMethod: PaymentCard;
+  billingAddress: BillingAddress;
+  notes?: string;
+  agreeToTerms: boolean;
 }

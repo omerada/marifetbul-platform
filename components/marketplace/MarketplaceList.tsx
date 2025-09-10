@@ -4,12 +4,17 @@ import React, { useState } from 'react';
 import { Job, ServicePackage, JobFilters, PackageFilters } from '@/types';
 import { useJobs } from '@/hooks/useJobs';
 import { usePackages } from '@/hooks/usePackages';
+import { useJobFilters, usePackageFilters } from '@/hooks/useFilters';
+import {
+  JobFiltersComponent,
+  PackageFiltersComponent,
+} from '@/components/filters';
 import { JobCard } from './JobCard';
 import { ServiceCard } from './ServiceCard';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Loading } from '@/components/ui/Loading';
-import { Search, Filter, Briefcase, Package } from 'lucide-react';
+import { Search, Briefcase, Package } from 'lucide-react';
 
 type MarketplaceMode = 'jobs' | 'services';
 
@@ -24,41 +29,69 @@ export function MarketplaceList({
 }: MarketplaceListProps) {
   const [mode, setMode] = useState<MarketplaceMode>(initialMode);
   const [currentPage, setCurrentPage] = useState(1);
-  const [showFilters, setShowFilters] = useState(false);
-
-  // Search and filter states
   const [searchQuery, setSearchQuery] = useState('');
-  const [jobFilters, setJobFilters] = useState<JobFilters>({});
-  const [packageFilters, setPackageFilters] = useState<PackageFilters>({});
 
-  // Data fetching
+  // Advanced filters hooks
+  const jobFiltersHook = useJobFilters({ search: searchQuery });
+  const packageFiltersHook = usePackageFilters({ search: searchQuery });
+
+  // Data fetching with filters
   const {
     jobs,
     pagination: jobsPagination,
     isLoading: jobsLoading,
     error: jobsError,
-  } = useJobs(currentPage, 12, { ...jobFilters, search: searchQuery });
+  } = useJobs(currentPage, 12, jobFiltersHook.filters);
 
   const {
     packages,
     pagination: packagesPagination,
     isLoading: packagesLoading,
     error: packagesError,
-  } = usePackages(currentPage, 12, { ...packageFilters, search: searchQuery });
+  } = usePackages(currentPage, 12, packageFiltersHook.filters);
 
   const isLoading = mode === 'jobs' ? jobsLoading : packagesLoading;
   const error = mode === 'jobs' ? jobsError : packagesError;
   const pagination = mode === 'jobs' ? jobsPagination : packagesPagination;
 
+  const activeFiltersHook =
+    mode === 'jobs' ? jobFiltersHook : packageFiltersHook;
+
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    setCurrentPage(1); // Reset to first page when searching
+    setCurrentPage(1);
+
+    // Update filters with search query
+    if (mode === 'jobs') {
+      jobFiltersHook.updateFilters({
+        ...jobFiltersHook.filters,
+        search: query,
+      });
+    } else {
+      packageFiltersHook.updateFilters({
+        ...packageFiltersHook.filters,
+        search: query,
+      });
+    }
   };
 
   const handleModeToggle = (newMode: MarketplaceMode) => {
     setMode(newMode);
     setCurrentPage(1);
     setSearchQuery('');
+    // Reset filters when switching modes
+    jobFiltersHook.clearFilters();
+    packageFiltersHook.clearFilters();
+  };
+
+  const handleJobFiltersChange = (newFilters: JobFilters) => {
+    jobFiltersHook.updateFilters({ ...newFilters, search: searchQuery });
+    setCurrentPage(1);
+  };
+
+  const handlePackageFiltersChange = (newFilters: PackageFilters) => {
+    packageFiltersHook.updateFilters({ ...newFilters, search: searchQuery });
+    setCurrentPage(1);
   };
 
   const handleJobAction = (action: string, job: Job) => {
@@ -172,69 +205,30 @@ export function MarketplaceList({
           </div>
           <Button
             variant="outline"
-            onClick={() => setShowFilters(!showFilters)}
+            onClick={() => activeFiltersHook.toggleFiltersVisibility()}
             className="flex items-center"
           >
-            <Filter className="mr-2 h-4 w-4" />
+            <Search className="mr-2 h-4 w-4" />
             Filtreler
           </Button>
         </div>
       </div>
 
-      {/* Filters Panel */}
-      {showFilters && (
-        <div className="rounded-lg bg-gray-50 p-6">
-          <h3 className="mb-4 text-lg font-semibold text-gray-900">
-            Filtreler
-          </h3>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <Input
-              type="text"
-              placeholder="Kategori"
-              value={
-                mode === 'jobs'
-                  ? jobFilters.category || ''
-                  : packageFilters.category || ''
-              }
-              onChange={(e) => {
-                if (mode === 'jobs') {
-                  setJobFilters({ ...jobFilters, category: e.target.value });
-                } else {
-                  setPackageFilters({
-                    ...packageFilters,
-                    category: e.target.value,
-                  });
-                }
-                setCurrentPage(1);
-              }}
-            />
-            {mode === 'jobs' && (
-              <Input
-                type="text"
-                placeholder="Konum"
-                value={jobFilters.location || ''}
-                onChange={(e) => {
-                  setJobFilters({ ...jobFilters, location: e.target.value });
-                  setCurrentPage(1);
-                }}
-              />
-            )}
-            <Input
-              type="text"
-              placeholder="Yetenekler"
-              value={mode === 'jobs' ? jobFilters.skills?.[0] || '' : ''}
-              onChange={(e) => {
-                if (mode === 'jobs') {
-                  setJobFilters({
-                    ...jobFilters,
-                    skills: e.target.value ? [e.target.value] : undefined,
-                  });
-                }
-                setCurrentPage(1);
-              }}
-            />
-          </div>
-        </div>
+      {/* Advanced Filters */}
+      {mode === 'jobs' ? (
+        <JobFiltersComponent
+          filters={jobFiltersHook.filters}
+          onFiltersChange={handleJobFiltersChange}
+          isVisible={jobFiltersHook.isFiltersVisible}
+          onToggleVisibility={jobFiltersHook.toggleFiltersVisibility}
+        />
+      ) : (
+        <PackageFiltersComponent
+          filters={packageFiltersHook.filters}
+          onFiltersChange={handlePackageFiltersChange}
+          isVisible={packageFiltersHook.isFiltersVisible}
+          onToggleVisibility={packageFiltersHook.toggleFiltersVisibility}
+        />
       )}
 
       {/* Loading State */}
