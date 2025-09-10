@@ -169,7 +169,13 @@ export const handlers = [
   }),
 
   http.post('/api/auth/register', async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as {
+      email: string;
+      password: string;
+      firstName: string;
+      lastName: string;
+      userType: 'freelancer' | 'employer';
+    };
 
     if (
       !body ||

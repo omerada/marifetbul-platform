@@ -446,6 +446,31 @@ export const handlers = [
     );
   }),
 
+  http.get('/api/users/me', ({ request }) => {
+    const authHeader = request.headers.get('Authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { success: false, error: 'Yetkisiz erişim' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const userId = token.replace('mock-token-', '');
+
+    const user = mockUsers.find((u) => u.id === userId);
+
+    if (!user) {
+      return HttpResponse.json(
+        { success: false, error: 'Geçersiz token' },
+        { status: 401 }
+      );
+    }
+
+    return HttpResponse.json(createApiResponse(user));
+  }),
+
   http.get('/api/auth/me', ({ request }) => {
     const authHeader = request.headers.get('Authorization');
 
@@ -473,7 +498,7 @@ export const handlers = [
 
   http.post('/api/auth/logout', () => {
     return HttpResponse.json(
-      createApiResponse(null, 'Başarıyla çıkış yapıldı')
+      createApiResponse(null as null, 'Başarıyla çıkış yapıldı')
     );
   }),
 

@@ -15,4 +15,6 @@ export { MobileFilters } from './MobileFilters';
 export { MobileNavigation } from './MobileNavigation';
 export { MobileDashboard } from './MobileDashboard';
 export { MobileLayout } from './MobileLayout';
+export { MobileMarketplace } from './MobileMarketplace';
+export { MobileFiltersSheet } from './MobileFiltersSheet';
 export { TouchJobCard, TouchServiceCard } from './TouchCards';
