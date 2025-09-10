@@ -201,7 +201,15 @@ const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'marifeto-auth',
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() =>
+        typeof window !== 'undefined'
+          ? localStorage
+          : {
+              getItem: () => null,
+              setItem: () => {},
+              removeItem: () => {},
+            }
+      ),
       partialize: (state) => ({
         user: state.user,
         token: state.token,

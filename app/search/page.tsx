@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AppLayout } from '@/components/layout';
 import { UniversalSearch } from '@/components/features/UniversalSearch';
 import { MarketplaceList } from '@/components/marketplace/MarketplaceList';
-import { Card, Button } from '@/components/ui';
+import { Card, Button, Loading } from '@/components/ui';
 import { useResponsive } from '@/hooks/useResponsive';
 import {
   Search,
@@ -21,7 +21,7 @@ import {
 
 type SearchTab = 'all' | 'services' | 'jobs' | 'freelancers';
 
-export default function SearchPage() {
+function SearchContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isMobile } = useResponsive();
@@ -469,5 +469,21 @@ export default function SearchPage() {
         </div>
       </div>
     </AppLayout>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense
+      fallback={
+        <AppLayout>
+          <div className="flex min-h-screen items-center justify-center">
+            <Loading size="lg" text="Arama sayfası yükleniyor..." />
+          </div>
+        </AppLayout>
+      }
+    >
+      <SearchContent />
+    </Suspense>
   );
 }

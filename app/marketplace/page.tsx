@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AppLayout } from '@/components/layout';
 import { MarketplaceList } from '@/components/marketplace/MarketplaceList';
 import { MobileMarketplace } from '@/components/features/MobileMarketplace';
-import { Card, Button, Input } from '@/components/ui';
+import { Card, Button, Input, Loading } from '@/components/ui';
 import { useResponsive } from '@/hooks/useResponsive';
 import {
   Search,
@@ -21,7 +21,7 @@ import {
 
 type MarketplaceView = 'jobs' | 'services';
 
-export default function MarketplacePage() {
+function MarketplaceContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isMobile } = useResponsive();
@@ -402,5 +402,21 @@ export default function MarketplacePage() {
         </div>
       </div>
     </AppLayout>
+  );
+}
+
+export default function MarketplacePage() {
+  return (
+    <Suspense
+      fallback={
+        <AppLayout>
+          <div className="flex min-h-screen items-center justify-center">
+            <Loading size="lg" text="Marketplace yükleniyor..." />
+          </div>
+        </AppLayout>
+      }
+    >
+      <MarketplaceContent />
+    </Suspense>
   );
 }

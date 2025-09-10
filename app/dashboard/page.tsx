@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AppLayout } from '@/components/layout';
 import { Card, CardContent, Loading } from '@/components/ui';
@@ -22,7 +22,7 @@ import {
 
 type DashboardView = 'overview' | 'freelancer' | 'employer';
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isAuthenticated, isLoading, refreshAuth } = useAuthStore();
@@ -274,5 +274,21 @@ export default function DashboardPage() {
         </div>
       </div>
     </AppLayout>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense
+      fallback={
+        <AppLayout showFooter={false}>
+          <div className="flex min-h-screen items-center justify-center">
+            <Loading size="lg" text="Dashboard yükleniyor..." />
+          </div>
+        </AppLayout>
+      }
+    >
+      <DashboardContent />
+    </Suspense>
   );
 }
