@@ -21,9 +21,14 @@ export { MobileNavigation } from './MobileNavigation';
 export { MobileDashboard } from './MobileDashboard';
 export { MobileLayout } from './MobileLayout';
 export { MobileMarketplace } from './MobileMarketplace';
+export { EnhancedMobileMarketplace } from './EnhancedMobileMarketplace';
 export { MobileFiltersSheet } from './MobileFiltersSheet';
 export { default as MobileFiltersSheetDefault } from './MobileFiltersSheet';
 export { TouchJobCard, TouchServiceCard } from './TouchCards';
+
+// Enhanced Marketplace Components
+export { MarketplaceHeader } from './MarketplaceHeader';
+export { EnhancedFilters } from './EnhancedFilters';
 
 // Advanced Features
 export { AdvancedSearch } from './AdvancedSearch';
