@@ -11,12 +11,7 @@ import {
   ActivityTimeline,
   DashboardCharts,
 } from '@/components/features';
-import {
-  Calendar,
-  Bell,
-  Settings,
-  HelpCircle,
-} from 'lucide-react';
+import { Calendar, Bell, Settings, HelpCircle } from 'lucide-react';
 
 export default function DashboardPage() {
   const router = useRouter();
