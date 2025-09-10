@@ -9,3 +9,11 @@ export { default as FileUpload } from './FileUpload';
 export { ToastContainer } from './ToastContainer';
 export { Textarea } from './Textarea';
 export { Badge } from './Badge';
+export {
+  AnimatedContainer,
+  StaggeredContainer,
+  ScrollTriggeredAnimation,
+  PageTransition,
+  HoverAnimation,
+  LoadingAnimation,
+} from './AnimatedContainer';
