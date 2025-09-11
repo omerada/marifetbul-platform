@@ -482,3 +482,5 @@ Yukarıdaki formata uygun olarak **12 Sprint** içeren detaylı roadmap hazırla
 
 **📌 ÖNEMLİ**: Bu prompt'u AI Agent'a verdiğinde, agent blueprint'i analiz edecek ve yukarıda belirtilen sprint formatına göre eksiksiz bir roadmap dökümanı oluşturacak.
 ```
+
+#codebase
