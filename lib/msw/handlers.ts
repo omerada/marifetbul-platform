@@ -18,7 +18,8 @@ const mockEmployer: Employer = {
   firstName: 'Fatma',
   lastName: 'Kaya',
   userType: 'employer',
-  avatar: '/avatars/employer-1.jpg',
+  avatar:
+    'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face',
   location: 'Ankara, Türkiye',
   createdAt: new Date('2024-01-01').toISOString(),
   updatedAt: new Date('2024-01-01').toISOString(),
@@ -40,7 +41,8 @@ const mockFreelancer: Freelancer = {
   firstName: 'Ahmet',
   lastName: 'Yılmaz',
   userType: 'freelancer',
-  avatar: '/avatars/freelancer-1.jpg',
+  avatar:
+    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
   location: 'İstanbul, Türkiye',
   createdAt: new Date('2024-01-01').toISOString(),
   updatedAt: new Date('2024-01-01').toISOString(),
@@ -101,6 +103,137 @@ const mockJobs: Job[] = [
     createdAt: new Date('2024-01-14').toISOString(),
     updatedAt: new Date('2024-01-14').toISOString(),
   },
+  {
+    id: '3',
+    title: 'WordPress E-ticaret Sitesi',
+    description:
+      'WooCommerce kullanarak kapsamlı e-ticaret sitesi geliştirme projesi. Ödeme entegrasyonları, kargo sistemleri ve stok yönetimi dahil.',
+    category: 'Web Geliştirme',
+    subcategory: 'E-ticaret',
+    budget: { type: 'fixed', amount: 5000 },
+    timeline: '3-4 ay',
+    duration: '3-4 ay',
+    skills: ['WordPress', 'WooCommerce', 'PHP', 'MySQL'],
+    experienceLevel: 'expert',
+    location: 'Ankara, Türkiye',
+    isRemote: false,
+    status: 'open',
+    employerId: 'employer-1',
+    employer: mockEmployer,
+    proposalsCount: 15,
+    createdAt: new Date('2024-01-13').toISOString(),
+    updatedAt: new Date('2024-01-13').toISOString(),
+  },
+  {
+    id: '4',
+    title: 'React Native Mobil Uygulama',
+    description:
+      'Cross-platform mobil uygulama geliştirme. iOS ve Android için aynı anda yayınlanacak. Firebase entegrasyonu ve push notification sistemi gerekli.',
+    category: 'Mobil Uygulama',
+    subcategory: 'React Native',
+    budget: { type: 'fixed', amount: 8000 },
+    timeline: '4-5 ay',
+    duration: '4-5 ay',
+    skills: ['React Native', 'Firebase', 'JavaScript', 'Mobile Development'],
+    experienceLevel: 'expert',
+    location: 'Uzaktan',
+    isRemote: true,
+    status: 'open',
+    employerId: 'employer-1',
+    employer: mockEmployer,
+    proposalsCount: 23,
+    createdAt: new Date('2024-01-12').toISOString(),
+    updatedAt: new Date('2024-01-12').toISOString(),
+  },
+  {
+    id: '5',
+    title: 'SEO İçerik Yazarı',
+    description:
+      'Blog yazıları ve web sitesi içerikleri için SEO uyumlu Türkçe içerik yazımı. Günlük 2-3 makale üretimi beklenmektedir.',
+    category: 'İçerik Yazımı',
+    subcategory: 'SEO İçerik',
+    budget: { type: 'hourly', amount: 25 },
+    timeline: 'Devam eden',
+    duration: 'Devam eden',
+    skills: ['SEO', 'İçerik Yazımı', 'Türkçe', 'Blog Yazımı'],
+    experienceLevel: 'intermediate',
+    location: 'Uzaktan',
+    isRemote: true,
+    status: 'open',
+    employerId: 'employer-1',
+    employer: mockEmployer,
+    proposalsCount: 31,
+    createdAt: new Date('2024-01-11').toISOString(),
+    updatedAt: new Date('2024-01-11').toISOString(),
+  },
+  {
+    id: '6',
+    title: 'Python Veri Analiz Projesi',
+    description:
+      'Büyük veri setleri üzerinde analiz yaparak raporlama. Pandas, NumPy ve Matplotlib kullanımı gerekli. Machine learning modeli geliştirme.',
+    category: 'Veri Bilimi',
+    subcategory: 'Veri Analizi',
+    budget: { type: 'fixed', amount: 4500 },
+    timeline: '2-3 ay',
+    duration: '2-3 ay',
+    skills: ['Python', 'Pandas', 'NumPy', 'Matplotlib', 'Data Science'],
+    experienceLevel: 'expert',
+    location: 'İzmir, Türkiye',
+    isRemote: false,
+    status: 'open',
+    employerId: 'employer-1',
+    employer: mockEmployer,
+    proposalsCount: 18,
+    createdAt: new Date('2024-01-10').toISOString(),
+    updatedAt: new Date('2024-01-10').toISOString(),
+  },
+  {
+    id: '7',
+    title: 'Social Media Manager',
+    description:
+      'Instagram, Facebook ve LinkedIn hesaplarının yönetimi. İçerik planlaması, gönderi hazırlama ve community management.',
+    category: 'Dijital Pazarlama',
+    subcategory: 'Sosyal Medya',
+    budget: { type: 'hourly', amount: 35 },
+    timeline: '6 ay',
+    duration: '6 ay',
+    skills: [
+      'Social Media Marketing',
+      'Content Creation',
+      'Instagram',
+      'Facebook',
+    ],
+    experienceLevel: 'intermediate',
+    location: 'Uzaktan',
+    isRemote: true,
+    status: 'open',
+    employerId: 'employer-1',
+    employer: mockEmployer,
+    proposalsCount: 27,
+    createdAt: new Date('2024-01-09').toISOString(),
+    updatedAt: new Date('2024-01-09').toISOString(),
+  },
+  {
+    id: '8',
+    title: 'Flutter Mobil Oyun Geliştirme',
+    description:
+      'Casual mobil oyun geliştirme projesi. 2D grafikleri ve animasyonlar dahil. Google Play Store ve App Store yayınlama süreci.',
+    category: 'Oyun Geliştirme',
+    subcategory: 'Mobil Oyun',
+    budget: { type: 'fixed', amount: 12000 },
+    timeline: '6-8 ay',
+    duration: '6-8 ay',
+    skills: ['Flutter', 'Dart', 'Game Development', '2D Animation'],
+    experienceLevel: 'expert',
+    location: 'Bursa, Türkiye',
+    isRemote: false,
+    status: 'open',
+    employerId: 'employer-1',
+    employer: mockEmployer,
+    proposalsCount: 9,
+    createdAt: new Date('2024-01-08').toISOString(),
+    updatedAt: new Date('2024-01-08').toISOString(),
+  },
 ];
 
 // Mock data - Hizmet Paketleri (Türkçe)
@@ -130,7 +263,10 @@ const mockPackages: ServicePackage[] = [
     isActive: true,
     createdAt: new Date('2024-01-10').toISOString(),
     updatedAt: new Date('2024-01-15').toISOString(),
-    images: ['/images/web-dev-1.jpg', '/images/web-dev-2.jpg'],
+    images: [
+      'https://picsum.photos/400/300?random=1',
+      'https://picsum.photos/400/300?random=2',
+    ],
   },
   {
     id: '2',
@@ -157,7 +293,181 @@ const mockPackages: ServicePackage[] = [
     isActive: true,
     createdAt: new Date('2024-01-08').toISOString(),
     updatedAt: new Date('2024-01-14').toISOString(),
-    images: ['/images/logo-design-1.jpg', '/images/logo-design-2.jpg'],
+    images: [
+      'https://picsum.photos/400/300?random=3',
+      'https://picsum.photos/400/300?random=4',
+    ],
+  },
+  {
+    id: '3',
+    title: 'WordPress Web Sitesi Kurulumu',
+    description:
+      'Sıfırdan WordPress web sitesi kurulumu ve özelleştirme. Theme seçimi, plugin kurulumu ve içerik yönetimi dahil.',
+    category: 'Web Geliştirme',
+    subcategory: 'WordPress',
+    price: 800,
+    deliveryTime: 7,
+    revisions: 3,
+    features: [
+      'WordPress Kurulumu',
+      'Premium Theme Kurulumu',
+      'Plugin Konfigürasyonu',
+      'İçerik Girişi',
+      'Temel SEO Ayarları',
+    ],
+    freelancerId: 'freelancer-1',
+    freelancer: mockFreelancer,
+    orders: 234,
+    rating: 4.7,
+    reviews: 156,
+    isActive: true,
+    createdAt: new Date('2024-01-09').toISOString(),
+    updatedAt: new Date('2024-01-13').toISOString(),
+    images: ['https://picsum.photos/400/300?random=5'],
+  },
+  {
+    id: '4',
+    title: 'Sosyal Medya Grafik Tasarımı',
+    description:
+      'Instagram, Facebook ve LinkedIn için profesyonel görsel tasarımları. Post, story ve banner tasarımları dahil.',
+    category: 'Tasarım',
+    subcategory: 'Sosyal Medya Tasarım',
+    price: 250,
+    deliveryTime: 3,
+    revisions: 4,
+    features: [
+      '10 Instagram Post Tasarımı',
+      '5 Instagram Story Tasarımı',
+      '3 Facebook Banner',
+      'LinkedIn Cover Tasarımı',
+      'Kaynak Dosyalar',
+    ],
+    freelancerId: 'freelancer-1',
+    freelancer: mockFreelancer,
+    orders: 345,
+    rating: 4.9,
+    reviews: 278,
+    isActive: true,
+    createdAt: new Date('2024-01-07').toISOString(),
+    updatedAt: new Date('2024-01-12').toISOString(),
+    images: [
+      'https://picsum.photos/400/300?random=6',
+      'https://picsum.photos/400/300?random=7',
+    ],
+  },
+  {
+    id: '5',
+    title: 'SEO Optimizasyon Paketi',
+    description:
+      'Web sitenizin arama motorlarında üst sıralarda yer alması için kapsamlı SEO optimizasyonu ve analiz.',
+    category: 'Dijital Pazarlama',
+    subcategory: 'SEO',
+    price: 600,
+    deliveryTime: 10,
+    revisions: 2,
+    features: [
+      'Anahtar Kelime Araştırması',
+      'On-Page SEO Optimizasyonu',
+      'Teknik SEO Analizi',
+      'Google Analytics Kurulumu',
+      'Aylık Rapor',
+    ],
+    freelancerId: 'freelancer-1',
+    freelancer: mockFreelancer,
+    orders: 78,
+    rating: 4.6,
+    reviews: 92,
+    isActive: true,
+    createdAt: new Date('2024-01-06').toISOString(),
+    updatedAt: new Date('2024-01-11').toISOString(),
+    images: ['https://picsum.photos/400/300?random=8'],
+  },
+  {
+    id: '6',
+    title: 'React Native Mobil Uygulama Geliştirme',
+    description:
+      'Cross-platform mobil uygulama geliştirme hizmeti. iOS ve Android için tek kod ile yayınlama.',
+    category: 'Mobil Uygulama',
+    subcategory: 'React Native',
+    price: 3500,
+    deliveryTime: 30,
+    revisions: 3,
+    features: [
+      'Cross-Platform Geliştirme',
+      'Firebase Entegrasyonu',
+      'Push Notification',
+      'App Store Yayınlama',
+      '3 Ay Ücretsiz Destek',
+    ],
+    freelancerId: 'freelancer-1',
+    freelancer: mockFreelancer,
+    orders: 23,
+    rating: 4.8,
+    reviews: 34,
+    isActive: true,
+    createdAt: new Date('2024-01-05').toISOString(),
+    updatedAt: new Date('2024-01-10').toISOString(),
+    images: [
+      'https://picsum.photos/400/300?random=9',
+      'https://picsum.photos/400/300?random=10',
+    ],
+  },
+  {
+    id: '7',
+    title: 'İçerik Yazımı ve Blog Yönetimi',
+    description:
+      'SEO uyumlu blog yazıları ve web sitesi içerikleri. Türkçe ve İngilizce içerik üretimi.',
+    category: 'İçerik Yazımı',
+    subcategory: 'Blog Yazımı',
+    price: 150,
+    deliveryTime: 5,
+    revisions: 2,
+    features: [
+      '5 Blog Yazısı (500+ kelime)',
+      'SEO Optimizasyonu',
+      'Anahtar Kelime Araştırması',
+      'Görsel Önerisi',
+      'İçerik Planlaması',
+    ],
+    freelancerId: 'freelancer-1',
+    freelancer: mockFreelancer,
+    orders: 167,
+    rating: 4.7,
+    reviews: 134,
+    isActive: true,
+    createdAt: new Date('2024-01-04').toISOString(),
+    updatedAt: new Date('2024-01-09').toISOString(),
+    images: ['https://picsum.photos/400/300?random=11'],
+  },
+  {
+    id: '8',
+    title: 'E-ticaret Mağaza Kurulumu',
+    description:
+      'Shopify veya WooCommerce ile profesyonel e-ticaret mağazası kurulumu. Ödeme sistemleri ve kargo entegrasyonları dahil.',
+    category: 'E-ticaret',
+    subcategory: 'Mağaza Kurulumu',
+    price: 1200,
+    deliveryTime: 12,
+    revisions: 3,
+    features: [
+      'E-ticaret Platform Kurulumu',
+      'Ödeme Sistemi Entegrasyonu',
+      'Kargo Entegrasyonu',
+      'Ürün Yükleme (50 ürün)',
+      'Mobil Uyumlu Tasarım',
+    ],
+    freelancerId: 'freelancer-1',
+    freelancer: mockFreelancer,
+    orders: 45,
+    rating: 4.9,
+    reviews: 67,
+    isActive: true,
+    createdAt: new Date('2024-01-03').toISOString(),
+    updatedAt: new Date('2024-01-08').toISOString(),
+    images: [
+      'https://picsum.photos/400/300?random=12',
+      'https://picsum.photos/400/300?random=13',
+    ],
   },
 ];
 
@@ -391,41 +701,185 @@ function createPaginatedResponse<
     description?: string;
     location?: string;
     skills?: string[];
+    budget?: { type: string; amount: number } | number;
+    price?: number;
+    experienceLevel?: string;
+    isRemote?: boolean;
+    createdAt?: string;
+    rating?: number;
   },
 >(
   items: T[],
   page: number,
   limit: number,
-  filters?: Record<string, string>
+  filters?: Record<string, string | number | boolean>,
+  sortBy?: string,
+  sortOrder?: 'asc' | 'desc'
 ): PaginatedResponse<T> {
   let filteredItems = [...items];
 
   // Apply filters
   if (filters) {
+    // Category filter
     if (filters.category) {
       filteredItems = filteredItems.filter((item: T) =>
-        item.category?.toLowerCase().includes(filters.category.toLowerCase())
+        item.category
+          ?.toLowerCase()
+          .includes(String(filters.category).toLowerCase())
       );
     }
+
+    // Search filter
     if (filters.search) {
       filteredItems = filteredItems.filter(
         (item: T) =>
-          item.title?.toLowerCase().includes(filters.search.toLowerCase()) ||
-          item.description?.toLowerCase().includes(filters.search.toLowerCase())
+          item.title
+            ?.toLowerCase()
+            .includes(String(filters.search).toLowerCase()) ||
+          item.description
+            ?.toLowerCase()
+            .includes(String(filters.search).toLowerCase())
       );
     }
+
+    // Location filter
     if (filters.location) {
       filteredItems = filteredItems.filter((item: T) =>
-        item.location?.toLowerCase().includes(filters.location.toLowerCase())
+        item.location
+          ?.toLowerCase()
+          .includes(String(filters.location).toLowerCase())
       );
     }
+
+    // Skills filter (supports multiple skills)
     if (filters.skills) {
+      const skillsStr = String(filters.skills);
+      const skillsArray = skillsStr.includes(',')
+        ? skillsStr.split(',').map((s: string) => s.trim())
+        : [skillsStr];
+
       filteredItems = filteredItems.filter((item: T) =>
-        item.skills?.some((skill: string) =>
-          skill.toLowerCase().includes(filters.skills!.toLowerCase())
+        skillsArray.some((skill: string) =>
+          item.skills?.some((itemSkill: string) =>
+            itemSkill.toLowerCase().includes(skill.toLowerCase())
+          )
         )
       );
     }
+
+    // Budget filter for jobs
+    if (filters.minBudget || filters.maxBudget) {
+      filteredItems = filteredItems.filter((item: T) => {
+        const budget = item.budget;
+        if (!budget) return true;
+
+        const amount = typeof budget === 'object' ? budget.amount : budget;
+        if (filters.minBudget && amount < Number(filters.minBudget))
+          return false;
+        if (filters.maxBudget && amount > Number(filters.maxBudget))
+          return false;
+        return true;
+      });
+    }
+
+    // Price filter for packages
+    if (filters.minPrice || filters.maxPrice) {
+      filteredItems = filteredItems.filter((item: T) => {
+        const price = item.price;
+        if (!price) return true;
+
+        if (filters.minPrice && price < Number(filters.minPrice)) return false;
+        if (filters.maxPrice && price > Number(filters.maxPrice)) return false;
+        return true;
+      });
+    }
+
+    // Experience level filter
+    if (filters.experienceLevel) {
+      filteredItems = filteredItems.filter(
+        (item: T) => item.experienceLevel === String(filters.experienceLevel)
+      );
+    }
+
+    // Job type filter
+    if (filters.jobType) {
+      filteredItems = filteredItems.filter((item: T) => {
+        if (filters.jobType === 'remote') return item.isRemote;
+        if (filters.jobType === 'onsite') return !item.isRemote;
+        return true;
+      });
+    }
+
+    // Date filter
+    if (filters.datePosted) {
+      const now = new Date();
+      filteredItems = filteredItems.filter((item: T) => {
+        const createdAt = new Date(item.createdAt || Date.now());
+        const daysDiff = Math.floor(
+          (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
+        switch (filters.datePosted) {
+          case 'today':
+            return daysDiff === 0;
+          case 'week':
+            return daysDiff <= 7;
+          case 'month':
+            return daysDiff <= 30;
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Rating filter
+    if (filters.minRating) {
+      filteredItems = filteredItems.filter(
+        (item: T) => (item.rating || 0) >= Number(filters.minRating)
+      );
+    }
+  }
+
+  // Apply sorting
+  if (sortBy && sortOrder) {
+    filteredItems.sort((a: T, b: T) => {
+      let aValue: string | number, bValue: string | number;
+
+      switch (sortBy) {
+        case 'createdAt':
+          aValue = new Date(a.createdAt || 0).getTime();
+          bValue = new Date(b.createdAt || 0).getTime();
+          break;
+        case 'budget':
+          aValue =
+            typeof a.budget === 'object' ? a.budget.amount : a.budget || 0;
+          bValue =
+            typeof b.budget === 'object' ? b.budget.amount : b.budget || 0;
+          break;
+        case 'price':
+          aValue = a.price || 0;
+          bValue = b.price || 0;
+          break;
+        case 'rating':
+          aValue = a.rating || 0;
+          bValue = b.rating || 0;
+          break;
+        case 'title':
+          aValue = a.title?.toLowerCase() || '';
+          bValue = b.title?.toLowerCase() || '';
+          break;
+        default:
+          // Fallback for other properties
+          aValue = 0;
+          bValue = 0;
+      }
+
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+      } else {
+        return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+      }
+    });
   }
 
   const startIndex = (page - 1) * limit;
@@ -600,9 +1054,35 @@ export const handlers = [
     const search = url.searchParams.get('search') || '';
     const location = url.searchParams.get('location') || '';
     const skills = url.searchParams.get('skills') || '';
+    const minBudget = url.searchParams.get('minBudget') || '';
+    const maxBudget = url.searchParams.get('maxBudget') || '';
+    const experienceLevel = url.searchParams.get('experienceLevel') || '';
+    const jobType = url.searchParams.get('jobType') || '';
+    const datePosted = url.searchParams.get('datePosted') || '';
+    const sortBy = url.searchParams.get('sortBy') || 'createdAt';
+    const sortOrder =
+      (url.searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc';
 
-    const filters = { category, search, location, skills };
-    const result = createPaginatedResponse(mockJobs, page, limit, filters);
+    const filters = {
+      category,
+      search,
+      location,
+      skills,
+      ...(minBudget && { minBudget: parseInt(minBudget) }),
+      ...(maxBudget && { maxBudget: parseInt(maxBudget) }),
+      experienceLevel,
+      jobType,
+      datePosted,
+    };
+
+    const result = createPaginatedResponse(
+      mockJobs,
+      page,
+      limit,
+      filters,
+      sortBy,
+      sortOrder
+    );
 
     return HttpResponse.json(createApiResponse(result));
   }),
@@ -654,9 +1134,31 @@ export const handlers = [
     const limit = parseInt(url.searchParams.get('limit') || '10');
     const category = url.searchParams.get('category') || '';
     const search = url.searchParams.get('search') || '';
+    const minPrice = url.searchParams.get('minPrice') || '';
+    const maxPrice = url.searchParams.get('maxPrice') || '';
+    const minRating = url.searchParams.get('minRating') || '';
+    const datePosted = url.searchParams.get('datePosted') || '';
+    const sortBy = url.searchParams.get('sortBy') || 'createdAt';
+    const sortOrder =
+      (url.searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc';
 
-    const filters = { category, search };
-    const result = createPaginatedResponse(mockPackages, page, limit, filters);
+    const filters = {
+      category,
+      search,
+      ...(minPrice && { minPrice: parseInt(minPrice) }),
+      ...(maxPrice && { maxPrice: parseInt(maxPrice) }),
+      ...(minRating && { minRating: parseFloat(minRating) }),
+      datePosted,
+    };
+
+    const result = createPaginatedResponse(
+      mockPackages,
+      page,
+      limit,
+      filters,
+      sortBy,
+      sortOrder
+    );
 
     return HttpResponse.json(createApiResponse(result));
   }),
@@ -1292,8 +1794,41 @@ export const handlers = [
     }
   ),
 
-  // Error handler for unmatched routes
-  http.all('*', () => {
+  // Bypass static assets and images
+  http.get('*', ({ request }) => {
+    const url = new URL(request.url);
+
+    // Bypass static assets
+    if (
+      url.pathname.startsWith('/_next/') ||
+      url.pathname.startsWith('/static/') ||
+      url.pathname.startsWith('/images/') ||
+      url.pathname.startsWith('/icons/') ||
+      url.pathname.startsWith('/uploads/') ||
+      url.pathname.endsWith('.ico') ||
+      url.pathname.endsWith('.png') ||
+      url.pathname.endsWith('.jpg') ||
+      url.pathname.endsWith('.jpeg') ||
+      url.pathname.endsWith('.gif') ||
+      url.pathname.endsWith('.svg') ||
+      url.pathname.endsWith('.webp') ||
+      url.pathname.endsWith('.css') ||
+      url.pathname.endsWith('.js') ||
+      url.pathname.endsWith('.map') ||
+      url.pathname.endsWith('.woff') ||
+      url.pathname.endsWith('.woff2') ||
+      url.pathname.endsWith('.ttf') ||
+      url.pathname.endsWith('.eot')
+    ) {
+      return;
+    }
+
+    // Only handle API routes
+    if (!url.pathname.startsWith('/api/')) {
+      return;
+    }
+
+    // For unmatched API routes, return 404
     return HttpResponse.json(
       { success: false, message: 'API endpoint bulunamadı' },
       { status: 404 }

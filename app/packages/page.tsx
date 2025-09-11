@@ -3,17 +3,14 @@
 import { useState } from 'react';
 import { AppLayout } from '@/components/layout';
 import { Card, Button, Input } from '@/components/ui';
-import { ServiceCard } from '@/components/marketplace/ServiceCard';
+import { PackageCard } from '@/components/features/marketplace/PackageCard';
 import { PackageFiltersComponent } from '@/components/filters/PackageFilters';
 import { MobilePackageFilters } from '@/components/mobile/MobilePackageFilters';
 import { usePackages } from '@/hooks/usePackages';
 import { usePackageFilters } from '@/hooks/useFilters';
 import { useResponsive } from '@/hooks/useResponsive';
 import { Search, Filter, Package, Star, DollarSign, Clock } from 'lucide-react';
-import type {
-  PackageFilters as PackageFiltersType,
-  ServicePackage,
-} from '@/types';
+import type { PackageFilters as PackageFiltersType } from '@/types';
 
 export default function PackagesPage() {
   const { isMobile } = useResponsive();
@@ -52,14 +49,6 @@ export default function PackagesPage() {
   const handleSortChange = (newSort: typeof sortBy) => {
     setSortBy(newSort);
     setCurrentPage(1);
-  };
-
-  const handlePackageSave = (pkg: ServicePackage) => {
-    console.log('Saving package:', pkg.id);
-  };
-
-  const handleAddToCart = (pkg: ServicePackage) => {
-    console.log('Adding to cart:', pkg.id);
   };
 
   // Quick filter options
@@ -303,13 +292,7 @@ export default function PackagesPage() {
                   {packages.length > 0 ? (
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                       {packages.map((pkg) => (
-                        <ServiceCard
-                          key={pkg.id}
-                          service={pkg}
-                          onSaveService={handlePackageSave}
-                          onAddToCart={handleAddToCart}
-                          className="hover:shadow-lg"
-                        />
+                        <PackageCard key={pkg.id} package={pkg} layout="grid" />
                       ))}
                     </div>
                   ) : (

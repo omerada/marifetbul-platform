@@ -27,7 +27,9 @@ interface FreelancerDashboardProps {
   userId?: string;
 }
 
-export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
+export function FreelancerDashboard({
+  userId: _userId,
+}: FreelancerDashboardProps) {
   const { dashboardData, isLoading, error, refreshDashboard } = useDashboard();
 
   if (isLoading) {

@@ -361,7 +361,7 @@ function SearchContent() {
                           <Package className="mr-2 h-5 w-5 text-green-500" />
                           Hizmetler
                         </h3>
-                        <MarketplaceList initialMode="services" />
+                        <MarketplaceList defaultTab="services" />
                       </div>
 
                       <div>
@@ -369,17 +369,17 @@ function SearchContent() {
                           <Briefcase className="mr-2 h-5 w-5 text-blue-500" />
                           İş İlanları
                         </h3>
-                        <MarketplaceList initialMode="jobs" />
+                        <MarketplaceList defaultTab="jobs" />
                       </div>
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'services' && (
-                  <MarketplaceList initialMode="services" />
+                  <MarketplaceList defaultTab="services" />
                 )}
 
-                {activeTab === 'jobs' && <MarketplaceList initialMode="jobs" />}
+                {activeTab === 'jobs' && <MarketplaceList defaultTab="jobs" />}
 
                 {activeTab === 'freelancers' && (
                   <div className="space-y-6">

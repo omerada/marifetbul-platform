@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { AppLayout } from '@/components/layout';
 import { Card, Button, Input } from '@/components/ui';
-import { JobCard } from '@/components/marketplace/JobCard';
+import { JobCard } from '@/components/features/marketplace/JobCard';
 import { JobFilters } from '@/components/filters';
 import { MobileJobFilters } from '@/components/mobile/MobileJobFilters';
 import { useJobs } from '@/hooks/useJobs';
@@ -17,7 +17,7 @@ import {
   Clock,
   DollarSign,
 } from 'lucide-react';
-import type { JobFilters as JobFiltersType, Job } from '@/types';
+import type { JobFilters as JobFiltersType } from '@/types';
 
 export default function JobsPage() {
   const { isMobile } = useResponsive();
@@ -56,10 +56,6 @@ export default function JobsPage() {
   const handleSortChange = (newSort: typeof sortBy) => {
     setSortBy(newSort);
     setCurrentPage(1);
-  };
-
-  const handleJobSave = (job: Job) => {
-    console.log('Saving job:', job.id);
   };
 
   // Quick filter options
@@ -302,12 +298,7 @@ export default function JobsPage() {
                   {jobs.length > 0 ? (
                     <div className="space-y-4">
                       {jobs.map((job) => (
-                        <JobCard
-                          key={job.id}
-                          job={job}
-                          onSaveJob={handleJobSave}
-                          className="hover:shadow-md"
-                        />
+                        <JobCard key={job.id} job={job} layout="list" />
                       ))}
                     </div>
                   ) : (

@@ -10,6 +10,7 @@ export { default as FileUpload } from './FileUpload';
 export { ToastContainer } from './ToastContainer';
 export { Textarea } from './Textarea';
 export { Badge } from './Badge';
+export { Pagination, MobilePagination } from './Pagination';
 export {
   AnimatedContainer,
   StaggeredContainer,

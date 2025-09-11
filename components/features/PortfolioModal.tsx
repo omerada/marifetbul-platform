@@ -47,7 +47,7 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
+    setValue: _setValue,
   } = useForm<PortfolioFormData>({
     resolver: zodResolver(portfolioSchema),
     defaultValues: {

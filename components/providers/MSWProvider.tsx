@@ -17,7 +17,26 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
           const { worker } = await import('../../lib/msw/browser');
 
           await worker.start({
-            onUnhandledRequest: 'bypass',
+            onUnhandledRequest: (req) => {
+              // Bypass Next.js image optimization and static assets
+              if (
+                req.url.includes('/_next/') ||
+                req.url.includes('/static/') ||
+                req.url.includes('/images/') ||
+                req.url.includes('/icons/') ||
+                req.url.includes('.png') ||
+                req.url.includes('.jpg') ||
+                req.url.includes('.jpeg') ||
+                req.url.includes('.gif') ||
+                req.url.includes('.svg') ||
+                req.url.includes('.webp') ||
+                req.url.includes('.css') ||
+                req.url.includes('.js')
+              ) {
+                return 'bypass';
+              }
+              return 'bypass';
+            },
             serviceWorker: {
               url: '/mockServiceWorker.js',
             },
