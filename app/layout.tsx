@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/icons/icon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
     ],
     apple: [
@@ -38,9 +38,8 @@ export const metadata: Metadata = {
         type: 'image/png',
       },
     ],
+    shortcut: '/favicon.ico',
   },
-  themeColor: '#2563eb',
-  colorScheme: 'light',
   other: {
     'mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-capable': 'yes',
@@ -53,6 +52,8 @@ export const metadata: Metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
+  themeColor: '#2563eb',
+  colorScheme: 'light',
 };
 
 export default function RootLayout({
