@@ -14,7 +14,11 @@ interface SearchResultsProps {
   sortBy: string;
 }
 
-export function SearchResults({ query, activeTab, sortBy }: SearchResultsProps) {
+export function SearchResults({
+  query,
+  activeTab,
+  sortBy,
+}: SearchResultsProps) {
   const {
     jobs,
     packages,
@@ -65,7 +69,14 @@ export function SearchResults({ query, activeTab, sortBy }: SearchResultsProps) 
     if (activeTab === 'services' || activeTab === 'all') {
       applyPackageFilters(sortFilters);
     }
-  }, [sortBy, searchApplied, query, activeTab, applyJobFilters, applyPackageFilters]);
+  }, [
+    sortBy,
+    searchApplied,
+    query,
+    activeTab,
+    applyJobFilters,
+    applyPackageFilters,
+  ]);
 
   const handleRefresh = () => {
     refreshData();
@@ -111,7 +122,10 @@ export function SearchResults({ query, activeTab, sortBy }: SearchResultsProps) 
                   variant="outline"
                   onClick={() => {
                     // This would normally navigate to services tab
-                    window.location.href = '/search?q=' + encodeURIComponent(query) + '&type=services';
+                    window.location.href =
+                      '/search?q=' +
+                      encodeURIComponent(query) +
+                      '&type=services';
                   }}
                 >
                   Tüm Hizmetleri Görüntüle ({packages.length})
@@ -140,7 +154,8 @@ export function SearchResults({ query, activeTab, sortBy }: SearchResultsProps) 
                   variant="outline"
                   onClick={() => {
                     // This would normally navigate to jobs tab
-                    window.location.href = '/search?q=' + encodeURIComponent(query) + '&type=jobs';
+                    window.location.href =
+                      '/search?q=' + encodeURIComponent(query) + '&type=jobs';
                   }}
                 >
                   Tüm İş İlanlarını Görüntüle ({jobs.length})
@@ -158,7 +173,10 @@ export function SearchResults({ query, activeTab, sortBy }: SearchResultsProps) 
             description={`"${query}" için herhangi bir sonuç bulunamadı. Farklı anahtar kelimeler deneyin veya filtreleri değiştirin.`}
             action={
               <div className="flex flex-col gap-3 sm:flex-row">
-                <Button variant="outline" onClick={() => window.location.href = '/marketplace'}>
+                <Button
+                  variant="outline"
+                  onClick={() => (window.location.href = '/marketplace')}
+                >
                   Marketplace&apos;e Git
                 </Button>
                 <Button onClick={handleRefresh}>
@@ -211,7 +229,7 @@ export function SearchResults({ query, activeTab, sortBy }: SearchResultsProps) 
               <Button
                 variant="outline"
                 className="mt-4"
-                onClick={() => window.location.href = '/marketplace'}
+                onClick={() => (window.location.href = '/marketplace')}
               >
                 Marketplace&apos;e Git
               </Button>

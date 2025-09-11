@@ -184,16 +184,15 @@ export function MobileFilters({
               {section.icon}
             </div>
             <span className="font-semibold text-gray-800">{section.title}</span>
-            {currentValue && (
-              (typeof currentValue === 'string' && currentValue !== '') ||
-              (Array.isArray(currentValue) && currentValue.length > 0)
-            ) ? (
-                <Badge className="border-blue-200 bg-blue-100 text-xs font-semibold text-blue-800">
-                  {Array.isArray(currentValue) 
-                    ? (currentValue as string[]).length 
-                    : 1}
-                </Badge>
-              ) : null}
+            {currentValue &&
+            ((typeof currentValue === 'string' && currentValue !== '') ||
+              (Array.isArray(currentValue) && currentValue.length > 0)) ? (
+              <Badge className="border-blue-200 bg-blue-100 text-xs font-semibold text-blue-800">
+                {Array.isArray(currentValue)
+                  ? (currentValue as string[]).length
+                  : 1}
+              </Badge>
+            ) : null}
           </div>
           <ChevronDown
             className={cn(
