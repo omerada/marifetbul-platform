@@ -7,6 +7,7 @@ import { MarketplaceFilters } from './MarketplaceFilters';
 import { MarketplaceList } from './MarketplaceList';
 import { MarketplacePagination } from './MarketplacePagination';
 import { MobileMarketplace } from './MobileMarketplace';
+import { ErrorState } from '@/components/features/ErrorState';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import {
@@ -81,21 +82,12 @@ export function MarketplacePage() {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-6">
-        <div className="rounded-2xl border-2 border-red-100 bg-red-50 p-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-            <RefreshCcw className="h-8 w-8 text-red-600" />
-          </div>
-          <h3 className="mb-2 text-xl font-semibold text-gray-900">
-            Marketplace Yüklenemedi
-          </h3>
-          <p className="mx-auto mb-6 max-w-md text-gray-600">{error}</p>
-          <Button onClick={handleRefresh} variant="primary">
-            <RefreshCcw className="mr-2 h-4 w-4" />
-            Tekrar Dene
-          </Button>
-        </div>
-      </div>
+      <ErrorState
+        title="Marketplace Yüklenemedi"
+        message={error}
+        onRetry={handleRefresh}
+        variant="page"
+      />
     );
   }
 
