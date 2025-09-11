@@ -59,7 +59,6 @@ export default function JobsPage() {
   };
 
   const handleJobSave = (job: Job) => {
-    // TODO: Implement job save functionality
     console.log('Saving job:', job.id);
   };
 
@@ -148,70 +147,65 @@ export default function JobsPage() {
   return (
     <AppLayout>
       <div className="min-h-screen bg-gray-50">
-        {/* Header Section */}
-        <div className="bg-white shadow-sm">
+        {/* Simplified Header */}
+        <div className="border-b bg-white">
           <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
-            <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 lg:text-3xl">
-                  İş İlanları
-                </h1>
-                <p className="mt-1 text-gray-600">
-                  {pagination?.total
-                    ? `${pagination.total.toLocaleString('tr-TR')} `
-                    : ''}
-                  iş ilanı bulundu
-                </p>
-              </div>
+            <div className="mb-6 text-center">
+              <h1 className="mb-2 text-2xl font-bold text-gray-900">
+                İş İlanları
+              </h1>
+              <p className="text-gray-600">
+                {pagination?.total
+                  ? `${pagination.total.toLocaleString('tr-TR')} `
+                  : ''}
+                iş ilanı bulundu
+              </p>
+            </div>
 
-              {/* Search Bar */}
-              <div className="flex items-center space-x-4">
-                <div className="relative flex-1 lg:w-80">
-                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder="İş ara (teknoloji, şirket, konum...)"
-                    value={searchQuery}
-                    onChange={(e) => handleSearch(e.target.value)}
-                    className="pr-4 pl-10"
-                  />
-                </div>
-
-                {/* Filter Toggle */}
+            {/* Unified Search and Filter */}
+            <div className="mx-auto mb-4 max-w-xl">
+              <div className="relative">
+                <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="İş ara (teknoloji, şirket, konum...)"
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="pr-20 pl-10"
+                />
                 <Button
                   variant="outline"
+                  size="sm"
                   onClick={() =>
                     isMobile
                       ? setShowMobileFilters(true)
                       : toggleFiltersVisibility()
                   }
-                  className="flex items-center whitespace-nowrap"
+                  className="absolute top-1/2 right-2 -translate-y-1/2"
                 >
-                  <Filter className="mr-2 h-4 w-4" />
-                  Filtreler
+                  <Filter className="mr-1 h-4 w-4" />
+                  Filtre
                 </Button>
               </div>
             </div>
 
-            {/* Quick Filters - Mobile */}
-            {isMobile && (
-              <div className="mt-4 flex space-x-2 overflow-x-auto pb-2">
-                {quickFilters.map((filter) => (
-                  <button
-                    key={filter.value}
-                    onClick={filter.onClick}
-                    className={`flex items-center rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
-                      filter.active
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    <filter.icon className="mr-1 h-4 w-4" />
-                    {filter.label}
-                  </button>
-                ))}
-              </div>
-            )}
+            {/* Quick Filters */}
+            <div className="flex justify-center space-x-2 overflow-x-auto pb-2">
+              {quickFilters.map((filter) => (
+                <button
+                  key={filter.value}
+                  onClick={filter.onClick}
+                  className={`flex items-center rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
+                    filter.active
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <filter.icon className="mr-1 h-4 w-4" />
+                  {filter.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 

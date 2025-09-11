@@ -2,23 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import type { JobFilters as JobFiltersType } from '@/types';
-import { Button, Input, Card } from '@/components/ui';
-import {
-  Filter,
-  X,
-  Search,
-  MapPin,
-  DollarSign,
-  Star,
-  ChevronDown,
-  ChevronUp,
-} from 'lucide-react';
+import { Button, Input } from '@/components/ui';
+import { Filter, X, MapPin, DollarSign, Star } from 'lucide-react';
 
 interface JobFiltersComponentProps {
   filters: JobFiltersType;
   onFiltersChange: (filters: JobFiltersType) => void;
-  isVisible: boolean;
-  onToggleVisibility: () => void;
 }
 
 const categories = [
@@ -41,47 +30,45 @@ const subcategories: Record<string, string[]> = {
   ],
   'Mobil Uygulama': ['iOS', 'Android', 'React Native', 'Flutter', 'Hybrid'],
   Tasarım: [
-    'UI/UX',
-    'Logo Tasarım',
-    'Web Tasarım',
+    'UI/UX Tasarım',
     'Grafik Tasarım',
-    'İllüstrasyon',
+    'Web Tasarım',
+    'Logo Tasarım',
+    'Branding',
   ],
   'İçerik Yazımı': [
     'Blog Yazımı',
     'Copywriting',
     'Teknik Yazım',
-    'SEO İçerik',
-    'Çeviri',
+    'Sosyal Medya',
+    'SEO Yazımı',
   ],
   'Dijital Pazarlama': [
+    'Google Ads',
+    'Facebook Ads',
     'SEO',
-    'SEM',
-    'Sosyal Medya',
-    'İçerik Pazarlama',
-    'Email Pazarlama',
+    'Social Media',
+    'Email Marketing',
   ],
-  'Veri Analizi': ['Excel', 'Python', 'R', 'SQL', 'Business Intelligence'],
+  'Veri Analizi': ['Excel', 'Power BI', 'Python', 'SQL', 'Machine Learning'],
   'İş Danışmanlığı': [
     'Strateji',
-    'Süreç Yönetimi',
-    'Finans',
+    'Operasyon',
     'İnsan Kaynakları',
-    'Proje Yönetimi',
+    'Finans',
+    'Pazarlama',
   ],
 };
 
-const skillsList = [
+const availableSkills = [
+  'JavaScript',
   'React',
-  'Vue.js',
-  'Angular',
   'Node.js',
   'Python',
   'PHP',
   'Laravel',
   'WordPress',
   'Shopify',
-  'JavaScript',
   'TypeScript',
   'HTML/CSS',
   'Figma',
@@ -108,15 +95,12 @@ const experienceLevels = [
 export function JobFiltersComponent({
   filters,
   onFiltersChange,
-  isVisible,
-  onToggleVisibility,
 }: JobFiltersComponentProps) {
   const [localFilters, setLocalFilters] = useState<JobFiltersType>(filters);
   const [selectedSkills, setSelectedSkills] = useState<string[]>(
     filters.skills || []
   );
 
-  // Update local filters when props change
   useEffect(() => {
     setLocalFilters(filters);
     setSelectedSkills(filters.skills || []);
@@ -169,251 +153,209 @@ export function JobFiltersComponent({
 
   return (
     <div className="space-y-4">
-      {/* Filter Toggle Button */}
-      <div className="flex items-center justify-between">
-        <Button
-          variant="outline"
-          onClick={onToggleVisibility}
-          className="flex items-center space-x-2"
-        >
-          <Filter className="h-4 w-4" />
-          <span>Filtreler</span>
-          {isVisible ? (
-            <ChevronUp className="h-4 w-4" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
-          )}
-        </Button>
-
-        {hasActiveFilters && (
+      {/* Clear filters button if active */}
+      {hasActiveFilters && (
+        <div className="flex justify-end">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleClearFilters}
-            className="text-red-600 hover:text-red-700"
+            className="text-red-600 hover:bg-red-50 hover:text-red-700"
           >
             <X className="mr-1 h-4 w-4" />
-            Temizle
+            Tüm Filtreleri Temizle
           </Button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Filter Panel */}
-      {isVisible && (
-        <Card className="p-6">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {/* Search */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                <Search className="mr-1 inline h-4 w-4" />
-                Arama
-              </label>
-              <Input
-                type="text"
-                placeholder="İş ara..."
-                value={localFilters.search || ''}
-                onChange={(e) => handleFilterChange('search', e.target.value)}
-              />
-            </div>
+      <div className="space-y-6 rounded-lg border bg-white p-6 shadow-sm">
+        {/* Category */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700">
+            <Filter className="mr-1 inline h-4 w-4" />
+            Kategori
+          </label>
+          <select
+            value={localFilters.category || ''}
+            onChange={(e) => {
+              handleFilterChange('category', e.target.value);
+              handleFilterChange('subcategory', ''); // Reset subcategory
+            }}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          >
+            <option value="">Tüm Kategoriler</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </div>
 
-            {/* Category */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Kategori
-              </label>
-              <select
-                value={localFilters.category || ''}
-                onChange={(e) => {
-                  handleFilterChange('category', e.target.value);
-                  handleFilterChange('subcategory', ''); // Reset subcategory
-                }}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              >
-                <option value="">Tüm Kategoriler</option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Subcategory */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Alt Kategori
-              </label>
-              <select
-                value={localFilters.subcategory || ''}
-                onChange={(e) =>
-                  handleFilterChange('subcategory', e.target.value)
-                }
-                disabled={!localFilters.category}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-              >
-                <option value="">Tüm Alt Kategoriler</option>
-                {localFilters.category &&
-                  subcategories[localFilters.category]?.map((sub) => (
-                    <option key={sub} value={sub}>
-                      {sub}
-                    </option>
-                  ))}
-              </select>
-            </div>
-
-            {/* Budget Type */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                <DollarSign className="mr-1 inline h-4 w-4" />
-                Bütçe Türü
-              </label>
-              <select
-                value={localFilters.budgetType || ''}
-                onChange={(e) =>
-                  handleFilterChange('budgetType', e.target.value || undefined)
-                }
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              >
-                <option value="">Hepsi</option>
-                <option value="fixed">Sabit Fiyat</option>
-                <option value="hourly">Saatlik</option>
-              </select>
-            </div>
-
-            {/* Budget Range */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Min Bütçe
-              </label>
-              <Input
-                type="number"
-                placeholder="0"
-                value={localFilters.budgetMin || ''}
-                onChange={(e) =>
-                  handleFilterChange(
-                    'budgetMin',
-                    e.target.value ? Number(e.target.value) : undefined
-                  )
-                }
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Max Bütçe
-              </label>
-              <Input
-                type="number"
-                placeholder="99999"
-                value={localFilters.budgetMax || ''}
-                onChange={(e) =>
-                  handleFilterChange(
-                    'budgetMax',
-                    e.target.value ? Number(e.target.value) : undefined
-                  )
-                }
-              />
-            </div>
-
-            {/* Experience Level */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                <Star className="mr-1 inline h-4 w-4" />
-                Deneyim Seviyesi
-              </label>
-              <select
-                value={localFilters.experienceLevel || ''}
-                onChange={(e) =>
-                  handleFilterChange(
-                    'experienceLevel',
-                    e.target.value || undefined
-                  )
-                }
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              >
-                <option value="">Hepsi</option>
-                {experienceLevels.map((level) => (
-                  <option key={level.value} value={level.value}>
-                    {level.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Location */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                <MapPin className="mr-1 inline h-4 w-4" />
-                Lokasyon
-              </label>
-              <Input
-                type="text"
-                placeholder="Şehir girin..."
-                value={localFilters.location || ''}
-                onChange={(e) => handleFilterChange('location', e.target.value)}
-              />
-            </div>
-
-            {/* Remote Work */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Çalışma Şekli
-              </label>
-              <select
-                value={
-                  localFilters.isRemote === undefined
-                    ? ''
-                    : String(localFilters.isRemote)
-                }
-                onChange={(e) => {
-                  const value = e.target.value;
-                  handleFilterChange(
-                    'isRemote',
-                    value === '' ? undefined : value === 'true'
-                  );
-                }}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              >
-                <option value="">Hepsi</option>
-                <option value="true">Uzaktan</option>
-                <option value="false">Ofiste</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Skills */}
-          <div className="mt-6 space-y-3">
+        {/* Subcategory */}
+        {localFilters.category && (
+          <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              Yetenekler
+              Alt Kategori
             </label>
-            <div className="flex flex-wrap gap-2">
-              {skillsList.map((skill) => (
-                <button
-                  key={skill}
-                  onClick={() => handleSkillToggle(skill)}
-                  className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
-                    selectedSkills.includes(skill)
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  } `}
-                >
-                  {skill}
-                </button>
+            <select
+              value={localFilters.subcategory || ''}
+              onChange={(e) =>
+                handleFilterChange('subcategory', e.target.value)
+              }
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            >
+              <option value="">Tüm Alt Kategoriler</option>
+              {subcategories[localFilters.category]?.map((subcategory) => (
+                <option key={subcategory} value={subcategory}>
+                  {subcategory}
+                </option>
               ))}
-            </div>
+            </select>
           </div>
+        )}
 
-          {/* Action Buttons */}
-          <div className="mt-6 flex space-x-3">
-            <Button onClick={handleApplyFilters} className="flex-1">
-              Filtreleri Uygula
-            </Button>
-            <Button variant="outline" onClick={handleClearFilters}>
-              Temizle
-            </Button>
+        {/* Budget Range */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700">
+            <DollarSign className="mr-1 inline h-4 w-4" />
+            Bütçe Aralığı
+          </label>
+          <div className="flex space-x-2">
+            <Input
+              type="number"
+              placeholder="Min"
+              value={localFilters.budgetMin || ''}
+              onChange={(e) =>
+                handleFilterChange(
+                  'budgetMin',
+                  e.target.value ? parseInt(e.target.value) : undefined
+                )
+              }
+              className="flex-1"
+            />
+            <Input
+              type="number"
+              placeholder="Max"
+              value={localFilters.budgetMax || ''}
+              onChange={(e) =>
+                handleFilterChange(
+                  'budgetMax',
+                  e.target.value ? parseInt(e.target.value) : undefined
+                )
+              }
+              className="flex-1"
+            />
           </div>
-        </Card>
-      )}
+        </div>
+
+        {/* Budget Type */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700">
+            Bütçe Türü
+          </label>
+          <select
+            value={localFilters.budgetType || ''}
+            onChange={(e) => handleFilterChange('budgetType', e.target.value)}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          >
+            <option value="">Tüm Türler</option>
+            <option value="fixed">Sabit Fiyat</option>
+            <option value="hourly">Saatlik</option>
+          </select>
+        </div>
+
+        {/* Experience Level */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700">
+            <Star className="mr-1 inline h-4 w-4" />
+            Deneyim Seviyesi
+          </label>
+          <select
+            value={localFilters.experienceLevel || ''}
+            onChange={(e) =>
+              handleFilterChange('experienceLevel', e.target.value)
+            }
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          >
+            <option value="">Tüm Seviyeler</option>
+            {experienceLevels.map((level) => (
+              <option key={level.value} value={level.value}>
+                {level.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Location */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700">
+            <MapPin className="mr-1 inline h-4 w-4" />
+            Konum
+          </label>
+          <Input
+            type="text"
+            placeholder="Şehir ara..."
+            value={
+              Array.isArray(localFilters.location)
+                ? localFilters.location.join(', ')
+                : localFilters.location || ''
+            }
+            onChange={(e) => {
+              const locations = e.target.value
+                .split(',')
+                .map((loc) => loc.trim())
+                .filter(Boolean);
+              handleFilterChange('location', locations);
+            }}
+          />
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="remote"
+              checked={localFilters.isRemote || false}
+              onChange={(e) => handleFilterChange('isRemote', e.target.checked)}
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <label htmlFor="remote" className="text-sm text-gray-600">
+              Uzaktan çalışma kabul ediliyor
+            </label>
+          </div>
+        </div>
+
+        {/* Skills */}
+        <div className="space-y-3">
+          <label className="text-sm font-medium text-gray-700">
+            Yetenekler
+          </label>
+          <div className="grid max-h-48 grid-cols-2 gap-2 overflow-y-auto">
+            {availableSkills.map((skill) => (
+              <button
+                key={skill}
+                onClick={() => handleSkillToggle(skill)}
+                className={`rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
+                  selectedSkills.includes(skill)
+                    ? 'border-blue-200 bg-blue-50 text-blue-700'
+                    : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                } `}
+              >
+                {skill}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mt-6 flex space-x-3">
+          <Button onClick={handleApplyFilters} className="flex-1">
+            Filtreleri Uygula
+          </Button>
+          <Button variant="outline" onClick={handleClearFilters}>
+            Temizle
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

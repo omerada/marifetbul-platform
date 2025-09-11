@@ -39,7 +39,7 @@ export class PushNotificationManager {
 
   // Bildirim izni kontrolü
   async checkPermission(): Promise<NotificationPermission> {
-    if (!('Notification' in window)) {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
       console.warn('Tarayıcı bildirimleri desteklenmiyor');
       return 'denied';
     }
@@ -268,6 +268,10 @@ export class PushNotificationManager {
       .replace(/\-/g, '+')
       .replace(/_/g, '/');
 
+    if (typeof window === 'undefined') {
+      throw new Error('window.atob is not available in server environment');
+    }
+
     const rawData = window.atob(base64);
     const outputArray = new Uint8Array(rawData.length);
 
@@ -280,6 +284,7 @@ export class PushNotificationManager {
   // Static utility methods
   static isSupported(): boolean {
     return (
+      typeof window !== 'undefined' &&
       'serviceWorker' in navigator &&
       'PushManager' in window &&
       'Notification' in window &&
@@ -305,7 +310,7 @@ export class PushNotificationManager {
   }
 
   static async requestPermission(): Promise<NotificationPermission> {
-    if (!('Notification' in window)) {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
       return 'denied';
     }
 
