@@ -138,7 +138,7 @@ export function useMarketplace() {
     if (!stats.hasMoreJobs || isLoadingMore) return;
 
     const nextPage = jobsPagination.page + 1;
-    await fetchJobs({ ...jobFilters, page: nextPage }, { append: true });
+    await fetchJobs({ ...jobFilters, page: nextPage } as Partial<JobFilters>, { append: true });
   }, [
     stats.hasMoreJobs,
     isLoadingMore,
@@ -152,7 +152,7 @@ export function useMarketplace() {
 
     const nextPage = packagesPagination.page + 1;
     await fetchPackages(
-      { ...packageFilters, page: nextPage },
+      { ...packageFilters, page: nextPage } as Partial<PackageFilters>,
       { append: true }
     );
   }, [

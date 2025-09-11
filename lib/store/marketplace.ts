@@ -110,8 +110,8 @@ type MarketplaceStore = MarketplaceState & MarketplaceActions;
 
 // Create the store
 export const useMarketplaceStore = create<MarketplaceStore>()(
-  devtools(
-    subscribeWithSelector(
+  subscribeWithSelector(
+    devtools(
       immer((set, get) => ({
         // Initial state
         jobs: [],

@@ -18,8 +18,6 @@ import {
   Briefcase,
   Package,
   Star,
-  Users,
-  TrendingUp,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -45,7 +43,7 @@ export function MarketplacePage() {
     search,
     applyJobFilters,
     applyPackageFilters,
-    setViewPreferences,
+    updateViewPreferences,
     refreshData,
   } = useMarketplace();
 
@@ -78,7 +76,7 @@ export function MarketplacePage() {
   };
 
   const handleViewModeChange = (layout: 'grid' | 'list') => {
-    setViewPreferences({ ...viewPreferences, layout });
+    updateViewPreferences({ ...viewPreferences, layout });
   };
 
   if (error) {
@@ -155,7 +153,7 @@ export function MarketplacePage() {
                     {mode === 'jobs' ? 'İş Fırsatları' : 'Hizmet Mağazası'}
                   </span>
                   <span className="block whitespace-nowrap text-blue-200">
-                    Marifeto'da
+                    Marifeto&apos;da
                   </span>
                 </h1>
                 <p className="mt-4 text-xl leading-relaxed text-blue-100">

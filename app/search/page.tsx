@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AppLayout } from '@/components/layout';
 import { UniversalSearch } from '@/components/features/UniversalSearch';
-import { MarketplaceList } from '@/components/marketplace/MarketplaceList';
+import { SearchResults } from '@/components/features/search/SearchResults';
 import { Card, Button, Loading } from '@/components/ui';
 import { useResponsive } from '@/hooks/useResponsive';
 import {
@@ -352,52 +352,11 @@ function SearchContent() {
                   showFilters && !isMobile ? 'lg:col-span-3' : 'lg:col-span-4'
                 }
               >
-                {activeTab === 'all' && (
-                  <div className="space-y-8">
-                    {/* Mixed Results Preview */}
-                    <div className="space-y-6">
-                      <div>
-                        <h3 className="mb-4 flex items-center text-lg font-semibold text-gray-900">
-                          <Package className="mr-2 h-5 w-5 text-green-500" />
-                          Hizmetler
-                        </h3>
-                        <MarketplaceList defaultTab="services" />
-                      </div>
-
-                      <div>
-                        <h3 className="mb-4 flex items-center text-lg font-semibold text-gray-900">
-                          <Briefcase className="mr-2 h-5 w-5 text-blue-500" />
-                          İş İlanları
-                        </h3>
-                        <MarketplaceList defaultTab="jobs" />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'services' && (
-                  <MarketplaceList defaultTab="services" />
-                )}
-
-                {activeTab === 'jobs' && <MarketplaceList defaultTab="jobs" />}
-
-                {activeTab === 'freelancers' && (
-                  <div className="space-y-6">
-                    <Card className="p-6">
-                      <div className="flex items-center justify-center py-12">
-                        <div className="text-center">
-                          <Users className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-                          <h3 className="mb-2 text-lg font-semibold text-gray-900">
-                            Freelancer Arama
-                          </h3>
-                          <p className="text-gray-600">
-                            Freelancer arama özelliği yakında eklenecek.
-                          </p>
-                        </div>
-                      </div>
-                    </Card>
-                  </div>
-                )}
+                <SearchResults
+                  query={searchQuery}
+                  activeTab={activeTab}
+                  sortBy={sortBy}
+                />
               </div>
             </div>
           ) : (
