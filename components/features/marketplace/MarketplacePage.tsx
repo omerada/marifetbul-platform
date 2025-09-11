@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useMarketplace } from '@/hooks/useMarketplace';
 import { useResponsive } from '@/hooks/useResponsive';
 import { MarketplaceFilters } from './MarketplaceFilters';
@@ -27,7 +27,6 @@ type MarketplaceMode = 'jobs' | 'packages';
 export function MarketplacePage() {
   const [mode, setMode] = useState<MarketplaceMode>('jobs');
   const [showFilters, setShowFilters] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const { isMobile, isTablet } = useResponsive();
 
   const {
@@ -46,6 +45,8 @@ export function MarketplacePage() {
     applyPackageFilters,
     updateViewPreferences,
     refreshData,
+    setSearchQuery,
+    searchQuery,
   } = useMarketplace();
 
   // Initial data fetch
@@ -79,6 +80,32 @@ export function MarketplacePage() {
   const handleViewModeChange = (layout: 'grid' | 'list') => {
     updateViewPreferences({ ...viewPreferences, layout });
   };
+
+  const handleClearFilters = useCallback(async () => {
+    try {
+      setSearchQuery('');
+      if (mode === 'jobs') {
+        await applyJobFilters({});
+      } else {
+        await applyPackageFilters({});
+      }
+    } catch (error) {
+      console.error('Error clearing filters:', error);
+    }
+  }, [mode, applyJobFilters, applyPackageFilters, setSearchQuery]);
+
+  const handleShowAll = useCallback(async () => {
+    try {
+      setSearchQuery('');
+      if (mode === 'jobs') {
+        await applyJobFilters({});
+      } else {
+        await applyPackageFilters({});
+      }
+    } catch (error) {
+      console.error('Error showing all items:', error);
+    }
+  }, [mode, applyJobFilters, applyPackageFilters, setSearchQuery]);
 
   if (error) {
     return (
@@ -346,6 +373,8 @@ export function MarketplacePage() {
               data={currentData}
               isLoading={isLoading}
               viewPreferences={viewPreferences}
+              onClearFilters={handleClearFilters}
+              onShowAll={handleShowAll}
             />
 
             {/* Pagination */}

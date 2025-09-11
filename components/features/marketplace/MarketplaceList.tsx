@@ -2,7 +2,7 @@
 
 import { JobCard } from './JobCard';
 import { PackageCard } from './PackageCard';
-import { MarketplaceSkeleton } from './MarketplaceSkeleton';
+import { MarketplaceLoadingState } from './MarketplaceLoadingState';
 import { EmptyState } from './EmptyState';
 import type { Job, ServicePackage } from '@/types';
 import type { ViewPreferences } from '@/lib/validations/marketplace';
@@ -12,6 +12,8 @@ interface MarketplaceListProps {
   data: Job[] | ServicePackage[];
   isLoading: boolean;
   viewPreferences: ViewPreferences;
+  onClearFilters?: () => void;
+  onShowAll?: () => void;
 }
 
 export function MarketplaceList({
@@ -19,9 +21,16 @@ export function MarketplaceList({
   data,
   isLoading,
   viewPreferences,
+  onClearFilters,
+  onShowAll,
 }: MarketplaceListProps) {
   if (isLoading) {
-    return <MarketplaceSkeleton />;
+    return (
+      <MarketplaceLoadingState
+        viewMode={viewPreferences.layout}
+        itemCount={8}
+      />
+    );
   }
 
   if (!data || data.length === 0) {
@@ -36,6 +45,8 @@ export function MarketplaceList({
             ? 'Arama kriterlerinizi değiştirerek tekrar deneyin veya yeni iş ilanları için daha sonra kontrol edin.'
             : 'Arama kriterlerinizi değiştirerek tekrar deneyin veya yeni hizmet paketleri için daha sonra kontrol edin.'
         }
+        onClearFilters={onClearFilters}
+        onShowAll={onShowAll}
       />
     );
   }
