@@ -10,6 +10,7 @@ export const loginSchema = z.object({
     .string()
     .min(1, 'Şifre gereklidir')
     .min(6, 'Şifre en az 6 karakter olmalıdır'),
+  rememberMe: z.boolean().optional(),
 });
 
 // Register form validation schema

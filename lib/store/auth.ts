@@ -9,14 +9,20 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  rememberMe: boolean;
 
   // Actions
-  login: (email: string, password: string) => Promise<void>;
+  login: (
+    email: string,
+    password: string,
+    rememberMe?: boolean
+  ) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => void;
   clearError: () => void;
   updateUser: (userData: Partial<User>) => void;
   refreshAuth: () => Promise<void>;
+  checkAuthStatus: () => Promise<void>;
 }
 
 interface RegisterData {
@@ -45,9 +51,10 @@ const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      rememberMe: false,
 
       // Login action
-      login: async (email: string, password: string) => {
+      login: async (email: string, password: string, rememberMe = false) => {
         set({ isLoading: true, error: null });
 
         try {
@@ -56,19 +63,21 @@ const useAuthStore = create<AuthState>()(
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify({ email, password, rememberMe }),
           });
 
           const data: LoginResponse = await response.json();
 
           if (data.success && data.data) {
-            // Set cookie for middleware
-            document.cookie = `marifeto-auth-token=${data.data.token}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
+            // Set cookie for middleware with appropriate expiration
+            const maxAge = rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60; // 30 days or 1 day
+            document.cookie = `marifeto-auth-token=${data.data.token}; path=/; max-age=${maxAge}; SameSite=Lax`;
 
             set({
               user: data.data.user,
               token: data.data.token,
               isAuthenticated: true,
+              rememberMe,
               isLoading: false,
               error: null,
             });
@@ -136,6 +145,7 @@ const useAuthStore = create<AuthState>()(
           user: null,
           token: null,
           isAuthenticated: false,
+          rememberMe: false,
           error: null,
         });
       },
@@ -186,6 +196,7 @@ const useAuthStore = create<AuthState>()(
               user: null,
               token: null,
               isAuthenticated: false,
+              rememberMe: false,
               isLoading: false,
             });
           }
@@ -194,8 +205,17 @@ const useAuthStore = create<AuthState>()(
             user: null,
             token: null,
             isAuthenticated: false,
+            rememberMe: false,
             isLoading: false,
           });
+        }
+      },
+
+      // Check auth status on app load
+      checkAuthStatus: async () => {
+        const { token, refreshAuth } = get();
+        if (token) {
+          await refreshAuth();
         }
       },
     }),
@@ -214,6 +234,7 @@ const useAuthStore = create<AuthState>()(
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
+        rememberMe: state.rememberMe,
       }),
     }
   )

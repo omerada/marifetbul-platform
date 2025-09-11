@@ -222,8 +222,6 @@ export default function PackagesPage() {
                   <PackageFiltersComponent
                     filters={filters}
                     onFiltersChange={updateFilters}
-                    isVisible={true}
-                    onToggleVisibility={() => {}}
                   />
                 </div>
               </div>

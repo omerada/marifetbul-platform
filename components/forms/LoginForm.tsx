@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
 
-import { Button, Input } from '@/components/ui';
+import { Button, Input, Checkbox } from '@/components/ui';
 import useAuthStore from '@/lib/store/auth';
 import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
 
@@ -28,7 +28,7 @@ export function LoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       clearError();
-      await login(data.email, data.password);
+      await login(data.email, data.password, data.rememberMe);
 
       // Redirect to dashboard on successful login
       router.push('/dashboard');
@@ -93,6 +93,13 @@ export function LoginForm() {
             </Link>
           </div>
         </div>
+
+        {/* Remember Me Checkbox */}
+        <Checkbox
+          {...register('rememberMe')}
+          label="Beni hatırla"
+          description="Bir sonraki sefere otomatik giriş yap"
+        />
 
         {/* Error Message */}
         {(error || errors.root) && (

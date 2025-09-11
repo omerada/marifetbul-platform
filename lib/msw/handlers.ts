@@ -456,9 +456,10 @@ function createApiResponse<T>(data: T, message = 'Başarılı'): ApiResponse<T> 
 export const handlers = [
   // Auth handlers
   http.post('/api/auth/login', async ({ request }) => {
-    const { email, password } = (await request.json()) as {
+    const { email, password, rememberMe } = (await request.json()) as {
       email: string;
       password: string;
+      rememberMe?: boolean;
     };
 
     // Simulate network delay
@@ -474,11 +475,15 @@ export const handlers = [
     }
 
     const token = `mock-token-${user.id}`;
+    const expiresAt = new Date(
+      Date.now() + (rememberMe ? 30 : 1) * 24 * 60 * 60 * 1000
+    ).toISOString();
 
     return HttpResponse.json(
       createApiResponse({
         user,
         token,
+        expiresAt,
       })
     );
   }),

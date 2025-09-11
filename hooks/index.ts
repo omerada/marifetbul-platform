@@ -5,5 +5,9 @@ export { usePerformance } from './usePerformance';
 export { usePullToRefresh } from './usePullToRefresh';
 export { useResponsive } from './useResponsive';
 
+// Auth hooks
+export { useAuth } from './useAuth';
+export { useAuthGuard, usePermissions } from './useAuthGuard';
+
 // Advanced Features
 export { useAdvancedSearch } from './useAdvancedSearch';
