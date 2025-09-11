@@ -1,4 +1,4 @@
-# 📋 Marifet Platform Blueprint
+# 📋 Marifet Bul Platform Temel Blueprint
 
 **Freelancer & İşveren Marketplace - Detaylı Proje Spesifikasyonu**
 
@@ -8,7 +8,7 @@
 
 ### Platform Konsepti
 
-**Marifet**, Armut ve Bionluk platformlarının hibrit bir karışımı olan modern bir freelancer marketplace platformudur. Platform, hem **iş ilanı bazlı teklif sistemi** (Armut modeli) hem de **paket hizmet satış sistemi** (Bionluk modeli) sunarak çift yönlü bir marketplace deneyimi sağlar.
+**Marifet Bul**, Armut ve Bionluk platformlarının hibrit bir karışımı olan modern bir freelancer marketplace platformudur. Platform, hem **iş ilanı bazlı teklif sistemi** (Armut modeli) hem de **paket hizmet satış sistemi** (Bionluk modeli) sunarak çift yönlü bir marketplace deneyimi sağlar.
 
 ### Teknik Altyapı
 

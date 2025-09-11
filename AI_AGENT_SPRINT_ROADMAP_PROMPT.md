@@ -1,6 +1,6 @@
 # 🤖 AI Agent Sprint Roadmap Oluşturma Talimat Promptu
 
-**Marifet Projesi - Freelancer & İşveren Marketplace Platform Geliştirme Roadmapı**
+**Marifet Bul Projesi - Freelancer & İşveren Marketplace Platform Geliştirme Roadmapı**
 
 ---
 
@@ -8,7 +8,7 @@
 
 Sen bir expert yazılım mimarı ve proje yöneticisi rolünde davranacaksın. Sana verilen BLUEPRINT.md dökümanını analiz edip, eksiksiz bir Sprint Bazlı Geliştirme Roadmapı oluşturacaksın.
 
-Bu roadmap, projenin şu anki durumundan production-ready seviyesine kadar olan tüm geliştirme sürecini kapsayacak. Her bir adımda 1 Sprint dökümanı oluştur ve devam etmek için komutumu bekle.
+Bu roadmap, projenin şu anki durumundan production-ready seviyesine kadar olan tüm geliştirme sürecini kapsayacak.
 
 ---
 
@@ -27,7 +27,7 @@ Bu roadmap, projenin şu anki durumundan production-ready seviyesine kadar olan 
 ### 📁 Mevcut Proje Yapısı
 
 ```
-marifet/
+Marifet Bul/
 ├── app/                    # Next.js 15 App Router
 │   ├── (auth)/            # Auth grup rotaları
 │   ├── dashboard/         # Dashboard sayfaları
@@ -330,7 +330,7 @@ export function [ComponentName]({ ...props }: [ComponentName]Props) {
 ### 📈 Sprint Önceliklendirme
 - **Faz 1 (Sprint 1-5)**: Core MVP - Auth, Profiles, Jobs, Messaging, Payment
 - **Faz 2 (Sprint 6-9)**: Enhanced Features - Search, Notifications, Files, Analytics
-- **Faz 3 (Sprint 10-12)**: Advanced & Scale - Performance, Admin, AI/ML
+- **Faz 3 (Sprint 10-x)**: Advanced & Scale - Performance, Admin, AI/ML
 
 ---
 
@@ -478,9 +478,7 @@ Yukarıdaki formata uygun olarak **12 Sprint** içeren detaylı roadmap hazırla
 
 ---
 
-**🎯 GÖREV**: Şimdi yukarıdaki kurallara göre BLUEPRINT.md'yi analiz et ve mevcut proje yapısını inceleyerek 12 Sprint'lik detaylı geliştirme roadmapını oluştur. Her sprint için yukarıdaki formatı eksiksiz kullan.
-
-**📌 ÖNEMLİ**: Bu prompt'u AI Agent'a verdiğinde, agent blueprint'i analiz edecek ve yukarıda belirtilen sprint formatına göre eksiksiz bir roadmap dökümanı oluşturacak.
-```
+**🎯 GÖREV**: Şimdi yukarıdaki kurallara göre BLUEPRINT.md'yi analiz et ve projenin production-ready seviyesine gelecek duruma kadar yapılacak tüm işlemleri sprint dökümanlarına bölerek detaylı geliştirme roadmapını oluştur. Her sprint için yukarıdaki formatı eksiksiz kullan. Güncel durumda ilk 2 sprint /docs/sprints klasörü altında oluşturuldu. Mevcut güncel sprint aşamasını oluşturarak devam edelim. Oluşturulan sprint dökümanı dosya uzunluğu 1000-1200 satırı aşmayacak şekilde oluşturmaya çalışalım, Burada planlanan sprint işlerini olabildiğince parçalı sprintlere bölerek dökümante edelim bu nedenle sprint sayısı fazla olabilir sayı önemli değil.
 
 #codebase
+```
