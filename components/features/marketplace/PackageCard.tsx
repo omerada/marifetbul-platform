@@ -38,16 +38,17 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
   if (layout === 'list') {
     return (
       <Card className="group border-gray-200 transition-all duration-300 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-100">
-        <CardContent className="p-6">
-          <div className="flex gap-6">
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
             {/* Image */}
             {pkg.images && pkg.images.length > 0 && (
-              <div className="shrink-0">
-                <div className="relative h-32 w-32 overflow-hidden rounded-xl shadow-md">
+              <div className="w-full shrink-0 sm:w-32">
+                <div className="relative h-48 w-full overflow-hidden rounded-xl shadow-md sm:h-32 sm:w-32">
                   <Image
                     src={pkg.images[0]}
                     alt={pkg.title}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
@@ -56,9 +57,9 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
             )}
 
             {/* Main Content */}
-            <div className="flex-1 space-y-4">
-              <div className="flex items-start justify-between">
-                <div className="space-y-2">
+            <div className="min-w-0 flex-1 space-y-3 sm:space-y-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0 space-y-2">
                   <div className="flex items-center gap-2">
                     <Badge
                       variant="outline"
@@ -105,14 +106,17 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
                 <button
                   onClick={() => togglePackageFavorite(pkg.id)}
                   className={cn(
-                    'rounded-full p-3 transition-all duration-200 hover:scale-110',
+                    'rounded-full p-2 transition-all duration-200 hover:scale-110 sm:p-3',
                     isFavorite
                       ? 'bg-red-50 text-red-500 hover:bg-red-100'
                       : 'text-gray-400 hover:bg-gray-50 hover:text-red-500'
                   )}
                 >
                   <Heart
-                    className={cn('h-5 w-5', isFavorite && 'fill-current')}
+                    className={cn(
+                      'h-4 w-4 sm:h-5 sm:w-5',
+                      isFavorite && 'fill-current'
+                    )}
                   />
                 </button>
               </div>
@@ -158,31 +162,31 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
             </div>
 
             {/* Right Side - Price & Actions */}
-            <div className="flex min-w-[140px] flex-col items-end justify-between space-y-4">
-              <div className="text-right">
-                <div className="text-3xl font-bold text-gray-900">
+            <div className="flex w-full flex-row items-center justify-between gap-4 border-t border-gray-100 pt-4 sm:w-auto sm:min-w-[140px] sm:flex-col sm:items-end sm:border-t-0 sm:pt-0">
+              <div className="text-left sm:text-right">
+                <div className="text-2xl font-bold text-gray-900 sm:text-3xl">
                   {formatCurrency(pkg.price)}
                 </div>
                 <div className="text-sm text-gray-500">başlangıç fiyatı</div>
               </div>
 
-              <div className="w-full space-y-2">
-                <Link href={`/packages/${pkg.id}`} className="block">
+              <div className="flex gap-2 sm:w-full sm:flex-col sm:space-y-2">
+                <Link href={`/packages/${pkg.id}`} className="flex-1 sm:block">
                   <Button
-                    size="lg"
-                    className="w-full bg-blue-600 shadow-md hover:bg-blue-700"
+                    size="sm"
+                    className="sm:size-lg w-full bg-blue-600 shadow-md hover:bg-blue-700"
                   >
                     <ShoppingCart className="mr-2 h-4 w-4" />
                     Satın Al
                   </Button>
                 </Link>
-                <Link href={`/packages/${pkg.id}`} className="block">
+                <Link href={`/packages/${pkg.id}`} className="flex-1 sm:block">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full border-gray-300 hover:border-blue-300 hover:bg-blue-50"
+                    className="sm:size-sm w-full border-gray-300 hover:border-blue-300 hover:bg-blue-50"
                   >
-                    Detayları Gör
+                    Detaylar
                   </Button>
                 </Link>
               </div>
@@ -202,6 +206,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
             src={pkg.images[0]}
             alt={pkg.title}
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />

@@ -173,39 +173,41 @@ export function MobileFilters({
     return (
       <div
         key={section.key}
-        className="border-b border-gray-200 last:border-b-0 dark:border-gray-700"
+        className="border-b border-blue-100/60 last:border-b-0"
       >
         <button
           onClick={() => toggleSection(section.key)}
-          className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
+          className="flex w-full items-center justify-between p-4 text-left transition-all duration-200 hover:bg-blue-50/50"
         >
           <div className="flex items-center gap-3">
-            {section.icon}
-            <span className="font-medium">{section.title}</span>
+            <div className="rounded-lg bg-blue-100 p-1.5 text-blue-600">
+              {section.icon}
+            </div>
+            <span className="font-semibold text-gray-800">{section.title}</span>
             {currentValue &&
               (typeof currentValue === 'string' ||
                 Array.isArray(currentValue)) && (
-                <Badge variant="secondary" className="text-xs">
-                  {Array.isArray(currentValue) ? currentValue.length : '1'}
+                <Badge className="border-blue-200 bg-blue-100 text-xs font-semibold text-blue-800">
+                  {Array.isArray(currentValue) ? currentValue.length : 1}
                 </Badge>
               )}
           </div>
           <ChevronDown
             className={cn(
-              'h-4 w-4 transition-transform duration-200',
+              'h-5 w-5 text-blue-500 transition-transform duration-300',
               isExpanded && 'rotate-180 transform'
             )}
           />
         </button>
 
         {isExpanded && (
-          <div className="px-4 pb-4">
+          <div className="bg-blue-50/30 px-4 pb-4">
             {section.type === 'select' && (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {section.options?.map((option) => (
                   <label
                     key={option.value}
-                    className="flex cursor-pointer items-center justify-between"
+                    className="flex cursor-pointer items-center justify-between rounded-lg p-2 transition-all duration-200 hover:bg-white/60"
                   >
                     <div className="flex items-center gap-3">
                       <input
@@ -216,13 +218,15 @@ export function MobileFilters({
                         onChange={(e) =>
                           handleFilterChange(section.key, e.target.value)
                         }
-                        className="text-primary-600 focus:ring-primary-500 h-4 w-4"
+                        className="h-4 w-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
                       />
-                      <span className="text-sm">{option.label}</span>
+                      <span className="text-sm font-medium text-gray-700">
+                        {option.label}
+                      </span>
                     </div>
                     {option.count && (
-                      <span className="text-xs text-gray-500">
-                        ({option.count})
+                      <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-600">
+                        {option.count}
                       </span>
                     )}
                   </label>
@@ -231,11 +235,11 @@ export function MobileFilters({
             )}
 
             {section.type === 'multiselect' && (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {section.options?.map((option) => (
                   <label
                     key={option.value}
-                    className="flex cursor-pointer items-center justify-between"
+                    className="flex cursor-pointer items-center justify-between rounded-lg p-2 transition-all duration-200 hover:bg-white/60"
                   >
                     <div className="flex items-center gap-3">
                       <input
@@ -248,13 +252,15 @@ export function MobileFilters({
                         onChange={() =>
                           handleMultiselectChange(section.key, option.value)
                         }
-                        className="text-primary-600 focus:ring-primary-500 h-4 w-4 rounded"
+                        className="h-4 w-4 rounded text-blue-600 focus:ring-2 focus:ring-blue-500"
                       />
-                      <span className="text-sm">{option.label}</span>
+                      <span className="text-sm font-medium text-gray-700">
+                        {option.label}
+                      </span>
                     </div>
                     {option.count && (
-                      <span className="text-xs text-gray-500">
-                        ({option.count})
+                      <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-600">
+                        {option.count}
                       </span>
                     )}
                   </label>
@@ -270,22 +276,31 @@ export function MobileFilters({
   return (
     <div
       className={cn(
-        'border-t border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800',
+        'border-t border-blue-100 bg-gradient-to-br from-white to-blue-50/30 backdrop-blur-sm',
         className
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700">
-        <div className="flex items-center gap-2">
-          <Filter className="h-5 w-5" />
-          <h3 className="font-semibold">Filtreler</h3>
+      <div className="flex items-center justify-between border-b border-blue-100 bg-white/80 p-4 backdrop-blur-sm">
+        <div className="flex items-center gap-3">
+          <div className="rounded-full bg-blue-100 p-2">
+            <Filter className="h-5 w-5 text-blue-600" />
+          </div>
+          <h3 className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-lg font-bold text-transparent">
+            Filtreler
+          </h3>
           {activeFiltersCount > 0 && (
-            <Badge variant="default" className="text-xs">
+            <Badge className="border-blue-200 bg-blue-100 text-xs font-semibold text-blue-800">
               {activeFiltersCount}
             </Badge>
           )}
         </div>
-        <Button variant="ghost" size="sm" onClick={clearFilters}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={clearFilters}
+          className="rounded-full text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+        >
           <X className="mr-1 h-4 w-4" />
           Temizle
         </Button>
@@ -297,12 +312,19 @@ export function MobileFilters({
       </div>
 
       {/* Actions */}
-      <div className="border-t border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900">
+      <div className="border-t border-blue-100 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 backdrop-blur-sm">
         <div className="flex gap-3">
-          <Button variant="outline" onClick={clearFilters} className="flex-1">
+          <Button
+            variant="outline"
+            onClick={clearFilters}
+            className="flex-1 rounded-xl border-blue-200 bg-white/90 font-semibold hover:border-blue-300 hover:bg-blue-50"
+          >
             Sıfırla
           </Button>
-          <Button onClick={applyFilters} className="flex-1">
+          <Button
+            onClick={applyFilters}
+            className="flex-1 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 font-semibold shadow-lg shadow-blue-200 hover:shadow-xl hover:shadow-blue-300"
+          >
             <Check className="mr-2 h-4 w-4" />
             Uygula
           </Button>

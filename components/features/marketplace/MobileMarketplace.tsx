@@ -97,22 +97,22 @@ export function MobileMarketplace({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div className="sticky top-0 z-50 border-b border-blue-100 bg-white/80 shadow-lg backdrop-blur-lg">
         <div className="space-y-4 p-4">
           {/* Mode Toggle */}
           <div className="flex justify-center">
-            <div className="rounded-xl bg-gray-100 p-1 dark:bg-gray-700">
+            <div className="rounded-2xl bg-gradient-to-r from-blue-100 to-indigo-100 p-1.5 shadow-inner">
               <Button
                 variant={mode === 'jobs' ? 'primary' : 'ghost'}
                 size="sm"
                 onClick={() => onModeChange('jobs')}
                 className={cn(
-                  'rounded-lg px-4 py-2 text-sm font-medium transition-all',
+                  'rounded-xl px-6 py-3 text-sm font-semibold transition-all duration-300',
                   mode === 'jobs'
-                    ? 'bg-white text-blue-600 shadow-sm dark:bg-gray-800 dark:text-blue-400'
-                    : 'text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-200 hover:shadow-xl hover:shadow-blue-300'
+                    : 'text-blue-700 hover:bg-white/60 hover:text-blue-800'
                 )}
               >
                 İş İlanları
@@ -122,10 +122,10 @@ export function MobileMarketplace({
                 size="sm"
                 onClick={() => onModeChange('packages')}
                 className={cn(
-                  'rounded-lg px-4 py-2 text-sm font-medium transition-all',
+                  'rounded-xl px-6 py-3 text-sm font-semibold transition-all duration-300',
                   mode === 'packages'
-                    ? 'bg-white text-blue-600 shadow-sm dark:bg-gray-800 dark:text-blue-400'
-                    : 'text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-200 hover:shadow-xl hover:shadow-blue-300'
+                    : 'text-blue-700 hover:bg-white/60 hover:text-blue-800'
                 )}
               >
                 Hizmet Paketleri
@@ -134,9 +134,9 @@ export function MobileMarketplace({
           </div>
 
           {/* Search Bar */}
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <div className="relative flex-1">
-              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+              <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 transform text-blue-400" />
               <Input
                 type="text"
                 placeholder={
@@ -145,56 +145,73 @@ export function MobileMarketplace({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                className="pr-4 pl-10"
+                className="h-12 rounded-2xl border-blue-200 bg-white/90 pr-4 pl-12 shadow-sm backdrop-blur-sm transition-all duration-200 focus:border-blue-300 focus:bg-white focus:shadow-md focus:ring-blue-100"
               />
             </div>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowFilters(!showFilters)}
-              className="px-3"
+              className={cn(
+                'h-12 rounded-2xl border-blue-200 bg-white/90 px-4 shadow-sm backdrop-blur-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50',
+                showFilters &&
+                  'border-blue-300 bg-blue-50 text-blue-700 shadow-md'
+              )}
             >
-              <SlidersHorizontal className="h-4 w-4" />
+              <SlidersHorizontal className="h-5 w-5" />
             </Button>
-            <Button size="sm" onClick={handleSearch}>
+            <Button
+              size="sm"
+              onClick={handleSearch}
+              className="h-12 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 shadow-lg shadow-blue-200 transition-all duration-200 hover:shadow-xl hover:shadow-blue-300"
+            >
               Ara
             </Button>
           </div>
 
           {/* Results Count */}
-          <div className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="rounded-xl bg-blue-50/80 px-4 py-3 text-sm">
             {currentTotal > 0 ? (
-              <>
-                <span className="font-medium text-gray-900 dark:text-white">
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                <span className="font-semibold text-blue-900">
                   {currentTotal.toLocaleString()}
-                </span>{' '}
-                {mode === 'jobs' ? 'iş ilanı' : 'hizmet paketi'} bulundu
-              </>
+                </span>
+                <span className="text-blue-700">
+                  {mode === 'jobs' ? 'iş ilanı' : 'hizmet paketi'} bulundu
+                </span>
+              </div>
             ) : (
-              <span>Sonuç bulunamadı</span>
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-gray-400"></div>
+                <span className="text-gray-600">Sonuç bulunamadı</span>
+              </div>
             )}
           </div>
         </div>
 
         {/* Filters Panel */}
         {showFilters && (
-          <Card className="m-4 mt-0">
-            <CardContent className="space-y-4 p-4">
+          <Card className="m-4 mt-0 rounded-2xl border-blue-200 bg-white/95 shadow-xl backdrop-blur-sm">
+            <CardContent className="space-y-5 p-6">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold">Filtreler</h3>
+                <h3 className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-lg font-bold text-transparent">
+                  Filtreler
+                </h3>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowFilters(false)}
+                  className="rounded-full p-2 hover:bg-blue-50"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-5 w-5 text-blue-600" />
                 </Button>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {/* Category Filter */}
                 <div>
-                  <label className="mb-1 block text-sm font-medium">
+                  <label className="mb-2 block text-sm font-semibold text-gray-800">
                     Kategori
                   </label>
                   <select
@@ -202,7 +219,7 @@ export function MobileMarketplace({
                     onChange={(e) =>
                       handleFilterChange('category', e.target.value)
                     }
-                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800"
+                    className="w-full rounded-xl border border-blue-200 bg-white/90 px-4 py-3 text-sm shadow-sm transition-all duration-200 focus:border-blue-300 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   >
                     <option value="">Tüm Kategoriler</option>
                     <option value="Web Geliştirme">Web Geliştirme</option>
@@ -215,7 +232,7 @@ export function MobileMarketplace({
 
                 {/* Location Filter */}
                 <div>
-                  <label className="mb-1 block text-sm font-medium">
+                  <label className="mb-2 block text-sm font-semibold text-gray-800">
                     Konum
                   </label>
                   <select
@@ -223,7 +240,7 @@ export function MobileMarketplace({
                     onChange={(e) =>
                       handleFilterChange('location', e.target.value)
                     }
-                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800"
+                    className="w-full rounded-xl border border-blue-200 bg-white/90 px-4 py-3 text-sm shadow-sm transition-all duration-200 focus:border-blue-300 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   >
                     <option value="">Tüm Konumlar</option>
                     <option value="İstanbul">İstanbul</option>
@@ -235,7 +252,7 @@ export function MobileMarketplace({
 
                 {/* Price Range Filter */}
                 <div>
-                  <label className="mb-1 block text-sm font-medium">
+                  <label className="mb-2 block text-sm font-semibold text-gray-800">
                     {mode === 'jobs' ? 'Bütçe Aralığı' : 'Fiyat Aralığı'}
                   </label>
                   <select
@@ -243,7 +260,7 @@ export function MobileMarketplace({
                     onChange={(e) =>
                       handleFilterChange('priceRange', e.target.value)
                     }
-                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800"
+                    className="w-full rounded-xl border border-blue-200 bg-white/90 px-4 py-3 text-sm shadow-sm transition-all duration-200 focus:border-blue-300 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   >
                     <option value="">Tüm Fiyatlar</option>
                     <option value="0-500">0 - 500 ₺</option>
@@ -255,16 +272,20 @@ export function MobileMarketplace({
               </div>
 
               {/* Filter Actions */}
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-3 pt-3">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={clearFilters}
-                  className="flex-1"
+                  className="flex-1 rounded-xl border-blue-200 bg-white/90 py-3 font-semibold transition-all duration-200 hover:border-blue-300 hover:bg-blue-50"
                 >
                   Temizle
                 </Button>
-                <Button size="sm" onClick={applyFilters} className="flex-1">
+                <Button
+                  size="sm"
+                  onClick={applyFilters}
+                  className="flex-1 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 py-3 font-semibold shadow-lg shadow-blue-200 transition-all duration-200 hover:shadow-xl hover:shadow-blue-300"
+                >
                   Uygula
                 </Button>
               </div>
@@ -274,7 +295,7 @@ export function MobileMarketplace({
       </div>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="p-3 sm:p-4">
         {!currentData || currentData.length === 0 ? (
           <EmptyState
             mode={mode}

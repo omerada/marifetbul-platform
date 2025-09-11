@@ -49,10 +49,10 @@ export function JobCard({ job, layout }: JobCardProps) {
   if (layout === 'list') {
     return (
       <Card className="group border-gray-200 transition-all duration-300 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-100">
-        <CardContent className="p-6">
-          <div className="flex items-start justify-between gap-6">
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
             {/* Main Content */}
-            <div className="flex-1 space-y-4">
+            <div className="min-w-0 flex-1 space-y-3 sm:space-y-4">
               <div className="flex items-start justify-between">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
@@ -159,9 +159,9 @@ export function JobCard({ job, layout }: JobCardProps) {
             </div>
 
             {/* Right Side */}
-            <div className="flex min-w-[140px] flex-col items-end justify-between space-y-4">
-              <div className="text-right">
-                <div className="text-2xl font-bold text-gray-900">
+            <div className="flex w-full flex-row items-center justify-between gap-4 border-t border-gray-100 pt-4 sm:w-auto sm:min-w-[140px] sm:flex-col sm:items-end sm:border-t-0 sm:pt-0">
+              <div className="text-left sm:text-right">
+                <div className="text-xl font-bold text-gray-900 sm:text-2xl">
                   {formatBudget()}
                 </div>
                 <div className="text-sm text-gray-500">
@@ -171,7 +171,7 @@ export function JobCard({ job, layout }: JobCardProps) {
                 </div>
               </div>
 
-              <div className="space-y-3 text-right">
+              <div className="flex items-center gap-3 sm:flex-col sm:space-y-3 sm:text-right">
                 <Badge
                   variant="outline"
                   className="border-green-200 bg-green-50 text-xs text-green-700"
@@ -181,22 +181,22 @@ export function JobCard({ job, layout }: JobCardProps) {
                   {job.experienceLevel === 'expert' && 'Uzman'}
                 </Badge>
 
-                <div className="w-full space-y-2">
-                  <Link href={`/jobs/${job.id}`} className="block">
+                <div className="flex gap-2 sm:w-full sm:flex-col sm:space-y-2">
+                  <Link href={`/jobs/${job.id}`} className="flex-1 sm:block">
                     <Button
-                      size="lg"
-                      className="w-full bg-blue-600 shadow-md hover:bg-blue-700"
+                      size="sm"
+                      className="sm:size-lg w-full bg-blue-600 shadow-md hover:bg-blue-700"
                     >
                       Teklif Ver
                     </Button>
                   </Link>
-                  <Link href={`/jobs/${job.id}`} className="block">
+                  <Link href={`/jobs/${job.id}`} className="flex-1 sm:block">
                     <Button
                       variant="outline"
                       size="sm"
-                      className="w-full border-gray-300 hover:border-blue-300 hover:bg-blue-50"
+                      className="sm:size-sm w-full border-gray-300 hover:border-blue-300 hover:bg-blue-50"
                     >
-                      Detayları Gör
+                      Detaylar
                     </Button>
                   </Link>
                 </div>

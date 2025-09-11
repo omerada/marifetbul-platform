@@ -53,23 +53,23 @@ export function MobileMarketplaceHeader({
   return (
     <div
       className={cn(
-        'border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800',
+        'border-b border-blue-100 bg-gradient-to-r from-white to-blue-50/50 backdrop-blur-sm',
         className
       )}
     >
       {/* Mode Toggle */}
-      <div className="p-4 pb-2">
+      <div className="p-4 pb-3">
         <div className="flex justify-center">
-          <div className="rounded-xl bg-gray-100 p-1 dark:bg-gray-700">
+          <div className="rounded-2xl bg-gradient-to-r from-blue-100 to-indigo-100 p-1.5 shadow-inner">
             <Button
               variant={mode === 'jobs' ? 'primary' : 'ghost'}
               size="sm"
               onClick={() => onModeChange('jobs')}
               className={cn(
-                'px-4 py-2 text-sm font-medium transition-all duration-200',
+                'rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-300',
                 mode === 'jobs'
-                  ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-800 dark:text-white'
-                  : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-200'
+                  : 'text-blue-700 hover:bg-white/60 hover:text-blue-800'
               )}
             >
               <Briefcase className="mr-2 h-4 w-4" />
@@ -80,10 +80,10 @@ export function MobileMarketplaceHeader({
               size="sm"
               onClick={() => onModeChange('packages')}
               className={cn(
-                'px-4 py-2 text-sm font-medium transition-all duration-200',
+                'rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-300',
                 mode === 'packages'
-                  ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-800 dark:text-white'
-                  : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-200'
+                  : 'text-blue-700 hover:bg-white/60 hover:text-blue-800'
               )}
             >
               <Package className="mr-2 h-4 w-4" />
@@ -98,14 +98,19 @@ export function MobileMarketplaceHeader({
         <div className="relative">
           <div
             className={cn(
-              'relative flex items-center rounded-xl border transition-all duration-200',
+              'relative flex items-center rounded-2xl border bg-white/90 shadow-sm backdrop-blur-sm transition-all duration-300',
               isSearchFocused
-                ? 'border-primary-500 ring-primary-500/20 shadow-sm ring-1'
-                : 'border-gray-300 dark:border-gray-600'
+                ? 'border-blue-300 shadow-lg ring-2 ring-blue-100'
+                : 'border-blue-200 hover:border-blue-300'
             )}
           >
-            <div className="flex items-center pl-3">
-              <Search className="h-4 w-4 text-gray-400" />
+            <div className="flex items-center pl-4">
+              <Search
+                className={cn(
+                  'h-5 w-5 transition-colors duration-200',
+                  isSearchFocused ? 'text-blue-500' : 'text-blue-400'
+                )}
+              />
             </div>
             <Input
               type="text"
@@ -119,24 +124,24 @@ export function MobileMarketplaceHeader({
               onKeyPress={handleSearchKeyPress}
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setIsSearchFocused(false)}
-              className="flex-1 border-0 bg-transparent px-2 focus:ring-0 focus:outline-none"
+              className="flex-1 border-0 bg-transparent px-3 py-3 placeholder:text-blue-400/70 focus:ring-0 focus:outline-none"
             />
-            <div className="flex items-center gap-1 pr-2">
+            <div className="flex items-center gap-2 pr-3">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={onFiltersToggle}
-                className="h-8 w-8 p-2"
+                className="h-10 w-10 rounded-full p-2 transition-all duration-200 hover:bg-blue-50 hover:text-blue-700"
               >
-                <SlidersHorizontal className="h-4 w-4" />
+                <SlidersHorizontal className="h-5 w-5" />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={onSortToggle}
-                className="h-8 w-8 p-2"
+                className="h-10 w-10 rounded-full p-2 transition-all duration-200 hover:bg-blue-50 hover:text-blue-700"
               >
-                <ArrowUpDown className="h-4 w-4" />
+                <ArrowUpDown className="h-5 w-5" />
               </Button>
             </div>
           </div>
@@ -144,34 +149,36 @@ export function MobileMarketplaceHeader({
       </div>
 
       {/* Results Header */}
-      <div className="flex items-center justify-between px-4 pb-3">
-        <div className="flex items-center gap-2">
-          <MapPin className="h-4 w-4 text-gray-400" />
-          <span className="text-sm text-gray-600 dark:text-gray-400">
+      <div className="flex items-center justify-between px-4 pb-4">
+        <div className="flex items-center gap-2 rounded-xl bg-blue-50/80 px-3 py-2">
+          <MapPin className="h-4 w-4 text-blue-500" />
+          <span className="text-sm">
             {totalResults > 0 ? (
-              <>
-                <span className="font-semibold text-gray-900 dark:text-white">
+              <div className="flex items-center gap-1">
+                <span className="font-bold text-blue-900">
                   {totalResults.toLocaleString()}
-                </span>{' '}
-                {mode === 'jobs' ? 'iş ilanı' : 'hizmet paketi'} bulundu
-              </>
+                </span>
+                <span className="text-blue-700">
+                  {mode === 'jobs' ? 'iş ilanı' : 'hizmet paketi'} bulundu
+                </span>
+              </div>
             ) : (
-              <span>Sonuç bulunamadı</span>
+              <span className="text-gray-600">Sonuç bulunamadı</span>
             )}
           </span>
         </div>
 
         {/* View Mode Toggle */}
-        <div className="flex items-center rounded-lg bg-gray-100 p-1 dark:bg-gray-700">
+        <div className="flex items-center rounded-xl bg-gradient-to-r from-blue-100 to-indigo-100 p-1.5 shadow-inner">
           <Button
             variant={viewMode === 'grid' ? 'primary' : 'ghost'}
             size="sm"
             onClick={() => onViewModeChange('grid')}
             className={cn(
-              'h-8 w-8 p-2',
+              'h-9 w-9 rounded-lg p-2 transition-all duration-200',
               viewMode === 'grid'
-                ? 'bg-white shadow-sm dark:bg-gray-800'
-                : 'hover:bg-gray-200 dark:hover:bg-gray-600'
+                ? 'bg-white text-blue-600 shadow-md'
+                : 'text-blue-600 hover:bg-white/60 hover:text-blue-800'
             )}
           >
             <Grid3X3 className="h-4 w-4" />
@@ -181,10 +188,10 @@ export function MobileMarketplaceHeader({
             size="sm"
             onClick={() => onViewModeChange('list')}
             className={cn(
-              'h-8 w-8 p-2',
+              'h-9 w-9 rounded-lg p-2 transition-all duration-200',
               viewMode === 'list'
-                ? 'bg-white shadow-sm dark:bg-gray-800'
-                : 'hover:bg-gray-200 dark:hover:bg-gray-600'
+                ? 'bg-white text-blue-600 shadow-md'
+                : 'text-blue-600 hover:bg-white/60 hover:text-blue-800'
             )}
           >
             <List className="h-4 w-4" />
