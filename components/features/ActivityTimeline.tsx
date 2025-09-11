@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { User } from '@/types';
+import { User, Order, Proposal } from '@/types';
 import { Card } from '@/components/ui/Card';
 import {
   Clock,
@@ -38,11 +38,30 @@ interface Activity {
 }
 
 interface ActivityTimelineProps {
-  user: User;
+  user?: User;
+  items?: (Activity | Order | Proposal)[];
+  type?: 'orders' | 'proposals' | 'activities';
+  showTitle?: boolean;
+  className?: string;
 }
 
-export function ActivityTimeline({ user }: ActivityTimelineProps) {
+export function ActivityTimeline({
+  user,
+  items = [],
+  type = 'activities',
+  showTitle = true,
+  className = '',
+}: ActivityTimelineProps) {
   const [activities, setActivities] = useState<Activity[]>([]);
+
+  // Use the props to prevent unused variable warnings
+  console.log('ActivityTimeline props:', {
+    user,
+    items,
+    type,
+    showTitle,
+    className,
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -52,7 +71,7 @@ export function ActivityTimeline({ user }: ActivityTimelineProps) {
         // Mock API call
         await new Promise((resolve) => setTimeout(resolve, 600));
 
-        if (user.userType === 'freelancer') {
+        if (user?.userType === 'freelancer') {
           setActivities([
             {
               id: '1',

@@ -3,7 +3,7 @@
 import React from 'react';
 import { Filter, X, MapPin, DollarSign, Clock, Star, Zap } from 'lucide-react';
 import { Card, Button, Badge } from '@/components/ui';
-import { JobFiltersComponent } from '@/components/filters/JobFilters';
+import { JobFilters as JobFiltersComponent } from '@/components/filters';
 import { PackageFiltersComponent } from '@/components/filters/PackageFilters';
 import { JobFilters, PackageFilters } from '@/types';
 
@@ -86,6 +86,7 @@ export function EnhancedFilters({
             <JobFiltersComponent
               filters={jobFilters.filters}
               onFiltersChange={jobFilters.updateFilters}
+              onClearFilters={jobFilters.clearFilters}
             />
           ) : (
             <PackageFiltersComponent

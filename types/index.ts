@@ -27,11 +27,15 @@ export interface Freelancer extends User {
   experience: 'beginner' | 'intermediate' | 'expert';
   rating: number;
   totalReviews: number;
+  reviewCount?: number; // Alternative naming
   totalEarnings: number;
   completedJobs: number;
+  completedProjects?: number; // Alternative naming
   responseTime: string; // e.g., "2 hours"
   availability: 'available' | 'busy' | 'not_available';
   portfolio: PortfolioItem[];
+  languages?: string[];
+  isOnline?: boolean;
 }
 
 export interface Employer extends User {
@@ -372,6 +376,73 @@ export interface EmployerStats {
   totalProposals: number;
   averageRating: number;
   savedFreelancers: number;
+}
+
+// Dashboard data interfaces
+export interface FreelancerDashboard {
+  stats: {
+    totalEarnings: number;
+    currentMonthEarnings: number;
+    activeOrders: number;
+    completedJobs: number;
+    responseRate: number;
+    rating: number;
+    profileViews: number;
+  };
+  recentOrders: Order[];
+  recentProposals: Proposal[];
+  notifications: Notification[];
+  quickStats: {
+    pendingProposals: number;
+    messagesWaiting: number;
+    reviewsPending: number;
+  };
+}
+
+export interface EmployerDashboard {
+  stats: {
+    totalSpent: number;
+    currentMonthSpending: number;
+    activeJobs: number;
+    completedJobs: number;
+    avgProjectCost: number;
+    savedFreelancers: number;
+  };
+  activeJobs: Job[];
+  recentHires: {
+    freelancerId: string;
+    jobTitle: string;
+    amount: number;
+    startDate: string;
+  }[];
+  notifications: Notification[];
+  quickStats: {
+    proposalsReceived: number;
+    messagesWaiting: number;
+    jobsExpiringSoon: number;
+  };
+}
+
+// Profile interfaces
+export interface FreelancerProfile extends Freelancer {
+  certifications?: Certification[];
+  languages?: string[];
+  memberSince: string;
+  verificationStatus: 'verified' | 'pending' | 'unverified';
+}
+
+export interface EmployerProfile extends Employer {
+  memberSince: string;
+  verificationStatus: 'verified' | 'pending' | 'unverified';
+  paymentMethods?: string[];
+}
+
+export interface Certification {
+  id: string;
+  name: string;
+  issuer: string;
+  issueDate: string;
+  url?: string;
 }
 
 // Payment System Types

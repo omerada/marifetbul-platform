@@ -1,18 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import Image from 'next/image';
 import { User, Freelancer, Employer } from '@/types';
-import useAuthStore from '@/lib/store/auth';
+import { useProfile, useProfileValidation } from '@/hooks/useProfile';
+import { AvatarUpload } from '@/components/features/AvatarUpload';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { Badge } from '@/components/ui/Badge';
+import { Progress } from '@/components/ui/Progress';
+import { useToast } from '@/hooks/useToast';
 import {
-  Camera,
   Save,
   ArrowLeft,
   User as UserIcon,
@@ -20,111 +19,153 @@ import {
   MapPin,
   Plus,
   X,
+  Globe,
+  Phone,
 } from 'lucide-react';
-
-// Validation Schemas
-const baseProfileSchema = z.object({
-  firstName: z.string().min(2, 'Ad en az 2 karakter olmalıdır'),
-  lastName: z.string().min(2, 'Soyad en az 2 karakter olmalıdır'),
-  email: z.string().email('Geçerli bir email adresi giriniz'),
-  phone: z.string().optional(),
-  location: z.string().optional(),
-  bio: z.string().max(500, 'Açıklama 500 karakterden fazla olamaz').optional(),
-});
-
-const freelancerProfileSchema = baseProfileSchema.extend({
-  title: z.string().min(5, 'Başlık en az 5 karakter olmalıdır').optional(),
-  hourlyRate: z.number().min(1, 'Saatlik ücret 1₺ dan az olamaz').optional(),
-  skills: z.array(z.string()).min(1, 'En az 1 yetenek seçmelisiniz'),
-});
-
-const employerProfileSchema = baseProfileSchema.extend({
-  companyName: z
-    .string()
-    .min(2, 'Şirket adı en az 2 karakter olmalıdır')
-    .optional(),
-  companySize: z.string().optional(),
-  industry: z.string().optional(),
-});
-
-type ProfileFormData = z.infer<typeof baseProfileSchema> & {
-  title?: string;
-  hourlyRate?: number;
-  skills?: string[];
-  companyName?: string;
-  companySize?: string;
-  industry?: string;
-};
 
 interface ProfileEditFormProps {
   user: User;
 }
 
+interface FormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  bio?: string;
+  location?: string;
+  phone?: string;
+  website?: string;
+  // Freelancer specific
+  title?: string;
+  hourlyRate?: number;
+  experience?: string;
+  skills?: string[];
+  // Employer specific
+  companyName?: string;
+  industry?: string;
+  companySize?: string;
+}
+
 export function ProfileEditForm({ user }: ProfileEditFormProps) {
   const router = useRouter();
-  const { updateUser } = useAuthStore();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [newSkill, setNewSkill] = useState('');
-  const [skills, setSkills] = useState<string[]>(
-    user.userType === 'freelancer' ? (user as Freelancer).skills : []
-  );
+  const { profile, isLoading, isUpdating, updateProfile } = useProfile();
+  const { completeness, missingFields } = useProfileValidation();
+  const { showToast } = useToast();
 
-  const schema =
-    user.userType === 'freelancer'
-      ? freelancerProfileSchema
-      : employerProfileSchema;
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm<ProfileFormData>({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      phone: user.phone || '',
-      location: user.location || '',
-      bio: user.bio || '',
-      ...(user.userType === 'freelancer' && {
-        title: (user as Freelancer).title || '',
-        hourlyRate: (user as Freelancer).hourlyRate || 0,
-        skills: (user as Freelancer).skills || [],
-      }),
-      ...(user.userType === 'employer' && {
-        companyName: (user as Employer).companyName || '',
-        companySize: (user as Employer).companySize || '',
-        industry: (user as Employer).industry || '',
-      }),
-    },
+  const [activeTab, setActiveTab] = useState<'basic' | 'professional'>('basic');
+  const [hasChanges, setHasChanges] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    bio: '',
+    location: '',
+    phone: '',
+    website: '',
   });
 
-  const handleFormSubmit = async (data: ProfileFormData) => {
-    setIsSubmitting(true);
+  // Skills state for freelancers
+  const [skills, setSkills] = useState<string[]>([]);
+  const [newSkill, setNewSkill] = useState('');
+
+  const isFreelancer = user.userType === 'freelancer';
+
+  // Initialize form data
+  useEffect(() => {
+    const currentData = profile || user;
+    setFormData({
+      firstName: currentData.firstName || '',
+      lastName: currentData.lastName || '',
+      email: currentData.email || '',
+      bio: currentData.bio || '',
+      location: currentData.location || '',
+      phone: currentData.phone || '',
+      website: currentData.website || '',
+      ...(isFreelancer && {
+        title: (currentData as Freelancer).title || '',
+        hourlyRate: (currentData as Freelancer).hourlyRate || 0,
+        experience: (currentData as Freelancer).experience || '',
+      }),
+      ...(!isFreelancer && {
+        companyName: (currentData as Employer).companyName || '',
+        industry: (currentData as Employer).industry || '',
+        companySize: (currentData as Employer).companySize || '',
+      }),
+    });
+
+    if (isFreelancer && (currentData as Freelancer).skills) {
+      setSkills((currentData as Freelancer).skills || []);
+    }
+  }, [profile, user, isFreelancer]);
+
+  // Auto-save functionality
+  useEffect(() => {
+    if (!hasChanges) return;
+
+    const autoSaveTimer = setTimeout(async () => {
+      try {
+        const submitData = {
+          ...formData,
+          ...(isFreelancer && { skills }),
+        };
+
+        await updateProfile(submitData);
+        setHasChanges(false);
+        showToast('Değişiklikler otomatik kaydedildi', 'success');
+      } catch {
+        // Silent fail for auto-save
+        console.log('Auto-save failed');
+      }
+    }, 3000); // 3 seconds delay
+
+    return () => clearTimeout(autoSaveTimer);
+  }, [formData, skills, hasChanges, updateProfile, isFreelancer, showToast]);
+
+  // Track changes
+  useEffect(() => {
+    const currentData = profile || user;
+    const hasFormChanges =
+      JSON.stringify(formData) !==
+      JSON.stringify({
+        firstName: currentData.firstName || '',
+        lastName: currentData.lastName || '',
+        email: currentData.email || '',
+        bio: currentData.bio || '',
+        location: currentData.location || '',
+        phone: currentData.phone || '',
+        website: currentData.website || '',
+      });
+    setHasChanges(hasFormChanges);
+  }, [formData, profile, user]);
+
+  const handleInputChange = (field: keyof FormData, value: string | number) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    setHasChanges(true);
+  };
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      // Include skills for freelancers
       const submitData = {
-        ...data,
-        ...(user.userType === 'freelancer' && { skills }),
+        ...formData,
+        ...(isFreelancer && { skills }),
       };
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Update user in store
-      updateUser(submitData);
-
-      // Show success message
-      alert('Profil başarıyla güncellendi!');
-
-      // Redirect to profile
+      await updateProfile(submitData);
+      showToast('Profil başarıyla güncellendi!', 'success');
+      setHasChanges(false);
       router.push(`/profile/${user.id}`);
     } catch {
-      alert('Profil güncellenirken bir hata oluştu.');
-    } finally {
-      setIsSubmitting(false);
+      showToast('Profil güncellenirken bir hata oluştu', 'error');
+    }
+  };
+
+  const handleAvatarUpdate = async (avatarUrl: string) => {
+    try {
+      await updateProfile({ avatar: avatarUrl });
+      showToast('Profil fotoğrafı güncellendi!', 'success');
+    } catch {
+      showToast('Fotoğraf yüklenirken bir hata oluştu', 'error');
     }
   };
 
@@ -132,15 +173,15 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
     if (newSkill.trim() && !skills.includes(newSkill.trim())) {
       const updatedSkills = [...skills, newSkill.trim()];
       setSkills(updatedSkills);
-      setValue('skills', updatedSkills);
       setNewSkill('');
+      setHasChanges(true);
     }
   };
 
   const removeSkill = (skillToRemove: string) => {
     const updatedSkills = skills.filter((skill) => skill !== skillToRemove);
     setSkills(updatedSkills);
-    setValue('skills', updatedSkills);
+    setHasChanges(true);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -150,30 +191,27 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
     }
   };
 
-  const companySizeOptions = [
-    { value: '1-10', label: '1-10 Çalışan' },
-    { value: '11-50', label: '11-50 Çalışan' },
-    { value: '51-200', label: '51-200 Çalışan' },
-    { value: '201-500', label: '201-500 Çalışan' },
-    { value: '500+', label: '500+ Çalışan' },
-  ];
-
-  const industryOptions = [
-    'Teknoloji',
-    'Pazarlama',
-    'Tasarım',
-    'Yazılım',
-    'E-ticaret',
-    'Finans',
-    'Sağlık',
-    'Eğitim',
-    'İnşaat',
-    'Turizm',
-    'Diğer',
-  ];
+  if (isLoading) {
+    return (
+      <div className="mx-auto max-w-4xl p-6">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 w-64 rounded bg-gray-200"></div>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="space-y-6 lg:col-span-2">
+              <div className="h-96 rounded bg-gray-200"></div>
+            </div>
+            <div className="space-y-4">
+              <div className="h-32 rounded bg-gray-200"></div>
+              <div className="h-48 rounded bg-gray-200"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-4xl p-6">
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div className="flex items-center">
@@ -186,278 +224,463 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Geri
           </Button>
-          <h1 className="text-2xl font-bold text-gray-900">Profili Düzenle</h1>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Profil Düzenle</h1>
+            <p className="mt-1 text-gray-600">
+              Bilgilerinizi güncel tutarak daha fazla fırsat yakalayın
+            </p>
+          </div>
         </div>
-      </div>
-
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
-        {/* Profile Photo */}
-        <Card className="p-6">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">
-            Profil Fotoğrafı
-          </h2>
-          <div className="flex items-center space-x-6">
-            <div className="relative">
-              <Image
-                src={user.avatar || '/images/default-avatar.jpg'}
-                alt="Profil fotoğrafı"
-                width={80}
-                height={80}
-                className="h-20 w-20 rounded-full object-cover"
-              />
-              <button
-                type="button"
-                className="bg-primary-600 hover:bg-primary-700 absolute right-0 bottom-0 rounded-full p-1.5 text-white transition-colors"
-              >
-                <Camera className="h-3 w-3" />
-              </button>
-            </div>
-            <div>
-              <p className="mb-2 text-sm text-gray-600">
-                JPG, PNG veya GIF formatında, maksimum 5MB
-              </p>
-              <Button type="button" variant="outline" size="sm">
-                Fotoğraf Yükle
-              </Button>
-            </div>
-          </div>
-        </Card>
-
-        {/* Basic Information */}
-        <Card className="p-6">
-          <h2 className="mb-4 flex items-center text-lg font-semibold text-gray-900">
-            <UserIcon className="mr-2 h-5 w-5" />
-            Temel Bilgiler
-          </h2>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Ad *
-              </label>
-              <Input
-                {...register('firstName')}
-                placeholder="Adınız"
-                error={errors.firstName?.message}
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Soyad *
-              </label>
-              <Input
-                {...register('lastName')}
-                placeholder="Soyadınız"
-                error={errors.lastName?.message}
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Email *
-              </label>
-              <Input
-                {...register('email')}
-                type="email"
-                placeholder="email@example.com"
-                error={errors.email?.message}
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Telefon
-              </label>
-              <Input
-                {...register('phone')}
-                placeholder="+90 555 123 45 67"
-                error={errors.phone?.message}
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                <MapPin className="mr-1 inline h-4 w-4" />
-                Konum
-              </label>
-              <Input
-                {...register('location')}
-                placeholder="Şehir, Ülke"
-                error={errors.location?.message}
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Hakkımda
-              </label>
-              <textarea
-                {...register('bio')}
-                rows={4}
-                className="focus:border-primary-500 focus:ring-primary-500 block w-full rounded-md border-gray-300 shadow-sm"
-                placeholder="Kendinizi tanıtın..."
-              />
-              {errors.bio && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.bio.message}
-                </p>
-              )}
-            </div>
-          </div>
-        </Card>
-
-        {/* Freelancer Specific Fields */}
-        {user.userType === 'freelancer' && (
-          <>
-            <Card className="p-6">
-              <h2 className="mb-4 text-lg font-semibold text-gray-900">
-                Freelancer Bilgileri
-              </h2>
-              <div className="space-y-6">
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700">
-                    Uzmanlik Alanı
-                  </label>
-                  <Input
-                    {...register('title')}
-                    placeholder="örn: Full Stack Geliştirici"
-                    error={errors.title?.message}
-                  />
-                </div>
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700">
-                    Saatlik Ücret (₺)
-                  </label>
-                  <Input
-                    {...register('hourlyRate', { valueAsNumber: true })}
-                    type="number"
-                    placeholder="50"
-                    error={errors.hourlyRate?.message}
-                  />
-                </div>
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700">
-                    Yetenekler *
-                  </label>
-                  <div className="mb-3 flex flex-wrap gap-2">
-                    {skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="bg-primary-100 text-primary-800 inline-flex items-center rounded-full px-3 py-1 text-sm"
-                      >
-                        {skill}
-                        <button
-                          type="button"
-                          onClick={() => removeSkill(skill)}
-                          className="text-primary-600 hover:text-primary-800 ml-2"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex space-x-2">
-                    <Input
-                      value={newSkill}
-                      onChange={(e) => setNewSkill(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Yeni yetenek ekle"
-                      className="flex-1"
-                    />
-                    <Button
-                      type="button"
-                      onClick={addSkill}
-                      variant="outline"
-                      size="sm"
-                      className="px-3"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  {errors.skills && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {errors.skills.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </Card>
-          </>
-        )}
-
-        {/* Employer Specific Fields */}
-        {user.userType === 'employer' && (
-          <Card className="p-6">
-            <h2 className="mb-4 flex items-center text-lg font-semibold text-gray-900">
-              <Building className="mr-2 h-5 w-5" />
-              Şirket Bilgileri
-            </h2>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Şirket Adı
-                </label>
-                <Input
-                  {...register('companyName')}
-                  placeholder="Şirket Adı Ltd."
-                  error={errors.companyName?.message}
-                />
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Şirket Büyüklüğü
-                </label>
-                <select
-                  {...register('companySize')}
-                  className="focus:border-primary-500 focus:ring-primary-500 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="">Seçiniz</option>
-                  {companySizeOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Sektör
-                </label>
-                <select
-                  {...register('industry')}
-                  className="focus:border-primary-500 focus:ring-primary-500 block w-full rounded-md border-gray-300 shadow-sm"
-                >
-                  <option value="">Seçiniz</option>
-                  {industryOptions.map((industry) => (
-                    <option key={industry} value={industry}>
-                      {industry}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </Card>
-        )}
-
-        {/* Submit Button */}
-        <div className="flex justify-end space-x-4">
-          <Button type="button" variant="outline" onClick={() => router.back()}>
+        <div className="flex items-center space-x-3">
+          <Button
+            variant="outline"
+            onClick={() => router.push(`/profile/${user.id}`)}
+            disabled={isUpdating}
+          >
             İptal
           </Button>
           <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="min-w-[120px]"
+            onClick={onSubmit}
+            disabled={isUpdating || !hasChanges}
+            className="flex items-center space-x-2"
           >
-            {isSubmitting ? (
-              <div className="flex items-center">
-                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                Kaydediliyor...
-              </div>
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Kaydet
-              </>
-            )}
+            <Save className="h-4 w-4" />
+            <span>{isUpdating ? 'Kaydediliyor...' : 'Kaydet'}</span>
           </Button>
         </div>
-      </form>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Main Content */}
+        <div className="lg:col-span-2">
+          {/* Tab Navigation */}
+          <div className="mb-6 flex space-x-1 rounded-lg bg-gray-100 p-1">
+            <button
+              onClick={() => setActiveTab('basic')}
+              className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === 'basic'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <UserIcon className="mr-2 inline h-4 w-4" />
+              Temel Bilgiler
+            </button>
+            <button
+              onClick={() => setActiveTab('professional')}
+              className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === 'professional'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Building className="mr-2 inline h-4 w-4" />
+              {isFreelancer ? 'Profesyonel' : 'Şirket'}
+            </button>
+          </div>
+
+          {/* Basic Information Tab */}
+          {activeTab === 'basic' && (
+            <Card className="p-6">
+              <h2 className="mb-6 text-xl font-semibold text-gray-900">
+                Temel Bilgiler
+              </h2>
+
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Ad *
+                    </label>
+                    <Input
+                      value={formData.firstName}
+                      onChange={(e) =>
+                        handleInputChange('firstName', e.target.value)
+                      }
+                      placeholder="Adınızı girin"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Soyad *
+                    </label>
+                    <Input
+                      value={formData.lastName}
+                      onChange={(e) =>
+                        handleInputChange('lastName', e.target.value)
+                      }
+                      placeholder="Soyadınızı girin"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Email *
+                  </label>
+                  <Input
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    type="email"
+                    placeholder="email@example.com"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Biyografi
+                  </label>
+                  <textarea
+                    value={formData.bio || ''}
+                    onChange={(e) => handleInputChange('bio', e.target.value)}
+                    className="w-full rounded-md border border-gray-300 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                    placeholder="Kendinizi tanıtın..."
+                    rows={4}
+                    maxLength={1000}
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    {(formData.bio || '').length}/1000 karakter
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      <MapPin className="mr-1 inline h-4 w-4" />
+                      Lokasyon
+                    </label>
+                    <Input
+                      value={formData.location || ''}
+                      onChange={(e) =>
+                        handleInputChange('location', e.target.value)
+                      }
+                      placeholder="Şehir, Ülke"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      <Phone className="mr-1 inline h-4 w-4" />
+                      Telefon
+                    </label>
+                    <Input
+                      value={formData.phone || ''}
+                      onChange={(e) =>
+                        handleInputChange('phone', e.target.value)
+                      }
+                      placeholder="+90 555 123 45 67"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    <Globe className="mr-1 inline h-4 w-4" />
+                    Website
+                  </label>
+                  <Input
+                    value={formData.website || ''}
+                    onChange={(e) =>
+                      handleInputChange('website', e.target.value)
+                    }
+                    placeholder="https://website.com"
+                    type="url"
+                  />
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Professional Information Tab */}
+          {activeTab === 'professional' && (
+            <Card className="p-6">
+              <h2 className="mb-6 text-xl font-semibold text-gray-900">
+                {isFreelancer ? 'Profesyonel Bilgiler' : 'Şirket Bilgileri'}
+              </h2>
+
+              {isFreelancer ? (
+                <div className="space-y-6">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Profesyonel Başlık *
+                    </label>
+                    <Input
+                      value={formData.title || ''}
+                      onChange={(e) =>
+                        handleInputChange('title', e.target.value)
+                      }
+                      placeholder="ör. Full Stack Developer"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Beceriler *
+                    </label>
+
+                    <div className="mb-3">
+                      <div className="flex space-x-2">
+                        <Input
+                          value={newSkill}
+                          onChange={(e) => setNewSkill(e.target.value)}
+                          placeholder="Beceri ekleyin (ör. React)"
+                          onKeyPress={handleKeyPress}
+                        />
+                        <Button
+                          type="button"
+                          onClick={addSkill}
+                          variant="outline"
+                          disabled={!newSkill.trim()}
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {skills.map((skill, index) => (
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="flex cursor-pointer items-center space-x-1 hover:bg-red-100"
+                          onClick={() => removeSkill(skill)}
+                        >
+                          <span>{skill}</span>
+                          <X className="h-3 w-3" />
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        Saatlik Ücret (TL)
+                      </label>
+                      <Input
+                        value={formData.hourlyRate || ''}
+                        onChange={(e) =>
+                          handleInputChange(
+                            'hourlyRate',
+                            Number(e.target.value)
+                          )
+                        }
+                        type="number"
+                        placeholder="75"
+                        min="0"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        Deneyim Seviyesi *
+                      </label>
+                      <select
+                        value={formData.experience || ''}
+                        onChange={(e) =>
+                          handleInputChange('experience', e.target.value)
+                        }
+                        className="w-full rounded-md border border-gray-300 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Seçiniz</option>
+                        <option value="beginner">Başlangıç</option>
+                        <option value="intermediate">Orta</option>
+                        <option value="expert">Uzman</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Şirket Adı *
+                    </label>
+                    <Input
+                      value={formData.companyName || ''}
+                      onChange={(e) =>
+                        handleInputChange('companyName', e.target.value)
+                      }
+                      placeholder="Şirket adınızı girin"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        Sektör *
+                      </label>
+                      <Input
+                        value={formData.industry || ''}
+                        onChange={(e) =>
+                          handleInputChange('industry', e.target.value)
+                        }
+                        placeholder="ör. Teknoloji"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        Şirket Büyüklüğü
+                      </label>
+                      <select
+                        value={formData.companySize || ''}
+                        onChange={(e) =>
+                          handleInputChange('companySize', e.target.value)
+                        }
+                        className="w-full rounded-md border border-gray-300 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Seçiniz</option>
+                        <option value="1-10">1-10 çalışan</option>
+                        <option value="11-50">11-50 çalışan</option>
+                        <option value="51-200">51-200 çalışan</option>
+                        <option value="201-1000">201-1000 çalışan</option>
+                        <option value="1000+">1000+ çalışan</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Card>
+          )}
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Avatar Upload */}
+          <Card className="p-6">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">
+              Profil Fotoğrafı
+            </h3>
+            <AvatarUpload
+              currentAvatar={profile?.avatar || user.avatar}
+              userId={user.id}
+              onAvatarUpdate={handleAvatarUpdate}
+              size="xl"
+            />
+          </Card>
+
+          {/* Profile Completeness */}
+          <Card className="p-6">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">
+              Profil Tamamlanma
+            </h3>
+
+            <div className="space-y-4">
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">
+                    İlerleme
+                  </span>
+                  <span className="text-sm font-medium text-blue-600">
+                    {completeness}%
+                  </span>
+                </div>
+                <Progress value={completeness} className="h-2" />
+              </div>
+
+              {missingFields.length > 0 && (
+                <div>
+                  <p className="mb-2 text-sm text-gray-600">Eksik alanlar:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {missingFields.map((field, index) => (
+                      <Badge key={index} variant="outline" size="sm">
+                        {field}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {completeness >= 90 && (
+                <div className="rounded-lg bg-green-50 p-3">
+                  <p className="text-sm text-green-800">
+                    🎉 Profiliniz tamamlandı! Daha fazla iş fırsatı
+                    yakalayabilirsiniz.
+                  </p>
+                </div>
+              )}
+            </div>
+          </Card>
+
+          {/* Profile Tips */}
+          <Card className="p-6">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">
+              Profil İpuçları
+            </h3>
+
+            <div className="space-y-3 text-sm text-gray-600">
+              <div className="flex items-start space-x-2">
+                <span className="text-blue-600">•</span>
+                <span>Profil fotoğrafınız profesyonel ve net olmalı</span>
+              </div>
+              <div className="flex items-start space-x-2">
+                <span className="text-blue-600">•</span>
+                <span>Biyografınızda yeteneklerinizi vurgulayın</span>
+              </div>
+              <div className="flex items-start space-x-2">
+                <span className="text-blue-600">•</span>
+                <span>İletişim bilgilerinizi güncel tutun</span>
+              </div>
+              {isFreelancer && (
+                <>
+                  <div className="flex items-start space-x-2">
+                    <span className="text-blue-600">•</span>
+                    <span>Portfolyonuza en iyi çalışmalarınızı ekleyin</span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <span className="text-blue-600">•</span>
+                    <span>Becerilerinizi gerçekçi şekilde belirtin</span>
+                  </div>
+                </>
+              )}
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      {/* Save Changes Bar */}
+      {hasChanges && (
+        <div className="fixed right-0 bottom-0 left-0 z-50 border-t border-gray-200 bg-white p-4 shadow-lg">
+          <div className="mx-auto flex max-w-4xl items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="h-2 w-2 animate-pulse rounded-full bg-orange-500"></div>
+              <span className="text-sm text-gray-700">
+                Kaydedilmemiş değişiklikleriniz var
+              </span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setFormData({
+                    firstName: user.firstName || '',
+                    lastName: user.lastName || '',
+                    email: user.email || '',
+                    bio: user.bio || '',
+                    location: user.location || '',
+                    phone: user.phone || '',
+                    website: user.website || '',
+                  })
+                }
+                disabled={isUpdating}
+              >
+                Geri Al
+              </Button>
+              <Button
+                size="sm"
+                onClick={onSubmit}
+                disabled={isUpdating}
+                className="flex items-center space-x-2"
+              >
+                <Save className="h-4 w-4" />
+                <span>Kaydet</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

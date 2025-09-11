@@ -709,7 +709,226 @@ export const handlers = [
     return HttpResponse.json(createApiResponse(newPackage));
   }),
 
-  // User Profile Endpoints
+  // Dashboard endpoints
+  http.get('/api/dashboard/freelancer', async ({ request }) => {
+    const authHeader = request.headers.get('Authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { success: false, error: 'Yetkisiz erişim' },
+        { status: 401 }
+      );
+    }
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    const mockFreelancerDashboard = {
+      stats: {
+        totalEarnings: 125000,
+        currentMonthEarnings: 8500,
+        activeOrders: 3,
+        completedJobs: 89,
+        responseRate: 96,
+        rating: 4.9,
+        profileViews: 247,
+      },
+      recentOrders: [
+        {
+          id: 'order-1',
+          title: 'E-ticaret Web Sitesi',
+          amount: 3500,
+          status: 'in_progress',
+          deadline: '2024-02-15',
+          client: 'TechCorp Solutions',
+        },
+        {
+          id: 'order-2',
+          title: 'Logo Tasarımı',
+          amount: 750,
+          status: 'revision',
+          deadline: '2024-02-10',
+          client: 'StartupXYZ',
+        },
+      ],
+      recentProposals: [
+        {
+          id: 'prop-1',
+          jobTitle: 'React Developer',
+          proposedAmount: 4200,
+          status: 'pending',
+          submittedAt: '2024-01-20',
+        },
+        {
+          id: 'prop-2',
+          jobTitle: 'Mobile App UI',
+          proposedAmount: 2800,
+          status: 'accepted',
+          submittedAt: '2024-01-18',
+        },
+      ],
+      notifications: [
+        {
+          id: 'notif-1',
+          type: 'order_update',
+          title: 'Sipariş Güncellendi',
+          message: 'E-ticaret projesi için yeni gereksinimler eklendi',
+          isRead: false,
+          createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+        },
+      ],
+      quickStats: {
+        pendingProposals: 5,
+        messagesWaiting: 2,
+        reviewsPending: 1,
+      },
+    };
+
+    return HttpResponse.json({
+      success: true,
+      data: mockFreelancerDashboard,
+    });
+  }),
+
+  http.get('/api/dashboard/employer', async ({ request }) => {
+    const authHeader = request.headers.get('Authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { success: false, error: 'Yetkisiz erişim' },
+        { status: 401 }
+      );
+    }
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    const mockEmployerDashboard = {
+      stats: {
+        totalSpent: 45000,
+        currentMonthSpending: 5200,
+        activeJobs: 3,
+        completedJobs: 15,
+        avgProjectCost: 3000,
+        savedFreelancers: 8,
+      },
+      activeJobs: [
+        {
+          id: 'job-1',
+          title: 'React Developer Needed',
+          proposalsCount: 12,
+          budget: 3500,
+          deadline: '2024-02-20',
+          status: 'open',
+        },
+        {
+          id: 'job-2',
+          title: 'UI/UX Designer',
+          proposalsCount: 8,
+          budget: 2200,
+          deadline: '2024-02-25',
+          status: 'open',
+        },
+      ],
+      recentHires: [
+        {
+          freelancerId: 'freelancer-1',
+          jobTitle: 'Web Development',
+          amount: 4500,
+          startDate: '2024-01-15',
+        },
+        {
+          freelancerId: 'freelancer-2',
+          jobTitle: 'Logo Design',
+          amount: 800,
+          startDate: '2024-01-10',
+        },
+      ],
+      notifications: [
+        {
+          id: 'notif-1',
+          type: 'proposal_received',
+          title: 'Yeni Teklif',
+          message: 'React Developer pozisyonu için yeni teklif aldınız',
+          isRead: false,
+          createdAt: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+        },
+      ],
+      quickStats: {
+        proposalsReceived: 23,
+        messagesWaiting: 4,
+        jobsExpiringSoon: 1,
+      },
+    };
+
+    return HttpResponse.json({
+      success: true,
+      data: mockEmployerDashboard,
+    });
+  }),
+
+  // Enhanced profile endpoints
+  http.post('/api/users/avatar', async ({ request }) => {
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
+    const userId = formData.get('userId') as string;
+
+    // Future: Could use cropData for image processing
+    // const cropData = formData.get('cropData') as string;
+
+    if (!file) {
+      return HttpResponse.json(
+        { success: false, error: 'Dosya bulunamadı' },
+        { status: 400 }
+      );
+    }
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      return HttpResponse.json(
+        {
+          success: false,
+          error:
+            'Geçersiz dosya formatı. Sadece JPEG, PNG ve WebP desteklenir.',
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      return HttpResponse.json(
+        { success: false, error: "Dosya boyutu 5MB'dan büyük olamaz" },
+        { status: 400 }
+      );
+    }
+
+    // Simulate processing delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // Simulate random failures (2% chance)
+    if (Math.random() < 0.02) {
+      return HttpResponse.json(
+        { success: false, error: 'Avatar yüklenirken bir hata oluştu' },
+        { status: 500 }
+      );
+    }
+
+    const timestamp = Date.now();
+    const avatarUrl = `/uploads/avatars/${userId}/${timestamp}-avatar.jpg`;
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        url: avatarUrl,
+        thumbnailUrl: `/uploads/avatars/${userId}/${timestamp}-thumb.jpg`,
+        originalUrl: `/uploads/avatars/${userId}/${timestamp}-original.jpg`,
+      },
+      message: 'Avatar başarıyla yüklendi',
+    });
+  }),
   http.get('/api/users/:id', async ({ params }) => {
     const { id } = params;
 

@@ -18,11 +18,25 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
+interface QuickAction {
+  label: string;
+  href: string;
+  icon: React.ReactNode;
+  color?: 'blue' | 'green' | 'purple' | 'orange' | 'red';
+  badge?: number;
+}
+
 interface QuickActionsProps {
-  user: User;
+  user?: User;
+  title?: string;
+  actions?: QuickAction[];
 }
 
 export function QuickActions({ user }: QuickActionsProps) {
+  if (!user) {
+    return null;
+  }
+
   if (user.userType === 'freelancer') {
     return (
       <Card className="p-6">

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { AppLayout } from '@/components/layout';
 import { Card, Button, Input } from '@/components/ui';
 import { JobCard } from '@/components/marketplace/JobCard';
-import { JobFiltersSimple as JobFilters } from '@/components/filters/JobFiltersSimple';
+import { JobFilters } from '@/components/filters';
 import { MobileJobFilters } from '@/components/mobile/MobileJobFilters';
 import { useJobs } from '@/hooks/useJobs';
 import { useJobFilters } from '@/hooks/useFilters';

@@ -1,364 +1,451 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Card, Button, Input } from '@/components/ui';
 import type { JobFilters as JobFiltersType } from '@/types';
-import { Button, Input } from '@/components/ui';
-import { Filter, X, MapPin, DollarSign, Star } from 'lucide-react';
+import {
+  MapPin,
+  DollarSign,
+  Clock,
+  Star,
+  X,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react';
 
-interface JobFiltersComponentProps {
+interface JobFiltersProps {
   filters: JobFiltersType;
   onFiltersChange: (filters: JobFiltersType) => void;
+  onClearFilters: () => void;
+  className?: string;
 }
 
-const categories = [
-  'Web Geliştirme',
-  'Mobil Uygulama',
-  'Tasarım',
-  'İçerik Yazımı',
-  'Dijital Pazarlama',
-  'Veri Analizi',
-  'İş Danışmanlığı',
-];
-
-const subcategories: Record<string, string[]> = {
-  'Web Geliştirme': [
-    'Frontend',
-    'Backend',
-    'Full Stack',
-    'WordPress',
-    'E-ticaret',
-  ],
-  'Mobil Uygulama': ['iOS', 'Android', 'React Native', 'Flutter', 'Hybrid'],
-  Tasarım: [
-    'UI/UX Tasarım',
-    'Grafik Tasarım',
-    'Web Tasarım',
-    'Logo Tasarım',
-    'Branding',
-  ],
-  'İçerik Yazımı': [
-    'Blog Yazımı',
-    'Copywriting',
-    'Teknik Yazım',
-    'Sosyal Medya',
-    'SEO Yazımı',
-  ],
-  'Dijital Pazarlama': [
-    'Google Ads',
-    'Facebook Ads',
-    'SEO',
-    'Social Media',
-    'Email Marketing',
-  ],
-  'Veri Analizi': ['Excel', 'Power BI', 'Python', 'SQL', 'Machine Learning'],
-  'İş Danışmanlığı': [
-    'Strateji',
-    'Operasyon',
-    'İnsan Kaynakları',
-    'Finans',
-    'Pazarlama',
-  ],
-};
-
-const availableSkills = [
-  'JavaScript',
-  'React',
-  'Node.js',
-  'Python',
-  'PHP',
-  'Laravel',
-  'WordPress',
-  'Shopify',
-  'TypeScript',
-  'HTML/CSS',
-  'Figma',
-  'Adobe Photoshop',
-  'Adobe Illustrator',
-  'Sketch',
-  'SEO',
-  'Google Ads',
-  'Facebook Ads',
-  'Content Marketing',
-  'Excel',
-  'SQL',
-  'Power BI',
-  'Tableau',
-  'Google Analytics',
-];
-
-const experienceLevels = [
-  { value: 'beginner', label: 'Başlangıç (0-2 yıl)' },
-  { value: 'intermediate', label: 'Orta (2-5 yıl)' },
-  { value: 'expert', label: 'Uzman (5+ yıl)' },
-];
-
-export function JobFiltersComponent({
+export function JobFilters({
   filters,
   onFiltersChange,
-}: JobFiltersComponentProps) {
-  const [localFilters, setLocalFilters] = useState<JobFiltersType>(filters);
-  const [selectedSkills, setSelectedSkills] = useState<string[]>(
-    filters.skills || []
-  );
+  onClearFilters,
+  className,
+}: JobFiltersProps) {
+  const [expandedSections, setExpandedSections] = useState({
+    budget: true,
+    location: true,
+    skills: false,
+    experience: true,
+    deadline: false,
+  });
 
-  useEffect(() => {
-    setLocalFilters(filters);
-    setSelectedSkills(filters.skills || []);
-  }, [filters]);
+  const categories = [
+    'Web Development',
+    'Mobile Development',
+    'Design',
+    'Writing',
+    'Marketing',
+    'Data Science',
+    'DevOps',
+    'Other',
+  ];
 
-  const handleFilterChange = (
-    key: keyof JobFiltersType,
-    value: JobFiltersType[keyof JobFiltersType]
-  ) => {
-    const newFilters = { ...localFilters, [key]: value };
-    setLocalFilters(newFilters);
+  const popularSkills = [
+    'React',
+    'JavaScript',
+    'TypeScript',
+    'Node.js',
+    'Python',
+    'PHP',
+    'Laravel',
+    'Vue.js',
+    'Angular',
+    'WordPress',
+    'Figma',
+    'Photoshop',
+    'UI/UX',
+    'HTML',
+    'CSS',
+  ];
+
+  const experienceLevels = [
+    { value: 'beginner', label: 'Başlangıç' },
+    { value: 'intermediate', label: 'Orta' },
+    { value: 'expert', label: 'Uzman' },
+  ];
+
+  const locations = [
+    'İstanbul',
+    'Ankara',
+    'İzmir',
+    'Bursa',
+    'Antalya',
+    'Adana',
+    'Konya',
+    'Gaziantep',
+    'Şanlıurfa',
+    'Kayseri',
+  ];
+
+  const deadlineOptions = [
+    { value: 'urgent', label: 'Acil (1 hafta)' },
+    { value: 'week', label: '1-2 hafta' },
+    { value: 'month', label: '1 ay' },
+    { value: 'flexible', label: 'Esnek' },
+  ];
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
+  const handleCategoryChange = (category: string) => {
+    onFiltersChange({
+      ...filters,
+      category: filters.category === category ? undefined : category,
+    });
   };
 
   const handleSkillToggle = (skill: string) => {
-    const newSkills = selectedSkills.includes(skill)
-      ? selectedSkills.filter((s) => s !== skill)
-      : [...selectedSkills, skill];
+    const currentSkills = filters.skills || [];
+    const newSkills = currentSkills.includes(skill)
+      ? currentSkills.filter((s) => s !== skill)
+      : [...currentSkills, skill];
 
-    setSelectedSkills(newSkills);
-    handleFilterChange('skills', newSkills);
+    onFiltersChange({
+      ...filters,
+      skills: newSkills.length > 0 ? newSkills : undefined,
+    });
   };
 
-  const handleApplyFilters = () => {
-    onFiltersChange(localFilters);
+  const handleLocationToggle = (location: string) => {
+    const currentLocations = filters.location || [];
+    const newLocations = currentLocations.includes(location)
+      ? currentLocations.filter((l) => l !== location)
+      : [...currentLocations, location];
+
+    onFiltersChange({
+      ...filters,
+      location: newLocations.length > 0 ? newLocations : undefined,
+    });
   };
 
-  const handleClearFilters = () => {
-    const clearedFilters: JobFiltersType = {
-      search: '',
-      category: '',
-      subcategory: '',
-      budgetMin: undefined,
-      budgetMax: undefined,
-      budgetType: undefined,
-      experienceLevel: undefined,
-      location: [],
-      isRemote: undefined,
-      skills: [],
-    };
-    setLocalFilters(clearedFilters);
-    setSelectedSkills([]);
-    onFiltersChange(clearedFilters);
+  const handleBudgetChange = (
+    field: 'budgetMin' | 'budgetMax',
+    value: string
+  ) => {
+    const numValue = value ? parseInt(value) : undefined;
+    onFiltersChange({
+      ...filters,
+      [field]: numValue,
+    });
   };
 
-  const hasActiveFilters = Object.values(localFilters).some((value) =>
-    Array.isArray(value)
-      ? value.length > 0
-      : value !== undefined && value !== ''
-  );
+  const hasActiveFilters = Object.entries(filters).some(([key, value]) => {
+    if (key === 'search') return false;
+    if (Array.isArray(value)) return value.length > 0;
+    return value !== undefined && value !== '';
+  });
 
   return (
-    <div className="space-y-4">
-      {/* Clear filters button if active */}
-      {hasActiveFilters && (
-        <div className="flex justify-end">
+    <Card className={`w-full p-6 ${className}`}>
+      <div className="mb-6 flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-gray-900">Filtreler</h3>
+        {hasActiveFilters && (
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
-            onClick={handleClearFilters}
-            className="text-red-600 hover:bg-red-50 hover:text-red-700"
+            onClick={onClearFilters}
+            className="text-red-600 hover:text-red-700"
           >
             <X className="mr-1 h-4 w-4" />
-            Tüm Filtreleri Temizle
+            Temizle
           </Button>
-        </div>
-      )}
-
-      {/* Filter Panel */}
-      <div className="space-y-6 rounded-lg border bg-white p-6 shadow-sm">
-        {/* Category */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
-            <Filter className="mr-1 inline h-4 w-4" />
-            Kategori
-          </label>
-          <select
-            value={localFilters.category || ''}
-            onChange={(e) => {
-              handleFilterChange('category', e.target.value);
-              handleFilterChange('subcategory', ''); // Reset subcategory
-            }}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          >
-            <option value="">Tüm Kategoriler</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Subcategory */}
-        {localFilters.category && (
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              Alt Kategori
-            </label>
-            <select
-              value={localFilters.subcategory || ''}
-              onChange={(e) =>
-                handleFilterChange('subcategory', e.target.value)
-              }
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            >
-              <option value="">Tüm Alt Kategoriler</option>
-              {subcategories[localFilters.category]?.map((subcategory) => (
-                <option key={subcategory} value={subcategory}>
-                  {subcategory}
-                </option>
-              ))}
-            </select>
-          </div>
         )}
+      </div>
 
-        {/* Budget Range */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
-            <DollarSign className="mr-1 inline h-4 w-4" />
-            Bütçe Aralığı
-          </label>
-          <div className="flex space-x-2">
-            <Input
-              type="number"
-              placeholder="Min"
-              value={localFilters.budgetMin || ''}
-              onChange={(e) =>
-                handleFilterChange(
-                  'budgetMin',
-                  e.target.value ? parseInt(e.target.value) : undefined
-                )
-              }
-              className="flex-1"
-            />
-            <Input
-              type="number"
-              placeholder="Max"
-              value={localFilters.budgetMax || ''}
-              onChange={(e) =>
-                handleFilterChange(
-                  'budgetMax',
-                  e.target.value ? parseInt(e.target.value) : undefined
-                )
-              }
-              className="flex-1"
-            />
+      <div className="space-y-6">
+        {/* Category Filter */}
+        <div>
+          <h4 className="mb-3 text-sm font-medium text-gray-900">Kategori</h4>
+          <div className="space-y-2">
+            {categories.map((category) => (
+              <label
+                key={category}
+                className="flex cursor-pointer items-center space-x-2"
+              >
+                <input
+                  type="radio"
+                  name="category"
+                  checked={filters.category === category}
+                  onChange={() => handleCategoryChange(category)}
+                  className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">{category}</span>
+              </label>
+            ))}
           </div>
         </div>
 
-        {/* Budget Type */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
-            Bütçe Türü
-          </label>
-          <select
-            value={localFilters.budgetType || ''}
-            onChange={(e) => handleFilterChange('budgetType', e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        {/* Budget Filter */}
+        <div>
+          <button
+            onClick={() => toggleSection('budget')}
+            className="mb-3 flex w-full items-center justify-between text-sm font-medium text-gray-900"
           >
-            <option value="">Tüm Türler</option>
-            <option value="fixed">Sabit Fiyat</option>
-            <option value="hourly">Saatlik</option>
-          </select>
+            <div className="flex items-center">
+              <DollarSign className="mr-2 h-4 w-4" />
+              Bütçe
+            </div>
+            {expandedSections.budget ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </button>
+
+          {expandedSections.budget && (
+            <div className="space-y-3">
+              {/* Budget Type */}
+              <div className="flex space-x-2">
+                <button
+                  onClick={() =>
+                    onFiltersChange({
+                      ...filters,
+                      jobType:
+                        filters.jobType === 'fixed' ? undefined : 'fixed',
+                    })
+                  }
+                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    filters.jobType === 'fixed'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Sabit Fiyat
+                </button>
+                <button
+                  onClick={() =>
+                    onFiltersChange({
+                      ...filters,
+                      jobType:
+                        filters.jobType === 'hourly' ? undefined : 'hourly',
+                    })
+                  }
+                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    filters.jobType === 'hourly'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Saatlik
+                </button>
+              </div>
+
+              {/* Budget Range */}
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  type="number"
+                  placeholder="Min ₺"
+                  value={filters.budgetMin || ''}
+                  onChange={(e) =>
+                    handleBudgetChange('budgetMin', e.target.value)
+                  }
+                />
+                <Input
+                  type="number"
+                  placeholder="Max ₺"
+                  value={filters.budgetMax || ''}
+                  onChange={(e) =>
+                    handleBudgetChange('budgetMax', e.target.value)
+                  }
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Location Filter */}
+        <div>
+          <button
+            onClick={() => toggleSection('location')}
+            className="mb-3 flex w-full items-center justify-between text-sm font-medium text-gray-900"
+          >
+            <div className="flex items-center">
+              <MapPin className="mr-2 h-4 w-4" />
+              Lokasyon
+            </div>
+            {expandedSections.location ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </button>
+
+          {expandedSections.location && (
+            <div className="space-y-3">
+              {/* Remote Toggle */}
+              <label className="flex cursor-pointer items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={filters.location?.includes('remote') || false}
+                  onChange={() => handleLocationToggle('remote')}
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">Uzaktan Çalışma</span>
+              </label>
+
+              {/* City Checkboxes */}
+              <div className="max-h-40 space-y-2 overflow-y-auto">
+                {locations.map((location) => (
+                  <label
+                    key={location}
+                    className="flex cursor-pointer items-center space-x-2"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={filters.location?.includes(location) || false}
+                      onChange={() => handleLocationToggle(location)}
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-gray-700">{location}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Experience Level */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
-            <Star className="mr-1 inline h-4 w-4" />
-            Deneyim Seviyesi
-          </label>
-          <select
-            value={localFilters.experienceLevel || ''}
-            onChange={(e) =>
-              handleFilterChange('experienceLevel', e.target.value)
-            }
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        <div>
+          <button
+            onClick={() => toggleSection('experience')}
+            className="mb-3 flex w-full items-center justify-between text-sm font-medium text-gray-900"
           >
-            <option value="">Tüm Seviyeler</option>
-            {experienceLevels.map((level) => (
-              <option key={level.value} value={level.value}>
-                {level.label}
-              </option>
-            ))}
-          </select>
+            <div className="flex items-center">
+              <Star className="mr-2 h-4 w-4" />
+              Deneyim Seviyesi
+            </div>
+            {expandedSections.experience ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </button>
+
+          {expandedSections.experience && (
+            <div className="space-y-2">
+              {experienceLevels.map((level) => (
+                <label
+                  key={level.value}
+                  className="flex cursor-pointer items-center space-x-2"
+                >
+                  <input
+                    type="radio"
+                    name="experienceLevel"
+                    checked={filters.experienceLevel === level.value}
+                    onChange={() =>
+                      onFiltersChange({
+                        ...filters,
+                        experienceLevel:
+                          filters.experienceLevel === level.value
+                            ? undefined
+                            : (level.value as
+                                | 'beginner'
+                                | 'intermediate'
+                                | 'expert'),
+                      })
+                    }
+                    className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="text-sm text-gray-700">{level.label}</span>
+                </label>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Location */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
-            <MapPin className="mr-1 inline h-4 w-4" />
-            Konum
-          </label>
-          <Input
-            type="text"
-            placeholder="Şehir ara..."
-            value={
-              Array.isArray(localFilters.location)
-                ? localFilters.location.join(', ')
-                : localFilters.location || ''
-            }
-            onChange={(e) => {
-              const locations = e.target.value
-                .split(',')
-                .map((loc) => loc.trim())
-                .filter(Boolean);
-              handleFilterChange('location', locations);
-            }}
-          />
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="remote"
-              checked={localFilters.isRemote || false}
-              onChange={(e) => handleFilterChange('isRemote', e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <label htmlFor="remote" className="text-sm text-gray-600">
-              Uzaktan çalışma kabul ediliyor
-            </label>
-          </div>
+        {/* Deadline Filter */}
+        <div>
+          <button
+            onClick={() => toggleSection('deadline')}
+            className="mb-3 flex w-full items-center justify-between text-sm font-medium text-gray-900"
+          >
+            <div className="flex items-center">
+              <Clock className="mr-2 h-4 w-4" />
+              Teslim Süresi
+            </div>
+            {expandedSections.deadline ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </button>
+
+          {expandedSections.deadline && (
+            <div className="space-y-2">
+              {deadlineOptions.map((option) => (
+                <label
+                  key={option.value}
+                  className="flex cursor-pointer items-center space-x-2"
+                >
+                  <input
+                    type="radio"
+                    name="deadline"
+                    checked={filters.deadline === option.value}
+                    onChange={() =>
+                      onFiltersChange({
+                        ...filters,
+                        deadline:
+                          filters.deadline === option.value
+                            ? undefined
+                            : (option.value as
+                                | 'urgent'
+                                | 'week'
+                                | 'month'
+                                | 'flexible'),
+                      })
+                    }
+                    className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="text-sm text-gray-700">{option.label}</span>
+                </label>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Skills */}
-        <div className="space-y-3">
-          <label className="text-sm font-medium text-gray-700">
-            Yetenekler
-          </label>
-          <div className="grid max-h-48 grid-cols-2 gap-2 overflow-y-auto">
-            {availableSkills.map((skill) => (
-              <button
-                key={skill}
-                onClick={() => handleSkillToggle(skill)}
-                className={`rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
-                  selectedSkills.includes(skill)
-                    ? 'border-blue-200 bg-blue-50 text-blue-700'
-                    : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
-                } `}
-              >
-                {skill}
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Skills Filter */}
+        <div>
+          <button
+            onClick={() => toggleSection('skills')}
+            className="mb-3 flex w-full items-center justify-between text-sm font-medium text-gray-900"
+          >
+            <span>Yetenekler</span>
+            {expandedSections.skills ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </button>
 
-        {/* Action Buttons */}
-        <div className="mt-6 flex space-x-3">
-          <Button onClick={handleApplyFilters} className="flex-1">
-            Filtreleri Uygula
-          </Button>
-          <Button variant="outline" onClick={handleClearFilters}>
-            Temizle
-          </Button>
+          {expandedSections.skills && (
+            <div className="max-h-48 space-y-2 overflow-y-auto">
+              {popularSkills.map((skill) => (
+                <label
+                  key={skill}
+                  className="flex cursor-pointer items-center space-x-2"
+                >
+                  <input
+                    type="checkbox"
+                    checked={filters.skills?.includes(skill) || false}
+                    onChange={() => handleSkillToggle(skill)}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="text-sm text-gray-700">{skill}</span>
+                </label>
+              ))}
+            </div>
+          )}
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
-
-// Export as JobFilters for compatibility
-export const JobFilters = JobFiltersComponent;

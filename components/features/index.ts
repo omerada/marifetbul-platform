@@ -4,7 +4,6 @@ export { ProposalForm } from './ProposalForm';
 export { OrderForm } from './OrderForm';
 export { FreelancerProfile } from './FreelancerProfile';
 export { EmployerProfile } from './EmployerProfile';
-export { ProfileEditForm } from './ProfileEditForm';
 export { DashboardStats } from './DashboardStats';
 export { QuickActions } from './QuickActions';
 export { ActivityTimeline } from './ActivityTimeline';
@@ -14,6 +13,19 @@ export { AvatarUpload } from './AvatarUpload';
 export { ProfileAvatarSection } from './ProfileAvatarSection';
 export { AvatarGallery } from './AvatarGallery';
 export { AvatarModal } from './AvatarModal';
+
+// Dashboard Components
+export { FreelancerDashboard } from './FreelancerDashboard';
+export { EmployerDashboard } from './EmployerDashboard';
+export { StatsCard } from './StatsCard';
+export { DashboardSkeleton } from './DashboardSkeleton';
+export { ErrorState } from './ErrorState';
+
+// Portfolio Components
+export { PortfolioGallery } from './PortfolioGallery';
+export { PortfolioModal } from './PortfolioModal';
+export { ProfileEditForm } from './ProfileEditForm';
+export { ProfileView } from './ProfileView';
 
 // Mobile & Touch Optimization
 export { MobileFilters } from './MobileFilters';
