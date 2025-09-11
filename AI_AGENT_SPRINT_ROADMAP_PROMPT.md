@@ -478,7 +478,7 @@ Yukarıdaki formata uygun olarak **12 Sprint** içeren detaylı roadmap hazırla
 
 ---
 
-**🎯 GÖREV**: Şimdi yukarıdaki kurallara göre BLUEPRINT.md'yi analiz et ve projenin production-ready seviyesine gelecek duruma kadar yapılacak tüm işlemleri sprint dökümanlarına bölerek detaylı geliştirme roadmapını oluştur. Her sprint için yukarıdaki formatı eksiksiz kullan. Güncel durumda ilk 2 sprint /docs/sprints klasörü altında oluşturuldu. Mevcut güncel sprint aşamasını oluşturarak devam edelim. Oluşturulan sprint dökümanı dosya uzunluğu 1000-1200 satırı aşmayacak şekilde oluşturmaya çalışalım, Burada planlanan sprint işlerini olabildiğince parçalı sprintlere bölerek dökümante edelim bu nedenle sprint sayısı fazla olabilir sayı önemli değil.
+**🎯 GÖREV**: Şimdi yukarıdaki kurallara göre BLUEPRINT.md'yi analiz et ve projenin production-ready seviyesine gelecek duruma kadar yapılacak tüm işlemleri sprint dökümanlarına bölerek detaylı geliştirme roadmapını oluştur. Her sprint için yukarıdaki formatı eksiksiz kullan. Güncel durumda ilk 2 sprint /docs/sprints klasörü altında oluşturuldu. Mevcut güncel sprint aşamasını oluşturarak devam edelim. Oluşturulan sprint dökümanı dosya uzunluğu 1000-1200 satırı aşmayacak şekilde oluşturmaya çalışalım, Burada planlanan sprint işlerini olabildiğince parçalı sprintlere bölerek dökümante edelim bu nedenle sprint sayısı fazla olabilir adet önemli değil.
 
 #codebase
 ```
