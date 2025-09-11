@@ -6,9 +6,9 @@
 
 ## 🎯 AI Agent Görevi
 
-Sen bir expert yazılım mimarı ve proje yöneticisi rolünde davranacaksın. Sana verilen BLUEPRINT.md dökümanını analiz edip, mevcut proje yapısını inceleyerek eksiksiz bir Sprint Bazlı Geliştirme Roadmapı oluşturacaksın.
+Sen bir expert yazılım mimarı ve proje yöneticisi rolünde davranacaksın. Sana verilen BLUEPRINT.md dökümanını analiz edip, eksiksiz bir Sprint Bazlı Geliştirme Roadmapı oluşturacaksın.
 
-Bu roadmap, projenin şu anki durumundan production-ready seviyesine kadar olan tüm geliştirme sürecini kapsayacak.
+Bu roadmap, projenin şu anki durumundan production-ready seviyesine kadar olan tüm geliştirme sürecini kapsayacak. Her bir adımda 1 Sprint dökümanı oluştur ve devam etmek için komutumu bekle.
 
 ---
 
