@@ -1,9 +1,44 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  createContext,
+  useContext,
+} from 'react';
 import { createPortal } from 'react-dom';
+import { cn } from '@/lib/utils';
+
+interface TooltipContextType {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}
+
+const TooltipContext = createContext<TooltipContextType>({
+  isOpen: false,
+  setIsOpen: () => {},
+});
 
 interface TooltipProps {
+  children: React.ReactNode;
+  delayDuration?: number;
+}
+
+interface TooltipTriggerProps {
+  children: React.ReactNode;
+  asChild?: boolean;
+}
+
+interface TooltipContentProps {
+  children: React.ReactNode;
+  className?: string;
+  side?: 'top' | 'right' | 'bottom' | 'left';
+  sideOffset?: number;
+}
+
+// Basic tooltip for backwards compatibility
+interface BasicTooltipProps {
   content: string;
   children: React.ReactNode;
   position?: 'top' | 'bottom' | 'left' | 'right';
@@ -11,51 +46,113 @@ interface TooltipProps {
   className?: string;
 }
 
-export function Tooltip({
-  content,
-  children,
-  position = 'top',
-  delay = 500,
-  className = '',
-}: TooltipProps) {
-  const [isVisible, setIsVisible] = useState(false);
-  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
-  const triggerRef = useRef<HTMLDivElement>(null);
+export function TooltipProvider({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
+}
+
+export function Tooltip({ children, delayDuration = 500 }: TooltipProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const showTooltip = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => setIsVisible(true), delay);
-  };
+  const contextValue = React.useMemo(
+    () => ({
+      isOpen,
+      setIsOpen: (open: boolean) => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
 
-  const hideTooltip = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setIsVisible(false);
-  };
+        if (open) {
+          timeoutRef.current = setTimeout(() => setIsOpen(true), delayDuration);
+        } else {
+          setIsOpen(false);
+        }
+      },
+    }),
+    [isOpen, delayDuration]
+  );
 
   useEffect(() => {
-    if (isVisible && triggerRef.current) {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  return (
+    <TooltipContext.Provider value={contextValue}>
+      <div className="relative inline-block">{children}</div>
+    </TooltipContext.Provider>
+  );
+}
+
+export function TooltipTrigger({
+  children,
+  asChild = false,
+}: TooltipTriggerProps) {
+  const { setIsOpen } = useContext(TooltipContext);
+
+  const handleMouseEnter = () => setIsOpen(true);
+  const handleMouseLeave = () => setIsOpen(false);
+  const handleFocus = () => setIsOpen(true);
+  const handleBlur = () => setIsOpen(false);
+
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children, {
+      onMouseEnter: handleMouseEnter,
+      onMouseLeave: handleMouseLeave,
+      onFocus: handleFocus,
+      onBlur: handleBlur,
+    } as any);
+  }
+
+  return (
+    <div
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      className="inline-block"
+    >
+      {children}
+    </div>
+  );
+}
+
+export function TooltipContent({
+  children,
+  className,
+  side = 'top',
+  sideOffset = 4,
+}: TooltipContentProps) {
+  const { isOpen } = useContext(TooltipContext);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const triggerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isOpen && triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
-      const tooltipWidth = 200; // Approximate width
-      const tooltipHeight = 32; // Approximate height
+      const tooltipWidth = 200;
+      const tooltipHeight = 32;
       let x = 0;
       let y = 0;
 
-      switch (position) {
+      switch (side) {
         case 'top':
           x = rect.left + rect.width / 2 - tooltipWidth / 2;
-          y = rect.top - tooltipHeight - 8;
+          y = rect.top - tooltipHeight - sideOffset;
           break;
         case 'bottom':
           x = rect.left + rect.width / 2 - tooltipWidth / 2;
-          y = rect.bottom + 8;
+          y = rect.bottom + sideOffset;
           break;
         case 'left':
-          x = rect.left - tooltipWidth - 8;
+          x = rect.left - tooltipWidth - sideOffset;
           y = rect.top + rect.height / 2 - tooltipHeight / 2;
           break;
         case 'right':
-          x = rect.right + 8;
+          x = rect.right + sideOffset;
           y = rect.top + rect.height / 2 - tooltipHeight / 2;
           break;
       }
@@ -70,56 +167,47 @@ export function Tooltip({
         y = window.innerHeight - tooltipHeight - 8;
       }
 
-      setTooltipPosition({ x, y });
+      setPosition({ x, y });
     }
-  }, [isVisible, position]);
+  }, [isOpen, side, sideOffset]);
 
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, []);
+  if (!isOpen) return null;
 
-  const tooltipElement = isVisible ? (
+  const tooltipElement = (
     <div
-      className={`fixed z-50 rounded-md bg-gray-900 px-3 py-2 text-sm text-white shadow-lg transition-opacity duration-200 ${className}`}
+      className={cn(
+        'animate-in fade-in-0 zoom-in-95 fixed z-50 rounded-md bg-gray-900 px-3 py-2 text-sm text-white shadow-lg',
+        className
+      )}
       style={{
-        left: `${tooltipPosition.x}px`,
-        top: `${tooltipPosition.y}px`,
+        left: `${position.x}px`,
+        top: `${position.y}px`,
         maxWidth: '200px',
-        wordWrap: 'break-word',
       }}
     >
-      {content}
-      <div
-        className={`absolute h-2 w-2 rotate-45 bg-gray-900 ${
-          position === 'top'
-            ? 'bottom-[-4px] left-1/2 -translate-x-1/2'
-            : position === 'bottom'
-              ? 'top-[-4px] left-1/2 -translate-x-1/2'
-              : position === 'left'
-                ? 'top-1/2 right-[-4px] -translate-y-1/2'
-                : 'top-1/2 left-[-4px] -translate-y-1/2'
-        }`}
-      />
+      {children}
     </div>
-  ) : null;
+  );
 
+  return typeof window !== 'undefined'
+    ? createPortal(tooltipElement, document.body)
+    : null;
+}
+
+// Basic tooltip component for backwards compatibility
+export function BasicTooltip({
+  content,
+  children,
+  position = 'top',
+  delay = 500,
+  className = '',
+}: BasicTooltipProps) {
   return (
-    <>
-      <div
-        ref={triggerRef}
-        onMouseEnter={showTooltip}
-        onMouseLeave={hideTooltip}
-        onFocus={showTooltip}
-        onBlur={hideTooltip}
-        className="inline-block"
-      >
-        {children}
-      </div>
-      {typeof window !== 'undefined' && tooltipElement
-        ? createPortal(tooltipElement, document.body)
-        : null}
-    </>
+    <Tooltip delayDuration={delay}>
+      <TooltipTrigger>{children}</TooltipTrigger>
+      <TooltipContent side={position} className={className}>
+        {content}
+      </TooltipContent>
+    </Tooltip>
   );
 }

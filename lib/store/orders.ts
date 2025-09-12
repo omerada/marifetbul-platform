@@ -26,9 +26,11 @@ interface OrderState {
   orders: Order[];
   currentOrder: Order | null;
   orderTimelines: Record<string, OrderTimeline[]>;
+  timeline: OrderTimeline[];
 
   // UI State
   isLoadingOrders: boolean;
+  isLoadingTimeline: boolean;
   isLoadingOrder: boolean;
   isUpdatingOrder: boolean;
   filters: OrderFilters;
@@ -102,6 +104,10 @@ interface OrderActions {
   handleOrderUpdate: (order: Order) => void;
   handleTimelineUpdate: (orderId: string, timeline: OrderTimeline) => void;
   handleStatusChange: (orderId: string, status: string) => void;
+  updateOrderMilestone: (
+    milestoneId: string,
+    data: { status?: string; feedback?: string }
+  ) => Promise<void>;
 }
 
 type OrderStore = OrderState & OrderActions;
@@ -110,8 +116,10 @@ const initialState: OrderState = {
   orders: [],
   currentOrder: null,
   orderTimelines: {},
+  timeline: [],
   isLoadingOrders: false,
   isLoadingOrder: false,
+  isLoadingTimeline: false,
   isUpdatingOrder: false,
   filters: {},
   pagination: null,
@@ -610,6 +618,31 @@ export const useOrderStore = create<OrderStore>()(
             state.orders[orderIndex].status = orderStatus;
           }
         });
+      },
+
+      updateOrderMilestone: async (
+        milestoneId: string,
+        data: { status?: string; feedback?: string }
+      ) => {
+        try {
+          // Mock API call
+          console.log('Updating milestone:', milestoneId, data);
+
+          // Update milestone in current order
+          set((state) => {
+            if (state.currentOrder?.milestones) {
+              const milestoneIndex = state.currentOrder.milestones.findIndex(
+                (m) => m.id === milestoneId
+              );
+              if (milestoneIndex !== -1 && data.status) {
+                state.currentOrder.milestones[milestoneIndex].status =
+                  data.status as any;
+              }
+            }
+          });
+        } catch (error) {
+          console.error('Error updating milestone:', error);
+        }
       },
     })),
     {

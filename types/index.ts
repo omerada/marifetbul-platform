@@ -1113,11 +1113,6 @@ export interface ConversationsResponse {
   pagination: PaginationMeta;
 }
 
-export interface OrdersResponse {
-  orders: OrderTracking[];
-  pagination: PaginationMeta;
-}
-
 export interface MessageSearchResponse {
   results: MessageSearchResult[];
   pagination: PaginationMeta;
@@ -1179,6 +1174,19 @@ export interface OrderTimeline {
     | 'in_progress'
     | 'under_review'
     | 'disputed';
+  eventType:
+    | 'milestone_completed'
+    | 'payment_received'
+    | 'revision_requested'
+    | 'communication'
+    | 'status_change'
+    | 'order_created'
+    | 'work_started'
+    | 'delivery_submitted'
+    | 'order_completed'
+    | 'review_submitted'
+    | 'dispute_created'
+    | 'message_sent';
   title: string;
   description: string;
   timestamp: string;
@@ -1188,7 +1196,16 @@ export interface OrderTimeline {
     avatar: string;
     role: 'client' | 'freelancer' | 'system';
   };
-  metadata?: Record<string, any>;
+  metadata?: {
+    amount?: number;
+    files?: Array<{
+      id: string;
+      name: string;
+      url: string;
+      type: string;
+    }>;
+    [key: string]: unknown;
+  };
 }
 
 export interface OrderProgress {
@@ -1196,6 +1213,14 @@ export interface OrderProgress {
   currentStage: string;
   stagesCompleted: number;
   totalStages: number;
+  status:
+    | 'pending'
+    | 'in_progress'
+    | 'completed'
+    | 'cancelled'
+    | 'requires_approval'
+    | 'rejected'
+    | 'delayed';
   estimatedCompletion?: string;
 }
 
@@ -1203,10 +1228,23 @@ export interface OrderMilestone {
   id: string;
   title: string;
   description?: string;
-  status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+  status:
+    | 'pending'
+    | 'in_progress'
+    | 'completed'
+    | 'cancelled'
+    | 'requires_approval'
+    | 'rejected';
   dueDate: string;
   completedAt?: string;
   amount: number;
+  deliverables?: Array<{
+    id: string;
+    name: string;
+    type: string;
+    url: string;
+    uploadedAt: string;
+  }>;
 }
 
 export interface OrderCommunication {
