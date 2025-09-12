@@ -17,3 +17,9 @@ export { useAuthGuard, usePermissions } from './useAuthGuard';
 
 // Advanced Features
 export { useAdvancedSearch } from './useAdvancedSearch';
+
+// Detail page hooks
+export { useJobDetail } from './useJobDetail';
+export { usePackageDetail } from './usePackageDetail';
+export { useProposalForm } from './useProposalForm';
+export { usePackageOrder } from './usePackageOrder';

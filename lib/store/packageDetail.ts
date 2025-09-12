@@ -1,0 +1,264 @@
+import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
+import { PackageDetail, Review } from '@/types';
+import { OrderFormData } from '@/lib/validations/details';
+
+interface PackageDetailStore {
+  // State properties
+  currentPackage: PackageDetail | null;
+  reviews: Review[];
+  isLoading: boolean;
+  isOrdering: boolean;
+  error: string | null;
+  selectedTier: 'basic' | 'standard' | 'premium';
+  selectedAddOns: string[];
+  customizations: {
+    requirements: string;
+    additionalInfo: string;
+  };
+
+  // Actions
+  fetchPackageDetail: (packageId: string) => Promise<void>;
+  fetchReviews: (
+    packageId: string,
+    page?: number,
+    limit?: number
+  ) => Promise<void>;
+  createOrder: (orderData: OrderFormData) => Promise<string>; // Returns order ID
+  setSelectedTier: (tier: 'basic' | 'standard' | 'premium') => void;
+  toggleAddOn: (addOnId: string) => void;
+  updateCustomizations: (
+    customizations: Partial<{
+      requirements: string;
+      additionalInfo: string;
+    }>
+  ) => void;
+  calculateTotal: () => number;
+  calculateDeliveryTime: () => number;
+  clearError: () => void;
+  clearPackageDetail: () => void;
+}
+
+export const usePackageDetailStore = create<PackageDetailStore>()(
+  devtools(
+    (set, get) => ({
+      // Initial state
+      currentPackage: null,
+      reviews: [],
+      isLoading: false,
+      isOrdering: false,
+      error: null,
+      selectedTier: 'basic',
+      selectedAddOns: [],
+      customizations: {
+        requirements: '',
+        additionalInfo: '',
+      },
+
+      // Actions
+      fetchPackageDetail: async (packageId: string) => {
+        set(
+          { isLoading: true, error: null },
+          false,
+          'packageDetail/fetchStart'
+        );
+
+        try {
+          const response = await fetch(`/api/v1/packages/${packageId}`);
+          const data = await response.json();
+
+          if (data.success) {
+            set(
+              {
+                currentPackage: data.data,
+                reviews: data.data.detailedReviews || [],
+                isLoading: false,
+              },
+              false,
+              'packageDetail/fetchSuccess'
+            );
+          } else {
+            set(
+              {
+                error: data.error || 'Paket detayları yüklenemedi',
+                isLoading: false,
+              },
+              false,
+              'packageDetail/fetchError'
+            );
+          }
+        } catch (error) {
+          console.error('Package detail fetch error:', error);
+          set(
+            { error: 'Paket detayları yüklenemedi', isLoading: false },
+            false,
+            'packageDetail/fetchError'
+          );
+        }
+      },
+
+      fetchReviews: async (packageId: string, page = 1, limit = 5) => {
+        try {
+          const response = await fetch(
+            `/api/v1/packages/${packageId}/reviews?page=${page}&limit=${limit}`
+          );
+          const data = await response.json();
+
+          if (data.success) {
+            set(
+              { reviews: data.data },
+              false,
+              'packageDetail/reviewsFetchSuccess'
+            );
+          } else {
+            console.error('Failed to fetch reviews:', data.error);
+          }
+        } catch (error) {
+          console.error('Reviews fetch error:', error);
+        }
+      },
+
+      createOrder: async (orderData: OrderFormData) => {
+        set(
+          { isOrdering: true, error: null },
+          false,
+          'packageDetail/orderStart'
+        );
+
+        try {
+          const token = localStorage.getItem('auth_token');
+          const response = await fetch(
+            `/api/v1/packages/${orderData.packageId}/orders`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(orderData),
+            }
+          );
+
+          const data = await response.json();
+
+          if (data.success) {
+            set({ isOrdering: false }, false, 'packageDetail/orderSuccess');
+
+            console.log('Sipariş başarıyla oluşturuldu!');
+            return data.data.id;
+          } else {
+            set(
+              {
+                error: data.error || 'Sipariş oluşturulamadı',
+                isOrdering: false,
+              },
+              false,
+              'packageDetail/orderError'
+            );
+            throw new Error(data.error);
+          }
+        } catch (error) {
+          console.error('Order creation error:', error);
+          set(
+            { error: 'Sipariş oluşturulamadı', isOrdering: false },
+            false,
+            'packageDetail/orderError'
+          );
+          throw error;
+        }
+      },
+
+      setSelectedTier: (tier: 'basic' | 'standard' | 'premium') => {
+        set({ selectedTier: tier }, false, 'packageDetail/setTier');
+      },
+
+      toggleAddOn: (addOnId: string) => {
+        const { selectedAddOns } = get();
+        const newAddOns = selectedAddOns.includes(addOnId)
+          ? selectedAddOns.filter((id) => id !== addOnId)
+          : [...selectedAddOns, addOnId];
+
+        set({ selectedAddOns: newAddOns }, false, 'packageDetail/toggleAddOn');
+      },
+
+      updateCustomizations: (
+        customizations: Partial<{
+          requirements: string;
+          additionalInfo: string;
+        }>
+      ) => {
+        set(
+          (state) => ({
+            customizations: { ...state.customizations, ...customizations },
+          }),
+          false,
+          'packageDetail/updateCustomizations'
+        );
+      },
+
+      calculateTotal: () => {
+        const { currentPackage, selectedTier, selectedAddOns } = get();
+
+        if (!currentPackage) return 0;
+
+        let total = currentPackage.pricing[selectedTier].price;
+
+        selectedAddOns.forEach((addOnId) => {
+          const addOn = currentPackage.addOns.find((a) => a.id === addOnId);
+          if (addOn) {
+            total += addOn.price;
+          }
+        });
+
+        return total;
+      },
+
+      calculateDeliveryTime: () => {
+        const { currentPackage, selectedTier, selectedAddOns } = get();
+
+        if (!currentPackage) return 0;
+
+        let deliveryTime = currentPackage.pricing[selectedTier].deliveryTime;
+
+        selectedAddOns.forEach((addOnId) => {
+          const addOn = currentPackage.addOns.find((a) => a.id === addOnId);
+          if (addOn && addOn.deliveryTime > 0) {
+            deliveryTime += addOn.deliveryTime;
+          } else if (addOn && addOn.deliveryTime < 0) {
+            // Negative delivery time means faster delivery
+            deliveryTime += addOn.deliveryTime;
+          }
+        });
+
+        return Math.max(1, deliveryTime); // Minimum 1 day
+      },
+
+      clearError: () => {
+        set({ error: null }, false, 'packageDetail/clearError');
+      },
+
+      clearPackageDetail: () => {
+        set(
+          {
+            currentPackage: null,
+            reviews: [],
+            error: null,
+            isLoading: false,
+            isOrdering: false,
+            selectedTier: 'basic',
+            selectedAddOns: [],
+            customizations: {
+              requirements: '',
+              additionalInfo: '',
+            },
+          },
+          false,
+          'packageDetail/clear'
+        );
+      },
+    }),
+    {
+      name: 'package-detail-store',
+    }
+  )
+);

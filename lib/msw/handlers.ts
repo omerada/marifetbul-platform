@@ -10,6 +10,7 @@ import {
   Message,
   Conversation,
 } from '@/types';
+import { detailHandlers } from './handlers/details';
 
 // Mock employer data
 const mockEmployer: Employer = {
@@ -2628,4 +2629,7 @@ export const handlers = [
       radius,
     });
   }),
+
+  // Detail page handlers
+  ...detailHandlers,
 ];

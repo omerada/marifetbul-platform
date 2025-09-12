@@ -122,6 +122,100 @@ export interface Proposal {
   status: 'pending' | 'accepted' | 'rejected' | 'withdrawn';
   createdAt: string;
   updatedAt: string;
+  // Extended fields for detail pages
+  milestones?: {
+    title: string;
+    description: string;
+    amount: number;
+    dueDate: string;
+  }[];
+  questions?: {
+    question: string;
+    answer: string;
+  }[];
+}
+
+// Extended Job interface for detail pages
+export interface JobDetail {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  budget: {
+    type: 'fixed' | 'hourly';
+    amount: number;
+    maxAmount?: number;
+  };
+  timeline: string;
+  duration?: string;
+  skills: string[];
+  experienceLevel: 'beginner' | 'intermediate' | 'expert';
+  location?: string;
+  isRemote: boolean;
+  status: 'open' | 'in_progress' | 'completed' | 'cancelled';
+  employerId: string;
+  employer: Employer;
+  proposalsCount: number;
+  createdAt: string;
+  updatedAt: string;
+  deadline?: string;
+  // Extended fields for detail pages
+  requirements: string[];
+  attachments: {
+    id: string;
+    name: string;
+    url: string;
+    type: string;
+  }[];
+  tags: string[];
+  urgency: 'low' | 'medium' | 'high';
+  expiresAt: string;
+}
+
+// Extended Package interface for detail pages
+export interface PackageDetail extends ServicePackage {
+  overview: string;
+  whatIncluded: string[];
+  faq: {
+    question: string;
+    answer: string;
+  }[];
+  pricing: {
+    basic: {
+      price: number;
+      title: string;
+      description: string;
+      features: string[];
+      deliveryTime: number;
+      revisions: number;
+    };
+    standard: {
+      price: number;
+      title: string;
+      description: string;
+      features: string[];
+      deliveryTime: number;
+      revisions: number;
+    };
+    premium: {
+      price: number;
+      title: string;
+      description: string;
+      features: string[];
+      deliveryTime: number;
+      revisions: number;
+    };
+  };
+  addOns: {
+    id: string;
+    title: string;
+    price: number;
+    deliveryTime: number;
+  }[];
+  totalOrders: number;
+  detailedReviews: Review[];
+  relatedPackages: Partial<ServicePackage>[];
 }
 
 export interface Review {
