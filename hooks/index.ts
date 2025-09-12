@@ -23,3 +23,6 @@ export { useJobDetail } from './useJobDetail';
 export { usePackageDetail } from './usePackageDetail';
 export { useProposalForm } from './useProposalForm';
 export { usePackageOrder } from './usePackageOrder';
+
+// Real-time features
+export { useWebSocket } from './useWebSocket';

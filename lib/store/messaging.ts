@@ -26,6 +26,7 @@ interface MessagingState {
   messages: Record<string, ChatMessage[]>;
   currentConversation: ChatConversation | null;
   typingStatuses: TypingStatus[];
+  typingUsers: Record<string, Set<string>>;
 
   // UI State
   isLoadingConversations: boolean;
@@ -98,6 +99,18 @@ interface MessagingActions {
   handleNewMessage: (message: ChatMessage) => void;
   handleMessageUpdate: (message: ChatMessage) => void;
   handleConversationUpdate: (conversation: ChatConversation) => void;
+
+  // WebSocket integration
+  addMessage: (conversationId: string, message: ChatMessage) => void;
+  updateTypingStatus: (
+    conversationId: string,
+    userId: string,
+    isTyping: boolean
+  ) => void;
+  updateUserStatus: (
+    userId: string,
+    status: 'online' | 'away' | 'busy' | 'offline'
+  ) => void;
 }
 
 type MessagingStore = MessagingState & MessagingActions;
@@ -107,6 +120,7 @@ const initialState: MessagingState = {
   messages: {},
   currentConversation: null,
   typingStatuses: [],
+  typingUsers: {},
   isLoadingConversations: false,
   isLoadingMessages: false,
   isSendingMessage: false,
@@ -713,6 +727,53 @@ export const useMessagingStore = create<MessagingStore>()(
             state.conversations[convIndex] = conversation;
           } else {
             state.conversations.unshift(conversation);
+          }
+        });
+      },
+
+      // WebSocket integration functions
+      addMessage: (conversationId, message) => {
+        set((state) => {
+          if (!state.messages[conversationId]) {
+            state.messages[conversationId] = [];
+          }
+          state.messages[conversationId].push(message);
+
+          // Update conversation's last message
+          const convIndex = state.conversations.findIndex(
+            (c) => c.id === conversationId
+          );
+          if (convIndex !== -1) {
+            state.conversations[convIndex].lastMessage = message;
+            // Note: ChatConversation doesn't have updatedAt, so we'll skip this update
+          }
+        });
+      },
+
+      updateTypingStatus: (conversationId, userId, isTyping) => {
+        set((state) => {
+          if (isTyping) {
+            if (!state.typingUsers[conversationId]) {
+              state.typingUsers[conversationId] = new Set();
+            }
+            state.typingUsers[conversationId].add(userId);
+          } else {
+            if (state.typingUsers[conversationId]) {
+              state.typingUsers[conversationId].delete(userId);
+              if (state.typingUsers[conversationId].size === 0) {
+                delete state.typingUsers[conversationId];
+              }
+            }
+          }
+        });
+      },
+
+      updateUserStatus: (userId, status) => {
+        set((state) => {
+          if (status === 'online') {
+            state.onlineUsers.add(userId);
+          } else {
+            state.onlineUsers.delete(userId);
           }
         });
       },

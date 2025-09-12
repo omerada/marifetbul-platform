@@ -35,10 +35,16 @@ export function DropdownMenu({ children }: DropdownMenuProps) {
     <div className="relative inline-block text-left">
       {React.Children.map(children, (child) =>
         React.isValidElement(child)
-          ? React.cloneElement(child as React.ReactElement<any>, {
-              isOpen,
-              setIsOpen,
-            })
+          ? React.cloneElement(
+              child as React.ReactElement<{
+                isOpen?: boolean;
+                setIsOpen?: (open: boolean) => void;
+              }>,
+              {
+                isOpen,
+                setIsOpen,
+              }
+            )
           : child
       )}
     </div>
@@ -60,11 +66,18 @@ export function DropdownMenuTrigger({
   };
 
   if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children, {
-      onClick: handleClick,
-      'aria-expanded': isOpen,
-      'aria-haspopup': true,
-    });
+    return React.cloneElement(
+      children as React.ReactElement<{
+        onClick?: () => void;
+        'aria-expanded'?: boolean;
+        'aria-haspopup'?: boolean;
+      }>,
+      {
+        onClick: handleClick,
+        'aria-expanded': isOpen,
+        'aria-haspopup': true,
+      }
+    );
   }
 
   return (
@@ -125,9 +138,14 @@ export function DropdownMenuContent({
     >
       {React.Children.map(children, (child) =>
         React.isValidElement(child)
-          ? React.cloneElement(child as React.ReactElement<any>, {
-              setIsOpen,
-            })
+          ? React.cloneElement(
+              child as React.ReactElement<{
+                setIsOpen?: (open: boolean) => void;
+              }>,
+              {
+                setIsOpen,
+              }
+            )
           : child
       )}
     </div>
