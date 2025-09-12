@@ -8,7 +8,6 @@ export { DashboardStats } from './DashboardStats';
 export { QuickActions } from './QuickActions';
 export { ActivityTimeline } from './ActivityTimeline';
 export { DashboardCharts } from './DashboardCharts';
-export { PaymentHistory } from './PaymentHistory';
 export { AvatarUpload } from './AvatarUpload';
 export { ProfileAvatarSection } from './ProfileAvatarSection';
 export { AvatarGallery } from './AvatarGallery';
@@ -103,11 +102,17 @@ export { AdvancedSearch } from './AdvancedSearch';
 export { UniversalSearch } from './UniversalSearch';
 export { NotificationCenter } from './NotificationCenter';
 export { NotificationModal } from './NotificationModal';
+export { NotificationItem } from './NotificationItem';
 export { NotificationSettingsPanel } from './NotificationSettings';
 export { PushNotificationToggle } from './PushNotificationToggle';
 export { AnimatedInteractions } from './AnimatedInteractions';
 export { AnalyticsDashboard } from './AnalyticsDashboard';
 export { PWAManager } from './PWAManager';
+
+// Payment System (Sprint 6)
+export { PaymentForm } from './PaymentForm';
+export { InvoiceCard } from './InvoiceCard';
+export { PaymentHistory } from './PaymentHistory';
 
 // Location & Map Features
 export { LocationPicker } from './LocationPicker';

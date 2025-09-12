@@ -1,403 +1,634 @@
 'use client';
 
-import { useState } from 'react';
-import { Card } from '@/components/ui/Card';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
+import { useNotification } from '@/hooks/useNotification';
+import { Notification, NotificationTypeEnum } from '@/types';
 import {
   Bell,
-  X,
+  BellOff,
   Check,
+  CheckCheck,
+  Trash2,
+  Settings,
+  Filter,
+  Eye,
+  Archive,
+  Clock,
   AlertCircle,
-  MessageSquare,
   DollarSign,
+  FileText,
+  MessageCircle,
+  Package,
+  UserPlus,
+  Heart,
   Star,
+  Zap,
+  X,
   Calendar,
   User,
   ChevronRight,
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { tr } from 'date-fns/locale';
-
-export interface Notification {
-  id: string;
-  type: 'message' | 'proposal' | 'payment' | 'rating' | 'job_update' | 'system';
-  title: string;
-  message: string;
-  read: boolean;
-  timestamp: Date;
-  actionUrl?: string;
-  actionLabel?: string;
-  priority: 'low' | 'medium' | 'high';
-  relatedUserId?: string;
-  relatedUserName?: string;
-  relatedUserAvatar?: string;
-}
 
 interface NotificationCenterProps {
   className?: string;
+  onNotificationClick?: (notification: Notification) => void;
+  onSettingsClick?: () => void;
+  maxHeight?: string;
 }
 
-// Mock notifications data
-const mockNotifications: Notification[] = [
-  {
-    id: '1',
-    type: 'message',
-    title: 'Yeni Mesaj',
-    message: 'Ahmet Yılmaz size yeni bir mesaj gönderdi.',
-    read: false,
-    timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
-    priority: 'medium',
-    relatedUserId: '1',
-    relatedUserName: 'Ahmet Yılmaz',
-    relatedUserAvatar: '/avatars/ahmet.jpg',
-    actionUrl: '/messages/1',
-    actionLabel: 'Mesajı Görüntüle',
-  },
-  {
-    id: '2',
-    type: 'proposal',
-    title: 'Yeni Teklif',
-    message: 'E-ticaret sitesi projeniz için yeni bir teklif aldınız.',
-    read: false,
-    timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-    priority: 'high',
-    relatedUserId: '2',
-    relatedUserName: 'Zeynep Demir',
-    relatedUserAvatar: '/avatars/zeynep.jpg',
-    actionUrl: '/jobs/1/proposals',
-    actionLabel: 'Teklifleri Görüntüle',
-  },
-  {
-    id: '3',
-    type: 'payment',
-    title: 'Ödeme Alındı',
-    message: '₺2,500 tutarında ödeme hesabınıza yatırıldı.',
-    read: true,
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-    priority: 'medium',
-    actionUrl: '/dashboard/payments',
-    actionLabel: 'Ödemeleri Görüntüle',
-  },
-  {
-    id: '4',
-    type: 'rating',
-    title: 'Yeni Değerlendirme',
-    message: 'Müşteriniz size 5 yıldız verdi ve yorum bıraktı.',
-    read: true,
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6), // 6 hours ago
-    priority: 'low',
-    relatedUserId: '3',
-    relatedUserName: 'Mehmet Özkan',
-    relatedUserAvatar: '/avatars/mehmet.jpg',
-    actionUrl: '/profile/reviews',
-    actionLabel: 'Değerlendirmeleri Görüntüle',
-  },
-  {
-    id: '5',
-    type: 'job_update',
-    title: 'İş Güncellendi',
-    message: 'Mobil uygulama geliştirme projenizde değişiklik yapıldı.',
-    read: true,
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-    priority: 'medium',
-    actionUrl: '/jobs/2',
-    actionLabel: 'İşi Görüntüle',
-  },
-  {
-    id: '6',
-    type: 'system',
-    title: 'Sistem Bildirimi',
-    message: 'Profilinizi tamamlayarak daha fazla iş fırsatı yakalayın.',
-    read: true,
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48), // 2 days ago
-    priority: 'low',
-    actionUrl: '/profile/edit',
-    actionLabel: 'Profili Tamamla',
-  },
-];
-
-export function NotificationCenter({
+export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   className = '',
-}: NotificationCenterProps) {
-  const [notifications, setNotifications] =
-    useState<Notification[]>(mockNotifications);
+  onNotificationClick,
+  onSettingsClick,
+  maxHeight = 'h-96',
+}) => {
+  const {
+    notifications,
+    unreadCount,
+    loading,
+    error,
+    fetchNotifications,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+  } = useNotification();
+
+  // Mock archive function since it's not in the hook
+  const archiveNotification = (notificationId: string) => {
+    // For now, just delete the notification
+    deleteNotification(notificationId);
+  };
+
+  const [activeTab, setActiveTab] = useState<
+    'all' | 'unread' | 'payment' | 'order' | 'message'
+  >('all');
+  const [selectedNotifications, setSelectedNotifications] = useState<string[]>(
+    []
+  );
   const [showNotifications, setShowNotifications] = useState(false);
-  const [filter, setFilter] = useState<'all' | 'unread' | 'important'>('all');
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
-  const importantCount = notifications.filter(
-    (n) => n.priority === 'high' && !n.read
-  ).length;
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
 
-  const filteredNotifications = notifications.filter((notification) => {
-    switch (filter) {
-      case 'unread':
-        return !notification.read;
-      case 'important':
-        return notification.priority === 'high';
-      default:
-        return true;
+  const getNotificationIcon = (type: string) => {
+    if (type.includes('payment'))
+      return <DollarSign className="h-4 w-4 text-green-600" />;
+    if (type.includes('escrow'))
+      return <DollarSign className="h-4 w-4 text-green-600" />;
+    if (type.includes('refund'))
+      return <DollarSign className="h-4 w-4 text-orange-600" />;
+    if (type.includes('invoice'))
+      return <FileText className="h-4 w-4 text-blue-600" />;
+    if (type.includes('proposal'))
+      return <MessageCircle className="h-4 w-4 text-blue-600" />;
+    if (type.includes('message'))
+      return <MessageCircle className="h-4 w-4 text-blue-600" />;
+    if (type.includes('order'))
+      return <Package className="h-4 w-4 text-blue-600" />;
+    if (type.includes('service'))
+      return <Package className="h-4 w-4 text-green-600" />;
+    if (type.includes('review'))
+      return <Star className="h-4 w-4 text-yellow-600" />;
+    if (type.includes('rating'))
+      return <Star className="h-4 w-4 text-yellow-600" />;
+    if (type.includes('follow'))
+      return <UserPlus className="h-4 w-4 text-blue-600" />;
+    if (type.includes('favorite'))
+      return <Heart className="h-4 w-4 text-red-600" />;
+    if (type.includes('promotion'))
+      return <Zap className="h-4 w-4 text-purple-600" />;
+    if (type.includes('system'))
+      return <Bell className="h-4 w-4 text-gray-600" />;
+    if (type.includes('security'))
+      return <AlertCircle className="h-4 w-4 text-red-600" />;
+    if (type.includes('profile'))
+      return <Eye className="h-4 w-4 text-blue-600" />;
+    return <Bell className="h-4 w-4 text-gray-600" />;
+  };
+
+  const getNotificationBadge = (type: string) => {
+    if (
+      type.includes('payment') ||
+      type.includes('escrow') ||
+      type.includes('refund')
+    ) {
+      return 'Ödeme';
     }
-  });
+    if (type.includes('order') || type.includes('service')) {
+      return 'Sipariş';
+    }
+    if (type.includes('message') || type.includes('proposal')) {
+      return 'Mesaj';
+    }
+    if (type.includes('review') || type.includes('rating')) {
+      return 'Değerlendirme';
+    }
+    return 'Sistem';
+  };
 
-  const markAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((notification) =>
-        notification.id === id ? { ...notification, read: true } : notification
-      )
+  const getBadgeVariant = (type: string) => {
+    if (type.includes('payment') || type.includes('escrow')) {
+      return 'success';
+    }
+    if (
+      type.includes('failed') ||
+      type.includes('rejected') ||
+      type.includes('cancelled')
+    ) {
+      return 'destructive';
+    }
+    if (type.includes('order') || type.includes('proposal')) {
+      return 'default';
+    }
+    return 'secondary';
+  };
+
+  const filteredNotifications = notifications.filter(
+    (notification: Notification) => {
+      switch (activeTab) {
+        case 'unread':
+          return !notification.isRead;
+        case 'payment':
+          return (
+            notification.type.includes('payment') ||
+            notification.type.includes('escrow') ||
+            notification.type.includes('refund')
+          );
+        case 'order':
+          return (
+            notification.type.includes('order') ||
+            notification.type.includes('service')
+          );
+        case 'message':
+          return (
+            notification.type.includes('message') ||
+            notification.type.includes('proposal')
+          );
+        default:
+          return true;
+      }
+    }
+  );
+
+  const handleNotificationClick = (notification: Notification) => {
+    if (!notification.isRead) {
+      markAsRead([notification.id]);
+    }
+    onNotificationClick?.(notification);
+  };
+
+  const handleSelectNotification = (notificationId: string) => {
+    setSelectedNotifications((prev) =>
+      prev.includes(notificationId)
+        ? prev.filter((id) => id !== notificationId)
+        : [...prev, notificationId]
     );
   };
 
-  const markAllAsRead = () => {
-    setNotifications((prev) =>
-      prev.map((notification) => ({ ...notification, read: true }))
+  const handleBulkMarkAsRead = () => {
+    markAsRead(selectedNotifications);
+    setSelectedNotifications([]);
+  };
+
+  const handleBulkArchive = () => {
+    selectedNotifications.forEach((id) => archiveNotification(id));
+    setSelectedNotifications([]);
+  };
+
+  const handleBulkDelete = () => {
+    selectedNotifications.forEach((id) => deleteNotification(id));
+    setSelectedNotifications([]);
+  };
+
+  const formatTimeAgo = (timestamp: string) => {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffInMinutes = Math.floor(
+      (now.getTime() - time.getTime()) / (1000 * 60)
     );
+
+    if (diffInMinutes < 1) return 'Şimdi';
+    if (diffInMinutes < 60) return `${diffInMinutes}dk önce`;
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours}sa önce`;
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}g önce`;
+
+    return time.toLocaleDateString('tr-TR');
   };
 
-  const deleteNotification = (id: string) => {
-    setNotifications((prev) =>
-      prev.filter((notification) => notification.id !== id)
-    );
-  };
+  // Toggle view for notification center
+  if (className.includes('dropdown')) {
+    return (
+      <div className="relative">
+        {/* Notification Bell */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowNotifications(!showNotifications)}
+          className="relative p-2"
+        >
+          <Bell className="h-5 w-5" />
+          {unreadCount > 0 && (
+            <Badge
+              variant="destructive"
+              size="sm"
+              className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs"
+            >
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </Badge>
+          )}
+        </Button>
 
-  const getNotificationIcon = (type: Notification['type']) => {
-    switch (type) {
-      case 'message':
-        return <MessageSquare className="h-4 w-4" />;
-      case 'proposal':
-        return <DollarSign className="h-4 w-4" />;
-      case 'payment':
-        return <DollarSign className="h-4 w-4" />;
-      case 'rating':
-        return <Star className="h-4 w-4" />;
-      case 'job_update':
-        return <Calendar className="h-4 w-4" />;
-      case 'system':
-        return <AlertCircle className="h-4 w-4" />;
-      default:
-        return <Bell className="h-4 w-4" />;
-    }
-  };
-
-  const getNotificationColor = (
-    type: Notification['type'],
-    priority: Notification['priority']
-  ) => {
-    if (priority === 'high') {
-      return 'text-red-600 bg-red-100';
-    }
-
-    switch (type) {
-      case 'message':
-        return 'text-blue-600 bg-blue-100';
-      case 'proposal':
-        return 'text-green-600 bg-green-100';
-      case 'payment':
-        return 'text-green-600 bg-green-100';
-      case 'rating':
-        return 'text-yellow-600 bg-yellow-100';
-      case 'job_update':
-        return 'text-purple-600 bg-purple-100';
-      case 'system':
-        return 'text-gray-600 bg-gray-100';
-      default:
-        return 'text-gray-600 bg-gray-100';
-    }
-  };
-
-  return (
-    <div className={`relative ${className}`}>
-      {/* Notification Bell */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setShowNotifications(!showNotifications)}
-        className="relative p-2"
-      >
-        <Bell className="h-5 w-5" />
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-            {unreadCount > 9 ? '9+' : unreadCount}
-          </span>
-        )}
-      </Button>
-
-      {/* Notification Panel */}
-      {showNotifications && (
-        <Card className="absolute top-full right-0 z-50 mt-2 max-h-96 w-80 overflow-hidden shadow-lg">
-          {/* Header */}
-          <div className="border-b border-gray-200 p-4">
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="font-semibold">Bildirimler</h3>
-              <div className="flex items-center gap-2">
+        {/* Dropdown Panel */}
+        {showNotifications && (
+          <Card className="absolute top-full right-0 z-50 mt-2 max-h-96 w-80 overflow-hidden shadow-lg">
+            <CardHeader className="border-b border-gray-200 pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Bell className="h-5 w-5" />
+                  Bildirimler
+                  {unreadCount > 0 && (
+                    <Badge variant="destructive" size="sm">
+                      {unreadCount}
+                    </Badge>
+                  )}
+                </CardTitle>
                 <Button
-                  size="sm"
-                  variant="ghost"
                   onClick={() => setShowNotifications(false)}
-                  className="p-1"
+                  size="sm"
+                  variant="outline"
+                  className="h-6 w-6 p-0"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3 w-3" />
                 </Button>
               </div>
-            </div>
+            </CardHeader>
 
-            {/* Filter Tabs */}
-            <div className="flex gap-1">
-              <Button
-                size="sm"
-                variant={filter === 'all' ? 'primary' : 'ghost'}
-                onClick={() => setFilter('all')}
-                className="text-xs"
-              >
-                Tümü ({notifications.length})
-              </Button>
-              <Button
-                size="sm"
-                variant={filter === 'unread' ? 'primary' : 'ghost'}
-                onClick={() => setFilter('unread')}
-                className="text-xs"
-              >
-                Okunmamış ({unreadCount})
-              </Button>
-              <Button
-                size="sm"
-                variant={filter === 'important' ? 'primary' : 'ghost'}
-                onClick={() => setFilter('important')}
-                className="text-xs"
-              >
-                Önemli ({importantCount})
-              </Button>
-            </div>
-          </div>
+            <CardContent className="p-0">
+              <div className="max-h-64 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <BellOff className="mb-2 h-8 w-8 text-gray-400" />
+                    <p className="text-gray-500">Bildirim bulunamadı</p>
+                  </div>
+                ) : (
+                  <div className="space-y-1 p-3">
+                    {notifications
+                      .slice(0, 5)
+                      .map((notification: Notification) => (
+                        <div
+                          key={notification.id}
+                          className={`group flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-all hover:bg-gray-50 ${
+                            !notification.isRead
+                              ? 'border-blue-200 bg-blue-50'
+                              : 'border-gray-200'
+                          }`}
+                          onClick={() => handleNotificationClick(notification)}
+                        >
+                          <div className="flex-shrink-0">
+                            {getNotificationIcon(notification.type)}
+                          </div>
 
-          {/* Notifications List */}
-          <div className="max-h-64 overflow-y-auto">
-            {filteredNotifications.length === 0 ? (
-              <div className="p-4 text-center text-gray-500">
-                <Bell className="mx-auto mb-2 h-8 w-8 opacity-50" />
-                <p>Bildirim bulunamadı</p>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <Badge
+                                    variant={getBadgeVariant(notification.type)}
+                                    size="sm"
+                                  >
+                                    {getNotificationBadge(notification.type)}
+                                  </Badge>
+                                  {!notification.isRead && (
+                                    <div className="h-2 w-2 rounded-full bg-blue-600"></div>
+                                  )}
+                                </div>
+                                <h4
+                                  className={`text-sm ${!notification.isRead ? 'font-semibold' : 'font-medium'}`}
+                                >
+                                  {notification.title}
+                                </h4>
+                                <p className="line-clamp-2 text-xs text-gray-600">
+                                  {notification.message}
+                                </p>
+                              </div>
+                              <span className="flex items-center gap-1 text-xs text-gray-500">
+                                <Clock className="h-3 w-3" />
+                                {formatTimeAgo(notification.createdAt)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
               </div>
-            ) : (
-              filteredNotifications.map((notification) => (
+
+              {/* Footer Actions */}
+              {unreadCount > 0 && (
+                <div className="border-t border-gray-200 p-3">
+                  <Button
+                    onClick={markAllAsRead}
+                    size="sm"
+                    variant="outline"
+                    className="w-full text-xs"
+                  >
+                    <CheckCheck className="mr-1 h-3 w-3" />
+                    Tümünü Okundu İşaretle
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Card className={className}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Bell className="h-5 w-5" />
+            Bildirimler
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="flex items-center space-x-4">
+                  <div className="h-10 w-10 rounded-full bg-gray-200"></div>
+                  <div className="flex-1">
+                    <div className="h-4 w-3/4 rounded bg-gray-200"></div>
+                    <div className="mt-2 h-3 w-1/2 rounded bg-gray-200"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className={className}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-red-600">
+            <AlertCircle className="h-5 w-5" />
+            Bildirimler Yüklenemedi
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-gray-600">{error}</p>
+          <Button
+            onClick={() => fetchNotifications()}
+            className="mt-4"
+            size="sm"
+          >
+            Tekrar Dene
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className={className}>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Bell className="h-5 w-5" />
+            Bildirimler
+            {unreadCount > 0 && (
+              <Badge variant="destructive" size="sm">
+                {unreadCount}
+              </Badge>
+            )}
+          </CardTitle>
+          <div className="flex items-center gap-2">
+            {selectedNotifications.length > 0 && (
+              <>
+                <Button
+                  onClick={handleBulkMarkAsRead}
+                  size="sm"
+                  variant="outline"
+                  title="Seçilenleri okundu işaretle"
+                >
+                  <Check className="h-3 w-3" />
+                </Button>
+                <Button
+                  onClick={handleBulkArchive}
+                  size="sm"
+                  variant="outline"
+                  title="Seçilenleri arşivle"
+                >
+                  <Archive className="h-3 w-3" />
+                </Button>
+                <Button
+                  onClick={handleBulkDelete}
+                  size="sm"
+                  variant="outline"
+                  title="Seçilenleri sil"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </>
+            )}
+            {unreadCount > 0 && (
+              <Button
+                onClick={markAllAsRead}
+                size="sm"
+                variant="outline"
+                title="Tümünü okundu işaretle"
+              >
+                <CheckCheck className="h-3 w-3" />
+              </Button>
+            )}
+            <Button
+              onClick={onSettingsClick}
+              size="sm"
+              variant="outline"
+              title="Bildirim ayarları"
+            >
+              <Settings className="h-3 w-3" />
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent className="p-0">
+        <div className="border-b border-gray-200 px-6 py-3">
+          <div className="flex gap-1">
+            <Button
+              size="sm"
+              variant={activeTab === 'all' ? 'primary' : 'outline'}
+              onClick={() => setActiveTab('all')}
+              className="text-xs"
+            >
+              Tümü ({notifications.length})
+            </Button>
+            <Button
+              size="sm"
+              variant={activeTab === 'unread' ? 'primary' : 'outline'}
+              onClick={() => setActiveTab('unread')}
+              className="text-xs"
+            >
+              Okunmamış ({unreadCount})
+            </Button>
+            <Button
+              size="sm"
+              variant={activeTab === 'payment' ? 'primary' : 'outline'}
+              onClick={() => setActiveTab('payment')}
+              className="text-xs"
+            >
+              Ödeme
+            </Button>
+            <Button
+              size="sm"
+              variant={activeTab === 'order' ? 'primary' : 'outline'}
+              onClick={() => setActiveTab('order')}
+              className="text-xs"
+            >
+              Sipariş
+            </Button>
+            <Button
+              size="sm"
+              variant={activeTab === 'message' ? 'primary' : 'outline'}
+              onClick={() => setActiveTab('message')}
+              className="text-xs"
+            >
+              Mesaj
+            </Button>
+          </div>
+        </div>
+
+        <div className={`${maxHeight} overflow-y-auto`}>
+          {filteredNotifications.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <BellOff className="mb-2 h-8 w-8 text-gray-400" />
+              <p className="text-gray-500">
+                {activeTab === 'unread'
+                  ? 'Okunmamış bildirim yok'
+                  : 'Bildirim bulunamadı'}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-1 px-6 pb-6">
+              {filteredNotifications.map((notification: Notification) => (
                 <div
                   key={notification.id}
-                  className={`border-b border-gray-100 p-3 transition-colors hover:bg-gray-50 ${
-                    !notification.read ? 'bg-blue-50' : ''
-                  }`}
+                  className={`group flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-all hover:bg-gray-50 ${
+                    !notification.isRead
+                      ? 'border-blue-200 bg-blue-50'
+                      : 'border-gray-200'
+                  } ${selectedNotifications.includes(notification.id) ? 'ring-2 ring-blue-300' : ''}`}
+                  onClick={() => handleNotificationClick(notification)}
                 >
-                  <div className="flex items-start gap-3">
-                    {/* Icon */}
-                    <div
-                      className={`rounded-full p-1.5 ${getNotificationColor(notification.type, notification.priority)}`}
-                    >
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedNotifications.includes(notification.id)}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        handleSelectNotification(notification.id);
+                      }}
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <div className="flex-shrink-0">
                       {getNotificationIcon(notification.type)}
                     </div>
+                  </div>
 
-                    {/* Content */}
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            variant={getBadgeVariant(notification.type)}
+                            size="sm"
+                          >
+                            {getNotificationBadge(notification.type)}
+                          </Badge>
+                          {!notification.isRead && (
+                            <div className="h-2 w-2 rounded-full bg-blue-600"></div>
+                          )}
+                        </div>
                         <h4
-                          className={`text-sm font-medium ${!notification.read ? 'text-gray-900' : 'text-gray-700'}`}
+                          className={`text-sm ${!notification.isRead ? 'font-semibold' : 'font-medium'}`}
                         >
                           {notification.title}
                         </h4>
-                        <div className="flex items-center gap-1">
-                          {!notification.read && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => markAsRead(notification.id)}
-                              className="p-1"
-                              title="Okundu olarak işaretle"
-                            >
-                              <Check className="h-3 w-3" />
-                            </Button>
-                          )}
+                        <p className="line-clamp-2 text-xs text-gray-600">
+                          {notification.message}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end gap-1">
+                        <span className="flex items-center gap-1 text-xs text-gray-500">
+                          <Clock className="h-3 w-3" />
+                          {formatTimeAgo(notification.createdAt)}
+                        </span>
+                        <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                           <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              archiveNotification(notification.id);
+                            }}
                             size="sm"
-                            variant="ghost"
-                            onClick={() => deleteNotification(notification.id)}
-                            className="p-1 text-red-600 hover:text-red-800"
+                            variant="outline"
+                            className="h-6 w-6 p-0"
+                            title="Arşivle"
+                          >
+                            <Archive className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteNotification(notification.id);
+                            }}
+                            size="sm"
+                            variant="outline"
+                            className="h-6 w-6 p-0"
                             title="Sil"
                           >
-                            <X className="h-3 w-3" />
+                            <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
                       </div>
-
-                      <p className="mb-1 text-xs text-gray-600">
-                        {notification.message}
-                      </p>
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500">
-                          {formatDistanceToNow(notification.timestamp, {
-                            addSuffix: true,
-                            locale: tr,
-                          })}
-                        </span>
-                        {notification.actionUrl && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="p-1 text-xs text-blue-600 hover:text-blue-800"
-                          >
-                            {notification.actionLabel}
-                            <ChevronRight className="ml-1 h-3 w-3" />
-                          </Button>
-                        )}
-                      </div>
-
-                      {/* Related User */}
-                      {notification.relatedUserName && (
-                        <div className="mt-2 flex items-center gap-2">
-                          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-300">
-                            <User className="h-3 w-3" />
-                          </div>
-                          <span className="text-xs text-gray-600">
-                            {notification.relatedUserName}
-                          </span>
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-
-          {/* Footer Actions */}
-          {unreadCount > 0 && (
-            <div className="border-t border-gray-200 p-3">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={markAllAsRead}
-                className="w-full text-xs"
-              >
-                <Check className="mr-1 h-3 w-3" />
-                Tümünü Okundu İşaretle
-              </Button>
+              ))}
             </div>
           )}
-        </Card>
-      )}
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
-}
+};
 
 // Notification Hook for managing notifications globally
 export function useNotifications() {
-  const [notifications, setNotifications] =
-    useState<Notification[]>(mockNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const addNotification = (
-    notification: Omit<Notification, 'id' | 'timestamp'>
+    notification: Omit<Notification, 'id' | 'createdAt'>
   ) => {
     const newNotification: Notification = {
       ...notification,
       id: Date.now().toString(),
-      timestamp: new Date(),
+      createdAt: new Date().toISOString(),
     };
     setNotifications((prev) => [newNotification, ...prev]);
   };
@@ -405,14 +636,16 @@ export function useNotifications() {
   const markAsRead = (id: string) => {
     setNotifications((prev) =>
       prev.map((notification) =>
-        notification.id === id ? { ...notification, read: true } : notification
+        notification.id === id
+          ? { ...notification, isRead: true }
+          : notification
       )
     );
   };
 
   const markAllAsRead = () => {
     setNotifications((prev) =>
-      prev.map((notification) => ({ ...notification, read: true }))
+      prev.map((notification) => ({ ...notification, isRead: true }))
     );
   };
 
@@ -423,7 +656,7 @@ export function useNotifications() {
   };
 
   const getUnreadCount = () => {
-    return notifications.filter((n) => !n.read).length;
+    return notifications.filter((n) => !n.isRead).length;
   };
 
   return {

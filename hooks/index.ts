@@ -27,5 +27,9 @@ export { usePackageOrder } from './usePackageOrder';
 // Real-time features
 export { useWebSocket } from './useWebSocket';
 
+// Sprint 6: Payment & Notification Systems
+export { usePayment } from './usePayment';
+export { useNotification } from './useNotification';
+
 // Sprint 6: Mobile Experience & Touch Optimization
 export { useHapticFeedback } from './useHapticFeedback';

@@ -1,398 +1,268 @@
 'use client';
 
-import { useState } from 'react';
-import {
-  formatCurrency,
-  getPaymentStatusColor,
-  getPaymentStatusLabel,
-} from '@/lib/utils/payment';
-import { Card } from '@/components/ui/Card';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Transaction, Order, Invoice } from '@/types';
+import { Input } from '@/components/ui/Input';
+import { Badge } from '@/components/ui/Badge';
+import { LoadingSkeleton } from '@/components/ui/Loading';
+import { usePayment } from '@/hooks/usePayment';
+import { Payment, PaymentMethodType } from '@/types';
+import {
+  Search,
+  Download,
+  Eye,
+  CreditCard,
+  Building2,
+  Wallet,
+  DollarSign,
+  Clock,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  RefreshCw,
+  FileText,
+} from 'lucide-react';
 
 interface PaymentHistoryProps {
-  userId: string;
+  userId?: string;
+  showSummary?: boolean;
+  onPaymentSelect?: (payment: Payment) => void;
 }
 
-export const PaymentHistory: React.FC<PaymentHistoryProps> = ({ userId }) => {
-  const [activeTab, setActiveTab] = useState<
-    'transactions' | 'orders' | 'invoices'
-  >('transactions');
+export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
+  userId,
+  showSummary = true,
+  onPaymentSelect,
+}) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
 
-  // Mock data - should come from API
-  const mockTransactions: Transaction[] = [
-    {
-      id: 'txn-001',
-      walletId: 'wallet-1',
-      type: 'payment',
-      amount: 1500,
-      currency: 'TRY',
-      status: 'completed',
-      description: 'Web sitesi tasarımı ödemesi',
-      referenceId: 'order-001',
-      fees: 75,
-      netAmount: 1425,
-      createdAt: '2024-01-15T10:30:00Z',
-      updatedAt: '2024-01-15T10:31:00Z',
-    },
-    {
-      id: 'txn-002',
-      walletId: 'wallet-1',
-      type: 'deposit',
-      amount: 2000,
-      currency: 'TRY',
-      status: 'completed',
-      description: 'Hesaba para yükleme',
-      createdAt: '2024-01-10T14:15:00Z',
-      updatedAt: '2024-01-10T14:16:00Z',
-    },
-    {
-      id: 'txn-003',
-      walletId: 'wallet-1',
-      type: 'refund',
-      amount: 500,
-      currency: 'TRY',
-      status: 'pending',
-      description: 'İptal edilen proje iadesi',
-      referenceId: 'order-002',
-      createdAt: '2024-01-12T09:20:00Z',
-      updatedAt: '2024-01-12T09:20:00Z',
-    },
-  ];
+  const {
+    payments,
+    paymentHistory,
+    loading,
+    error,
+    fetchPaymentHistory,
+    formatPaymentAmount,
+  } = usePayment();
 
-  const mockOrders: Order[] = [
-    {
-      id: 'order-001',
-      userId,
-      user: {
-        id: userId,
-        firstName: 'Ahmet',
-        lastName: 'Yılmaz',
-        email: 'ahmet@example.com',
-        userType: 'employer',
-        createdAt: '2024-01-01T00:00:00Z',
-        updatedAt: '2024-01-01T00:00:00Z',
-      },
-      packageId: 'pkg-001',
-      amount: 1500,
-      subtotal: 1271.19,
-      tax: 228.81,
-      discount: 0,
-      total: 1500,
-      currency: 'TRY',
-      status: 'completed',
-      paymentStatus: 'paid',
-      notes: 'Kurumsal web sitesi tasarımı',
-      createdAt: '2024-01-15T10:00:00Z',
-      updatedAt: '2024-01-20T16:30:00Z',
-    },
-    {
-      id: 'order-002',
-      userId,
-      user: {
-        id: userId,
-        firstName: 'Ahmet',
-        lastName: 'Yılmaz',
-        email: 'ahmet@example.com',
-        userType: 'employer',
-        createdAt: '2024-01-01T00:00:00Z',
-        updatedAt: '2024-01-01T00:00:00Z',
-      },
-      jobId: 'job-001',
-      amount: 500,
-      subtotal: 423.73,
-      tax: 76.27,
-      discount: 0,
-      total: 500,
-      currency: 'TRY',
-      status: 'canceled',
-      paymentStatus: 'refunded',
-      notes: 'İptal edilen mobil uygulama projesi',
-      createdAt: '2024-01-12T09:00:00Z',
-      updatedAt: '2024-01-12T11:30:00Z',
-    },
-  ];
+  useEffect(() => {
+    fetchPaymentHistory();
+  }, [fetchPaymentHistory]);
 
-  const mockInvoices: Invoice[] = [
-    {
-      id: 'inv-001',
-      orderId: 'order-001',
-      order: mockOrders[0],
-      invoiceNumber: 'INV-202401-001',
-      issueDate: '2024-01-15T10:30:00Z',
-      dueDate: '2024-01-30T23:59:59Z',
-      amount: 1271.19,
-      tax: 228.81,
-      totalAmount: 1500,
-      currency: 'TRY',
-      status: 'paid',
-      billingAddress: {
-        fullName: 'Ahmet Yılmaz',
-        email: 'ahmet@example.com',
-        phone: '+90 555 123 4567',
-        addressLine1: 'Atatürk Cad. No: 123',
-        city: 'İstanbul',
-        state: 'İstanbul',
-        postalCode: '34000',
-        country: 'TR',
-      },
-      items: [
-        {
-          id: 'item-1',
-          description: 'Kurumsal Web Sitesi Tasarımı',
-          quantity: 1,
-          unitPrice: 1271.19,
-          totalPrice: 1271.19,
-        },
-      ],
-      notes: 'Teşekkür ederiz.',
-      createdAt: '2024-01-15T10:30:00Z',
-      updatedAt: '2024-01-15T10:31:00Z',
-    },
-  ];
+  const getMethodIcon = (method: PaymentMethodType) => {
+    switch (method) {
+      case 'credit_card':
+        return <CreditCard className="h-4 w-4" />;
+      case 'bank_transfer':
+        return <Building2 className="h-4 w-4" />;
+      case 'wallet':
+        return <Wallet className="h-4 w-4" />;
+      default:
+        return <CreditCard className="h-4 w-4" />;
+    }
+  };
 
-  const renderTransactions = () => (
-    <div className="space-y-4">
-      {mockTransactions.map((transaction) => (
-        <Card key={transaction.id} className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <div className="flex items-center space-x-3">
-                <div className="text-lg">
-                  {transaction.type === 'payment' && '💳'}
-                  {transaction.type === 'deposit' && '💰'}
-                  {transaction.type === 'withdrawal' && '🏦'}
-                  {transaction.type === 'refund' && '↩️'}
-                  {transaction.type === 'commission' && '💼'}
-                  {transaction.type === 'bonus' && '🎁'}
-                </div>
-                <div>
-                  <h4 className="font-semibold">{transaction.description}</h4>
-                  <p className="text-sm text-gray-500">
-                    {new Date(transaction.createdAt).toLocaleDateString(
-                      'tr-TR',
-                      {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      }
-                    )}
-                  </p>
-                  {transaction.referenceId && (
-                    <p className="text-xs text-gray-400">
-                      Referans: {transaction.referenceId}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="text-right">
-              <div
-                className={`text-lg font-semibold ${
-                  transaction.type === 'deposit' ||
-                  transaction.type === 'refund' ||
-                  transaction.type === 'bonus'
-                    ? 'text-green-600'
-                    : 'text-red-600'
-                }`}
-              >
-                {transaction.type === 'deposit' ||
-                transaction.type === 'refund' ||
-                transaction.type === 'bonus'
-                  ? '+'
-                  : '-'}
-                {formatCurrency(transaction.amount, transaction.currency)}
-              </div>
-              <div
-                className={`inline-block rounded-full px-2 py-1 text-xs ${getPaymentStatusColor(transaction.status)}`}
-              >
-                {getPaymentStatusLabel(transaction.status)}
-              </div>
-              {transaction.fees && transaction.fees > 0 && (
-                <p className="mt-1 text-xs text-gray-400">
-                  Komisyon:{' '}
-                  {formatCurrency(transaction.fees, transaction.currency)}
-                </p>
-              )}
-            </div>
+  const getStatusBadge = (status: Payment['status']) => {
+    const statusConfig = {
+      completed: { label: 'Tamamlandı', variant: 'success' as const },
+      pending: { label: 'Beklemede', variant: 'warning' as const },
+      processing: { label: 'İşleniyor', variant: 'default' as const },
+      failed: { label: 'Başarısız', variant: 'destructive' as const },
+      cancelled: { label: 'İptal Edildi', variant: 'secondary' as const },
+      refunded: { label: 'İade Edildi', variant: 'secondary' as const },
+    };
+
+    const config = statusConfig[status] || statusConfig.pending;
+    return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  const getStatusIcon = (status: Payment['status']) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'pending':
+        return <Clock className="h-4 w-4 text-yellow-500" />;
+      case 'processing':
+        return <RefreshCw className="h-4 w-4 animate-spin text-blue-500" />;
+      case 'failed':
+        return <XCircle className="h-4 w-4 text-red-500" />;
+      case 'cancelled':
+        return <XCircle className="h-4 w-4 text-gray-500" />;
+      case 'refunded':
+        return <AlertCircle className="h-4 w-4 text-orange-500" />;
+      default:
+        return <Clock className="h-4 w-4 text-gray-500" />;
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('tr-TR', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  // Filter payments based on search
+  const filteredPayments = payments.filter((payment) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      payment.paymentId.toLowerCase().includes(query) ||
+      payment.orderId.toLowerCase().includes(query) ||
+      payment.method.toLowerCase().includes(query)
+    );
+  });
+
+  const handlePaymentClick = (payment: Payment) => {
+    setSelectedPayment(payment);
+    onPaymentSelect?.(payment);
+  };
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center">
+            <XCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
+            <h3 className="mb-2 text-lg font-medium">
+              Ödeme geçmişi yüklenemedi
+            </h3>
+            <p className="text-muted-foreground mb-4">{error}</p>
+            <Button onClick={() => fetchPaymentHistory()}>
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Tekrar Dene
+            </Button>
           </div>
-        </Card>
-      ))}
-    </div>
-  );
-
-  const renderOrders = () => (
-    <div className="space-y-4">
-      {mockOrders.map((order) => (
-        <Card key={order.id} className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <div className="flex items-center space-x-3">
-                <div className="text-lg">📋</div>
-                <div>
-                  <h4 className="font-semibold">
-                    Sipariş #{order.id.split('-')[1]}
-                  </h4>
-                  <p className="text-sm text-gray-600">{order.notes}</p>
-                  <p className="text-sm text-gray-500">
-                    {new Date(order.createdAt).toLocaleDateString('tr-TR', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-lg font-semibold">
-                {formatCurrency(order.total, order.currency)}
-              </div>
-              <div
-                className={`inline-block rounded-full px-2 py-1 text-xs ${getPaymentStatusColor(order.status)}`}
-              >
-                {getPaymentStatusLabel(order.status)}
-              </div>
-              <div
-                className={`mt-1 inline-block rounded-full px-2 py-1 text-xs ${getPaymentStatusColor(order.paymentStatus)}`}
-              >
-                {getPaymentStatusLabel(order.paymentStatus)}
-              </div>
-            </div>
-          </div>
-        </Card>
-      ))}
-    </div>
-  );
-
-  const renderInvoices = () => (
-    <div className="space-y-4">
-      {mockInvoices.map((invoice) => (
-        <Card key={invoice.id} className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <div className="flex items-center space-x-3">
-                <div className="text-lg">🧾</div>
-                <div>
-                  <h4 className="font-semibold">{invoice.invoiceNumber}</h4>
-                  <p className="text-sm text-gray-600">
-                    {invoice.items[0]?.description}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Düzenlenme:{' '}
-                    {new Date(invoice.issueDate).toLocaleDateString('tr-TR')}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Vade:{' '}
-                    {new Date(invoice.dueDate).toLocaleDateString('tr-TR')}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-lg font-semibold">
-                {formatCurrency(invoice.totalAmount, invoice.currency)}
-              </div>
-              <div
-                className={`inline-block rounded-full px-2 py-1 text-xs ${getPaymentStatusColor(invoice.status)}`}
-              >
-                {getPaymentStatusLabel(invoice.status)}
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="mt-2"
-                onClick={() => {
-                  // Download invoice logic
-                  console.log('Download invoice:', invoice.id);
-                }}
-              >
-                İndir
-              </Button>
-            </div>
-          </div>
-        </Card>
-      ))}
-    </div>
-  );
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Ödeme Geçmişi</h2>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>Ödeme Geçmişi</span>
+            <div className="relative">
+              <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
+              <Input
+                placeholder="Ödeme ID, sipariş ID ara..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-64 pl-10"
+              />
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="space-y-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <LoadingSkeleton key={i} className="h-16" />
+              ))}
+            </div>
+          ) : filteredPayments.length === 0 ? (
+            <div className="py-12 text-center">
+              <FileText className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+              <h3 className="mb-2 text-lg font-medium">Ödeme bulunamadı</h3>
+              <p className="text-muted-foreground">
+                {searchQuery
+                  ? 'Arama kriterlerinizle eşleşen ödeme bulunamadı.'
+                  : 'Henüz hiç ödeme yapmamışsınız.'}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredPayments.map((payment) => (
+                <Card
+                  key={payment.paymentId}
+                  className={`hover:bg-muted/50 cursor-pointer transition-colors ${
+                    selectedPayment?.paymentId === payment.paymentId
+                      ? 'ring-primary ring-2'
+                      : ''
+                  }`}
+                  onClick={() => handlePaymentClick(payment)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2">
+                          {getStatusIcon(payment.status)}
+                          {getMethodIcon(payment.method)}
+                        </div>
 
-      {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8">
-          <button
-            onClick={() => setActiveTab('transactions')}
-            className={`border-b-2 px-1 py-2 text-sm font-medium ${
-              activeTab === 'transactions'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-            }`}
-          >
-            İşlemler
-          </button>
-          <button
-            onClick={() => setActiveTab('orders')}
-            className={`border-b-2 px-1 py-2 text-sm font-medium ${
-              activeTab === 'orders'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-            }`}
-          >
-            Siparişler
-          </button>
-          <button
-            onClick={() => setActiveTab('invoices')}
-            className={`border-b-2 px-1 py-2 text-sm font-medium ${
-              activeTab === 'invoices'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-            }`}
-          >
-            Faturalar
-          </button>
-        </nav>
-      </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="mb-1 flex items-center space-x-2">
+                            <p className="truncate text-sm font-medium">
+                              {payment.paymentId}
+                            </p>
+                            {getStatusBadge(payment.status)}
+                          </div>
+                          <p className="text-muted-foreground text-xs">
+                            Sipariş: {payment.orderId} •{' '}
+                            {formatDate(payment.createdAt)}
+                          </p>
+                        </div>
+                      </div>
 
-      {/* Content */}
-      <div>
-        {activeTab === 'transactions' && renderTransactions()}
-        {activeTab === 'orders' && renderOrders()}
-        {activeTab === 'invoices' && renderInvoices()}
-      </div>
+                      <div className="flex items-center space-x-4">
+                        <div className="text-right">
+                          <p className="text-sm font-medium">
+                            {formatPaymentAmount(
+                              payment.amount,
+                              payment.currency
+                            )}
+                          </p>
+                          {payment.fees && (
+                            <p className="text-muted-foreground text-xs">
+                              +{formatPaymentAmount(payment.fees.total)}{' '}
+                              komisyon
+                            </p>
+                          )}
+                        </div>
 
-      {/* Empty state */}
-      {((activeTab === 'transactions' && mockTransactions.length === 0) ||
-        (activeTab === 'orders' && mockOrders.length === 0) ||
-        (activeTab === 'invoices' && mockInvoices.length === 0)) && (
-        <div className="py-12 text-center">
-          <div className="mb-4 text-4xl">📋</div>
-          <h3 className="mb-2 text-lg font-semibold text-gray-900">
-            Henüz{' '}
-            {activeTab === 'transactions'
-              ? 'işlem'
-              : activeTab === 'orders'
-                ? 'sipariş'
-                : 'fatura'}{' '}
-            bulunmuyor
-          </h3>
-          <p className="text-gray-500">
-            İlk{' '}
-            {activeTab === 'transactions'
-              ? 'işleminizi'
-              : activeTab === 'orders'
-                ? 'siparişinizi'
-                : 'faturanızı'}{' '}
-            gerçekleştirdiğinizde burada görünecek.
-          </p>
-        </div>
-      )}
+                        <div className="flex items-center space-x-1">
+                          {payment.invoiceUrl && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(payment.invoiceUrl, '_blank');
+                              }}
+                            >
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          )}
+
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handlePaymentClick(payment);
+                            }}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
+
+export default PaymentHistory;

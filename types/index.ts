@@ -1278,3 +1278,489 @@ export interface OrdersResponse {
   data: Order[];
   meta: PaginationMeta;
 }
+
+// ========================================
+// SPRINT 6: PAYMENT SYSTEM & NOTIFICATIONS
+// ========================================
+
+// Enhanced Payment Types for Sprint 6
+export type PaymentMethodType = 'credit_card' | 'bank_transfer' | 'wallet';
+
+export interface CreatePaymentRequest {
+  orderId: string;
+  method: PaymentMethodType;
+  amount: number;
+  currency?: 'TRY' | 'USD' | 'EUR';
+  saveCard?: boolean;
+  cardDetails?: PaymentCard;
+  billingAddress?: BillingAddress;
+  metadata?: Record<string, unknown>;
+}
+
+export interface CreatePaymentResponse {
+  success: boolean;
+  data?: {
+    paymentId: string;
+    status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
+    paymentUrl?: string;
+    invoiceUrl?: string;
+    redirectUrl?: string;
+    estimatedCompletionTime?: string;
+  };
+  error?: string;
+  message?: string;
+}
+
+export interface Payment {
+  id: string;
+  paymentId: string;
+  orderId: string;
+  userId: string;
+  amount: number;
+  currency: 'TRY' | 'USD' | 'EUR';
+  method: PaymentMethodType;
+  status:
+    | 'pending'
+    | 'processing'
+    | 'completed'
+    | 'failed'
+    | 'cancelled'
+    | 'refunded';
+  failureReason?: string;
+  transactionId?: string;
+  gatewayReference?: string;
+  paymentMethodDetails?: PaymentMethodDetails;
+  escrowStatus?: 'held' | 'released' | 'refunded';
+  escrowReleaseDate?: string;
+  fees?: {
+    platformFee: number;
+    processingFee: number;
+    total: number;
+  };
+  invoiceUrl?: string;
+  receiptUrl?: string;
+  refundableAmount?: number;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+  completedAt?: string;
+}
+
+export interface PaymentMethodDetails {
+  type: PaymentMethodType;
+  last4?: string; // Last 4 digits for cards
+  brand?: string; // Visa, Mastercard, etc.
+  bankName?: string; // For bank transfers
+  accountNumber?: string; // Masked account number
+  holderName?: string;
+  expiryMonth?: string;
+  expiryYear?: string;
+}
+
+export interface EscrowDetails {
+  id: string;
+  paymentId: string;
+  amount: number;
+  currency: 'TRY' | 'USD' | 'EUR';
+  status: 'held' | 'released' | 'disputed' | 'refunded' | 'cancelled';
+  holdStartDate: string;
+  releaseDate?: string;
+  releaseTrigger: 'manual' | 'automatic' | 'milestone' | 'dispute_resolution';
+  disputeId?: string;
+  releaseConditions?: string[];
+  fees: {
+    escrowFee: number;
+    platformFee: number;
+  };
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaymentHistory {
+  payments: Payment[];
+  summary: {
+    totalPayments: number;
+    totalAmount: number;
+    successfulPayments: number;
+    failedPayments: number;
+    refundedAmount: number;
+    escrowAmount: number;
+  };
+  pagination: PaginationMeta;
+}
+
+export interface PaymentFilters {
+  status?: Payment['status'][];
+  method?: Payment['method'][];
+  amountMin?: number;
+  amountMax?: number;
+  dateFrom?: string;
+  dateTo?: string;
+  orderId?: string;
+  search?: string;
+  currency?: 'TRY' | 'USD' | 'EUR';
+}
+
+// Enhanced Invoice Types
+export interface InvoiceGeneration {
+  orderId: string;
+  paymentId: string;
+  templateType: 'standard' | 'detailed' | 'simple';
+  language: 'tr' | 'en';
+  includeItemizedBreakdown: boolean;
+  includeTaxBreakdown: boolean;
+  customFields?: Record<string, string>;
+}
+
+export interface InvoiceDetails extends Invoice {
+  escrowInfo?: {
+    amount: number;
+    status: 'held' | 'released';
+    releaseDate?: string;
+  };
+  paymentBreakdown: {
+    subtotal: number;
+    platformFee: number;
+    processingFee: number;
+    tax: number;
+    discount: number;
+    total: number;
+  };
+  downloadUrls: {
+    pdf: string;
+    xml?: string;
+    print: string;
+  };
+  emailStatus?: {
+    sent: boolean;
+    sentAt?: string;
+    recipientEmail?: string;
+  };
+}
+
+// Notification Types for Sprint 6
+export interface NotificationPreferences {
+  userId: string;
+  browser: {
+    enabled: boolean;
+    proposals: boolean;
+    messages: boolean;
+    payments: boolean;
+    orders: boolean;
+    system: boolean;
+    marketing: boolean;
+  };
+  email: {
+    enabled: boolean;
+    proposals: boolean;
+    messages: boolean;
+    payments: boolean;
+    orders: boolean;
+    system: boolean;
+    marketing: boolean;
+    digest: 'never' | 'daily' | 'weekly' | 'monthly';
+    digestTime?: string; // HH:mm format
+  };
+  sms: {
+    enabled: boolean;
+    urgent: boolean;
+    payments: boolean;
+    security: boolean;
+  };
+  push: {
+    enabled: boolean;
+    proposals: boolean;
+    messages: boolean;
+    payments: boolean;
+    orders: boolean;
+    system: boolean;
+    sound: boolean;
+    vibration: boolean;
+  };
+  quietHours: {
+    enabled: boolean;
+    start: string; // HH:mm format
+    end: string; // HH:mm format
+    timezone: string;
+    daysOfWeek: string[]; // ['monday', 'tuesday', ...]
+  };
+  frequency: {
+    immediate: string[]; // Notification types for immediate delivery
+    batched: string[]; // Notification types for batched delivery
+    batchInterval: number; // Minutes between batches
+  };
+  updatedAt: string;
+}
+
+export interface NotificationTemplate {
+  id: string;
+  type: NotificationTypeEnum;
+  channel: 'browser' | 'email' | 'sms' | 'push';
+  language: 'tr' | 'en';
+  subject?: string; // For email
+  title: string;
+  body: string;
+  actionUrl?: string;
+  actionText?: string;
+  variables: string[]; // Template variables like {{userName}}, {{amount}}
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type NotificationTypeEnum =
+  | 'payment_received'
+  | 'payment_completed'
+  | 'payment_failed'
+  | 'escrow_released'
+  | 'invoice_generated'
+  | 'refund_processed'
+  | 'proposal_received'
+  | 'proposal_accepted'
+  | 'proposal_rejected'
+  | 'order_created'
+  | 'order_updated'
+  | 'order_completed'
+  | 'order_cancelled'
+  | 'delivery_submitted'
+  | 'revision_requested'
+  | 'message_received'
+  | 'review_received'
+  | 'dispute_opened'
+  | 'dispute_resolved'
+  | 'system_maintenance'
+  | 'security_alert'
+  | 'account_verification'
+  | 'password_reset'
+  | 'login_attempt'
+  | 'subscription_expiring'
+  | 'welcome'
+  | 'onboarding_step'
+  | 'marketing_announcement';
+
+export interface EnhancedNotification extends Notification {
+  category:
+    | 'payment'
+    | 'order'
+    | 'message'
+    | 'system'
+    | 'security'
+    | 'marketing';
+  priority: 'low' | 'normal' | 'high' | 'urgent';
+  channel: 'browser' | 'email' | 'sms' | 'push';
+  templateId?: string;
+  variables?: Record<string, string>;
+  actionUrl?: string;
+  actionText?: string;
+  imageUrl?: string;
+  expiresAt?: string;
+  readAt?: string;
+  clickedAt?: string;
+  dismissedAt?: string;
+  retryCount?: number;
+  scheduledFor?: string;
+  deliveryStatus: 'pending' | 'sent' | 'delivered' | 'failed' | 'cancelled';
+  deliveryAttempts: NotificationDeliveryAttempt[];
+  tags?: string[];
+}
+
+export interface NotificationDeliveryAttempt {
+  id: string;
+  notificationId: string;
+  channel: 'browser' | 'email' | 'sms' | 'push';
+  status: 'pending' | 'sent' | 'delivered' | 'failed' | 'bounced' | 'clicked';
+  attemptedAt: string;
+  deliveredAt?: string;
+  failureReason?: string;
+  gatewayResponse?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+}
+
+export interface NotificationCenter {
+  notifications: EnhancedNotification[];
+  summary: {
+    total: number;
+    unread: number;
+    byCategory: Record<string, number>;
+    byPriority: Record<string, number>;
+  };
+  pagination: PaginationMeta;
+}
+
+export interface NotificationFilters {
+  category?: NotificationTypeEnum[];
+  priority?: ('low' | 'normal' | 'high' | 'urgent')[];
+  isRead?: boolean;
+  dateFrom?: string;
+  dateTo?: string;
+  search?: string;
+  tags?: string[];
+}
+
+export interface NotificationBatch {
+  id: string;
+  userId: string;
+  type: 'digest' | 'batch' | 'scheduled';
+  notifications: EnhancedNotification[];
+  scheduledFor: string;
+  sentAt?: string;
+  status: 'pending' | 'sent' | 'failed' | 'cancelled';
+  channel: 'email' | 'sms' | 'push';
+  metadata?: Record<string, unknown>;
+}
+
+// Push Notification Enhanced Types
+export interface PushNotificationPayload {
+  title: string;
+  body: string;
+  icon?: string;
+  badge?: string;
+  image?: string;
+  data?: Record<string, unknown>;
+  actions?: PushNotificationAction[];
+  tag?: string;
+  requireInteraction?: boolean;
+  silent?: boolean;
+  timestamp?: number;
+  vibrate?: number[];
+  sound?: string;
+}
+
+export interface PushNotificationAction {
+  action: string;
+  title: string;
+  icon?: string;
+}
+
+export interface PushSubscriptionData {
+  id: string;
+  userId: string;
+  endpoint: string;
+  keys: {
+    p256dh: string;
+    auth: string;
+  };
+  userAgent?: string;
+  deviceType: 'desktop' | 'mobile' | 'tablet';
+  isActive: boolean;
+  lastUsed?: string;
+  failureCount: number;
+  metadata?: {
+    browser?: string;
+    os?: string;
+    device?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Notification Event Types
+export interface NotificationEvent {
+  id: string;
+  type: NotificationTypeEnum;
+  userId: string;
+  triggeredBy?: string; // User ID who triggered the event
+  data: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface PaymentNotificationData {
+  paymentId: string;
+  orderId: string;
+  amount: number;
+  currency: string;
+  method: string;
+  status: string;
+  userRole: 'buyer' | 'seller';
+}
+
+export interface OrderNotificationData {
+  orderId: string;
+  orderNumber: string;
+  title: string;
+  amount: number;
+  status: string;
+  userRole: 'buyer' | 'seller';
+  deadline?: string;
+}
+
+// Form Types for Sprint 6
+export interface PaymentFormData {
+  orderId: string;
+  method: PaymentMethodType;
+  amount: number;
+  currency: 'TRY' | 'USD' | 'EUR';
+  saveCard?: boolean;
+  cardDetails?: PaymentCard;
+  billingAddress?: BillingAddress;
+  agreeToTerms: boolean;
+}
+
+export interface NotificationSettingsFormData {
+  browser: {
+    enabled: boolean;
+    proposals: boolean;
+    messages: boolean;
+    payments: boolean;
+    orders: boolean;
+    system: boolean;
+  };
+  email: {
+    enabled: boolean;
+    proposals: boolean;
+    messages: boolean;
+    payments: boolean;
+    orders: boolean;
+    system: boolean;
+    digest: 'never' | 'daily' | 'weekly';
+  };
+  quietHours: {
+    enabled: boolean;
+    start: string;
+    end: string;
+  };
+}
+
+// API Response Types for Sprint 6
+export interface PaymentHistoryResponse {
+  success: boolean;
+  data: PaymentHistory;
+  message?: string;
+}
+
+export interface NotificationCenterResponse {
+  success: boolean;
+  data: NotificationCenter;
+  message?: string;
+}
+
+export interface NotificationPreferencesResponse {
+  success: boolean;
+  data: NotificationPreferences;
+  message?: string;
+}
+
+export interface InvoiceResponse {
+  success: boolean;
+  data: InvoiceDetails;
+  message?: string;
+}
+
+// Error Types
+export interface PaymentError {
+  code: string;
+  message: string;
+  details?: Record<string, unknown>;
+  retryable: boolean;
+  userMessage: string;
+}
+
+export interface NotificationError {
+  code: string;
+  message: string;
+  channel: 'browser' | 'email' | 'sms' | 'push';
+  retryable: boolean;
+  userMessage: string;
+}
