@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import ReactMarkdown from 'react-markdown';
 import {
   MapPin,
   User,
@@ -238,7 +237,9 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
             </CardHeader>
             <CardContent>
               <div className="prose max-w-none">
-                <ReactMarkdown>{currentJob.description}</ReactMarkdown>
+                <div className="whitespace-pre-wrap text-gray-700">
+                  {currentJob.description}
+                </div>
               </div>
             </CardContent>
           </Card>

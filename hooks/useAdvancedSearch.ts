@@ -1,12 +1,147 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAdvancedSearchStore } from '@/lib/store';
-import { AdvancedSearchRequest } from '@/types';
+import {
+  AdvancedSearchRequest,
+  Job,
+  ServicePackage,
+  Freelancer,
+} from '@/types';
 
-export function useAdvancedSearch() {
+export interface SearchFilters {
+  categories: string[];
+  skills: string[];
+  location: string;
+  priceRange: [number, number];
+  rating: number;
+  deliveryTime: string;
+  level: string;
+  availability: string;
+}
+
+export interface SearchSuggestion {
+  id: string;
+  text: string;
+  type: 'category' | 'skill' | 'location';
+  count?: number;
+}
+
+interface UseAdvancedSearchProps {
+  mode: 'jobs' | 'services';
+  items: (Job | ServicePackage)[];
+}
+
+export function useAdvancedSearch(props?: UseAdvancedSearchProps) {
   const store = useAdvancedSearchStore();
   const suggestionsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Local state for filters and filtered items when used with props
+  const [filters, setFilters] = useState<SearchFilters>({
+    categories: [],
+    skills: [],
+    location: '',
+    priceRange: [0, 10000],
+    rating: 0,
+    deliveryTime: '',
+    level: '',
+    availability: '',
+  });
+
+  const [filteredItems, setFilteredItems] = useState<(Job | ServicePackage)[]>(
+    []
+  );
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  const [activeFilterCount, setActiveFilterCount] = useState(0);
+
+  // Update filter function
+  const updateFilter = useCallback((key: keyof SearchFilters, value: any) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  }, []);
+
+  // Add to search history
+  const addToSearchHistory = useCallback((query: string) => {
+    setSearchHistory((prev) => {
+      const updated = [query, ...prev.filter((q) => q !== query)].slice(0, 10);
+      return updated;
+    });
+  }, []);
+
+  // Clear filters
+  const clearFilters = useCallback(() => {
+    setFilters({
+      categories: [],
+      skills: [],
+      location: '',
+      priceRange: [0, 10000],
+      rating: 0,
+      deliveryTime: '',
+      level: '',
+      availability: '',
+    });
+  }, []);
+
+  // Filter items based on current filters
+  useEffect(() => {
+    if (!props?.items) {
+      setFilteredItems([]);
+      return;
+    }
+
+    let filtered = [...props.items];
+
+    // Apply category filter
+    if (filters.categories.length > 0) {
+      filtered = filtered.filter((item) =>
+        filters.categories.some((cat) =>
+          item.category?.toLowerCase().includes(cat.toLowerCase())
+        )
+      );
+    }
+
+    // Apply skill filter
+    if (filters.skills.length > 0) {
+      filtered = filtered.filter((item) =>
+        filters.skills.some((skill) =>
+          (item as any).skills?.some((itemSkill: string) =>
+            itemSkill.toLowerCase().includes(skill.toLowerCase())
+          )
+        )
+      );
+    }
+
+    // Apply location filter
+    if (filters.location) {
+      filtered = filtered.filter((item) =>
+        (item as any).location
+          ?.toLowerCase()
+          .includes(filters.location.toLowerCase())
+      );
+    }
+
+    // Apply rating filter
+    if (filters.rating > 0) {
+      filtered = filtered.filter(
+        (item) => (item as any).rating >= filters.rating
+      );
+    }
+
+    setFilteredItems(filtered);
+  }, [filters, props?.items]);
+
+  // Update active filter count
+  useEffect(() => {
+    let count = 0;
+    if (filters.categories.length > 0) count++;
+    if (filters.skills.length > 0) count++;
+    if (filters.location) count++;
+    if (filters.rating > 0) count++;
+    if (filters.deliveryTime) count++;
+    if (filters.level) count++;
+    if (filters.availability) count++;
+
+    setActiveFilterCount(count);
+  }, [filters]);
 
   // Debounced suggestions getter to avoid too many API calls
   const getSuggestions = useCallback(
@@ -72,10 +207,24 @@ export function useAdvancedSearch() {
   );
 
   return {
-    // State
+    // State - return local state if props are provided, otherwise store state
     searchQuery: store.searchQuery,
     searchResults: store.searchResults,
-    suggestions: store.suggestions,
+    suggestions: store.suggestions.map((s) => {
+      if (typeof s === 'string') {
+        return {
+          id: s,
+          text: s,
+          type: 'skill' as const,
+        };
+      }
+      return {
+        id: (s as any).id || String(s),
+        text: (s as any).text || String(s),
+        type: 'skill' as const,
+        count: (s as any).count,
+      };
+    }) as SearchSuggestion[],
     recentSearches: store.recentSearches,
     savedSearches: store.savedSearches,
     isLoading: store.isLoading,
@@ -86,6 +235,12 @@ export function useAdvancedSearch() {
     totalResults: store.totalResults,
     hasNextPage: store.hasNextPage,
     currentPage: store.currentPage,
+
+    // Props-based state
+    filters: props ? filters : undefined,
+    filteredItems: props ? filteredItems : [],
+    searchHistory: props ? searchHistory : [],
+    activeFilterCount: props ? activeFilterCount : 0,
 
     // Actions
     setSearchQuery: store.setSearchQuery,
@@ -100,5 +255,10 @@ export function useAdvancedSearch() {
     clearSuggestions: store.clearSuggestions,
     clearError: store.clearError,
     reset: store.reset,
+
+    // Props-based actions
+    updateFilter: props ? updateFilter : undefined,
+    addToSearchHistory: props ? addToSearchHistory : undefined,
+    clearFilters: props ? clearFilters : undefined,
   };
 }

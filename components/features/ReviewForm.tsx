@@ -8,11 +8,11 @@ import { reviewSchema, type ReviewFormData } from '@/lib/validations/reviews';
 import { useReviewForm } from '@/hooks';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Label } from '@/components/ui/Label';
 import { Textarea } from '@/components/ui/Textarea';
-import { Switch } from '@/components/ui/Switch';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
 import { Progress } from '@/components/ui/Progress';
+import { Alert, AlertDescription } from '../ui/Alert';
+import { Label } from '../ui/Label';
+import { Switch } from '../ui/Switch';
 
 interface ReviewFormProps {
   orderId: string;
@@ -263,7 +263,9 @@ export function ReviewForm({
             </div>
             <Switch
               checked={form.watch('isPublic')}
-              onCheckedChange={(checked) => form.setValue('isPublic', checked)}
+              onCheckedChange={(checked: boolean) =>
+                form.setValue('isPublic', checked)
+              }
             />
           </div>
 

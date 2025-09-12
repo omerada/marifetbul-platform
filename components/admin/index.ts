@@ -1,6 +1,5 @@
 // Admin Layout Components
 export { AdminLayout } from './AdminLayout';
-export { AdminSidebar } from './AdminSidebar';
 export { AdminHeader } from './AdminHeader';
 export { AdminFooter } from './AdminFooter';
 

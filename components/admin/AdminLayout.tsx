@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { AdminSidebar } from './AdminSidebar';
-import { AdminHeader } from './AdminHeader';
-import { AdminFooter } from './AdminFooter';
+import AdminFooter from './AdminFooter';
+import AdminHeader from './AdminHeader';
+import AdminSidebar from './AdminSidebar';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -16,7 +16,15 @@ export function AdminLayout({ children, className }: AdminLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50">
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div
+          className="animate-fade-in fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <AdminSidebar
         isOpen={sidebarOpen}
@@ -28,13 +36,17 @@ export function AdminLayout({ children, className }: AdminLayoutProps) {
       {/* Main content area */}
       <div
         className={cn(
-          'transition-all duration-300 ease-in-out',
+          'ease-out-quart transition-all duration-300',
           sidebarOpen && !sidebarCollapsed && 'lg:ml-64',
           sidebarOpen && sidebarCollapsed && 'lg:ml-16'
         )}
       >
         {/* Header */}
-        <AdminHeader onSidebarToggle={() => setSidebarOpen(!sidebarOpen)} />
+        <AdminHeader
+          onSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
+          isCollapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        />
 
         {/* Page content */}
         <main
@@ -44,20 +56,12 @@ export function AdminLayout({ children, className }: AdminLayoutProps) {
             className
           )}
         >
-          {children}
+          <div className="mx-auto max-w-screen-2xl">{children}</div>
         </main>
 
         {/* Footer */}
         <AdminFooter />
       </div>
-
-      {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
-        <div
-          className="bg-opacity-75 fixed inset-0 z-40 bg-gray-600 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
     </div>
   );
 }

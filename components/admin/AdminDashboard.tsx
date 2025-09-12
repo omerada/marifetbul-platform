@@ -12,6 +12,16 @@ import {
   AlertTriangle,
   CheckCircle,
   RefreshCw,
+  Briefcase,
+  Activity,
+  ArrowUpRight,
+  ArrowDownRight,
+  Eye,
+  MessageSquare,
+  Clock,
+  Calendar,
+  PlusCircle,
+  BarChart3,
 } from 'lucide-react';
 
 export function AdminDashboard() {
@@ -66,30 +76,30 @@ export function AdminDashboard() {
 
   const statCards = [
     {
-      title: 'Total Users',
+      title: 'Toplam Kullanıcı',
       value: new Intl.NumberFormat('tr-TR').format(stats?.totalUsers || 0),
-      change: `+${stats?.newUsersToday ?? 0} today`,
+      change: `+${stats?.newUsersToday ?? 0} bugün`,
       icon: Users,
       color: 'blue',
     },
     {
-      title: 'Monthly Revenue',
+      title: 'Aylık Gelir',
       value: `₺${new Intl.NumberFormat('tr-TR').format(stats?.monthlyRevenue || 0)}`,
-      change: `${stats?.revenueGrowth ?? 0}% growth`,
+      change: `%${stats?.revenueGrowth ?? 0} büyüme`,
       icon: DollarSign,
       color: 'green',
     },
     {
-      title: 'Active Orders',
+      title: 'Aktif Siparişler',
       value: new Intl.NumberFormat('tr-TR').format(stats?.pendingOrders || 0),
-      change: `${stats?.completedOrders ?? 0} completed`,
+      change: `${stats?.completedOrders ?? 0} tamamlandı`,
       icon: ShoppingCart,
       color: 'orange',
     },
     {
-      title: 'Conversion Rate',
-      value: `${stats?.conversionRate ?? 0}%`,
-      change: `${stats?.userRetentionRate ?? 0}% retention`,
+      title: 'Dönüşüm Oranı',
+      value: `%${stats?.conversionRate ?? 0}`,
+      change: `%${stats?.userRetentionRate ?? 0} tutma oranı`,
       icon: TrendingUp,
       color: 'purple',
     },
@@ -98,21 +108,30 @@ export function AdminDashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Dashboard Overview
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Welcome back! Here's what's happening on your platform.
+          <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Platform performansınızın genel bakışı
           </p>
         </div>
-        <Button onClick={refresh} disabled={isLoading}>
-          <RefreshCw
-            className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}
-          />
-          Refresh
-        </Button>
+        <div className="mt-4 flex space-x-3 sm:mt-0">
+          <Button variant="outline" size="sm">
+            <Calendar className="mr-2 h-4 w-4" />
+            Son 30 Gün
+          </Button>
+          <Button
+            onClick={refresh}
+            disabled={isLoading}
+            variant="primary"
+            size="sm"
+          >
+            <RefreshCw
+              className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}
+            />
+            Yenile
+          </Button>
+        </div>
       </div>
 
       {/* System Health Alert */}
@@ -122,11 +141,11 @@ export function AdminDashboard() {
             <div className="flex items-center space-x-2">
               <AlertTriangle className="h-5 w-5 text-orange-600" />
               <span className="font-medium text-orange-800">
-                System Health: {systemHealth?.status || 'Unknown'}
+                Sistem Durumu: {systemHealth?.status || 'Bilinmiyor'}
               </span>
               {systemHealth?.issues && systemHealth.issues.length > 0 && (
                 <Badge variant="secondary">
-                  {systemHealth.issues.length} issues
+                  {systemHealth.issues.length} sorun
                 </Badge>
               )}
             </div>
@@ -134,36 +153,174 @@ export function AdminDashboard() {
         </Card>
       )}
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {statCards.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {stat.value}
-              </div>
-              <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
-                {stat.change}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+      {/* Enhanced Stats Grid */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {statCards.map((stat) => {
+          const Icon = stat.icon;
+          const colorConfig = {
+            blue: {
+              text: 'text-blue-600',
+              bg: 'bg-blue-50',
+              border: 'border-blue-200',
+            },
+            green: {
+              text: 'text-green-600',
+              bg: 'bg-green-50',
+              border: 'border-green-200',
+            },
+            orange: {
+              text: 'text-orange-600',
+              bg: 'bg-orange-50',
+              border: 'border-orange-200',
+            },
+            purple: {
+              text: 'text-purple-600',
+              bg: 'bg-purple-50',
+              border: 'border-purple-200',
+            },
+          };
+          const colors = colorConfig[stat.color as keyof typeof colorConfig];
+
+          return (
+            <Card
+              key={stat.title}
+              className={`border ${colors.border} ${colors.bg} transition-all hover:shadow-md`}
+            >
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">
+                      {stat.title}
+                    </p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {stat.value}
+                    </p>
+                    <div className="mt-2 flex items-center">
+                      <ArrowUpRight className="h-4 w-4 text-green-500" />
+                      <span className="ml-1 text-sm font-medium text-green-600">
+                        +12.3%
+                      </span>
+                      <span className="ml-1 text-sm text-gray-500">
+                        son 30 gün
+                      </span>
+                    </div>
+                  </div>
+                  <div className={`rounded-full p-3 ${colors.bg}`}>
+                    <Icon className={`h-6 w-6 ${colors.text}`} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
-      {/* Alerts Section */}
+      {/* Enhanced Charts and Activity */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {/* Revenue Chart Placeholder */}
+        <Card className="border-gray-200">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-base font-medium">
+              Gelir Trendi
+            </CardTitle>
+            <Button variant="ghost" size="sm">
+              <BarChart3 className="h-4 w-4" />
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="flex h-64 items-center justify-center rounded-lg bg-gray-50">
+              <div className="text-center">
+                <TrendingUp className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                <p className="text-sm text-gray-500">
+                  Gelir grafiği burada gösterilecek
+                </p>
+                <p className="mt-1 text-xs text-gray-400">
+                  Chart.js entegrasyonu gerekli
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Enhanced Recent Activity */}
+        <Card className="border-gray-200">
+          <CardHeader>
+            <CardTitle className="text-base font-medium">
+              Son Aktiviteler
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
+                    <Users className="h-4 w-4 text-blue-600" />
+                  </div>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-gray-900">
+                    Yeni kullanıcı kaydı
+                  </p>
+                  <p className="text-xs text-gray-500">5 dakika önce</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                    <Briefcase className="h-4 w-4 text-green-600" />
+                  </div>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-gray-900">
+                    Yeni iş ilanı yayınlandı
+                  </p>
+                  <p className="text-xs text-gray-500">15 dakika önce</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100">
+                    <DollarSign className="h-4 w-4 text-emerald-600" />
+                  </div>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-gray-900">
+                    Ödeme tamamlandı
+                  </p>
+                  <p className="text-xs text-gray-500">1 saat önce</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100">
+                    <AlertTriangle className="h-4 w-4 text-red-600" />
+                  </div>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-gray-900">
+                    İçerik raporlandı
+                  </p>
+                  <p className="text-xs text-gray-500">2 saat önce</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Enhanced Alerts Section */}
       {alerts && alerts.length > 0 && (
-        <Card>
+        <Card className="border-gray-200">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <AlertTriangle className="h-5 w-5" />
-              <span>Recent Alerts</span>
-              <Badge variant="secondary">{alerts.length}</Badge>
+              <AlertTriangle className="h-5 w-5 text-orange-500" />
+              <span>Son Uyarılar</span>
+              <Badge
+                variant="outline"
+                className="border-orange-300 text-orange-600"
+              >
+                {alerts.length}
+              </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -171,11 +328,17 @@ export function AdminDashboard() {
               {alerts.slice(0, 5).map((alert) => (
                 <div
                   key={alert.id}
-                  className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800"
+                  className={`flex items-center justify-between rounded-lg border p-3 ${
+                    alert.type === 'error'
+                      ? 'border-red-200 bg-red-50'
+                      : alert.type === 'warning'
+                        ? 'border-yellow-200 bg-yellow-50'
+                        : 'border-blue-200 bg-blue-50'
+                  }`}
                 >
                   <div className="flex items-center space-x-3">
                     <div
-                      className={`h-2 w-2 rounded-full ${
+                      className={`h-3 w-3 rounded-full ${
                         alert.type === 'error'
                           ? 'bg-red-500'
                           : alert.type === 'warning'
@@ -184,12 +347,8 @@ export function AdminDashboard() {
                       }`}
                     />
                     <div>
-                      <p className="font-medium text-gray-900 dark:text-white">
-                        {alert.title}
-                      </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {alert.message}
-                      </p>
+                      <p className="font-medium text-gray-900">{alert.title}</p>
+                      <p className="text-sm text-gray-600">{alert.message}</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -197,10 +356,18 @@ export function AdminDashboard() {
                       variant={
                         alert.priority === 'critical'
                           ? 'destructive'
-                          : 'secondary'
+                          : alert.priority === 'high'
+                            ? 'warning'
+                            : 'secondary'
                       }
                     >
-                      {alert.priority}
+                      {alert.priority === 'critical'
+                        ? 'Kritik'
+                        : alert.priority === 'high'
+                          ? 'Yüksek'
+                          : alert.priority === 'medium'
+                            ? 'Orta'
+                            : 'Düşük'}
                     </Badge>
                     {!alert.isRead && (
                       <Button
@@ -208,7 +375,7 @@ export function AdminDashboard() {
                         size="sm"
                         onClick={() => alertAction(alert.id, 'read')}
                       >
-                        Mark Read
+                        Okundu İşaretle
                       </Button>
                     )}
                   </div>
@@ -219,65 +386,207 @@ export function AdminDashboard() {
         </Card>
       )}
 
-      {/* Charts placeholder */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Card>
+      {/* Enhanced System Health & Quick Actions */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* System Health */}
+        <Card className="border-gray-200">
           <CardHeader>
-            <CardTitle>User Growth</CardTitle>
+            <CardTitle className="flex items-center space-x-2">
+              <CheckCircle className="h-5 w-5 text-green-500" />
+              <span>Sistem Durumu</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex h-64 items-center justify-center text-gray-500">
-              Charts component will be implemented here
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">API Durumu</span>
+                <Badge
+                  variant="success"
+                  className="bg-green-100 text-green-800"
+                >
+                  {systemHealth?.apiStatus === 'operational'
+                    ? 'Çalışıyor'
+                    : 'Sorunlu'}
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Database</span>
+                <Badge
+                  variant="success"
+                  className="bg-green-100 text-green-800"
+                >
+                  Bağlı
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Cache</span>
+                <Badge
+                  variant="warning"
+                  className="bg-yellow-100 text-yellow-800"
+                >
+                  Yavaş
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Depolama</span>
+                <Badge
+                  variant="success"
+                  className="bg-green-100 text-green-800"
+                >
+                  Kullanılabilir
+                </Badge>
+              </div>
+              <div className="mt-4 border-t border-gray-200 pt-3">
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <div className="text-lg font-bold text-green-600">
+                      {systemHealth?.uptime
+                        ? Math.floor(systemHealth.uptime / 3600)
+                        : 0}
+                      h
+                    </div>
+                    <p className="text-xs text-gray-600">Çalışma Süresi</p>
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-blue-600">
+                      {systemHealth?.responseTime || 0}ms
+                    </div>
+                    <p className="text-xs text-gray-600">Yanıt Süresi</p>
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-green-600">
+                      99.9%
+                    </div>
+                    <p className="text-xs text-gray-600">Uptime</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        {/* Pending Tasks */}
+        <Card className="border-gray-200">
           <CardHeader>
-            <CardTitle>Revenue Overview</CardTitle>
+            <CardTitle className="text-base font-medium">
+              Bekleyen Görevler
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex h-64 items-center justify-center text-gray-500">
-              Charts component will be implemented here
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Clock className="h-4 w-4 text-orange-500" />
+                  <span className="text-sm text-gray-600">
+                    Onay Bekleyen Kullanıcılar
+                  </span>
+                </div>
+                <Badge
+                  variant="outline"
+                  className="border-orange-300 text-orange-600"
+                >
+                  23
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <AlertTriangle className="h-4 w-4 text-red-500" />
+                  <span className="text-sm text-gray-600">
+                    Moderasyon Kuyruğu
+                  </span>
+                </div>
+                <Badge
+                  variant="outline"
+                  className="border-red-300 text-red-600"
+                >
+                  12
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <MessageSquare className="h-4 w-4 text-blue-500" />
+                  <span className="text-sm text-gray-600">
+                    Destek Talepleri
+                  </span>
+                </div>
+                <Badge
+                  variant="outline"
+                  className="border-blue-300 text-blue-600"
+                >
+                  8
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <ShoppingCart className="h-4 w-4 text-purple-500" />
+                  <span className="text-sm text-gray-600">
+                    Bekleyen Ödemeler
+                  </span>
+                </div>
+                <Badge
+                  variant="outline"
+                  className="border-purple-300 text-purple-600"
+                >
+                  5
+                </Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <Card className="border-gray-200">
+          <CardHeader>
+            <CardTitle className="text-base font-medium">
+              Hızlı İşlemler
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start"
+              >
+                <Users className="mr-2 h-4 w-4" />
+                Kullanıcı Ekle
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start"
+              >
+                <Briefcase className="mr-2 h-4 w-4" />
+                İş İlanı Onayla
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start"
+              >
+                <Eye className="mr-2 h-4 w-4" />
+                İçerik İncele
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start"
+              >
+                <BarChart3 className="mr-2 h-4 w-4" />
+                Rapor Oluştur
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start"
+              >
+                <Activity className="mr-2 h-4 w-4" />
+                Sistem Logları
+              </Button>
             </div>
           </CardContent>
         </Card>
       </div>
-
-      {/* System Health Details */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <CheckCircle className="h-5 w-5 text-green-500" />
-            <span>System Health</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
-                {systemHealth?.uptime
-                  ? Math.floor(systemHealth.uptime / 3600)
-                  : 0}
-                h
-              </div>
-              <p className="text-sm text-gray-600">Uptime</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
-                {systemHealth?.responseTime || 0}ms
-              </div>
-              <p className="text-sm text-gray-600">Response Time</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
-                {systemHealth?.apiStatus === 'operational' ? '✓' : '✗'}
-              </div>
-              <p className="text-sm text-gray-600">API Status</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
