@@ -1764,3 +1764,689 @@ export interface NotificationError {
   retryable: boolean;
   userMessage: string;
 }
+
+// ========================================
+// SPRINT 7: ADVANCED SEARCH & LOCATION-BASED FILTERING TYPES
+// ========================================
+
+// Advanced Search Types
+export interface AdvancedSearchRequest {
+  query?: string;
+  category?: string;
+  skills?: string[];
+  location?: {
+    city?: string;
+    district?: string;
+    coordinates?: {
+      lat: number;
+      lng: number;
+    };
+    radius?: number; // km
+  };
+  budget?: {
+    min?: number;
+    max?: number;
+  };
+  rating?: number;
+  availability?: 'available' | 'busy' | 'any';
+  remoteOk?: boolean;
+  sortBy?: 'relevance' | 'rating' | 'price' | 'distance';
+  page?: number;
+  pageSize?: number;
+  deliveryTime?: number; // for services
+  experienceLevel?: 'beginner' | 'intermediate' | 'expert'; // for jobs
+}
+
+export interface AdvancedSearchResponse {
+  success: boolean;
+  data?: {
+    results: (Freelancer | Job | ServicePackage)[];
+    pagination: PaginationMeta;
+    facets: SearchFacets;
+    searchId: string; // For analytics
+  };
+  error?: string;
+}
+
+export interface SearchFacets {
+  categories: { name: string; count: number }[];
+  locations: { name: string; count: number }[];
+  skills: { name: string; count: number }[];
+  priceRanges: { range: string; count: number }[];
+  ratings: { rating: number; count: number }[];
+  experienceLevels: { level: string; count: number }[];
+}
+
+export interface SearchSuggestionsRequest {
+  query: string;
+  type: 'freelancers' | 'jobs' | 'services' | 'skills' | 'locations';
+  limit?: number;
+}
+
+export interface SearchSuggestionsResponse {
+  success: boolean;
+  data?: {
+    suggestions: string[];
+    trending: string[];
+    recent: string[];
+  };
+  error?: string;
+}
+
+export interface SearchAnalytics {
+  searchId: string;
+  query?: string;
+  filters: AdvancedSearchRequest;
+  resultsCount: number;
+  clickedResults: string[];
+  searchTime: number; // milliseconds
+  userId?: string;
+  sessionId: string;
+  timestamp: string;
+}
+
+// Location-Based Types
+export interface LocationSearchRequest {
+  query?: string;
+  coordinates?: Coordinates;
+  radius?: number;
+  bounds?: MapBounds;
+  types?: ('city' | 'district' | 'neighborhood')[];
+  limit?: number;
+  language?: 'tr' | 'en';
+}
+
+export interface LocationSearchResponse {
+  success: boolean;
+  data?: LocationSearchResult[];
+  error?: string;
+}
+
+export interface LocationAutocompleteRequest {
+  input: string;
+  coordinates?: Coordinates;
+  radius?: number;
+  types?: string[];
+  language?: 'tr' | 'en';
+}
+
+export interface LocationAutocompleteResponse {
+  success: boolean;
+  data?: {
+    predictions: LocationPrediction[];
+  };
+  error?: string;
+}
+
+export interface LocationPrediction {
+  id: string;
+  description: string;
+  mainText: string;
+  secondaryText: string;
+  types: string[];
+  matchedSubstrings: {
+    offset: number;
+    length: number;
+  }[];
+  placeId?: string;
+}
+
+export interface GeocodeRequest {
+  address?: string;
+  placeId?: string;
+  coordinates?: Coordinates;
+}
+
+export interface GeocodeResponse {
+  success: boolean;
+  data?: {
+    location: LocationData;
+    formattedAddress: string;
+    components: AddressComponent[];
+  };
+  error?: string;
+}
+
+export interface AddressComponent {
+  longName: string;
+  shortName: string;
+  types: string[];
+}
+
+// Recommendation System Types
+export interface RecommendationsRequest {
+  type: 'freelancers' | 'jobs' | 'services';
+  userId?: string;
+  basedOn?: 'profile' | 'activity' | 'similar' | 'collaborative';
+  targetItemId?: string; // For "similar to this" recommendations
+  limit?: number;
+  excludeIds?: string[];
+}
+
+export interface RecommendationsResponse {
+  success: boolean;
+  data?: Recommendation[];
+  error?: string;
+}
+
+export interface Recommendation {
+  item: Freelancer | Job | ServicePackage;
+  score: number; // 0-1 confidence score
+  reason: RecommendationReason;
+  metadata?: RecommendationMetadata;
+}
+
+export interface RecommendationReason {
+  type:
+    | 'skill_match'
+    | 'location_proximity'
+    | 'rating_similarity'
+    | 'price_range'
+    | 'category_preference'
+    | 'collaborative_filtering';
+  description: string;
+  factors: RecommendationFactor[];
+}
+
+export interface RecommendationFactor {
+  name: string;
+  weight: number; // 0-1
+  value: string | number;
+  contribution: number; // How much this factor contributed to the score
+}
+
+export interface RecommendationMetadata {
+  algorithm: string;
+  version: string;
+  generatedAt: string;
+  expiresAt: string;
+  debug?: Record<string, unknown>;
+}
+
+export interface RecommendationFeedback {
+  recommendationId: string;
+  userId: string;
+  feedback:
+    | 'like'
+    | 'dislike'
+    | 'not_relevant'
+    | 'already_contacted'
+    | 'too_expensive';
+  timestamp: string;
+  metadata?: Record<string, unknown>;
+}
+
+// Favorites System Types
+export interface FavoritesRequest {
+  type?: 'freelancers' | 'jobs' | 'services';
+  folderId?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface FavoritesResponse {
+  success: boolean;
+  data?: {
+    freelancers: Freelancer[];
+    jobs: Job[];
+    services: ServicePackage[];
+    folders: FavoriteFolder[];
+  };
+  error?: string;
+}
+
+export interface FavoriteFolder {
+  id: string;
+  name: string;
+  description?: string;
+  color?: string;
+  icon?: string;
+  isPublic: boolean;
+  itemCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateFolderRequest {
+  name: string;
+  description?: string;
+  color?: string;
+  icon?: string;
+  isPublic?: boolean;
+  userId: string;
+}
+
+export interface UpdateFolderRequest {
+  folderId: string;
+  name?: string;
+  description?: string;
+  color?: string;
+  icon?: string;
+  isPublic?: boolean;
+}
+
+// Favorite type for component usage
+export interface Favorite {
+  id: string;
+  userId: string;
+  itemId: string;
+  itemType: 'freelancer' | 'job' | 'service';
+  item: Freelancer | Job | ServicePackage;
+  folderId?: string;
+  folder?: FavoriteFolder;
+  notes?: string;
+  tags?: string[];
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface AddToFavoritesRequest {
+  itemId: string;
+  itemType: 'freelancer' | 'job' | 'service';
+  folderId?: string;
+  note?: string;
+}
+
+export interface AddToFavoritesResponse {
+  success: boolean;
+  data?: {
+    favoriteId: string;
+    message: string;
+  };
+  error?: string;
+}
+
+export interface FavoriteItem {
+  id: string;
+  userId: string;
+  itemId: string;
+  itemType: 'freelancer' | 'job' | 'service';
+  item: Freelancer | Job | ServicePackage;
+  folderId?: string;
+  folder?: FavoriteFolder;
+  note?: string;
+  addedAt: string;
+  tags?: string[];
+}
+
+// Saved Searches Types
+export interface SavedSearch {
+  id: string;
+  userId: string;
+  name: string;
+  query?: string;
+  filters: AdvancedSearchRequest;
+  alertEnabled: boolean;
+  alertFrequency: 'immediate' | 'daily' | 'weekly';
+  lastRun?: string;
+  resultsCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SaveSearchRequest {
+  name: string;
+  query?: string;
+  filters: AdvancedSearchRequest;
+  alertEnabled?: boolean;
+  alertFrequency?: 'immediate' | 'daily' | 'weekly';
+}
+
+export interface SaveSearchResponse {
+  success: boolean;
+  data?: {
+    id: string;
+    name: string;
+    savedAt: string;
+  };
+  error?: string;
+}
+
+export interface SavedSearchAlert {
+  id: string;
+  savedSearchId: string;
+  userId: string;
+  newResults: (Freelancer | Job | ServicePackage)[];
+  triggeredAt: string;
+  sent: boolean;
+  sentAt?: string;
+}
+
+// Map Integration Types
+export interface MapConfig {
+  apiKey: string;
+  defaultCenter: Coordinates;
+  defaultZoom: number;
+  maxZoom: number;
+  minZoom: number;
+  enableGeolocation: boolean;
+  enableSearch: boolean;
+  enableClustering: boolean;
+  style?: 'default' | 'satellite' | 'terrain' | 'hybrid';
+}
+
+export interface MapInstance {
+  id: string;
+  center: Coordinates;
+  zoom: number;
+  bounds: MapBounds;
+  markers: MapMarker[];
+  clusterer?: MarkerClusterer;
+}
+
+export interface MarkerClusterer {
+  enabled: boolean;
+  maxZoom: number;
+  gridSize: number;
+  style: ClusterStyle[];
+}
+
+export interface ClusterStyle {
+  url: string;
+  height: number;
+  width: number;
+  textColor: string;
+  textSize: number;
+}
+
+export interface MapMarkerData {
+  freelancer?: Freelancer;
+  job?: Job;
+  service?: ServicePackage;
+  user?: User;
+}
+
+export interface MapSearchParams {
+  bounds: MapBounds;
+  zoom: number;
+  center: Coordinates;
+  type: 'freelancers' | 'jobs' | 'services';
+  filters?: AdvancedSearchRequest;
+}
+
+export interface MapSearchResponse {
+  success: boolean;
+  data?: {
+    markers: MapMarker[];
+    clusters: MarkerCluster[];
+    bounds: MapBounds;
+  };
+  error?: string;
+}
+
+export interface MarkerCluster {
+  id: string;
+  position: Coordinates;
+  count: number;
+  bounds: MapBounds;
+  markers: MapMarker[];
+}
+
+// Trending & Popular Types
+export interface TrendingSearches {
+  timeframe: 'hour' | 'day' | 'week' | 'month';
+  searches: TrendingSearch[];
+  updatedAt: string;
+}
+
+export interface TrendingSearch {
+  query: string;
+  count: number;
+  growth: number; // Percentage growth compared to previous period
+  category?: string;
+  rank: number;
+}
+
+export interface PopularItems {
+  type: 'freelancers' | 'jobs' | 'services';
+  timeframe: 'day' | 'week' | 'month';
+  items: PopularItem[];
+  updatedAt: string;
+}
+
+export interface PopularItem {
+  item: Freelancer | Job | ServicePackage;
+  score: number;
+  metrics: {
+    views: number;
+    contacts: number;
+    favorites: number;
+    proposals?: number; // for jobs
+    orders?: number; // for services
+  };
+  rank: number;
+}
+
+// Search Filters UI Types
+export interface FilterOption {
+  value: string;
+  label: string;
+  count?: number;
+  disabled?: boolean;
+}
+
+export interface FilterGroup {
+  id: string;
+  name: string;
+  type:
+    | 'select'
+    | 'multi-select'
+    | 'range'
+    | 'checkbox'
+    | 'radio'
+    | 'location'
+    | 'rating';
+  options?: FilterOption[];
+  min?: number;
+  max?: number;
+  step?: number;
+  placeholder?: string;
+  required?: boolean;
+  dependencies?: string[]; // Other filter IDs that this depends on
+}
+
+export interface ActiveFilter {
+  groupId: string;
+  value: string | number | string[] | { min: number; max: number };
+  label: string;
+  removable: boolean;
+}
+
+// Search History Types
+export interface SearchHistory {
+  searches: SearchHistoryItem[];
+  pagination: PaginationMeta;
+}
+
+export interface SearchHistoryItem {
+  id: string;
+  userId: string;
+  query?: string;
+  filters: AdvancedSearchRequest;
+  resultsCount: number;
+  searchedAt: string;
+  clickedResults: string[];
+  bookmarked: boolean;
+}
+
+// Form Data Types for Sprint 7
+export interface AdvancedSearchFormData {
+  query?: string;
+  category?: string;
+  skills?: string[];
+  location?: {
+    city?: string;
+    district?: string;
+    coordinates?: { lat: number; lng: number };
+    radius?: number;
+  };
+  budget?: { min?: number; max?: number };
+  rating?: number;
+  availability?: 'available' | 'busy' | 'any';
+  remoteOk?: boolean;
+  sortBy?: 'relevance' | 'rating' | 'price' | 'distance';
+  deliveryTime?: number;
+  experienceLevel?: 'beginner' | 'intermediate' | 'expert';
+}
+
+export interface SaveSearchFormData {
+  name: string;
+  filters: AdvancedSearchFormData;
+  alertEnabled?: boolean;
+  alertFrequency?: 'immediate' | 'daily' | 'weekly';
+}
+
+export interface LocationPickerFormData {
+  query: string;
+  selectedLocation?: LocationData;
+  useCurrentLocation?: boolean;
+  radius?: number;
+}
+
+export interface FavoriteFolderFormData {
+  name: string;
+  description?: string;
+  color?: string;
+  icon?: string;
+  isPublic?: boolean;
+}
+
+// Component Props Types
+export interface AdvancedSearchProps {
+  mode: 'freelancers' | 'jobs' | 'services';
+  defaultFilters?: Partial<AdvancedSearchFormData>;
+  onSearch?: (filters: AdvancedSearchRequest) => void;
+  onResults?: (results: (Freelancer | Job | ServicePackage)[]) => void;
+  showSaveSearch?: boolean;
+  showMapToggle?: boolean;
+  className?: string;
+}
+
+export interface LocationPickerProps {
+  value?: LocationData;
+  onChange: (location: LocationData | null) => void;
+  placeholder?: string;
+  showRadius?: boolean;
+  defaultRadius?: number;
+  disabled?: boolean;
+  className?: string;
+}
+
+export interface RecommendationCardProps {
+  recommendation: Recommendation;
+  onContact?: (item: Freelancer | Job | ServicePackage) => void;
+  onFavorite?: (item: Freelancer | Job | ServicePackage) => void;
+  onFeedback?: (feedback: RecommendationFeedback) => void;
+  showReason?: boolean;
+  className?: string;
+}
+
+export interface SearchSuggestionsProps {
+  query: string;
+  suggestions: string[];
+  trending: string[];
+  recent: string[];
+  onSelect: (suggestion: string) => void;
+  loading?: boolean;
+  className?: string;
+}
+
+export interface FavoritesListProps {
+  type?: 'freelancers' | 'jobs' | 'services';
+  folderId?: string;
+  onItemClick?: (item: FavoriteItem) => void;
+  onFolderChange?: (folderId: string) => void;
+  showFolders?: boolean;
+  className?: string;
+}
+
+export interface MapViewProps {
+  searchParams: MapSearchParams;
+  markers: MapMarker[];
+  onMarkerClick?: (marker: MapMarker) => void;
+  onBoundsChange?: (bounds: MapBounds) => void;
+  showSearch?: boolean;
+  showFilters?: boolean;
+  className?: string;
+}
+
+// Store Types
+export interface AdvancedSearchStore {
+  // State
+  searchQuery: string;
+  searchResults: (Freelancer | Job | ServicePackage)[];
+  suggestions: string[];
+  recentSearches: string[];
+  savedSearches: SavedSearch[];
+  isLoading: boolean;
+  isLoadingSuggestions: boolean;
+  error: string | null;
+  facets: SearchFacets | null;
+  searchId: string | null;
+
+  // Actions
+  setSearchQuery: (query: string) => void;
+  getSuggestions: (query: string) => Promise<void>;
+  performAdvancedSearch: (filters: AdvancedSearchRequest) => Promise<void>;
+  saveSearch: (name: string, filters: AdvancedSearchRequest) => Promise<void>;
+  deleteSavedSearch: (id: string) => Promise<void>;
+  addToRecentSearches: (query: string) => void;
+  clearSearchResults: () => void;
+  clearError: () => void;
+}
+
+export interface RecommendationStore {
+  // State
+  recommendations: Recommendation[];
+  isLoading: boolean;
+  error: string | null;
+
+  // Actions
+  fetchRecommendations: (request: RecommendationsRequest) => Promise<void>;
+  refreshRecommendations: () => Promise<void>;
+  provideFeedback: (feedback: RecommendationFeedback) => Promise<void>;
+  clearError: () => void;
+}
+
+export interface FavoritesStore {
+  // State
+  favorites: {
+    freelancers: Freelancer[];
+    jobs: Job[];
+    services: ServicePackage[];
+    folders: FavoriteFolder[];
+  };
+  isLoading: boolean;
+  error: string | null;
+
+  // Actions
+  fetchFavorites: () => Promise<void>;
+  addToFavorites: (request: AddToFavoritesRequest) => Promise<void>;
+  removeFromFavorites: (
+    itemId: string,
+    itemType: 'freelancer' | 'job' | 'service'
+  ) => Promise<void>;
+  createFolder: (
+    folder: Omit<FavoriteFolder, 'id' | 'itemCount' | 'createdAt' | 'updatedAt'>
+  ) => Promise<void>;
+  moveToFolder: (itemId: string, folderId: string) => Promise<void>;
+  clearError: () => void;
+}
+
+export interface LocationStore {
+  // State
+  currentLocation: Coordinates | null;
+  selectedLocation: LocationData | null;
+  searchResults: LocationSearchResult[];
+  predictions: LocationPrediction[];
+  isLoading: boolean;
+  error: string | null;
+
+  // Actions
+  getCurrentLocation: () => Promise<void>;
+  searchLocations: (request: LocationSearchRequest) => Promise<void>;
+  getAutocomplete: (request: LocationAutocompleteRequest) => Promise<void>;
+  geocode: (request: GeocodeRequest) => Promise<void>;
+  setSelectedLocation: (location: LocationData | null) => void;
+  clearError: () => void;
+}

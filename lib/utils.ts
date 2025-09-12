@@ -48,3 +48,81 @@ export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return text.substring(0, maxLength) + '...';
 }
+
+// Debounce utility function
+export function debounce<T extends (...args: unknown[]) => unknown>(
+  func: T,
+  delay: number
+): T & { cancel: () => void } {
+  let timeoutId: NodeJS.Timeout | null = null;
+
+  const debouncedFunction = ((...args: Parameters<T>) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    timeoutId = setTimeout(() => {
+      func(...args);
+    }, delay);
+  }) as T & { cancel: () => void };
+
+  debouncedFunction.cancel = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  };
+
+  return debouncedFunction;
+}
+
+// Specific debounce for async functions
+export function debounceAsync<
+  T extends (...args: unknown[]) => Promise<unknown>,
+>(func: T, delay: number): T & { cancel: () => void } {
+  let timeoutId: NodeJS.Timeout | null = null;
+
+  const debouncedFunction = ((...args: Parameters<T>) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    return new Promise<ReturnType<T>>((resolve, reject) => {
+      timeoutId = setTimeout(async () => {
+        try {
+          const result = await func(...args);
+          resolve(result as ReturnType<T>);
+        } catch (error) {
+          reject(error);
+        }
+      }, delay);
+    });
+  }) as T & { cancel: () => void };
+
+  debouncedFunction.cancel = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  };
+
+  return debouncedFunction;
+}
+
+// Throttle utility function
+export function throttle<T extends (...args: unknown[]) => unknown>(
+  func: T,
+  delay: number
+): T {
+  let isThrottled = false;
+
+  return ((...args: Parameters<T>) => {
+    if (!isThrottled) {
+      func(...args);
+      isThrottled = true;
+      setTimeout(() => {
+        isThrottled = false;
+      }, delay);
+    }
+  }) as T;
+}

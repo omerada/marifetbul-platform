@@ -4,3 +4,9 @@ export { useJobDetailStore } from './jobDetail';
 export { usePackageDetailStore } from './packageDetail';
 export { usePaymentStore, usePaymentSelectors } from './payment';
 export { useNotificationStore, useNotificationSelectors } from './notification';
+
+// Sprint 7 - Advanced Search & Location stores
+export { useAdvancedSearchStore } from './advanced-search';
+export { useRecommendationStore } from './recommendations';
+export { useFavoritesStore } from './favorites';
+export { useLocationStore } from './location';
