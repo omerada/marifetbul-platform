@@ -104,7 +104,7 @@ export function TooltipTrigger({
       onMouseLeave: handleMouseLeave,
       onFocus: handleFocus,
       onBlur: handleBlur,
-    } as any);
+    } as React.HTMLAttributes<HTMLElement>);
   }
 
   return (

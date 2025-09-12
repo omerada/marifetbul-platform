@@ -16,8 +16,17 @@ export { default as FileUpload } from './FileUpload';
 export { ToastContainer } from './ToastContainer';
 export { Textarea } from './Textarea';
 export { Badge } from './Badge';
+export { Label } from './Label';
 export { Pagination, MobilePagination } from './Pagination';
 export { ScrollArea } from './ScrollArea';
+export { Slider } from './Slider';
+export {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './Select';
 export {
   DropdownMenu,
   DropdownMenuTrigger,

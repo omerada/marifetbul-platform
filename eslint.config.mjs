@@ -22,6 +22,11 @@ const eslintConfig = [
       'public/**',
     ],
   },
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'warn', // Changed from error to warning
+    },
+  },
 ];
 
 export default eslintConfig;

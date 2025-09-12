@@ -55,9 +55,12 @@ export function useAdvancedSearch(props?: UseAdvancedSearchProps) {
   const [activeFilterCount, setActiveFilterCount] = useState(0);
 
   // Update filter function
-  const updateFilter = useCallback((key: keyof SearchFilters, value: any) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-  }, []);
+  const updateFilter = useCallback(
+    (key: keyof SearchFilters, value: SearchFilters[keyof SearchFilters]) => {
+      setFilters((prev) => ({ ...prev, [key]: value }));
+    },
+    []
+  );
 
   // Add to search history
   const addToSearchHistory = useCallback((query: string) => {
@@ -101,29 +104,41 @@ export function useAdvancedSearch(props?: UseAdvancedSearchProps) {
 
     // Apply skill filter
     if (filters.skills.length > 0) {
-      filtered = filtered.filter((item) =>
-        filters.skills.some((skill) =>
-          (item as any).skills?.some((itemSkill: string) =>
-            itemSkill.toLowerCase().includes(skill.toLowerCase())
+      filtered = filtered.filter((item) => {
+        const skills =
+          'skills' in item ? (item as { skills?: string[] }).skills : undefined;
+        return (
+          skills &&
+          filters.skills.some((skill) =>
+            skills.some((itemSkill: string) =>
+              itemSkill.toLowerCase().includes(skill.toLowerCase())
+            )
           )
-        )
-      );
+        );
+      });
     }
 
     // Apply location filter
     if (filters.location) {
-      filtered = filtered.filter((item) =>
-        (item as any).location
-          ?.toLowerCase()
-          .includes(filters.location.toLowerCase())
-      );
+      filtered = filtered.filter((item) => {
+        const location =
+          'location' in item
+            ? (item as { location?: string }).location
+            : undefined;
+        return (
+          location &&
+          location.toLowerCase().includes(filters.location.toLowerCase())
+        );
+      });
     }
 
     // Apply rating filter
     if (filters.rating > 0) {
-      filtered = filtered.filter(
-        (item) => (item as any).rating >= filters.rating
-      );
+      filtered = filtered.filter((item) => {
+        const rating =
+          'rating' in item ? (item as { rating?: number }).rating : undefined;
+        return rating && rating >= filters.rating;
+      });
     }
 
     setFilteredItems(filtered);
@@ -218,11 +233,13 @@ export function useAdvancedSearch(props?: UseAdvancedSearchProps) {
           type: 'skill' as const,
         };
       }
+      // Handle suggestion object with proper typing
+      const suggestion = s as { id?: string; text?: string; count?: number };
       return {
-        id: (s as any).id || String(s),
-        text: (s as any).text || String(s),
+        id: suggestion.id || String(s),
+        text: suggestion.text || String(s),
         type: 'skill' as const,
-        count: (s as any).count,
+        count: suggestion.count,
       };
     }) as SearchSuggestion[],
     recentSearches: store.recentSearches,

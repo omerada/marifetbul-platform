@@ -127,7 +127,6 @@ export function UserTable({ className }: UserTableProps) {
   } = useUserManagement();
 
   const [actionUser, setActionUser] = useState<AdminUserData | null>(null);
-  const [actionType, setActionType] = useState<string>('');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleUserAction = async (action: string) => {
@@ -159,15 +158,14 @@ export function UserTable({ className }: UserTableProps) {
       console.error('Error performing user action:', error);
     } finally {
       setActionUser(null);
-      setActionType('');
     }
   };
 
-  const handleSelectUser = (userId: string, checked: boolean) => {
+  const handleSelectUser = (userId: string, _checked: boolean) => {
     onBulkToggle(userId);
   };
 
-  const handleSelectAll = (checked: boolean) => {
+  const handleSelectAll = (_checked: boolean) => {
     onSelectAll();
   };
 
@@ -332,7 +330,17 @@ export function UserTable({ className }: UserTableProps) {
               onAction={(action: string) =>
                 onBulkAction({
                   userIds: bulkSelection.selectedIds,
-                  action: { action: action as any },
+                  action: {
+                    action: action as
+                      | 'suspend'
+                      | 'unsuspend'
+                      | 'ban'
+                      | 'unban'
+                      | 'verify'
+                      | 'unverify'
+                      | 'add_note'
+                      | 'reset_password',
+                  },
                 })
               }
               onClear={() =>
@@ -446,7 +454,6 @@ export function UserTable({ className }: UserTableProps) {
                             <DropdownMenuItem
                               onClick={() => {
                                 setActionUser(user);
-                                setActionType('view');
                               }}
                             >
                               <Eye className="mr-2 h-4 w-4" />
@@ -455,7 +462,6 @@ export function UserTable({ className }: UserTableProps) {
                             <DropdownMenuItem
                               onClick={() => {
                                 setActionUser(user);
-                                setActionType('email');
                               }}
                             >
                               <Mail className="mr-2 h-4 w-4" />

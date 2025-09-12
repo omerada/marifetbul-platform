@@ -502,8 +502,10 @@ export const useNotification = (): UseNotificationReturn => {
   const applyFilters = useCallback(
     (filters: NotificationFilters): void => {
       try {
-        // Cast to any to bypass type checking temporarily
-        const validFilters = notificationFiltersSchema.parse(filters) as any;
+        // Parse and validate filters
+        const validFilters = notificationFiltersSchema.parse(
+          filters
+        ) as NotificationFilters;
         setFilters(validFilters);
         fetchNotifications(validFilters);
       } catch (error) {

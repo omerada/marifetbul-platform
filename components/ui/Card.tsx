@@ -1,7 +1,13 @@
+'use client';
+
 import { cn } from '@/lib/utils';
-import { HTMLAttributes, ReactNode } from 'react';
-import { useResponsive, useTouch } from '@/hooks/useResponsive';
-import { useHapticFeedback } from '@/hooks/useHapticFeedback';
+import {
+  HTMLAttributes,
+  ReactNode,
+  useEffect,
+  useState,
+  useCallback,
+} from 'react';
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'elevated' | 'outlined' | 'ghost' | 'gradient';
@@ -41,16 +47,43 @@ export function Card({
   onClick,
   ...props
 }: CardProps) {
-  const { isMobile } = useResponsive();
-  const { isTouchDevice } = useTouch();
-  const { triggerImpact } = useHapticFeedback();
+  const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
 
-  const shouldOptimizeForTouch = touchOptimized || isMobile || isTouchDevice;
+  const triggerImpact = useCallback(
+    (intensity: 'light' | 'medium' | 'heavy') => {
+      if (typeof window === 'undefined') return;
+
+      try {
+        if ('vibrate' in navigator) {
+          const vibrationPatterns = {
+            light: [10],
+            medium: [20],
+            heavy: [30],
+          };
+          navigator.vibrate(vibrationPatterns[intensity]);
+        }
+      } catch (error) {
+        // Silently fail if haptic feedback is not supported
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    setMounted(true);
+    setIsMobile(window.innerWidth < 768);
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  }, []);
+
+  const shouldOptimizeForTouch =
+    touchOptimized || (mounted && (isMobile || isTouchDevice));
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (disabled || loading) return;
 
-    if (hapticFeedback && interactive) {
+    if (hapticFeedback && interactive && mounted) {
       triggerImpact('light');
     }
 

@@ -218,11 +218,21 @@ export const AdvancedSearchForm: React.FC<AdvancedSearchFormProps> = ({
                       <button
                         key={index}
                         type="button"
-                        onClick={() => handleSuggestionSelect(suggestion)}
+                        onClick={() =>
+                          handleSuggestionSelect(
+                            typeof suggestion === 'string'
+                              ? suggestion
+                              : suggestion.text
+                          )
+                        }
                         className="hover:bg-accent flex w-full items-center gap-2 rounded-md p-2 text-left"
                       >
                         <TrendingUp className="h-4 w-4 text-orange-500" />
-                        <div className="font-medium">{suggestion}</div>
+                        <div className="font-medium">
+                          {typeof suggestion === 'string'
+                            ? suggestion
+                            : suggestion.text}
+                        </div>
                       </button>
                     ))}
                   </CardContent>

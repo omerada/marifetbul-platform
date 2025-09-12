@@ -636,7 +636,13 @@ export const useOrderStore = create<OrderStore>()(
               );
               if (milestoneIndex !== -1 && data.status) {
                 state.currentOrder.milestones[milestoneIndex].status =
-                  data.status as any;
+                  data.status as
+                    | 'pending'
+                    | 'in_progress'
+                    | 'completed'
+                    | 'cancelled'
+                    | 'requires_approval'
+                    | 'rejected';
               }
             }
           });

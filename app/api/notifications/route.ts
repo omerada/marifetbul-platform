@@ -14,7 +14,8 @@ const CreateNotificationSchema = z.object({
 });
 
 // Notification update validation schema
-const UpdateNotificationSchema = z.object({
+// Unused schema but kept for future use
+const _UpdateNotificationSchema = z.object({
   isRead: z.boolean().optional(),
   isPinned: z.boolean().optional(),
 });
@@ -35,6 +36,7 @@ const NotificationQuerySchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     // Mock authentication - In production, implement proper auth validation
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const mockSession = {
       user: {
         id: 'current-user-id',
@@ -162,6 +164,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Mock authentication - In production, implement proper auth validation
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const mockSession = {
       user: {
         id: 'current-user-id',

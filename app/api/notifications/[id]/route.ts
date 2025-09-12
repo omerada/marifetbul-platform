@@ -9,7 +9,7 @@ const UpdateNotificationSchema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Mock authentication - In production, implement proper auth validation
@@ -20,7 +20,7 @@ export async function PATCH(
       },
     };
 
-    const notificationId = params.id;
+    const { id: notificationId } = await params;
     if (!notificationId) {
       return NextResponse.json(
         { success: false, error: 'Notification ID is required' },
@@ -72,7 +72,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Mock authentication - In production, implement proper auth validation
@@ -83,7 +83,7 @@ export async function DELETE(
       },
     };
 
-    const notificationId = params.id;
+    const { id: notificationId } = await params;
     if (!notificationId) {
       return NextResponse.json(
         { success: false, error: 'Notification ID is required' },

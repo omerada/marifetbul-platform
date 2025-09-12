@@ -15,12 +15,10 @@ import {
   Briefcase,
   Activity,
   ArrowUpRight,
-  ArrowDownRight,
   Eye,
   MessageSquare,
   Clock,
   Calendar,
-  PlusCircle,
   BarChart3,
 } from 'lucide-react';
 

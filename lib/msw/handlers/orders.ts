@@ -87,10 +87,14 @@ const mockOrders: Order[] = [
     userId: 'user-1',
     user: {
       id: 'user-1',
-      name: 'Fatma Demir',
       email: 'fatma@example.com',
+      firstName: 'Fatma',
+      lastName: 'Demir',
       avatar: '/avatars/fatma-demir.jpg',
-    } as any,
+      userType: 'employer' as const,
+      createdAt: '2024-01-01T00:00:00Z',
+      updatedAt: '2024-01-01T00:00:00Z',
+    },
     packageId: 'pkg-1',
     jobId: undefined,
     amount: 5000,
@@ -188,10 +192,14 @@ const mockOrders: Order[] = [
     userId: 'user-1',
     user: {
       id: 'user-1',
-      name: 'Fatma Demir',
       email: 'fatma@example.com',
+      firstName: 'Fatma',
+      lastName: 'Demir',
       avatar: '/avatars/fatma-demir.jpg',
-    } as any,
+      userType: 'employer' as const,
+      createdAt: '2024-01-01T00:00:00Z',
+      updatedAt: '2024-01-01T00:00:00Z',
+    },
     packageId: 'pkg-2',
     jobId: undefined,
     amount: 15000,
@@ -344,7 +352,11 @@ export const ordersHandlers = [
       'under_review',
       'disputed',
     ] as const;
-    if (!validStatuses.includes(updateData.status as any)) {
+    if (
+      !validStatuses.includes(
+        updateData.status as (typeof validStatuses)[number]
+      )
+    ) {
       return HttpResponse.json({ error: 'Invalid status' }, { status: 400 });
     }
 
@@ -480,7 +492,11 @@ export const ordersHandlers = [
         'completed',
         'cancelled',
       ] as const;
-      if (!validMilestoneStatuses.includes(updateData.status as any)) {
+      if (
+        !validMilestoneStatuses.includes(
+          updateData.status as (typeof validMilestoneStatuses)[number]
+        )
+      ) {
         return HttpResponse.json(
           { error: 'Invalid milestone status' },
           { status: 400 }

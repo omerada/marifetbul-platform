@@ -1,7 +1,14 @@
+'use client';
+
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
-import { ButtonHTMLAttributes, ReactNode } from 'react';
-import { useHapticFeedback } from '@/hooks/useHapticFeedback';
+import {
+  ButtonHTMLAttributes,
+  ReactNode,
+  useCallback,
+  useState,
+  useEffect,
+} from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
@@ -29,14 +36,39 @@ export function Button({
   onClick,
   ...props
 }: ButtonProps) {
-  const { triggerImpact } = useHapticFeedback();
+  const [mounted, setMounted] = useState(false);
+
+  const triggerImpact = useCallback(
+    (intensity: 'light' | 'medium' | 'heavy') => {
+      if (typeof window === 'undefined') return;
+
+      try {
+        if ('vibrate' in navigator) {
+          const vibrationPatterns = {
+            light: [10],
+            medium: [20],
+            heavy: [30],
+          };
+          navigator.vibrate(vibrationPatterns[intensity]);
+        }
+      } catch {
+        // Silently fail if haptic feedback is not supported
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (hapticFeedback && !disabled && !loading) {
+    if (hapticFeedback && !disabled && !loading && mounted) {
       triggerImpact(hapticIntensity);
     }
     onClick?.(e);
   };
+
   const baseClasses =
     'inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 rounded-md';
 

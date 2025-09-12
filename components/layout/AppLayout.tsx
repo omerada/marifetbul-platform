@@ -1,10 +1,9 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { MobileLayout } from '../features/MobileLayout';
-import { useResponsive } from '@/hooks/useResponsive';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -23,7 +22,32 @@ export function AppLayout({
   user,
   isAuthenticated = false,
 }: AppLayoutProps) {
-  const { isMobile } = useResponsive();
+  const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  // Render desktop layout during SSR to prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="flex min-h-screen flex-col bg-gray-50">
+        <Header />
+        <main className="flex-1">{children}</main>
+        {showFooter && <Footer />}
+      </div>
+    );
+  }
 
   // Mobile Layout
   if (isMobile) {
