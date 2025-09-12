@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { usePlatformSettings } from '@/hooks/usePlatformSettings';
 import { Button } from '@/components/ui/Button';

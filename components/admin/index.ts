@@ -5,17 +5,14 @@ export { AdminHeader } from './AdminHeader';
 export { AdminFooter } from './AdminFooter';
 
 // Dashboard Components
-// export { AdminDashboard } from './AdminDashboard';
-// export { PlatformStats } from './PlatformStats';
-// export { AdminCharts } from './AdminCharts';
+export { AdminDashboard } from './AdminDashboard';
 
 // User Management Components
-// export { UserTable } from './UserTable';
-// export { BulkActions } from './BulkActions';
+export { UserTable } from './UserTable';
+export { default as BulkActions } from './BulkActions';
 
 // Content Moderation Components
-// export { ContentModerationQueue } from './ContentModerationQueue';
-// export { ModerationActions } from './ModerationActions';
+export { ContentModerationQueue } from './ContentModerationQueue';
 
 // Platform Settings Components
-// export { SystemSettings } from './SystemSettings';
+export { SystemSettings } from './SystemSettings';

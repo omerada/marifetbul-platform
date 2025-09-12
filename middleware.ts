@@ -13,6 +13,9 @@ const protectedRoutes = [
   '/projects',
 ];
 
+// Define admin routes (require admin authentication)
+const adminRoutes = ['/admin'];
+
 // Define auth routes (should redirect to dashboard if already authenticated)
 const authRoutes = ['/login', '/register'];
 
@@ -38,6 +41,9 @@ export function middleware(request: NextRequest) {
     pathname.startsWith(route)
   );
 
+  // Check if the current route is an admin route
+  const isAdminRoute = adminRoutes.some((route) => pathname.startsWith(route));
+
   // Check if the current route is an auth route
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
 
@@ -45,6 +51,11 @@ export function middleware(request: NextRequest) {
   const isPublicRoute = publicRoutes.some(
     (route) => pathname === route || pathname.startsWith(route)
   );
+
+  // If accessing admin routes, allow for development (TODO: Add role-based auth)
+  if (isAdminRoute) {
+    return NextResponse.next();
+  }
 
   // If accessing protected route without token, redirect to login
   if (isProtectedRoute && !token) {

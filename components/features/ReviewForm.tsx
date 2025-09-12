@@ -6,13 +6,13 @@ import { useForm } from 'react-hook-form';
 import { Star, MessageSquare, Clock, Users, DollarSign } from 'lucide-react';
 import { reviewSchema, type ReviewFormData } from '@/lib/validations/reviews';
 import { useReviewForm } from '@/hooks';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Label } from '@/components/ui/Label';
+import { Textarea } from '@/components/ui/Textarea';
+import { Switch } from '@/components/ui/Switch';
+import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Progress } from '@/components/ui/Progress';
 
 interface ReviewFormProps {
   orderId: string;
