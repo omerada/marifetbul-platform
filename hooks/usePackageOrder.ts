@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { usePackageDetailStore } from '@/lib/store';
 import { OrderFormData, orderSchema } from '@/lib/validations/details';
 import { useRouter } from 'next/navigation';
+import type { PackageDetail, ServicePackage } from '@/types';
 
 export function usePackageOrder(packageId: string) {
   const router = useRouter();
@@ -90,6 +91,15 @@ export function usePackageOrder(packageId: string) {
   const getOrderSummary = useCallback(() => {
     const { currentPackage } = store;
     if (!currentPackage) return null;
+
+    // Type guard to check if the package has pricing (PackageDetail)
+    const isPackageDetail = (
+      pkg: ServicePackage | PackageDetail
+    ): pkg is PackageDetail => {
+      return 'pricing' in pkg && 'addOns' in pkg;
+    };
+
+    if (!isPackageDetail(currentPackage)) return null;
 
     const tier = form.watch('tier');
     const addOns = form.watch('addOns') || [];

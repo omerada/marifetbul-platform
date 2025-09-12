@@ -20,6 +20,7 @@ import {
   Shield,
 } from 'lucide-react';
 import { usePackageDetail } from '@/hooks';
+import type { ServicePackage, PackageDetail } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -59,6 +60,22 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
     return (
       <ErrorState
         message={error || 'Paket bulunamadı'}
+        onRetry={refreshPackageDetail}
+      />
+    );
+  }
+
+  // Type guard to check if the package has pricing (PackageDetail)
+  const isPackageDetail = (
+    pkg: ServicePackage | PackageDetail
+  ): pkg is PackageDetail => {
+    return 'pricing' in pkg;
+  };
+
+  if (!isPackageDetail(currentPackage)) {
+    return (
+      <ErrorState
+        message="Bu paket için detay görünümü mevcut değil"
         onRetry={refreshPackageDetail}
       />
     );

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mockPackages } from '@/lib/msw/data';
+import { mockPackages } from '@/lib/msw/handlers';
 
 export async function GET(
   request: NextRequest,
@@ -14,6 +14,7 @@ export async function GET(
     if (!pkg) {
       return NextResponse.json(
         {
+          success: false,
           error: 'Hizmet paketi bulunamadı',
           message: `ID: ${id} ile hizmet paketi mevcut değil`,
         },
@@ -21,11 +22,15 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(pkg);
+    return NextResponse.json({
+      success: true,
+      data: pkg,
+    });
   } catch (error) {
     console.error('Packages API error:', error);
     return NextResponse.json(
       {
+        success: false,
         error: 'Sunucu hatası',
         message: 'Hizmet paketi getirilirken hata oluştu',
       },

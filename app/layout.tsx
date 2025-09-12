@@ -62,7 +62,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" className="h-full">
+    <html lang="tr" className="h-full" data-scroll-behavior="smooth">
       <body
         className={`${inter.variable} h-full bg-gray-50 font-sans antialiased`}
       >

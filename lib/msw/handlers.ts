@@ -13,6 +13,7 @@ import {
   Conversation,
 } from '@/types';
 import { detailHandlers } from './handlers/details';
+import { generateCategoryPlaceholder } from '@/lib/utils/image-fallback';
 
 // Mock employer data
 const mockEmployer: Employer = {
@@ -240,7 +241,7 @@ const mockJobs: Job[] = [
 ];
 
 // Mock data - Hizmet Paketleri (Türkçe)
-const mockPackages: ServicePackage[] = [
+export const mockPackages: ServicePackage[] = [
   {
     id: '1',
     title: 'Profesyonel Web Sitesi Geliştirme',
@@ -267,8 +268,8 @@ const mockPackages: ServicePackage[] = [
     createdAt: new Date('2024-01-10').toISOString(),
     updatedAt: new Date('2024-01-15').toISOString(),
     images: [
-      'https://picsum.photos/400/300?random=1',
-      'https://picsum.photos/400/300?random=2',
+      generateCategoryPlaceholder('Web Geliştirme', 'Web Development 1'),
+      generateCategoryPlaceholder('Web Geliştirme', 'Web Development 2'),
     ],
   },
   {
@@ -297,8 +298,8 @@ const mockPackages: ServicePackage[] = [
     createdAt: new Date('2024-01-08').toISOString(),
     updatedAt: new Date('2024-01-14').toISOString(),
     images: [
-      'https://picsum.photos/400/300?random=3',
-      'https://picsum.photos/400/300?random=4',
+      generateCategoryPlaceholder('Tasarım', 'Logo Design 1'),
+      generateCategoryPlaceholder('Tasarım', 'Logo Design 2'),
     ],
   },
   {
@@ -326,7 +327,7 @@ const mockPackages: ServicePackage[] = [
     isActive: true,
     createdAt: new Date('2024-01-09').toISOString(),
     updatedAt: new Date('2024-01-13').toISOString(),
-    images: ['https://picsum.photos/400/300?random=5'],
+    images: [generateCategoryPlaceholder('İçerik Yazımı', 'Content Writing')],
   },
   {
     id: '4',
@@ -354,8 +355,8 @@ const mockPackages: ServicePackage[] = [
     createdAt: new Date('2024-01-07').toISOString(),
     updatedAt: new Date('2024-01-12').toISOString(),
     images: [
-      'https://picsum.photos/400/300?random=6',
-      'https://picsum.photos/400/300?random=7',
+      generateCategoryPlaceholder('Dijital Pazarlama', 'Marketing 1'),
+      generateCategoryPlaceholder('Dijital Pazarlama', 'Marketing 2'),
     ],
   },
   {
@@ -383,7 +384,9 @@ const mockPackages: ServicePackage[] = [
     isActive: true,
     createdAt: new Date('2024-01-06').toISOString(),
     updatedAt: new Date('2024-01-11').toISOString(),
-    images: ['https://picsum.photos/400/300?random=8'],
+    images: [
+      generateCategoryPlaceholder('Dijital Pazarlama', 'SEO Optimization'),
+    ],
   },
   {
     id: '6',
@@ -411,8 +414,8 @@ const mockPackages: ServicePackage[] = [
     createdAt: new Date('2024-01-05').toISOString(),
     updatedAt: new Date('2024-01-10').toISOString(),
     images: [
-      'https://picsum.photos/400/300?random=9',
-      'https://picsum.photos/400/300?random=10',
+      generateCategoryPlaceholder('Mobil Uygulama', 'Mobile App 1'),
+      generateCategoryPlaceholder('Mobil Uygulama', 'Mobile App 2'),
     ],
   },
   {
@@ -440,7 +443,9 @@ const mockPackages: ServicePackage[] = [
     isActive: true,
     createdAt: new Date('2024-01-04').toISOString(),
     updatedAt: new Date('2024-01-09').toISOString(),
-    images: ['https://picsum.photos/400/300?random=11'],
+    images: [
+      generateCategoryPlaceholder('İçerik Yazımı', 'Content Management'),
+    ],
   },
   {
     id: '8',
@@ -468,8 +473,8 @@ const mockPackages: ServicePackage[] = [
     createdAt: new Date('2024-01-03').toISOString(),
     updatedAt: new Date('2024-01-08').toISOString(),
     images: [
-      'https://picsum.photos/400/300?random=12',
-      'https://picsum.photos/400/300?random=13',
+      generateCategoryPlaceholder('Veri Bilimi', 'Data Analysis 1'),
+      generateCategoryPlaceholder('Veri Bilimi', 'Data Analysis 2'),
     ],
   },
 ];

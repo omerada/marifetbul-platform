@@ -14,7 +14,6 @@ import {
   Check,
   RefreshCw,
   MessageCircle,
-  Award,
   MapPin,
 } from 'lucide-react';
 import { usePackageDetail } from '@/hooks/usePackageDetail';
@@ -33,26 +32,33 @@ interface ServiceDetailProps {
 export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
   const {
     currentPackage: servicePackage,
-    isLoading,
+    isLoading: loading,
     error,
-    totalPrice,
-    deliveryTime,
     selectedTier,
     selectedAddOns,
     setSelectedTier,
     toggleAddOn,
-    clearError,
     canOrder,
+    totalPrice,
+    deliveryTime,
   } = usePackageDetail(packageId);
 
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className={`container mx-auto px-4 py-8 ${className}`}>
         <Loading size="lg" />
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className={`container mx-auto px-4 py-8 ${className}`}>
+        <Loading />
       </div>
     );
   }
@@ -67,9 +73,9 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
           <p className="mb-6 text-gray-600">
             Aradığınız hizmet mevcut değil veya kaldırılmış olabilir.
           </p>
-          <Button asChild>
-            <Link href="/marketplace">Keşfet'e Dön</Link>
-          </Button>
+          <Link href="/marketplace">
+            <Button>İş & Hizmet&apos;e Dön</Button>
+          </Link>
         </div>
       </div>
     );
@@ -109,56 +115,67 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
   };
 
   return (
-    <div className={`container mx-auto px-4 py-8 ${className}`}>
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+    <div className={`container mx-auto px-4 py-4 sm:py-8 ${className}`}>
+      <div className="grid grid-cols-1 gap-4 sm:gap-8 lg:grid-cols-3">
         {/* Main Content */}
-        <div className="space-y-6 lg:col-span-2">
+        <div className="space-y-4 sm:space-y-6 lg:col-span-2">
           {/* Header */}
-          <Card className="p-6">
-            <div className="mb-4 flex items-start justify-between">
-              <div className="flex-1">
-                <h1 className="mb-2 text-2xl font-bold text-gray-900">
+          <Card className="p-4 sm:p-6">
+            <div className="mb-4 flex flex-col space-y-3 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+              <div className="min-w-0 flex-1">
+                <h1 className="mb-2 text-xl font-bold break-words text-gray-900 sm:text-2xl">
                   {servicePackage.title}
                 </h1>
-                <div className="flex items-center space-x-4 text-sm text-gray-600">
+                <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 sm:gap-4">
                   <div className="flex items-center">
-                    <User className="mr-1 h-4 w-4" />
+                    <User className="mr-1 h-4 w-4 flex-shrink-0" />
                     <Link
                       href={`/profile/${servicePackage.freelancer.id}`}
-                      className="font-medium hover:text-blue-600"
+                      className="truncate font-medium hover:text-blue-600"
                     >
                       {servicePackage.freelancer.firstName}{' '}
                       {servicePackage.freelancer.lastName}
                     </Link>
                   </div>
                   <div className="flex items-center">
-                    <Star className="mr-1 h-4 w-4 text-yellow-400" />
-                    {servicePackage.rating.toFixed(1)} ({servicePackage.reviews}{' '}
-                    değerlendirme)
+                    <Star className="mr-1 h-4 w-4 flex-shrink-0 text-yellow-400" />
+                    <span className="truncate">
+                      {servicePackage.rating.toFixed(1)} (
+                      {servicePackage.reviews} değerlendirme)
+                    </span>
                   </div>
                   <div className="flex items-center">
-                    <ShoppingCart className="mr-1 h-4 w-4" />
+                    <ShoppingCart className="mr-1 h-4 w-4 flex-shrink-0" />
                     {servicePackage.orders} sipariş
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center space-x-2">
+              <div className="mt-3 flex items-center space-x-2 sm:mt-0 sm:ml-4">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleSaveToggle}
-                  className={isSaved ? 'text-red-600' : ''}
+                  className={`${isSaved ? 'text-red-600' : ''} h-8 px-2 sm:h-10 sm:px-4`}
                 >
                   <Heart
                     className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`}
                   />
                 </Button>
-                <Button variant="outline" size="sm" onClick={handleShare}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleShare}
+                  className="h-8 px-2 sm:h-10 sm:px-4"
+                >
                   <Share2 className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 px-2 sm:h-10 sm:px-4"
+                >
                   <Flag className="h-4 w-4" />
                 </Button>
               </div>
@@ -166,16 +183,30 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
 
             {/* Package Images */}
             {servicePackage.images && servicePackage.images.length > 0 && (
-              <div className="mb-6">
-                <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+              <div className="mb-4 sm:mb-6">
+                <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-gray-100">
                   <Image
                     src={servicePackage.images[currentImageIndex]}
                     alt={servicePackage.title}
                     fill
                     className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      // Create a fallback SVG as data URL
+                      const svg = `<svg width="800" height="450" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="100%" height="100%" fill="#f3f4f6"/>
+                        <text x="50%" y="50%" font-family="system-ui, -apple-system, sans-serif" 
+                              font-size="18" font-weight="500" fill="#6b7280" 
+                              text-anchor="middle" dy="0.3em">
+                          ${servicePackage.title.length > 30 ? servicePackage.title.substring(0, 30) + '...' : servicePackage.title}
+                        </text>
+                      </svg>`;
+                      target.src = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`;
+                    }}
                   />
                   {servicePackage.images.length > 1 && (
-                    <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 space-x-2">
+                    <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 space-x-2 sm:bottom-4">
                       {servicePackage.images.map((_, index) => (
                         <button
                           key={index}
@@ -348,13 +379,15 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Freelancer Card */}
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <div className="flex items-center space-x-3">
-              <Avatar className="h-12 w-12">
+              <Avatar className="h-10 w-10 flex-shrink-0 sm:h-12 sm:w-12">
                 <AvatarImage
-                  src={servicePackage.freelancer.avatar}
+                  src={
+                    servicePackage.freelancer.avatar || '/avatars/default.jpg'
+                  }
                   alt={`${servicePackage.freelancer.firstName} ${servicePackage.freelancer.lastName}`}
                 />
                 <AvatarFallback>
@@ -362,46 +395,53 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
                   {servicePackage.freelancer.lastName.charAt(0)}
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <h3 className="font-semibold">
+              <div className="min-w-0 flex-1">
+                <h3 className="truncate font-semibold">
                   {servicePackage.freelancer.firstName}{' '}
                   {servicePackage.freelancer.lastName}
                 </h3>
                 {'title' in servicePackage.freelancer && (
-                  <p className="text-sm text-gray-600">
+                  <p className="truncate text-sm text-gray-600">
                     {servicePackage.freelancer.title}
                   </p>
                 )}
                 {'location' in servicePackage.freelancer && (
                   <div className="flex items-center text-sm text-gray-500">
-                    <MapPin className="mr-1 h-3 w-3" />
-                    {servicePackage.freelancer.location}
+                    <MapPin className="mr-1 h-3 w-3 flex-shrink-0" />
+                    <span className="truncate">
+                      {servicePackage.freelancer.location}
+                    </span>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-4 text-center">
+            <div className="mt-3 grid grid-cols-2 gap-3 text-center sm:mt-4 sm:gap-4">
               <div>
-                <div className="text-lg font-semibold">
+                <div className="text-base font-semibold sm:text-lg">
                   {servicePackage.freelancer.rating}
                 </div>
-                <div className="text-sm text-gray-600">Puan</div>
+                <div className="text-xs text-gray-600 sm:text-sm">Puan</div>
               </div>
               <div>
-                <div className="text-lg font-semibold">
+                <div className="text-base font-semibold sm:text-lg">
                   {servicePackage.freelancer.totalReviews}
                 </div>
-                <div className="text-sm text-gray-600">Değerlendirme</div>
+                <div className="text-xs text-gray-600 sm:text-sm">
+                  Değerlendirme
+                </div>
               </div>
             </div>
 
-            <div className="mt-4 space-y-2">
-              <Button asChild className="w-full" variant="outline">
-                <Link href={`/profile/${servicePackage.freelancer.id}`}>
+            <div className="mt-3 space-y-2 sm:mt-4">
+              <Link href={`/profile/${servicePackage.freelancer.id}`}>
+                <Button
+                  className="w-full text-sm sm:text-base"
+                  variant="outline"
+                >
                   Profili Görüntüle
-                </Link>
-              </Button>
+                </Button>
+              </Link>
               <Button className="w-full" variant="outline">
                 <MessageCircle className="mr-2 h-4 w-4" />
                 Mesaj Gönder
@@ -410,29 +450,31 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
           </Card>
 
           {/* Order Summary */}
-          <Card className="p-6">
-            <h3 className="mb-4 font-semibold">Sipariş Özeti</h3>
+          <Card className="p-4 sm:p-6">
+            <h3 className="mb-3 text-base font-semibold sm:mb-4 sm:text-lg">
+              Sipariş Özeti
+            </h3>
 
-            <div className="space-y-3">
-              <div className="flex justify-between text-sm">
+            <div className="space-y-2 sm:space-y-3">
+              <div className="flex justify-between text-xs sm:text-sm">
                 <span>Seçili Paket:</span>
-                <span className="font-medium">
+                <span className="ml-2 text-right font-medium">
                   {'pricing' in servicePackage && servicePackage.pricing
                     ? servicePackage.pricing[selectedTier].title
                     : 'Temel Paket'}
                 </span>
               </div>
 
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs sm:text-sm">
                 <span>Teslimat:</span>
-                <span className="font-medium">
+                <span className="ml-2 text-right font-medium">
                   {formatDeliveryTime(deliveryTime)}
                 </span>
               </div>
 
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs sm:text-sm">
                 <span>Revizyon:</span>
-                <span className="font-medium">
+                <span className="ml-2 text-right font-medium">
                   {'pricing' in servicePackage && servicePackage.pricing
                     ? `${servicePackage.pricing[selectedTier].revisions} kez`
                     : `${servicePackage.revisions} kez`}
@@ -440,8 +482,10 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
               </div>
 
               {selectedAddOns.length > 0 && (
-                <div className="border-t pt-3">
-                  <div className="text-sm font-medium">Ek Hizmetler:</div>
+                <div className="border-t pt-2 sm:pt-3">
+                  <div className="text-xs font-medium sm:text-sm">
+                    Ek Hizmetler:
+                  </div>
                   {'addOns' in servicePackage &&
                     servicePackage.addOns &&
                     servicePackage.addOns
@@ -458,27 +502,30 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
                 </div>
               )}
 
-              <div className="border-t pt-3">
-                <div className="flex justify-between font-semibold">
+              <div className="border-t pt-2 sm:pt-3">
+                <div className="flex justify-between text-sm font-semibold sm:text-base">
                   <span>Toplam:</span>
-                  <span className="text-lg text-green-600">
-                    {formatPrice(totalPrice)}
+                  <span className="text-base text-green-600 sm:text-lg">
+                    ₺{formatPrice(totalPrice)}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 space-y-2">
+            <div className="mt-4 space-y-2 sm:mt-6">
               {canOrder ? (
                 <Button
-                  className="w-full"
+                  className="w-full py-2 text-sm sm:py-3 sm:text-base"
                   onClick={() => setShowOrderForm(true)}
                 >
                   <ShoppingCart className="mr-2 h-4 w-4" />
                   Sipariş Ver
                 </Button>
               ) : (
-                <Button className="w-full" disabled>
+                <Button
+                  className="w-full py-2 text-sm sm:py-3 sm:text-base"
+                  disabled
+                >
                   Sipariş Verilemez
                 </Button>
               )}
@@ -488,10 +535,14 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
       </div>
 
       {/* Order Form Modal */}
-      {showOrderForm && (
+      {showOrderForm && 'overview' in servicePackage && (
         <OrderForm
           servicePackage={servicePackage}
-          onClose={() => setShowOrderForm(false)}
+          onSubmit={(data) => {
+            console.log('Order submitted:', data);
+            setShowOrderForm(false);
+          }}
+          onCancel={() => setShowOrderForm(false)}
         />
       )}
     </div>

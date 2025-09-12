@@ -115,17 +115,22 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
   };
 
   return (
-    <div className={`mx-auto max-w-6xl space-y-8 p-6 ${className}`}>
+    <div
+      className={`mx-auto max-w-6xl space-y-4 p-4 sm:space-y-8 sm:p-6 ${className}`}
+    >
       {/* Header Section */}
-      <div className="rounded-lg border bg-white p-6 shadow-sm">
-        <div className="mb-4 flex items-start justify-between">
-          <div className="flex-1">
-            <div className="mb-2 flex items-center gap-2">
-              <h1 className="text-3xl font-bold text-gray-900">
+      <div className="rounded-lg border bg-white p-4 shadow-sm sm:p-6">
+        <div className="mb-4 flex flex-col space-y-3 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+          <div className="min-w-0 flex-1">
+            <div className="mb-2 flex flex-col space-y-2 sm:flex-row sm:items-center sm:gap-2 sm:space-y-0">
+              <h1 className="text-xl font-bold break-words text-gray-900 sm:text-2xl lg:text-3xl">
                 {currentJob.title}
               </h1>
               {currentJob.urgency && (
-                <Badge variant={getUrgencyColor(currentJob.urgency)}>
+                <Badge
+                  variant={getUrgencyColor(currentJob.urgency)}
+                  className="self-start"
+                >
                   {currentJob.urgency === 'high' && 'Acil'}
                   {currentJob.urgency === 'medium' && 'Orta'}
                   {currentJob.urgency === 'low' && 'Normal'}
@@ -133,16 +138,18 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
               )}
             </div>
 
-            <div className="mb-4 flex items-center space-x-4 text-sm text-gray-600">
+            <div className="mb-4 flex flex-wrap items-center gap-2 text-xs text-gray-600 sm:gap-4 sm:text-sm">
               <span className="flex items-center">
-                <Calendar className="mr-1 h-4 w-4" />
-                {formatDistanceToNow(new Date(currentJob.createdAt), {
-                  addSuffix: true,
-                  locale: tr,
-                })}
+                <Calendar className="mr-1 h-4 w-4 flex-shrink-0" />
+                <span className="truncate">
+                  {formatDistanceToNow(new Date(currentJob.createdAt), {
+                    addSuffix: true,
+                    locale: tr,
+                  })}
+                </span>
               </span>
               <span className="flex items-center">
-                <MapPin className="mr-1 h-4 w-4" />
+                <MapPin className="mr-1 h-4 w-4 flex-shrink-0" />
                 {currentJob.location}
               </span>
               <span className="flex items-center">
@@ -163,33 +170,33 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
             {/* Tags */}
             <div className="mb-4 flex flex-wrap gap-2">
               {(currentJob.tags || []).map((tag) => (
-                <Badge key={tag} variant="secondary">
+                <Badge key={tag} variant="secondary" className="text-xs">
                   {tag}
                 </Badge>
               ))}
             </div>
           </div>
 
-          <div className="text-right">
-            <div className="mb-1 text-2xl font-bold text-green-600">
+          <div className="mt-3 text-right sm:mt-0 sm:ml-4">
+            <div className="mb-1 text-lg font-bold text-green-600 sm:text-xl lg:text-2xl">
               {formatBudget(currentJob.budget)}
             </div>
-            <div className="mb-2 text-sm text-gray-600">
+            <div className="mb-2 text-xs text-gray-600 sm:text-sm">
               {currentJob.budget.type === 'fixed' ? 'Sabit fiyat' : 'Saatlik'}
             </div>
-            <div className="text-sm font-medium text-gray-700">
+            <div className="text-xs font-medium text-gray-700 sm:text-sm">
               {getExperienceLevelText(currentJob.experienceLevel)} seviye
             </div>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-3">
           {canPropose && (
             <Button
               size="lg"
               onClick={() => setShowProposalModal(true)}
-              className="px-8"
+              className="px-4 text-sm sm:px-8 sm:text-base"
             >
               <FileText className="mr-2 h-4 w-4" />
               Teklif Ver
@@ -200,6 +207,7 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
             variant="outline"
             size="lg"
             onClick={() => setIsSaved(!isSaved)}
+            className="px-4 text-sm sm:px-8 sm:text-base"
           >
             <Heart
               className={`mr-2 h-4 w-4 ${isSaved ? 'fill-current text-red-500' : ''}`}
@@ -220,11 +228,11 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:gap-8 lg:grid-cols-3">
         {/* Left Column - Job Details */}
-        <div className="space-y-6 lg:col-span-2">
+        <div className="space-y-4 sm:space-y-6 lg:col-span-2">
           {/* Description */}
-          <Card>
+          <Card className="p-4 sm:p-6">
             <CardHeader>
               <CardTitle>İş Açıklaması</CardTitle>
             </CardHeader>

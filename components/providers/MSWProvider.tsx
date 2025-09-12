@@ -8,6 +8,7 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
   );
 
   useEffect(() => {
+    // Only start MSW in development environment
     if (process.env.NODE_ENV === 'development') {
       const startMSW = async () => {
         try {
@@ -31,8 +32,16 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
                 req.url.includes('.svg') ||
                 req.url.includes('.webp') ||
                 req.url.includes('.css') ||
-                req.url.includes('.js')
+                req.url.includes('.js') ||
+                req.url.includes('.woff') ||
+                req.url.includes('.woff2') ||
+                req.url.includes('.ttf') ||
+                req.url.includes('.eot')
               ) {
+                return 'bypass';
+              }
+              // Bypass via.placeholder.com URLs since we handle them locally now
+              if (req.url.includes('via.placeholder.com')) {
                 return 'bypass';
               }
               return 'bypass';
@@ -68,7 +77,7 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600"></div>
-          <p className="text-sm text-gray-600">MSW başlatılıyor...</p>
+          <p className="text-sm text-gray-600">Mock API başlatılıyor...</p>
         </div>
       </div>
     );

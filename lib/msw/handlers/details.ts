@@ -311,7 +311,7 @@ export const detailHandlers = [
   }),
 
   // Get package detail
-  http.get('/api/v1/packages/:id', async ({ params }) => {
+  http.get('/api/packages/:id', async ({ params }) => {
     const { id } = params;
 
     await new Promise((resolve) => setTimeout(resolve, 600));
@@ -484,7 +484,7 @@ export const detailHandlers = [
   }),
 
   // Get package reviews
-  http.get('/api/v1/packages/:id/reviews', async ({ params, request }) => {
+  http.get('/api/packages/:id/reviews', async ({ params, request }) => {
     const { id } = params;
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get('page') || '1');
@@ -492,31 +492,60 @@ export const detailHandlers = [
 
     await new Promise((resolve) => setTimeout(resolve, 400));
 
-    if (id === 'pkg-789') {
-      const startIndex = (page - 1) * limit;
-      const reviews = mockPackageDetail.detailedReviews.slice(
-        startIndex,
-        startIndex + limit
-      );
-
-      return HttpResponse.json({
-        success: true,
-        data: reviews,
-        pagination: {
-          page,
-          limit,
-          total: mockPackageDetail.detailedReviews.length,
-          totalPages: Math.ceil(
-            mockPackageDetail.detailedReviews.length / limit
-          ),
+    // Generate mock reviews for any package ID
+    const mockReviews = [
+      {
+        id: `review-${id}-1`,
+        rating: 5,
+        comment:
+          'Harika bir çalışma oldu. Tam istediğim gibi modern ve etkileyici bir sonuç.',
+        reviewer: {
+          id: 'user-1',
+          firstName: 'Mehmet',
+          lastName: 'Öz',
+          avatar: '/avatars/user-1.jpg',
         },
-      });
-    }
+        reviewee: {
+          id: 'freelancer-1',
+          firstName: 'Ahmet',
+          lastName: 'Yılmaz',
+        },
+        packageId: id,
+        createdAt: '2024-11-15T14:30:00Z',
+      },
+      {
+        id: `review-${id}-2`,
+        rating: 4,
+        comment:
+          'Çok profesyonel yaklaşım, zamanında teslimat ve kaliteli iş. Teşekkürler.',
+        reviewer: {
+          id: 'user-2',
+          firstName: 'Fatma',
+          lastName: 'Kara',
+          avatar: '/avatars/user-2.jpg',
+        },
+        reviewee: {
+          id: 'freelancer-1',
+          firstName: 'Ahmet',
+          lastName: 'Yılmaz',
+        },
+        packageId: id,
+        createdAt: '2024-11-10T09:15:00Z',
+      },
+    ];
+
+    const startIndex = (page - 1) * limit;
+    const reviews = mockReviews.slice(startIndex, startIndex + limit);
 
     return HttpResponse.json({
       success: true,
-      data: [],
-      pagination: { page: 1, limit, total: 0, totalPages: 0 },
+      data: reviews,
+      pagination: {
+        page,
+        limit,
+        total: mockReviews.length,
+        totalPages: Math.ceil(mockReviews.length / limit),
+      },
     });
   }),
 
