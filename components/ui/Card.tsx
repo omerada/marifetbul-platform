@@ -1,9 +1,18 @@
 import { cn } from '@/lib/utils';
 import { HTMLAttributes, ReactNode } from 'react';
+import { useResponsive, useTouch } from '@/hooks/useResponsive';
+import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'elevated' | 'outlined';
-  padding?: 'none' | 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'elevated' | 'outlined' | 'ghost' | 'gradient';
+  padding?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg';
+  interactive?: boolean;
+  touchOptimized?: boolean;
+  hapticFeedback?: boolean;
+  loading?: boolean;
+  disabled?: boolean;
+  asChild?: boolean;
 }
 
 interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {
@@ -21,24 +30,71 @@ interface CardFooterProps extends HTMLAttributes<HTMLDivElement> {
 export function Card({
   variant = 'default',
   padding = 'md',
+  size = 'md',
+  interactive = false,
+  touchOptimized = false,
+  hapticFeedback = false,
+  loading = false,
+  disabled = false,
   className,
   children,
+  onClick,
   ...props
 }: CardProps) {
-  const baseClasses = 'rounded-lg bg-white';
+  const { isMobile } = useResponsive();
+  const { isTouchDevice } = useTouch();
+  const { triggerImpact } = useHapticFeedback();
+
+  const shouldOptimizeForTouch = touchOptimized || isMobile || isTouchDevice;
+
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (disabled || loading) return;
+
+    if (hapticFeedback && interactive) {
+      triggerImpact('light');
+    }
+
+    onClick?.(e);
+  };
+
+  const baseClasses = cn(
+    'rounded-lg bg-white transition-all duration-200',
+    interactive && 'cursor-pointer',
+    shouldOptimizeForTouch && interactive && 'touch-manipulation',
+    disabled && 'opacity-50 cursor-not-allowed',
+    loading && 'pointer-events-none'
+  );
 
   const variantClasses = {
     default: 'border border-gray-200',
-    elevated: 'shadow-md',
+    elevated: 'shadow-md hover:shadow-lg',
     outlined: 'border-2 border-gray-300',
+    ghost: 'border-0 shadow-none bg-transparent',
+    gradient: 'bg-gradient-to-br from-white to-gray-50 border border-gray-200',
   };
 
   const paddingClasses = {
     none: '',
+    xs: 'p-2',
     sm: 'p-4',
     md: 'p-6',
     lg: 'p-8',
+    xl: 'p-10',
   };
+
+  const sizeClasses = {
+    sm: 'text-sm',
+    md: 'text-base',
+    lg: 'text-lg',
+  };
+
+  const interactiveClasses = interactive
+    ? cn(
+        'hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
+        shouldOptimizeForTouch && 'active:scale-98 active:shadow-sm',
+        !shouldOptimizeForTouch && 'hover:transform hover:scale-[1.02]'
+      )
+    : '';
 
   return (
     <div
@@ -46,11 +102,23 @@ export function Card({
         baseClasses,
         variantClasses[variant],
         paddingClasses[padding],
+        sizeClasses[size],
+        interactiveClasses,
         className
       )}
+      onClick={interactive ? handleClick : onClick}
+      role={interactive ? 'button' : undefined}
+      tabIndex={interactive && !disabled ? 0 : undefined}
+      aria-disabled={disabled}
       {...props}
     >
-      {children}
+      {loading ? (
+        <div className="flex items-center justify-center py-8">
+          <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-blue-600" />
+        </div>
+      ) : (
+        children
+      )}
     </div>
   );
 }

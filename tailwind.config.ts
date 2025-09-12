@@ -36,6 +36,13 @@ const config: Config = {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'bounce-soft': 'bounceSoft 0.6s ease-out',
       },
+      scale: {
+        '98': '0.98',
+        '99': '0.99',
+        '101': '1.01',
+        '102': '1.02',
+        '103': '1.03',
+      },
       keyframes: {
         fadeIn: {
           '0%': { opacity: '0' },

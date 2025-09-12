@@ -41,6 +41,63 @@ export { TouchJobCard, TouchServiceCard } from './TouchCards';
 export { MarketplaceHeader } from './MarketplaceHeader';
 export { EnhancedFilters } from './EnhancedFilters';
 
+// Sprint 6: Mobile Experience & Polish Components
+export {
+  PullToRefresh,
+  AnimatedPullToRefresh,
+  usePullToRefreshComponent,
+} from './PullToRefresh';
+export {
+  UnifiedLoading,
+  ProgressLoader,
+  LoadingButton,
+  LoadingOverlay,
+  LoadingCard,
+  useLoadingState,
+} from './UnifiedLoading';
+export {
+  ErrorBoundaryFallback,
+  useErrorHandler,
+  withErrorBoundary,
+  ErrorBoundaryConfigProvider,
+  useErrorBoundaryConfig,
+} from './ErrorBoundaryFallback';
+export {
+  OptimizedImage,
+  AvatarImage,
+  HeroImage,
+  GalleryImage,
+  ThumbnailImage,
+  BackgroundImage,
+  useImagePreloader,
+} from './OptimizedImage';
+export { PerformanceMonitor } from './PerformanceMonitor';
+export {
+  AccessibilityProvider,
+  useAccessibility,
+  AccessibilitySettings,
+  AccessibleButton,
+  AccessibleHeading,
+  useFocusManagement,
+  SkipLink,
+  Landmark,
+} from './AccessibilityProvider';
+export {
+  LazyPerformanceMonitor,
+  LazyAnalyticsDashboard,
+  LazyPortfolioGallery,
+  LazyNotificationCenter,
+  LazyMapView,
+  withSuspense,
+  PerformanceMonitorWithLoading,
+  AnalyticsDashboardWithLoading,
+  PortfolioGalleryWithLoading,
+  NotificationCenterWithLoading,
+  MapViewWithLoading,
+  useComponentPreloader,
+  useCriticalComponentsPreloader,
+} from './LazyComponents';
+
 // Advanced Features
 export { AdvancedSearch } from './AdvancedSearch';
 export { UniversalSearch } from './UniversalSearch';

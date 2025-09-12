@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 import { ButtonHTMLAttributes, ReactNode } from 'react';
+import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
@@ -9,6 +10,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
   fullWidth?: boolean;
+  hapticFeedback?: boolean;
+  hapticIntensity?: 'light' | 'medium' | 'heavy';
 }
 
 export function Button({
@@ -18,11 +21,22 @@ export function Button({
   leftIcon,
   rightIcon,
   fullWidth = false,
+  hapticFeedback = true,
+  hapticIntensity = 'light',
   children,
   className,
   disabled,
+  onClick,
   ...props
 }: ButtonProps) {
+  const { triggerImpact } = useHapticFeedback();
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (hapticFeedback && !disabled && !loading) {
+      triggerImpact(hapticIntensity);
+    }
+    onClick?.(e);
+  };
   const baseClasses =
     'inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 rounded-md';
 
@@ -53,6 +67,7 @@ export function Button({
         className
       )}
       disabled={disabled || loading}
+      onClick={handleClick}
       {...props}
     >
       {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
