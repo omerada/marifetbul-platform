@@ -71,7 +71,7 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
   // Refresh dashboard
   refreshDashboard: async () => {
     const { user } = useAuthStore.getState();
-    if (user?.userType) {
+    if (user?.userType && user.userType !== 'admin') {
       await get().fetchDashboard(user.userType);
     }
   },

@@ -17,6 +17,7 @@ import { messagingHandlers } from './handlers/messaging';
 import { ordersHandlers } from './handlers/orders';
 import { paymentHandlers } from './handlers/payment';
 import { notificationHandlers } from './handlers/notification';
+import { adminHandlers } from './handlers/admin';
 import { generateCategoryPlaceholder } from '@/lib/utils/image-fallback';
 
 // Mock employer data
@@ -2775,4 +2776,7 @@ export const handlers = [
   // Sprint 6 - Payment and Notification handlers
   ...paymentHandlers,
   ...notificationHandlers,
+
+  // Admin handlers
+  ...adminHandlers,
 ];

@@ -79,9 +79,29 @@ export const useToast = () => {
     removeToast(id);
   };
 
+  const success = (message: string, duration = 5000) => {
+    return showToast(message, 'success', duration);
+  };
+
+  const error = (message: string, duration = 5000) => {
+    return showToast(message, 'error', duration);
+  };
+
+  const warning = (message: string, duration = 5000) => {
+    return showToast(message, 'warning', duration);
+  };
+
+  const info = (message: string, duration = 5000) => {
+    return showToast(message, 'info', duration);
+  };
+
   return {
     toasts: toastList,
     showToast,
     hideToast,
+    success,
+    error,
+    warning,
+    info,
   };
 };

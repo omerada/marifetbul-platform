@@ -13,8 +13,8 @@ interface AuthState {
 
   // Actions
   login: (
-    email: string,
-    password: string,
+    emailOrUser: string | User,
+    passwordOrToken?: string,
     rememberMe?: boolean
   ) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
@@ -54,10 +54,39 @@ const useAuthStore = create<AuthState>()(
       rememberMe: false,
 
       // Login action
-      login: async (email: string, password: string, rememberMe = false) => {
+      login: async (
+        emailOrUser: string | User,
+        passwordOrToken?: string,
+        rememberMe = false
+      ) => {
         set({ isLoading: true, error: null });
 
         try {
+          // If User object is passed (admin login), set directly
+          if (typeof emailOrUser === 'object') {
+            const user = emailOrUser;
+            const token = passwordOrToken || 'mock-admin-token';
+
+            // Set cookie for middleware with appropriate expiration
+            const maxAge = rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60; // 30 days or 1 day
+            document.cookie = `marifeto-auth-token=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+            document.cookie = `marifeto-user-role=${user.role}; path=/; max-age=${maxAge}; SameSite=Lax`;
+
+            set({
+              user,
+              token,
+              isAuthenticated: true,
+              rememberMe,
+              isLoading: false,
+              error: null,
+            });
+            return;
+          }
+
+          // Regular login flow
+          const email = emailOrUser;
+          const password = passwordOrToken || '';
+
           const response = await fetch('/api/auth/login', {
             method: 'POST',
             headers: {
@@ -72,6 +101,7 @@ const useAuthStore = create<AuthState>()(
             // Set cookie for middleware with appropriate expiration
             const maxAge = rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60; // 30 days or 1 day
             document.cookie = `marifeto-auth-token=${data.data.token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+            document.cookie = `marifeto-user-role=${data.data.user.role}; path=/; max-age=${maxAge}; SameSite=Lax`;
 
             set({
               user: data.data.user,
@@ -113,6 +143,7 @@ const useAuthStore = create<AuthState>()(
           if (result.success && result.data) {
             // Set cookie for middleware
             document.cookie = `marifeto-auth-token=${result.data.token}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
+            document.cookie = `marifeto-user-role=${result.data.user.role}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
 
             set({
               user: result.data.user,
@@ -137,9 +168,11 @@ const useAuthStore = create<AuthState>()(
 
       // Logout action
       logout: () => {
-        // Clear cookie
+        // Clear cookies
         document.cookie =
           'marifeto-auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        document.cookie =
+          'marifeto-user-role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
         set({
           user: null,

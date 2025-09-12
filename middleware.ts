@@ -16,6 +16,9 @@ const protectedRoutes = [
 // Define admin routes (require admin authentication)
 const adminRoutes = ['/admin'];
 
+// Define admin login route (separate from regular auth)
+const adminLoginRoute = '/admin/login';
+
 // Define auth routes (should redirect to dashboard if already authenticated)
 const authRoutes = ['/login', '/register'];
 
@@ -35,14 +38,20 @@ export function middleware(request: NextRequest) {
   // Get the token from the cookies (localStorage is not accessible in middleware)
   // Note: We'll need to sync localStorage auth with cookies in the auth store
   const token = request.cookies.get('marifeto-auth-token')?.value;
+  const userRole = request.cookies.get('marifeto-user-role')?.value;
 
   // Check if the current route is protected
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)
   );
 
-  // Check if the current route is an admin route
-  const isAdminRoute = adminRoutes.some((route) => pathname.startsWith(route));
+  // Check if the current route is an admin route (excluding login)
+  const isAdminRoute =
+    adminRoutes.some((route) => pathname.startsWith(route)) &&
+    pathname !== adminLoginRoute;
+
+  // Check if accessing admin login page
+  const isAdminLoginPage = pathname === adminLoginRoute;
 
   // Check if the current route is an auth route
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
@@ -52,8 +61,31 @@ export function middleware(request: NextRequest) {
     (route) => pathname === route || pathname.startsWith(route)
   );
 
-  // If accessing admin routes, allow for development (TODO: Add role-based auth)
+  // Admin route protection
   if (isAdminRoute) {
+    // If no token, redirect to admin login
+    if (!token) {
+      const adminLoginUrl = new URL(adminLoginRoute, request.url);
+      adminLoginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(adminLoginUrl);
+    }
+
+    // If token exists but user is not admin, redirect to regular dashboard
+    if (userRole !== 'admin') {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+
+    // Allow admin access
+    return NextResponse.next();
+  }
+
+  // If accessing admin login page with admin token, redirect to admin dashboard
+  if (isAdminLoginPage && token && userRole === 'admin') {
+    return NextResponse.redirect(new URL('/admin', request.url));
+  }
+
+  // If accessing admin login page without token, allow access
+  if (isAdminLoginPage) {
     return NextResponse.next();
   }
 

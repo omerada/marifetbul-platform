@@ -7,7 +7,7 @@ export function useDashboard() {
   const { user, isAuthenticated } = useAuthStore();
 
   useEffect(() => {
-    if (isAuthenticated && user?.userType) {
+    if (isAuthenticated && user?.userType && user.userType !== 'admin') {
       store.fetchDashboard(user.userType);
       store.startAutoRefresh();
     }
@@ -22,7 +22,11 @@ export function useDashboard() {
     const handleVisibilityChange = () => {
       if (document.hidden) {
         store.stopAutoRefresh();
-      } else if (isAuthenticated && user?.userType) {
+      } else if (
+        isAuthenticated &&
+        user?.userType &&
+        user.userType !== 'admin'
+      ) {
         store.startAutoRefresh();
         // Refresh when user comes back to tab
         store.refreshDashboard();

@@ -5,7 +5,8 @@ export interface User {
   firstName: string;
   lastName: string;
   avatar?: string;
-  userType: 'freelancer' | 'employer';
+  userType: 'freelancer' | 'employer' | 'admin';
+  role?: 'user' | 'admin' | 'moderator' | 'super_admin';
   phone?: string;
   location?: string;
   bio?: string;
@@ -15,6 +16,8 @@ export interface User {
     twitter?: string;
     github?: string;
   };
+  permissions?: string[];
+  lastLoginAt?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -3041,10 +3044,14 @@ export interface LocationStore {
 
 // Admin User Types
 export interface AdminUser extends User {
-  role: 'admin' | 'super_admin' | 'moderator';
-  permissions: AdminPermission[];
-  lastLoginAt?: string;
-  loginCount: number;
+  userType: 'admin';
+  role: 'admin' | 'moderator' | 'super_admin';
+  permissions: string[];
+  adminLevel: 'admin' | 'moderator' | 'super_admin';
+  managedDepartments?: string[];
+  accessLevel: 'full' | 'limited';
+  lastAdminAction?: string;
+  adminMetadata?: Record<string, unknown>;
 }
 
 export interface AdminPermission {
