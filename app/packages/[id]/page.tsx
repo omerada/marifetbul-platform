@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { usePackage } from '@/hooks/usePackages';
+import { usePackageDetail } from '@/hooks/usePackageDetail';
 import { AppLayout } from '@/components/layout';
 import { ServiceDetail } from '@/components/features/ServiceDetail';
 import { Loading } from '@/components/ui';
@@ -10,7 +10,11 @@ export default function ServiceDetailPage() {
   const params = useParams();
   const packageId = params.id as string;
 
-  const { package: servicePackage, isLoading, error } = usePackage(packageId);
+  const {
+    currentPackage: servicePackage,
+    isLoading,
+    error,
+  } = usePackageDetail(packageId);
 
   if (isLoading) {
     return (

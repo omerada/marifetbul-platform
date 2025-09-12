@@ -40,6 +40,9 @@ export function ProposalModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Log jobId for debugging - will be used for API calls
+  console.log('Creating proposal for job:', jobId);
+
   const [formData, setFormData] = useState<ProposalData>({
     coverLetter: '',
     proposedBudget: 0,

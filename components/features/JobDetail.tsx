@@ -336,7 +336,10 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
             <CardContent>
               <div className="mb-4 flex items-center">
                 <Avatar className="mr-4 h-12 w-12">
-                  <AvatarImage src={currentJob.employer.avatar} />
+                  <AvatarImage
+                    src={currentJob.employer.avatar || '/avatars/default.jpg'}
+                    alt={`${currentJob.employer.firstName} ${currentJob.employer.lastName}`}
+                  />
                   <AvatarFallback>
                     {currentJob.employer.firstName.charAt(0)}
                   </AvatarFallback>

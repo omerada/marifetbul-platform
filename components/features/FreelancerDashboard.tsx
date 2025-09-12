@@ -27,10 +27,11 @@ interface FreelancerDashboardProps {
   userId?: string;
 }
 
-export function FreelancerDashboard({
-  userId: _userId,
-}: FreelancerDashboardProps) {
+export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
   const { dashboardData, isLoading, error, refreshDashboard } = useDashboard();
+
+  // For future use when we need user-specific data
+  console.log('Dashboard for user:', userId);
 
   if (isLoading) {
     return <DashboardSkeleton type="freelancer" />;

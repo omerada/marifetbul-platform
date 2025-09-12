@@ -16,13 +16,14 @@ import {
   MessageCircle,
   Award,
 } from 'lucide-react';
-import { ServicePackage } from '@/types';
+import { PackageDetail } from '@/types';
+import { usePackageDetail } from '@/hooks/usePackageDetail';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { OrderForm } from './OrderForm';
 
 interface ServiceDetailProps {
-  servicePackage: ServicePackage;
+  servicePackage: PackageDetail;
   className?: string;
 }
 
@@ -33,6 +34,15 @@ export function ServiceDetail({
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const {
+    selectedTier,
+    selectedAddOns,
+    setSelectedTier,
+    toggleAddOn,
+    totalPrice,
+    deliveryTime,
+  } = usePackageDetail(servicePackage.id);
 
   const formatPrice = (price: number) => {
     return `₺${price.toLocaleString('tr-TR')}`;
@@ -235,13 +245,148 @@ export function ServiceDetail({
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Pricing Card */}
+          {/* Pricing Tiers */}
           <Card className="p-6">
-            <div className="mb-6 text-center">
-              <div className="mb-2 text-3xl font-bold text-gray-900">
-                {formatPrice(servicePackage.price)}
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">
+              Paket Seçenekleri
+            </h3>
+
+            <div className="mb-6 flex rounded-lg bg-gray-100 p-1">
+              {(['basic', 'standard', 'premium'] as const).map((tier) => (
+                <button
+                  key={tier}
+                  onClick={() => setSelectedTier(tier)}
+                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    selectedTier === tier
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {tier === 'basic' && 'Temel'}
+                  {tier === 'standard' && 'Standart'}
+                  {tier === 'premium' && 'Premium'}
+                </button>
+              ))}
+            </div>
+
+            {/* Selected Tier Details */}
+            <div className="mb-6 rounded-lg border p-4">
+              <div className="mb-3 flex items-center justify-between">
+                <h4 className="font-semibold text-gray-900">
+                  {servicePackage.pricing[selectedTier].title}
+                </h4>
+                <div className="text-2xl font-bold text-gray-900">
+                  {formatPrice(servicePackage.pricing[selectedTier].price)}
+                </div>
               </div>
-              <div className="text-sm text-gray-600">Başlangıç fiyatı</div>
+
+              <p className="mb-3 text-sm text-gray-600">
+                {servicePackage.pricing[selectedTier].description}
+              </p>
+
+              <div className="mb-3 grid grid-cols-2 gap-3 text-sm">
+                <div className="flex items-center text-gray-600">
+                  <Clock className="mr-1 h-4 w-4" />
+                  {formatDeliveryTime(
+                    servicePackage.pricing[selectedTier].deliveryTime
+                  )}
+                </div>
+                <div className="flex items-center text-gray-600">
+                  <RefreshCw className="mr-1 h-4 w-4" />
+                  {servicePackage.pricing[selectedTier].revisions} revizyon
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                {servicePackage.pricing[selectedTier].features.map(
+                  (feature, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center text-sm text-gray-700"
+                    >
+                      <Check className="mr-2 h-3 w-3 flex-shrink-0 text-green-500" />
+                      {feature}
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+
+            {/* Add-ons */}
+            {servicePackage.addOns.length > 0 && (
+              <div className="mb-6">
+                <h4 className="mb-3 font-semibold text-gray-900">
+                  Ek Hizmetler
+                </h4>
+                <div className="space-y-2">
+                  {servicePackage.addOns.map((addOn) => (
+                    <div
+                      key={addOn.id}
+                      className="flex items-center justify-between rounded-lg border p-3"
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center">
+                          <button
+                            onClick={() => toggleAddOn(addOn.id)}
+                            className={`mr-3 flex h-4 w-4 items-center justify-center rounded border ${
+                              selectedAddOns.includes(addOn.id)
+                                ? 'border-blue-600 bg-blue-600'
+                                : 'border-gray-300'
+                            }`}
+                          >
+                            {selectedAddOns.includes(addOn.id) && (
+                              <Check className="h-3 w-3 text-white" />
+                            )}
+                          </button>
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {addOn.title}
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              +{formatDeliveryTime(addOn.deliveryTime)}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-sm font-medium text-gray-900">
+                        +{formatPrice(addOn.price)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Total Summary */}
+            <div className="mb-6 rounded-lg bg-gray-50 p-4">
+              <div className="mb-2 flex justify-between text-sm">
+                <span className="text-gray-600">Paket fiyatı:</span>
+                <span className="text-gray-900">
+                  {formatPrice(servicePackage.pricing[selectedTier].price)}
+                </span>
+              </div>
+              {selectedAddOns.length > 0 && (
+                <div className="mb-2 flex justify-between text-sm">
+                  <span className="text-gray-600">Ek hizmetler:</span>
+                  <span className="text-gray-900">
+                    +
+                    {formatPrice(
+                      totalPrice - servicePackage.pricing[selectedTier].price
+                    )}
+                  </span>
+                </div>
+              )}
+              <div className="border-t pt-2">
+                <div className="flex justify-between">
+                  <span className="font-semibold text-gray-900">Toplam:</span>
+                  <span className="text-xl font-bold text-gray-900">
+                    {formatPrice(totalPrice)}
+                  </span>
+                </div>
+                <div className="mt-1 text-xs text-gray-600">
+                  Teslimat: {formatDeliveryTime(deliveryTime)}
+                </div>
+              </div>
             </div>
 
             {!showOrderForm ? (

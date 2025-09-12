@@ -41,7 +41,7 @@ export default function JobDetailPage() {
 
   return (
     <AppLayout>
-      <JobDetail job={job} />
+      <JobDetail jobId={jobId} />
     </AppLayout>
   );
 }

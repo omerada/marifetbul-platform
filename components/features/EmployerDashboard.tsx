@@ -25,8 +25,11 @@ interface EmployerDashboardProps {
   userId?: string;
 }
 
-export function EmployerDashboard({ userId: _userId }: EmployerDashboardProps) {
+export function EmployerDashboard({ userId }: EmployerDashboardProps) {
   const { dashboardData, isLoading, error, refreshDashboard } = useDashboard();
+
+  // For future use when we need user-specific data
+  console.log('Dashboard for user:', userId);
 
   if (isLoading) {
     return <DashboardSkeleton type="employer" />;

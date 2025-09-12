@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { ServicePackage } from '@/types';
+import { PackageDetail } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
@@ -26,7 +26,7 @@ const orderSchema = z.object({
 type OrderFormData = z.infer<typeof orderSchema>;
 
 interface OrderFormProps {
-  servicePackage: ServicePackage;
+  servicePackage: PackageDetail;
   onSubmit: (data: OrderFormData) => void;
   onCancel: () => void;
 }
