@@ -7,8 +7,8 @@ export {
   useMarketplacePackages,
   useMarketplaceControls,
 } from './useMarketplace';
-export { usePerformance } from './usePerformance';
-export { usePullToRefresh } from './usePullToRefresh';
+// export { usePerformance } from './usePerformance'; // TODO: Sprint 6+
+// export { usePullToRefresh } from './usePullToRefresh'; // TODO: Sprint 6+
 export { useResponsive } from './useResponsive';
 
 // Auth hooks

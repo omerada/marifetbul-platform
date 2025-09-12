@@ -603,7 +603,15 @@ export interface Order {
   discount: number;
   total: number;
   currency: 'TRY' | 'USD' | 'EUR';
-  status: 'pending' | 'processing' | 'completed' | 'canceled' | 'refunded';
+  status:
+    | 'pending'
+    | 'processing'
+    | 'completed'
+    | 'canceled'
+    | 'refunded'
+    | 'in_progress'
+    | 'under_review'
+    | 'disputed';
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
   paymentMethodId?: string;
   paymentMethod?: PaymentMethod;
@@ -613,6 +621,25 @@ export interface Order {
   completedAt?: string;
   createdAt: string;
   updatedAt: string;
+  // Sprint 5 - Order tracking fields
+  clientId?: string;
+  freelancerId?: string;
+  title?: string;
+  description?: string;
+  totalAmount?: number;
+  deadline?: string;
+  deliveryDate?: string;
+  timeline?: OrderTimeline[];
+  progress?: OrderProgress;
+  milestones?: OrderMilestone[];
+  communications?: OrderCommunication[];
+  metadata?: {
+    category?: string;
+    subcategory?: string;
+    urgency?: 'low' | 'medium' | 'high';
+    clientRating?: number;
+    freelancerRating?: number;
+  };
 }
 
 export interface Invoice {
@@ -802,4 +829,414 @@ export interface FreelancerWithLocation extends Omit<Freelancer, 'location'> {
   serviceAreas?: LocationData[];
   maxTravelDistance?: number; // in kilometers
   travelRate?: number; // per kilometer
+}
+
+// ========================================
+// SPRINT 5: MESSAGING & ORDER TRACKING TYPES
+// ========================================
+
+// Messaging Types - Enhanced for Sprint 5
+export interface ChatMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  receiverId: string;
+  content: string;
+  type: 'text' | 'file' | 'image' | 'system';
+  sentAt: string;
+  readAt?: string;
+  editedAt?: string;
+  attachments?: MessageAttachment[];
+  metadata?: MessageMetadata;
+}
+
+export interface MessageAttachment {
+  id: string;
+  name: string;
+  url: string;
+  type: string; // MIME type
+  size: number; // bytes
+  thumbnailUrl?: string;
+}
+
+export interface MessageMetadata {
+  isEdited?: boolean;
+  replyTo?: string; // Message ID being replied to
+  mentions?: string[]; // User IDs mentioned
+  reactions?: MessageReaction[];
+}
+
+export interface MessageReaction {
+  emoji: string;
+  userId: string;
+  timestamp: string;
+}
+
+export interface ChatConversation {
+  id: string;
+  type: 'direct' | 'order'; // order-based or direct messaging
+  participants: ConversationParticipant[];
+  lastMessage?: ChatMessage;
+  lastActivity: string;
+  unreadCount: number;
+  isArchived: boolean;
+  isPinned: boolean;
+  orderId?: string; // If conversation is order-related
+  metadata?: ConversationMetadata;
+}
+
+export interface ConversationParticipant {
+  userId: string;
+  user: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar' | 'userType'>;
+  joinedAt: string;
+  lastReadAt?: string;
+  isTyping?: boolean;
+  isOnline?: boolean;
+}
+
+export interface ConversationMetadata {
+  title?: string;
+  description?: string;
+  tags?: string[];
+  priority?: 'low' | 'normal' | 'high' | 'urgent';
+}
+
+export interface TypingIndicator {
+  conversationId: string;
+  userId: string;
+  isTyping: boolean;
+  timestamp: string;
+}
+
+export interface MessageSearchParams {
+  query?: string;
+  conversationId?: string;
+  senderId?: string;
+  type?: ChatMessage['type'];
+  hasAttachments?: boolean;
+  dateFrom?: string;
+  dateTo?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface MessageSearchResult {
+  message: ChatMessage;
+  conversation: Pick<ChatConversation, 'id' | 'type' | 'participants'>;
+  matches: string[]; // Highlighted text matches
+}
+
+// Order Tracking Types
+export interface OrderTracking {
+  id: string;
+  orderNumber: string;
+  packageId?: string;
+  jobId?: string;
+  package?: ServicePackage;
+  job?: Job;
+  buyerId: string;
+  sellerId: string;
+  buyer: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar' | 'userType'>;
+  seller: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar' | 'userType'>;
+  status: OrderTrackingStatus;
+  price: number;
+  currency: 'TRY' | 'USD' | 'EUR';
+  deliveryDate: string;
+  completedAt?: string;
+  files: OrderFile[];
+  timeline: OrderTimelineEvent[];
+  conversationId: string;
+  invoiceUrl?: string;
+  paymentStatus: OrderPaymentStatus;
+  revisionCount: number;
+  maxRevisions: number;
+  requirements?: string;
+  description?: string;
+  metadata?: OrderTrackingMetadata;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type OrderTrackingStatus =
+  | 'pending_payment'
+  | 'active'
+  | 'in_progress'
+  | 'delivered'
+  | 'revision_requested'
+  | 'revision_in_progress'
+  | 'completed'
+  | 'cancelled'
+  | 'disputed';
+
+export type OrderPaymentStatus =
+  | 'pending'
+  | 'processing'
+  | 'paid'
+  | 'failed'
+  | 'refunded'
+  | 'partially_refunded';
+
+export interface OrderFile {
+  id: string;
+  orderId: string;
+  name: string;
+  url: string;
+  type: string; // MIME type
+  size: number; // bytes
+  uploadedBy: string; // User ID
+  uploadedAt: string;
+  version?: number;
+  description?: string;
+  isDeliverable: boolean; // Final delivery files vs work files
+}
+
+export interface OrderTimelineEvent {
+  id: string;
+  orderId: string;
+  type: OrderEventType;
+  status?: OrderTrackingStatus;
+  title: string;
+  description?: string;
+  userId?: string; // Who triggered the event
+  user?: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar'>;
+  timestamp: string;
+  metadata?: OrderEventMetadata;
+}
+
+export type OrderEventType =
+  | 'order_created'
+  | 'payment_received'
+  | 'work_started'
+  | 'file_uploaded'
+  | 'delivery_submitted'
+  | 'revision_requested'
+  | 'revision_submitted'
+  | 'order_completed'
+  | 'order_cancelled'
+  | 'dispute_opened'
+  | 'dispute_resolved'
+  | 'message_sent';
+
+export interface OrderEventMetadata {
+  fileIds?: string[];
+  messageId?: string;
+  revisionReason?: string;
+  paymentAmount?: number;
+  disputeReason?: string;
+}
+
+export interface OrderTrackingMetadata {
+  priority?: 'low' | 'normal' | 'high' | 'urgent';
+  tags?: string[];
+  customFields?: Record<string, string | number | boolean>;
+  externalOrderId?: string;
+  source?: 'web' | 'mobile' | 'api';
+}
+
+export interface RevisionRequest {
+  id: string;
+  orderId: string;
+  requestedBy: string;
+  reason: string;
+  description?: string;
+  requestedFiles?: string[]; // File IDs to revise
+  requestedAt: string;
+  respondedAt?: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'completed';
+}
+
+export interface DeliverySubmission {
+  id: string;
+  orderId: string;
+  submittedBy: string;
+  files: OrderFile[];
+  message?: string;
+  submittedAt: string;
+  acceptedAt?: string;
+  status: 'submitted' | 'accepted' | 'revision_requested';
+}
+
+// Pagination Helper Type
+export interface PaginationMeta {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+}
+
+// Form Types for Messaging & Orders
+export interface SendMessageRequest {
+  conversationId: string;
+  content: string;
+  type: 'text' | 'file' | 'image';
+  attachments?: Omit<MessageAttachment, 'id'>[];
+  replyTo?: string;
+}
+
+export interface CreateConversationRequest {
+  type: 'direct' | 'order';
+  participantIds: string[];
+  orderId?: string;
+  initialMessage?: string;
+  title?: string;
+}
+
+export interface SubmitDeliveryRequest {
+  orderId: string;
+  files: File[];
+  message?: string;
+}
+
+export interface RequestRevisionRequest {
+  orderId: string;
+  reason: string;
+  description?: string;
+  requestedFiles?: string[];
+}
+
+export interface AcceptDeliveryRequest {
+  orderId: string;
+  rating?: number;
+  review?: string;
+}
+
+// API Response Types
+export interface MessagesResponse {
+  messages: ChatMessage[];
+  pagination: PaginationMeta;
+}
+
+export interface ConversationsResponse {
+  conversations: ChatConversation[];
+  pagination: PaginationMeta;
+}
+
+export interface OrdersResponse {
+  orders: OrderTracking[];
+  pagination: PaginationMeta;
+}
+
+export interface MessageSearchResponse {
+  results: MessageSearchResult[];
+  pagination: PaginationMeta;
+  totalMatches: number;
+}
+
+// WebSocket Events (for real-time messaging)
+export interface WebSocketEvent {
+  type: string;
+  payload: Record<string, unknown>;
+  timestamp: string;
+}
+
+export interface MessageEvent extends WebSocketEvent {
+  type: 'message_sent' | 'message_read' | 'message_edited' | 'message_deleted';
+  payload: {
+    conversationId: string;
+    message: ChatMessage;
+  };
+}
+
+export interface TypingEvent extends WebSocketEvent {
+  type: 'typing_start' | 'typing_stop';
+  payload: {
+    conversationId: string;
+    userId: string;
+    isTyping: boolean;
+    timestamp: string;
+  };
+}
+
+export interface OrderEvent extends WebSocketEvent {
+  type: 'order_updated' | 'delivery_submitted' | 'revision_requested';
+  payload: {
+    orderId: string;
+    order: OrderTracking;
+    event: OrderTimelineEvent;
+  };
+}
+
+export interface OnlineStatusEvent extends WebSocketEvent {
+  type: 'user_online' | 'user_offline';
+  payload: {
+    userId: string;
+    isOnline: boolean;
+  };
+}
+
+// Sprint 5 - Additional Order Tracking Types
+export interface OrderTimeline {
+  id: string;
+  orderId: string;
+  status:
+    | 'pending'
+    | 'processing'
+    | 'completed'
+    | 'canceled'
+    | 'refunded'
+    | 'in_progress'
+    | 'under_review'
+    | 'disputed';
+  title: string;
+  description: string;
+  timestamp: string;
+  actor: {
+    id: string;
+    name: string;
+    avatar: string;
+    role: 'client' | 'freelancer' | 'system';
+  };
+  metadata?: Record<string, any>;
+}
+
+export interface OrderProgress {
+  percentage: number;
+  currentStage: string;
+  stagesCompleted: number;
+  totalStages: number;
+  estimatedCompletion?: string;
+}
+
+export interface OrderMilestone {
+  id: string;
+  title: string;
+  description?: string;
+  status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+  dueDate: string;
+  completedAt?: string;
+  amount: number;
+}
+
+export interface OrderCommunication {
+  id: string;
+  from: string;
+  to: string;
+  message: string;
+  timestamp: string;
+  attachments: string[];
+}
+
+export interface OrderUpdate {
+  from: string;
+  to: string;
+  message: string;
+  attachments?: string[];
+}
+
+export interface OrderDispute {
+  id: string;
+  orderId: string;
+  raisedBy: string;
+  reason: string;
+  description: string;
+  status: 'open' | 'in_review' | 'resolved' | 'closed';
+  createdAt: string;
+  evidence?: string[];
+}
+
+export interface OrdersResponse {
+  data: Order[];
+  meta: PaginationMeta;
 }

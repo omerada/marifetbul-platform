@@ -13,6 +13,8 @@ import {
   Conversation,
 } from '@/types';
 import { detailHandlers } from './handlers/details';
+import { messagingHandlers } from './handlers/messaging';
+import { ordersHandlers } from './handlers/orders';
 import { generateCategoryPlaceholder } from '@/lib/utils/image-fallback';
 
 // Mock employer data
@@ -2763,4 +2765,8 @@ export const handlers = [
 
   // Detail page handlers
   ...detailHandlers,
+
+  // Sprint 5 - Messaging and Order tracking handlers
+  ...messagingHandlers,
+  ...ordersHandlers,
 ];

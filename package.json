@@ -16,7 +16,6 @@
     "icons:clean": "rimraf public/icons/* && rimraf public/favicon.*"
   },
   "dependencies": {
-    "@headlessui/react": "^2.2.7",
     "@hookform/resolvers": "^5.2.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",

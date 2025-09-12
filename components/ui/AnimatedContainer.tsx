@@ -1,69 +1,8 @@
 'use client';
 
-import { ReactNode, useEffect, useState, useRef } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-
-// Custom hooks
-function useReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(mediaQuery.matches);
-
-    const handleChange = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches);
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-
-    return () => {
-      mediaQuery.removeEventListener('change', handleChange);
-    };
-  }, []);
-
-  return prefersReducedMotion;
-}
-
-// Custom intersection observer hook
-function useIntersectionObserver(
-  options: IntersectionObserverInit & { triggerOnce?: boolean } = {}
-) {
-  const [isIntersecting, setIsIntersecting] = useState(false);
-  const [hasIntersected, setHasIntersected] = useState(false);
-  const targetRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const target = targetRef.current;
-    if (!target) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsIntersecting(entry.isIntersecting);
-        if (entry.isIntersecting && !hasIntersected) {
-          setHasIntersected(true);
-        }
-      },
-      {
-        threshold: options.threshold || 0.1,
-        root: options.root,
-        rootMargin: options.rootMargin,
-      }
-    );
-
-    observer.observe(target);
-
-    return () => {
-      observer.unobserve(target);
-    };
-  }, [hasIntersected, options]);
-
-  return {
-    targetRef,
-    isIntersecting,
-    hasIntersected,
-  };
-}
+import { useIntersectionObserver, useReducedMotion } from '@/lib/animations';
 
 interface AnimatedContainerProps {
   children: ReactNode;
@@ -72,7 +11,6 @@ interface AnimatedContainerProps {
   duration?: string;
   className?: string;
   threshold?: number;
-  triggerOnce?: boolean;
 }
 
 const animationClasses = {
@@ -90,12 +28,10 @@ export function AnimatedContainer({
   duration = '0.6s',
   className,
   threshold = 0.1,
-  triggerOnce = true,
 }: AnimatedContainerProps) {
   const [isVisible, setIsVisible] = useState(false);
   const { targetRef, hasIntersected } = useIntersectionObserver({
     threshold,
-    triggerOnce,
   });
 
   const prefersReducedMotion = useReducedMotion();
