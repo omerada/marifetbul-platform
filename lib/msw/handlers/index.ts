@@ -3,6 +3,7 @@ import { advancedSearchHandlers } from './advanced-search';
 import { recommendationHandlers } from './recommendations';
 import { favoritesHandlers } from './favorites';
 import { locationHandlers } from './location';
+import { reviewsAnalyticsHandlers } from './reviews-analytics';
 
 // Combine all handlers
 export const handlers = [
@@ -10,6 +11,7 @@ export const handlers = [
   ...recommendationHandlers,
   ...favoritesHandlers,
   ...locationHandlers,
+  ...reviewsAnalyticsHandlers,
 ];
 
 // Export individual handler groups for selective usage
@@ -18,4 +20,5 @@ export {
   recommendationHandlers,
   favoritesHandlers,
   locationHandlers,
+  reviewsAnalyticsHandlers,
 };

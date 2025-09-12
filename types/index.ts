@@ -1998,10 +1998,594 @@ export interface FavoritesResponse {
 export interface FavoriteFolder {
   id: string;
   name: string;
+  color?: string;
+  icon?: string;
+  itemCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ========================================
+// SPRINT 8: REVIEW & RATING SYSTEM TYPES
+// ========================================
+
+// Review System Types
+export interface ReviewCategories {
+  communication: number; // 1-5
+  quality: number; // 1-5
+  timing: number; // 1-5
+  professionalism?: number; // 1-5
+  value?: number; // 1-5
+}
+
+export interface ReviewData {
+  id: string;
+  orderId: string;
+  reviewerId: string;
+  revieweeId: string;
+  reviewer: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar' | 'userType'>;
+  reviewee: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar' | 'userType'>;
+  rating: number; // Overall rating 1-5
+  categories: ReviewCategories;
+  comment: string;
+  isPublic: boolean;
+  reply?: ReviewReply;
+  status: 'active' | 'hidden' | 'disputed' | 'spam';
+  helpfulCount?: number;
+  reportCount?: number;
+  verifiedPurchase: boolean;
+  projectTitle?: string;
+  projectCategory?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface ReviewReply {
+  id: string;
+  reviewId: string;
+  userId: string;
+  user: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar'>;
+  content: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface ReviewSummary {
+  averageRating: number;
+  totalReviews: number;
+  categoryAverages: ReviewCategories;
+  ratingDistribution: {
+    5: number;
+    4: number;
+    3: number;
+    2: number;
+    1: number;
+  };
+  recentReviews: ReviewData[];
+  verifiedPurchasePercentage: number;
+}
+
+export interface CreateReviewRequest {
+  orderId: string;
+  reviewerId: string;
+  revieweeId: string;
+  rating: number;
+  categories: ReviewCategories;
+  comment: string;
+  isPublic: boolean;
+}
+
+export interface CreateReviewResponse {
+  success: boolean;
+  data?: ReviewData;
+  error?: string;
+  message?: string;
+}
+
+export interface ReviewFilters {
+  rating?: number; // Filter by minimum rating
+  category?: string; // Filter by project category
+  dateFrom?: string;
+  dateTo?: string;
+  verified?: boolean; // Only verified purchases
+  hasReply?: boolean;
+  search?: string;
+  sortBy?: 'newest' | 'oldest' | 'rating_high' | 'rating_low' | 'helpful';
+}
+
+export interface ReviewsResponse {
+  success: boolean;
+  data?: {
+    reviews: ReviewData[];
+    summary: ReviewSummary;
+    pagination: PaginationMeta;
+  };
+  error?: string;
+}
+
+export interface ReviewModerationRequest {
+  reviewId: string;
+  action: 'approve' | 'hide' | 'mark_spam' | 'dispute';
+  reason?: string;
+  moderatorNote?: string;
+}
+
+export interface ReviewReportRequest {
+  reviewId: string;
+  reason: 'spam' | 'offensive' | 'fake' | 'inappropriate' | 'other';
+  description?: string;
+  reporterId: string;
+}
+
+// ========================================
+// ANALYTICS DASHBOARD TYPES
+// ========================================
+
+// Base Analytics Types
+export interface AnalyticsTimeframe {
+  period: 'week' | 'month' | 'quarter' | 'year' | 'custom';
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface KPICard {
+  id: string;
+  title: string;
+  value: number | string;
+  formattedValue: string;
+  unit?: string;
+  trend?: {
+    direction: 'up' | 'down' | 'neutral';
+    percentage: number;
+    periodComparison: string; // e.g., "vs last month"
+  };
+  icon?: string;
+  color?: 'green' | 'red' | 'blue' | 'orange' | 'purple';
+  description?: string;
+}
+
+export interface ChartDataPoint {
+  date: string;
+  value: number;
+  label?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface ChartConfig {
+  type: 'line' | 'bar' | 'area' | 'pie' | 'donut';
+  title: string;
+  description?: string;
+  data: ChartDataPoint[];
+  colors?: string[];
+  yAxisLabel?: string;
+  xAxisLabel?: string;
+  formatValue?: (value: number) => string;
+}
+
+// Freelancer Analytics
+export interface FreelancerAnalytics {
+  overview: {
+    totalEarnings: number;
+    currentMonthEarnings: number;
+    averageOrderValue: number;
+    completedOrders: number;
+    activeOrders: number;
+    clientSatisfaction: number;
+    repeatClientRate: number;
+    responseTime: string; // e.g., "2 hours"
+    profileViews: number;
+    proposalAcceptanceRate: number;
+  };
+  earnings: {
+    timeframe: AnalyticsTimeframe;
+    totalEarnings: number;
+    earningsTrend: ChartDataPoint[];
+    earningsByCategory: {
+      category: string;
+      amount: number;
+      percentage: number;
+    }[];
+    monthlyRecurring: number;
+    projectedEarnings: number;
+  };
+  orders: {
+    total: number;
+    completed: number;
+    inProgress: number;
+    cancelled: number;
+    averageOrderValue: number;
+    ordersTrend: ChartDataPoint[];
+    ordersByCategory: {
+      category: string;
+      count: number;
+      percentage: number;
+    }[];
+    averageDeliveryTime: number; // days
+    onTimeDeliveryRate: number; // percentage
+  };
+  clients: {
+    totalClients: number;
+    newClients: number;
+    repeatClients: number;
+    repeatClientRate: number;
+    clientSatisfaction: number;
+    clientRetentionRate: number;
+    topClients: {
+      clientId: string;
+      name: string;
+      avatar?: string;
+      totalSpent: number;
+      orderCount: number;
+      lastOrderDate: string;
+    }[];
+  };
+  performance: {
+    rating: number;
+    totalReviews: number;
+    ratingTrend: ChartDataPoint[];
+    reviewsByRating: {
+      rating: number;
+      count: number;
+      percentage: number;
+    }[];
+    skills: {
+      skillName: string;
+      proficiency: number;
+      demandScore: number;
+      earningsContribution: number;
+    }[];
+    responseTime: number; // hours
+    proposalWinRate: number; // percentage
+  };
+  growth: {
+    profileViews: ChartDataPoint[];
+    proposalsSent: ChartDataPoint[];
+    conversionRate: ChartDataPoint[];
+    marketShare: number; // in category
+    rankInCategory: number;
+    growthRate: number; // monthly percentage
+    opportunities: GrowthOpportunity[];
+  };
+}
+
+// Employer Analytics
+export interface EmployerAnalytics {
+  overview: {
+    totalSpent: number;
+    currentMonthSpending: number;
+    averageProjectCost: number;
+    completedProjects: number;
+    activeProjects: number;
+    freelancerSatisfaction: number;
+    projectSuccessRate: number;
+    averageProjectDuration: number; // days
+    savedFreelancers: number;
+    repeatFreelancers: number;
+  };
+  spending: {
+    timeframe: AnalyticsTimeframe;
+    totalSpent: number;
+    spendingTrend: ChartDataPoint[];
+    spendingByCategory: {
+      category: string;
+      amount: number;
+      percentage: number;
+    }[];
+    budgetUtilization: number; // percentage
+    costSavings: number; // vs traditional hiring
+  };
+  projects: {
+    total: number;
+    completed: number;
+    inProgress: number;
+    cancelled: number;
+    averageProjectCost: number;
+    projectsTrend: ChartDataPoint[];
+    projectsByCategory: {
+      category: string;
+      count: number;
+      percentage: number;
+    }[];
+    averageCompletionTime: number; // days
+    onTimeCompletionRate: number; // percentage
+    budgetAdherenceRate: number; // percentage
+  };
+  freelancers: {
+    totalFreelancers: number;
+    activeFreelancers: number;
+    repeatFreelancers: number;
+    freelancerRetentionRate: number;
+    averageFreelancerRating: number;
+    freelancerSatisfaction: number;
+    topFreelancers: {
+      freelancerId: string;
+      name: string;
+      avatar?: string;
+      totalPaid: number;
+      projectCount: number;
+      rating: number;
+      lastProjectDate: string;
+    }[];
+  };
+  hiring: {
+    jobsPosted: number;
+    proposalsReceived: number;
+    averageProposalsPerJob: number;
+    hireRate: number; // percentage of jobs that result in hires
+    timeToHire: number; // days
+    hiringTrend: ChartDataPoint[];
+    proposalQualityScore: number; // 1-10
+    freelancerSourceBreakdown: {
+      source: 'search' | 'recommendations' | 'favorites' | 'direct';
+      count: number;
+      percentage: number;
+    }[];
+  };
+  performance: {
+    projectSuccessRate: number;
+    budgetAccuracy: number; // how close final cost is to budget
+    timelineAccuracy: number; // how close delivery is to deadline
+    qualitySatisfaction: number;
+    communicationSatisfaction: number;
+    performanceTrend: ChartDataPoint[];
+    categoryPerformance: {
+      category: string;
+      successRate: number;
+      averageRating: number;
+      averageCost: number;
+    }[];
+  };
+}
+
+export interface GrowthOpportunity {
+  id: string;
+  type: 'skill' | 'market' | 'pricing' | 'service';
+  title: string;
+  description: string;
+  potentialImpact: 'low' | 'medium' | 'high';
+  effort: 'low' | 'medium' | 'high';
+  priority: number;
+  actionItems: string[];
+  estimatedValue?: number;
+  timeframe?: string;
+}
+
+export interface AnalyticsFilters {
+  timeframe: AnalyticsTimeframe;
+  category?: string;
+  clientType?: 'new' | 'repeat' | 'all';
+  projectSize?: 'small' | 'medium' | 'large' | 'all';
+  region?: string;
+}
+
+export interface AnalyticsExport {
+  format: 'pdf' | 'excel' | 'csv' | 'json';
+  sections: string[];
+  timeframe: AnalyticsTimeframe;
+  includeCharts: boolean;
+  includeRawData: boolean;
+}
+
+export interface AnalyticsExportResponse {
+  success: boolean;
+  data?: {
+    downloadUrl: string;
+    filename: string;
+    expiresAt: string;
+  };
+  error?: string;
+}
+
+// ========================================
+// REPUTATION & SECURITY TYPES
+// ========================================
+
+// Reputation System Types
+export interface ReputationScore {
+  userId: string;
+  overallScore: number; // 0-100
+  level: 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
+  badges: ReputationBadge[];
+  factors: ReputationFactor[];
+  history: ReputationHistory[];
+  nextLevelRequirements?: ReputationRequirement[];
+  calculatedAt: string;
+  expiresAt: string;
+}
+
+export interface ReputationBadge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  category: 'achievement' | 'verification' | 'milestone' | 'quality';
+  earnedAt: string;
+  isVisible: boolean;
+  requirements?: string[];
+}
+
+export interface ReputationFactor {
+  name: string;
+  currentValue: number;
+  maxValue: number;
+  weight: number; // Contribution to overall score
+  trend: 'improving' | 'stable' | 'declining';
+  description: string;
+}
+
+export interface ReputationHistory {
+  date: string;
+  score: number;
+  change: number;
+  reason: string;
+  factors: {
+    name: string;
+    oldValue: number;
+    newValue: number;
+  }[];
+}
+
+export interface ReputationRequirement {
+  name: string;
+  description: string;
+  currentProgress: number;
+  targetValue: number;
+  isCompleted: boolean;
+}
+
+// Security System Types
+export interface SecurityAlert {
+  id: string;
+  userId: string;
+  type: 'account' | 'payment' | 'verification' | 'activity' | 'policy';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  title: string;
+  description: string;
+  recommendations: string[];
+  actionRequired: boolean;
+  actionUrl?: string;
+  actionText?: string;
+  dismissible: boolean;
+  isDismissed: boolean;
+  dismissedAt?: string;
+  createdAt: string;
+  expiresAt?: string;
+}
+
+export interface SecurityStatus {
+  userId: string;
+  overallScore: number; // 0-100
+  level: 'poor' | 'fair' | 'good' | 'excellent';
+  verifications: SecurityVerification[];
+  alerts: SecurityAlert[];
+  recommendations: SecurityRecommendation[];
+  lastAssessment: string;
+  nextAssessment: string;
+}
+
+export interface SecurityVerification {
+  type: 'email' | 'phone' | 'identity' | '2fa' | 'payment' | 'address';
+  status: 'verified' | 'pending' | 'failed' | 'not_started';
+  verifiedAt?: string;
+  expiresAt?: string;
+  documents?: VerificationDocument[];
+  failureReason?: string;
+  retryCount: number;
+  maxRetries: number;
+}
+
+export interface VerificationDocument {
+  id: string;
+  type:
+    | 'passport'
+    | 'id_card'
+    | 'driver_license'
+    | 'utility_bill'
+    | 'bank_statement';
+  status: 'uploaded' | 'reviewing' | 'approved' | 'rejected';
+  uploadedAt: string;
+  reviewedAt?: string;
+  rejectionReason?: string;
+  expiresAt?: string;
+  fileName: string;
+  fileUrl: string;
+}
+
+export interface SecurityRecommendation {
+  id: string;
+  type: 'verification' | 'password' | '2fa' | 'profile' | 'privacy';
+  priority: 'low' | 'medium' | 'high';
+  title: string;
+  description: string;
+  impact: string; // What completing this will improve
+  actionText: string;
+  actionUrl: string;
+  isCompleted: boolean;
+  completedAt?: string;
+  estimatedTime: string; // e.g., "5 minutes"
+}
+
+export interface TrustIndicators {
+  userId: string;
+  profileCompletion: number; // 0-100
+  verificationLevel: number; // 0-100
+  activityScore: number; // 0-100
+  reviewScore: number; // 0-100
+  responseReliability: number; // 0-100
+  paymentHistory: number; // 0-100
+  communityStanding: number; // 0-100
+  overallTrustScore: number; // 0-100
+  publicBadges: ReputationBadge[];
+  calculatedAt: string;
+}
+
+// ========================================
+// FORM VALIDATION TYPES
+// ========================================
+
+export interface ReviewFormData {
+  orderId: string;
+  reviewerId: string;
+  revieweeId: string;
+  rating: number;
+  categories: ReviewCategories;
+  comment: string;
+  isPublic: boolean;
+}
+
+export interface ReviewReplyFormData {
+  reviewId: string;
+  content: string;
+}
+
+export interface ReviewModerationFormData {
+  action: 'approve' | 'hide' | 'mark_spam' | 'dispute';
+  reason?: string;
+  moderatorNote?: string;
+}
+
+export interface SecurityVerificationFormData {
+  type: SecurityVerification['type'];
+  documents?: File[];
+  additionalInfo?: Record<string, string>;
+}
+
+// ========================================
+// API RESPONSE TYPES
+// ========================================
+
+export interface GetAnalyticsResponse {
+  success: boolean;
+  data?: FreelancerAnalytics | EmployerAnalytics;
+  error?: string;
+  message?: string;
+}
+
+export interface GetReputationResponse {
+  success: boolean;
+  data?: {
+    score: ReputationScore;
+    status: SecurityStatus;
+    trustIndicators: TrustIndicators;
+  };
+  error?: string;
+  message?: string;
+}
+
+export interface GetSecurityAlertsResponse {
+  success: boolean;
+  data?: SecurityAlert[];
+  error?: string;
+  message?: string;
+}
+
+export interface FavoriteFolder {
+  id: string;
+  name: string;
   description?: string;
   color?: string;
   icon?: string;
-  isPublic: boolean;
   itemCount: number;
   createdAt: string;
   updatedAt: string;

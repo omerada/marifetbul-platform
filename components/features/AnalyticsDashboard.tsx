@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
 import {
   TrendingUp,
   TrendingDown,
@@ -16,6 +14,8 @@ import {
   PieChart,
   LineChart,
 } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 
 interface AnalyticsData {
   period: 'day' | 'week' | 'month' | 'year';

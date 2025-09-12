@@ -10,6 +10,21 @@ export { useGeolocation } from './useLocation';
 export { useRecommendations } from './useRecommendations';
 export { useFavorites } from './useFavorites';
 
+// Reviews & Analytics - Sprint 8
+export { useReviews, useReviewSummary, useReviewForm } from './useReviews';
+export {
+  useAnalytics,
+  useAnalyticsSummary,
+  useAnalyticsChart,
+  useKPICards,
+} from './useAnalytics';
+export {
+  useReputation,
+  useReputationSummary,
+  useSecurityAlerts,
+  useVerificationStatus,
+} from './useReputation';
+
 // Job & Package Management
 export { useJobs } from './useJobs';
 export { useJobDetail } from './useJobDetail';

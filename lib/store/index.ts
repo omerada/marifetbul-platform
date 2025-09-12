@@ -10,3 +10,8 @@ export { useAdvancedSearchStore } from './advanced-search';
 export { useRecommendationStore } from './recommendations';
 export { useFavoritesStore } from './favorites';
 export { useLocationStore } from './location';
+
+// Sprint 8 - Review, Analytics & Reputation stores
+export { useReviewStore } from './reviewStore';
+export { useAnalyticsStore } from './analyticsStore';
+export { useReputationStore } from './reputationStore';
