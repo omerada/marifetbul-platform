@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Facebook,
   Twitter,
@@ -18,9 +21,23 @@ export function Footer() {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
-                <span className="text-sm font-bold text-white">M</span>
-              </div>
+              <Image
+                src="/icons/icon-48x48.png"
+                alt="Marifeto"
+                width={32}
+                height={32}
+                className="rounded-lg"
+                onError={(e) => {
+                  // Fallback to M letter if icon fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  target.parentElement!.innerHTML = `
+                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
+                      <span class="text-sm font-bold text-white">M</span>
+                    </div>
+                  `;
+                }}
+              />
               <span className="text-xl font-bold">Marifeto</span>
             </div>
             <p className="leading-relaxed text-gray-300">
@@ -65,23 +82,7 @@ export function Footer() {
                   href="/marketplace"
                   className="text-gray-300 transition-colors hover:text-white"
                 >
-                  İş İlanları
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/packages"
-                  className="text-gray-300 transition-colors hover:text-white"
-                >
-                  Hizmetler
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/freelancers"
-                  className="text-gray-300 transition-colors hover:text-white"
-                >
-                  Uzmanlar
+                  İş & Hizmet
                 </Link>
               </li>
               <li>

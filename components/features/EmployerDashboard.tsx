@@ -160,7 +160,7 @@ export function EmployerDashboard({ userId }: EmployerDashboardProps) {
         actions={[
           {
             label: 'Yeni İş İlanı',
-            href: '/jobs/create',
+            href: '/marketplace/jobs/create',
             icon: <Plus className="h-5 w-5" />,
             color: 'blue',
           },

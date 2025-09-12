@@ -46,7 +46,9 @@ export function MobileDashboard({ user, stats }: MobileDashboardProps) {
     {
       icon: isFreelancer ? Package : Briefcase,
       label: isFreelancer ? 'Yeni Hizmet' : 'Yeni İş İlanı',
-      href: isFreelancer ? '/packages/create' : '/jobs/create',
+      href: isFreelancer
+        ? '/marketplace/packages/create'
+        : '/marketplace/jobs/create',
       color: 'bg-blue-500',
     },
     {

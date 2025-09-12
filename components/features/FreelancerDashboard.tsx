@@ -164,13 +164,13 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
         actions={[
           {
             label: 'Yeni Paket Ekle',
-            href: '/packages/create',
+            href: '/marketplace/packages/create',
             icon: <Plus className="h-5 w-5" />,
             color: 'blue',
           },
           {
             label: 'İş İlanlarını Gör',
-            href: '/jobs',
+            href: '/marketplace',
             icon: <Search className="h-5 w-5" />,
             color: 'green',
           },

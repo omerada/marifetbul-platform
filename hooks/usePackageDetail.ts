@@ -14,11 +14,10 @@ export function usePackageDetail(packageId: string) {
 
     // Cleanup when unmounting or packageId changes
     return () => {
-      if (packageId) {
-        store.clearPackageDetail();
-      }
+      store.clearPackageDetail();
     };
-  }, [packageId, store]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [packageId]);
 
   // Derived state
   const isPackageOwner = user?.id === store.currentPackage?.freelancer.id;

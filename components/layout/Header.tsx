@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Menu,
   X,
@@ -41,16 +42,30 @@ export function Header() {
   };
 
   const handleSearch = (query: string, type?: string) => {
+    if (!query.trim()) return;
+
     const params = new URLSearchParams();
     params.set('q', query);
 
-    if (type === 'services') {
-      params.set('view', 'services');
+    if (type === 'packages') {
+      params.set('view', 'packages');
     } else if (type === 'jobs') {
       params.set('view', 'jobs');
     } else {
-      // Default to mixed search
-      params.set('view', 'jobs');
+      // Akıllı default: sorgu tipine göre karar ver
+      const lowerQuery = query.toLowerCase();
+      if (
+        lowerQuery.includes('hizmet') ||
+        lowerQuery.includes('paket') ||
+        lowerQuery.includes('logo') ||
+        lowerQuery.includes('tasarım') ||
+        lowerQuery.includes('çeviri') ||
+        lowerQuery.includes('yazı')
+      ) {
+        params.set('view', 'packages');
+      } else {
+        params.set('view', 'jobs');
+      }
     }
 
     router.push(`/marketplace?${params.toString()}`);
@@ -63,9 +78,23 @@ export function Header() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
-                <span className="text-sm font-bold text-white">M</span>
-              </div>
+              <Image
+                src="/icons/icon-48x48.png"
+                alt="Marifeto"
+                width={32}
+                height={32}
+                className="rounded-lg"
+                onError={(e) => {
+                  // Fallback to M letter if icon fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  target.parentElement!.innerHTML = `
+                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
+                      <span class="text-sm font-bold text-white">M</span>
+                    </div>
+                  `;
+                }}
+              />
               <span className="text-xl font-bold text-gray-900">Marifeto</span>
             </Link>
           </div>
@@ -73,22 +102,16 @@ export function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden items-center space-x-8 md:flex">
             <Link
-              href="/marketplace?view=jobs"
+              href="/marketplace"
               className="font-medium text-gray-700 transition-colors hover:text-blue-600"
             >
-              İş İlanları
+              İş & Hizmet
             </Link>
             <Link
-              href="/marketplace?view=services"
+              href="/how-it-works"
               className="font-medium text-gray-700 transition-colors hover:text-blue-600"
             >
-              Hizmetler
-            </Link>
-            <Link
-              href="/freelancers"
-              className="font-medium text-gray-700 transition-colors hover:text-blue-600"
-            >
-              Uzmanlar
+              Nasıl Çalışır?
             </Link>
           </nav>
 
@@ -96,7 +119,7 @@ export function Header() {
           <div className="mx-8 hidden max-w-lg flex-1 lg:flex">
             <UniversalSearch
               onSearch={handleSearch}
-              placeholder="İş, hizmet veya uzman ara..."
+              placeholder="Ne arıyorsun? (logo tasarım, web geliştirme, veri analizi...)"
               className="w-full"
             />
           </div>
@@ -208,7 +231,7 @@ export function Header() {
             <div className="mb-4">
               <UniversalSearch
                 onSearch={handleSearch}
-                placeholder="İş, hizmet veya uzman ara..."
+                placeholder="Ne arıyorsun? (logo, web tasarım, yazılım...)"
                 className="w-full"
               />
             </div>
@@ -216,25 +239,18 @@ export function Header() {
             {/* Mobile Navigation */}
             <nav className="mb-4 space-y-2">
               <Link
-                href="/marketplace?view=jobs"
-                className="block rounded-md px-3 py-2 text-gray-700 transition-colors hover:bg-blue-50 hover:text-blue-600"
+                href="/marketplace"
+                className="block rounded-md px-3 py-2 text-gray-700 transition-colors hover:text-blue-600"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                İş İlanları
+                Keşfet
               </Link>
               <Link
-                href="/marketplace?view=services"
+                href="/how-it-works"
                 className="block rounded-md px-3 py-2 text-gray-700 transition-colors hover:bg-blue-50 hover:text-blue-600"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Hizmetler
-              </Link>
-              <Link
-                href="/freelancers"
-                className="block rounded-md px-3 py-2 text-gray-700 transition-colors hover:bg-blue-50 hover:text-blue-600"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Uzmanlar
+                Nasıl Çalışır?
               </Link>
             </nav>
 

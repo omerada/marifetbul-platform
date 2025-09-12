@@ -96,7 +96,7 @@ export function MessagesList({ user }: MessagesListProps) {
             </Button>
           </Link>
           {user.userType === 'employer' && (
-            <Link href="/jobs/create">
+            <Link href="/marketplace/jobs/create">
               <Button variant="outline">
                 <Plus className="mr-2 h-4 w-4" />
                 İş İlanı Ver

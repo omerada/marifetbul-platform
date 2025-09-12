@@ -1,7 +1,9 @@
 import { http, HttpResponse } from 'msw';
 import {
   Job,
+  JobDetail,
   ServicePackage,
+  PackageDetail,
   User,
   PaginatedResponse,
   ApiResponse,
@@ -898,6 +900,124 @@ function createPaginatedResponse<
   };
 }
 
+// Helper function to convert Job to JobDetail
+function createJobDetail(job: Job): JobDetail {
+  return {
+    ...job,
+    // Extended fields for detail pages
+    requirements: [
+      'Proje gereksinimlerini detaylı olarak anlayabilme',
+      'Belirlenen süre içerisinde teslimat yapabilme',
+      'Düzenli iletişim kurabilme',
+      'Kaliteli ve temiz kod yazabilme',
+    ],
+    attachments: [
+      {
+        id: 'att-1',
+        name: 'proje-detaylari.pdf',
+        url: '/attachments/proje-detaylari.pdf',
+        type: 'application/pdf',
+      },
+      {
+        id: 'att-2',
+        name: 'tasarim-ornekleri.zip',
+        url: '/attachments/tasarim-ornekleri.zip',
+        type: 'application/zip',
+      },
+    ],
+    tags: [
+      ...job.skills.slice(0, 3), // İlk 3 skill'i tag olarak kullan
+      job.experienceLevel === 'expert'
+        ? 'uzman'
+        : job.experienceLevel === 'intermediate'
+          ? 'orta'
+          : 'başlangıç',
+      job.isRemote ? 'uzaktan' : 'yerinde',
+      job.category.toLowerCase().replace(' ', '-'),
+    ],
+    urgency:
+      job.timeline.includes('acil') || job.timeline.includes('hızlı')
+        ? 'high'
+        : job.timeline.includes('ay')
+          ? 'low'
+          : 'medium',
+    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 gün sonra
+  };
+}
+
+// Helper function to convert ServicePackage to PackageDetail
+function createPackageDetail(servicePackage: ServicePackage): PackageDetail {
+  return {
+    ...servicePackage,
+    overview: `${servicePackage.description}\n\nBu hizmet paketi, profesyonel ihtiyaçlarınızı karşılamak için özenle tasarlanmıştır. Deneyimli ekibimizle kaliteli sonuçlar elde edeceksiniz.`,
+    whatIncluded: servicePackage.features,
+    faq: [
+      {
+        question: 'Revizyon hakkım nedir?',
+        answer: `${servicePackage.revisions} revizyon hakkınız bulunmaktadır. İlave revizyon talepleri için ek ücret alınabilir.`,
+      },
+      {
+        question: 'Teslimat süresi kesin midir?',
+        answer: `${servicePackage.deliveryTime} gün içerisinde teslimat yapılacaktır. Proje karmaşıklığına göre süre değişiklik gösterebilir.`,
+      },
+      {
+        question: 'Hangi dosya formatlarında teslim edilir?',
+        answer:
+          'Projenin gereksinimine göre PDF, DOCX, PNG, JPEG, PSD gibi formatları sağlanabilir.',
+      },
+    ],
+    pricing: {
+      basic: {
+        price: servicePackage.price,
+        title: 'Temel Paket',
+        description: 'Başlangıç seviyesi çözüm',
+        features: servicePackage.features.slice(0, 3),
+        deliveryTime: servicePackage.deliveryTime,
+        revisions: servicePackage.revisions,
+      },
+      standard: {
+        price: Math.round(servicePackage.price * 1.5),
+        title: 'Standart Paket',
+        description: 'Kapsamlı çözüm',
+        features: servicePackage.features.slice(0, 4),
+        deliveryTime: Math.round(servicePackage.deliveryTime * 0.8),
+        revisions: servicePackage.revisions + 2,
+      },
+      premium: {
+        price: Math.round(servicePackage.price * 2.2),
+        title: 'Premium Paket',
+        description: 'Tam kapsamlı premium çözüm',
+        features: servicePackage.features,
+        deliveryTime: Math.round(servicePackage.deliveryTime * 0.6),
+        revisions: servicePackage.revisions + 5,
+      },
+    },
+    addOns: [
+      {
+        id: 'addon-1',
+        title: 'Hızlı Teslimat',
+        price: Math.round(servicePackage.price * 0.3),
+        deliveryTime: -2,
+      },
+      {
+        id: 'addon-2',
+        title: 'Ek Revizyon',
+        price: Math.round(servicePackage.price * 0.1),
+        deliveryTime: 0,
+      },
+      {
+        id: 'addon-3',
+        title: 'Kaynak Dosyalar',
+        price: Math.round(servicePackage.price * 0.2),
+        deliveryTime: 1,
+      },
+    ],
+    totalOrders: servicePackage.orders,
+    detailedReviews: [],
+    relatedPackages: [],
+  };
+}
+
 // Helper function to create API response
 function createApiResponse<T>(data: T, message = 'Başarılı'): ApiResponse<T> {
   return {
@@ -1098,7 +1218,10 @@ export const handlers = [
       );
     }
 
-    return HttpResponse.json(createApiResponse(job));
+    // Convert Job to JobDetail for detailed view
+    const jobDetail = createJobDetail(job);
+
+    return HttpResponse.json(createApiResponse(jobDetail));
   }),
 
   http.post('/api/jobs', async ({ request }) => {
@@ -1174,7 +1297,10 @@ export const handlers = [
       );
     }
 
-    return HttpResponse.json(createApiResponse(package_));
+    // Convert ServicePackage to PackageDetail for detailed view
+    const packageDetail = createPackageDetail(package_);
+
+    return HttpResponse.json(createApiResponse(packageDetail));
   }),
 
   http.get('/api/packages/my', () => {

@@ -90,6 +90,7 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
   };
 
   const getUrgencyColor = (urgency: typeof currentJob.urgency) => {
+    if (!urgency) return 'outline';
     switch (urgency) {
       case 'high':
         return 'destructive';
@@ -123,11 +124,13 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
               <h1 className="text-3xl font-bold text-gray-900">
                 {currentJob.title}
               </h1>
-              <Badge variant={getUrgencyColor(currentJob.urgency)}>
-                {currentJob.urgency === 'high' && 'Acil'}
-                {currentJob.urgency === 'medium' && 'Orta'}
-                {currentJob.urgency === 'low' && 'Normal'}
-              </Badge>
+              {currentJob.urgency && (
+                <Badge variant={getUrgencyColor(currentJob.urgency)}>
+                  {currentJob.urgency === 'high' && 'Acil'}
+                  {currentJob.urgency === 'medium' && 'Orta'}
+                  {currentJob.urgency === 'low' && 'Normal'}
+                </Badge>
+              )}
             </div>
 
             <div className="mb-4 flex items-center space-x-4 text-sm text-gray-600">
@@ -159,7 +162,7 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
 
             {/* Tags */}
             <div className="mb-4 flex flex-wrap gap-2">
-              {currentJob.tags.map((tag) => (
+              {(currentJob.tags || []).map((tag) => (
                 <Badge key={tag} variant="secondary">
                   {tag}
                 </Badge>
@@ -239,7 +242,7 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
-                {currentJob.requirements.map((req, index) => (
+                {(currentJob.requirements || []).map((req, index) => (
                   <li key={index} className="flex items-start">
                     <CheckCircle className="mt-0.5 mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
                     <span>{req}</span>

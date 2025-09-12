@@ -62,21 +62,9 @@
   ],
   "shortcuts": [
     {
-      "name": "İş İlanları",
-      "short_name": "İşler",
-      "description": "Mevcut iş ilanlarını görüntüle",
-      "url": "/jobs",
-      "icons": [
-        {
-          "src": "/icons/jobs-shortcut.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Hizmet Marketi",
-      "short_name": "Market",
-      "description": "Freelancer hizmetlerini keşfet",
+      "name": "İş & Hizmet",
+      "short_name": "İş & Hizmet",
+      "description": "İş ilanları ve freelancer hizmetlerini keşfet",
       "url": "/marketplace",
       "icons": [
         {

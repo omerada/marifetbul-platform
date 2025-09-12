@@ -48,7 +48,7 @@ export function QuickActions({ user }: QuickActionsProps) {
         </div>
 
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <Link href="/jobs" className="group">
+          <Link href="/marketplace" className="group">
             <div className="flex flex-col items-center rounded-lg border border-gray-200 p-4 transition-all hover:border-blue-300 hover:bg-blue-50">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 transition-colors group-hover:bg-blue-200">
                 <Search className="h-6 w-6 text-blue-600" />

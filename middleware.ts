@@ -20,8 +20,6 @@ const authRoutes = ['/login', '/register'];
 const publicRoutes = [
   '/',
   '/marketplace',
-  '/jobs',
-  '/packages',
   '/about',
   '/contact',
   '/terms',

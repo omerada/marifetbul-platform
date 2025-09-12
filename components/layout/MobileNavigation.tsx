@@ -2,15 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  Home,
-  Search,
-  Briefcase,
-  Package,
-  MessageCircle,
-  User,
-  Plus,
-} from 'lucide-react';
+import { Home, Search, Package, MessageCircle, User, Plus } from 'lucide-react';
 
 import { useAuth } from '@/hooks';
 
@@ -24,8 +16,7 @@ export function MobileNavigation() {
       return [
         { href: '/', label: 'Ana Sayfa', icon: Home },
         { href: '/search', label: 'Ara', icon: Search },
-        { href: '/jobs', label: 'İşler', icon: Briefcase },
-        { href: '/marketplace', label: 'Market', icon: Package },
+        { href: '/marketplace', label: 'İş & Hizmet', icon: Package },
         { href: '/login', label: 'Giriş', icon: User },
       ];
     }
@@ -33,12 +24,13 @@ export function MobileNavigation() {
     const baseItems = [
       { href: '/dashboard', label: 'Panel', icon: Home },
       { href: '/search', label: 'Ara', icon: Search },
+      { href: '/marketplace', label: 'İş & Hizmet', icon: Package },
     ];
 
     if (isEmployer) {
       return [
         ...baseItems,
-        { href: '/jobs/create', label: 'İş Oluştur', icon: Plus },
+        { href: '/marketplace/jobs/create', label: 'İş Oluştur', icon: Plus },
         { href: '/messages', label: 'Mesajlar', icon: MessageCircle },
         { href: '/profile', label: 'Profil', icon: User },
       ];
@@ -47,7 +39,11 @@ export function MobileNavigation() {
     if (isFreelancer) {
       return [
         ...baseItems,
-        { href: '/packages', label: 'Paketlerim', icon: Package },
+        {
+          href: '/marketplace/packages/create',
+          label: 'Paket Oluştur',
+          icon: Plus,
+        },
         { href: '/messages', label: 'Mesajlar', icon: MessageCircle },
         { href: '/profile', label: 'Profil', icon: User },
       ];

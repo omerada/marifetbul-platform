@@ -39,7 +39,7 @@ export const useJobDetailStore = create<JobDetailStore>()(
         set({ isLoading: true, error: null }, false, 'jobDetail/fetchStart');
 
         try {
-          const response = await fetch(`/api/v1/jobs/${jobId}`);
+          const response = await fetch(`/api/jobs/${jobId}`);
           const data = await response.json();
 
           if (data.success) {
@@ -71,7 +71,7 @@ export const useJobDetailStore = create<JobDetailStore>()(
       fetchProposals: async (jobId: string) => {
         try {
           const token = localStorage.getItem('auth_token');
-          const response = await fetch(`/api/v1/jobs/${jobId}/proposals`, {
+          const response = await fetch(`/api/jobs/${jobId}/proposals`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -103,7 +103,7 @@ export const useJobDetailStore = create<JobDetailStore>()(
         try {
           const token = localStorage.getItem('auth_token');
           const response = await fetch(
-            `/api/v1/jobs/${proposalData.jobId}/proposals`,
+            `/api/jobs/${proposalData.jobId}/proposals`,
             {
               method: 'POST',
               headers: {
@@ -152,17 +152,14 @@ export const useJobDetailStore = create<JobDetailStore>()(
       ) => {
         try {
           const token = localStorage.getItem('auth_token');
-          const response = await fetch(
-            `/api/v1/proposals/${proposalId}/status`,
-            {
-              method: 'PATCH',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({ status, note }),
-            }
-          );
+          const response = await fetch(`/api/proposals/${proposalId}/status`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ status, note }),
+          });
 
           const data = await response.json();
 

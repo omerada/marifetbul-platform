@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { PackageDetail, Review } from '@/types';
+import { PackageDetail, ServicePackage, Review } from '@/types';
 import { OrderFormData } from '@/lib/validations/details';
 
 interface PackageDetailStore {
   // State properties
-  currentPackage: PackageDetail | null;
+  currentPackage: PackageDetail | ServicePackage | null;
   reviews: Review[];
   isLoading: boolean;
   isOrdering: boolean;
@@ -39,6 +39,13 @@ interface PackageDetailStore {
   clearPackageDetail: () => void;
 }
 
+// Type guard to check if package is PackageDetail
+function isPackageDetail(
+  pkg: PackageDetail | ServicePackage
+): pkg is PackageDetail {
+  return 'pricing' in pkg && 'addOns' in pkg;
+}
+
 export const usePackageDetailStore = create<PackageDetailStore>()(
   devtools(
     (set, get) => ({
@@ -64,7 +71,7 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
         );
 
         try {
-          const response = await fetch(`/api/v1/packages/${packageId}`);
+          const response = await fetch(`/api/packages/${packageId}`);
           const data = await response.json();
 
           if (data.success) {
@@ -100,7 +107,7 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
       fetchReviews: async (packageId: string, page = 1, limit = 5) => {
         try {
           const response = await fetch(
-            `/api/v1/packages/${packageId}/reviews?page=${page}&limit=${limit}`
+            `/api/packages/${packageId}/reviews?page=${page}&limit=${limit}`
           );
           const data = await response.json();
 
@@ -128,7 +135,7 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
         try {
           const token = localStorage.getItem('auth_token');
           const response = await fetch(
-            `/api/v1/packages/${orderData.packageId}/orders`,
+            `/api/packages/${orderData.packageId}/orders`,
             {
               method: 'POST',
               headers: {
@@ -201,14 +208,27 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
 
         if (!currentPackage) return 0;
 
-        let total = currentPackage.pricing[selectedTier].price;
+        // Handle both PackageDetail and ServicePackage types
+        let total = 0;
+        if (isPackageDetail(currentPackage)) {
+          // PackageDetail type with pricing tiers
+          total = currentPackage.pricing[selectedTier].price;
+        } else {
+          // ServicePackage type with simple price
+          total = currentPackage.price;
+        }
 
-        selectedAddOns.forEach((addOnId) => {
-          const addOn = currentPackage.addOns.find((a) => a.id === addOnId);
-          if (addOn) {
-            total += addOn.price;
-          }
-        });
+        // Add selected add-ons (only for PackageDetail)
+        if (isPackageDetail(currentPackage)) {
+          selectedAddOns.forEach((addOnId) => {
+            const addOn = currentPackage.addOns.find(
+              (a: any) => a.id === addOnId
+            );
+            if (addOn) {
+              total += addOn.price;
+            }
+          });
+        }
 
         return total;
       },
@@ -218,17 +238,30 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
 
         if (!currentPackage) return 0;
 
-        let deliveryTime = currentPackage.pricing[selectedTier].deliveryTime;
+        // Handle both PackageDetail and ServicePackage types
+        let deliveryTime = 0;
+        if (isPackageDetail(currentPackage)) {
+          // PackageDetail type with pricing tiers
+          deliveryTime = currentPackage.pricing[selectedTier].deliveryTime;
+        } else {
+          // ServicePackage type with simple deliveryTime
+          deliveryTime = currentPackage.deliveryTime;
+        }
 
-        selectedAddOns.forEach((addOnId) => {
-          const addOn = currentPackage.addOns.find((a) => a.id === addOnId);
-          if (addOn && addOn.deliveryTime > 0) {
-            deliveryTime += addOn.deliveryTime;
-          } else if (addOn && addOn.deliveryTime < 0) {
-            // Negative delivery time means faster delivery
-            deliveryTime += addOn.deliveryTime;
-          }
-        });
+        // Add selected add-ons delivery time (only for PackageDetail)
+        if (isPackageDetail(currentPackage)) {
+          selectedAddOns.forEach((addOnId) => {
+            const addOn = currentPackage.addOns.find(
+              (a: any) => a.id === addOnId
+            );
+            if (addOn && addOn.deliveryTime > 0) {
+              deliveryTime += addOn.deliveryTime;
+            } else if (addOn && addOn.deliveryTime < 0) {
+              // Negative delivery time means faster delivery
+              deliveryTime += addOn.deliveryTime;
+            }
+          });
+        }
 
         return Math.max(1, deliveryTime); // Minimum 1 day
       },

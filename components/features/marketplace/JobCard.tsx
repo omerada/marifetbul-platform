@@ -77,7 +77,7 @@ export function JobCard({ job, layout }: JobCardProps) {
                   </div>
 
                   <Link
-                    href={`/jobs/${job.id}`}
+                    href={`/marketplace/jobs/${job.id}`}
                     className="line-clamp-2 block text-xl font-bold text-gray-900 transition-colors hover:text-blue-600"
                   >
                     {job.title}
@@ -182,7 +182,10 @@ export function JobCard({ job, layout }: JobCardProps) {
                 </Badge>
 
                 <div className="flex gap-2 sm:w-full sm:flex-col sm:space-y-2">
-                  <Link href={`/jobs/${job.id}`} className="flex-1 sm:block">
+                  <Link
+                    href={`/marketplace/jobs/${job.id}`}
+                    className="flex-1 sm:block"
+                  >
                     <Button
                       size="sm"
                       className="sm:size-lg w-full bg-blue-600 shadow-md hover:bg-blue-700"
@@ -190,7 +193,10 @@ export function JobCard({ job, layout }: JobCardProps) {
                       Teklif Ver
                     </Button>
                   </Link>
-                  <Link href={`/jobs/${job.id}`} className="flex-1 sm:block">
+                  <Link
+                    href={`/marketplace/jobs/${job.id}`}
+                    className="flex-1 sm:block"
+                  >
                     <Button
                       variant="outline"
                       size="sm"
@@ -246,7 +252,7 @@ export function JobCard({ job, layout }: JobCardProps) {
         </div>
 
         <Link
-          href={`/jobs/${job.id}`}
+          href={`/marketplace/jobs/${job.id}`}
           className="line-clamp-2 text-lg leading-tight font-bold text-gray-900 transition-colors hover:text-blue-600"
         >
           {job.title}
@@ -331,7 +337,7 @@ export function JobCard({ job, layout }: JobCardProps) {
           </div>
 
           <div className="space-x-2">
-            <Link href={`/jobs/${job.id}`}>
+            <Link href={`/marketplace/jobs/${job.id}`}>
               <Button
                 size="sm"
                 className="bg-blue-600 shadow-md hover:bg-blue-700"

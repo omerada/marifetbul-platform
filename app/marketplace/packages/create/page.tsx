@@ -118,7 +118,7 @@ export default function CreatePackagePage() {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       showToast('Paket başarıyla oluşturuldu!', 'success');
-      router.push('/packages');
+      router.push('/marketplace?view=packages');
     } catch (error) {
       console.error('Package creation error:', error);
       showToast('Paket oluşturulurken bir hata oluştu', 'error');

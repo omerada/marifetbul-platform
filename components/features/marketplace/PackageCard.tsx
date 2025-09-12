@@ -76,7 +76,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
                   </div>
 
                   <Link
-                    href={`/packages/${pkg.id}`}
+                    href={`/marketplace/packages/${pkg.id}`}
                     className="line-clamp-2 block text-xl font-bold text-gray-900 transition-colors hover:text-blue-600"
                   >
                     {pkg.title}
@@ -171,7 +171,10 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
               </div>
 
               <div className="flex gap-2 sm:w-full sm:flex-col sm:space-y-2">
-                <Link href={`/packages/${pkg.id}`} className="flex-1 sm:block">
+                <Link
+                  href={`/marketplace/packages/${pkg.id}`}
+                  className="flex-1 sm:block"
+                >
                   <Button
                     size="sm"
                     className="sm:size-lg w-full bg-blue-600 shadow-md hover:bg-blue-700"
@@ -180,7 +183,10 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
                     Satın Al
                   </Button>
                 </Link>
-                <Link href={`/packages/${pkg.id}`} className="flex-1 sm:block">
+                <Link
+                  href={`/marketplace/packages/${pkg.id}`}
+                  className="flex-1 sm:block"
+                >
                   <Button
                     variant="outline"
                     size="sm"
@@ -265,7 +271,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
         )}
 
         <Link
-          href={`/packages/${pkg.id}`}
+          href={`/marketplace/packages/${pkg.id}`}
           className="line-clamp-2 text-lg leading-tight font-bold text-gray-900 transition-colors hover:text-blue-600"
         >
           {pkg.title}
@@ -348,7 +354,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
           </div>
 
           <div className="space-x-2">
-            <Link href={`/packages/${pkg.id}`}>
+            <Link href={`/marketplace/packages/${pkg.id}`}>
               <Button
                 size="sm"
                 className="bg-blue-600 shadow-md hover:bg-blue-700"

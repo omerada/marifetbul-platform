@@ -18,11 +18,10 @@ export function useJobDetail(jobId: string) {
 
     // Cleanup when unmounting or jobId changes
     return () => {
-      if (jobId) {
-        store.clearJobDetail();
-      }
+      store.clearJobDetail();
     };
-  }, [jobId, user?.userType, store]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jobId, user?.userType]);
 
   // Derived state
   const isJobOwner = user?.id === store.currentJob?.employer.id;

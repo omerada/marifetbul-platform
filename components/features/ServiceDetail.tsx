@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -15,37 +15,68 @@ import {
   RefreshCw,
   MessageCircle,
   Award,
+  MapPin,
 } from 'lucide-react';
-import { PackageDetail } from '@/types';
 import { usePackageDetail } from '@/hooks/usePackageDetail';
 import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/Avatar';
+import { Loading } from '@/components/ui';
 import { OrderForm } from './OrderForm';
 
 interface ServiceDetailProps {
-  servicePackage: PackageDetail;
+  packageId: string;
   className?: string;
 }
 
-export function ServiceDetail({
-  servicePackage,
-  className,
-}: ServiceDetailProps) {
-  const [showOrderForm, setShowOrderForm] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
+export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
   const {
+    currentPackage: servicePackage,
+    isLoading,
+    error,
+    totalPrice,
+    deliveryTime,
     selectedTier,
     selectedAddOns,
     setSelectedTier,
     toggleAddOn,
-    totalPrice,
-    deliveryTime,
-  } = usePackageDetail(servicePackage.id);
+    clearError,
+    canOrder,
+  } = usePackageDetail(packageId);
+
+  const [showOrderForm, setShowOrderForm] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  if (isLoading) {
+    return (
+      <div className={`container mx-auto px-4 py-8 ${className}`}>
+        <Loading size="lg" />
+      </div>
+    );
+  }
+
+  if (error || !servicePackage) {
+    return (
+      <div className={`container mx-auto px-4 py-8 ${className}`}>
+        <div className="text-center">
+          <h1 className="mb-4 text-2xl font-bold text-gray-900">
+            Hizmet Bulunamadı
+          </h1>
+          <p className="mb-6 text-gray-600">
+            Aradığınız hizmet mevcut değil veya kaldırılmış olabilir.
+          </p>
+          <Button asChild>
+            <Link href="/marketplace">Keşfet'e Dön</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const formatPrice = (price: number) => {
-    return `₺${price.toLocaleString('tr-TR')}`;
+    return `${price.toLocaleString('tr-TR')}`;
   };
 
   const formatDeliveryTime = (days: number) => {
@@ -57,21 +88,24 @@ export function ServiceDetail({
     return `${weeks}h ${remainingDays}g`;
   };
 
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60 * 60)
-    );
+  const handleSaveToggle = () => {
+    setIsSaved(!isSaved);
+  };
 
-    if (diffInHours < 1) return 'Şimdi';
-    if (diffInHours < 24) return `${diffInHours} saat önce`;
-
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays} gün önce`;
-
-    const diffInWeeks = Math.floor(diffInDays / 7);
-    return `${diffInWeeks} hafta önce`;
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: servicePackage.title,
+          text: servicePackage.description,
+          url: window.location.href,
+        });
+      } catch (err) {
+        console.log('Error sharing:', err);
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+    }
   };
 
   return (
@@ -88,436 +122,378 @@ export function ServiceDetail({
                 </h1>
                 <div className="flex items-center space-x-4 text-sm text-gray-600">
                   <div className="flex items-center">
-                    <Star className="mr-1 h-4 w-4 fill-current text-yellow-400" />
-                    <span className="font-medium">
-                      {servicePackage.rating.toFixed(1)}
-                    </span>
-                    <span className="ml-1">
-                      ({servicePackage.reviews} değerlendirme)
-                    </span>
+                    <User className="mr-1 h-4 w-4" />
+                    <Link
+                      href={`/profile/${servicePackage.freelancer.id}`}
+                      className="font-medium hover:text-blue-600"
+                    >
+                      {servicePackage.freelancer.firstName}{' '}
+                      {servicePackage.freelancer.lastName}
+                    </Link>
                   </div>
-                  <span>{servicePackage.orders} sipariş</span>
+                  <div className="flex items-center">
+                    <Star className="mr-1 h-4 w-4 text-yellow-400" />
+                    {servicePackage.rating.toFixed(1)} ({servicePackage.reviews}{' '}
+                    değerlendirme)
+                  </div>
+                  <div className="flex items-center">
+                    <ShoppingCart className="mr-1 h-4 w-4" />
+                    {servicePackage.orders} sipariş
+                  </div>
                 </div>
               </div>
-              <div className="flex space-x-2">
+
+              {/* Action Buttons */}
+              <div className="flex items-center space-x-2">
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  onClick={() => setIsSaved(!isSaved)}
-                  className={isSaved ? 'text-red-500' : 'text-gray-400'}
+                  onClick={handleSaveToggle}
+                  className={isSaved ? 'text-red-600' : ''}
                 >
                   <Heart
                     className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`}
                   />
                 </Button>
-                <Button variant="ghost" size="sm">
+                <Button variant="outline" size="sm" onClick={handleShare}>
                   <Share2 className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="sm">
+                <Button variant="outline" size="sm">
                   <Flag className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
-            {/* Image Gallery */}
+            {/* Package Images */}
             {servicePackage.images && servicePackage.images.length > 0 && (
               <div className="mb-6">
-                <div className="relative mb-4 aspect-video overflow-hidden rounded-lg bg-gray-100">
+                <div className="relative aspect-video w-full overflow-hidden rounded-lg">
                   <Image
                     src={servicePackage.images[currentImageIndex]}
                     alt={servicePackage.title}
                     fill
                     className="object-cover"
-                    onError={() => {
-                      // Fallback for image load errors
-                    }}
                   />
-                </div>
-
-                {servicePackage.images.length > 1 && (
-                  <div className="flex space-x-2 overflow-x-auto">
-                    {servicePackage.images.map((image, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentImageIndex(index)}
-                        className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 ${
-                          currentImageIndex === index
-                            ? 'border-blue-500'
-                            : 'border-gray-200'
-                        }`}
-                      >
-                        <Image
-                          src={image}
-                          alt={`${servicePackage.title} ${index + 1}`}
-                          fill
-                          className="object-cover"
+                  {servicePackage.images.length > 1 && (
+                    <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 space-x-2">
+                      {servicePackage.images.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentImageIndex(index)}
+                          className={`h-2 w-2 rounded-full ${
+                            index === currentImageIndex
+                              ? 'bg-white'
+                              : 'bg-white/50'
+                          }`}
                         />
-                      </button>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
             {/* Description */}
-            <div className="mb-6">
-              <h3 className="mb-3 text-lg font-semibold text-gray-900">
-                Hizmet Açıklaması
-              </h3>
-              <div className="prose max-w-none text-gray-700">
-                {servicePackage.description
-                  .split('\n')
-                  .map((paragraph, index) => (
-                    <p key={index} className="mb-3">
-                      {paragraph}
-                    </p>
-                  ))}
-              </div>
-            </div>
-
-            {/* Features */}
-            <div className="mb-6">
-              <h3 className="mb-3 text-lg font-semibold text-gray-900">
-                Bu Hizmette Neler Var?
-              </h3>
-              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                {servicePackage.features.map((feature, index) => (
-                  <div key={index} className="flex items-center text-gray-700">
-                    <Check className="mr-2 h-4 w-4 flex-shrink-0 text-green-500" />
-                    <span className="text-sm">{feature}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Service Details */}
-            <div className="grid grid-cols-1 gap-4 rounded-lg bg-gray-50 p-4 md:grid-cols-3">
-              <div className="flex items-center">
-                <Clock className="mr-2 h-5 w-5 text-gray-400" />
-                <div>
-                  <div className="text-sm font-medium text-gray-900">
-                    Teslimat Süresi
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    {formatDeliveryTime(servicePackage.deliveryTime)}
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <RefreshCw className="mr-2 h-5 w-5 text-gray-400" />
-                <div>
-                  <div className="text-sm font-medium text-gray-900">
-                    Revizyon
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    {servicePackage.revisions} kez ücretsiz
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <Award className="mr-2 h-5 w-5 text-gray-400" />
-                <div>
-                  <div className="text-sm font-medium text-gray-900">
-                    Kategori
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    {servicePackage.category}
-                  </div>
-                </div>
-              </div>
+            <div className="prose max-w-none">
+              <p className="text-gray-700">{servicePackage.description}</p>
             </div>
           </Card>
 
-          {/* Order Form */}
-          {showOrderForm && (
-            <Card className="p-6">
-              <h3 className="mb-4 text-lg font-semibold text-gray-900">
-                Sipariş Ver
-              </h3>
-              <OrderForm
-                servicePackage={servicePackage}
-                onSubmit={() => setShowOrderForm(false)}
-                onCancel={() => setShowOrderForm(false)}
-              />
+          {/* Pricing Tiers */}
+          {'pricing' in servicePackage && servicePackage.pricing && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Paket Seçenekleri</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                  {Object.entries(servicePackage.pricing).map(
+                    ([tier, details]) => (
+                      <div
+                        key={tier}
+                        className={`cursor-pointer rounded-lg border-2 p-4 transition-colors ${
+                          selectedTier === tier
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() =>
+                          setSelectedTier(
+                            tier as 'basic' | 'standard' | 'premium'
+                          )
+                        }
+                      >
+                        <div className="mb-2 flex items-center justify-between">
+                          <h3 className="font-semibold">{details.title}</h3>
+                          <Badge
+                            variant={tier === 'premium' ? 'default' : 'outline'}
+                          >
+                            {formatPrice(details.price)}
+                          </Badge>
+                        </div>
+                        <p className="mb-3 text-sm text-gray-600">
+                          {details.description}
+                        </p>
+                        <div className="space-y-1 text-sm">
+                          <div className="flex items-center">
+                            <Clock className="mr-1 h-3 w-3" />
+                            {formatDeliveryTime(details.deliveryTime)}
+                          </div>
+                          <div className="flex items-center">
+                            <RefreshCw className="mr-1 h-3 w-3" />
+                            {details.revisions} revizyon
+                          </div>
+                        </div>
+                        <ul className="mt-3 space-y-1">
+                          {details.features.map((feature, index) => (
+                            <li
+                              key={index}
+                              className="flex items-start text-sm"
+                            >
+                              <Check className="mt-0.5 mr-1 h-3 w-3 text-green-500" />
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )
+                  )}
+                </div>
+              </CardContent>
             </Card>
           )}
+
+          {/* Add-ons */}
+          {'addOns' in servicePackage &&
+            servicePackage.addOns &&
+            servicePackage.addOns.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Ek Hizmetler</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {servicePackage.addOns.map((addOn) => (
+                      <div
+                        key={addOn.id}
+                        className="flex items-center justify-between rounded-lg border p-3"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <input
+                            type="checkbox"
+                            checked={selectedAddOns.includes(addOn.id)}
+                            onChange={() => toggleAddOn(addOn.id)}
+                            className="h-4 w-4 rounded border-gray-300"
+                          />
+                          <div>
+                            <h4 className="font-medium">{addOn.title}</h4>
+                            {addOn.deliveryTime !== 0 && (
+                              <p className="text-sm text-gray-600">
+                                {addOn.deliveryTime > 0 ? '+' : ''}
+                                {addOn.deliveryTime} gün
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <span className="font-semibold">
+                          +{formatPrice(addOn.price)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+          {/* What's Included */}
+          {'whatIncluded' in servicePackage && servicePackage.whatIncluded && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Paket çeriği</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  {servicePackage.whatIncluded.map((item, index) => (
+                    <li key={index} className="flex items-start">
+                      <Check className="mt-0.5 mr-2 h-4 w-4 text-green-500" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* FAQ */}
+          {'faq' in servicePackage &&
+            servicePackage.faq &&
+            servicePackage.faq.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Sıkça Sorulan Sorular</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {servicePackage.faq.map((item, index) => (
+                      <div key={index}>
+                        <h4 className="font-medium text-gray-900">
+                          {item.question}
+                        </h4>
+                        <p className="mt-1 text-gray-600">{item.answer}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Pricing Tiers */}
+          {/* Freelancer Card */}
           <Card className="p-6">
-            <h3 className="mb-4 text-lg font-semibold text-gray-900">
-              Paket Seçenekleri
-            </h3>
-
-            <div className="mb-6 flex rounded-lg bg-gray-100 p-1">
-              {(['basic', 'standard', 'premium'] as const).map((tier) => (
-                <button
-                  key={tier}
-                  onClick={() => setSelectedTier(tier)}
-                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    selectedTier === tier
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  {tier === 'basic' && 'Temel'}
-                  {tier === 'standard' && 'Standart'}
-                  {tier === 'premium' && 'Premium'}
-                </button>
-              ))}
-            </div>
-
-            {/* Selected Tier Details */}
-            <div className="mb-6 rounded-lg border p-4">
-              <div className="mb-3 flex items-center justify-between">
-                <h4 className="font-semibold text-gray-900">
-                  {servicePackage.pricing[selectedTier].title}
-                </h4>
-                <div className="text-2xl font-bold text-gray-900">
-                  {formatPrice(servicePackage.pricing[selectedTier].price)}
-                </div>
-              </div>
-
-              <p className="mb-3 text-sm text-gray-600">
-                {servicePackage.pricing[selectedTier].description}
-              </p>
-
-              <div className="mb-3 grid grid-cols-2 gap-3 text-sm">
-                <div className="flex items-center text-gray-600">
-                  <Clock className="mr-1 h-4 w-4" />
-                  {formatDeliveryTime(
-                    servicePackage.pricing[selectedTier].deliveryTime
-                  )}
-                </div>
-                <div className="flex items-center text-gray-600">
-                  <RefreshCw className="mr-1 h-4 w-4" />
-                  {servicePackage.pricing[selectedTier].revisions} revizyon
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                {servicePackage.pricing[selectedTier].features.map(
-                  (feature, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center text-sm text-gray-700"
-                    >
-                      <Check className="mr-2 h-3 w-3 flex-shrink-0 text-green-500" />
-                      {feature}
-                    </div>
-                  )
+            <div className="flex items-center space-x-3">
+              <Avatar className="h-12 w-12">
+                <AvatarImage
+                  src={servicePackage.freelancer.avatar}
+                  alt={`${servicePackage.freelancer.firstName} ${servicePackage.freelancer.lastName}`}
+                />
+                <AvatarFallback>
+                  {servicePackage.freelancer.firstName.charAt(0)}
+                  {servicePackage.freelancer.lastName.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h3 className="font-semibold">
+                  {servicePackage.freelancer.firstName}{' '}
+                  {servicePackage.freelancer.lastName}
+                </h3>
+                {'title' in servicePackage.freelancer && (
+                  <p className="text-sm text-gray-600">
+                    {servicePackage.freelancer.title}
+                  </p>
+                )}
+                {'location' in servicePackage.freelancer && (
+                  <div className="flex items-center text-sm text-gray-500">
+                    <MapPin className="mr-1 h-3 w-3" />
+                    {servicePackage.freelancer.location}
+                  </div>
                 )}
               </div>
             </div>
 
-            {/* Add-ons */}
-            {servicePackage.addOns.length > 0 && (
-              <div className="mb-6">
-                <h4 className="mb-3 font-semibold text-gray-900">
-                  Ek Hizmetler
-                </h4>
-                <div className="space-y-2">
-                  {servicePackage.addOns.map((addOn) => (
-                    <div
-                      key={addOn.id}
-                      className="flex items-center justify-between rounded-lg border p-3"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center">
-                          <button
-                            onClick={() => toggleAddOn(addOn.id)}
-                            className={`mr-3 flex h-4 w-4 items-center justify-center rounded border ${
-                              selectedAddOns.includes(addOn.id)
-                                ? 'border-blue-600 bg-blue-600'
-                                : 'border-gray-300'
-                            }`}
-                          >
-                            {selectedAddOns.includes(addOn.id) && (
-                              <Check className="h-3 w-3 text-white" />
-                            )}
-                          </button>
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">
-                              {addOn.title}
-                            </div>
-                            <div className="text-xs text-gray-600">
-                              +{formatDeliveryTime(addOn.deliveryTime)}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-sm font-medium text-gray-900">
-                        +{formatPrice(addOn.price)}
-                      </div>
-                    </div>
-                  ))}
+            <div className="mt-4 grid grid-cols-2 gap-4 text-center">
+              <div>
+                <div className="text-lg font-semibold">
+                  {servicePackage.freelancer.rating}
                 </div>
+                <div className="text-sm text-gray-600">Puan</div>
               </div>
-            )}
+              <div>
+                <div className="text-lg font-semibold">
+                  {servicePackage.freelancer.totalReviews}
+                </div>
+                <div className="text-sm text-gray-600">Değerlendirme</div>
+              </div>
+            </div>
 
-            {/* Total Summary */}
-            <div className="mb-6 rounded-lg bg-gray-50 p-4">
-              <div className="mb-2 flex justify-between text-sm">
-                <span className="text-gray-600">Paket fiyatı:</span>
-                <span className="text-gray-900">
-                  {formatPrice(servicePackage.pricing[selectedTier].price)}
+            <div className="mt-4 space-y-2">
+              <Button asChild className="w-full" variant="outline">
+                <Link href={`/profile/${servicePackage.freelancer.id}`}>
+                  Profili Görüntüle
+                </Link>
+              </Button>
+              <Button className="w-full" variant="outline">
+                <MessageCircle className="mr-2 h-4 w-4" />
+                Mesaj Gönder
+              </Button>
+            </div>
+          </Card>
+
+          {/* Order Summary */}
+          <Card className="p-6">
+            <h3 className="mb-4 font-semibold">Sipariş Özeti</h3>
+
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span>Seçili Paket:</span>
+                <span className="font-medium">
+                  {'pricing' in servicePackage && servicePackage.pricing
+                    ? servicePackage.pricing[selectedTier].title
+                    : 'Temel Paket'}
                 </span>
               </div>
+
+              <div className="flex justify-between text-sm">
+                <span>Teslimat:</span>
+                <span className="font-medium">
+                  {formatDeliveryTime(deliveryTime)}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-sm">
+                <span>Revizyon:</span>
+                <span className="font-medium">
+                  {'pricing' in servicePackage && servicePackage.pricing
+                    ? `${servicePackage.pricing[selectedTier].revisions} kez`
+                    : `${servicePackage.revisions} kez`}
+                </span>
+              </div>
+
               {selectedAddOns.length > 0 && (
-                <div className="mb-2 flex justify-between text-sm">
-                  <span className="text-gray-600">Ek hizmetler:</span>
-                  <span className="text-gray-900">
-                    +
-                    {formatPrice(
-                      totalPrice - servicePackage.pricing[selectedTier].price
-                    )}
-                  </span>
+                <div className="border-t pt-3">
+                  <div className="text-sm font-medium">Ek Hizmetler:</div>
+                  {'addOns' in servicePackage &&
+                    servicePackage.addOns &&
+                    servicePackage.addOns
+                      .filter((addOn) => selectedAddOns.includes(addOn.id))
+                      .map((addOn) => (
+                        <div
+                          key={addOn.id}
+                          className="flex justify-between text-sm"
+                        >
+                          <span>• {addOn.title}</span>
+                          <span>+{formatPrice(addOn.price)}</span>
+                        </div>
+                      ))}
                 </div>
               )}
-              <div className="border-t pt-2">
-                <div className="flex justify-between">
-                  <span className="font-semibold text-gray-900">Toplam:</span>
-                  <span className="text-xl font-bold text-gray-900">
+
+              <div className="border-t pt-3">
+                <div className="flex justify-between font-semibold">
+                  <span>Toplam:</span>
+                  <span className="text-lg text-green-600">
                     {formatPrice(totalPrice)}
                   </span>
                 </div>
-                <div className="mt-1 text-xs text-gray-600">
-                  Teslimat: {formatDeliveryTime(deliveryTime)}
-                </div>
               </div>
             </div>
 
-            {!showOrderForm ? (
-              <Button
-                size="lg"
-                fullWidth
-                onClick={() => setShowOrderForm(true)}
-                className="mb-4"
-              >
-                <ShoppingCart className="mr-2 h-4 w-4" />
-                Hemen Sipariş Ver
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                size="lg"
-                fullWidth
-                onClick={() => setShowOrderForm(false)}
-                className="mb-4"
-              >
-                Formu Kapat
-              </Button>
-            )}
-
-            <Button variant="outline" fullWidth className="mb-4">
-              <MessageCircle className="mr-2 h-4 w-4" />
-              Mesaj Gönder
-            </Button>
-
-            <div className="text-center text-xs text-gray-500">
-              • Güvenli ödeme
-              <br />
-              • 7 gün para iade garantisi
-              <br />• 24/7 müşteri desteği
-            </div>
-          </Card>
-
-          {/* Freelancer Info */}
-          <Card className="p-6">
-            <h3 className="mb-4 text-lg font-semibold text-gray-900">
-              Hizmet Sağlayıcı
-            </h3>
-
-            <div className="mb-4 flex items-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-300">
-                <span className="text-lg font-medium text-gray-600">
-                  {servicePackage.freelancer.firstName[0]}
-                </span>
-              </div>
-              <div className="ml-3">
-                <div className="font-medium text-gray-900">
-                  {servicePackage.freelancer.firstName}{' '}
-                  {servicePackage.freelancer.lastName}
-                </div>
-                <div className="flex items-center">
-                  <Star className="mr-1 h-4 w-4 fill-current text-yellow-400" />
-                  <span className="text-sm text-gray-600">
-                    {servicePackage.freelancer.rating.toFixed(1)} (
-                    {servicePackage.freelancer.totalReviews} değerlendirme)
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Üyelik:</span>
-                <span className="text-gray-900">
-                  {formatTimeAgo(servicePackage.freelancer.createdAt)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Tamamlanan İş:</span>
-                <span className="text-gray-900">
-                  {servicePackage.freelancer.completedJobs}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Yanıt Süresi:</span>
-                <span className="text-gray-900">
-                  {servicePackage.freelancer.responseTime}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Konum:</span>
-                <span className="text-gray-900">
-                  {servicePackage.freelancer.location || 'Türkiye'}
-                </span>
-              </div>
-            </div>
-
-            <Link href={`/profile/${servicePackage.freelancer.id}`}>
-              <Button variant="outline" fullWidth className="mt-4">
-                <User className="mr-2 h-4 w-4" />
-                Profili Görüntüle
-              </Button>
-            </Link>
-          </Card>
-
-          {/* Similar Services */}
-          <Card className="p-6">
-            <h3 className="mb-4 text-lg font-semibold text-gray-900">
-              Benzer Hizmetler
-            </h3>
-            <div className="space-y-3">
-              {[1, 2, 3].map((item) => (
-                <div
-                  key={item}
-                  className="border-b border-gray-100 pb-3 last:border-b-0"
+            <div className="mt-6 space-y-2">
+              {canOrder ? (
+                <Button
+                  className="w-full"
+                  onClick={() => setShowOrderForm(true)}
                 >
-                  <h4 className="mb-1 text-sm font-medium text-gray-900">
-                    Profesyonel Logo Tasarımı
-                  </h4>
-                  <div className="flex items-center justify-between text-xs text-gray-600">
-                    <span>₺500 - ₺1.500</span>
-                    <div className="flex items-center">
-                      <Star className="mr-1 h-3 w-3 fill-current text-yellow-400" />
-                      <span>4.9</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                  Sipariş Ver
+                </Button>
+              ) : (
+                <Button className="w-full" disabled>
+                  Sipariş Verilemez
+                </Button>
+              )}
             </div>
-            <Link href="/marketplace?mode=services">
-              <Button variant="outline" size="sm" fullWidth className="mt-4">
-                Tüm Hizmetler
-              </Button>
-            </Link>
           </Card>
         </div>
       </div>
+
+      {/* Order Form Modal */}
+      {showOrderForm && (
+        <OrderForm
+          servicePackage={servicePackage}
+          onClose={() => setShowOrderForm(false)}
+        />
+      )}
     </div>
   );
 }
