@@ -4,6 +4,7 @@ import { recommendationHandlers } from './recommendations';
 import { favoritesHandlers } from './favorites';
 import { locationHandlers } from './location';
 import { reviewsAnalyticsHandlers } from './reviews-analytics';
+import { adminHandlers } from './admin';
 
 // Combine all handlers
 export const handlers = [
@@ -12,6 +13,7 @@ export const handlers = [
   ...favoritesHandlers,
   ...locationHandlers,
   ...reviewsAnalyticsHandlers,
+  ...adminHandlers,
 ];
 
 // Export individual handler groups for selective usage
@@ -21,4 +23,5 @@ export {
   favoritesHandlers,
   locationHandlers,
   reviewsAnalyticsHandlers,
+  adminHandlers,
 };

@@ -25,6 +25,12 @@ export {
   useVerificationStatus,
 } from './useReputation';
 
+// Admin Panel - Sprint 10
+export { useAdminDashboard } from './useAdminDashboard';
+export { useUserManagement } from './useUserManagement';
+export { useContentModeration } from './useContentModeration';
+export { usePlatformSettings } from './usePlatformSettings';
+
 // Job & Package Management
 export { useJobs } from './useJobs';
 export { useJobDetail } from './useJobDetail';

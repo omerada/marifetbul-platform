@@ -3034,3 +3034,824 @@ export interface LocationStore {
   setSelectedLocation: (location: LocationData | null) => void;
   clearError: () => void;
 }
+
+// ========================================
+// SPRINT 10: ADMIN PANEL TYPES
+// ========================================
+
+// Admin User Types
+export interface AdminUser extends User {
+  role: 'admin' | 'super_admin' | 'moderator';
+  permissions: AdminPermission[];
+  lastLoginAt?: string;
+  loginCount: number;
+}
+
+export interface AdminPermission {
+  id: string;
+  name: string;
+  resource: string;
+  action: 'create' | 'read' | 'update' | 'delete' | 'manage';
+  scope?: 'own' | 'all';
+}
+
+// Admin Dashboard Types
+export interface AdminDashboardData {
+  stats: AdminStats;
+  charts: AdminCharts;
+  alerts: AdminAlert[];
+  recentActivity: AdminActivity[];
+  systemHealth: SystemHealth;
+}
+
+export interface AdminStats {
+  totalUsers: number;
+  activeUsers: number;
+  newUsersToday: number;
+  newUsersThisMonth: number;
+  totalRevenue: number;
+  monthlyRevenue: number;
+  revenueGrowth: number;
+  totalJobs: number;
+  activeJobs: number;
+  jobsToday: number;
+  totalOrders: number;
+  completedOrders: number;
+  pendingOrders: number;
+  totalServices: number;
+  activeServices: number;
+  averageOrderValue: number;
+  conversionRate: number;
+  userRetentionRate: number;
+}
+
+export interface AdminCharts {
+  userGrowth: Array<{ date: string; users: number; newUsers: number }>;
+  revenue: Array<{ date: string; amount: number; orders: number }>;
+  activity: Array<{
+    date: string;
+    jobs: number;
+    orders: number;
+    messages: number;
+  }>;
+  userTypes: Array<{
+    type: 'freelancer' | 'employer';
+    count: number;
+    percentage: number;
+  }>;
+  topCategories: Array<{
+    category: string;
+    jobCount: number;
+    orderCount: number;
+  }>;
+  orderStatus: Array<{ status: string; count: number; percentage: number }>;
+  geographicDistribution: Array<{
+    country: string;
+    region: string;
+    userCount: number;
+  }>;
+}
+
+export interface AdminAlert {
+  id: string;
+  type: 'info' | 'warning' | 'error' | 'success';
+  title: string;
+  message: string;
+  category: 'system' | 'security' | 'moderation' | 'finance' | 'user';
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  isRead: boolean;
+  actionRequired: boolean;
+  actionUrl?: string;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+  expiresAt?: string;
+}
+
+export interface AdminActivity {
+  id: string;
+  type:
+    | 'user_action'
+    | 'system_event'
+    | 'moderation_action'
+    | 'financial_transaction';
+  userId?: string;
+  adminId?: string;
+  action: string;
+  description: string;
+  details?: Record<string, unknown>;
+  ipAddress?: string;
+  userAgent?: string;
+  timestamp: string;
+}
+
+export interface SystemHealth {
+  status: 'healthy' | 'warning' | 'critical';
+  uptime: number; // seconds
+  responseTime: number; // milliseconds
+  apiStatus: 'operational' | 'degraded' | 'down';
+  databaseStatus: 'healthy' | 'slow' | 'down';
+  cacheStatus: 'healthy' | 'degraded' | 'down';
+  paymentGatewayStatus: 'operational' | 'degraded' | 'down';
+  notificationServiceStatus: 'operational' | 'degraded' | 'down';
+  lastCheckedAt: string;
+  issues: SystemIssue[];
+}
+
+export interface SystemIssue {
+  id: string;
+  component: string;
+  description: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  startedAt: string;
+  resolvedAt?: string;
+  status: 'ongoing' | 'resolved' | 'investigating';
+}
+
+// User Management Types
+export interface AdminUserData extends User {
+  accountStatus: 'active' | 'suspended' | 'banned' | 'pending_verification';
+  verificationStatus: 'verified' | 'pending' | 'rejected' | 'unverified';
+  verificationBadges: VerificationBadge[];
+  joinDate: string;
+  lastActiveAt: string;
+  lastLoginAt: string;
+  loginCount: number;
+  totalOrders: number;
+  totalEarnings: number;
+  totalSpent: number;
+  successRate: number;
+  disputeCount: number;
+  warningCount: number;
+  reputationScore: number;
+  riskScore: number;
+  notes: AdminUserNote[];
+  suspensionHistory: SuspensionRecord[];
+  metadata?: UserMetadata;
+}
+
+export interface VerificationBadge {
+  id: string;
+  type: 'email' | 'phone' | 'identity' | 'payment' | 'professional' | 'premium';
+  status: 'verified' | 'pending' | 'rejected' | 'expired';
+  verifiedAt?: string;
+  expiresAt?: string;
+  verifiedBy?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface AdminUserNote {
+  id: string;
+  adminId: string;
+  adminName: string;
+  note: string;
+  category: 'general' | 'warning' | 'positive' | 'security' | 'finance';
+  isPublic: boolean;
+  createdAt: string;
+}
+
+export interface SuspensionRecord {
+  id: string;
+  adminId: string;
+  adminName: string;
+  reason: string;
+  startDate: string;
+  endDate?: string;
+  isActive: boolean;
+  type: 'warning' | 'temporary_suspension' | 'permanent_ban';
+  metadata?: Record<string, unknown>;
+}
+
+export interface UserMetadata {
+  registrationIp?: string;
+  registrationUserAgent?: string;
+  referralSource?: string;
+  marketingCampaign?: string;
+  deviceInfo?: Record<string, unknown>;
+  behaviorFlags?: string[];
+  customFields?: Record<string, unknown>;
+}
+
+export interface UserFilters {
+  search?: string;
+  userType?: 'freelancer' | 'employer';
+  status?: ('active' | 'suspended' | 'banned' | 'pending_verification')[];
+  verificationStatus?: ('verified' | 'pending' | 'rejected' | 'unverified')[];
+  joinDateFrom?: string;
+  joinDateTo?: string;
+  lastActiveFrom?: string;
+  lastActiveTo?: string;
+  location?: string[];
+  minOrders?: number;
+  maxOrders?: number;
+  minEarnings?: number;
+  maxEarnings?: number;
+  riskScore?: 'low' | 'medium' | 'high';
+  hasDisputes?: boolean;
+  sort?:
+    | 'newest'
+    | 'oldest'
+    | 'most_active'
+    | 'highest_earnings'
+    | 'risk_score';
+  page?: number;
+  limit?: number;
+}
+
+export interface UserActionRequest {
+  action:
+    | 'suspend'
+    | 'unsuspend'
+    | 'ban'
+    | 'unban'
+    | 'verify'
+    | 'unverify'
+    | 'add_note'
+    | 'reset_password';
+  reason?: string;
+  duration?: number; // For suspensions in days
+  endDate?: string;
+  note?: string;
+  notifyUser?: boolean;
+  metadata?: Record<string, unknown>;
+}
+
+export interface BulkUserActionRequest {
+  userIds: string[];
+  action: UserActionRequest;
+}
+
+// Content Moderation Types
+export interface ModerationItem {
+  id: string;
+  type: 'review' | 'job' | 'service' | 'profile' | 'message' | 'portfolio';
+  contentId: string;
+  content: ModerationContent;
+  reportedBy?: string;
+  reporterInfo?: Pick<User, 'id' | 'firstName' | 'lastName' | 'userType'>;
+  reason: ModerationReason;
+  category: ModerationCategory;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  status: 'pending' | 'approved' | 'rejected' | 'escalated' | 'dismissed';
+  assignedTo?: string;
+  moderatorId?: string;
+  moderatorNotes?: string;
+  automatedFlags: AutomatedFlag[];
+  reviewHistory: ModerationReview[];
+  createdAt: string;
+  updatedAt: string;
+  resolvedAt?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface ModerationContent {
+  title?: string;
+  description?: string;
+  images?: string[];
+  text?: string;
+  rating?: number;
+  originalContent?: Record<string, unknown>;
+  userContent?: UserGeneratedContent;
+}
+
+export interface UserGeneratedContent {
+  userId: string;
+  userName: string;
+  userType: 'freelancer' | 'employer';
+  submittedAt: string;
+  ipAddress?: string;
+  userAgent?: string;
+}
+
+export type ModerationReason =
+  | 'spam'
+  | 'inappropriate_content'
+  | 'false_information'
+  | 'copyright_violation'
+  | 'harassment'
+  | 'hate_speech'
+  | 'scam'
+  | 'fake_reviews'
+  | 'price_manipulation'
+  | 'duplicate_content'
+  | 'off_topic'
+  | 'low_quality'
+  | 'policy_violation'
+  | 'other';
+
+export type ModerationCategory =
+  | 'content_quality'
+  | 'user_safety'
+  | 'platform_integrity'
+  | 'legal_compliance'
+  | 'community_standards'
+  | 'business_policy';
+
+export interface AutomatedFlag {
+  id: string;
+  type:
+    | 'keyword_detection'
+    | 'image_analysis'
+    | 'pattern_matching'
+    | 'sentiment_analysis'
+    | 'duplicate_detection';
+  severity: 'low' | 'medium' | 'high';
+  confidence: number; // 0-1
+  details: string;
+  metadata?: Record<string, unknown>;
+  flaggedAt: string;
+}
+
+export interface ModerationReview {
+  id: string;
+  moderatorId: string;
+  moderatorName: string;
+  action:
+    | 'approved'
+    | 'rejected'
+    | 'escalated'
+    | 'requested_changes'
+    | 'dismissed';
+  notes: string;
+  reviewTime: number; // seconds spent reviewing
+  timestamp: string;
+}
+
+export interface ModerationActionRequest {
+  action: 'approve' | 'reject' | 'escalate' | 'dismiss' | 'request_changes';
+  reason?: string;
+  notes?: string;
+  notifyUser?: boolean;
+  notifyReporter?: boolean;
+  additionalActions?: UserActionRequest[];
+  metadata?: Record<string, unknown>;
+}
+
+export interface ModerationFilters {
+  type?: ('review' | 'job' | 'service' | 'profile' | 'message' | 'portfolio')[];
+  status?: ('pending' | 'approved' | 'rejected' | 'escalated' | 'dismissed')[];
+  priority?: ('low' | 'medium' | 'high' | 'urgent')[];
+  reason?: ModerationReason[];
+  category?: ModerationCategory[];
+  assignedTo?: string;
+  reportedBy?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  hasAutomatedFlags?: boolean;
+  search?: string;
+  sort?: 'newest' | 'oldest' | 'priority' | 'most_reported';
+  page?: number;
+  limit?: number;
+}
+
+export interface ModerationStats {
+  totalItems: number;
+  pendingItems: number;
+  approvedItems: number;
+  rejectedItems: number;
+  averageReviewTime: number;
+  automatedFlagAccuracy: number;
+  topModerationReasons: Array<{ reason: ModerationReason; count: number }>;
+  moderatorPerformance: Array<{
+    moderatorId: string;
+    moderatorName: string;
+    reviewedItems: number;
+    averageTime: number;
+    accuracy: number;
+  }>;
+}
+
+// Platform Settings Types
+export interface PlatformSettings {
+  general: GeneralSettings;
+  payment: PaymentSettings;
+  security: SecuritySettings;
+  email: EmailSettings;
+  features: FeatureSettings;
+  content: ContentSettings;
+  api: ApiSettings;
+  integrations: IntegrationSettings;
+  maintenance: MaintenanceSettings;
+}
+
+export interface GeneralSettings {
+  siteName: string;
+  siteDescription: string;
+  supportEmail: string;
+  maxFileUploadSize: number; // bytes
+  allowedFileTypes: string[];
+  defaultLanguage: 'tr' | 'en';
+  supportedLanguages: string[];
+  timezone: string;
+  currency: 'TRY' | 'USD' | 'EUR';
+  supportedCurrencies: string[];
+  termsOfServiceUrl: string;
+  privacyPolicyUrl: string;
+  cookiePolicyUrl: string;
+}
+
+export interface PaymentSettings {
+  platformFee: number; // percentage
+  minimumWithdrawal: number;
+  withdrawalFee: number;
+  escrowPeriod: number; // days
+  automaticRelease: boolean;
+  supportedPaymentMethods: string[];
+  taxCalculation: boolean;
+  invoiceGeneration: boolean;
+  refundPolicy: RefundPolicySettings;
+}
+
+export interface RefundPolicySettings {
+  allowRefunds: boolean;
+  refundPeriod: number; // days
+  partialRefunds: boolean;
+  automaticRefunds: boolean;
+  refundFee: number; // percentage
+}
+
+export interface SecuritySettings {
+  twoFactorAuth: boolean;
+  passwordRequirements: PasswordRequirements;
+  sessionTimeout: number; // minutes
+  maxLoginAttempts: number;
+  lockoutDuration: number; // minutes
+  ipWhitelist: string[];
+  ipBlacklist: string[];
+  enableCaptcha: boolean;
+  dataRetentionPeriod: number; // days
+}
+
+export interface PasswordRequirements {
+  minLength: number;
+  requireUppercase: boolean;
+  requireLowercase: boolean;
+  requireNumbers: boolean;
+  requireSpecialChars: boolean;
+  preventCommonPasswords: boolean;
+}
+
+export interface EmailSettings {
+  smtpHost: string;
+  smtpPort: number;
+  smtpUsername: string;
+  smtpPassword: string;
+  fromEmail: string;
+  fromName: string;
+  enableEmailVerification: boolean;
+  emailTemplates: EmailTemplateSettings[];
+}
+
+export interface EmailTemplateSettings {
+  id: string;
+  name: string;
+  subject: string;
+  template: string;
+  variables: string[];
+  isActive: boolean;
+}
+
+export interface FeatureSettings {
+  userRegistration: boolean;
+  emailVerificationRequired: boolean;
+  profileVerification: boolean;
+  servicePackages: boolean;
+  jobPosting: boolean;
+  directMessaging: boolean;
+  videoChat: boolean;
+  mobileApp: boolean;
+  apiAccess: boolean;
+  affiliateProgram: boolean;
+  loyaltyProgram: boolean;
+  multiLanguage: boolean;
+  darkMode: boolean;
+  notificationSystem: boolean;
+  searchEngine: boolean;
+  analyticsTracking: boolean;
+}
+
+export interface ContentSettings {
+  moderationEnabled: boolean;
+  autoModeration: boolean;
+  userGeneratedContent: boolean;
+  allowUserProfiles: boolean;
+  allowPortfolio: boolean;
+  allowCustomCategories: boolean;
+  contentFiltering: boolean;
+  spamDetection: boolean;
+  duplicateDetection: boolean;
+  imageModeration: boolean;
+  textAnalysis: boolean;
+}
+
+export interface ApiSettings {
+  enablePublicApi: boolean;
+  enableWebhooks: boolean;
+  rateLimiting: RateLimitSettings;
+  apiVersioning: boolean;
+  apiDocumentation: boolean;
+  apiKeys: ApiKeySettings[];
+}
+
+export interface RateLimitSettings {
+  requestsPerMinute: number;
+  requestsPerHour: number;
+  requestsPerDay: number;
+  burst: number;
+}
+
+export interface ApiKeySettings {
+  id: string;
+  name: string;
+  keyPrefix: string;
+  permissions: string[];
+  rateLimits: RateLimitSettings;
+  isActive: boolean;
+  createdAt: string;
+  lastUsedAt?: string;
+}
+
+export interface IntegrationSettings {
+  paymentGateways: PaymentGatewaySettings[];
+  emailProviders: EmailProviderSettings[];
+  smsProviders: SmsProviderSettings[];
+  analyticsProviders: AnalyticsProviderSettings[];
+  socialLogins: SocialLoginSettings[];
+}
+
+export interface PaymentGatewaySettings {
+  id: string;
+  name: string;
+  isActive: boolean;
+  configuration: Record<string, unknown>;
+  supportedCurrencies: string[];
+  fees: {
+    percentage: number;
+    fixed: number;
+  };
+}
+
+export interface EmailProviderSettings {
+  id: string;
+  name: string;
+  isActive: boolean;
+  configuration: Record<string, unknown>;
+  isDefault: boolean;
+}
+
+export interface SmsProviderSettings {
+  id: string;
+  name: string;
+  isActive: boolean;
+  configuration: Record<string, unknown>;
+  isDefault: boolean;
+  supportedCountries: string[];
+}
+
+export interface AnalyticsProviderSettings {
+  id: string;
+  name: string;
+  isActive: boolean;
+  configuration: Record<string, unknown>;
+  trackingId: string;
+}
+
+export interface SocialLoginSettings {
+  provider: 'google' | 'facebook' | 'linkedin' | 'twitter' | 'github';
+  isActive: boolean;
+  clientId: string;
+  clientSecret: string;
+  scopes: string[];
+}
+
+export interface MaintenanceSettings {
+  isMaintenanceMode: boolean;
+  maintenanceMessage: string;
+  scheduledMaintenance: ScheduledMaintenance[];
+  allowedIps: string[];
+  allowedRoles: string[];
+}
+
+export interface ScheduledMaintenance {
+  id: string;
+  title: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  affectedServices: string[];
+  notifyUsers: boolean;
+  isActive: boolean;
+}
+
+// Audit Log Types
+export interface AuditLog {
+  id: string;
+  userId?: string;
+  adminId?: string;
+  action: string;
+  resource: string;
+  resourceId?: string;
+  details: AuditLogDetails;
+  ipAddress: string;
+  userAgent: string;
+  timestamp: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  category: 'user_action' | 'admin_action' | 'system_event' | 'security_event';
+}
+
+export interface AuditLogDetails {
+  before?: Record<string, unknown>;
+  after?: Record<string, unknown>;
+  changes?: Array<{
+    field: string;
+    oldValue: unknown;
+    newValue: unknown;
+  }>;
+  metadata?: Record<string, unknown>;
+}
+
+export interface AuditLogFilters {
+  userId?: string;
+  adminId?: string;
+  action?: string[];
+  resource?: string[];
+  severity?: ('low' | 'medium' | 'high' | 'critical')[];
+  category?: (
+    | 'user_action'
+    | 'admin_action'
+    | 'system_event'
+    | 'security_event'
+  )[];
+  dateFrom?: string;
+  dateTo?: string;
+  ipAddress?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+// Admin Store Interfaces
+export interface AdminDashboardStore {
+  // State
+  data: AdminDashboardData | null;
+  isLoading: boolean;
+  error: string | null;
+  lastUpdated: string | null;
+
+  // Actions
+  fetchDashboard: () => Promise<void>;
+  refreshDashboard: () => Promise<void>;
+  markAlertAsRead: (alertId: string) => Promise<void>;
+  dismissAlert: (alertId: string) => Promise<void>;
+  clearError: () => void;
+}
+
+export interface AdminUserStore {
+  // State
+  users: AdminUserData[];
+  selectedUser: AdminUserData | null;
+  isLoading: boolean;
+  error: string | null;
+  filters: UserFilters;
+  pagination: PaginationMeta | null;
+  bulkSelectedIds: string[];
+
+  // Actions
+  fetchUsers: (filters?: UserFilters) => Promise<void>;
+  fetchUserById: (userId: string) => Promise<void>;
+  performUserAction: (
+    userId: string,
+    action: UserActionRequest
+  ) => Promise<void>;
+  performBulkAction: (action: BulkUserActionRequest) => Promise<void>;
+  setFilters: (filters: Partial<UserFilters>) => void;
+  selectUser: (user: AdminUserData | null) => void;
+  toggleBulkSelection: (userId: string) => void;
+  selectAllUsers: () => void;
+  clearBulkSelection: () => void;
+  clearError: () => void;
+}
+
+export interface AdminModerationStore {
+  // State
+  items: ModerationItem[];
+  selectedItem: ModerationItem | null;
+  stats: ModerationStats | null;
+  isLoading: boolean;
+  error: string | null;
+  filters: ModerationFilters;
+  pagination: PaginationMeta | null;
+
+  // Actions
+  fetchModerationQueue: (filters?: ModerationFilters) => Promise<void>;
+  fetchModerationStats: () => Promise<void>;
+  performModerationAction: (
+    itemId: string,
+    action: ModerationActionRequest
+  ) => Promise<void>;
+  assignModerator: (itemId: string, moderatorId: string) => Promise<void>;
+  escalateItem: (itemId: string, reason: string) => Promise<void>;
+  setFilters: (filters: Partial<ModerationFilters>) => void;
+  selectItem: (item: ModerationItem | null) => void;
+  clearError: () => void;
+}
+
+export interface AdminSettingsStore {
+  // State
+  settings: PlatformSettings | null;
+  isLoading: boolean;
+  error: string | null;
+  hasUnsavedChanges: boolean;
+
+  // Actions
+  fetchSettings: () => Promise<void>;
+  updateSettings: (settings: Partial<PlatformSettings>) => Promise<void>;
+  resetSettings: () => Promise<void>;
+  exportSettings: () => Promise<void>;
+  importSettings: (settings: PlatformSettings) => Promise<void>;
+  clearError: () => void;
+}
+
+export interface AdminAuditStore {
+  // State
+  logs: AuditLog[];
+  isLoading: boolean;
+  error: string | null;
+  filters: AuditLogFilters;
+  pagination: PaginationMeta | null;
+
+  // Actions
+  fetchAuditLogs: (filters?: AuditLogFilters) => Promise<void>;
+  exportAuditLogs: (filters?: AuditLogFilters) => Promise<void>;
+  setFilters: (filters: Partial<AuditLogFilters>) => void;
+  clearError: () => void;
+}
+
+// Admin API Response Types
+export interface AdminDashboardResponse {
+  success: boolean;
+  data: AdminDashboardData;
+  message?: string;
+}
+
+export interface AdminUsersResponse {
+  success: boolean;
+  data: {
+    users: AdminUserData[];
+    pagination: PaginationMeta;
+  };
+  message?: string;
+}
+
+export interface AdminUserResponse {
+  success: boolean;
+  data: AdminUserData;
+  message?: string;
+}
+
+export interface AdminUserActionResponse {
+  success: boolean;
+  data?: {
+    user: AdminUserData;
+    auditLog: AuditLog;
+  };
+  message: string;
+}
+
+export interface AdminModerationResponse {
+  success: boolean;
+  data: {
+    items: ModerationItem[];
+    pagination: PaginationMeta;
+  };
+  message?: string;
+}
+
+export interface AdminModerationStatsResponse {
+  success: boolean;
+  data: ModerationStats;
+  message?: string;
+}
+
+export interface AdminModerationActionResponse {
+  success: boolean;
+  data?: {
+    item: ModerationItem;
+    auditLog: AuditLog;
+  };
+  message: string;
+}
+
+export interface AdminSettingsResponse {
+  success: boolean;
+  data: PlatformSettings;
+  message?: string;
+}
+
+export interface AdminAuditLogsResponse {
+  success: boolean;
+  data: {
+    logs: AuditLog[];
+    pagination: PaginationMeta;
+  };
+  message?: string;
+}
