@@ -4,6 +4,7 @@ export { useAuthGuard, usePermissions } from './useAuthGuard';
 
 // Search & Filtering - Sprint 7
 export { useAdvancedSearch } from './useAdvancedSearch';
+export { useEnhancedSearch } from './useEnhancedSearch';
 export { useGeolocation } from './useLocation';
 
 // Recommendations & Favorites - Sprint 7
@@ -45,6 +46,12 @@ export {
 } from './useSupport';
 export { useChat, useChatSession, useChatComposer } from './useChat';
 
+// SEO & Performance - Sprint 18
+export { useSEO } from './useSEO';
+export { usePerformance } from './usePerformance';
+export { useEnhancedPerformance } from './useEnhancedPerformance';
+export { useSocialShare } from './useSocialShare';
+
 // Job & Package Management
 export { useJobs } from './useJobs';
 export { useJobDetail } from './useJobDetail';
@@ -85,7 +92,7 @@ export { useHapticFeedback } from './useHapticFeedback';
 export { usePayment } from './usePayment';
 
 // Performance & Monitoring
-// export { usePerformance } from './usePerformance'; // TODO: Sprint 6+
+// Moved to SEO & Performance section above
 
 // Push Notifications
 // export { usePushNotifications } from './usePushNotifications'; // TODO: Create if needed

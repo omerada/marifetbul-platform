@@ -7,6 +7,7 @@ import { reviewsAnalyticsHandlers } from './reviews-analytics';
 import { adminHandlers } from './admin';
 import { authHandlers } from './auth';
 import { helpSupportHandlers } from './help-support';
+import { seoPerformanceHandlers } from './seo-performance';
 
 // Combine all handlers
 export const handlers = [
@@ -18,6 +19,7 @@ export const handlers = [
   ...reviewsAnalyticsHandlers,
   ...adminHandlers,
   ...helpSupportHandlers,
+  ...seoPerformanceHandlers,
 ];
 
 // Export individual handler groups for selective usage
@@ -30,4 +32,5 @@ export {
   reviewsAnalyticsHandlers,
   adminHandlers,
   helpSupportHandlers,
+  seoPerformanceHandlers,
 };

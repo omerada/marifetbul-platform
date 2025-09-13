@@ -11,7 +11,6 @@ import {
   Calendar,
   Users,
   Heart,
-  Share2,
   Flag,
   CheckCircle,
   FileText,
@@ -23,6 +22,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/Avatar';
+import { SocialShare } from '@/components/social/SocialShare';
 import { ProposalModal } from './ProposalModal';
 import { ProposalCard } from './ProposalCard';
 import { ErrorState } from './ErrorState';
@@ -214,10 +214,14 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
             {isSaved ? 'Favorilerde' : 'Favorilere Ekle'}
           </Button>
 
-          <Button variant="outline" size="lg">
-            <Share2 className="mr-2 h-4 w-4" />
-            Paylaş
-          </Button>
+          <SocialShare
+            data={{
+              url: typeof window !== 'undefined' ? window.location.href : '',
+              title: currentJob?.title || 'İş İlanı',
+              description: currentJob?.description || "Marifeto'da iş fırsatı",
+              image: currentJob?.employer?.avatar || '/images/og-default.jpg',
+            }}
+          />
 
           <Button variant="outline" size="lg">
             <Flag className="mr-2 h-4 w-4" />

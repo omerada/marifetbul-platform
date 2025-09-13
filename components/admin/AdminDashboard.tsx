@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { PerformanceMonitor } from '@/components/performance/PerformanceMonitor';
 import { useAdminDashboard } from '@/hooks';
 import {
   Users,
@@ -20,6 +21,7 @@ import {
   Clock,
   Calendar,
   BarChart3,
+  Gauge,
 } from 'lucide-react';
 
 export function AdminDashboard() {
@@ -254,28 +256,16 @@ export function AdminDashboard() {
 
       {/* Enhanced Charts and Activity */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Revenue Chart Placeholder */}
+        {/* Performance Monitor */}
         <Card className="border-gray-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base font-medium">
-              Gelir Trendi
+            <CardTitle className="flex items-center space-x-2 text-base font-medium">
+              <Gauge className="h-5 w-5" />
+              <span>Performans İzleme</span>
             </CardTitle>
-            <Button variant="ghost" size="sm">
-              <BarChart3 className="h-4 w-4" />
-            </Button>
           </CardHeader>
           <CardContent>
-            <div className="flex h-64 items-center justify-center rounded-lg bg-gray-50">
-              <div className="text-center">
-                <TrendingUp className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-                <p className="text-sm text-gray-500">
-                  Gelir grafiği burada gösterilecek
-                </p>
-                <p className="mt-1 text-xs text-gray-400">
-                  Chart.js entegrasyonu gerekli
-                </p>
-              </div>
-            </div>
+            <PerformanceMonitor />
           </CardContent>
         </Card>
 

@@ -7,12 +7,12 @@ import { MarketplaceFilters } from './MarketplaceFilters';
 import { MarketplaceList } from './MarketplaceList';
 import { MarketplacePagination } from './MarketplacePagination';
 import { MobileMarketplace } from './MobileMarketplace';
+import { SearchAutocomplete } from '@/components/search/SearchAutocomplete';
 import { ErrorState } from '@/components/features/ErrorState';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import {
   RefreshCcw,
-  Search,
   Filter,
   Grid3X3,
   List,
@@ -46,7 +46,6 @@ export function MarketplacePage() {
     updateViewPreferences,
     refreshData,
     setSearchQuery,
-    searchQuery,
   } = useMarketplace();
 
   // Initial data fetch
@@ -83,7 +82,6 @@ export function MarketplacePage() {
 
   const handleClearFilters = useCallback(async () => {
     try {
-      setSearchQuery('');
       if (mode === 'jobs') {
         await applyJobFilters({});
       } else {
@@ -92,11 +90,10 @@ export function MarketplacePage() {
     } catch (error) {
       console.error('Error clearing filters:', error);
     }
-  }, [mode, applyJobFilters, applyPackageFilters, setSearchQuery]);
+  }, [mode, applyJobFilters, applyPackageFilters]);
 
   const handleShowAll = useCallback(async () => {
     try {
-      setSearchQuery('');
       if (mode === 'jobs') {
         await applyJobFilters({});
       } else {
@@ -105,7 +102,7 @@ export function MarketplacePage() {
     } catch (error) {
       console.error('Error showing all items:', error);
     }
-  }, [mode, applyJobFilters, applyPackageFilters, setSearchQuery]);
+  }, [mode, applyJobFilters, applyPackageFilters]);
 
   if (error) {
     return (
@@ -182,36 +179,17 @@ export function MarketplacePage() {
                 </p>
               </div>
 
-              {/* Search Bar - Ana sayfa tasarımı */}
+              {/* Enhanced Search Bar */}
               <div>
-                <div className="rounded-lg bg-white p-2 shadow-xl">
-                  <div className="flex flex-col gap-2 sm:flex-row">
-                    <div className="relative flex-1">
-                      <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
-                      <input
-                        type="text"
-                        placeholder={
-                          mode === 'jobs'
-                            ? 'İş ilanı, beceri veya kategori ara...'
-                            : 'Hizmet, freelancer veya kategori ara...'
-                        }
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyPress={(e) =>
-                          e.key === 'Enter' && handleSearch(searchQuery)
-                        }
-                        className="w-full rounded-md py-3 pr-4 pl-10 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      />
-                    </div>
-                    <Button
-                      size="lg"
-                      onClick={() => handleSearch(searchQuery)}
-                      className="px-8"
-                    >
-                      Ara
-                    </Button>
-                  </div>
-                </div>
+                <SearchAutocomplete
+                  placeholder={
+                    mode === 'jobs'
+                      ? 'İş ilanı, beceri veya kategori ara...'
+                      : 'Hizmet, freelancer veya kategori ara...'
+                  }
+                  onSearch={handleSearch}
+                  className="rounded-lg bg-white shadow-xl"
+                />
               </div>
 
               {/* Quick Stats */}
