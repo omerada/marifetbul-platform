@@ -70,7 +70,7 @@ const useAuthStore = create<AuthState>()(
             // Set cookie for middleware with appropriate expiration
             const maxAge = rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60; // 30 days or 1 day
             document.cookie = `marifeto-auth-token=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
-            document.cookie = `marifeto-user-role=${user.role}; path=/; max-age=${maxAge}; SameSite=Lax`;
+            document.cookie = `marifeto-user-role=${user.userType}; path=/; max-age=${maxAge}; SameSite=Lax`;
 
             set({
               user,
@@ -101,7 +101,7 @@ const useAuthStore = create<AuthState>()(
             // Set cookie for middleware with appropriate expiration
             const maxAge = rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60; // 30 days or 1 day
             document.cookie = `marifeto-auth-token=${data.data.token}; path=/; max-age=${maxAge}; SameSite=Lax`;
-            document.cookie = `marifeto-user-role=${data.data.user.role}; path=/; max-age=${maxAge}; SameSite=Lax`;
+            document.cookie = `marifeto-user-role=${data.data.user.userType}; path=/; max-age=${maxAge}; SameSite=Lax`;
 
             set({
               user: data.data.user,
@@ -143,7 +143,7 @@ const useAuthStore = create<AuthState>()(
           if (result.success && result.data) {
             // Set cookie for middleware
             document.cookie = `marifeto-auth-token=${result.data.token}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
-            document.cookie = `marifeto-user-role=${result.data.user.role}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
+            document.cookie = `marifeto-user-role=${result.data.user.userType}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
 
             set({
               user: result.data.user,

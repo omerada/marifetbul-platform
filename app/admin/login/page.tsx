@@ -25,8 +25,15 @@ export default function AdminLoginPage() {
 
   // Redirect if already authenticated as admin
   useEffect(() => {
-    if (isAuthenticated && user?.userType === 'admin') {
-      router.push('/admin');
+    if (isAuthenticated && user) {
+      if (user.userType === 'admin') {
+        router.push('/admin');
+      } else {
+        // Non-admin user tried to access admin area
+        setError(
+          'Admin yetkisine sahip değilsiniz. Lütfen admin hesabı ile giriş yapın.'
+        );
+      }
     }
   }, [isAuthenticated, user, router]);
 
@@ -42,40 +49,11 @@ export default function AdminLoginPage() {
     setError('');
 
     try {
-      // Admin credentials validation
-      if (
-        credentials.email !== 'admin@marifeto.com' ||
-        credentials.password !== 'admin123'
-      ) {
-        throw new Error('Geçersiz admin kimlik bilgileri');
-      }
-
-      const adminUser = {
-        id: 'admin-001',
-        email: 'admin@marifeto.com',
-        firstName: 'Admin',
-        lastName: 'User',
-        userType: 'admin' as const,
-        role: 'admin' as const,
-        avatar: '/images/admin-avatar.png',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        lastLoginAt: new Date().toISOString(),
-        permissions: [
-          'users.read',
-          'users.write',
-          'users.delete',
-          'content.moderate',
-          'analytics.read',
-          'settings.write',
-          'system.admin',
-        ],
-      };
-
-      await login(adminUser, 'mock-admin-token');
+      // Use regular login flow which will check via API
+      await login(credentials.email, credentials.password);
 
       toast.success('Admin paneline başarıyla giriş yapıldı');
-      router.push('/admin');
+      // Don't redirect here, let useEffect handle it after user is set
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Giriş yapılırken bir hata oluştu';
@@ -187,8 +165,32 @@ export default function AdminLoginPage() {
                   Demo Kimlik Bilgileri:
                 </h4>
                 <div className="space-y-1 text-xs text-blue-700">
-                  <p>E-posta: admin@marifeto.com</p>
-                  <p>Şifre: admin123</p>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Admin:</span>
+                    <span>admin@marifeto.com / admin123</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Freelancer:</span>
+                    <span>demo@example.com / demo123</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Employer:</span>
+                    <span>employer@example.com / employer123</span>
+                  </div>
+                </div>
+                <div className="mt-2 border-t border-blue-200 pt-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setCredentials({
+                        email: 'admin@marifeto.com',
+                        password: 'admin123',
+                      })
+                    }
+                    className="text-xs text-blue-600 underline hover:text-blue-800"
+                  >
+                    Admin bilgilerini doldur
+                  </button>
                 </div>
               </div>
 

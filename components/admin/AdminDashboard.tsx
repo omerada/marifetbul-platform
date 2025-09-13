@@ -132,6 +132,45 @@ export function AdminDashboard() {
         </div>
       </div>
 
+      {/* Demo Info Card */}
+      <Card className="border-blue-200 bg-blue-50">
+        <CardHeader className="pb-3">
+          <div className="flex items-center space-x-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
+              <MessageSquare className="h-4 w-4 text-blue-600" />
+            </div>
+            <div>
+              <CardTitle className="text-sm font-medium text-blue-900">
+                Demo Admin Paneli
+              </CardTitle>
+              <p className="text-xs text-blue-700">
+                Tüm veriler demo amaçlıdır ve gerçek platformu temsil eder
+              </p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="space-y-2 text-xs text-blue-700">
+            <div className="flex items-center justify-between">
+              <span>• Kullanıcı yönetimi sistemi</span>
+              <CheckCircle className="h-3 w-3 text-green-600" />
+            </div>
+            <div className="flex items-center justify-between">
+              <span>• Gerçek zamanlı analitik</span>
+              <CheckCircle className="h-3 w-3 text-green-600" />
+            </div>
+            <div className="flex items-center justify-between">
+              <span>• İçerik moderation sistemi</span>
+              <CheckCircle className="h-3 w-3 text-green-600" />
+            </div>
+            <div className="flex items-center justify-between">
+              <span>• Platform ayarları</span>
+              <CheckCircle className="h-3 w-3 text-green-600" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* System Health Alert */}
       {systemHealth?.status !== 'healthy' && (
         <Card className="border-orange-200 bg-orange-50">

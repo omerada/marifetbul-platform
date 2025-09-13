@@ -32,12 +32,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         return;
       }
 
-      if (user?.role !== 'admin') {
+      if (user?.userType !== 'admin') {
         router.push('/dashboard');
         return;
       }
     }
   }, [isAuthenticated, isLoading, user, router]);
+
+  // Skip layout for login page
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
 
   const handleLogout = () => {
     logout();
@@ -94,7 +99,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   // Show loading if not authenticated or not admin (will redirect)
-  if (!isAuthenticated || user?.role !== 'admin') {
+  if (!isAuthenticated || user?.userType !== 'admin') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <Card className="w-96">
