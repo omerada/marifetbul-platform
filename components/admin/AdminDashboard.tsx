@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { PerformanceMonitor } from '@/components/performance/PerformanceMonitor';
+import SystemHealthWidget from '@/components/admin/SystemHealthWidget';
 import { useAdminDashboard } from '@/hooks';
 import {
   Users,
@@ -414,83 +415,9 @@ export function AdminDashboard() {
       )}
 
       {/* Enhanced System Health & Quick Actions */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* System Health */}
-        <Card className="border-gray-200">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <CheckCircle className="h-5 w-5 text-green-500" />
-              <span>Sistem Durumu</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">API Durumu</span>
-                <Badge
-                  variant="success"
-                  className="bg-green-100 text-green-800"
-                >
-                  {systemHealth?.apiStatus === 'operational'
-                    ? 'Çalışıyor'
-                    : 'Sorunlu'}
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Database</span>
-                <Badge
-                  variant="success"
-                  className="bg-green-100 text-green-800"
-                >
-                  Bağlı
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Cache</span>
-                <Badge
-                  variant="warning"
-                  className="bg-yellow-100 text-yellow-800"
-                >
-                  Yavaş
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Depolama</span>
-                <Badge
-                  variant="success"
-                  className="bg-green-100 text-green-800"
-                >
-                  Kullanılabilir
-                </Badge>
-              </div>
-              <div className="mt-4 border-t border-gray-200 pt-3">
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <div className="text-lg font-bold text-green-600">
-                      {systemHealth?.uptime
-                        ? Math.floor(systemHealth.uptime / 3600)
-                        : 0}
-                      h
-                    </div>
-                    <p className="text-xs text-gray-600">Çalışma Süresi</p>
-                  </div>
-                  <div>
-                    <div className="text-lg font-bold text-blue-600">
-                      {systemHealth?.responseTime || 0}ms
-                    </div>
-                    <p className="text-xs text-gray-600">Yanıt Süresi</p>
-                  </div>
-                  <div>
-                    <div className="text-lg font-bold text-green-600">
-                      99.9%
-                    </div>
-                    <p className="text-xs text-gray-600">Uptime</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {/* System Health Widget */}
+        <SystemHealthWidget className="lg:col-span-1" />
 
         {/* Pending Tasks */}
         <Card className="border-gray-200">
