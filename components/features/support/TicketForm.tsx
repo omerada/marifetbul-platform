@@ -14,9 +14,13 @@ import {
 import { useSupport } from '@/hooks/useSupport';
 import { cn } from '@/lib/utils';
 
+import type { CreateTicketFormData } from '@/lib/validations/support';
+
 interface TicketFormProps {
   onBack?: () => void;
   onSuccess?: (ticketId: string) => void;
+  onSubmit?: (data: CreateTicketFormData) => Promise<void>;
+  isLoading?: boolean;
   className?: string;
 }
 
@@ -32,6 +36,8 @@ interface TicketFormData {
 export const TicketForm: React.FC<TicketFormProps> = ({
   onBack,
   onSuccess,
+  onSubmit,
+  isLoading = false,
   className,
 }) => {
   const router = useRouter();
