@@ -31,6 +31,20 @@ export { useUserManagement } from './useUserManagement';
 export { useContentModeration } from './useContentModeration';
 export { usePlatformSettings } from './usePlatformSettings';
 
+// Help Center & Support System - Sprint 17
+export {
+  useHelpCenter,
+  useHelpArticle,
+  useHelpCenterSearch,
+} from './useHelpCenter';
+export {
+  useSupport,
+  useSupportTicket,
+  useSupportSearch,
+  useSupportFileUpload,
+} from './useSupport';
+export { useChat, useChatSession, useChatComposer } from './useChat';
+
 // Job & Package Management
 export { useJobs } from './useJobs';
 export { useJobDetail } from './useJobDetail';

@@ -6,6 +6,7 @@ import { locationHandlers } from './location';
 import { reviewsAnalyticsHandlers } from './reviews-analytics';
 import { adminHandlers } from './admin';
 import { authHandlers } from './auth';
+import { helpSupportHandlers } from './help-support';
 
 // Combine all handlers
 export const handlers = [
@@ -16,6 +17,7 @@ export const handlers = [
   ...locationHandlers,
   ...reviewsAnalyticsHandlers,
   ...adminHandlers,
+  ...helpSupportHandlers,
 ];
 
 // Export individual handler groups for selective usage
@@ -27,4 +29,5 @@ export {
   locationHandlers,
   reviewsAnalyticsHandlers,
   adminHandlers,
+  helpSupportHandlers,
 };

@@ -118,3 +118,12 @@ export { PaymentHistory } from './PaymentHistory';
 export { LocationPicker } from './LocationPicker';
 export { LocationSearch } from './LocationSearch';
 export { MapView } from './MapView';
+
+// Help Center Components (Sprint 17)
+export * from './help-center';
+
+// Support System Components (Sprint 17)
+export * from './support';
+
+// Live Chat Components (Sprint 17)
+export * from './chat';

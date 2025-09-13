@@ -1998,6 +1998,685 @@ export interface FavoritesResponse {
   error?: string;
 }
 
+// ========================================
+// SPRINT 17: HELP CENTER & SUPPORT SYSTEM TYPES
+// ========================================
+
+// Help Center & Knowledge Base Types
+export interface HelpCategory {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  articleCount: number;
+  parentId?: string;
+  children?: HelpCategory[];
+  order: number;
+  isVisible: boolean;
+  slug: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HelpArticle {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  categoryId: string;
+  category?: HelpCategory;
+  author: {
+    id: string;
+    name: string;
+    avatar?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string;
+  views: number;
+  rating: number;
+  ratingCount: number;
+  tags: string[];
+  featured: boolean;
+  status: 'published' | 'draft' | 'archived' | 'under_review';
+  estimatedReadTime: number; // minutes
+  language: 'tr' | 'en';
+  relatedArticles?: string[]; // Article IDs
+  attachments?: ArticleAttachment[];
+  seoTitle?: string;
+  seoDescription?: string;
+  lastReviewedAt?: string;
+  nextReviewDate?: string;
+  version: number;
+}
+
+export interface ArticleAttachment {
+  id: string;
+  name: string;
+  url: string;
+  type: string; // MIME type
+  size: number;
+  description?: string;
+  downloadCount: number;
+  uploadedAt: string;
+}
+
+export interface ArticleRating {
+  id: string;
+  articleId: string;
+  userId: string;
+  rating: number; // 1-5
+  feedback?: string;
+  isHelpful: boolean;
+  createdAt: string;
+}
+
+export interface ArticleView {
+  id: string;
+  articleId: string;
+  userId?: string;
+  sessionId: string;
+  viewedAt: string;
+  timeSpent?: number; // seconds
+  userAgent?: string;
+  ipAddress?: string;
+  referrer?: string;
+}
+
+// Support Ticket System Types
+export interface SupportTicket {
+  id: string;
+  ticketNumber: string;
+  subject: string;
+  description: string;
+  category:
+    | 'technical'
+    | 'billing'
+    | 'account'
+    | 'general'
+    | 'report_user'
+    | 'feature_request'
+    | 'bug_report';
+  subcategory?: string;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  status:
+    | 'open'
+    | 'pending'
+    | 'in_progress'
+    | 'waiting_user'
+    | 'resolved'
+    | 'closed';
+  userId: string;
+  user: Pick<
+    User,
+    'id' | 'firstName' | 'lastName' | 'email' | 'avatar' | 'userType'
+  >;
+  assignedAgentId?: string;
+  assignedAgent?: SupportAgent;
+  attachments: TicketAttachment[];
+  responses: TicketResponse[];
+  tags: string[];
+  metadata?: TicketMetadata;
+  slaDetails: SLADetails;
+  satisfaction?: TicketSatisfaction;
+  createdAt: string;
+  updatedAt: string;
+  resolvedAt?: string;
+  closedAt?: string;
+  firstResponseAt?: string;
+  lastUserResponseAt?: string;
+  lastAgentResponseAt?: string;
+}
+
+export interface SupportAgent {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  title: string;
+  department: string;
+  specialties: string[];
+  languages: string[];
+  isOnline: boolean;
+  currentLoad: number; // Number of active tickets
+  maxLoad: number;
+  rating: number;
+  totalTicketsResolved: number;
+  averageResponseTime: number; // minutes
+  isAvailable: boolean;
+  workingHours: {
+    timezone: string;
+    schedule: DailySchedule[];
+  };
+  lastActiveAt: string;
+}
+
+export interface DailySchedule {
+  day:
+    | 'monday'
+    | 'tuesday'
+    | 'wednesday'
+    | 'thursday'
+    | 'friday'
+    | 'saturday'
+    | 'sunday';
+  isWorkingDay: boolean;
+  startTime: string; // HH:mm format
+  endTime: string; // HH:mm format
+  breaks?: {
+    startTime: string;
+    endTime: string;
+    title: string;
+  }[];
+}
+
+export interface TicketAttachment {
+  id: string;
+  ticketId: string;
+  responseId?: string;
+  name: string;
+  url: string;
+  type: string; // MIME type
+  size: number;
+  uploadedBy: string;
+  uploadedAt: string;
+  isPublic: boolean;
+  scanStatus: 'pending' | 'clean' | 'malware' | 'suspicious';
+}
+
+export interface TicketResponse {
+  id: string;
+  ticketId: string;
+  responseType:
+    | 'agent_reply'
+    | 'user_reply'
+    | 'system_note'
+    | 'status_change'
+    | 'assignment_change';
+  content: string;
+  authorId: string;
+  author: (
+    | Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar'>
+    | Pick<SupportAgent, 'id' | 'name' | 'avatar'>
+  ) & { role: 'user' | 'agent' | 'system' };
+  isPublic: boolean; // Internal notes vs public responses
+  attachments: TicketAttachment[];
+  mentions?: string[]; // User/Agent IDs mentioned
+  metadata?: ResponseMetadata;
+  createdAt: string;
+  editedAt?: string;
+}
+
+export interface ResponseMetadata {
+  isAutoResponse?: boolean;
+  templateId?: string;
+  macroId?: string;
+  escalationLevel?: number;
+  timeToResponse?: number; // minutes
+  responseChannel?: 'web' | 'email' | 'chat' | 'phone';
+  priority?: 'low' | 'medium' | 'high' | 'urgent';
+}
+
+export interface TicketMetadata {
+  source: 'web' | 'email' | 'chat' | 'phone' | 'mobile_app';
+  urgency?: 'low' | 'medium' | 'high' | 'critical';
+  businessImpact?: 'low' | 'medium' | 'high' | 'critical';
+  customerType?: 'free' | 'premium' | 'enterprise';
+  originalCategory?: string;
+  escalationPath?: string[];
+  customFields?: Record<string, string | number | boolean>;
+  relatedTickets?: string[];
+  duplicateOf?: string;
+  mergedTickets?: string[];
+}
+
+export interface SLADetails {
+  responseTime: {
+    target: number; // minutes
+    remaining: number;
+    status: 'within_sla' | 'approaching_breach' | 'breached';
+  };
+  resolutionTime: {
+    target: number; // minutes
+    remaining: number;
+    status: 'within_sla' | 'approaching_breach' | 'breached';
+  };
+  escalationThresholds: {
+    level: number;
+    triggerTime: number; // minutes
+    triggered: boolean;
+    triggeredAt?: string;
+  }[];
+}
+
+export interface TicketSatisfaction {
+  rating: number; // 1-5
+  feedback?: string;
+  categories?: {
+    responsiveness: number;
+    helpfulness: number;
+    professionalism: number;
+    resolution: number;
+  };
+  wouldRecommend: boolean;
+  submittedAt: string;
+}
+
+// Live Chat System Types
+export interface ChatSession {
+  id: string;
+  userId: string;
+  user: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar' | 'userType'>;
+  agentId?: string;
+  agent?: Pick<SupportAgent, 'id' | 'name' | 'avatar' | 'title'>;
+  status: 'queued' | 'connected' | 'ended' | 'transferred' | 'abandoned';
+  topic?: string;
+  department: 'technical' | 'billing' | 'sales' | 'general';
+  priority: 'normal' | 'high' | 'urgent';
+  queuePosition?: number;
+  estimatedWaitTime?: number; // minutes
+  actualWaitTime?: number; // minutes
+  sessionDuration?: number; // minutes
+  metadata?: ChatSessionMetadata;
+  startedAt: string;
+  connectedAt?: string;
+  endedAt?: string;
+  lastActivityAt: string;
+  rating?: ChatRating;
+  transcript?: string;
+  tags?: string[];
+}
+
+export interface ChatSessionMetadata {
+  source: 'website' | 'mobile_app' | 'widget';
+  pageUrl?: string;
+  userAgent?: string;
+  referrer?: string;
+  currentOrder?: string;
+  customerValue?: 'low' | 'medium' | 'high';
+  transferHistory?: {
+    fromAgentId: string;
+    toAgentId: string;
+    reason: string;
+    transferredAt: string;
+  }[];
+  proactiveChat?: boolean;
+  automation?: {
+    botHandled: boolean;
+    botDuration?: number;
+    escalatedReason?: string;
+  };
+}
+
+export interface SupportChatMessage {
+  id: string;
+  chatId: string;
+  from: 'user' | 'agent' | 'system' | 'bot';
+  senderId: string; // Made required to match earlier declaration
+  sender?:
+    | Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar'>
+    | Pick<SupportAgent, 'id' | 'name' | 'avatar'>; // Fixed type constraint
+  message: string;
+  messageType:
+    | 'text'
+    | 'file'
+    | 'image'
+    | 'system'
+    | 'automated'
+    | 'quick_reply'
+    | 'card';
+  timestamp: string;
+  readAt?: string;
+  deliveredAt?: string;
+  attachments?: MessageAttachment[]; // Use consistent type
+  quickReplies?: QuickReply[];
+  cardData?: ChatCard;
+  metadata?: MessageMetadata; // Use consistent type
+  isEdited?: boolean;
+  editedAt?: string;
+  replyTo?: string; // Message ID being replied to
+}
+
+export interface ChatAttachment {
+  id: string;
+  name: string;
+  url: string;
+  type: string; // MIME type
+  size: number;
+  thumbnailUrl?: string;
+  uploadedAt: string;
+}
+
+export interface QuickReply {
+  id: string;
+  title: string;
+  payload: string;
+  imageUrl?: string;
+}
+
+export interface ChatCard {
+  title: string;
+  subtitle?: string;
+  imageUrl?: string;
+  buttons: {
+    title: string;
+    type: 'url' | 'postback';
+    url?: string;
+    payload?: string;
+  }[];
+}
+
+export interface ChatMessageMetadata {
+  deliveryChannel?: 'web' | 'mobile';
+  messageSource?: 'manual' | 'template' | 'macro' | 'automation';
+  templateId?: string;
+  confidence?: number; // For bot messages
+  intent?: string; // For bot messages
+  entities?: Record<string, unknown>; // For bot messages
+}
+
+export interface ChatRating {
+  rating: number; // 1-5
+  feedback?: string;
+  categories?: {
+    responsiveness: number;
+    helpfulness: number;
+    professionalism: number;
+  };
+  wouldRecommend: boolean;
+  submittedAt: string;
+}
+
+export interface ChatQueue {
+  department: string;
+  queueLength: number;
+  averageWaitTime: number; // minutes
+  availableAgents: number;
+  totalAgents: number;
+  longestWaitTime: number; // minutes
+  estimatedWaitTime: number; // minutes
+}
+
+export interface ChatAvailability {
+  isOnline: boolean;
+  departments: {
+    name: string;
+    isAvailable: boolean;
+    queueLength: number;
+    estimatedWaitTime: number;
+    message?: string;
+  }[];
+  businessHours: {
+    timezone: string;
+    currentTime: string;
+    isBusinessHours: boolean;
+    nextAvailable?: string;
+    schedule: DailySchedule[];
+  };
+  maintenance?: {
+    isScheduled: boolean;
+    startTime?: string;
+    endTime?: string;
+    message?: string;
+  };
+}
+
+export interface UserReputation {
+  userId: string;
+  reputation: number;
+  level: number;
+  stats: {
+    threadsCreated: number;
+    postsWritten: number;
+    bestAnswers: number;
+    helpfulVotes: number;
+    thanksReceived: number;
+  };
+  history: ReputationChange[];
+}
+
+export interface ReputationChange {
+  id: string;
+  userId: string;
+  change: number;
+  reason: string;
+  sourceId?: string; // Thread, post, or badge ID
+  timestamp: string;
+}
+
+// Support Analytics Types
+export interface SupportAnalytics {
+  overview: {
+    totalTickets: number;
+    openTickets: number;
+    resolvedTickets: number;
+    averageResolutionTime: number; // hours
+    averageResponseTime: number; // minutes
+    customerSatisfaction: number; // 1-5
+    firstCallResolution: number; // percentage
+  };
+  ticketsByCategory: {
+    category: string;
+    count: number;
+    percentage: number;
+    averageResolutionTime: number;
+  }[];
+  ticketsByPriority: {
+    priority: string;
+    count: number;
+    percentage: number;
+  }[];
+  responseTimeMetrics: {
+    period: string;
+    averageTime: number;
+    target: number;
+    performance: number; // percentage
+  }[];
+  agentPerformance: {
+    agentId: string;
+    agentName: string;
+    ticketsHandled: number;
+    averageResolutionTime: number;
+    customerSatisfaction: number;
+    responseTime: number;
+  }[];
+  chatMetrics: {
+    totalSessions: number;
+    averageWaitTime: number;
+    averageSessionDuration: number;
+    abandonmentRate: number;
+    satisfactionRating: number;
+    transferRate: number;
+  };
+  knowledgeBaseMetrics: {
+    totalArticles: number;
+    totalViews: number;
+    averageRating: number;
+    searchQueries: number;
+    successfulSearches: number; // percentage
+    topArticles: {
+      articleId: string;
+      title: string;
+      views: number;
+      rating: number;
+    }[];
+  };
+  trends: {
+    period: string;
+    tickets: number;
+    resolutionTime: number;
+    satisfaction: number;
+  }[];
+}
+
+// API Request/Response Types
+export interface HelpCategoriesResponse {
+  data: HelpCategory[];
+  success: boolean;
+  message?: string;
+}
+
+export interface HelpArticlesResponse {
+  data: HelpArticle[];
+  pagination: PaginationMeta;
+  success: boolean;
+  message?: string;
+}
+
+export interface CreateTicketRequest {
+  subject: string;
+  description: string;
+  category: 'technical' | 'billing' | 'account' | 'general';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  attachments?: {
+    name: string;
+    url: string;
+    size: number;
+  }[];
+  metadata?: Record<string, unknown>;
+}
+
+export interface CreateTicketResponse {
+  success: boolean;
+  data?: {
+    id: string;
+    ticketNumber: string;
+    subject: string;
+    status: 'open';
+    priority: string;
+    createdAt: string;
+    estimatedResolutionTime: string;
+  };
+  error?: string;
+  message?: string;
+}
+
+export interface UserTicketsResponse {
+  data: SupportTicket[];
+  pagination: PaginationMeta;
+  success: boolean;
+  message?: string;
+}
+
+export interface StartChatRequest {
+  topic?: string;
+  department?: 'technical' | 'billing' | 'sales' | 'general';
+  priority?: 'normal' | 'high' | 'urgent';
+  metadata?: Record<string, unknown>;
+}
+
+export interface StartChatResponse {
+  success: boolean;
+  data?: {
+    chatId: string;
+    queuePosition: number;
+    estimatedWaitTime: number; // minutes
+    availableAgents: number;
+    sessionToken?: string;
+  };
+  error?: string;
+  message?: string;
+}
+
+export interface ChatMessagesResponse {
+  data: SupportChatMessage[];
+  pagination: PaginationMeta;
+  success: boolean;
+  message?: string;
+}
+
+export interface ArticleSearchRequest {
+  query?: string;
+  categoryId?: string;
+  tags?: string[];
+  featured?: boolean;
+  language?: 'tr' | 'en';
+  page?: number;
+  limit?: number;
+  sortBy?: 'relevance' | 'views' | 'rating' | 'date';
+}
+
+export interface TicketSearchRequest {
+  status?: SupportTicket['status'][];
+  category?: SupportTicket['category'][];
+  priority?: SupportTicket['priority'][];
+  dateFrom?: string;
+  dateTo?: string;
+  search?: string;
+  assignedAgent?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: 'created' | 'updated' | 'priority' | 'status';
+}
+
+export interface ArticleRatingRequest {
+  articleId: string;
+  rating: number; // 1-5
+  feedback?: string;
+  isHelpful: boolean;
+}
+
+export interface ArticleRatingResponse {
+  success: boolean;
+  data?: {
+    averageRating: number;
+    ratingCount: number;
+  };
+  message?: string;
+}
+
+// Form Data Types
+export interface CreateTicketFormData {
+  subject: string;
+  description: string;
+  category: 'technical' | 'billing' | 'account' | 'general';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  attachments?: File[];
+}
+
+export interface ArticleRatingFormData {
+  articleId: string;
+  rating: number;
+  feedback?: string;
+  isHelpful: boolean;
+}
+
+export interface ChatFeedbackFormData {
+  chatId: string;
+  rating: number;
+  feedback?: string;
+  categories?: {
+    responsiveness: number;
+    helpfulness: number;
+    professionalism: number;
+  };
+  wouldRecommend: boolean;
+}
+
+export interface TicketResponseFormData {
+  ticketId: string;
+  content: string;
+  attachments?: File[];
+  isPublic: boolean;
+}
+
+// Error Types
+export interface HelpCenterError {
+  code: string;
+  message: string;
+  details?: Record<string, unknown>;
+  userMessage: string;
+}
+
+export interface SupportError {
+  code: string;
+  message: string;
+  category: 'ticket' | 'chat' | 'knowledge_base';
+  retryable: boolean;
+  userMessage: string;
+}
+
 export interface FavoriteFolder {
   id: string;
   name: string;
