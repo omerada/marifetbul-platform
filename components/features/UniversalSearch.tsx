@@ -22,7 +22,7 @@ interface SearchSuggestion {
   category?: string;
 }
 
-interface SearchResult {
+interface SearchResultGroup {
   services: SearchSuggestion[];
   jobs: SearchSuggestion[];
   freelancers: SearchSuggestion[];
@@ -42,7 +42,9 @@ export function UniversalSearch({
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
-  const [searchResults, setSearchResults] = useState<SearchResult | null>(null);
+  const [searchResults, setSearchResults] = useState<SearchResultGroup | null>(
+    null
+  );
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -132,7 +134,7 @@ export function UniversalSearch({
       setSuggestions(filteredSuggestions);
 
       // Group results by type
-      const results: SearchResult = {
+      const results: SearchResultGroup = {
         services: filteredSuggestions.filter((item) => item.type === 'service'),
         jobs: filteredSuggestions.filter((item) => item.type === 'job'),
         freelancers: filteredSuggestions.filter(

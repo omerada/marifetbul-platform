@@ -129,7 +129,7 @@ export interface UseLocationSearchState {
 }
 
 // Hook for location-based search
-export const useLocationSearch = () => {
+export const useLocationBasedSearch = () => {
   const [state, setState] = useState<UseLocationSearchState>({
     results: [],
     loading: false,

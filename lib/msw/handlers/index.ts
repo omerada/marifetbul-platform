@@ -1,5 +1,5 @@
 // MSW handlers for API mocking
-import { advancedSearchHandlers } from './advanced-search';
+import { enhancedSearchHandlers } from './enhanced-search';
 import { recommendationHandlers } from './recommendations';
 import { favoritesHandlers } from './favorites';
 import { locationHandlers } from './location';
@@ -15,7 +15,7 @@ import { analyticsHandlers } from './analyticsHandlers';
 // Combine all handlers
 export const handlers = [
   ...authHandlers,
-  ...advancedSearchHandlers,
+  ...enhancedSearchHandlers,
   ...recommendationHandlers,
   ...favoritesHandlers,
   ...locationHandlers,
@@ -31,7 +31,7 @@ export const handlers = [
 // Export individual handler groups for selective usage
 export {
   authHandlers,
-  advancedSearchHandlers,
+  enhancedSearchHandlers,
   recommendationHandlers,
   favoritesHandlers,
   locationHandlers,

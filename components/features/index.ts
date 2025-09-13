@@ -110,7 +110,6 @@ export { AnalyticsDashboard } from './AnalyticsDashboard';
 export { PWAManager } from './PWAManager';
 
 // Payment System (Sprint 6)
-export { PaymentForm } from './PaymentForm';
 export { InvoiceCard } from './InvoiceCard';
 export { PaymentHistory } from './PaymentHistory';
 

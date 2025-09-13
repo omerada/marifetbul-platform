@@ -54,15 +54,49 @@ export interface SearchFacets {
 
 export interface SearchResult {
   id: string;
-  type: 'job' | 'service' | 'user';
+  type: 'job' | 'service' | 'freelancer';
   title: string;
   description: string;
+  category: string;
+  location: string;
+  budget: {
+    min: number;
+    max: number;
+    currency: string;
+  };
+  rating: number;
+  reviews: number;
+  featured: boolean;
+  urgent: boolean;
+  verified: boolean;
+  postedAt: string;
+  deadline?: string;
+  skills: string[];
+  employer?: {
+    id: string;
+    name: string;
+    avatar: string;
+    verified: boolean;
+    rating: number;
+  };
+  freelancer?: {
+    id: string;
+    name: string;
+    avatar: string;
+    title: string;
+    hourlyRate: number;
+    availability: string;
+    level: string;
+  };
+  metrics: {
+    views: number;
+    applications: number;
+    responseTime: string;
+  };
+  // Backward compatibility fields
   price?: number;
   currency?: string;
-  rating?: number;
   reviewCount?: number;
-  location?: string;
-  skills: string[];
   image?: string;
   user: {
     id: string;
@@ -72,7 +106,6 @@ export interface SearchResult {
   };
   createdAt: string;
   updatedAt: string;
-  featured?: boolean;
   highlighted?: boolean;
 }
 

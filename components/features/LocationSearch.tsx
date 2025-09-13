@@ -19,7 +19,7 @@ import { Card } from '@/components/ui/Card';
 import { LocationPicker } from './LocationPicker';
 import { Coordinates, LocationSearchParams, LocationData } from '@/types';
 import {
-  useLocationSearch,
+  useLocationBasedSearch,
   useGeolocation,
   useDistanceCalculator,
 } from '@/hooks/useLocation';
@@ -64,7 +64,8 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({
     types: searchTypes,
   });
 
-  const { results, loading, error, searchByLocation } = useLocationSearch();
+  const { results, loading, error, searchByLocation } =
+    useLocationBasedSearch();
   const { getCurrentPosition, loading: geoLoading } = useGeolocation();
   const { formatDistance } = useDistanceCalculator();
 
