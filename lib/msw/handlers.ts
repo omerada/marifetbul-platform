@@ -19,6 +19,9 @@ import { paymentHandlers } from './handlers/payment';
 import { notificationHandlers } from './handlers/notification';
 import { adminHandlers } from './handlers/admin';
 import { dashboardHandlers } from './admin/dashboardHandlers';
+import { moderationHandlers } from './admin/moderationHandlers';
+import { filteringHandlers } from './admin/filteringHandlers';
+import { reportHandlers } from './admin/reportHandlers';
 import { generateCategoryPlaceholder } from '@/lib/utils/image-fallback';
 
 // Mock employer data
@@ -2783,4 +2786,13 @@ export const handlers = [
 
   // Admin Dashboard handlers
   ...dashboardHandlers,
+
+  // Admin Moderation handlers
+  ...moderationHandlers,
+
+  // Admin Filtering handlers
+  ...filteringHandlers,
+
+  // Admin Report handlers
+  ...reportHandlers,
 ];
