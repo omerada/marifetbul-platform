@@ -1,17 +1,17 @@
+'use client';
+
 /**
  * Location Picker Component
  * Konum seçme bileşeni
  */
 
-'use client';
-
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { MapPin, Search, Target, X, MapIcon } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { Search, MapPin, X, Target, MapIcon } from 'lucide-react';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
-import { Coordinates } from '@/types';
-import { useGeolocation, useGeocoding } from '@/hooks/useLocation';
+import { useUnifiedLocation } from '@/hooks/useUnifiedLocation';
+import type { Coordinates } from '@/types';
 
 interface LocationPickerProps {
   value?: Coordinates | null;
@@ -49,8 +49,8 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
   const [showResults, setShowResults] = useState(false);
 
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const { getCurrentPosition, loading: geoLoading } = useGeolocation();
-  const { reverseGeocode, loading: geocodeLoading } = useGeocoding();
+  const unifiedLocation = useUnifiedLocation();
+  const { getCurrentPosition, isLoadingPosition: geoLoading } = unifiedLocation;
 
   // Handle search input change
   const handleSearchChange = useCallback((value: string) => {
@@ -132,30 +132,34 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
         throw new Error('getCurrentPosition not available');
       }
 
-      const position = await getCurrentPosition();
+      // Get current position using unified location
+      await getCurrentPosition();
+      const position = unifiedLocation.currentPosition;
+
       if (!position) {
         throw new Error('Could not get current position');
       }
 
-      setSelectedLocation(position);
+      const currentCoordinates = {
+        latitude: position.latitude,
+        longitude: position.longitude,
+        lat: position.latitude,
+        lng: position.longitude,
+      };
 
-      // Get address for current location
-      let address: string | null = null;
-      if (reverseGeocode && position.latitude && position.longitude) {
-        address = await reverseGeocode(position.latitude, position.longitude);
-      }
+      setSelectedLocation(currentCoordinates);
 
-      onLocationSelect(position, address || undefined);
+      // Get address for current location (simplified for now)
+      const address = `${position.latitude.toFixed(4)}, ${position.longitude.toFixed(4)}`;
 
-      setSearchQuery(
-        address ||
-          `${position.latitude.toFixed(4)}, ${position.longitude.toFixed(4)}`
-      );
+      onLocationSelect(currentCoordinates, address);
+
+      setSearchQuery(address);
       setShowResults(false);
     } catch (error) {
       console.error('Current location error:', error);
     }
-  }, [getCurrentPosition, reverseGeocode, onLocationSelect]);
+  }, [getCurrentPosition, unifiedLocation.currentPosition, onLocationSelect]);
 
   // Handle search result selection
   const handleResultSelect = useCallback(
@@ -238,7 +242,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
         </div>
 
         {/* Loading indicator */}
-        {(isSearching || geocodeLoading) && (
+        {isSearching && (
           <div className="absolute top-1/2 right-14 -translate-y-1/2 transform">
             <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-blue-600"></div>
           </div>
@@ -347,3 +351,5 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
     </div>
   );
 };
+
+export default LocationPicker;

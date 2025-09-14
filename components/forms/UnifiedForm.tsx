@@ -23,7 +23,7 @@ import {
   type ValidationResult,
   type ValidationErrorDetail,
 } from '@/lib/validations';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Label } from '@/components/ui/Label';
@@ -64,7 +64,8 @@ const userRegistrationSchema = z
     marketingAccepted: createBooleanSchema(false),
   })
   .refine(
-    (data) => (data.userType === 'freelancer' ? data.bio.length >= 100 : true),
+    (data) =>
+      data.userType === 'freelancer' ? (data.bio?.length || 0) >= 100 : true,
     {
       message:
         'Freelancer profilleri için biyografi en az 100 karakter olmalıdır',

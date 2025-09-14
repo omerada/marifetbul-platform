@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 import { PaymentForm } from '@/components/forms/PaymentForm';
 import { formatCurrency } from '@/lib/utils/payment';

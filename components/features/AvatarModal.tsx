@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AvatarGallery } from '@/components/features/AvatarGallery';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 
 interface AvatarModalProps {
   isOpen: boolean;

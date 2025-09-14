@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { usePlatformSettings } from '@/hooks/usePlatformSettings';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Checkbox } from '@/components/ui/Checkbox';

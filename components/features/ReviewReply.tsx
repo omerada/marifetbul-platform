@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Send, X } from 'lucide-react';
 import { useReviews } from '@/hooks';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Textarea } from '@/components/ui/Textarea';
 
 const replySchema = z.object({

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import {
   Activity,
@@ -349,7 +349,7 @@ export function PerformanceMonitor() {
             </div>
             <Button
               onClick={toggleMonitoring}
-              variant={isMonitoring ? 'danger' : 'primary'}
+              variant={isMonitoring ? 'destructive' : 'primary'}
             >
               <RefreshCw
                 className={cn('mr-2 h-4 w-4', isMonitoring && 'animate-spin')}

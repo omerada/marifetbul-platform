@@ -6,7 +6,7 @@ import { Search, X, Filter, SortAsc, SortDesc } from 'lucide-react';
 import { useHelpCenter } from '@/hooks/useHelpCenter';
 import { ArticleCard } from './ArticleCard';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 

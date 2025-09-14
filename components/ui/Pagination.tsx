@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
-import { Button } from './Button';
+import { UnifiedButton as Button } from './UnifiedButton';
 import { cn } from '@/lib/utils';
 
 export interface PaginationProps {

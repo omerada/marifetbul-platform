@@ -5,9 +5,9 @@ import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { Star, MessageCircle, CheckCircle, X } from 'lucide-react';
 import { Proposal } from '@/types/core/jobs';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/Avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 
 interface ProposalCardProps {
   proposal: Proposal;
@@ -60,13 +60,11 @@ export function ProposalCard({
       {/* Header */}
       <div className="mb-4 flex items-start justify-between">
         <div className="flex items-center">
-          <Avatar className="mr-3 h-10 w-10">
-            {proposal.freelancer?.avatar && (
-              <AvatarImage
-                src={proposal.freelancer.avatar}
-                alt={`${proposal.freelancer?.firstName || ''} ${proposal.freelancer?.lastName || ''}`}
-              />
-            )}
+          <Avatar
+            src={proposal.freelancer?.avatar}
+            alt={`${proposal.freelancer?.firstName || ''} ${proposal.freelancer?.lastName || ''}`}
+            className="mr-3 h-10 w-10"
+          >
             <AvatarFallback>
               {proposal.freelancer?.firstName?.charAt(0) || '?'}
               {proposal.freelancer?.lastName?.charAt(0) || '?'}

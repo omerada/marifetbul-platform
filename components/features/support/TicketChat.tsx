@@ -17,7 +17,7 @@ import {
   File,
 } from 'lucide-react';
 import { useSupportTicket } from '@/hooks/useSupport';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import type { TicketResponse } from '@/types';

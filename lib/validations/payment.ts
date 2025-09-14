@@ -1,4 +1,13 @@
 import { z } from 'zod';
+import { baseSchemas, compositeSchemas } from './base';
+import validationMessages from './messages';
+
+// ================================================
+// PAYMENT VALIDATION SCHEMAS
+// ================================================
+// Optimized with base schema composition
+
+const vm = validationMessages.vm();
 
 // Payment Method Schema
 export const paymentMethodSchema = z.enum([
@@ -8,9 +17,9 @@ export const paymentMethodSchema = z.enum([
 ]);
 
 // Currency Schema
-export const currencySchema = z.enum(['TRY', 'USD', 'EUR']);
+export const currencySchema = baseSchemas.currency;
 
-// Payment Card Schema
+// Payment Card Schema with base composition
 export const paymentCardSchema = z.object({
   cardNumber: z
     .string()
@@ -34,67 +43,35 @@ export const paymentCardSchema = z.object({
     .regex(/^[0-9]+$/, 'CVV sadece rakam içermeli'),
   cardHolderName: z
     .string()
-    .min(2, 'Kart sahibi adı en az 2 karakter olmalı')
-    .max(50, 'Kart sahibi adı en fazla 50 karakter olmalı')
+    .min(2, vm.name.tooShort(2))
+    .max(50, vm.name.tooLong(50))
     .regex(/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/, 'Kart sahibi adı sadece harf içermeli'),
 });
 
-// Billing Address Schema
+// Billing Address Schema using composites
 export const billingAddressSchema = z.object({
-  fullName: z
-    .string()
-    .min(2, 'Ad soyad en az 2 karakter olmalı')
-    .max(100, 'Ad soyad en fazla 100 karakter olmalı'),
-  email: z.string().email('Geçerli bir email adresi girin'),
-  phone: z
-    .string()
-    .optional()
-    .refine((phone) => {
-      if (!phone) return true;
-      return /^(\+90|0)?[0-9]{10}$/.test(phone.replace(/\s/g, ''));
-    }, 'Geçerli bir telefon numarası girin'),
-  addressLine1: z
-    .string()
-    .min(5, 'Adres en az 5 karakter olmalı')
-    .max(200, 'Adres en fazla 200 karakter olmalı'),
-  addressLine2: z
-    .string()
-    .max(200, 'Adres satırı 2 en fazla 200 karakter olmalı')
-    .optional(),
-  city: z
-    .string()
-    .min(2, 'Şehir en az 2 karakter olmalı')
-    .max(50, 'Şehir en fazla 50 karakter olmalı'),
-  state: z
-    .string()
-    .min(2, 'İl/Eyalet en az 2 karakter olmalı')
-    .max(50, 'İl/Eyalet en fazla 50 karakter olmalı'),
+  fullName: baseSchemas.name.max(100, 'Ad soyad en fazla 100 karakter olmalı'),
+  email: baseSchemas.email,
+  phone: baseSchemas.phoneOptional,
+  ...compositeSchemas.address.shape,
   postalCode: z
     .string()
     .min(5, 'Posta kodu en az 5 karakter olmalı')
     .max(10, 'Posta kodu en fazla 10 karakter olmalı')
     .regex(/^[0-9]+$/, 'Posta kodu sadece rakam içermeli'),
-  country: z
-    .string()
-    .min(2, 'Ülke seçimi gerekli')
-    .max(50, 'Ülke adı en fazla 50 karakter olmalı'),
 });
 
 // Create Payment Request Schema
 export const createPaymentRequestSchema = z
   .object({
-    orderId: z
-      .string()
-      .min(1, 'Sipariş ID gereklidir')
-      .uuid('Geçerli bir sipariş ID olmalı'),
+    orderId: baseSchemas.uuid,
     method: paymentMethodSchema,
-    amount: z
-      .number()
+    amount: baseSchemas.price
       .min(1, 'Tutar en az 1 TL olmalı')
       .max(1000000, 'Tutar en fazla 1.000.000 TL olabilir')
       .multipleOf(0.01, 'Tutar en fazla 2 ondalık basamak içerebilir'),
     currency: currencySchema.default('TRY'),
-    saveCard: z.boolean().optional().default(false),
+    saveCard: baseSchemas.optional.default(false),
     cardDetails: paymentCardSchema.optional(),
     billingAddress: billingAddressSchema.optional(),
     metadata: z.record(z.string(), z.unknown()).optional(),
@@ -121,14 +98,13 @@ export const createPaymentRequestSchema = z
 
 // Payment Form Data Schema
 export const paymentFormDataSchema = z.object({
-  orderId: z.string().min(1, 'Sipariş ID gereklidir'),
+  orderId: baseSchemas.id,
   method: paymentMethodSchema,
-  amount: z
-    .number()
-    .min(1, 'Tutar en az 1 TL olmalı')
+  amount: baseSchemas.price
+    .min(1, vm.payment.amountRequired)
     .max(1000000, 'Tutar en fazla 1.000.000 TL olabilir'),
   currency: currencySchema.default('TRY'),
-  saveCard: z.boolean().optional().default(false),
+  saveCard: baseSchemas.optional.default(false),
   cardDetails: paymentCardSchema.optional(),
   billingAddress: billingAddressSchema.optional(),
   agreeToTerms: z
@@ -136,7 +112,7 @@ export const paymentFormDataSchema = z.object({
     .refine((val) => val === true, 'Kullanım şartlarını kabul etmelisiniz'),
 });
 
-// Payment Filters Schema
+// Payment Filters Schema using composite patterns
 export const paymentFiltersSchema = z
   .object({
     status: z
@@ -152,11 +128,11 @@ export const paymentFiltersSchema = z
       )
       .optional(),
     method: z.array(paymentMethodSchema).optional(),
-    amountMin: z.number().min(0).optional(),
-    amountMax: z.number().min(0).optional(),
-    dateFrom: z.string().datetime().optional(),
-    dateTo: z.string().datetime().optional(),
-    orderId: z.string().uuid().optional(),
+    amountMin: baseSchemas.price.optional(),
+    amountMax: baseSchemas.price.optional(),
+    dateFrom: baseSchemas.dateOptional,
+    dateTo: baseSchemas.dateOptional,
+    orderId: baseSchemas.uuid.optional(),
     search: z.string().max(100).optional(),
     currency: currencySchema.optional(),
   })
@@ -187,47 +163,32 @@ export const paymentFiltersSchema = z
 
 // Invoice Generation Schema
 export const invoiceGenerationSchema = z.object({
-  orderId: z
-    .string()
-    .min(1, 'Sipariş ID gereklidir')
-    .uuid('Geçerli bir sipariş ID olmalı'),
-  paymentId: z
-    .string()
-    .min(1, 'Ödeme ID gereklidir')
-    .uuid('Geçerli bir ödeme ID olmalı'),
+  orderId: baseSchemas.uuid,
+  paymentId: baseSchemas.uuid,
   templateType: z.enum(['standard', 'detailed', 'simple']).default('standard'),
   language: z.enum(['tr', 'en']).default('tr'),
-  includeItemizedBreakdown: z.boolean().default(true),
-  includeTaxBreakdown: z.boolean().default(true),
+  includeItemizedBreakdown: baseSchemas.optional.default(true),
+  includeTaxBreakdown: baseSchemas.optional.default(true),
   customFields: z.record(z.string(), z.string()).optional(),
 });
 
 // Refund Request Schema
 export const refundRequestSchema = z.object({
-  paymentId: z
-    .string()
-    .min(1, 'Ödeme ID gereklidir')
-    .uuid('Geçerli bir ödeme ID olmalı'),
-  amount: z
-    .number()
+  paymentId: baseSchemas.uuid,
+  amount: baseSchemas.price
     .min(0.01, 'İade tutarı en az 0.01 TL olmalı')
     .max(1000000, 'İade tutarı en fazla 1.000.000 TL olabilir'),
-  reason: z
-    .string()
+  reason: baseSchemas.description
     .min(10, 'İade sebebi en az 10 karakter olmalı')
     .max(500, 'İade sebebi en fazla 500 karakter olmalı'),
   type: z.enum(['full', 'partial']).default('full'),
-  notifyUser: z.boolean().default(true),
+  notifyUser: baseSchemas.optional.default(true),
 });
 
 // Escrow Release Schema
 export const escrowReleaseSchema = z.object({
-  paymentId: z
-    .string()
-    .min(1, 'Ödeme ID gereklidir')
-    .uuid('Geçerli bir ödeme ID olmalı'),
-  amount: z
-    .number()
+  paymentId: baseSchemas.uuid,
+  amount: baseSchemas.price
     .min(0.01, 'Serbest bırakılacak tutar en az 0.01 TL olmalı')
     .optional(),
   reason: z
@@ -237,7 +198,7 @@ export const escrowReleaseSchema = z.object({
   releaseType: z
     .enum(['manual', 'automatic', 'milestone', 'dispute_resolution'])
     .default('manual'),
-  notifyUsers: z.boolean().default(true),
+  notifyUsers: baseSchemas.optional.default(true),
 });
 
 // Type exports

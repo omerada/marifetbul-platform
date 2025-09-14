@@ -7,7 +7,7 @@ import { useOrderStore } from '@/lib/store/orders';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { FreelancerDashboard as FreelancerDashboardType } from '@/types';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { ActivityTimeline } from '@/components/features/ActivityTimeline';
 import { QuickActions } from '@/components/features/QuickActions';

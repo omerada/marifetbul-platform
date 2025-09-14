@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { X, FileText, Upload, Plus, Minus } from 'lucide-react';
 import { JobDetail } from '@/types';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';

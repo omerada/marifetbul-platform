@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { useProfile } from '@/hooks/useProfile';
 import { Freelancer, PortfolioItem } from '@/types';
 import { PortfolioModal } from './PortfolioModal';

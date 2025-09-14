@@ -684,14 +684,49 @@ export const useNotificationStore = create<NotificationStore>()(
   )
 );
 
-// Subscribe to notification changes to update unread count
-useNotificationStore.subscribe(
+// ================================
+// CLEANUP AND MEMORY MANAGEMENT
+// ================================
+
+// Track subscriptions for cleanup
+const subscriptionCleanups: Array<() => void> = [];
+
+// Subscribe to notification changes to update unread count with cleanup
+const unsubscribeFromNotifications = useNotificationStore.subscribe(
   (state) => state.notifications,
   (notifications) => {
     const unreadCount = notifications.filter((n) => !n.isRead).length;
     useNotificationStore.setState({ unreadCount });
   }
 );
+
+subscriptionCleanups.push(unsubscribeFromNotifications);
+
+// Cleanup on page unload to prevent memory leaks
+if (typeof window !== 'undefined') {
+  const cleanup = () => {
+    subscriptionCleanups.forEach((unsubscribe) => unsubscribe());
+
+    // Stop WebSocket connections
+    try {
+      const store = useNotificationStore.getState();
+      if (store.isConnected) {
+        store.stopRealtimeConnection();
+      }
+    } catch (error) {
+      console.warn('Error during notification store cleanup:', error);
+    }
+  };
+
+  window.addEventListener('beforeunload', cleanup);
+
+  // Also cleanup on visibility change
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      cleanup();
+    }
+  });
+}
 
 // Selectors for easy access to computed values
 export const useNotificationSelectors = () => {

@@ -335,7 +335,7 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
             >
               İptal
             </Button>
-            <Button size="sm" variant="danger" onClick={handleReject}>
+            <Button size="sm" variant="destructive" onClick={handleReject}>
               Reddet
             </Button>
             <Button size="sm" onClick={handleApprove}>

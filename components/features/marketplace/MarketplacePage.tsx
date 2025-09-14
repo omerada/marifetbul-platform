@@ -8,9 +8,9 @@ import { MarketplaceList } from './MarketplaceList';
 import { MarketplacePagination } from './MarketplacePagination';
 import { MobileMarketplace } from './MobileMarketplace';
 import { SearchAutocomplete } from '@/components/search/SearchAutocomplete';
-import { ErrorState } from '@/components/features/ErrorState';
+import { ErrorState } from '../ErrorState';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
   RefreshCcw,
   Filter,
@@ -68,7 +68,7 @@ export function MarketplacePage() {
   };
 
   const handleSearch = async (query: string) => {
-    setSearchQuery(query);
+    setSearchQuery();
     await search(query, mode);
   };
 
@@ -110,7 +110,7 @@ export function MarketplacePage() {
         title="Marketplace Yüklenemedi"
         message={error}
         onRetry={handleRefresh}
-        variant="page"
+        variant="full"
       />
     );
   }
@@ -350,7 +350,11 @@ export function MarketplacePage() {
               mode={mode}
               data={currentData}
               isLoading={isLoading}
-              viewPreferences={viewPreferences}
+              viewPreferences={{
+                ...viewPreferences,
+                showFilters: showFilters,
+                showAdvancedFilters: false,
+              }}
               onClearFilters={handleClearFilters}
               onShowAll={handleShowAll}
             />

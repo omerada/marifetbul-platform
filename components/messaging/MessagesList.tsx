@@ -4,8 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { User, Conversation } from '@/types';
-import { Card } from '@/components/ui';
-import { Button } from '@/components/ui';
+import { Card, Button } from '@/components/ui';
 import { useConversations } from '@/hooks/useMessages';
 import {
   MessageCircle,

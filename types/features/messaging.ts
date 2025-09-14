@@ -3,8 +3,8 @@ import { User, FileAttachment } from '../core/base';
 import { PaginationMeta } from '../utils/api';
 
 // Legacy compatibility types
-export interface ChatMessage extends Message {}
-export interface ChatConversation extends Conversation {}
+export type ChatMessage = Message;
+export type ChatConversation = Conversation;
 
 export interface MessagesResponse {
   messages: Message[];

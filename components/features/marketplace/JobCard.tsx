@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import {
   Heart,
@@ -101,7 +101,7 @@ export function JobCard({ job, layout }: JobCardProps) {
                 </div>
 
                 <button
-                  onClick={() => toggleJobFavorite(job.id)}
+                  onClick={() => toggleJobFavorite()}
                   className={cn(
                     'rounded-full p-3 transition-all duration-200 hover:scale-110',
                     isFavorite
@@ -253,7 +253,7 @@ export function JobCard({ job, layout }: JobCardProps) {
             )}
           </div>
           <button
-            onClick={() => toggleJobFavorite(job.id)}
+            onClick={() => toggleJobFavorite()}
             className={cn(
               'rounded-full p-2 transition-all duration-200 hover:scale-110',
               isFavorite

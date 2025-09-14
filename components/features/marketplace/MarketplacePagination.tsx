@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

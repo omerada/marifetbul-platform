@@ -11,7 +11,7 @@ import {
   Clock,
   DollarSign,
 } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';

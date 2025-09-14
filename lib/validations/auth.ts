@@ -1,47 +1,30 @@
 import { z } from 'zod';
+import { baseSchemas, createPasswordConfirmationSchema } from './base';
+
+// ================================================
+// AUTHENTICATION VALIDATION SCHEMAS
+// ================================================
+// Optimized with base schema composition
 
 // Login form validation schema
 export const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'E-posta adresi gereklidir')
-    .email('Geçerli bir e-posta adresi giriniz'),
-  password: z
-    .string()
-    .min(1, 'Şifre gereklidir')
-    .min(6, 'Şifre en az 6 karakter olmalıdır'),
-  rememberMe: z.boolean().optional(),
+  email: baseSchemas.email,
+  password: baseSchemas.password.min(6, 'Şifre en az 6 karakter olmalıdır'),
+  rememberMe: baseSchemas.optional,
 });
 
 // Register form validation schema
 export const registerSchema = z
   .object({
-    firstName: z
-      .string()
-      .min(1, 'Ad gereklidir')
-      .min(2, 'Ad en az 2 karakter olmalıdır')
-      .max(50, 'Ad en fazla 50 karakter olabilir'),
-    lastName: z
-      .string()
-      .min(1, 'Soyad gereklidir')
-      .min(2, 'Soyad en az 2 karakter olmalıdır')
-      .max(50, 'Soyad en fazla 50 karakter olabilir'),
-    email: z
-      .string()
-      .min(1, 'E-posta adresi gereklidir')
-      .email('Geçerli bir e-posta adresi giriniz'),
-    password: z
-      .string()
-      .min(1, 'Şifre gereklidir')
-      .min(6, 'Şifre en az 6 karakter olmalıdır')
-      .max(100, 'Şifre en fazla 100 karakter olabilir'),
-    confirmPassword: z.string().min(1, 'Şifre onayı gereklidir'),
-    userType: z
-      .enum(['freelancer', 'employer'])
-      .refine((val) => val !== undefined, {
-        message: 'Kullanıcı tipi seçiniz',
-      }),
-    agreeToTerms: z.boolean().refine((val) => val === true, {
+    firstName: baseSchemas.name,
+    lastName: baseSchemas.name,
+    email: baseSchemas.email,
+    password: baseSchemas.password,
+    confirmPassword: baseSchemas.confirmPassword,
+    userType: z.enum(['freelancer', 'employer'], {
+      message: 'Kullanıcı tipi seçiniz',
+    }),
+    agreeToTerms: baseSchemas.required.refine((val) => val === true, {
       message: 'Kullanım şartlarını kabul etmelisiniz',
     }),
   })
@@ -52,75 +35,40 @@ export const registerSchema = z
 
 // Forgot password schema
 export const forgotPasswordSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'E-posta adresi gereklidir')
-    .email('Geçerli bir e-posta adresi giriniz'),
+  email: baseSchemas.email,
 });
 
-// Reset password schema
-export const resetPasswordSchema = z
-  .object({
-    password: z
-      .string()
-      .min(1, 'Yeni şifre gereklidir')
-      .min(6, 'Şifre en az 6 karakter olmalıdır')
-      .max(100, 'Şifre en fazla 100 karakter olabilir'),
-    confirmPassword: z.string().min(1, 'Şifre onayı gereklidir'),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Şifreler eşleşmiyor',
-    path: ['confirmPassword'],
-  });
+// Reset password schema using utility function
+export const resetPasswordSchema = createPasswordConfirmationSchema();
 
-// Profile update schema
+// Profile update schema with base schema composition
 export const profileUpdateSchema = z.object({
-  firstName: z
-    .string()
-    .min(2, 'Ad en az 2 karakter olmalıdır')
-    .max(50, 'Ad en fazla 50 karakter olabilir'),
-  lastName: z
-    .string()
-    .min(2, 'Soyad en az 2 karakter olmalıdır')
-    .max(50, 'Soyad en fazla 50 karakter olabilir'),
+  firstName: baseSchemas.name,
+  lastName: baseSchemas.name,
   phone: z
     .string()
     .optional()
     .refine(
       (val) => !val || /^(\+90|0)?[5][0-9]{9}$/.test(val.replace(/\s/g, '')),
-      {
-        message: 'Geçerli bir telefon numarası giriniz',
-      }
+      { message: 'Geçerli bir telefon numarası giriniz' }
     ),
   location: z
     .string()
     .max(100, 'Konum en fazla 100 karakter olabilir')
     .optional(),
-  bio: z
-    .string()
+  bio: baseSchemas.description
     .max(500, 'Hakkında bölümü en fazla 500 karakter olabilir')
     .optional(),
-  website: z
-    .string()
-    .optional()
-    .refine((val) => !val || z.string().url().safeParse(val).success, {
-      message: "Geçerli bir website URL'si giriniz",
-    }),
+  website: baseSchemas.urlOptional,
 });
 
-// Freelancer specific schema
+// Freelancer specific schema using base composition
 export const freelancerProfileSchema = profileUpdateSchema.extend({
-  title: z
-    .string()
-    .max(100, 'Başlık en fazla 100 karakter olabilir')
-    .optional(),
-  skills: z
-    .array(z.string())
+  title: baseSchemas.title.optional(),
+  skills: baseSchemas.tags
     .min(1, 'En az bir yetenek seçiniz')
     .max(20, 'En fazla 20 yetenek seçebilirsiniz'),
-  hourlyRate: z
-    .number()
-    .min(0, "Saatlik ücret 0'dan küçük olamaz")
+  hourlyRate: baseSchemas.price
     .max(10000, "Saatlik ücret 10.000 TL'den büyük olamaz")
     .optional(),
   experience: z.enum(['beginner', 'intermediate', 'expert']).optional(),
@@ -128,8 +76,7 @@ export const freelancerProfileSchema = profileUpdateSchema.extend({
 
 // Employer specific schema
 export const employerProfileSchema = profileUpdateSchema.extend({
-  companyName: z
-    .string()
+  companyName: baseSchemas.name
     .max(100, 'Şirket adı en fazla 100 karakter olabilir')
     .optional(),
   companySize: z.string().optional(),

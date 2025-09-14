@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { AvatarUpload } from '@/components/features/AvatarUpload';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { User, Freelancer, Employer } from '@/types';
 

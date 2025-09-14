@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useContentModeration } from '@/hooks/useContentModeration';
 import { ModerationItem } from '@/types';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';

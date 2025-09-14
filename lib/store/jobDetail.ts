@@ -1,8 +1,18 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 import { JobDetail } from '@/types';
 import { Proposal } from '@/types/core/jobs';
 import { ProposalFormData } from '@/lib/validations/details';
+
+// Cache timeout for preventing excessive API calls
+const CACHE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+
+interface JobDetailCache {
+  jobId: string;
+  data: JobDetail;
+  timestamp: number;
+}
 
 interface JobDetailStore {
   // State properties
@@ -12,8 +22,12 @@ interface JobDetailStore {
   isSubmittingProposal: boolean;
   error: string | null;
 
+  // Cache management
+  cache: Record<string, JobDetailCache>;
+  lastFetchTime: number | null;
+
   // Actions
-  fetchJobDetail: (jobId: string) => Promise<void>;
+  fetchJobDetail: (jobId: string, forceRefresh?: boolean) => Promise<void>;
   fetchProposals: (jobId: string) => Promise<void>;
   submitProposal: (proposalData: ProposalFormData) => Promise<void>;
   updateProposalStatus: (
@@ -23,86 +37,154 @@ interface JobDetailStore {
   ) => Promise<void>;
   clearError: () => void;
   clearJobDetail: () => void;
+  invalidateCache: (jobId?: string) => void;
+  shouldRefresh: (jobId: string) => boolean;
 }
+
+// Utility function to get auth token
+const getAuthToken = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  try {
+    return typeof window !== 'undefined'
+      ? localStorage.getItem('auth_token')
+      : null;
+  } catch (error) {
+    console.warn('Failed to access localStorage:', error);
+    return null;
+  }
+};
 
 export const useJobDetailStore = create<JobDetailStore>()(
   devtools(
-    (set, get) => ({
+    immer((set, get) => ({
       // Initial state
       currentJob: null,
       proposals: [],
       isLoading: false,
       isSubmittingProposal: false,
       error: null,
+      cache: {},
+      lastFetchTime: null,
+
+      // Cache methods
+      shouldRefresh: (jobId: string) => {
+        const cached = get().cache[jobId];
+        if (!cached) return true;
+        return Date.now() - cached.timestamp > CACHE_TIMEOUT;
+      },
+
+      invalidateCache: (jobId) => {
+        set((state) => {
+          if (jobId) {
+            delete state.cache[jobId];
+          } else {
+            state.cache = {};
+          }
+          state.lastFetchTime = null;
+        });
+      },
 
       // Actions
-      fetchJobDetail: async (jobId: string) => {
-        set({ isLoading: true, error: null }, false, 'jobDetail/fetchStart');
+      fetchJobDetail: async (jobId: string, forceRefresh = false) => {
+        const { shouldRefresh, cache } = get();
+
+        // Check cache first
+        if (!forceRefresh && !shouldRefresh(jobId)) {
+          const cached = cache[jobId];
+          if (cached) {
+            set((state) => {
+              state.currentJob = cached.data;
+            });
+            return;
+          }
+        }
+
+        set((state) => {
+          state.isLoading = true;
+          state.error = null;
+        });
 
         try {
           const response = await fetch(`/api/jobs/${jobId}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
           const data = await response.json();
 
           if (data.success) {
-            set(
-              {
-                currentJob: data.data,
-                isLoading: false,
-              },
-              false,
-              'jobDetail/fetchSuccess'
-            );
+            set((state) => {
+              state.currentJob = data.data;
+              state.isLoading = false;
+              state.lastFetchTime = Date.now();
+
+              // Cache the result
+              state.cache[jobId] = {
+                jobId,
+                data: data.data,
+                timestamp: Date.now(),
+              };
+            });
           } else {
-            set(
-              { error: data.error || 'İş ilanı yüklenemedi', isLoading: false },
-              false,
-              'jobDetail/fetchError'
-            );
+            throw new Error(data.error || 'İş ilanı yüklenemedi');
           }
         } catch (error) {
           console.error('Job detail fetch error:', error);
-          set(
-            { error: 'İş ilanı yüklenemedi', isLoading: false },
-            false,
-            'jobDetail/fetchError'
-          );
+          set((state) => {
+            state.error =
+              error instanceof Error ? error.message : 'İş ilanı yüklenemedi';
+            state.isLoading = false;
+          });
         }
       },
 
       fetchProposals: async (jobId: string) => {
         try {
-          const token = localStorage.getItem('auth_token');
+          const token = getAuthToken();
+          if (!token) {
+            throw new Error("Yetkilendirme token'ı bulunamadı");
+          }
+
           const response = await fetch(`/api/jobs/${jobId}/proposals`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
 
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
           const data = await response.json();
 
           if (data.success) {
-            set(
-              { proposals: data.data },
-              false,
-              'jobDetail/proposalsFetchSuccess'
-            );
+            set((state) => {
+              state.proposals = data.data;
+            });
           } else {
-            console.error('Failed to fetch proposals:', data.error);
+            throw new Error(data.error || 'Teklifler yüklenemedi');
           }
         } catch (error) {
           console.error('Proposals fetch error:', error);
+          set((state) => {
+            state.error =
+              error instanceof Error ? error.message : 'Teklifler yüklenemedi';
+          });
         }
       },
 
       submitProposal: async (proposalData: ProposalFormData) => {
-        set(
-          { isSubmittingProposal: true, error: null },
-          false,
-          'jobDetail/proposalSubmitStart'
-        );
+        set((state) => {
+          state.isSubmittingProposal = true;
+          state.error = null;
+        });
 
         try {
-          const token = localStorage.getItem('auth_token');
+          const token = getAuthToken();
+          if (!token) {
+            throw new Error("Yetkilendirme token'ı bulunamadı");
+          }
+
           const response = await fetch(
             `/api/jobs/${proposalData.jobId}/proposals`,
             {
@@ -115,34 +197,35 @@ export const useJobDetailStore = create<JobDetailStore>()(
             }
           );
 
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
           const data = await response.json();
 
           if (data.success) {
-            set(
-              { isSubmittingProposal: false },
-              false,
-              'jobDetail/proposalSubmitSuccess'
-            );
+            set((state) => {
+              state.isSubmittingProposal = false;
+              // Add new proposal to the list if available
+              if (data.data) {
+                state.proposals.push(data.data);
+              }
+            });
 
-            // Show success notification (you can implement toast here)
+            // Invalidate cache for this job since new proposal affects it
+            get().invalidateCache(proposalData.jobId);
+
             console.log('Teklifiniz başarıyla gönderildi!');
           } else {
-            set(
-              {
-                error: data.error || 'Teklif gönderilemedi',
-                isSubmittingProposal: false,
-              },
-              false,
-              'jobDetail/proposalSubmitError'
-            );
+            throw new Error(data.error || 'Teklif gönderilemedi');
           }
         } catch (error) {
           console.error('Proposal submission error:', error);
-          set(
-            { error: 'Teklif gönderilemedi', isSubmittingProposal: false },
-            false,
-            'jobDetail/proposalSubmitError'
-          );
+          set((state) => {
+            state.error =
+              error instanceof Error ? error.message : 'Teklif gönderilemedi';
+            state.isSubmittingProposal = false;
+          });
         }
       },
 
@@ -152,7 +235,11 @@ export const useJobDetailStore = create<JobDetailStore>()(
         note?: string
       ) => {
         try {
-          const token = localStorage.getItem('auth_token');
+          const token = getAuthToken();
+          if (!token) {
+            throw new Error("Yetkilendirme token'ı bulunamadı");
+          }
+
           const response = await fetch(`/api/proposals/${proposalId}/status`, {
             method: 'PATCH',
             headers: {
@@ -162,63 +249,86 @@ export const useJobDetailStore = create<JobDetailStore>()(
             body: JSON.stringify({ status, note }),
           });
 
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
           const data = await response.json();
 
           if (data.success) {
             // Update local proposals state
-            const { proposals } = get();
-            const updatedProposals = proposals.map((proposal) =>
-              proposal.id === proposalId
-                ? { ...proposal, status, updatedAt: data.data.updatedAt }
-                : proposal
-            );
+            set((state) => {
+              const proposalIndex = state.proposals.findIndex(
+                (proposal) => proposal.id === proposalId
+              );
 
-            set(
-              { proposals: updatedProposals },
-              false,
-              'jobDetail/proposalStatusUpdated'
-            );
+              if (proposalIndex !== -1) {
+                state.proposals[proposalIndex] = {
+                  ...state.proposals[proposalIndex],
+                  status,
+                  updatedAt: data.data.updatedAt,
+                };
+              }
+            });
 
             console.log(
               `Teklif ${status === 'accepted' ? 'kabul edildi' : 'reddedildi'}`
             );
           } else {
-            set(
-              { error: data.error || 'Teklif durumu güncellenemedi' },
-              false,
-              'jobDetail/proposalStatusError'
-            );
+            throw new Error(data.error || 'Teklif durumu güncellenemedi');
           }
         } catch (error) {
           console.error('Proposal status update error:', error);
-          set(
-            { error: 'Teklif durumu güncellenemedi' },
-            false,
-            'jobDetail/proposalStatusError'
-          );
+          set((state) => {
+            state.error =
+              error instanceof Error
+                ? error.message
+                : 'Teklif durumu güncellenemedi';
+          });
         }
       },
 
       clearError: () => {
-        set({ error: null }, false, 'jobDetail/clearError');
+        set((state) => {
+          state.error = null;
+        });
       },
 
       clearJobDetail: () => {
-        set(
-          {
-            currentJob: null,
-            proposals: [],
-            error: null,
-            isLoading: false,
-            isSubmittingProposal: false,
-          },
-          false,
-          'jobDetail/clear'
-        );
+        set((state) => {
+          state.currentJob = null;
+          state.proposals = [];
+          state.error = null;
+          state.isLoading = false;
+          state.isSubmittingProposal = false;
+        });
       },
-    }),
+    })),
     {
       name: 'job-detail-store',
     }
   )
 );
+
+// Optimized hooks for easier usage
+export const useJobDetailCurrentJob = () =>
+  useJobDetailStore((state) => state.currentJob);
+export const useJobDetailProposals = () =>
+  useJobDetailStore((state) => state.proposals);
+export const useJobDetailLoading = () =>
+  useJobDetailStore((state) => state.isLoading);
+export const useJobDetailSubmitting = () =>
+  useJobDetailStore((state) => state.isSubmittingProposal);
+export const useJobDetailError = () =>
+  useJobDetailStore((state) => state.error);
+
+export const useJobDetailActions = () =>
+  useJobDetailStore((state) => ({
+    fetchJobDetail: state.fetchJobDetail,
+    fetchProposals: state.fetchProposals,
+    submitProposal: state.submitProposal,
+    updateProposalStatus: state.updateProposalStatus,
+    clearError: state.clearError,
+    clearJobDetail: state.clearJobDetail,
+    invalidateCache: state.invalidateCache,
+  }));

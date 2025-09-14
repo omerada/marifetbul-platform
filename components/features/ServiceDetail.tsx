@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -17,10 +17,10 @@ import {
   MapPin,
 } from 'lucide-react';
 import { usePackageDetail } from '@/hooks/usePackageDetail';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/Avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Loading } from '@/components/ui';
 import { OrderForm } from './OrderForm';
 
@@ -80,13 +80,13 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
       <div className={`container mx-auto px-4 py-8 ${className}`}>
         <div className="text-center">
           <h1 className="mb-4 text-2xl font-bold text-gray-900">
-            Hizmet Bulunamadı
+            Hizmet Bulunamad�
           </h1>
           <p className="mb-6 text-gray-600">
-            Aradığınız hizmet mevcut değil veya kaldırılmış olabilir.
+            Arad���n�z hizmet mevcut de�il veya kald�r�lm�� olabilir.
           </p>
           <Link href="/marketplace">
-            <Button>İş & Hizmet&apos;e Dön</Button>
+            <Button>�� & Hizmet&apos;e D�n</Button>
           </Link>
         </div>
       </div>
@@ -98,8 +98,8 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
   };
 
   const formatDeliveryTime = (days: number) => {
-    if (days === 1) return '1 gün';
-    if (days < 7) return `${days} gün`;
+    if (days === 1) return '1 g�n';
+    if (days < 7) return `${days} g�n`;
     const weeks = Math.floor(days / 7);
     const remainingDays = days % 7;
     if (remainingDays === 0) return `${weeks} hafta`;
@@ -160,12 +160,12 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
                       {Array.isArray(servicePackage.reviews)
                         ? servicePackage.reviews.length
                         : servicePackage.reviews || 0}{' '}
-                      değerlendirme)
+                      de�erlendirme)
                     </span>
                   </div>
                   <div className="flex items-center">
                     <ShoppingCart className="mr-1 h-4 w-4 flex-shrink-0" />
-                    {servicePackage.orders} sipariş
+                    {servicePackage.orders} sipari�
                   </div>
                 </div>
               </div>
@@ -257,7 +257,7 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
           {'pricing' in servicePackage && servicePackage.pricing && (
             <Card>
               <CardHeader>
-                <CardTitle>Paket Seçenekleri</CardTitle>
+                <CardTitle>Paket Se�enekleri</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -343,7 +343,7 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
                             {addOn.deliveryTime !== 0 && (
                               <p className="text-sm text-gray-600">
                                 {addOn.deliveryTime > 0 ? '+' : ''}
-                                {addOn.deliveryTime} gün
+                                {addOn.deliveryTime} g�n
                               </p>
                             )}
                           </div>
@@ -362,7 +362,7 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
           {'whatIncluded' in servicePackage && servicePackage.whatIncluded && (
             <Card>
               <CardHeader>
-                <CardTitle>Paket çeriği</CardTitle>
+                <CardTitle>Paket �eri�i</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
@@ -383,7 +383,7 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
             servicePackage.faq.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Sıkça Sorulan Sorular</CardTitle>
+                  <CardTitle>S�k�a Sorulan Sorular</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -406,13 +406,13 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
           {/* Freelancer Card */}
           <Card className="p-4 sm:p-6">
             <div className="flex items-center space-x-3">
-              <Avatar className="h-10 w-10 flex-shrink-0 sm:h-12 sm:w-12">
-                <AvatarImage
-                  src={
-                    servicePackage.freelancer?.avatar || '/avatars/default.jpg'
-                  }
-                  alt={`${servicePackage.freelancer?.firstName} ${servicePackage.freelancer?.lastName}`}
-                />
+              <Avatar
+                src={
+                  servicePackage.freelancer?.avatar || '/avatars/default.jpg'
+                }
+                alt={`${servicePackage.freelancer?.firstName} ${servicePackage.freelancer?.lastName}`}
+                className="h-10 w-10 flex-shrink-0 sm:h-12 sm:w-12"
+              >
                 <AvatarFallback>
                   {servicePackage.freelancer?.firstName?.charAt(0) || 'F'}
                   {servicePackage.freelancer?.lastName?.charAt(0) || ''}
@@ -456,7 +456,7 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
                     : 0}
                 </div>
                 <div className="text-xs text-gray-600 sm:text-sm">
-                  Değerlendirme
+                  De�erlendirme
                 </div>
               </div>
             </div>
@@ -467,12 +467,12 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
                   className="w-full text-sm sm:text-base"
                   variant="outline"
                 >
-                  Profili Görüntüle
+                  Profili G�r�nt�le
                 </Button>
               </Link>
               <Button className="w-full" variant="outline">
                 <MessageCircle className="mr-2 h-4 w-4" />
-                Mesaj Gönder
+                Mesaj G�nder
               </Button>
             </div>
           </Card>
@@ -480,12 +480,12 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
           {/* Order Summary */}
           <Card className="p-4 sm:p-6">
             <h3 className="mb-3 text-base font-semibold sm:mb-4 sm:text-lg">
-              Sipariş Özeti
+              Sipari� �zeti
             </h3>
 
             <div className="space-y-2 sm:space-y-3">
               <div className="flex justify-between text-xs sm:text-sm">
-                <span>Seçili Paket:</span>
+                <span>Se�ili Paket:</span>
                 <span className="ml-2 text-right font-medium">
                   {'pricing' in servicePackage &&
                   servicePackage.pricing &&
@@ -527,7 +527,7 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
                           key={addOn.id}
                           className="flex justify-between text-sm"
                         >
-                          <span>• {addOn.title}</span>
+                          <span>� {addOn.title}</span>
                           <span>+{formatPrice(addOn.price)}</span>
                         </div>
                       ))}
@@ -538,7 +538,7 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
                 <div className="flex justify-between text-sm font-semibold sm:text-base">
                   <span>Toplam:</span>
                   <span className="text-base text-green-600 sm:text-lg">
-                    ₺{formatPrice(totalPrice)}
+                    ?{formatPrice(totalPrice)}
                   </span>
                 </div>
               </div>
@@ -551,14 +551,14 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
                   onClick={() => setShowOrderForm(true)}
                 >
                   <ShoppingCart className="mr-2 h-4 w-4" />
-                  Sipariş Ver
+                  Sipari� Ver
                 </Button>
               ) : (
                 <Button
                   className="w-full py-2 text-sm sm:py-3 sm:text-base"
                   disabled
                 >
-                  Sipariş Verilemez
+                  Sipari� Verilemez
                 </Button>
               )}
             </div>

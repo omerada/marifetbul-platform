@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { AppLayout } from '@/components/layout';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
   UserPlus,
   Search,

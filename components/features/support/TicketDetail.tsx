@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useSupport } from '@/hooks/useSupport';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';

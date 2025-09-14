@@ -13,7 +13,10 @@
     "format:check": "prettier --check .",
     "icons:generate": "node scripts/generate-icons.js",
     "icons:from-logo": "node scripts/generate-icons-from-logo.js",
-    "icons:clean": "rimraf public/icons/* && rimraf public/favicon.*"
+    "icons:clean": "rimraf public/icons/* && rimraf public/favicon.*",
+    "analyze": "cross-env ANALYZE=true next build",
+    "analyze:server": "cross-env ANALYZE=true next build && npx serve@latest .next/static",
+    "bundle:analyze": "npx @next/bundle-analyzer .next"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -34,12 +37,14 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@next/bundle-analyzer": "^15.5.3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.43.0",
+    "cross-env": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
     "msw": "^2.11.1",

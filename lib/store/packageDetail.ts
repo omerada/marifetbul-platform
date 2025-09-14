@@ -133,7 +133,10 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
         );
 
         try {
-          const token = localStorage.getItem('auth_token');
+          const token =
+            typeof window !== 'undefined'
+              ? localStorage.getItem('auth_token')
+              : null;
           const response = await fetch(
             `/api/packages/${orderData.packageId}/orders`,
             {

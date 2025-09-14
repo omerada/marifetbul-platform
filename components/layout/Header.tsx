@@ -15,7 +15,7 @@ import {
   ChevronDown,
   MessageCircle,
 } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { UniversalSearch } from '@/components/features';
 import useAuthStore from '@/lib/store/auth';
 import { useUnreadCount } from '@/hooks/useMessages';

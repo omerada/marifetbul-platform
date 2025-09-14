@@ -1,15 +1,22 @@
 import { z } from 'zod';
+import { baseSchemas, validateFormData } from './base';
+import validationMessages from './messages';
 
-// Proposal schema
+// ================================================
+// DETAIL FORM VALIDATION SCHEMAS
+// ================================================
+// Optimized with base schema composition
+
+const vm = validationMessages.vm();
+
+// Proposal schema with base composition
 export const proposalSchema = z.object({
-  jobId: z.string().min(1, 'İş ID gereklidir'),
-  coverLetter: z
-    .string()
+  jobId: baseSchemas.id,
+  coverLetter: baseSchemas.description
     .min(50, 'Kapak mektubu en az 50 karakter olmalıdır')
     .max(2000, 'Kapak mektubu en fazla 2000 karakter olabilir'),
   budget: z.object({
-    amount: z
-      .number()
+    amount: baseSchemas.price
       .min(1, 'Teklif tutarı en az 1 TL olmalıdır')
       .max(1000000, 'Teklif tutarı çok yüksek'),
     type: z.enum(['fixed', 'hourly'], {
@@ -17,8 +24,7 @@ export const proposalSchema = z.object({
     }),
   }),
   timeline: z.object({
-    value: z
-      .number()
+    value: baseSchemas.positiveInt
       .min(1, 'Süre en az 1 olmalıdır')
       .max(365, 'Süre çok uzun'),
     unit: z.enum(['days', 'weeks', 'months'], {
@@ -28,9 +34,9 @@ export const proposalSchema = z.object({
   milestones: z
     .array(
       z.object({
-        title: z.string().min(5, 'Başlık en az 5 karakter olmalıdır'),
-        description: z.string().min(10, 'Açıklama en az 10 karakter olmalıdır'),
-        amount: z.number().min(1, 'Tutar pozitif olmalıdır'),
+        title: baseSchemas.title.min(5, 'Başlık en az 5 karakter olmalıdır'),
+        description: baseSchemas.shortDescription,
+        amount: baseSchemas.price,
         dueDate: z.string().refine((date) => new Date(date) > new Date(), {
           message: 'Teslim tarihi gelecekte olmalıdır',
         }),
@@ -49,36 +55,34 @@ export const proposalSchema = z.object({
     .array(
       z.object({
         name: z.string(),
-        url: z.string().url('Geçerli bir URL giriniz'),
+        url: baseSchemas.url,
         type: z.string(),
       })
     )
     .optional(),
 });
 
-// Order schema
+// Order schema with base composition
 export const orderSchema = z.object({
-  packageId: z.string().min(1, 'Paket ID gereklidir'),
+  packageId: baseSchemas.id,
   tier: z.enum(['basic', 'standard', 'premium'], {
     message: 'Geçerli bir paket seviyesi seçiniz',
   }),
   customizations: z
     .object({
-      requirements: z
-        .string()
+      requirements: baseSchemas.description
         .max(1000, 'Özel istekler en fazla 1000 karakter olabilir')
         .optional(),
-      additionalInfo: z
-        .string()
+      additionalInfo: baseSchemas.shortDescription
         .max(500, 'Ek bilgiler en fazla 500 karakter olabilir')
         .optional(),
     })
     .optional(),
-  addOns: z.array(z.string()).optional(),
-  urgentDelivery: z.boolean().optional(),
+  addOns: baseSchemas.stringArray.optional(),
+  urgentDelivery: baseSchemas.optional,
 });
 
-// File upload schema
+// File upload schema with enhanced validation
 export const fileUploadSchema = z.object({
   file: z
     .instanceof(File)
@@ -106,20 +110,16 @@ export const fileUploadSchema = z.object({
     ),
 });
 
-// Review schema
+// Review schema with base composition
 export const reviewSchema = z.object({
-  rating: z
-    .number()
-    .min(1, 'En az 1 yıldız veriniz')
-    .max(5, 'En fazla 5 yıldız verebilirsiniz'),
-  comment: z
-    .string()
-    .min(10, 'Yorum en az 10 karakter olmalıdır')
+  rating: baseSchemas.rating,
+  comment: baseSchemas.description
+    .min(10, vm.review.commentTooShort(10))
     .max(1000, 'Yorum en fazla 1000 karakter olabilir'),
-  orderId: z.string().min(1, 'Sipariş ID gereklidir'),
+  orderId: baseSchemas.id,
 });
 
-// Message schema
+// Message schema with base composition
 export const messageSchema = z.object({
   content: z
     .string()
@@ -129,7 +129,7 @@ export const messageSchema = z.object({
     .array(
       z.object({
         name: z.string(),
-        url: z.string().url(),
+        url: baseSchemas.url,
         type: z.string(),
         size: z.number(),
       })
@@ -137,29 +137,29 @@ export const messageSchema = z.object({
     .optional(),
 });
 
-// Search filters schema
+// Search filters using marketplace patterns
 export const jobFiltersSchema = z.object({
-  category: z.string().optional(),
+  category: baseSchemas.category.optional(),
   subcategory: z.string().optional(),
-  budgetMin: z.number().min(0).optional(),
-  budgetMax: z.number().min(0).optional(),
+  budgetMin: baseSchemas.price.optional(),
+  budgetMax: baseSchemas.price.optional(),
   budgetType: z.enum(['fixed', 'hourly']).optional(),
   experienceLevel: z.enum(['beginner', 'intermediate', 'expert']).optional(),
-  location: z.array(z.string()).optional(),
-  isRemote: z.boolean().optional(),
-  skills: z.array(z.string()).optional(),
+  location: baseSchemas.stringArray.optional(),
+  isRemote: baseSchemas.optional,
+  skills: baseSchemas.tags.optional(),
   search: z.string().optional(),
   deadline: z.enum(['urgent', 'week', 'month', 'flexible']).optional(),
   sort: z.enum(['newest', 'budget', 'proposals', 'rating']).optional(),
 });
 
 export const packageFiltersSchema = z.object({
-  category: z.string().optional(),
+  category: baseSchemas.category.optional(),
   subcategory: z.string().optional(),
-  priceMin: z.number().min(0).optional(),
-  priceMax: z.number().min(0).optional(),
-  deliveryTime: z.number().min(1).optional(),
-  rating: z.number().min(1).max(5).optional(),
+  priceMin: baseSchemas.price.optional(),
+  priceMax: baseSchemas.price.optional(),
+  deliveryTime: baseSchemas.positiveInt.optional(),
+  rating: baseSchemas.rating.optional(),
   search: z.string().optional(),
   sort: z
     .enum(['newest', 'price_low', 'price_high', 'rating', 'orders'])
@@ -171,22 +171,22 @@ export const proposalStatusSchema = z.object({
   status: z.enum(['accepted', 'rejected'], {
     message: 'Geçerli bir durum seçiniz',
   }),
-  note: z.string().max(500, 'Not en fazla 500 karakter olabilir').optional(),
+  note: baseSchemas.shortDescription
+    .max(500, 'Not en fazla 500 karakter olabilir')
+    .optional(),
 });
 
-// Contact form schema
+// Contact form schema with base composition
 export const contactFormSchema = z.object({
-  recipientId: z.string().min(1, 'Alıcı ID gereklidir'),
-  subject: z
-    .string()
+  recipientId: baseSchemas.id,
+  subject: baseSchemas.title
     .min(5, 'Konu en az 5 karakter olmalıdır')
     .max(100, 'Konu en fazla 100 karakter olabilir'),
-  message: z
-    .string()
+  message: baseSchemas.description
     .min(20, 'Mesaj en az 20 karakter olmalıdır')
     .max(2000, 'Mesaj en fazla 2000 karakter olabilir'),
-  jobId: z.string().optional(),
-  packageId: z.string().optional(),
+  jobId: baseSchemas.id.optional(),
+  packageId: baseSchemas.id.optional(),
 });
 
 // Type exports
@@ -200,39 +200,39 @@ export type PackageFiltersData = z.infer<typeof packageFiltersSchema>;
 export type ProposalStatusData = z.infer<typeof proposalStatusSchema>;
 export type ContactFormData = z.infer<typeof contactFormSchema>;
 
-// Validation helper functions
-export const validateProposal = (data: unknown) => {
-  return proposalSchema.safeParse(data);
+// Enhanced validation helper functions
+export const validateProposal = async (data: unknown) => {
+  return await validateFormData(proposalSchema, data);
 };
 
-export const validateOrder = (data: unknown) => {
-  return orderSchema.safeParse(data);
+export const validateOrder = async (data: unknown) => {
+  return await validateFormData(orderSchema, data);
 };
 
 export const validateFile = (file: File) => {
   return fileUploadSchema.safeParse({ file });
 };
 
-export const validateReview = (data: unknown) => {
-  return reviewSchema.safeParse(data);
+export const validateReview = async (data: unknown) => {
+  return await validateFormData(reviewSchema, data);
 };
 
-export const validateMessage = (data: unknown) => {
-  return messageSchema.safeParse(data);
+export const validateMessage = async (data: unknown) => {
+  return await validateFormData(messageSchema, data);
 };
 
-export const validateJobFilters = (data: unknown) => {
-  return jobFiltersSchema.safeParse(data);
+export const validateJobFilters = async (data: unknown) => {
+  return await validateFormData(jobFiltersSchema, data);
 };
 
-export const validatePackageFilters = (data: unknown) => {
-  return packageFiltersSchema.safeParse(data);
+export const validatePackageFilters = async (data: unknown) => {
+  return await validateFormData(packageFiltersSchema, data);
 };
 
-export const validateProposalStatus = (data: unknown) => {
-  return proposalStatusSchema.safeParse(data);
+export const validateProposalStatus = async (data: unknown) => {
+  return await validateFormData(proposalStatusSchema, data);
 };
 
-export const validateContactForm = (data: unknown) => {
-  return contactFormSchema.safeParse(data);
+export const validateContactForm = async (data: unknown) => {
+  return await validateFormData(contactFormSchema, data);
 };

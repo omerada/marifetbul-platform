@@ -19,15 +19,15 @@ import {
 } from 'lucide-react';
 import { useJobDetail } from '@/hooks';
 import { formatJobBudget, getBudgetType } from '@/lib/utils/typeGuards';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/Avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { SocialShare } from '@/components/social/SocialShare';
 import { ProposalModal } from './ProposalModal';
 import { ProposalCard } from './ProposalCard';
-import { ErrorState } from './ErrorState';
 import { Loading } from '@/components/ui';
+import { ErrorState } from './ErrorState';
 
 interface JobDetailProps {
   jobId: string;
@@ -349,11 +349,11 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
             </CardHeader>
             <CardContent>
               <div className="mb-4 flex items-center">
-                <Avatar className="mr-4 h-12 w-12">
-                  <AvatarImage
-                    src={currentJob.employer.avatar || '/avatars/default.jpg'}
-                    alt={`${currentJob.employer.firstName} ${currentJob.employer.lastName}`}
-                  />
+                <Avatar
+                  src={currentJob.employer.avatar || '/avatars/default.jpg'}
+                  alt={`${currentJob.employer.firstName} ${currentJob.employer.lastName}`}
+                  className="mr-4 h-12 w-12"
+                >
                   <AvatarFallback>
                     {currentJob.employer.firstName.charAt(0)}
                   </AvatarFallback>

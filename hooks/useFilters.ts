@@ -183,7 +183,9 @@ export function useSearchSuggestions(query: string, type: 'jobs' | 'packages') {
 export function useFilterPersistence(key: string) {
   const saveFilters = (filters: JobFilters | PackageFilters) => {
     try {
-      localStorage.setItem(key, JSON.stringify(filters));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(key, JSON.stringify(filters));
+      }
     } catch (error) {
       console.error('Failed to save filters to localStorage:', error);
     }
@@ -191,8 +193,11 @@ export function useFilterPersistence(key: string) {
 
   const loadFilters = (): JobFilters | PackageFilters | null => {
     try {
-      const saved = localStorage.getItem(key);
-      return saved ? JSON.parse(saved) : null;
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem(key);
+        return saved ? JSON.parse(saved) : null;
+      }
+      return null;
     } catch (error) {
       console.error('Failed to load filters from localStorage:', error);
       return null;
@@ -201,7 +206,9 @@ export function useFilterPersistence(key: string) {
 
   const clearSavedFilters = () => {
     try {
-      localStorage.removeItem(key);
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem(key);
+      }
     } catch (error) {
       console.error('Failed to clear filters from localStorage:', error);
     }

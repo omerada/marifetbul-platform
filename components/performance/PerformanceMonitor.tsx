@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Progress } from '@/components/ui/Progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';

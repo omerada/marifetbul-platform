@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import type { FreelancerAnalytics, EmployerAnalytics } from '@/types';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Star, ThumbsUp, ThumbsDown } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Textarea } from '@/components/ui/Textarea';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';

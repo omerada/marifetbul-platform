@@ -5,7 +5,7 @@ import { useMarketplace } from '@/hooks/useMarketplace';
 import { MarketplaceList } from '@/components/features/marketplace/MarketplaceList';
 import { EmptyState } from '@/components/features/marketplace/EmptyState';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Package, Briefcase, Users, RefreshCcw } from 'lucide-react';
 
 interface SearchResultsProps {
@@ -114,7 +114,12 @@ export function SearchResults({
               mode="packages"
               data={packages.slice(0, 6)} // Show first 6 for preview
               isLoading={isLoading}
-              viewPreferences={{ ...viewPreferences, layout: 'grid' }}
+              viewPreferences={{
+                ...viewPreferences,
+                layout: 'grid',
+                showFilters: false,
+                showAdvancedFilters: false,
+              }}
             />
             {packages.length > 6 && (
               <div className="mt-4 text-center">
@@ -146,7 +151,12 @@ export function SearchResults({
               mode="jobs"
               data={jobs.slice(0, 6)} // Show first 6 for preview
               isLoading={isLoading}
-              viewPreferences={{ ...viewPreferences, layout: 'grid' }}
+              viewPreferences={{
+                ...viewPreferences,
+                layout: 'grid',
+                showFilters: false,
+                showAdvancedFilters: false,
+              }}
             />
             {jobs.length > 6 && (
               <div className="mt-4 text-center">
@@ -197,7 +207,11 @@ export function SearchResults({
         mode="packages"
         data={packages}
         isLoading={isLoading}
-        viewPreferences={viewPreferences}
+        viewPreferences={{
+          ...viewPreferences,
+          showFilters: false,
+          showAdvancedFilters: false,
+        }}
       />
     );
   }
@@ -208,7 +222,11 @@ export function SearchResults({
         mode="jobs"
         data={jobs}
         isLoading={isLoading}
-        viewPreferences={viewPreferences}
+        viewPreferences={{
+          ...viewPreferences,
+          showFilters: false,
+          showAdvancedFilters: false,
+        }}
       />
     );
   }

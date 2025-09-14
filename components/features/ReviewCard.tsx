@@ -16,7 +16,7 @@ import {
 import type { ReviewData } from '@/types';
 import { useReviews } from '@/hooks';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 

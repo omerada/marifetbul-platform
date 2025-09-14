@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import {
   Heart,
@@ -112,7 +112,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
                 </div>
 
                 <button
-                  onClick={() => togglePackageFavorite(pkg.id)}
+                  onClick={() => togglePackageFavorite()}
                   className={cn(
                     'rounded-full p-2 transition-all duration-200 hover:scale-110 sm:p-3',
                     isFavorite
@@ -246,7 +246,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
           </div>
 
           <button
-            onClick={() => togglePackageFavorite(pkg.id)}
+            onClick={() => togglePackageFavorite()}
             className={cn(
               'absolute top-3 right-3 rounded-full p-2 backdrop-blur-sm transition-all duration-200 hover:scale-110',
               isFavorite
@@ -269,7 +269,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
               {pkg.category}
             </Badge>
             <button
-              onClick={() => togglePackageFavorite(pkg.id)}
+              onClick={() => togglePackageFavorite()}
               className={cn(
                 'rounded-full p-1 transition-colors',
                 isFavorite

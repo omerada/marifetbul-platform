@@ -36,7 +36,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@/components/ui';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
+import { AvatarImage, Avatar, AvatarFallback } from '@/components/ui';
 import type { ChatMessage, ChatConversation, MessageAttachment } from '@/types';
 
 interface ChatWindowProps {
@@ -353,10 +353,20 @@ const MessageComposer: React.FC<MessageComposerProps> = ({
     if (!user || disabled) return;
 
     const isTyping = message.length > 0;
-    setTypingStatus(conversationId, user.id, isTyping);
+    setTypingStatus({
+      conversationId,
+      userId: user.id,
+      isTyping,
+      timestamp: new Date().toISOString(),
+    });
 
     return () => {
-      setTypingStatus(conversationId, user.id, false);
+      setTypingStatus({
+        conversationId,
+        userId: user.id,
+        isTyping: false,
+        timestamp: new Date().toISOString(),
+      });
     };
   }, [message, conversationId, user, setTypingStatus, disabled]);
 
@@ -381,13 +391,11 @@ const MessageComposer: React.FC<MessageComposerProps> = ({
       replyTo: replyingTo?.id,
     };
 
-    const result = await sendMessage(conversationId, messageData);
+    await sendMessage(messageData);
 
-    if (result) {
-      setMessage('');
-      setFiles([]);
-      onCancelReply?.();
-    }
+    setMessage('');
+    setFiles([]);
+    onCancelReply?.();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -629,7 +637,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   );
   const isOnline =
     otherParticipant && otherParticipant.userId
-      ? onlineUsers.has(otherParticipant.userId)
+      ? onlineUsers.includes(otherParticipant.userId)
       : false;
 
   return (

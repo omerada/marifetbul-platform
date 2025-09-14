@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { useHelpCenter } from '@/hooks/useHelpCenter';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 
 export function HelpCenterMain() {

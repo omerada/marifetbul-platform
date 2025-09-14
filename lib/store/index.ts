@@ -11,10 +11,10 @@ export { useRecommendationStore } from './recommendations';
 export { useFavoritesStore } from './favorites';
 export { useLocationStore } from './location';
 
-// Sprint 8 - Review, Analytics & Reputation stores
-export { useReviewStore } from './reviewStore';
-export { useAnalyticsStore } from './analyticsStore';
-export { useReputationStore } from './reputationStore';
+// Sprint 8 - Review, Analytics & Reputation stores (moved to domains)
+export { useReviewStore } from './domains/reviews/reviewStore';
+export { useAnalyticsStore } from './domains/analytics/analyticsStore';
+export { useReputationStore } from './domains/reputation/reputationStore';
 
 // Sprint 10 - Admin stores
 export {

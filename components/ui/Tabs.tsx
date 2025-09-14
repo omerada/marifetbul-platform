@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, createContext, useContext } from 'react';
-import { Button } from './Button';
+import { UnifiedButton as Button } from './UnifiedButton';
 
 interface TabsContextValue {
   activeTab: string;

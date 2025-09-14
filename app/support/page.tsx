@@ -2,7 +2,7 @@
 
 import { SupportLayout } from '@/components/features/support';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { useRouter } from 'next/navigation';
 import {
   Plus,

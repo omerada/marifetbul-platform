@@ -7,7 +7,7 @@ import { useOrderStore } from '@/lib/store/orders';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { EmployerDashboard as EmployerDashboardType } from '@/types';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { isJobBudgetObject } from '@/lib/utils/typeGuards';
 import { QuickActions } from '@/components/features/QuickActions';

@@ -1,10 +1,9 @@
 // Consolidated review types
-import { User } from '../core/base';
 import { PaginationMeta, ApiResponse } from '../utils/api';
 
 // Legacy compatibility exports
-export interface ReviewData extends Review {}
-export interface ReviewFilters extends ReviewFilter {}
+export type ReviewData = Review;
+export type ReviewFilters = ReviewFilter;
 export interface CreateReviewRequest {
   orderId: string;
   rating: number;
@@ -17,7 +16,7 @@ export interface CreateReviewRequest {
   images?: File[];
 }
 
-export interface CreateReviewResponse extends ApiResponse<Review> {}
+export type CreateReviewResponse = ApiResponse<Review>;
 export interface ReviewsResponse {
   reviews: Review[];
   pagination: PaginationMeta;

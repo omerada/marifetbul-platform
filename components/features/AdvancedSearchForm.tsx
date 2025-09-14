@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import { useAdvancedSearchStore } from '@/lib/store/advanced-search';
 import { AdvancedSearchRequest } from '@/types';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';

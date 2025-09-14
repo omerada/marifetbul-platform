@@ -1,68 +1,80 @@
-'use client';
-
 import React from 'react';
-import Image from 'next/image';
+import { AvatarImage } from './UnifiedImage';
 import { cn } from '@/lib/utils';
 
-interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
+// Re-export AvatarImage for external use
+export { AvatarImage } from './UnifiedImage';
+
+// ================================================
+// AVATAR COMPONENT SYSTEM
+// ================================================
+
+interface AvatarProps {
+  src?: string;
+  alt?: string;
+  className?: string;
+  children?: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
-interface AvatarImageProps
-  extends Omit<React.ComponentProps<typeof Image>, 'width' | 'height'> {
-  alt: string;
-}
-
-interface AvatarFallbackProps extends React.HTMLAttributes<HTMLDivElement> {
+interface AvatarFallbackProps {
   children: React.ReactNode;
+  className?: string;
 }
 
-const sizeClasses = {
-  sm: 'h-8 w-8 text-xs',
-  md: 'h-10 w-10 text-sm',
-  lg: 'h-12 w-12 text-base',
-  xl: 'h-16 w-16 text-lg',
-};
+// Main Avatar component
+export function Avatar({
+  src,
+  alt = 'Avatar',
+  className,
+  children,
+  size = 'md',
+}: AvatarProps) {
+  const sizeClasses = {
+    sm: 'h-8 w-8',
+    md: 'h-10 w-10',
+    lg: 'h-12 w-12',
+    xl: 'h-16 w-16',
+  };
 
-export function Avatar({ size = 'md', className, ...props }: AvatarProps) {
   return (
     <div
       className={cn(
-        'relative flex shrink-0 overflow-hidden rounded-full',
+        'relative inline-flex shrink-0 overflow-hidden rounded-full',
         sizeClasses[size],
         className
       )}
-      {...props}
-    />
+    >
+      {src ? (
+        <AvatarImage
+          src={src}
+          alt={alt}
+          className="aspect-square h-full w-full object-cover"
+        />
+      ) : (
+        children
+      )}
+    </div>
   );
 }
 
-export function AvatarImage({ className, alt, ...props }: AvatarImageProps) {
-  return (
-    <Image
-      className={cn('aspect-square h-full w-full object-cover', className)}
-      width={40}
-      height={40}
-      alt={alt}
-      {...props}
-    />
-  );
-}
-
-export function AvatarFallback({
-  className,
-  children,
-  ...props
-}: AvatarFallbackProps) {
+// Avatar Fallback component
+export function AvatarFallback({ children, className }: AvatarFallbackProps) {
   return (
     <div
       className={cn(
-        'flex h-full w-full items-center justify-center rounded-full bg-gray-100 font-medium text-gray-600',
+        'bg-muted flex h-full w-full items-center justify-center rounded-full text-sm font-medium',
         className
       )}
-      {...props}
     >
       {children}
     </div>
   );
 }
+
+// Convenience export with all components
+export const AvatarComponents = {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+};

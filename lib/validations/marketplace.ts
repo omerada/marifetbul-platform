@@ -1,85 +1,84 @@
 import { z } from 'zod';
+import { baseSchemas, compositeSchemas } from './base';
 
-// Base marketplace filter schema
+// ================================================
+// MARKETPLACE VALIDATION SCHEMAS
+// ================================================
+// Optimized with base schema composition
+
+// Base marketplace filter schema using composition
 export const marketplaceFilterSchema = z.object({
   search: z.string().optional(),
-  category: z.string().optional(),
+  category: baseSchemas.category.optional(),
   subcategory: z.string().optional(),
-  minBudget: z.number().min(0).optional(),
-  maxBudget: z.number().min(0).optional(),
-  minPrice: z.number().min(0).optional(),
-  maxPrice: z.number().min(0).optional(),
+  minBudget: baseSchemas.price.optional(),
+  maxBudget: baseSchemas.price.optional(),
+  minPrice: baseSchemas.price.optional(),
+  maxPrice: baseSchemas.price.optional(),
   deliveryTime: z.number().min(1).max(365).optional(),
   experienceLevel: z.enum(['beginner', 'intermediate', 'expert']).optional(),
-  location: z.array(z.string()).optional(),
-  isRemote: z.boolean().optional(),
-  skills: z.array(z.string()).optional(),
-  rating: z.number().min(1).max(5).optional(),
+  location: baseSchemas.stringArray.optional(),
+  isRemote: baseSchemas.optional,
+  skills: baseSchemas.tags.optional(),
+  rating: baseSchemas.rating.optional(),
   datePosted: z.enum(['today', 'week', 'month', 'all']).optional(),
   sortBy: z
     .enum(['newest', 'oldest', 'budget', 'price', 'rating', 'relevance'])
     .optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),
-  page: z.number().min(1).optional(),
-  limit: z.number().min(1).max(50).optional(),
+  ...compositeSchemas.pagination.shape,
 });
 
 // Job-specific filters
 export const jobFiltersSchema = marketplaceFilterSchema.extend({
   budgetType: z.enum(['fixed', 'hourly']).optional(),
-  proposalsCount: z.number().min(0).optional(),
+  proposalsCount: baseSchemas.nonNegativeInt.optional(),
   deadline: z.enum(['urgent', 'week', 'month', 'flexible']).optional(),
 });
 
 // Package-specific filters
 export const packageFiltersSchema = marketplaceFilterSchema.extend({
-  revisions: z.number().min(0).optional(),
-  orders: z.number().min(0).optional(),
+  revisions: baseSchemas.nonNegativeInt.optional(),
+  orders: baseSchemas.nonNegativeInt.optional(),
 });
 
-// Search query schema
+// Search query schema with composition
 export const searchQuerySchema = z.object({
   query: z.string().min(1, 'Arama terimi en az 1 karakter olmalıdır'),
   filters: marketplaceFilterSchema.optional(),
   type: z.enum(['jobs', 'packages', 'all']).default('all'),
 });
 
-// Advanced search schema
+// Advanced search schema using composite patterns
 export const advancedSearchSchema = z.object({
-  keywords: z.array(z.string()).optional(),
-  excludeKeywords: z.array(z.string()).optional(),
+  keywords: baseSchemas.stringArray.optional(),
+  excludeKeywords: baseSchemas.stringArray.optional(),
   exactPhrase: z.string().optional(),
-  category: z.string().optional(),
+  category: baseSchemas.category.optional(),
   subcategory: z.string().optional(),
   location: z
     .object({
-      city: z.string().optional(),
-      country: z.string().optional(),
+      city: baseSchemas.city.optional(),
+      country: baseSchemas.country.optional(),
       radius: z.number().min(1).max(100).optional(),
     })
     .optional(),
-  budget: z
-    .object({
-      min: z.number().min(0).optional(),
-      max: z.number().min(0).optional(),
-      type: z.enum(['fixed', 'hourly']).optional(),
-    })
-    .optional(),
+  budget: compositeSchemas.priceRange.optional(),
   timeline: z
     .object({
-      min: z.number().min(1).optional(),
-      max: z.number().min(1).optional(),
+      min: baseSchemas.positiveInt.optional(),
+      max: baseSchemas.positiveInt.optional(),
       unit: z.enum(['days', 'weeks', 'months']).optional(),
     })
     .optional(),
   skills: z
     .object({
-      required: z.array(z.string()).optional(),
-      preferred: z.array(z.string()).optional(),
+      required: baseSchemas.tags.optional(),
+      preferred: baseSchemas.tags.optional(),
     })
     .optional(),
-  rating: z.number().min(1).max(5).optional(),
-  verified: z.boolean().optional(),
+  rating: baseSchemas.rating.optional(),
+  verified: baseSchemas.optional,
   availability: z.enum(['available', 'busy', 'not_available']).optional(),
 });
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Suspense, lazy } from 'react';
-import { UnifiedLoading } from './UnifiedLoading';
+import { UnifiedLoading } from '@/components/ui/UnifiedLoadingSystem';
 
 // Lazy load heavy components for better performance
 export const LazyPerformanceMonitor = lazy(() =>

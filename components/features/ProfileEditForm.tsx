@@ -6,7 +6,7 @@ import { User, Freelancer, Employer } from '@/types';
 import { useProfile, useProfileValidation } from '@/hooks/useProfile';
 import { AvatarUpload } from '@/components/features/AvatarUpload';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { Progress } from '@/components/ui/Progress';

@@ -3,7 +3,7 @@
 import React from 'react';
 import { User } from '@/types';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
   Plus,
   Search,

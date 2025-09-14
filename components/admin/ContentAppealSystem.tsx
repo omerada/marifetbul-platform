@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { Badge } from '@/components/ui/Badge';
@@ -892,7 +892,7 @@ export default function ContentAppealSystem() {
                     onClick={() =>
                       handleAppealAction(selectedAppeal.id, 'reject')
                     }
-                    variant="danger"
+                    variant="destructive"
                   >
                     <XCircle className="mr-2 h-4 w-4" />
                     Reddet

@@ -124,12 +124,12 @@ export abstract class BaseRepository {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
 
+        // Add authentication headers
+        const headers = await this.addAuthHeaders(config.headers || {});
+
         const response = await fetch(url, {
           ...config,
-          headers: {
-            'Content-Type': 'application/json',
-            ...config.headers,
-          },
+          headers,
           body: config.body ? JSON.stringify(config.body) : undefined,
           signal: config.signal || controller.signal,
         });
@@ -174,6 +174,38 @@ export abstract class BaseRepository {
     }
 
     throw lastError!;
+  }
+
+  /**
+   * Add authentication headers
+   */
+  private async addAuthHeaders(
+    headers: Record<string, string>
+  ): Promise<Record<string, string>> {
+    const finalHeaders: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...headers,
+    };
+
+    // Add auth token if available and not already set
+    if (!finalHeaders['Authorization'] && typeof window !== 'undefined') {
+      try {
+        const authData =
+          typeof window !== 'undefined'
+            ? localStorage.getItem('marifeto-auth')
+            : null;
+        if (authData) {
+          const parsed = JSON.parse(authData);
+          if (parsed.state?.token) {
+            finalHeaders['Authorization'] = `Bearer ${parsed.state.token}`;
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to parse auth data:', error);
+      }
+    }
+
+    return finalHeaders;
   }
 
   /**

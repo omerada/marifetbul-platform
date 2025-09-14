@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { PackageFilters } from '@/types';
 import {

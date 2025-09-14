@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { PerformanceMonitor } from '@/components/performance/PerformanceMonitor';
 import SystemHealthWidget from '@/components/admin/SystemHealthWidget';
 import { useAdminDashboard } from '@/hooks';

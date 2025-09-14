@@ -28,7 +28,11 @@ export function LoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       clearError();
-      await login(data.email, data.password, data.rememberMe);
+      await login({
+        email: data.email,
+        password: data.password,
+        rememberMe: data.rememberMe,
+      });
 
       // Redirect to dashboard on successful login
       router.push('/dashboard');

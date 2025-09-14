@@ -11,7 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 
 interface SearchSuggestion {

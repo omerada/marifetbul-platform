@@ -92,10 +92,7 @@ export const useWebSocket = ({
           case 'message':
             // New chat message received
             if (message.data && message.conversationId) {
-              addMessage(
-                message.conversationId,
-                message.data as unknown as ChatMessage
-              );
+              addMessage(message.data as unknown as ChatMessage);
             }
             break;
 
@@ -132,7 +129,7 @@ export const useWebSocket = ({
               const statusData = message.data as {
                 status: 'online' | 'away' | 'busy' | 'offline';
               };
-              updateUserStatus(message.userId, statusData.status);
+              updateUserStatus(message.userId, statusData.status === 'online');
             }
             break;
 

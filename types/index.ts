@@ -1,4 +1,4 @@
-﻿// Central export hub for all types
+// Central export hub for all types
 // Legacy compatibility - keep existing types working
 
 // Essential legacy exports

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { useAuth } from '@/hooks/useAuth';
@@ -50,7 +50,10 @@ export default function AdminLoginPage() {
 
     try {
       // Use regular login flow which will check via API
-      await login(credentials.email, credentials.password);
+      await login({
+        email: credentials.email,
+        password: credentials.password,
+      });
 
       toast.success('Admin paneline başarıyla giriş yapıldı');
       // Don't redirect here, let useEffect handle it after user is set

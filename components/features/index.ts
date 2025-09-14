@@ -18,7 +18,6 @@ export { FreelancerDashboard } from './FreelancerDashboard';
 export { EmployerDashboard } from './EmployerDashboard';
 export { StatsCard } from './StatsCard';
 export { DashboardSkeleton } from './DashboardSkeleton';
-export { ErrorState } from './ErrorState';
 
 // Portfolio Components
 export { PortfolioGallery } from './PortfolioGallery';
@@ -52,23 +51,29 @@ export {
   LoadingOverlay,
   LoadingCard,
   useLoadingState,
-} from './UnifiedLoading';
+} from '@/components/ui/UnifiedLoadingSystem';
 export {
-  ErrorBoundaryFallback,
+  UnifiedErrorBoundary,
+  UnifiedErrorBoundary as ErrorBoundaryFallback,
   useErrorHandler,
   withErrorBoundary,
   ErrorBoundaryConfigProvider,
   useErrorBoundaryConfig,
-} from './ErrorBoundaryFallback';
+} from '@/components/ui/UnifiedErrorBoundary';
 export {
-  OptimizedImage,
+  UnifiedImage,
+  UnifiedImage as OptimizedImage,
   AvatarImage,
   HeroImage,
   GalleryImage,
   ThumbnailImage,
   BackgroundImage,
+  ProfileImage,
+  LogoImage,
+  ProductImage,
   useImagePreloader,
-} from './OptimizedImage';
+  useLazyImage,
+} from '@/components/ui/UnifiedImage';
 export { PerformanceMonitor } from './PerformanceMonitor';
 export {
   AccessibilityProvider,

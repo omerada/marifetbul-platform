@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
   Heart,
   Bookmark,
@@ -204,7 +204,7 @@ export function AnimatedInteractions({
         <div className="flex gap-4">
           <div ref={heartRef} className="relative overflow-hidden rounded">
             <Button
-              variant={liked ? 'danger' : 'outline'}
+              variant={liked ? 'destructive' : 'outline'}
               size="sm"
               onClick={handleLike}
               className={`transition-all duration-300 ${

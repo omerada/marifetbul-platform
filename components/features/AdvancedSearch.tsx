@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useUnifiedSearch } from '@/hooks/useUnifiedSearch';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { Badge } from '@/components/ui/Badge';

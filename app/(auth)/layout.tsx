@@ -1,6 +1,16 @@
+'use client';
+
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { AuthLayoutWrapper } from '@/components/layout/AuthLayout';
+import dynamic from 'next/dynamic';
+
+const AuthLayoutWrapper = dynamic(
+  () =>
+    import('@/components/layout/AuthLayout').then((mod) => ({
+      default: mod.AuthLayoutWrapper,
+    })),
+  { ssr: false }
+);
 
 interface AuthLayoutProps {
   children: ReactNode;

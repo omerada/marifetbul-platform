@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { Star, MessageSquare, Clock, Users, DollarSign } from 'lucide-react';
 import { reviewSchema, type ReviewFormData } from '@/lib/validations/reviews';
 import { useReviewForm } from '@/hooks';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Textarea } from '@/components/ui/Textarea';
 import { Progress } from '@/components/ui/Progress';

@@ -1,6 +1,6 @@
 # 🔧 AI Agent Refactoring Master Prompt - Marifeto Platform
 
-Bu dokümanda, Marifeto freelancer platform projesinin production-ready seviyeye çıkarılması için kapsamlı refactoring planı ve AI agent talimatları yer almaktadır.
+Bu dokümanda, Marifeto freelancer platform projesinin production-ready seviyeye çıkarılması için kapsamlı refactoring planı ve AI agent talimatları yer almaktadır. Yeni yapıya geçerken artık gereksiz olan, kullanılmayan, projeyi karmaşıklaştıran, duplicate olan tüm dosyaları ve yapıları sil.
 
 ## 📊 Proje Durumu Analizi
 
@@ -569,26 +569,6 @@ export type FormData<T> = {
 };
 ```
 
-### 📋 PHASE 8: TESTING INFRASTRUCTURE
-
-#### Task 8.1: Test Utilities
-
-```typescript
-// GÖREV: Test helper functions
-
-// tests/utils/testUtils.tsx
-export const renderWithProviders = (
-  ui: React.ReactElement,
-  options?: RenderOptions
-) => {
-  // Provider wrapper ile render
-};
-
-export const createMockStore = <T>(initialState: Partial<T>) => {
-  // Mock store factory
-};
-```
-
 #### Task 8.2: MSW Integration Enhancement
 
 ```typescript
@@ -622,7 +602,6 @@ export const createMockStore = <T>(initialState: Partial<T>) => {
 ### 📝 LOW PRIORITY (1-2 ay içinde)
 
 1. **Type Safety Enhancement** (Phase 7)
-2. **Testing Infrastructure** (Phase 8)
 
 ## 🔍 CODE REVIEW CHECKLIST
 
@@ -667,7 +646,6 @@ Her refactoring işlemi sonrası kontrol edilecekler:
 - Bundle size reduction: **%30+**
 - Core Web Vitals score: **90+**
 - TypeScript strict mode: **100% compliance**
-- Test coverage: **80%+**
 - Memory leak incidents: **0**
 
 ### 📊 Developer Experience
@@ -701,7 +679,6 @@ Her refactoring işlemi sonrası kontrol edilecekler:
 - [ ] API layer standardized
 - [ ] Validation system unified
 - [ ] Error handling centralized
-- [ ] Testing infrastructure ready
 
 ### ✅ Documentation
 
@@ -714,3 +691,7 @@ Her refactoring işlemi sonrası kontrol edilecekler:
 ---
 
 **Bu promptu AI agent'a vererek tüm refactoring işlemlerini sistematik olarak gerçekleştir. Her phase'i tamamladıktan sonra code review checklist'ini kullanarak kaliteyi kontrol et.**
+
+İşleme başlamadan önce projenin mevcut durumunu analiz et. Daha önce refactor işlemine başlamıştık. Kaldığımız yerden devam edelim. İşlemler sonunda temiz bir proje yapısı ve hiyerarşisine sahip olalım.
+Tüm işlemler bittikten sonra TypeScript hatalarını kontrol et ve hata kalmadığına emin ol.
+#codebase

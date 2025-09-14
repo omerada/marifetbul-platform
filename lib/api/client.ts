@@ -22,7 +22,10 @@ class ApiClient {
 
     // Add auth token if available
     if (typeof window !== 'undefined') {
-      const authData = localStorage.getItem('marifeto-auth');
+      const authData =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('marifeto-auth')
+          : null;
       if (authData) {
         try {
           const parsed = JSON.parse(authData);

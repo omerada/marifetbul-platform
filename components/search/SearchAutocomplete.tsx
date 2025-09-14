@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Search, X, Clock, TrendingUp } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';

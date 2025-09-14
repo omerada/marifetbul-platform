@@ -353,10 +353,12 @@ export const useAdvancedSearchStore = create<AdvancedSearchStore>()(
 
             // Store in localStorage
             try {
-              localStorage.setItem(
-                'marifet_recent_searches',
-                JSON.stringify(updatedRecent)
-              );
+              if (typeof window !== 'undefined') {
+                localStorage.setItem(
+                  'marifet_recent_searches',
+                  JSON.stringify(updatedRecent)
+                );
+              }
             } catch (error) {
               console.warn(
                 'Failed to save recent searches to localStorage:',

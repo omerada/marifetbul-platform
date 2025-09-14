@@ -14,7 +14,7 @@ import {
   PieChart,
   LineChart,
 } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 
 interface AnalyticsData {

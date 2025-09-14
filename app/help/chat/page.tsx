@@ -3,7 +3,7 @@
 import { HelpCenterLayout } from '@/components/help';
 import { ChatWindow } from '@/components/features/chat';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { useChat } from '@/hooks/useChat';
 import { useRouter } from 'next/navigation';
 import {

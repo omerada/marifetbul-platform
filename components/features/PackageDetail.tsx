@@ -21,12 +21,12 @@ import {
 } from 'lucide-react';
 import { usePackageDetail } from '@/hooks';
 import type { ServicePackage, PackageDetail, Freelancer } from '@/types';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/Avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
-import { ErrorState } from './ErrorState';
+import { ErrorState } from '@/components/features/ErrorState';
 import { Loading } from '@/components/ui';
 
 interface PackageDetailProps {
@@ -469,13 +469,11 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
             </CardHeader>
             <CardContent>
               <div className="mb-4 flex items-center">
-                <Avatar className="mr-4 h-12 w-12">
-                  {currentPackage.freelancer.avatar && (
-                    <AvatarImage
-                      src={currentPackage.freelancer.avatar}
-                      alt={`${currentPackage.freelancer.firstName} ${currentPackage.freelancer.lastName}`}
-                    />
-                  )}
+                <Avatar
+                  src={currentPackage.freelancer.avatar}
+                  alt={`${currentPackage.freelancer.firstName} ${currentPackage.freelancer.lastName}`}
+                  className="mr-4 h-12 w-12"
+                >
                   <AvatarFallback>
                     {currentPackage.freelancer.firstName.charAt(0)}
                     {currentPackage.freelancer.lastName.charAt(0)}

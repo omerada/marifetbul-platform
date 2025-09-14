@@ -1,11 +1,85 @@
-export { Button } from './Button';
+// ================================================
+// UNIFIED UI COMPONENTS - PRODUCTION READY
+// ================================================
+// Single source of truth for all UI components
+
+// Button System
+export {
+  UnifiedButton as Button,
+  UnifiedButton,
+  PrimaryButton,
+  SecondaryButton,
+  DestructiveButton,
+  LoadingButton,
+} from './UnifiedButton';
+
+// Image System
+export {
+  UnifiedImage as Image,
+  UnifiedImage,
+  AvatarImage,
+  HeroImage,
+  GalleryImage,
+  ThumbnailImage,
+  BackgroundImage,
+} from './UnifiedImage';
+
+// Avatar System
+export { Avatar, AvatarFallback, AvatarComponents } from './Avatar';
+
+// Loading System
+export {
+  UnifiedLoading as Loading,
+  UnifiedLoading,
+  LoadingCard,
+  LoadingPageSkeleton,
+  LoadingOverlay,
+  ProgressLoader,
+  useLoadingState,
+  AdminLoadingSkeleton,
+  AdminSpinnerLoading,
+  MarketplaceLoadingState,
+} from './UnifiedLoadingSystem';
+
+// Error System
+export {
+  UnifiedErrorBoundary as ErrorBoundary,
+  UnifiedErrorBoundary,
+  useErrorHandler,
+  withErrorBoundary,
+  ErrorBoundaryConfigProvider,
+  useErrorBoundaryConfig,
+} from './UnifiedErrorBoundary';
+
+// Form Components
 export { Input } from './Input';
 export { Checkbox } from './Checkbox';
+export { Textarea } from './Textarea';
+export { Label } from './Label';
+export {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './Select';
+
+// Layout Components
 export { Card, CardHeader, CardContent, CardFooter } from './Card';
-// LOADING COMPONENTS CONSOLIDATED TO SHARED/UNIFIEDLOADING
-export { default as Loading } from '../shared/UnifiedLoading';
-export { default as Skeleton } from '../shared/SkeletonComponent';
-export { ErrorFallback } from './ErrorFallback';
+export { Badge } from './Badge';
+export { Pagination, MobilePagination } from './Pagination';
+export { ScrollArea } from './ScrollArea';
+export { Slider } from './Slider';
+
+// Skeleton Components
+export {
+  Skeleton,
+  SkeletonText,
+  SkeletonAvatar,
+  SkeletonCard,
+} from './Skeleton';
+
+// Interactive Components
 export {
   Tooltip,
   TooltipProvider,
@@ -14,21 +88,6 @@ export {
   BasicTooltip,
 } from './Tooltip';
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs';
-export { default as FileUpload } from './FileUpload';
-export { ToastContainer } from './ToastContainer';
-export { Textarea } from './Textarea';
-export { Badge } from './Badge';
-export { Label } from './Label';
-export { Pagination, MobilePagination } from './Pagination';
-export { ScrollArea } from './ScrollArea';
-export { Slider } from './Slider';
-export {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './Select';
 export {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -36,6 +95,12 @@ export {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from './DropdownMenu';
+
+// Upload & Toast Components
+export { default as FileUpload } from './FileUpload';
+export { ToastContainer } from './ToastContainer';
+
+// Animation Components
 export {
   AnimatedContainer,
   StaggeredContainer,

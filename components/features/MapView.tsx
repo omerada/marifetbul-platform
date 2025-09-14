@@ -14,10 +14,10 @@ import {
   Navigation,
   Layers,
 } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 import { Coordinates, MapBounds } from '@/types';
-import { useMapBounds, useGeolocation } from '@/hooks/useLocation';
+import { useUnifiedLocation } from '@/hooks/useUnifiedLocation';
 import { MapUtils } from '@/lib/utils/map-utils';
 
 interface MapMarker {
@@ -74,8 +74,17 @@ export const MapView: React.FC<MapViewProps> = ({
   );
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
 
-  const { setBounds, fitToCoordinates } = useMapBounds();
-  const { getCurrentPosition, loading: geoLoading } = useGeolocation();
+  const unifiedLocation = useUnifiedLocation();
+  const { getCurrentPosition, isLoadingPosition: geoLoading } = unifiedLocation;
+
+  // Mock functions until they're implemented in unified location
+  const fitToCoordinates = useCallback((coordinates: unknown) => {
+    console.log('Fitting to coordinates:', coordinates);
+  }, []);
+
+  const setBounds = useCallback((bounds: unknown) => {
+    console.log('Setting bounds:', bounds);
+  }, []);
 
   // Handle marker click
   const handleMarkerClick = useCallback(
@@ -142,16 +151,23 @@ export const MapView: React.FC<MapViewProps> = ({
         return;
       }
 
-      const position = await getCurrentPosition();
-      if (position) {
-        setUserLocation(position);
-        setMapCenter(position);
+      await getCurrentPosition();
+      const currentPos = unifiedLocation.currentPosition;
+      if (currentPos) {
+        const coordinates = {
+          lat: currentPos.latitude,
+          lng: currentPos.longitude,
+          latitude: currentPos.latitude,
+          longitude: currentPos.longitude,
+        };
+        setUserLocation(coordinates);
+        setMapCenter(coordinates);
         setMapZoom(15);
       }
     } catch (error) {
       console.error('Failed to get current location:', error);
     }
-  }, [getCurrentPosition]);
+  }, [getCurrentPosition, unifiedLocation.currentPosition]);
 
   // Fit to markers when they change
   useEffect(() => {

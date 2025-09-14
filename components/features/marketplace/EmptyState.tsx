@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Search, Briefcase, Package, RotateCcw } from 'lucide-react';
 
 interface EmptyStateProps {

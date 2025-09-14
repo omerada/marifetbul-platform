@@ -5,7 +5,7 @@ import { ChevronDown, Filter, Star, Clock, Check } from 'lucide-react';
 import { ReviewCard } from './ReviewCard';
 import { ReviewReply } from './ReviewReply';
 import { useReviews } from '@/hooks';
-import { Button } from '@/components/ui/Button';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 
 interface ReviewListProps {
