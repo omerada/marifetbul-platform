@@ -4,7 +4,9 @@ import { lazy } from 'react';
 import { LazyAdminWrapper } from '@/components/admin/LazyAdminWrapper';
 
 // Lazy load the heavy AdminModeration component
-const AdminModeration = lazy(() => import('@/components/admin/AdminModeration'));
+const AdminModeration = lazy(
+  () => import('@/components/admin/AdminModeration')
+);
 
 export default function AdminModerationPage() {
   return (

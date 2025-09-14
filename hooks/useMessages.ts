@@ -55,7 +55,8 @@ export function useMessages(conversationId: string) {
 // Hook to send messages - REFACTORED to use useAsyncOperation
 export function useMessaging() {
   const sendMessageOperation = useAsyncOperation<ApiResponse<Message>>();
-  const createConversationOperation = useAsyncOperation<ApiResponse<Conversation>>();
+  const createConversationOperation =
+    useAsyncOperation<ApiResponse<Conversation>>();
   const markAsReadAction = useAsyncAction();
 
   const sendMessage = async (conversationId: string, content: string) => {
@@ -98,8 +99,14 @@ export function useMessaging() {
     sendMessage,
     createConversation,
     markAsRead,
-    isLoading: sendMessageOperation.isLoading || createConversationOperation.isLoading || markAsReadAction.isLoading,
-    error: sendMessageOperation.error || createConversationOperation.error || markAsReadAction.error,
+    isLoading:
+      sendMessageOperation.isLoading ||
+      createConversationOperation.isLoading ||
+      markAsReadAction.isLoading,
+    error:
+      sendMessageOperation.error ||
+      createConversationOperation.error ||
+      markAsReadAction.error,
   };
 }
 
