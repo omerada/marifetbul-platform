@@ -1,134 +1,359 @@
-'use client';
+'use client';'use client';'use client';
 
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+
+
+import React, { useState } from 'react';
+
+import { useUnifiedSearch } from '@/hooks/useUnifiedSearch';
+
+import { Button } from '@/components/ui/Button';import React, { useState } from 'react';import React, { useState, useCallback, useEffect, useMemo } from 'react';
+
 import { Input } from '@/components/ui/Input';
-import { Badge } from '@/components/ui/Badge';
-import { Label } from '@/components/ui/Label';
-import { Slider } from '@/components/ui/Slider';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
-import {
-  Search,
+
+import { Badge } from '@/components/ui/Badge';import { useUnifiedSearch } from '@/hooks/useUnifiedSearch';import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+
+import { Search, MapPin } from 'lucide-react';
+
+import { Button } from '@/components/ui/Button';import { Button } from '@/components/ui/Button';
+
+interface EnhancedSearchSystemProps {
+
+  className?: string;import { Input } from '@/components/ui/Input';import { Input } from '@/components/ui/Input';
+
+}
+
+import { Badge } from '@/components/ui/Badge';import { Badge } from '@/components/ui/Badge';
+
+const EnhancedSearchSystem: React.FC<EnhancedSearchSystemProps> = ({
+
+  className = ''import { Search, Filter, MapPin } from 'lucide-react';import { Label } from '@/components/ui/Label';
+
+}) => {
+
+  const [query, setQuery] = useState('');import { Slider } from '@/components/ui/Slider';
+
+  const [location, setLocation] = useState('');
+
+  interface EnhancedSearchSystemProps {import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
+
+  const { results, isLoading, search } = useUnifiedSearch();
+
+  className?: string;import {
+
+  const handleSearch = async () => {
+
+    await search(query, { location, type: 'all' });}  Search,
+
+  };
+
   Filter,
-  X,
-  MapPin,
-  TrendingUp,
-  Zap,
-  BookmarkPlus,
-  BarChart3,
-  Heart,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useEnhancedSearch } from '@/hooks/useEnhancedSearch';
-import { SearchResult, SearchFilters } from '@/types/search';
 
-// Enhanced types for Sprint 3
-interface SearchFacet {
-  id: string;
-  name: string;
-  count: number;
-  selected: boolean;
-  type: 'category' | 'location' | 'skill' | 'price' | 'rating' | 'time';
-}
+  return (
 
-interface SmartFilter {
-  id: string;
-  name: string;
-  type: 'range' | 'select' | 'multiselect' | 'toggle' | 'location';
-  options?: { value: string; label: string; count?: number }[];
-  value: unknown; // More specific than any
-  min?: number;
-  max?: number;
-  step?: number;
-  placeholder?: string;
-}
+    <div className={`space-y-6 ${className}`}>const EnhancedSearchSystem: React.FC<EnhancedSearchSystemProps> = ({  X,
 
-interface SearchMetrics {
-  totalResults: number;
-  searchTime: number;
-  popularFilters: string[];
-  relatedSearches: string[];
-}
+      <div className="bg-white rounded-lg shadow-sm border p-6">
 
-interface SavedFilterSet {
-  id: string;
-  name: string;
-  filters: SmartFilter[];
-  createdAt: string;
-}
+        <div className="flex flex-col md:flex-row gap-4">  className = ''  MapPin,
 
-interface EnhancedSearchProps {
-  mode?: 'jobs' | 'services' | 'freelancers' | 'all';
-  onResults?: (results: SearchResult[]) => void;
-  onMetrics?: (metrics: SearchMetrics) => void;
-  className?: string;
-  enableAnalytics?: boolean;
-  enableSavedSearches?: boolean;
-  enableRealtime?: boolean;
-  placeholder?: string;
-}
+          <div className="flex-1">
 
-export function EnhancedSearchSystem({
-  mode = 'all',
-  onResults,
-  onMetrics,
-  className,
-  enableAnalytics = true,
-  enableSavedSearches = true,
-  enableRealtime = true,
-  placeholder = 'Gelişmiş arama: iş, hizmet, freelancer...',
-}: EnhancedSearchProps) {
+            <div className="relative">}) => {  TrendingUp,
+
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+
+              <Input  const [query, setQuery] = useState('');  Zap,
+
+                value={query}
+
+                onChange={(e) => setQuery(e.target.value)}  const [location, setLocation] = useState('');  BookmarkPlus,
+
+                placeholder="Ne arıyorsunuz?"
+
+                className="pl-10"  const [type, setType] = useState<'all' | 'jobs' | 'services' | 'users'>('all');  BarChart3,
+
+              />
+
+            </div>    Heart,
+
+          </div>
+
+            const { results, isLoading, search } = useUnifiedSearch();} from 'lucide-react';
+
+          <div className="w-full md:w-64">
+
+            <div className="relative">import { cn } from '@/lib/utils';
+
+              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+
+              <Input  const handleSearch = async () => {import { useUnifiedSearch } from '@/hooks/useUnifiedSearch';
+
+                value={location}
+
+                onChange={(e) => setLocation(e.target.value)}    await search(query, { location, type });import { SearchResult, SearchFilters } from '@/types/search';
+
+                placeholder="Konum"
+
+                className="pl-10"  };
+
+              />
+
+            </div>// Enhanced types for Sprint 3
+
+          </div>
+
+            const searchTypes = [interface SearchFacet {
+
+          <Button onClick={handleSearch} disabled={isLoading}>
+
+            {isLoading ? 'Aranıyor...' : 'Ara'}    { value: 'all', label: 'Tümü' },  id: string;
+
+          </Button>
+
+        </div>    { value: 'jobs', label: 'İşler' },  name: string;
+
+      </div>
+
+    { value: 'services', label: 'Hizmetler' },  count: number;
+
+      {results.length > 0 && (
+
+        <div className="space-y-4">    { value: 'users', label: 'Kullanıcılar' }  selected: boolean;
+
+          <h3 className="text-lg font-semibold">
+
+            {results.length} sonuç bulundu  ];  type: 'category' | 'location' | 'skill' | 'price' | 'rating' | 'time';
+
+          </h3>
+
+          }
+
+          <div className="grid gap-4">
+
+            {results.map((result, index: number) => (  return (
+
+              <div key={index} className="bg-white rounded-lg shadow-sm border p-6">
+
+                <h4 className="font-medium text-lg">{result.title}</h4>    <div className={`space-y-6 ${className}`}>interface SmartFilter {
+
+                <p className="text-gray-600 mt-1">{result.description}</p>
+
+                      {/* Search Header */}  id: string;
+
+                <div className="flex items-center gap-2 mt-3">
+
+                  <Badge variant="secondary">{result.type}</Badge>      <div className="bg-white rounded-lg shadow-sm border p-6">  name: string;
+
+                  {result.location && (
+
+                    <Badge variant="outline">        <div className="flex flex-col md:flex-row gap-4">  type: 'range' | 'select' | 'multiselect' | 'toggle' | 'location';
+
+                      <MapPin className="h-3 w-3 mr-1" />
+
+                      {result.location}          <div className="flex-1">  options?: { value: string; label: string; count?: number }[];
+
+                    </Badge>
+
+                  )}            <div className="relative">  value: unknown; // More specific than any
+
+                </div>
+
+              </div>              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />  min?: number;
+
+            ))}
+
+          </div>              <Input  max?: number;
+
+        </div>
+
+      )}                value={query}  step?: number;
+
+      
+
+      {query && !isLoading && results.length === 0 && (                onChange={(e) => setQuery(e.target.value)}  placeholder?: string;
+
+        <div className="text-center py-8">
+
+          <p className="text-gray-500">Arama kriterlerinize uygun sonuç bulunamadı.</p>                placeholder="Ne arıyorsunuz?"}
+
+        </div>
+
+      )}                className="pl-10"
+
+    </div>
+
+  );              />interface SearchMetrics {
+
+};
+
+            </div>  totalResults: number;
+
+export default EnhancedSearchSystem;
+          </div>  searchTime: number;
+
+            popularFilters: string[];
+
+          <div className="w-full md:w-64">  relatedSearches: string[];
+
+            <div className="relative">}
+
+              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+
+              <Inputinterface SavedFilterSet {
+
+                value={location}  id: string;
+
+                onChange={(e) => setLocation(e.target.value)}  name: string;
+
+                placeholder="Konum"  filters: SmartFilter[];
+
+                className="pl-10"  createdAt: string;
+
+              />}
+
+            </div>
+
+          </div>interface EnhancedSearchProps {
+
+            mode?: 'jobs' | 'services' | 'freelancers' | 'all';
+
+          <Button onClick={handleSearch} disabled={isLoading}>  onResults?: (results: SearchResult[]) => void;
+
+            {isLoading ? 'Aranıyor...' : 'Ara'}  onMetrics?: (metrics: SearchMetrics) => void;
+
+          </Button>  className?: string;
+
+        </div>  enableAnalytics?: boolean;
+
+          enableSavedSearches?: boolean;
+
+        {/* Search Type Filters */}  enableRealtime?: boolean;
+
+        <div className="flex gap-2 mt-4">  placeholder?: string;
+
+          {searchTypes.map((searchType) => (}
+
+            <Button
+
+              key={searchType.value}export function EnhancedSearchSystem({
+
+              variant={type === searchType.value ? 'default' : 'outline'}  mode = 'all',
+
+              size="sm"  onResults,
+
+              onClick={() => setType(searchType.value as any)}  onMetrics,
+
+            >  className,
+
+              {searchType.label}  enableAnalytics = true,
+
+            </Button>  enableSavedSearches = true,
+
+          ))}  enableRealtime = true,
+
+        </div>  placeholder = 'Gelişmiş arama: iş, hizmet, freelancer...',
+
+      </div>}: EnhancedSearchProps) {
+
   // Enhanced search state
-  const {
-    query,
-    results,
-    suggestions,
-    isLoading,
-    filters,
-    setQuery,
-    search,
-    applyFilter,
-    removeFilter,
-    clearSearch,
-    saveCurrentSearch,
-    getSearchAnalytics,
-  } = useEnhancedSearch();
 
-  const [searchInput, setSearchInput] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [searchMode, setSearchMode] = useState<
-    'simple' | 'advanced' | 'expert'
-  >('simple');
-  const [facets, setFacets] = useState<SearchFacet[]>([]);
-  const [smartFilters, setSmartFilters] = useState<SmartFilter[]>([]);
-  const [searchMetrics, setSearchMetrics] = useState<SearchMetrics | null>(
-    null
-  );
-  const [savedFilterSets, setSavedFilterSets] = useState<SavedFilterSet[]>([]);
-  const [realtimeEnabled, setRealtimeEnabled] = useState(enableRealtime);
+      {/* Results */}  const {
 
-  // Initialize smart filters based on mode
-  useEffect(() => {
-    const initializeFilters = () => {
-      const baseFilters: SmartFilter[] = [
+      {results.length > 0 && (    query,
+
+        <div className="space-y-4">    results,
+
+          <div className="flex items-center justify-between">    suggestions,
+
+            <h3 className="text-lg font-semibold">    isLoading,
+
+              {results.length} sonuç bulundu    filters,
+
+            </h3>    setQuery,
+
+            <div className="flex items-center gap-2">    search,
+
+              <Filter className="h-4 w-4" />    applyFilter,
+
+              <span className="text-sm text-gray-600">Filtreler</span>    removeFilter,
+
+            </div>    clearSearch,
+
+          </div>    saveCurrentSearch,
+
+              getSearchAnalytics,
+
+          <div className="grid gap-4">  } = useUnifiedSearch();
+
+            {results.map((result, index: number) => (
+
+              <div key={index} className="bg-white rounded-lg shadow-sm border p-6">  const [searchInput, setSearchInput] = useState('');
+
+                <div className="flex items-start justify-between">  const [showFilters, setShowFilters] = useState(false);
+
+                  <div className="flex-1">  const [showSuggestions, setShowSuggestions] = useState(false);
+
+                    <h4 className="font-medium text-lg">{result.title}</h4>  const [searchMode, setSearchMode] = useState<
+
+                    <p className="text-gray-600 mt-1">{result.description}</p>    'simple' | 'advanced' | 'expert'
+
+                      >('simple');
+
+                    <div className="flex items-center gap-2 mt-3">  const [facets, setFacets] = useState<SearchFacet[]>([]);
+
+                      <Badge variant="secondary">{result.type}</Badge>  const [smartFilters, setSmartFilters] = useState<SmartFilter[]>([]);
+
+                      {result.location && (  const [searchMetrics, setSearchMetrics] = useState<SearchMetrics | null>(
+
+                        <Badge variant="outline">    null
+
+                          <MapPin className="h-3 w-3 mr-1" />  );
+
+                          {result.location}  const [savedFilterSets, setSavedFilterSets] = useState<SavedFilterSet[]>([]);
+
+                        </Badge>  const [realtimeEnabled, setRealtimeEnabled] = useState(enableRealtime);
+
+                      )}
+
+                    </div>  // Initialize smart filters based on mode
+
+                  </div>  useEffect(() => {
+
+                </div>    const initializeFilters = () => {
+
+              </div>      const baseFilters: SmartFilter[] = [
+
+            ))}        {
+
+          </div>          id: 'categories',
+
+        </div>          name: 'Kategoriler',
+
+      )}          type: 'multiselect',
+
+                value: [],
+
+      {/* Empty State */}          options: [
+
+      {query && !isLoading && results.length === 0 && (            { value: 'web-dev', label: 'Web Geliştirme', count: 245 },
+
+        <div className="text-center py-8">            { value: 'mobile-dev', label: 'Mobil Geliştirme', count: 189 },
+
+          <p className="text-gray-500">Arama kriterlerinize uygun sonuç bulunamadı.</p>            { value: 'design', label: 'Tasarım', count: 156 },
+
+        </div>            { value: 'marketing', label: 'Pazarlama', count: 134 },
+
+      )}            { value: 'writing', label: 'Yazarlık', count: 98 },
+
+    </div>            { value: 'translation', label: 'Çeviri', count: 87 },
+
+  );          ],
+
+};        },
+
         {
-          id: 'categories',
-          name: 'Kategoriler',
-          type: 'multiselect',
-          value: [],
-          options: [
-            { value: 'web-dev', label: 'Web Geliştirme', count: 245 },
-            { value: 'mobile-dev', label: 'Mobil Geliştirme', count: 189 },
-            { value: 'design', label: 'Tasarım', count: 156 },
-            { value: 'marketing', label: 'Pazarlama', count: 134 },
-            { value: 'writing', label: 'Yazarlık', count: 98 },
-            { value: 'translation', label: 'Çeviri', count: 87 },
-          ],
-        },
-        {
-          id: 'location',
+
+export default EnhancedSearchSystem;          id: 'location',
           name: 'Lokasyon',
           type: 'location',
           value: '',

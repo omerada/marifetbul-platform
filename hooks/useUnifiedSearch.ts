@@ -199,14 +199,15 @@ export function useUnifiedSearch(
     }
   }, [store.query, fetchSuggestions, autoSuggestions]);
 
-  // Clear timeout on unmount
   useEffect(() => {
     return () => {
       if (suggestionsTimeoutRef.current) {
         clearTimeout(suggestionsTimeoutRef.current);
+        suggestionsTimeoutRef.current = null;
       }
       if (searchRequestRef.current) {
         searchRequestRef.current.abort();
+        searchRequestRef.current = null;
       }
     };
   }, []);

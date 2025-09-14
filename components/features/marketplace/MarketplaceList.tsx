@@ -2,7 +2,7 @@
 
 import { JobCard } from './JobCard';
 import { PackageCard } from './PackageCard';
-import { MarketplaceLoadingState } from './MarketplaceLoadingState';
+import { Loading } from '@/components/ui';
 import { EmptyState } from './EmptyState';
 import type { Job, ServicePackage } from '@/types';
 import type { ViewPreferences } from '@/lib/validations/marketplace';
@@ -26,9 +26,10 @@ export function MarketplaceList({
 }: MarketplaceListProps) {
   if (isLoading) {
     return (
-      <MarketplaceLoadingState
-        viewMode={viewPreferences.layout}
-        itemCount={8}
+      <Loading
+        variant="skeleton"
+        size="lg"
+        text="Marketplace içeriği yükleniyor..."
       />
     );
   }

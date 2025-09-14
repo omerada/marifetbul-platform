@@ -232,7 +232,7 @@ export function useEnhancedPerformance() {
     };
   }, []);
 
-  // Auto-refresh metrics
+  // Auto-refresh metrics with cleanup
   useEffect(() => {
     if (!isTracking) return;
 
@@ -243,7 +243,7 @@ export function useEnhancedPerformance() {
     return () => clearInterval(interval);
   }, [isTracking, fetchMetrics]);
 
-  // Listen for performance events
+  // Listen for performance events with cleanup
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden && isTracking) {

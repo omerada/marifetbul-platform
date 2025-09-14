@@ -41,9 +41,37 @@ const nextConfig: NextConfig = {
     unoptimized: process.env.NODE_ENV === 'development',
   },
 
-  // Performance optimizations
+  // Performance optimizations - ENHANCED
   experimental: {
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    optimizePackageImports: [
+      'lucide-react',
+      '@radix-ui/react-icons',
+      'date-fns',
+      'lodash-es',
+      '@hookform/resolvers',
+    ],
+    optimizeCss: true,
+  },
+
+  // WEBPACK OPTIMIZATIONS
+  webpack: (config, { dev, isServer }) => {
+    // Tree shaking optimization
+    if (!dev && !isServer) {
+      config.optimization = {
+        ...config.optimization,
+        sideEffects: false,
+        usedExports: true,
+      };
+    }
+
+    // Reduce bundle size
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      // Use ES modules for better tree shaking
+      lodash: 'lodash-es',
+    };
+
+    return config;
   },
 
   // Security headers

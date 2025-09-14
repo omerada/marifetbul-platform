@@ -103,58 +103,6 @@ export const useLocation = (): UseLocationReturn => {
     }
   }, [getCurrentPosition]);
 
-  const searchByLocation = useCallback(
-    async (params: { query: string; coordinates?: Coordinates }) => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const searchResults = await searchLocations(params.query);
-        setResults(searchResults);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Failed to search locations'
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    []
-  );
-
-  const formatDistance = useCallback((distance: number): string => {
-    if (distance < 1000) {
-      return `${Math.round(distance)}m`;
-    }
-    return `${(distance / 1000).toFixed(1)}km`;
-  }, []);
-
-  const setBounds = useCallback(
-    (bounds: { north: number; south: number; east: number; west: number }) => {
-      // Mock implementation - in real app would set map bounds
-      console.log('Setting bounds:', bounds);
-    },
-    []
-  );
-
-  const fitToCoordinates = useCallback((coordinates: Coordinates[]) => {
-    // Mock implementation - in real app would fit map to coordinates
-    console.log('Fitting to coordinates:', coordinates);
-  }, []);
-
-  const reverseGeocode = useCallback(
-    async (lat: number, lng: number): Promise<string | null> => {
-      try {
-        // Mock reverse geocoding
-        return `Location at ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-      } catch (err) {
-        console.error('Reverse geocoding failed:', err);
-        return null;
-      }
-    },
-    []
-  );
-
   const searchLocations = useCallback(
     async (query: string): Promise<LocationData[]> => {
       if (!query.trim()) return [];
@@ -190,6 +138,58 @@ export const useLocation = (): UseLocationReturn => {
       } catch (err) {
         console.error('Failed to search locations:', err);
         return [];
+      }
+    },
+    []
+  );
+
+  const searchByLocation = useCallback(
+    async (params: { query: string; coordinates?: Coordinates }) => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const searchResults = await searchLocations(params.query);
+        setResults(searchResults);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Failed to search locations'
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [searchLocations]
+  );
+
+  const formatDistance = useCallback((distance: number): string => {
+    if (distance < 1000) {
+      return `${Math.round(distance)}m`;
+    }
+    return `${(distance / 1000).toFixed(1)}km`;
+  }, []);
+
+  const setBounds = useCallback(
+    (bounds: { north: number; south: number; east: number; west: number }) => {
+      // Mock implementation - in real app would set map bounds
+      console.log('Setting bounds:', bounds);
+    },
+    []
+  );
+
+  const fitToCoordinates = useCallback((coordinates: Coordinates[]) => {
+    // Mock implementation - in real app would fit map to coordinates
+    console.log('Fitting to coordinates:', coordinates);
+  }, []);
+
+  const reverseGeocode = useCallback(
+    async (lat: number, lng: number): Promise<string | null> => {
+      try {
+        // Mock reverse geocoding
+        return `Location at ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      } catch (err) {
+        console.error('Reverse geocoding failed:', err);
+        return null;
       }
     },
     []
@@ -257,8 +257,10 @@ export const useMapBounds = () => {
   return {
     ...locationHook,
     setBounds: locationHook.setBounds,
-    fitToCoordinates: locationHook.fitToCoordinates,
   };
 };
 
 export default useLocation;
+
+// DEPRECATED: Use useUnifiedLocation instead of these utility hooks
+// These will be removed in next major version

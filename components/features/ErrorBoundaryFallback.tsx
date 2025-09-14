@@ -62,7 +62,7 @@ export class ErrorBoundaryFallback extends Component<
     };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.setState({
       errorInfo,
     });
@@ -81,7 +81,7 @@ export class ErrorBoundaryFallback extends Component<
     }
   }
 
-  componentDidUpdate(prevProps: ErrorBoundaryProps) {
+  override componentDidUpdate(prevProps: ErrorBoundaryProps) {
     const { resetOnPropsChange, children } = this.props;
     const { hasError } = this.state;
 
@@ -91,7 +91,7 @@ export class ErrorBoundaryFallback extends Component<
     }
   }
 
-  componentWillUnmount() {
+  override componentWillUnmount() {
     if (this.resetTimeoutId) {
       window.clearTimeout(this.resetTimeoutId);
     }
@@ -138,7 +138,7 @@ export class ErrorBoundaryFallback extends Component<
     this.forceUpdate();
   };
 
-  render() {
+  override render() {
     const { hasError, error, errorInfo, eventId } = this.state;
     const {
       children,

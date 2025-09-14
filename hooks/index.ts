@@ -9,9 +9,10 @@ export {
   useMultipleAsyncOperations,
 } from './useAsyncOperation';
 
-// Search & Filtering - Sprint 7
-export { useAdvancedSearch } from './useAdvancedSearch';
-export { useEnhancedSearch } from './useEnhancedSearch';
+// Search & Filtering - Sprint 7 - CONSOLIDATED
+export { useUnifiedSearch } from './useUnifiedSearch';
+// LOCATION: Prefer useUnifiedLocation over useLocation utilities
+export { useUnifiedLocation } from './useUnifiedLocation';
 export { useGeolocation, useLocation } from './useLocation';
 
 // Recommendations & Favorites - Sprint 7
@@ -53,10 +54,11 @@ export {
 } from './useSupport';
 export { useChat, useChatSession, useChatComposer } from './useChat';
 
-// SEO & Performance - Sprint 18
+// SEO & Performance - Sprint 18 - ENHANCED VERSION
 export { useSEO } from './useSEO';
-export { usePerformance } from './usePerformance';
 export { useEnhancedPerformance } from './useEnhancedPerformance';
+// DEPRECATED: Use useEnhancedPerformance instead
+export { usePerformance } from './usePerformance';
 export { useSocialShare } from './useSocialShare';
 
 // Job & Package Management

@@ -5,6 +5,7 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -13,6 +14,15 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    // ENHANCED TYPE CHECKING
+    "exactOptionalPropertyTypes": false, // Too strict for current codebase
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "noUncheckedIndexedAccess": false, // Too strict for arrays
+    "noUnusedLocals": false, // Turn off for now, enable later
+    "noUnusedParameters": false, // Turn off for now, enable later
     "plugins": [
       {
         "name": "next"

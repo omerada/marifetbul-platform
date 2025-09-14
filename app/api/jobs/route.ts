@@ -1,3 +1,7 @@
+/**
+ * @deprecated This API route will be removed in the next major version.
+ * Use /api/v1/jobs instead for better performance and maintainability.
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import type { Job, PaginatedResponse } from '@/types';
 

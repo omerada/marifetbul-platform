@@ -1,45 +1,86 @@
-'use client';
+'use client';'use client';
 
-import { Skeleton } from '@/components/ui/Skeleton';
-import { Card } from '@/components/ui/Card';
 
-interface MarketplaceLoadingStateProps {
-  viewMode: 'grid' | 'list';
-  itemCount?: number;
-}
 
-export function MarketplaceLoadingState({
-  viewMode,
-  itemCount = 8,
-}: MarketplaceLoadingStateProps) {
-  const items = Array.from({ length: itemCount }, (_, i) => i);
+import { Loading } from '@/components/ui';import { Skeleton } from '@/components/ui';
 
-  if (viewMode === 'list') {
-    return (
-      <div className="space-y-4" role="status" aria-label="İçerik yükleniyor">
-        {items.map((index) => (
-          <Card key={index} className="p-6">
-            <div className="flex items-start gap-4">
-              <Skeleton variant="circular" width={64} height={64} />
-              <div className="flex-1 space-y-3">
-                <div className="flex items-center justify-between">
-                  <Skeleton variant="text" className="h-6 w-3/4" />
-                  <Skeleton variant="text" className="h-5 w-20" />
+import { Card } from '@/components/ui/Card';import { Card } from '@/components/ui/Card';
+
+
+
+interface MarketplaceLoadingStateProps {interface MarketplaceLoadingStateProps {
+
+  viewMode: 'grid' | 'list';  viewMode: 'grid' | 'list';
+
+  itemCount?: number;  itemCount?: number;
+
+}}
+
+
+
+export function MarketplaceLoadingState({export function MarketplaceLoadingState({
+
+  viewMode,  viewMode,
+
+  itemCount = 8,  itemCount = 8,
+
+}: MarketplaceLoadingStateProps) {}: MarketplaceLoadingStateProps) {
+
+  const items = Array.from({ length: itemCount }, (_, i) => i);  const items = Array.from({ length: itemCount }, (_, i) => i);
+
+
+
+  if (viewMode === 'list') {  if (viewMode === 'list') {
+
+    return (    return (
+
+      <div className="space-y-4" role="status" aria-label="İçerik yükleniyor">      <div className="space-y-4" role="status" aria-label="İçerik yükleniyor">
+
+        {items.map((index) => (        {items.map((index) => (
+
+          <Card key={index} className="p-6">          <Card key={index} className="p-6">
+
+            <Loading variant="skeleton" size="lg" text="Marketplace öğeleri yükleniyor..." />            <div className="flex items-start gap-4">
+
+          </Card>              <Skeleton variant="circular" width={64} height={64} />
+
+        ))}              <div className="flex-1 space-y-3">
+
+      </div>                <div className="flex items-center justify-between">
+
+    );                  <Skeleton variant="text" className="h-6 w-3/4" />
+
+  }                  <Skeleton variant="text" className="h-5 w-20" />
+
                 </div>
-                <Skeleton variant="text" className="h-4 w-full" />
-                <Skeleton variant="text" className="h-4 w-2/3" />
-                <div className="flex items-center justify-between pt-2">
-                  <div className="flex gap-2">
-                    <Skeleton variant="rectangular" className="h-6 w-16" />
-                    <Skeleton variant="rectangular" className="h-6 w-20" />
-                  </div>
-                  <Skeleton variant="text" className="h-6 w-24" />
-                </div>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
+
+  return (                <Skeleton variant="text" className="h-4 w-full" />
+
+    <div                <Skeleton variant="text" className="h-4 w-2/3" />
+
+      className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"                <div className="flex items-center justify-between pt-2">
+
+      role="status"                  <div className="flex gap-2">
+
+      aria-label="İçerik yükleniyor"                    <Skeleton variant="rectangular" className="h-6 w-16" />
+
+    >                    <Skeleton variant="rectangular" className="h-6 w-20" />
+
+      {items.map((index) => (                  </div>
+
+        <Card key={index} className="group hover:shadow-lg transition-shadow">                  <Skeleton variant="text" className="h-6 w-24" />
+
+          <Loading variant="skeleton" size="lg" text="Ürün bilgileri yükleniyor..." />                </div>
+
+        </Card>              </div>
+
+      ))}            </div>
+
+    </div>          </Card>
+
+  );        ))}
+
+}      </div>
     );
   }
 

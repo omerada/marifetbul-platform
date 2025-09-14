@@ -27,7 +27,7 @@ import { SocialShare } from '@/components/social/SocialShare';
 import { ProposalModal } from './ProposalModal';
 import { ProposalCard } from './ProposalCard';
 import { ErrorState } from './ErrorState';
-import { JobDetailSkeleton } from './JobDetailSkeleton';
+import { Loading } from '@/components/ui';
 
 interface JobDetailProps {
   jobId: string;
@@ -50,7 +50,7 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
   const [isSaved, setIsSaved] = useState(false);
 
   if (isLoading) {
-    return <JobDetailSkeleton />;
+    return <Loading variant="skeleton" text="İş detayları yükleniyor..." />;
   }
 
   if (error || !currentJob) {

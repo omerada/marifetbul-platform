@@ -9,7 +9,7 @@ import { useMarketplace } from '@/hooks/useMarketplace';
 import { JobCard } from './JobCard';
 import { PackageCard } from './PackageCard';
 import { EmptyState } from './EmptyState';
-import { MarketplaceSkeleton } from './MarketplaceSkeleton';
+import { Loading } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 interface MobileMarketplaceProps {
@@ -79,7 +79,13 @@ export function MobileMarketplace({
   };
 
   if (isLoading) {
-    return <MarketplaceSkeleton />;
+    return (
+      <Loading
+        variant="skeleton"
+        size="lg"
+        text="Mobil marketplace yükleniyor..."
+      />
+    );
   }
 
   if (error) {

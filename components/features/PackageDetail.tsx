@@ -27,7 +27,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/Avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { ErrorState } from './ErrorState';
-import { JobDetailSkeleton } from './JobDetailSkeleton';
+import { Loading } from '@/components/ui';
 
 interface PackageDetailProps {
   packageId: string;
@@ -53,7 +53,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
   const [isSaved, setIsSaved] = useState(false);
 
   if (isLoading) {
-    return <JobDetailSkeleton />;
+    return <Loading variant="skeleton" text="Paket detayları yükleniyor..." />;
   }
 
   if (error || !currentPackage) {

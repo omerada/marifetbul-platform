@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
-import { LoadingSkeleton } from '@/components/ui/Loading';
+import { Loading } from '@/components/ui';
 import { usePayment } from '@/hooks/usePayment';
 import { Payment, PaymentMethodType } from '@/types';
 import {
@@ -171,7 +171,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
           {loading ? (
             <div className="space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
-                <LoadingSkeleton key={i} className="h-16" />
+                <Loading key={i} variant="skeleton" className="h-16" />
               ))}
             </div>
           ) : filteredPayments.length === 0 ? (

@@ -2,7 +2,9 @@ export { Button } from './Button';
 export { Input } from './Input';
 export { Checkbox } from './Checkbox';
 export { Card, CardHeader, CardContent, CardFooter } from './Card';
-export { Loading, LoadingSkeleton, LoadingCard, LoadingText } from './Loading';
+// LOADING COMPONENTS CONSOLIDATED TO SHARED/UNIFIEDLOADING
+export { default as Loading } from '../shared/UnifiedLoading';
+export { default as Skeleton } from '../shared/UnifiedLoading';
 export { ErrorFallback } from './ErrorFallback';
 export {
   Tooltip,

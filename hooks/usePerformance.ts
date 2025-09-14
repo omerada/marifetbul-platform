@@ -1,4 +1,7 @@
-'use client';
+/**
+ * @deprecated Use useEnhancedPerformance instead
+ * This hook will be removed in the next major version
+ */
 
 import { useEffect, useState, useRef } from 'react';
 import {

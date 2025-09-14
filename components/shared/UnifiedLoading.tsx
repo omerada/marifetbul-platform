@@ -1,5 +1,5 @@
-// Unified Loading components - consolidating all loading functionality
-import React from 'react';
+// Unified Loading components - PRODUCTION READY VERSION
+import React, { memo } from 'react';
 import { Loader2, Check, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -17,14 +17,14 @@ interface BaseLoadingProps {
   state?: LoadingState;
 }
 
-// Main unified loading component
-export function UnifiedLoading({
+// Main unified loading component - OPTIMIZED WITH MEMO
+const UnifiedLoadingComponent = ({
   variant = 'spinner',
   size = 'md',
   className,
   text,
   state = 'loading',
-}: BaseLoadingProps) {
+}: BaseLoadingProps) => {
   const sizeClasses = {
     sm: 'h-4 w-4',
     md: 'h-6 w-6',
@@ -88,7 +88,9 @@ export function UnifiedLoading({
       )}
     </div>
   );
-}
+};
+
+export const UnifiedLoading = memo(UnifiedLoadingComponent);
 
 // Dot spinner component
 function DotSpinner({ size }: { size: LoadingSize }) {
@@ -362,3 +364,4 @@ export function ProgressLoader({
 
 // Export all components
 export { DotSpinner, PulseLoader, SkeletonLoader };
+export default UnifiedLoadingComponent;

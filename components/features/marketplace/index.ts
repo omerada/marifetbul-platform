@@ -4,7 +4,6 @@ export { MarketplaceFilters } from './MarketplaceFilters';
 export { MarketplaceList } from './MarketplaceList';
 export { MarketplaceStats } from './MarketplaceStats';
 export { MarketplacePagination } from './MarketplacePagination';
-export { MarketplaceSkeleton } from './MarketplaceSkeleton';
 export { JobCard } from './JobCard';
 export { PackageCard } from './PackageCard';
 export { EmptyState } from './EmptyState';

@@ -97,7 +97,7 @@ export {
 } from './LazyComponents';
 
 // Advanced Features
-export { AdvancedSearch } from './AdvancedSearch';
+export { default as AdvancedSearch } from './AdvancedSearch';
 export { UniversalSearch } from './UniversalSearch';
 export { NotificationCenter } from './NotificationCenter';
 export { NotificationModal } from './NotificationModal';
