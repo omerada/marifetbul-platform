@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { MSWProvider } from '@/components/providers/MSWProvider';
 import { AuthProvider } from '@/components/providers/AuthProvider';
-import { ToastContainer } from '@/components/ui/Toast';
+import { ToastProvider } from '@/components/providers/ToastProvider';
 import { SEOHead } from '@/components/seo/SEOHead';
 import './globals.css';
 
@@ -70,8 +70,7 @@ export default function RootLayout({
       >
         <MSWProvider>
           <AuthProvider>
-            {children}
-            <ToastContainer />
+            <ToastProvider>{children}</ToastProvider>
           </AuthProvider>
         </MSWProvider>
       </body>

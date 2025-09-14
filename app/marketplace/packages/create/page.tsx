@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardContent,
 } from '@/components/ui';
-import { useToast } from '@/hooks/useToast';
+import { useToast } from '@/hooks';
 
 // Zod validation schema
 const packageSchema = z.object({
@@ -97,7 +97,7 @@ const subcategories: Record<string, string[]> = {
 
 export default function CreatePackagePage() {
   const router = useRouter();
-  const { showToast } = useToast();
+  const { success, error } = useToast();
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
   const {
@@ -117,11 +117,11 @@ export default function CreatePackagePage() {
       console.log('Package data:', data);
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      showToast('Paket başarıyla oluşturuldu!', 'success');
+      success('Paket başarıyla oluşturuldu!');
       router.push('/marketplace?view=packages');
-    } catch (error) {
-      console.error('Package creation error:', error);
-      showToast('Paket oluşturulurken bir hata oluştu', 'error');
+    } catch (err) {
+      console.error('Package creation error:', err);
+      error('Paket oluşturulurken bir hata oluştu');
     }
   };
 

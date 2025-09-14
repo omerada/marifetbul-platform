@@ -49,14 +49,11 @@ export { useJobsSearch, usePackagesSearch, useUserSearch } from './api';
 export { useUnifiedSearch } from './business';
 
 // UI interaction hooks (legacy compatibility)
-export {
-  useModal,
-  useToast,
-  useForm,
-  useTheme,
-  useSidebar,
-  useClipboard,
-} from './ui';
+export { useModal, useForm, useTheme, useSidebar, useClipboard } from './ui';
+
+// Core optimized hooks
+export { useToast } from './useToast';
+export { default as useNotification } from './core/useNotification';
 
 // UI responsive hooks (legacy compatibility)
 export { useResponsive } from './useResponsive';

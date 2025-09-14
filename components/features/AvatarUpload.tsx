@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { useToast } from '@/hooks/useToast';
+import { useToast } from '@/hooks';
 import Image from 'next/image';
 
 interface AvatarUploadProps {
@@ -23,7 +23,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { showToast } = useToast();
+  const { error, success } = useToast();
 
   const sizeClasses = {
     sm: 'w-12 h-12',
@@ -138,14 +138,14 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
       // Dosya validasyonu
       const fileValidation = validateFile(file);
       if (!fileValidation.valid) {
-        showToast(fileValidation.error!, 'error');
+        error(fileValidation.error!);
         return;
       }
 
       // Görüntü boyut validasyonu
       const dimensionValidation = await validateImageDimensions(file);
       if (!dimensionValidation.valid) {
-        showToast(dimensionValidation.error!, 'error');
+        error(dimensionValidation.error!);
         return;
       }
 
@@ -158,13 +158,10 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
       try {
         const avatarUrl = await uploadFile(file);
         onAvatarUpdate(avatarUrl);
-        showToast('Profil fotoğrafı başarıyla güncellendi!', 'success');
+        success('Profil fotoğrafı başarıyla güncellendi!');
         setPreviewUrl(null);
-      } catch (error) {
-        showToast(
-          error instanceof Error ? error.message : 'Yükleme başarısız',
-          'error'
-        );
+      } catch (err) {
+        error(err instanceof Error ? err.message : 'Yükleme başarısız');
         setPreviewUrl(null);
       } finally {
         setIsUploading(false);
@@ -174,7 +171,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
         }
       }
     },
-    [onAvatarUpdate, showToast, uploadFile]
+    [onAvatarUpdate, success, error, uploadFile]
   );
 
   const handleClick = () => {
@@ -196,12 +193,9 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
       }
 
       onAvatarUpdate('');
-      showToast('Profil fotoğrafı kaldırıldı', 'success');
-    } catch (error) {
-      showToast(
-        error instanceof Error ? error.message : 'Silme işlemi başarısız',
-        'error'
-      );
+      success('Profil fotoğrafı kaldırıldı');
+    } catch (err) {
+      error(err instanceof Error ? err.message : 'Silme işlemi başarısız');
     } finally {
       setIsUploading(false);
     }

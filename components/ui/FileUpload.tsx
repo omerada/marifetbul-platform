@@ -12,6 +12,7 @@ import {
   createPreviewUrl,
   cleanupPreviewUrl,
   FileUploadOptions,
+  FileUploadResult,
   ALLOWED_FILE_TYPES,
 } from '@/lib/utils/fileUpload';
 
@@ -43,7 +44,7 @@ export default function FileUpload({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
-    allowedTypes = ALLOWED_FILE_TYPES.all,
+    allowedTypes = ALLOWED_FILE_TYPES,
     multiple = true,
     maxFiles = 5,
   } = options;
@@ -56,7 +57,7 @@ export default function FileUpload({
 
       // Validate files
       const validation = validateFiles(fileArray, options);
-      if (!validation.valid) {
+      if (!validation.isValid) {
         onError?.(validation.errors.join('\n'));
         return;
       }
@@ -79,8 +80,23 @@ export default function FileUpload({
 
     try {
       const files = previews.map((p) => p.file);
-      const uploadedFiles = await uploadFiles(files);
-      onFilesUploaded(uploadedFiles);
+      const uploadResults = await uploadFiles(files);
+
+      // Convert FileUploadResult[] to FileAttachment[]
+      const fileAttachments: FileAttachment[] = uploadResults
+        .filter((result: FileUploadResult) => result.success)
+        .map((result: FileUploadResult, index: number) => ({
+          id: Math.random().toString(36).substr(2, 9),
+          name: files[index].name,
+          type: files[index].type,
+          filename: files[index].name,
+          size: files[index].size,
+          mimetype: files[index].type,
+          url: result.url || '',
+          uploadedAt: new Date().toISOString(),
+        }));
+
+      onFilesUploaded(fileAttachments);
 
       // Cleanup
       previews.forEach((preview) => {

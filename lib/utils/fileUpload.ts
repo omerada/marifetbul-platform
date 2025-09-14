@@ -1,118 +1,109 @@
-/**
- * File upload utilities
- * Production-ready file upload functionality with service integration
- */
-
-import { FileAttachment } from '@/types';
-import { getFileUploadService } from '@/lib/services/fileUpload';
-
-// Allowed file types
-export const ALLOWED_FILE_TYPES = {
-  image: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'],
-  document: [
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  ],
-  text: ['text/plain'],
-  all: [
-    'image/jpeg',
-    'image/jpg',
-    'image/png',
-    'image/gif',
-    'image/webp',
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'text/plain',
-  ],
-};
-
-// Max file size (5MB)
-export const MAX_FILE_SIZE = 5 * 1024 * 1024;
-
-// Max files per upload
-export const MAX_FILES = 5;
-
 export interface FileUploadOptions {
+  maxSize?: number; // bytes
   allowedTypes?: string[];
-  maxSize?: number;
   maxFiles?: number;
+  compression?: boolean;
+  quality?: number; // 0-1 for image compression
   multiple?: boolean;
 }
 
+// Type alias for compatibility
+export type FileUploadConfig = FileUploadOptions;
+
 export interface FileValidationResult {
-  valid: boolean;
+  isValid: boolean;
   errors: string[];
 }
 
-/**
- * Validate file before upload
- */
+export interface FileUploadResult {
+  success: boolean;
+  file?: File;
+  url?: string;
+  error?: string;
+}
+
+// Extended file upload result for multiple files
+export interface UploadedFile {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  url: string;
+  thumbnailUrl?: string;
+  uploadedAt: string;
+}
+
+export interface ImageDimensions {
+  width: number;
+  height: number;
+}
+
+export const DEFAULT_UPLOAD_OPTIONS: FileUploadOptions = {
+  maxSize: 10 * 1024 * 1024, // 10MB
+  allowedTypes: [
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'application/pdf',
+    'text/plain',
+  ],
+  maxFiles: 5,
+  compression: true,
+  quality: 0.8,
+};
+
+export const ALLOWED_FILE_TYPES = DEFAULT_UPLOAD_OPTIONS.allowedTypes!;
+
 export function validateFile(
   file: File,
-  options: FileUploadOptions = {}
+  options: FileUploadOptions = DEFAULT_UPLOAD_OPTIONS
 ): FileValidationResult {
-  const { allowedTypes = ALLOWED_FILE_TYPES.all, maxSize = MAX_FILE_SIZE } =
-    options;
-
   const errors: string[] = [];
 
+  // Check file size
+  if (options.maxSize && file.size > options.maxSize) {
+    errors.push(
+      `Dosya boyutu ${formatFileSize(options.maxSize)} limitini aşıyor`
+    );
+  }
+
   // Check file type
-  if (!allowedTypes.includes(file.type)) {
+  if (options.allowedTypes && !options.allowedTypes.includes(file.type)) {
     errors.push(`Desteklenmeyen dosya türü: ${file.type}`);
   }
 
-  // Check file size
-  if (file.size > maxSize) {
-    const maxSizeMB = Math.round(maxSize / (1024 * 1024));
-    errors.push(`Dosya boyutu ${maxSizeMB}MB'dan büyük olamaz`);
-  }
-
-  // Check file name
-  if (!file.name || file.name.trim() === '') {
-    errors.push('Geçersiz dosya adı');
-  }
-
   return {
-    valid: errors.length === 0,
+    isValid: errors.length === 0,
     errors,
   };
 }
 
-/**
- * Validate multiple files
- */
 export function validateFiles(
-  files: File[],
-  options: FileUploadOptions = {}
+  files: FileList | File[],
+  options: FileUploadOptions = DEFAULT_UPLOAD_OPTIONS
 ): FileValidationResult {
-  const { maxFiles = MAX_FILES } = options;
-
   const errors: string[] = [];
+  const fileArray = Array.from(files);
 
   // Check number of files
-  if (files.length > maxFiles) {
-    errors.push(`En fazla ${maxFiles} dosya yükleyebilirsiniz`);
+  if (options.maxFiles && fileArray.length > options.maxFiles) {
+    errors.push(`En fazla ${options.maxFiles} dosya yükleyebilirsiniz`);
   }
 
   // Validate each file
-  files.forEach((file, index) => {
-    const fileValidation = validateFile(file, options);
-    if (!fileValidation.valid) {
-      errors.push(`Dosya ${index + 1}: ${fileValidation.errors.join(', ')}`);
+  fileArray.forEach((file, index) => {
+    const validation = validateFile(file, options);
+    if (!validation.isValid) {
+      errors.push(`Dosya ${index + 1}: ${validation.errors.join(', ')}`);
     }
   });
 
   return {
-    valid: errors.length === 0,
+    isValid: errors.length === 0,
     errors,
   };
 }
 
-/**
- * Format file size for display
- */
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes';
 
@@ -123,102 +114,197 @@ export function formatFileSize(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-/**
- * Get file icon based on file type
- */
-export function getFileIcon(fileType: string): string {
-  if (fileType.startsWith('image/')) {
-    return '🖼️';
-  } else if (fileType === 'application/pdf') {
-    return '📄';
-  } else if (fileType.includes('word') || fileType.includes('document')) {
-    return '📝';
-  } else if (fileType.startsWith('text/')) {
-    return '📋';
-  } else {
-    return '📁';
-  }
-}
-
-/**
- * Upload a single file using the file upload service
- */
-export async function uploadFile(file: File): Promise<FileAttachment> {
-  const uploadService = getFileUploadService();
-  const result = await uploadService.uploadFile(file);
-
-  if (!result.success) {
-    throw new Error(result.error || 'Dosya yüklenemedi');
-  }
-
-  const attachment = uploadService.resultToAttachment(result, file);
-  if (!attachment) {
-    throw new Error('Dosya yüklenirken bir hata oluştu');
-  }
-
-  return attachment;
-}
-
-/**
- * Upload multiple files using the file upload service
- */
-export async function uploadFiles(files: File[]): Promise<FileAttachment[]> {
-  const uploadService = getFileUploadService();
-  const results = await uploadService.uploadFiles(files);
-
-  const attachments: FileAttachment[] = [];
-
-  for (let i = 0; i < results.length; i++) {
-    const result = results[i];
-    const file = files[i];
-
-    if (result.success) {
-      const attachment = uploadService.resultToAttachment(result, file);
-      if (attachment) {
-        attachments.push(attachment);
-      }
-    }
-    // Silently skip failed uploads - could be enhanced with error handling
-  }
-
-  return attachments;
-}
-
-/**
- * Mock file deletion function
- */
-export async function deleteFile(fileId: string): Promise<void> {
-  // Simulate deletion delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  // In a real app, this would delete from cloud storage
-  console.log(`Mock: Deleted file ${fileId}`);
-}
-
-/**
- * Get file extension from filename
- */
 export function getFileExtension(filename: string): string {
   return filename.slice(((filename.lastIndexOf('.') - 1) >>> 0) + 2);
 }
 
-/**
- * Check if file is an image
- */
+export function getMimeTypeFromExtension(extension: string): string {
+  const mimeTypes: Record<string, string> = {
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    png: 'image/png',
+    gif: 'image/gif',
+    webp: 'image/webp',
+    pdf: 'application/pdf',
+    txt: 'text/plain',
+    doc: 'application/msword',
+    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    xls: 'application/vnd.ms-excel',
+    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  };
+
+  return mimeTypes[extension.toLowerCase()] || 'application/octet-stream';
+}
+
+export async function compressImage(
+  file: File,
+  quality: number = 0.8,
+  maxWidth: number = 1920,
+  maxHeight: number = 1080
+): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    img.onload = () => {
+      // Calculate new dimensions
+      let { width, height } = img;
+
+      if (width > maxWidth || height > maxHeight) {
+        const ratio = Math.min(maxWidth / width, maxHeight / height);
+        width *= ratio;
+        height *= ratio;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+
+      // Draw and compress
+      ctx?.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            const compressedFile = new File([blob], file.name, {
+              type: file.type,
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          } else {
+            reject(new Error('Sıkıştırma işlemi başarısız'));
+          }
+        },
+        file.type,
+        quality
+      );
+    };
+
+    img.onerror = () => reject(new Error('Resim yüklenemedi'));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+export async function getImageDimensions(file: File): Promise<ImageDimensions> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+
+    img.onload = () => {
+      resolve({
+        width: img.naturalWidth,
+        height: img.naturalHeight,
+      });
+    };
+
+    img.onerror = () => reject(new Error('Resim boyutları alınamadı'));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+export function createFilePreview(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      resolve(e.target?.result as string);
+    };
+
+    reader.onerror = () => reject(new Error('Dosya önizlemesi oluşturulamadı'));
+    reader.readAsDataURL(file);
+  });
+}
+
+export async function uploadFile(
+  file: File,
+  endpoint: string,
+  options: FileUploadOptions = DEFAULT_UPLOAD_OPTIONS
+): Promise<FileUploadResult> {
+  // Validate file first
+  const validation = validateFile(file, options);
+  if (!validation.isValid) {
+    return {
+      success: false,
+      error: validation.errors.join(', '),
+    };
+  }
+
+  // Compress if it's an image and compression is enabled
+  let fileToUpload = file;
+  if (options.compression && file.type.startsWith('image/')) {
+    try {
+      fileToUpload = await compressImage(file, options.quality);
+    } catch (error) {
+      console.warn('Image compression failed, uploading original:', error);
+    }
+  }
+
+  // Create form data
+  const formData = new FormData();
+  formData.append('file', fileToUpload);
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    return {
+      success: true,
+      file: fileToUpload,
+      url: data.url,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Upload failed',
+    };
+  }
+}
+
+// Additional utility functions for FileUpload component
+export async function uploadFiles(
+  files: File[],
+  endpoint: string = '/api/upload',
+  options: FileUploadOptions = DEFAULT_UPLOAD_OPTIONS
+): Promise<FileUploadResult[]> {
+  const results: FileUploadResult[] = [];
+
+  for (const file of files) {
+    const result = await uploadFile(file, endpoint, options);
+    results.push(result);
+  }
+
+  return results;
+}
+
+export function getFileIcon(fileType: string): string {
+  if (fileType.startsWith('image/')) return '🖼️';
+  if (fileType.startsWith('video/')) return '🎥';
+  if (fileType.startsWith('audio/')) return '🎵';
+  if (fileType === 'application/pdf') return '📄';
+  if (fileType.includes('word')) return '📝';
+  if (fileType.includes('excel') || fileType.includes('spreadsheet'))
+    return '📊';
+  if (fileType.includes('presentation')) return '📈';
+  if (fileType.startsWith('text/')) return '📋';
+
+  return '📁';
+}
+
 export function isImageFile(fileType: string): boolean {
   return fileType.startsWith('image/');
 }
 
-/**
- * Create file preview URL
- */
 export function createPreviewUrl(file: File): string {
   return URL.createObjectURL(file);
 }
 
-/**
- * Cleanup preview URL
- */
 export function cleanupPreviewUrl(url: string): void {
   URL.revokeObjectURL(url);
 }

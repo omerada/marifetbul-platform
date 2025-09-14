@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
-import { getWebSocketManager } from '@/lib/services/websocket';
+import { getWebSocketManager } from '@/lib/services';
 import {
   EnhancedNotification,
   NotificationCenter,
@@ -586,7 +586,7 @@ export const useNotificationStore = create<NotificationStore>()(
           const wsManager = getWebSocketManager();
 
           // Subscribe to notification events
-          wsManager.on('notification', (data) => {
+          wsManager.on('notification', (data: unknown) => {
             get().handleRealtimeNotification(
               data as unknown as EnhancedNotification
             );
@@ -599,7 +599,7 @@ export const useNotificationStore = create<NotificationStore>()(
               set({ isConnected: true });
               console.log('Notification real-time connection established');
             })
-            .catch((error) => {
+            .catch((error: unknown) => {
               console.error('Failed to establish real-time connection:', error);
               set({ isConnected: false });
             });

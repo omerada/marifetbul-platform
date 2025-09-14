@@ -98,7 +98,7 @@ export {
 
 // Upload & Toast Components
 export { default as FileUpload } from './FileUpload';
-export { ToastContainer } from './ToastContainer';
+export { Toast, ToastContainer } from './Toast';
 
 // Animation Components
 export {

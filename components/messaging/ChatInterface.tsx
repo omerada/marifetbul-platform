@@ -307,7 +307,7 @@ export function ChatInterface({
                 onFilesUploaded={handleFilesUploaded}
                 onError={handleFileUploadError}
                 options={{
-                  allowedTypes: ALLOWED_FILE_TYPES.all,
+                  allowedTypes: ALLOWED_FILE_TYPES,
                   maxFiles: 3,
                   multiple: true,
                 }}

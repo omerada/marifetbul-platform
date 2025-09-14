@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
-import { PushNotificationManager } from '@/lib/utils/push-notifications';
+import { PushNotificationManager } from '@/lib/domains/notification/push-notifications';
 
 interface PushNotificationToggleProps {
   userId?: string;

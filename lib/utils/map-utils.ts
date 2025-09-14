@@ -203,14 +203,31 @@ export class MapUtils {
 
   // Convert address string to coordinates using geocoding service
   static async geocodeAddress(address: string): Promise<Coordinates | null> {
-    return await geocodeAddress(address);
+    const results = await geocodeAddress(address);
+    if (results && results.length > 0) {
+      const firstResult = results[0];
+      return {
+        lat: firstResult.latitude,
+        lng: firstResult.longitude,
+        latitude: firstResult.latitude,
+        longitude: firstResult.longitude,
+      };
+    }
+    return null;
   }
 
   // Reverse geocode coordinates to address using geocoding service
   static async reverseGeocode(
     coordinates: Coordinates
   ): Promise<string | null> {
-    return await reverseGeocode(coordinates);
+    const results = await reverseGeocode(
+      coordinates.latitude,
+      coordinates.longitude
+    );
+    if (results && results.length > 0) {
+      return results[0].formattedAddress;
+    }
+    return null;
   }
 }
 

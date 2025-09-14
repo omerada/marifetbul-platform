@@ -43,17 +43,27 @@ export interface Portfolio {
 // JOB TYPES
 // ================================================
 
+export interface JobBudget {
+  amount: number;
+  maxAmount?: number;
+  type: 'fixed' | 'hourly';
+  currency?: string;
+}
+
 export interface Job {
   id: string;
   title: string;
   description: string;
   category: string;
   subcategory: string;
-  budget: {
-    min: number;
-    max: number;
-    currency: string;
-  };
+  budget:
+    | number
+    | JobBudget
+    | {
+        min: number;
+        max: number;
+        currency: string;
+      };
   duration: string;
   experienceLevel: 'beginner' | 'intermediate' | 'expert';
   skills: string[];
@@ -237,6 +247,22 @@ export interface Notification {
   actionUrl?: string;
   metadata?: Record<string, unknown>;
   createdAt: string;
+}
+
+export interface InAppNotification extends Notification {
+  priority: 'low' | 'medium' | 'high';
+  dismissible: boolean;
+  autoHide: boolean;
+  duration?: number; // in milliseconds
+  icon?: string;
+  actions?: NotificationAction[];
+}
+
+export interface NotificationAction {
+  id: string;
+  label: string;
+  action: string;
+  style?: 'primary' | 'secondary' | 'danger';
 }
 
 // ================================================

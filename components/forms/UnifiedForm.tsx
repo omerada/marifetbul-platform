@@ -37,7 +37,7 @@ import {
 } from '@/components/ui/Select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
-import { useToast } from '@/hooks/useToast';
+import { useToast } from '@/hooks/ui';
 
 // ================================================
 // UNIFIED FORM SCHEMA EXAMPLE
@@ -142,7 +142,7 @@ function useUnifiedValidation<T>(schema: z.ZodSchema<T>) {
 // ================================================
 
 export default function UnifiedForm() {
-  const { showToast } = useToast();
+  const { error, success } = useToast();
   const {
     validationErrors,
     isValidating,
@@ -172,9 +172,9 @@ export default function UnifiedForm() {
     const validationResult = await validateData(data);
 
     if (!validationResult.success) {
-      showToast(
-        `${validationResult.errors?.length || 0} hata bulundu. Lütfen formu kontrol edin.`,
-        'error'
+      error(
+        'Doğrulama Hatası',
+        `${validationResult.errors?.length || 0} hata bulundu. Lütfen formu kontrol edin.`
       );
       return;
     }
@@ -183,11 +183,11 @@ export default function UnifiedForm() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      showToast('Kullanıcı kaydı başarıyla oluşturuldu.', 'success');
+      success('Başarılı', 'Kullanıcı kaydı başarıyla oluşturuldu.');
 
       console.log('Validated form data:', validationResult.data);
     } catch {
-      showToast('Kayıt işlemi sırasında bir hata oluştu.', 'error');
+      error('Hata', 'Kayıt işlemi sırasında bir hata oluştu.');
     }
   };
 

@@ -3,18 +3,10 @@
 import { useState } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
-import { Card } from '@/components/ui/Card';
-import {
-  validateCardNumber,
-  validateExpiryDate,
-  validateCVV,
-  validateBillingAddress,
-  formatCardNumber,
-  formatExpiryDate,
-  processPayment,
-  calculateOrderTotal,
-} from '@/lib/utils/payment';
+import { Card } from '@/components/ui/Card'; 
 import { PaymentCard, BillingAddress, Order } from '@/types';
+import { calculateOrderTotal } from '@/lib';
+import { validateCardNumber, validateExpiryDate, validateCVV, validateBillingAddress, processPayment, formatCardNumber, formatExpiryDate } from '@/lib/domains/payment/utils';
 
 interface PaymentFormProps {
   order: Order;

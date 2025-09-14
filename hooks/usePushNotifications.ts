@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { PushNotificationManager } from '@/lib/utils/push-notifications';
+import { PushNotificationManager } from '@/lib/domains/notification/push-notifications';
 import { Notification, NotificationSettings } from '@/types';
 
 interface UsePushNotificationsReturn {

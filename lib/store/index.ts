@@ -1,33 +1,82 @@
+/**
+ * Optimized Store Architecture
+ * Consolidated and performance-optimized state management
+ */
+
+// === CORE STORES ===
+// Essential application state
+
+// Auth store - core authentication state
 export { default as useAuthStore } from './auth';
+
+// Notification store - optimized notifications
+export { useNotificationStore } from './notification';
+
+// === FEATURE STORES ===
+// Feature-specific state management
+
+// Marketplace & Jobs
 export { useMarketplaceStore } from './marketplace';
 export { useJobDetailStore } from './jobDetail';
 export { usePackageDetailStore } from './packageDetail';
-export { usePaymentStore, usePaymentSelectors } from './payment';
-export { useNotificationStore, useNotificationSelectors } from './notification';
 
-// Sprint 7 - Advanced Search & Location stores
+// Payment & Orders
+export { usePaymentStore } from './payment';
+
+// Search & Recommendations
 export { useAdvancedSearchStore } from './advanced-search';
 export { useRecommendationStore } from './recommendations';
 export { useFavoritesStore } from './favorites';
+
+// Location services
 export { useLocationStore } from './location';
 
-// Sprint 8 - Review, Analytics & Reputation stores (moved to domains)
+// === DOMAIN STORES ===
+// Business domain specific stores
+
+// Reviews & Reputation (consolidated)
 export { useReviewStore } from './domains/reviews/reviewStore';
-export { useAnalyticsStore } from './domains/analytics/analyticsStore';
 export { useReputationStore } from './domains/reputation/reputationStore';
 
-// Sprint 10 - Admin stores
-export {
-  useAdminDashboardStore,
-  useAdminDashboardSelectors,
-} from './admin-dashboard';
-export { useAdminUserStore, useAdminUserSelectors } from './admin-users';
-export {
-  useAdminModerationStore,
-  useAdminModerationSelectors,
-} from './admin-moderation';
-export {
-  useAdminSettingsStore,
-  useAdminSettingsSelectors,
-  useAdminSettingsActions,
-} from './admin-settings';
+// Analytics (lightweight)
+export { useAnalyticsStore } from './domains/analytics/analyticsStore';
+
+// === ADMIN STORES ===
+// Administrative functionality
+
+export { useAdminDashboardStore } from './admin-dashboard';
+export { useAdminUserStore } from './admin-users';
+export { useAdminModerationStore } from './admin-moderation';
+export { useAdminSettingsStore } from './admin-settings';
+
+// === UI STORES ===
+// UI state management
+
+export { default as uiSelectors } from './domains/ui/uiStore';
+
+// === MESSAGING & SOCIAL ===
+// Communication features
+
+export { useChatStore } from './chat';
+export { useMessagingStore } from './messaging';
+export { useSocialStore } from './social';
+
+// === UTILITY STORES ===
+// Supporting functionality
+
+export { useHelpCenterStore } from './help-center';
+export { useSupportStore } from './support';
+export { usePerformanceStore } from './performance';
+export { useSearchStore } from './search';
+export { useSEOStore } from './seo';
+
+// === LEGACY EXPORTS ===
+// Backward compatibility
+
+// Selectors
+export { usePaymentSelectors } from './payment';
+export { useNotificationSelectors } from './notification';
+export { useAdminDashboardSelectors } from './admin-dashboard';
+export { useAdminUserSelectors } from './admin-users';
+export { useAdminModerationSelectors } from './admin-moderation';
+export { useAdminSettingsSelectors } from './admin-settings';

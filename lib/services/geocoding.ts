@@ -1,317 +1,162 @@
-/**
- * Geocoding Service
- * Production-ready geocoding implementation with fallback to mock data
- */
-
-export interface Coordinates {
+export interface GeocodeResult {
+  address: string;
   latitude: number;
   longitude: number;
-  lat: number;
-  lng: number;
+  city?: string;
+  state?: string;
+  country?: string;
+  postalCode?: string;
+  formattedAddress: string;
 }
 
-export interface GeocodingOptions {
-  enableGoogleMaps?: boolean;
-  apiKey?: string;
-  fallbackToMock?: boolean;
+export interface GoogleGeocodeComponent {
+  long_name: string;
+  short_name: string;
+  types: string[];
+}
+
+export interface GoogleGeocodeResult {
+  address_components: GoogleGeocodeComponent[];
+  formatted_address: string;
+  geometry: {
+    location: {
+      lat: number;
+      lng: number;
+    };
+  };
+}
+
+export interface ReverseGeocodeResult {
+  latitude: number;
+  longitude: number;
+  address: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  postalCode?: string;
+  formattedAddress: string;
 }
 
 export class GeocodingService {
-  private options: GeocodingOptions;
+  private static instance: GeocodingService;
+  private apiKey: string;
+  private baseUrl = 'https://maps.googleapis.com/maps/api/geocode/json';
 
-  constructor(options: GeocodingOptions = {}) {
-    this.options = {
-      enableGoogleMaps: false, // Default to mock for development
-      fallbackToMock: true,
-      ...options,
-    };
+  private constructor() {
+    this.apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
   }
 
-  /**
-   * Convert address string to coordinates
-   */
-  async geocodeAddress(address: string): Promise<Coordinates | null> {
-    if (this.options.enableGoogleMaps && this.options.apiKey) {
-      try {
-        return await this.googleMapsGeocode(address);
-      } catch (error) {
-        console.warn(
-          'Google Maps geocoding failed, falling back to mock:',
-          error
-        );
+  public static getInstance(): GeocodingService {
+    if (!GeocodingService.instance) {
+      GeocodingService.instance = new GeocodingService();
+    }
+    return GeocodingService.instance;
+  }
 
-        if (this.options.fallbackToMock) {
-          return this.mockGeocode(address);
-        }
+  async geocodeAddress(address: string): Promise<GeocodeResult[]> {
+    if (!this.apiKey) {
+      throw new Error('Google Maps API key is not configured');
+    }
 
-        throw error;
+    const params = new URLSearchParams({
+      address: address,
+      key: this.apiKey,
+    });
+
+    try {
+      const response = await fetch(`${this.baseUrl}?${params.toString()}`);
+      const data = await response.json();
+
+      if (data.status !== 'OK') {
+        throw new Error(`Geocoding failed: ${data.status}`);
       }
-    }
 
-    return this.mockGeocode(address);
+      return data.results.map((result: GoogleGeocodeResult) => ({
+        address: address,
+        latitude: result.geometry.location.lat,
+        longitude: result.geometry.location.lng,
+        city: this.extractComponent(result.address_components, 'locality'),
+        state: this.extractComponent(
+          result.address_components,
+          'administrative_area_level_1'
+        ),
+        country: this.extractComponent(result.address_components, 'country'),
+        postalCode: this.extractComponent(
+          result.address_components,
+          'postal_code'
+        ),
+        formattedAddress: result.formatted_address,
+      }));
+    } catch (error) {
+      console.error('Geocoding error:', error);
+      throw error;
+    }
   }
 
-  /**
-   * Convert coordinates to address
-   */
-  async reverseGeocode(coordinates: Coordinates): Promise<string | null> {
-    if (this.options.enableGoogleMaps && this.options.apiKey) {
-      try {
-        return await this.googleMapsReverseGeocode(coordinates);
-      } catch (error) {
-        console.warn(
-          'Google Maps reverse geocoding failed, falling back to mock:',
-          error
-        );
+  async reverseGeocode(
+    latitude: number,
+    longitude: number
+  ): Promise<ReverseGeocodeResult[]> {
+    if (!this.apiKey) {
+      throw new Error('Google Maps API key is not configured');
+    }
 
-        if (this.options.fallbackToMock) {
-          return this.mockReverseGeocode(coordinates);
-        }
+    const params = new URLSearchParams({
+      latlng: `${latitude},${longitude}`,
+      key: this.apiKey,
+    });
 
-        throw error;
+    try {
+      const response = await fetch(`${this.baseUrl}?${params.toString()}`);
+      const data = await response.json();
+
+      if (data.status !== 'OK') {
+        throw new Error(`Reverse geocoding failed: ${data.status}`);
       }
-    }
 
-    return this.mockReverseGeocode(coordinates);
-  }
-
-  /**
-   * Google Maps Geocoding API implementation
-   */
-  private async googleMapsGeocode(
-    address: string
-  ): Promise<Coordinates | null> {
-    if (!this.options.apiKey) {
-      throw new Error('Google Maps API key is required');
-    }
-
-    const encodedAddress = encodeURIComponent(address);
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${this.options.apiKey}`;
-
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(`Geocoding API request failed: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    if (data.status !== 'OK' || !data.results?.length) {
-      return null;
-    }
-
-    const location = data.results[0].geometry.location;
-
-    return {
-      latitude: location.lat,
-      longitude: location.lng,
-      lat: location.lat,
-      lng: location.lng,
-    };
-  }
-
-  /**
-   * Google Maps Reverse Geocoding API implementation
-   */
-  private async googleMapsReverseGeocode(
-    coordinates: Coordinates
-  ): Promise<string | null> {
-    if (!this.options.apiKey) {
-      throw new Error('Google Maps API key is required');
-    }
-
-    const { latitude, longitude } = coordinates;
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${this.options.apiKey}`;
-
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(
-        `Reverse geocoding API request failed: ${response.status}`
-      );
-    }
-
-    const data = await response.json();
-
-    if (data.status !== 'OK' || !data.results?.length) {
-      return null;
-    }
-
-    return data.results[0].formatted_address;
-  }
-
-  /**
-   * Mock geocoding implementation for development/fallback
-   */
-  private mockGeocode(address: string): Coordinates | null {
-    const mockLocations: Record<string, Coordinates> = {
-      istanbul: {
-        latitude: 41.0082,
-        longitude: 28.9784,
-        lat: 41.0082,
-        lng: 28.9784,
-      },
-      ankara: {
-        latitude: 39.9334,
-        longitude: 32.8597,
-        lat: 39.9334,
-        lng: 32.8597,
-      },
-      izmir: {
-        latitude: 38.4192,
-        longitude: 27.1287,
-        lat: 38.4192,
-        lng: 27.1287,
-      },
-      bursa: {
-        latitude: 40.1826,
-        longitude: 29.0665,
-        lat: 40.1826,
-        lng: 29.0665,
-      },
-      antalya: {
-        latitude: 36.8969,
-        longitude: 30.7133,
-        lat: 36.8969,
-        lng: 30.7133,
-      },
-      adana: {
-        latitude: 37.0,
-        longitude: 35.3213,
-        lat: 37.0,
-        lng: 35.3213,
-      },
-      konya: {
-        latitude: 37.8713,
-        longitude: 32.4846,
-        lat: 37.8713,
-        lng: 32.4846,
-      },
-      gaziantep: {
-        latitude: 37.0662,
-        longitude: 37.3833,
-        lat: 37.0662,
-        lng: 37.3833,
-      },
-    };
-
-    const addressLower = address.toLowerCase();
-
-    // Check for exact matches first
-    for (const [city, coords] of Object.entries(mockLocations)) {
-      if (addressLower.includes(city)) {
-        return coords;
-      }
-    }
-
-    // Fallback to approximate location based on first match
-    const turkishCities = ['istanbul', 'ankara', 'izmir', 'bursa', 'antalya'];
-    const matchedCity = turkishCities.find((city) =>
-      addressLower.includes(city)
-    );
-
-    if (matchedCity && mockLocations[matchedCity]) {
-      return mockLocations[matchedCity];
-    }
-
-    // Default to Istanbul if no match found
-    return mockLocations.istanbul;
-  }
-
-  /**
-   * Mock reverse geocoding implementation
-   */
-  private mockReverseGeocode(coordinates: Coordinates): string | null {
-    const { latitude, longitude } = coordinates;
-
-    const cities = [
-      { name: 'İstanbul', lat: 41.0082, lng: 28.9784 },
-      { name: 'Ankara', lat: 39.9334, lng: 32.8597 },
-      { name: 'İzmir', lat: 38.4192, lng: 27.1287 },
-      { name: 'Bursa', lat: 40.1826, lng: 29.0665 },
-      { name: 'Antalya', lat: 36.8969, lng: 30.7133 },
-      { name: 'Adana', lat: 37.0, lng: 35.3213 },
-      { name: 'Konya', lat: 37.8713, lng: 32.4846 },
-      { name: 'Gaziantep', lat: 37.0662, lng: 37.3833 },
-    ];
-
-    // Find the closest city
-    let closestCity = cities[0];
-    let minDistance = this.calculateDistance(
-      latitude,
-      longitude,
-      closestCity.lat,
-      closestCity.lng
-    );
-
-    for (const city of cities.slice(1)) {
-      const distance = this.calculateDistance(
+      return data.results.map((result: GoogleGeocodeResult) => ({
         latitude,
         longitude,
-        city.lat,
-        city.lng
-      );
-
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestCity = city;
-      }
+        address: result.formatted_address,
+        city: this.extractComponent(result.address_components, 'locality'),
+        state: this.extractComponent(
+          result.address_components,
+          'administrative_area_level_1'
+        ),
+        country: this.extractComponent(result.address_components, 'country'),
+        postalCode: this.extractComponent(
+          result.address_components,
+          'postal_code'
+        ),
+        formattedAddress: result.formatted_address,
+      }));
+    } catch (error) {
+      console.error('Reverse geocoding error:', error);
+      throw error;
     }
-
-    return `${closestCity.name}, Türkiye`;
   }
 
-  /**
-   * Calculate distance between two coordinates using Haversine formula
-   */
-  private calculateDistance(
-    lat1: number,
-    lng1: number,
-    lat2: number,
-    lng2: number
-  ): number {
-    const R = 6371; // Earth's radius in kilometers
-    const dLat = (lat2 - lat1) * (Math.PI / 180);
-    const dLng = (lng2 - lng1) * (Math.PI / 180);
-
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * (Math.PI / 180)) *
-        Math.cos(lat2 * (Math.PI / 180)) *
-        Math.sin(dLng / 2) *
-        Math.sin(dLng / 2);
-
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c;
+  private extractComponent(
+    components: GoogleGeocodeComponent[],
+    type: string
+  ): string | undefined {
+    const component = components.find((c) => c.types.includes(type));
+    return component?.long_name;
   }
 }
 
-// Singleton instance
-let geocodingService: GeocodingService | null = null;
-
-/**
- * Get or create geocoding service instance
- */
-export function getGeocodingService(): GeocodingService {
-  if (!geocodingService) {
-    geocodingService = new GeocodingService({
-      enableGoogleMaps:
-        process.env.NODE_ENV === 'production' &&
-        !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-      apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-      fallbackToMock: true,
-    });
-  }
-
-  return geocodingService;
+// Utility functions
+export async function geocodeAddress(
+  address: string
+): Promise<GeocodeResult[]> {
+  const service = GeocodingService.getInstance();
+  return service.geocodeAddress(address);
 }
 
-/**
- * Convenience functions for backward compatibility
- */
-export const geocodeAddress = (address: string) =>
-  getGeocodingService().geocodeAddress(address);
-
-export const reverseGeocode = (coordinates: Coordinates) =>
-  getGeocodingService().reverseGeocode(coordinates);
+export async function reverseGeocode(
+  latitude: number,
+  longitude: number
+): Promise<ReverseGeocodeResult[]> {
+  const service = GeocodingService.getInstance();
+  return service.reverseGeocode(latitude, longitude);
+}

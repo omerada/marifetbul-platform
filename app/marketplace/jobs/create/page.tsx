@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { Card, Button, Input, Textarea } from '@/components/ui';
 import { Badge } from '@/components/ui';
 import useAuthStore from '@/lib/store/auth';
-import { useToast } from '@/hooks/useToast';
+import { useToast } from '@/hooks';
 import {
   Briefcase,
   DollarSign,
@@ -151,7 +151,7 @@ const skillsPool = [
 export default function CreateJobPage() {
   const router = useRouter();
   const { user, isAuthenticated } = useAuthStore();
-  const { showToast } = useToast();
+  const { success, error } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [skillSearch, setSkillSearch] = useState('');
@@ -221,11 +221,11 @@ export default function CreateJobPage() {
 
       console.log('Job creation data:', data);
 
-      showToast('İş ilanı başarıyla oluşturuldu!', 'success');
+      success('Başarılı', 'İş ilanı başarıyla oluşturuldu!');
 
       router.push('/marketplace?view=jobs');
     } catch {
-      showToast('İş ilanı oluşturulurken bir hata oluştu', 'error');
+      error('Hata', 'İş ilanı oluşturulurken bir hata oluştu');
     } finally {
       setIsSubmitting(false);
     }

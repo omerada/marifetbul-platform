@@ -10,7 +10,7 @@ import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
-import { useToast } from '@/hooks/useToast';
+import { useToast } from '@/hooks';
 import {
   X,
   Plus,
@@ -36,7 +36,7 @@ interface PortfolioModalProps {
 }
 
 export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
-  const { showToast } = useToast();
+  const { error, success } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [skills, setSkills] = useState<string[]>(item?.skills || []);
   const [newSkill, setNewSkill] = useState('');
@@ -74,11 +74,11 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
       };
 
       await onSave(portfolioData);
-      showToast('Portfolyo öğesi kaydedildi!', 'success');
+      success('Başarılı', 'Portfolyo öğesi kaydedildi!');
       onClose();
     } catch (err) {
       console.error('Portfolio save error:', err);
-      showToast('Kaydetme sırasında bir hata oluştu', 'error');
+      error('Hata', 'Kaydetme sırasında bir hata oluştu');
     } finally {
       setIsSubmitting(false);
     }

@@ -11,7 +11,7 @@ import {
   paymentFiltersSchema,
   paymentCardSchema,
 } from '@/lib/validations/payment';
-import { useToast } from '@/hooks/useToast';
+import { useToast } from '@/hooks/ui';
 import { ZodError } from 'zod';
 
 type PaymentStatus =
@@ -78,7 +78,7 @@ export const usePayment = (): UsePaymentReturn => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { showToast } = useToast();
+  const { error: toastError, success } = useToast();
 
   const {
     payments,
@@ -107,9 +107,9 @@ export const usePayment = (): UsePaymentReturn => {
       console.error('Payment operation error:', error);
       const message = error instanceof Error ? error.message : defaultMessage;
       setError(message);
-      showToast(message, 'error');
+      toastError('Hata', message);
     },
-    [showToast]
+    [toastError]
   );
 
   const createPayment = useCallback(
@@ -119,7 +119,7 @@ export const usePayment = (): UsePaymentReturn => {
         setError(null);
 
         await storeCreatePayment(request);
-        showToast('Ödeme işleminiz başarıyla tamamlandı.', 'success');
+        success('Başarılı', 'Ödeme işleminiz başarıyla tamamlandı.');
         return true;
       } catch (error) {
         handleError(error, 'Ödeme oluşturulurken bir hata oluştu');
@@ -128,7 +128,7 @@ export const usePayment = (): UsePaymentReturn => {
         setLoading(false);
       }
     },
-    [storeCreatePayment, handleError, showToast]
+    [storeCreatePayment, handleError, success]
   );
 
   const refundPayment = useCallback(
@@ -142,7 +142,7 @@ export const usePayment = (): UsePaymentReturn => {
         setError(null);
 
         await storeRequestRefund(paymentId, amount, reason);
-        showToast('Ödeme iadesi başarıyla işleme alındı.', 'success');
+        success('Başarılı', 'Ödeme iadesi başarıyla işleme alındı.');
         return true;
       } catch (error) {
         handleError(error, 'İade işlemi sırasında bir hata oluştu');
@@ -151,7 +151,7 @@ export const usePayment = (): UsePaymentReturn => {
         setLoading(false);
       }
     },
-    [storeRequestRefund, handleError, showToast]
+    [storeRequestRefund, handleError, success]
   );
 
   const releaseEscrow = useCallback(
@@ -165,7 +165,7 @@ export const usePayment = (): UsePaymentReturn => {
         setError(null);
 
         await storeReleaseEscrow(paymentId, amount, reason);
-        showToast('Escrow tutarı başarıyla serbest bırakıldı.', 'success');
+        success('Başarılı', 'Escrow tutarı başarıyla serbest bırakıldı.');
         return true;
       } catch (error) {
         handleError(error, 'Escrow serbest bırakma işlemi başarısız');
@@ -174,7 +174,7 @@ export const usePayment = (): UsePaymentReturn => {
         setLoading(false);
       }
     },
-    [storeReleaseEscrow, handleError, showToast]
+    [storeReleaseEscrow, handleError, success]
   );
 
   const generateInvoice = useCallback(
@@ -184,7 +184,7 @@ export const usePayment = (): UsePaymentReturn => {
         setError(null);
 
         const invoice = await storeGenerateInvoice(orderId, paymentId);
-        showToast('Faturanız başarıyla oluşturuldu.', 'success');
+        success('Başarılı', 'Faturanız başarıyla oluşturuldu.');
         return invoice;
       } catch (error) {
         handleError(error, 'Fatura oluşturulurken bir hata oluştu');
@@ -193,7 +193,7 @@ export const usePayment = (): UsePaymentReturn => {
         setLoading(false);
       }
     },
-    [storeGenerateInvoice, handleError, showToast]
+    [storeGenerateInvoice, handleError, success]
   );
 
   const fetchPaymentHistory = useCallback(

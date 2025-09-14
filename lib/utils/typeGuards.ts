@@ -1,29 +1,39 @@
-import { JobBudget } from '@/types';
+import { JobBudget } from '@/lib/types';
 
-// Type guards for production-ready type safety
-export const isJobBudgetObject = (
-  budget: number | JobBudget
-): budget is JobBudget => {
-  return typeof budget === 'object' && budget !== null && 'type' in budget;
-};
+export function isJobBudgetObject(value: unknown): value is JobBudget {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as JobBudget).amount === 'number' &&
+    typeof (value as JobBudget).type === 'string'
+  );
+}
 
-export const formatJobBudget = (budget: number | JobBudget): string => {
+export function formatJobBudget(budget: number | JobBudget): string {
+  if (typeof budget === 'number') {
+    return `₺${budget.toLocaleString('tr-TR')}`;
+  }
+
   if (isJobBudgetObject(budget)) {
-    const maxAmount = budget.maxAmount
+    const baseAmount = `₺${budget.amount.toLocaleString('tr-TR')}`;
+    const maxPart = budget.maxAmount
       ? ` - ₺${budget.maxAmount.toLocaleString('tr-TR')}`
       : '';
-    const suffix = budget.type === 'hourly' ? '/saat' : '';
-    return `₺${budget.amount.toLocaleString('tr-TR')}${maxAmount}${suffix}`;
+    const typePart = budget.type === 'hourly' ? '/saat' : '';
+    return baseAmount + maxPart + typePart;
   }
-  return `₺${budget.toLocaleString('tr-TR')}`;
-};
 
-export const getBudgetType = (
-  budget: number | JobBudget
-): 'fixed' | 'hourly' => {
-  return isJobBudgetObject(budget) ? budget.type : 'fixed';
-};
+  return '₺0';
+}
 
-export const getBudgetAmount = (budget: number | JobBudget): number => {
-  return isJobBudgetObject(budget) ? budget.amount : budget;
-};
+export function getBudgetType(budget: number | JobBudget): string {
+  if (typeof budget === 'number') {
+    return 'fixed';
+  }
+
+  if (isJobBudgetObject(budget)) {
+    return budget.type;
+  }
+
+  return 'fixed';
+}

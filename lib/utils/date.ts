@@ -1,46 +1,46 @@
-// Date utilities
-export function formatDate(date: Date | string) {
-  return new Intl.DateTimeFormat('tr-TR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(new Date(date));
-}
+// Date utility functions
 
-export function formatRelativeTime(date: Date | string) {
-  const now = new Date();
-  const targetDate = new Date(date);
-  const diffInSeconds = Math.floor(
-    (now.getTime() - targetDate.getTime()) / 1000
-  );
+export function formatDate(
+  date: Date | string | number,
+  options?: Intl.DateTimeFormatOptions
+): string {
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return 'Invalid Date';
 
-  if (diffInSeconds < 60) {
-    return 'az önce';
-  } else if (diffInSeconds < 3600) {
-    const minutes = Math.floor(diffInSeconds / 60);
-    return `${minutes} dakika önce`;
-  } else if (diffInSeconds < 86400) {
-    const hours = Math.floor(diffInSeconds / 3600);
-    return `${hours} saat önce`;
-  } else {
-    const days = Math.floor(diffInSeconds / 86400);
-    return `${days} gün önce`;
-  }
-}
-
-export function formatDateTime(date: Date | string) {
-  return new Intl.DateTimeFormat('tr-TR', {
+  const defaultOptions: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(date));
+    ...options,
+  };
+
+  return new Intl.DateTimeFormat('tr-TR', defaultOptions).format(d);
 }
 
-export function isValidDate(date: string | Date): boolean {
+export function formatRelativeTime(date: Date | string | number): string {
   const d = new Date(date);
-  return d instanceof Date && !isNaN(d.getTime());
+  if (isNaN(d.getTime())) return 'Invalid Date';
+
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - d.getTime()) / 1000);
+
+  const rtf = new Intl.RelativeTimeFormat('tr-TR', { numeric: 'auto' });
+
+  if (diffInSeconds < 60) return rtf.format(-diffInSeconds, 'second');
+  if (diffInSeconds < 3600)
+    return rtf.format(-Math.floor(diffInSeconds / 60), 'minute');
+  if (diffInSeconds < 86400)
+    return rtf.format(-Math.floor(diffInSeconds / 3600), 'hour');
+  if (diffInSeconds < 2592000)
+    return rtf.format(-Math.floor(diffInSeconds / 86400), 'day');
+  if (diffInSeconds < 31536000)
+    return rtf.format(-Math.floor(diffInSeconds / 2592000), 'month');
+
+  return rtf.format(-Math.floor(diffInSeconds / 31536000), 'year');
+}
+
+export function isValidDate(date: unknown): boolean {
+  return date instanceof Date && !isNaN(date.getTime());
 }
 
 export function addDays(date: Date, days: number): Date {
@@ -49,7 +49,14 @@ export function addDays(date: Date, days: number): Date {
   return result;
 }
 
-export function differenceInDays(date1: Date, date2: Date): number {
-  const diffTime = Math.abs(date2.getTime() - date1.getTime());
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+export function startOfDay(date: Date): Date {
+  const result = new Date(date);
+  result.setHours(0, 0, 0, 0);
+  return result;
+}
+
+export function endOfDay(date: Date): Date {
+  const result = new Date(date);
+  result.setHours(23, 59, 59, 999);
+  return result;
 }

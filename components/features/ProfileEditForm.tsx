@@ -4,13 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, Freelancer, Employer } from '@/types';
 import { useProfile, useProfileValidation } from '@/hooks/useProfile';
+import { useToast } from '@/hooks';
 import { AvatarUpload } from '@/components/features/AvatarUpload';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { Progress } from '@/components/ui/Progress';
-import { useToast } from '@/hooks/useToast';
 import {
   Save,
   ArrowLeft,
@@ -50,7 +50,7 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
   const router = useRouter();
   const { profile, isLoading, isUpdating, updateProfile } = useProfile();
   const { completeness, missingFields } = useProfileValidation();
-  const { showToast } = useToast();
+  const { success, error } = useToast();
 
   const [activeTab, setActiveTab] = useState<'basic' | 'professional'>('basic');
   const [hasChanges, setHasChanges] = useState(false);
@@ -111,7 +111,7 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
 
         await updateProfile(submitData);
         setHasChanges(false);
-        showToast('Değişiklikler otomatik kaydedildi', 'success');
+        success('Başarılı', 'Değişiklikler otomatik kaydedildi');
       } catch {
         // Silent fail for auto-save
         console.log('Auto-save failed');
@@ -119,7 +119,7 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
     }, 3000); // 3 seconds delay
 
     return () => clearTimeout(autoSaveTimer);
-  }, [formData, skills, hasChanges, updateProfile, isFreelancer, showToast]);
+  }, [formData, skills, hasChanges, updateProfile, isFreelancer, success]);
 
   // Track changes
   useEffect(() => {
@@ -152,20 +152,20 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
       };
 
       await updateProfile(submitData);
-      showToast('Profil başarıyla güncellendi!', 'success');
+      success('Başarılı', 'Profil başarıyla güncellendi!');
       setHasChanges(false);
       router.push(`/profile/${user.id}`);
     } catch {
-      showToast('Profil güncellenirken bir hata oluştu', 'error');
+      error('Hata', 'Profil güncellenirken bir hata oluştu');
     }
   };
 
   const handleAvatarUpdate = async (avatarUrl: string) => {
     try {
       await updateProfile({ avatar: avatarUrl });
-      showToast('Profil fotoğrafı güncellendi!', 'success');
+      success('Başarılı', 'Profil fotoğrafı güncellendi!');
     } catch {
-      showToast('Fotoğraf yüklenirken bir hata oluştu', 'error');
+      error('Hata', 'Fotoğraf yüklenirken bir hata oluştu');
     }
   };
 
