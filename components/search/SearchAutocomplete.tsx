@@ -1,333 +1,254 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { Badge } from '@/components/ui/Badge';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { Search, X, Clock, TrendingUp } from 'lucide-react';
+import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { Card, CardContent } from '@/components/ui/Card';
-import {
-  Search,
-  Clock,
-  TrendingUp,
-  MapPin,
-  User,
-  Briefcase,
-  Package,
-  X,
-  Star,
-} from 'lucide-react';
-import { useSearchStore } from '@/lib/store/search';
-import { SearchSuggestion } from '@/types/search';
+import { Badge } from '@/components/ui/Badge';
+import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
+import { useUnifiedSearch } from '@/hooks/useUnifiedSearch';
+import type { SearchSuggestion } from '@/types/search';
 
 interface SearchAutocompleteProps {
+  placeholder?: string;
   onSearch?: (query: string) => void;
   onSuggestionSelect?: (suggestion: SearchSuggestion) => void;
-  placeholder?: string;
   className?: string;
-  showTrending?: boolean;
-  showHistory?: boolean;
   autoFocus?: boolean;
+  showHistory?: boolean;
+  showTrending?: boolean;
 }
 
 export function SearchAutocomplete({
+  placeholder = 'Ara...',
   onSearch,
   onSuggestionSelect,
-  placeholder = 'İş, hizmet veya freelancer ara...',
   className,
-  showTrending = true,
-  showHistory = true,
   autoFocus = false,
+  showHistory = true,
+  showTrending = true,
 }: SearchAutocompleteProps) {
-  const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState('');
+  const [localQuery, setLocalQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const {
     suggestions,
-    history,
-    isLoading,
+    isLoadingSuggestions,
     setQuery,
     fetchSuggestions,
-    performSearch,
-    config,
-  } = useSearchStore();
+    clearQuery,
+  } = useUnifiedSearch({
+    autoSuggestions: true,
+    suggestionsDelay: 200,
+  });
 
+  // Handle input change
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setLocalQuery(value);
+
+      if (value.length >= 2) {
+        fetchSuggestions(value);
+        setShowSuggestions(true);
+      } else {
+        setShowSuggestions(false);
+      }
+    },
+    [fetchSuggestions]
+  );
+
+  // Handle search submission
+  const handleSearch = useCallback(() => {
+    if (localQuery.trim()) {
+      setQuery(localQuery);
+      onSearch?.(localQuery);
+      setShowSuggestions(false);
+      inputRef.current?.blur();
+    }
+  }, [localQuery, setQuery, onSearch]);
+
+  // Handle suggestion click
+  const handleSuggestionClick = useCallback(
+    (suggestion: SearchSuggestion) => {
+      setLocalQuery(suggestion.text);
+      setQuery(suggestion.text);
+      onSuggestionSelect?.(suggestion);
+      onSearch?.(suggestion.text);
+      setShowSuggestions(false);
+      inputRef.current?.blur();
+    },
+    [setQuery, onSuggestionSelect, onSearch]
+  );
+
+  // Handle clear
+  const handleClear = useCallback(() => {
+    setLocalQuery('');
+    clearQuery();
+    setShowSuggestions(false);
+    inputRef.current?.focus();
+  }, [clearQuery]);
+
+  // Handle key events
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        handleSearch();
+      } else if (e.key === 'Escape') {
+        setShowSuggestions(false);
+        inputRef.current?.blur();
+      }
+    },
+    [handleSearch]
+  );
+
+  // Click outside to close suggestions
   useEffect(() => {
-    if (inputValue && inputValue.length >= config.minQueryLength) {
-      const timeoutId = setTimeout(() => {
-        fetchSuggestions(inputValue);
-      }, config.debounceMs);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
 
-      return () => clearTimeout(timeoutId);
-    }
-  }, [inputValue, fetchSuggestions, config.minQueryLength, config.debounceMs]);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  const handleInputChange = (value: string) => {
-    setInputValue(value);
-    setQuery(value);
-  };
+  // Mock history and trending for demo
+  const mockHistory: SearchSuggestion[] = [
+    { text: 'Web tasarım', type: 'skill', count: 0 },
+    { text: 'React geliştirici', type: 'job', count: 0 },
+    { text: 'Logo tasarım', type: 'service', count: 0 },
+  ];
 
-  const handleSearch = (searchQuery?: string) => {
-    const finalQuery = searchQuery || inputValue;
-    if (finalQuery.trim()) {
-      setQuery(finalQuery);
-      performSearch();
-      onSearch?.(finalQuery);
-      setOpen(false);
-    }
-  };
-
-  const handleSuggestionSelect = (suggestion: SearchSuggestion) => {
-    setInputValue(suggestion.text);
-    setQuery(suggestion.text);
-    onSuggestionSelect?.(suggestion);
-    handleSearch(suggestion.text);
-  };
-
-  const handleHistorySelect = (historyQuery: string) => {
-    setInputValue(historyQuery);
-    handleSearch(historyQuery);
-  };
-
-  const getTypeIcon = (type: SearchSuggestion['type']) => {
-    switch (type) {
-      case 'job':
-        return <Briefcase className="h-4 w-4" />;
-      case 'service':
-        return <Package className="h-4 w-4" />;
-      case 'user':
-        return <User className="h-4 w-4" />;
-      case 'location':
-        return <MapPin className="h-4 w-4" />;
-      case 'skill':
-        return <Star className="h-4 w-4" />;
-      default:
-        return <Search className="h-4 w-4" />;
-    }
-  };
-
-  const getTypeLabel = (type: SearchSuggestion['type']) => {
-    switch (type) {
-      case 'job':
-        return 'İş';
-      case 'service':
-        return 'Hizmet';
-      case 'user':
-        return 'Kullanıcı';
-      case 'location':
-        return 'Konum';
-      case 'skill':
-        return 'Yetenek';
-      case 'category':
-        return 'Kategori';
-      default:
-        return '';
-    }
-  };
-
-  // Mock trending searches
-  const trendingSearches = [
-    'Web tasarım',
-    'Logo tasarımı',
-    'Mobil uygulama',
-    'SEO optimizasyonu',
-    'İçerik yazarlığı',
+  const mockTrending: SearchSuggestion[] = [
+    { text: 'AI yazılım geliştirme', type: 'category', count: 245 },
+    { text: 'E-ticaret', type: 'category', count: 156 },
+    { text: 'Mobil uygulama', type: 'category', count: 189 },
   ];
 
   return (
-    <div className={cn('relative w-full', className)}>
+    <div ref={containerRef} className={cn('relative w-full', className)}>
       <div className="relative">
-        <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-        <input
+        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+        <Input
           ref={inputRef}
-          type="text"
-          value={inputValue}
-          onChange={(e) => handleInputChange(e.target.value)}
-          onFocus={() => setOpen(true)}
-          onBlur={() => setTimeout(() => setOpen(false), 200)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              handleSearch();
-            }
-            if (e.key === 'Escape') {
-              setOpen(false);
-              inputRef.current?.blur();
+          value={localQuery}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          onFocus={() => {
+            if (localQuery.length >= 2 || showHistory || showTrending) {
+              setShowSuggestions(true);
             }
           }}
           placeholder={placeholder}
-          className={cn(
-            'border-input bg-background ring-offset-background w-full rounded-lg border px-10 py-3 text-sm',
-            'placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:outline-none',
-            'focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
-          )}
+          className="pr-12 pl-10"
           autoFocus={autoFocus}
         />
-        {inputValue && (
+        {localQuery && (
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {
-              setInputValue('');
-              setQuery('');
-              inputRef.current?.focus();
-            }}
-            className="hover:bg-muted absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2 p-0"
+            onClick={handleClear}
+            className="absolute top-1/2 right-2 h-6 w-6 -translate-y-1/2 p-0"
           >
             <X className="h-3 w-3" />
           </Button>
         )}
       </div>
 
-      {/* Dropdown */}
-      {open && (
-        <Card className="absolute top-full right-0 left-0 z-50 mt-1 max-h-96 overflow-y-auto">
-          <CardContent className="p-0">
-            {isLoading && (
-              <div className="flex items-center justify-center py-6">
-                <div className="border-primary h-6 w-6 animate-spin rounded-full border-b-2"></div>
+      {/* Suggestions Dropdown */}
+      {showSuggestions && (
+        <Card className="absolute top-full right-0 left-0 z-50 mt-1 max-h-80 overflow-y-auto border shadow-lg">
+          <div className="p-2">
+            {/* Loading state */}
+            {isLoadingSuggestions && (
+              <div className="py-4 text-center text-sm text-gray-500">
+                Aranıyor...
               </div>
             )}
 
-            {/* Search Suggestions */}
+            {/* Search suggestions */}
             {suggestions.length > 0 && (
-              <div className="border-b">
-                <div className="text-muted-foreground px-3 py-2 text-xs font-medium">
+              <div className="space-y-1">
+                <div className="px-2 py-1 text-xs font-medium tracking-wide text-gray-500 uppercase">
                   Öneriler
                 </div>
-                {suggestions.map((suggestion, index) => (
+                {suggestions.slice(0, 5).map((suggestion, index) => (
                   <button
-                    key={`${suggestion.type}-${suggestion.text}-${index}`}
-                    onClick={() => handleSuggestionSelect(suggestion)}
-                    className="hover:bg-muted flex w-full items-center justify-between gap-2 px-3 py-2 text-left"
+                    key={`suggestion-${index}`}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    className="flex w-full items-center gap-3 rounded px-2 py-2 text-left text-sm hover:bg-gray-50"
                   >
-                    <div className="flex items-center gap-2">
-                      {getTypeIcon(suggestion.type)}
-                      <span className="text-sm">{suggestion.text}</span>
-                      {suggestion.category && (
-                        <Badge variant="secondary" className="text-xs">
-                          {suggestion.category}
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Badge variant="outline" className="text-xs">
-                        {getTypeLabel(suggestion.type)}
+                    <Search className="h-4 w-4 text-gray-400" />
+                    <span className="flex-1">{suggestion.text}</span>
+                    {suggestion.count && (
+                      <Badge variant="secondary" size="sm">
+                        {suggestion.count}
                       </Badge>
-                      {suggestion.count > 0 && (
-                        <span className="text-muted-foreground text-xs">
-                          {suggestion.count}
-                        </span>
-                      )}
-                    </div>
+                    )}
                   </button>
                 ))}
               </div>
             )}
 
-            {/* Search History */}
-            {showHistory && history.length > 0 && !inputValue && (
-              <div className="border-b">
-                <div className="text-muted-foreground px-3 py-2 text-xs font-medium">
+            {/* History */}
+            {showHistory && !localQuery && mockHistory.length > 0 && (
+              <div className="space-y-1">
+                <div className="px-2 py-1 text-xs font-medium tracking-wide text-gray-500 uppercase">
                   Son Aramalar
                 </div>
-                {history.slice(0, 5).map((historyItem) => (
+                {mockHistory.map((item, index) => (
                   <button
-                    key={historyItem.id}
-                    onClick={() => handleHistorySelect(historyItem.query)}
-                    className="hover:bg-muted flex w-full items-center justify-between gap-2 px-3 py-2 text-left"
+                    key={`history-${index}`}
+                    onClick={() => handleSuggestionClick(item)}
+                    className="flex w-full items-center gap-3 rounded px-2 py-2 text-left text-sm hover:bg-gray-50"
                   >
-                    <div className="flex items-center gap-2">
-                      <Clock className="text-muted-foreground h-4 w-4" />
-                      <span className="text-sm">{historyItem.query}</span>
-                    </div>
-                    <span className="text-muted-foreground text-xs">
-                      {historyItem.resultCount} sonuç
-                    </span>
+                    <Clock className="h-4 w-4 text-gray-400" />
+                    <span className="flex-1">{item.text}</span>
                   </button>
                 ))}
               </div>
             )}
 
-            {/* Trending Searches */}
-            {showTrending && !inputValue && (
-              <div>
-                <div className="text-muted-foreground px-3 py-2 text-xs font-medium">
-                  Popüler Aramalar
+            {/* Trending */}
+            {showTrending && !localQuery && mockTrending.length > 0 && (
+              <div className="space-y-1">
+                <div className="px-2 py-1 text-xs font-medium tracking-wide text-gray-500 uppercase">
+                  Trend Aramalar
                 </div>
-                {trendingSearches.map((trend) => (
+                {mockTrending.map((item, index) => (
                   <button
-                    key={trend}
-                    onClick={() => handleHistorySelect(trend)}
-                    className="hover:bg-muted flex w-full items-center gap-2 px-3 py-2 text-left"
+                    key={`trending-${index}`}
+                    onClick={() => handleSuggestionClick(item)}
+                    className="flex w-full items-center gap-3 rounded px-2 py-2 text-left text-sm hover:bg-gray-50"
                   >
-                    <TrendingUp className="text-muted-foreground h-4 w-4" />
-                    <span className="text-sm">{trend}</span>
+                    <TrendingUp className="h-4 w-4 text-gray-400" />
+                    <span className="flex-1">{item.text}</span>
                   </button>
                 ))}
               </div>
             )}
 
-            {/* Empty State */}
-            {!isLoading && suggestions.length === 0 && inputValue && (
-              <div className="flex flex-col items-center gap-2 px-3 py-6">
-                <Search className="text-muted-foreground h-8 w-8" />
-                <p className="text-muted-foreground text-sm">
-                  &quot;{inputValue}&quot; için öneri bulunamadı
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleSearch()}
-                  className="mt-2"
-                >
-                  Yine de ara
-                </Button>
-              </div>
-            )}
-          </CardContent>
+            {/* No results */}
+            {!isLoadingSuggestions &&
+              suggestions.length === 0 &&
+              localQuery.length >= 2 && (
+                <div className="py-4 text-center text-sm text-gray-500">
+                  Öneri bulunamadı
+                </div>
+              )}
+          </div>
         </Card>
       )}
     </div>
   );
 }
 
-// Quick search component for mobile
-export function QuickSearch({
-  onSearch,
-}: {
-  onSearch?: (query: string) => void;
-}) {
-  const { setQuery, performSearch } = useSearchStore();
-
-  const quickSearches = [
-    'Web tasarım',
-    'Logo',
-    'Mobil app',
-    'SEO',
-    'Yazarlık',
-    'Çeviri',
-  ];
-
-  const handleQuickSearch = (searchQuery: string) => {
-    setQuery(searchQuery);
-    performSearch();
-    onSearch?.(searchQuery);
-  };
-
-  return (
-    <div className="flex flex-wrap gap-2">
-      {quickSearches.map((query) => (
-        <Button
-          key={query}
-          variant="outline"
-          size="sm"
-          onClick={() => handleQuickSearch(query)}
-          className="text-xs"
-        >
-          {query}
-        </Button>
-      ))}
-    </div>
-  );
-}
+export default SearchAutocomplete;

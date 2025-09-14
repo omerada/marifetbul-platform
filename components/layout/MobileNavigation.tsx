@@ -4,11 +4,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Search, Package, MessageCircle, User, Plus } from 'lucide-react';
 
-import { useAuth } from '@/hooks';
+import { useAuthState } from '@/hooks';
 
 export function MobileNavigation() {
   const pathname = usePathname();
-  const { isAuthenticated, isEmployer, isFreelancer } = useAuth();
+  const { isAuthenticated, user } = useAuthState();
+
+  const isEmployer = user?.role === 'client';
+  const isFreelancer = user?.role === 'freelancer';
 
   // Get navigation items based on authentication and user role
   const getNavigationItems = () => {

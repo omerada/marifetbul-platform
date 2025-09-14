@@ -17,7 +17,7 @@ import {
   Award,
   Clock,
 } from 'lucide-react';
-import { useAnalytics } from '@/hooks';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import type { FreelancerAnalytics, EmployerAnalytics } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';

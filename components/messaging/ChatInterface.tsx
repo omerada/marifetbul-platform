@@ -103,7 +103,7 @@ export function ChatInterface({
       }
     } catch (error) {
       console.error('Failed to send message:', error);
-      toast.error('Mesaj gönderilemedi', 5000);
+      toast.error('Mesaj gönderilemedi');
     }
   };
 
@@ -118,7 +118,7 @@ export function ChatInterface({
 
   const handleFileUploadError = (error: string) => {
     console.error('File upload error:', error);
-    toast.error('Dosya yükleme hatası', 5000);
+    toast.error('Dosya yükleme hatası');
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { PerformanceMonitor } from '@/components/performance/PerformanceMonitor';
 import SystemHealthWidget from '@/components/admin/SystemHealthWidget';
 import { useAdminDashboard } from '@/hooks';
+import type { SecurityAlert } from '@/types';
 import {
   Users,
   TrendingUp,
@@ -353,7 +354,7 @@ export function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {alerts.slice(0, 5).map((alert) => (
+              {alerts.slice(0, 5).map((alert: SecurityAlert) => (
                 <div
                   key={alert.id}
                   className={`flex items-center justify-between rounded-lg border p-3 ${

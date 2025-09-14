@@ -1,106 +1,212 @@
-// Authentication
-export { useAuth } from './useAuth';
-export { useAuthGuard, usePermissions } from './useAuthGuard';
+// ================================================
+// UNIFIED HOOKS SYSTEM - MAIN EXPORT INDEX
+// ================================================
+// Central export for all standardized hooks with consistent patterns
+// Replaces: 44 individual hook files with duplicate patterns
 
-// Async Operations - NEW: Generic async operation management
+// ================================================
+// BASE HOOKS - CORE PATTERNS
+// ================================================
+export * from './base';
+export { default as BaseHooks } from './base';
+
+// ================================================
+// API HOOKS - STANDARDIZED API INTERACTIONS
+// ================================================
+export * from './api';
+export { default as ApiHooks } from './api';
+
+// ================================================
+// UI HOOKS - USER INTERFACE PATTERNS
+// ================================================
+export * from './ui';
+export { default as UIHooks } from './ui';
+
+// ================================================
+// BUSINESS HOOKS - DOMAIN LOGIC PATTERNS
+// ================================================
+export * from './business';
+export { default as BusinessHooks } from './business';
+
+// ================================================
+// LEGACY HOOK COMPATIBILITY
+// ================================================
+// Maintain backward compatibility for existing components
+
+// Auth hooks (legacy compatibility)
+export { useAuth, useCurrentUser } from './api';
+export { useAuthState } from './business';
+
+// Admin hooks (legacy compatibility)
+export { useAdminDashboard } from './useAdminDashboard';
+
+// Job/Package detail hooks (legacy compatibility)
+export { useJobDetail } from './useJobDetail';
+export { usePackageDetail } from './usePackageDetail';
+
+// Search hooks (legacy compatibility)
+export { useJobsSearch, usePackagesSearch, useUserSearch } from './api';
+export { useUnifiedSearch } from './business';
+
+// UI interaction hooks (legacy compatibility)
+export {
+  useModal,
+  useToast,
+  useForm,
+  useTheme,
+  useSidebar,
+  useClipboard,
+} from './ui';
+
+// UI responsive hooks (legacy compatibility)
+export { useResponsive } from './useResponsive';
+
+// Base utility hooks (legacy compatibility)
 export {
   useAsyncOperation,
-  useAsyncAction,
-  useMultipleAsyncOperations,
-} from './useAsyncOperation';
+  useMutation,
+  usePagination,
+  useDebounce,
+  useDebouncedCallback,
+  useThrottledCallback,
+  useLocalStorage,
+  usePrevious,
+  useMediaQuery,
+  useIntersectionObserver,
+} from './base';
 
-// Search & Filtering - Sprint 7 - CONSOLIDATED
-export { useUnifiedSearch } from './useUnifiedSearch';
-// LOCATION: Prefer useUnifiedLocation over useLocation utilities
-export { useUnifiedLocation } from './useUnifiedLocation';
-export { useGeolocation, useLocation } from './useLocation';
-
-// Recommendations & Favorites - Sprint 7
-export { useRecommendations } from './useRecommendations';
-export { useFavorites } from './useFavorites';
-
-// Reviews & Analytics - Sprint 8
-export { useReviews, useReviewSummary, useReviewForm } from './useReviews';
+// Business logic hooks (legacy compatibility)
 export {
-  useAnalytics,
-  useAnalyticsSummary,
-  useAnalyticsChart,
-  useKPICards,
-} from './useAnalytics';
-export {
-  useReputation,
-  useReputationSummary,
-  useSecurityAlerts,
-  useVerificationStatus,
-} from './useReputation';
+  useFavoritesManager,
+  useFilterManager,
+  useBreadcrumbs,
+  useNotificationManager,
+  usePerformanceMonitor,
+} from './business';
 
-// Admin Panel - Sprint 10
-export { useAdminDashboard } from './useAdminDashboard';
-export { useUserManagement } from './useUserManagement';
-export { useContentModeration } from './useContentModeration';
-export { usePlatformSettings } from './usePlatformSettings';
-
-// Help Center & Support System - Sprint 17
-export {
-  useHelpCenter,
-  useHelpArticle,
-  useHelpCenterSearch,
-} from './useHelpCenter';
-export {
-  useSupport,
-  useSupportTicket,
-  useSupportSearch,
-  useSupportFileUpload,
-} from './useSupport';
-export { useChat, useChatSession, useChatComposer } from './useChat';
-
-// SEO & Performance - Sprint 18 - ENHANCED VERSION
-export { useSEO } from './useSEO';
-export { useEnhancedPerformance } from './useEnhancedPerformance';
-// DEPRECATED: Use useEnhancedPerformance instead
-export { usePerformance } from './usePerformance';
-export { useSocialShare } from './useSocialShare';
-
-// Job & Package Management
-export { useJobs } from './useJobs';
-export { useJobDetail } from './useJobDetail';
-export { usePackages } from './usePackages';
-export { usePackageDetail } from './usePackageDetail';
-export { usePackageOrder } from './usePackageOrder';
-export { useProposalForm } from './useProposalForm';
-
-// User & Profile Management
-export { useProfile } from './useProfile';
-export { useDashboard } from './useDashboard';
-
-// Communication
-export { useMessages } from './useMessages';
-export { useNotifications } from './useNotification';
-export { useWebSocket } from './useWebSocket';
-
-// Marketplace
-export {
-  useMarketplace,
-  useMarketplaceJobs,
-  useMarketplacePackages,
-  useMarketplaceControls,
-} from './useMarketplace';
-
-// Location Services
-// Already exported above in Search & Filtering section
-
-// UI & UX
-export { useToast } from './useToast';
-export { useResponsive } from './useResponsive';
-export { useAccessibility } from './useAccessibility';
+// Additional feature hooks (legacy compatibility)
 export { useHapticFeedback } from './useHapticFeedback';
-export { usePullToRefresh } from './usePullToRefresh';
+export { useReputation } from './useReputation';
+export { useReviews, useReviewForm } from './useReviews';
 
-// Payment
-export { usePayment } from './usePayment';
+// ================================================
+// HOOK CATEGORIES FOR ORGANIZED IMPORTS
+// ================================================
 
-// Performance & Monitoring
-// Moved to SEO & Performance section above
+// Base patterns for custom hook development
+export const BasePatterns = {
+  useAsyncOperation: () => import('./base').then((m) => m.useAsyncOperation),
+  useMutation: () => import('./base').then((m) => m.useMutation),
+  usePagination: () => import('./base').then((m) => m.usePagination),
+  useDebounce: () => import('./base').then((m) => m.useDebounce),
+  useLocalStorage: () => import('./base').then((m) => m.useLocalStorage),
+};
 
-// Push Notifications
-export { usePushNotifications } from './usePushNotifications';
+// API interaction patterns
+export const ApiPatterns = {
+  useAuth: () => import('./api').then((m) => m.useAuth),
+  useCurrentUser: () => import('./api').then((m) => m.useCurrentUser),
+  useJobsSearch: () => import('./api').then((m) => m.useJobsSearch),
+  usePackagesSearch: () => import('./api').then((m) => m.usePackagesSearch),
+  useUserSearch: () => import('./api').then((m) => m.useUserSearch),
+};
+
+// UI interaction patterns
+export const UIPatterns = {
+  useModal: () => import('./ui').then((m) => m.useModal),
+  useToast: () => import('./ui').then((m) => m.useToast),
+  useForm: () => import('./ui').then((m) => m.useForm),
+  useTheme: () => import('./ui').then((m) => m.useTheme),
+  useSidebar: () => import('./ui').then((m) => m.useSidebar),
+};
+
+// Business logic patterns
+export const BusinessPatterns = {
+  useAuthState: () => import('./business').then((m) => m.useAuthState),
+  useUnifiedSearch: () => import('./business').then((m) => m.useUnifiedSearch),
+  useFavoritesManager: () =>
+    import('./business').then((m) => m.useFavoritesManager),
+  useFilterManager: () => import('./business').then((m) => m.useFilterManager),
+};
+
+// ================================================
+// HOOK USAGE GUIDELINES
+// ================================================
+
+/**
+ * HOOK SELECTION GUIDE:
+ *
+ * 1. BASE HOOKS (hooks/base/):
+ *    - useAsyncOperation: Generic async state management
+ *    - useMutation: Generic mutation operations
+ *    - usePagination: Generic pagination logic
+ *    - useDebounce: Value debouncing
+ *    - useLocalStorage: Persistent local storage
+ *    - useMediaQuery: Responsive breakpoint detection
+ *
+ * 2. API HOOKS (hooks/api/):
+ *    - useAuth: Authentication operations
+ *    - useCurrentUser: Current user state
+ *    - useJobsSearch: Job search with pagination
+ *    - usePackagesSearch: Package search with pagination
+ *    - useUserSearch: User search with pagination
+ *    - useFavorites: Favorites management
+ *    - useNotifications: Notification management
+ *
+ * 3. UI HOOKS (hooks/ui/):
+ *    - useModal: Modal state management
+ *    - useToast: Toast notification system
+ *    - useForm: Form state and validation
+ *    - useTheme: Theme switching (light/dark/system)
+ *    - useSidebar: Sidebar toggle state
+ *    - useClipboard: Copy to clipboard
+ *    - useScrollPosition: Scroll position tracking
+ *    - useKeyboardShortcut: Keyboard shortcut handling
+ *
+ * 4. BUSINESS HOOKS (hooks/business/):
+ *    - useAuthState: Authentication business logic
+ *    - useUnifiedSearch: Combined search across entities
+ *    - useFavoritesManager: Optimistic favorites management
+ *    - useFilterManager: Generic filter management
+ *    - useBreadcrumbs: Breadcrumb navigation
+ *    - useAnalyticsTracker: Event tracking
+ *    - useNotificationManager: UI notification management
+ *    - usePerformanceMonitor: Performance metrics
+ */
+
+// ================================================
+// MIGRATION HELPERS
+// ================================================
+
+/**
+ * LEGACY HOOK MIGRATION:
+ *
+ * Old Pattern -> New Pattern:
+ *
+ * // Before (multiple files)
+ * import { useAuth } from './hooks/useAuth'
+ * import { useJobs } from './hooks/useJobs'
+ * import { useModal } from './hooks/useModal'
+ *
+ * // After (unified import)
+ * import { useAuth, useJobsSearch, useModal } from './hooks'
+ *
+ * // Or category-specific imports
+ * import { useAuth } from './hooks/api'
+ * import { useModal } from './hooks/ui'
+ * import { useAuthState } from './hooks/business'
+ */
+
+// ================================================
+// DEFAULT EXPORT
+// ================================================
+
+const UnifiedHooks = {
+  // Patterns for lazy loading
+  BasePatterns,
+  ApiPatterns,
+  UIPatterns,
+  BusinessPatterns,
+};
+
+export default UnifiedHooks;

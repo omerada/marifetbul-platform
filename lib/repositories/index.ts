@@ -4,16 +4,45 @@
  */
 
 // Base repository functionality
-export { BaseRepository, RepositoryError } from './base';
-export type {
-  ApiResponse,
-  HttpMethod,
-  RequestConfig,
-  RequestOptions,
-  CacheConfig,
-} from './base';
+export {
+  default as BaseRepository,
+  type Repository,
+  type PaginatedResult,
+  type SearchOptions,
+} from './BaseRepository';
 
-// Domain Repositories
+// Unified API client
+export {
+  unifiedApiClient,
+  type ApiResponse,
+  type RequestConfig,
+} from '../api/UnifiedApiClient';
+
+// Domain Repositories - New Unified Repositories
+export {
+  default as userRepository,
+  type User,
+  type CreateUserData,
+  type UpdateUserData,
+} from './UserRepository';
+export {
+  default as jobRepository,
+  type Job,
+  type CreateJobData,
+  type UpdateJobData,
+} from './JobRepository';
+export {
+  default as packageRepository,
+  type Package,
+  type CreatePackageData,
+  type UpdatePackageData,
+} from './PackageRepository';
+
+// Legacy repositories for backwards compatibility
+export {
+  BaseRepository as LegacyBaseRepository,
+  RepositoryError,
+} from './base';
 export { NotificationRepository } from './notification.repository';
 export { MessagingRepository } from './messaging.repository';
 export { PaymentRepository } from './payment.repository';
@@ -22,8 +51,22 @@ export { PaymentRepository } from './payment.repository';
 import { NotificationRepository } from './notification.repository';
 import { MessagingRepository } from './messaging.repository';
 import { PaymentRepository } from './payment.repository';
+import userRepository from './UserRepository';
+import jobRepository from './JobRepository';
+import packageRepository from './PackageRepository';
 
-// Repository Data Types
+// Unified repository collection
+export const repositories = {
+  user: userRepository,
+  job: jobRepository,
+  package: packageRepository,
+  // Legacy repositories
+  notification: new NotificationRepository(),
+  messaging: new MessagingRepository(),
+  payment: new PaymentRepository(),
+} as const;
+
+// Repository Data Types - Legacy
 export type {
   NotificationFilters,
   NotificationPreferences,
@@ -46,12 +89,26 @@ export type {
   InvoiceRecord,
 } from './payment.repository';
 
-// Repository Factory - for dependency injection and testing
+// Repository Factory - Enhanced with new repositories
 export class RepositoryFactory {
   private static notificationRepository: NotificationRepository;
   private static messagingRepository: MessagingRepository;
   private static paymentRepository: PaymentRepository;
 
+  // New unified repositories are singletons by design
+  static getUserRepository() {
+    return userRepository;
+  }
+
+  static getJobRepository() {
+    return jobRepository;
+  }
+
+  static getPackageRepository() {
+    return packageRepository;
+  }
+
+  // Legacy repository methods
   static getNotificationRepository(): NotificationRepository {
     if (!this.notificationRepository) {
       this.notificationRepository = new NotificationRepository();
@@ -93,19 +150,49 @@ export class RepositoryFactory {
     this.paymentRepository = new PaymentRepository();
   }
 
-  // Health check for all repositories
+  // Enhanced health check including new repositories
   static async healthCheck(): Promise<{
+    user: boolean;
+    job: boolean;
+    package: boolean;
     notification: boolean;
     messaging: boolean;
     payment: boolean;
     overall: boolean;
   }> {
     const results = {
+      user: false,
+      job: false,
+      package: false,
       notification: false,
       messaging: false,
       payment: false,
       overall: false,
     };
+
+    try {
+      // Test user repository
+      await this.getUserRepository().count();
+      results.user = true;
+    } catch (error) {
+      console.warn('User repository health check failed:', error);
+    }
+
+    try {
+      // Test job repository
+      await this.getJobRepository().count();
+      results.job = true;
+    } catch (error) {
+      console.warn('Job repository health check failed:', error);
+    }
+
+    try {
+      // Test package repository
+      await this.getPackageRepository().count();
+      results.package = true;
+    } catch (error) {
+      console.warn('Package repository health check failed:', error);
+    }
 
     try {
       // Test notification repository
@@ -124,7 +211,7 @@ export class RepositoryFactory {
     }
 
     try {
-      // Test payment repository - try to get payment methods
+      // Test payment repository
       await this.getPaymentRepository().getPaymentMethods();
       results.payment = true;
     } catch (error) {
@@ -132,19 +219,32 @@ export class RepositoryFactory {
     }
 
     results.overall =
-      results.notification && results.messaging && results.payment;
+      results.user &&
+      results.job &&
+      results.package &&
+      results.notification &&
+      results.messaging &&
+      results.payment;
+
     return results;
   }
 
-  // Clear all repository caches
+  // Enhanced cache clearing including unified API client
   static clearAllCaches(): void {
+    // Clear unified API client cache (shared across all repositories)
+    import('../api/UnifiedApiClient').then(({ unifiedApiClient }) => {
+      unifiedApiClient.clearCache();
+    });
+
+    // Clear legacy repository caches
     this.getNotificationRepository().clearRepositoryCache();
     this.getMessagingRepository().clearRepositoryCache();
     this.getPaymentRepository().clearRepositoryCache();
   }
 
-  // Get cache statistics from all repositories
+  // Enhanced cache statistics
   static getCacheStats(): {
+    unified: { size: number; description: string };
     notification: { size: number; keys: string[] };
     messaging: { size: number; keys: string[] };
     payment: { size: number; keys: string[] };
@@ -157,10 +257,17 @@ export class RepositoryFactory {
     const paymentStats = this.getPaymentRepository().getRepositoryCacheStats();
 
     return {
+      unified: {
+        size: 1, // Unified API client uses Map-based caching
+        description: 'Unified API client cache',
+      },
       notification: notificationStats,
       messaging: messagingStats,
       payment: paymentStats,
-      total: notificationStats.size + messagingStats.size + paymentStats.size,
+      total:
+        1 + notificationStats.size + messagingStats.size + paymentStats.size,
     };
   }
 }
+
+export default repositories;
