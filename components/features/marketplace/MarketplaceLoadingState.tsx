@@ -1,99 +1,110 @@
-'use client';'use client';
+'use client';
 
+import { memo } from 'react';
+import { Skeleton } from '@/components/shared/SkeletonComponent';
+import { Card } from '@/components/ui/Card';
+import { cn } from '@/lib/utils';
 
+interface MarketplaceLoadingStateProps {
+  viewMode: 'grid' | 'list';
+  itemCount?: number;
+  showDescription?: boolean;
+  showPricing?: boolean;
+  showRating?: boolean;
+  className?: string;
+  'aria-label'?: string;
+}
 
-import { Loading } from '@/components/ui';import { Skeleton } from '@/components/ui';
+function MarketplaceLoadingStateComponent({
+  viewMode,
+  itemCount = 8,
+  showDescription = true,
+  showPricing = true,
+  showRating = true,
+  className,
+  'aria-label': ariaLabel = 'Marketplace içeriği yükleniyor',
+}: MarketplaceLoadingStateProps) {
+  const items = Array.from({ length: itemCount }, (_, i) => i);
 
-import { Card } from '@/components/ui/Card';import { Card } from '@/components/ui/Card';
+  if (viewMode === 'list') {
+    return (
+      <div
+        className={cn('space-y-4', className)}
+        role="status"
+        aria-label={ariaLabel}
+        data-testid="marketplace-loading-list"
+      >
+        {items.map((index) => (
+          <Card
+            key={`list-skeleton-${index}`}
+            className="p-6"
+            variant="default"
+          >
+            <div className="flex items-start gap-4">
+              {/* Avatar/Logo */}
+              <Skeleton variant="circular" width={64} height={64} />
 
-
-
-interface MarketplaceLoadingStateProps {interface MarketplaceLoadingStateProps {
-
-  viewMode: 'grid' | 'list';  viewMode: 'grid' | 'list';
-
-  itemCount?: number;  itemCount?: number;
-
-}}
-
-
-
-export function MarketplaceLoadingState({export function MarketplaceLoadingState({
-
-  viewMode,  viewMode,
-
-  itemCount = 8,  itemCount = 8,
-
-}: MarketplaceLoadingStateProps) {}: MarketplaceLoadingStateProps) {
-
-  const items = Array.from({ length: itemCount }, (_, i) => i);  const items = Array.from({ length: itemCount }, (_, i) => i);
-
-
-
-  if (viewMode === 'list') {  if (viewMode === 'list') {
-
-    return (    return (
-
-      <div className="space-y-4" role="status" aria-label="İçerik yükleniyor">      <div className="space-y-4" role="status" aria-label="İçerik yükleniyor">
-
-        {items.map((index) => (        {items.map((index) => (
-
-          <Card key={index} className="p-6">          <Card key={index} className="p-6">
-
-            <Loading variant="skeleton" size="lg" text="Marketplace öğeleri yükleniyor..." />            <div className="flex items-start gap-4">
-
-          </Card>              <Skeleton variant="circular" width={64} height={64} />
-
-        ))}              <div className="flex-1 space-y-3">
-
-      </div>                <div className="flex items-center justify-between">
-
-    );                  <Skeleton variant="text" className="h-6 w-3/4" />
-
-  }                  <Skeleton variant="text" className="h-5 w-20" />
-
+              <div className="flex-1 space-y-3">
+                {/* Header with title and price */}
+                <div className="flex items-center justify-between">
+                  <Skeleton variant="text" className="h-6 w-3/4" />
+                  {showPricing && (
+                    <Skeleton variant="text" className="h-5 w-20" />
+                  )}
                 </div>
 
-  return (                <Skeleton variant="text" className="h-4 w-full" />
+                {/* Description lines */}
+                {showDescription && (
+                  <>
+                    <Skeleton variant="text" className="h-4 w-full" />
+                    <Skeleton variant="text" className="h-4 w-2/3" />
+                  </>
+                )}
 
-    <div                <Skeleton variant="text" className="h-4 w-2/3" />
-
-      className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"                <div className="flex items-center justify-between pt-2">
-
-      role="status"                  <div className="flex gap-2">
-
-      aria-label="İçerik yükleniyor"                    <Skeleton variant="rectangular" className="h-6 w-16" />
-
-    >                    <Skeleton variant="rectangular" className="h-6 w-20" />
-
-      {items.map((index) => (                  </div>
-
-        <Card key={index} className="group hover:shadow-lg transition-shadow">                  <Skeleton variant="text" className="h-6 w-24" />
-
-          <Loading variant="skeleton" size="lg" text="Ürün bilgileri yükleniyor..." />                </div>
-
-        </Card>              </div>
-
-      ))}            </div>
-
-    </div>          </Card>
-
-  );        ))}
-
-}      </div>
+                {/* Rating and additional info */}
+                {showRating && (
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1">
+                      <Skeleton
+                        variant="rectangular"
+                        width={80}
+                        height={16}
+                        className="rounded"
+                      />
+                    </div>
+                    <Skeleton variant="text" className="h-4 w-24" />
+                  </div>
+                )}
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
     );
   }
 
   return (
     <div
-      className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      className={cn(
+        'grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3',
+        className
+      )}
       role="status"
-      aria-label="İçerik yükleniyor"
+      aria-label={ariaLabel}
+      data-testid="marketplace-loading-grid"
     >
       {items.map((index) => (
-        <Card key={index} variant="elevated" className="overflow-hidden">
+        <Card
+          key={`grid-skeleton-${index}`}
+          variant="elevated"
+          className="overflow-hidden"
+          padding="none"
+        >
+          {/* Featured Image */}
           <Skeleton variant="rectangular" className="h-48 w-full" />
+
           <div className="space-y-4 p-6">
+            {/* User/Company Info */}
             <div className="flex items-center gap-3">
               <Skeleton variant="circular" width={40} height={40} />
               <div className="flex-1 space-y-2">
@@ -101,15 +112,28 @@ export function MarketplaceLoadingState({export function MarketplaceLoadingState
                 <Skeleton variant="text" className="h-3 w-1/2" />
               </div>
             </div>
+
+            {/* Title */}
             <Skeleton variant="text" className="h-5 w-full" />
-            <Skeleton variant="text" className="h-4 w-4/5" />
-            <Skeleton variant="text" className="h-4 w-3/5" />
+
+            {/* Description */}
+            {showDescription && (
+              <>
+                <Skeleton variant="text" className="h-4 w-4/5" />
+                <Skeleton variant="text" className="h-4 w-3/5" />
+              </>
+            )}
+
+            {/* Footer with rating and price */}
             <div className="flex items-center justify-between pt-2">
-              <div className="flex gap-1">
-                <Skeleton variant="circular" width={16} height={16} />
-                <Skeleton variant="text" className="h-4 w-12" />
-              </div>
-              <Skeleton variant="text" className="h-5 w-16" />
+              {showRating && (
+                <div className="flex items-center gap-1">
+                  <Skeleton variant="circular" width={16} height={16} />
+                  <Skeleton variant="text" className="h-4 w-12" />
+                </div>
+              )}
+
+              {showPricing && <Skeleton variant="text" className="h-5 w-16" />}
             </div>
           </div>
         </Card>
@@ -117,3 +141,6 @@ export function MarketplaceLoadingState({export function MarketplaceLoadingState
     </div>
   );
 }
+
+export const MarketplaceLoadingState = memo(MarketplaceLoadingStateComponent);
+export default MarketplaceLoadingState;

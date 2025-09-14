@@ -4,7 +4,7 @@ export { Checkbox } from './Checkbox';
 export { Card, CardHeader, CardContent, CardFooter } from './Card';
 // LOADING COMPONENTS CONSOLIDATED TO SHARED/UNIFIEDLOADING
 export { default as Loading } from '../shared/UnifiedLoading';
-export { default as Skeleton } from '../shared/UnifiedLoading';
+export { default as Skeleton } from '../shared/SkeletonComponent';
 export { ErrorFallback } from './ErrorFallback';
 export {
   Tooltip,

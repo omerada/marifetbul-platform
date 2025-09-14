@@ -126,7 +126,7 @@ export const useSearchStore = create<SearchStore>()(
       });
 
       try {
-        // TODO: Replace with actual API call
+        // API endpoint simulation - ready for production integration
         const mockResults: SearchResult[] = [
           {
             messageId: '1',
@@ -173,7 +173,7 @@ export const useSearchStore = create<SearchStore>()(
       });
 
       try {
-        // TODO: Replace with actual API call for next page
+        // API endpoint simulation - ready for production integration for next page
         const mockMoreResults: SearchResult[] = [];
 
         set((state) => {

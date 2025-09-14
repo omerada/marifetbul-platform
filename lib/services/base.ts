@@ -50,6 +50,38 @@ export abstract class BaseService {
   }
 
   /**
+   * Simulate API call with realistic delay and error scenarios
+   * This should be replaced with actual HTTP client in production
+   */
+  protected async simulateApiCall(
+    endpoint: string,
+    options: {
+      method?: string;
+      body?: unknown;
+      headers?: Record<string, string>;
+    } = {}
+  ): Promise<Record<string, unknown>> {
+    // Simulate network delay
+    await new Promise((resolve) =>
+      setTimeout(resolve, 100 + Math.random() * 400)
+    );
+
+    // Simulate occasional errors for testing
+    if (Math.random() < 0.05) {
+      // 5% error rate
+      throw new Error('Simulated network error');
+    }
+
+    // Return mock successful response
+    return {
+      id: `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      success: true,
+      timestamp: new Date().toISOString(),
+      ...((options.body as Record<string, unknown>) || {}),
+    };
+  }
+
+  /**
    * Validate input data using Zod schema
    */
   protected validateInput<T>(
