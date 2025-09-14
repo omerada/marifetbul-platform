@@ -65,13 +65,18 @@ export const useNotifications = (): UseNotificationReturn => {
     });
   }, [fetchOperation]);
 
-  const markAsRead = useCallback(async (notificationId: string) => {
-    await markAsReadAction.execute(async () => {
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n))
-      );
-    });
-  }, [markAsReadAction]);
+  const markAsRead = useCallback(
+    async (notificationId: string) => {
+      await markAsReadAction.execute(async () => {
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n.id === notificationId ? { ...n, isRead: true } : n
+          )
+        );
+      });
+    },
+    [markAsReadAction]
+  );
 
   const markAllAsRead = useCallback(async () => {
     await markAllAsReadAction.execute(async () => {
@@ -79,11 +84,14 @@ export const useNotifications = (): UseNotificationReturn => {
     });
   }, [markAllAsReadAction]);
 
-  const deleteNotification = useCallback(async (notificationId: string) => {
-    await deleteAction.execute(async () => {
-      setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
-    });
-  }, [deleteAction]);
+  const deleteNotification = useCallback(
+    async (notificationId: string) => {
+      await deleteAction.execute(async () => {
+        setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+      });
+    },
+    [deleteAction]
+  );
 
   const updatePreferences = useCallback(
     async (newPreferences: Partial<NotificationSettings>) => {
@@ -152,8 +160,18 @@ export const useNotifications = (): UseNotificationReturn => {
     notifications,
     unreadCount,
     preferences,
-    isLoading: fetchOperation.isLoading || markAsReadAction.isLoading || markAllAsReadAction.isLoading || deleteAction.isLoading || updatePreferencesAction.isLoading,
-    error: fetchOperation.error || markAsReadAction.error || markAllAsReadAction.error || deleteAction.error || updatePreferencesAction.error,
+    isLoading:
+      fetchOperation.isLoading ||
+      markAsReadAction.isLoading ||
+      markAllAsReadAction.isLoading ||
+      deleteAction.isLoading ||
+      updatePreferencesAction.isLoading,
+    error:
+      fetchOperation.error ||
+      markAsReadAction.error ||
+      markAllAsReadAction.error ||
+      deleteAction.error ||
+      updatePreferencesAction.error,
     fetchNotifications,
     markAsRead,
     markAllAsRead,

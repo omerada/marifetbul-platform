@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { 
-  CORE_WEB_VITALS, 
-  PERFORMANCE_BUDGETS, 
+import {
+  CORE_WEB_VITALS,
+  PERFORMANCE_BUDGETS,
   UI_PERFORMANCE,
   calculatePerformanceScore,
   isGoodPerformance,
   needsImprovement,
-  isPoorPerformance 
+  isPoorPerformance,
 } from '@/lib/constants/performance';
 
 interface PerformanceMetrics {
@@ -256,26 +256,70 @@ export function usePerformance() {
 
   // Check if metrics are good, need improvement, or poor
   const metricsStatus = {
-    lcp: performanceMetrics.lcp ? {
-      isGood: isGoodPerformance(performanceMetrics.lcp, CORE_WEB_VITALS.LCP),
-      needsImprovement: needsImprovement(performanceMetrics.lcp, CORE_WEB_VITALS.LCP),
-      isPoor: isPoorPerformance(performanceMetrics.lcp, CORE_WEB_VITALS.LCP),
-    } : null,
-    fid: performanceMetrics.fid ? {
-      isGood: isGoodPerformance(performanceMetrics.fid, CORE_WEB_VITALS.FID),
-      needsImprovement: needsImprovement(performanceMetrics.fid, CORE_WEB_VITALS.FID),
-      isPoor: isPoorPerformance(performanceMetrics.fid, CORE_WEB_VITALS.FID),
-    } : null,
-    cls: performanceMetrics.cls ? {
-      isGood: isGoodPerformance(performanceMetrics.cls, CORE_WEB_VITALS.CLS),
-      needsImprovement: needsImprovement(performanceMetrics.cls, CORE_WEB_VITALS.CLS),
-      isPoor: isPoorPerformance(performanceMetrics.cls, CORE_WEB_VITALS.CLS),
-    } : null,
-    fcp: performanceMetrics.fcp ? {
-      isGood: isGoodPerformance(performanceMetrics.fcp, CORE_WEB_VITALS.FCP),
-      needsImprovement: needsImprovement(performanceMetrics.fcp, CORE_WEB_VITALS.FCP),
-      isPoor: isPoorPerformance(performanceMetrics.fcp, CORE_WEB_VITALS.FCP),
-    } : null,
+    lcp: performanceMetrics.lcp
+      ? {
+          isGood: isGoodPerformance(
+            performanceMetrics.lcp,
+            CORE_WEB_VITALS.LCP
+          ),
+          needsImprovement: needsImprovement(
+            performanceMetrics.lcp,
+            CORE_WEB_VITALS.LCP
+          ),
+          isPoor: isPoorPerformance(
+            performanceMetrics.lcp,
+            CORE_WEB_VITALS.LCP
+          ),
+        }
+      : null,
+    fid: performanceMetrics.fid
+      ? {
+          isGood: isGoodPerformance(
+            performanceMetrics.fid,
+            CORE_WEB_VITALS.FID
+          ),
+          needsImprovement: needsImprovement(
+            performanceMetrics.fid,
+            CORE_WEB_VITALS.FID
+          ),
+          isPoor: isPoorPerformance(
+            performanceMetrics.fid,
+            CORE_WEB_VITALS.FID
+          ),
+        }
+      : null,
+    cls: performanceMetrics.cls
+      ? {
+          isGood: isGoodPerformance(
+            performanceMetrics.cls,
+            CORE_WEB_VITALS.CLS
+          ),
+          needsImprovement: needsImprovement(
+            performanceMetrics.cls,
+            CORE_WEB_VITALS.CLS
+          ),
+          isPoor: isPoorPerformance(
+            performanceMetrics.cls,
+            CORE_WEB_VITALS.CLS
+          ),
+        }
+      : null,
+    fcp: performanceMetrics.fcp
+      ? {
+          isGood: isGoodPerformance(
+            performanceMetrics.fcp,
+            CORE_WEB_VITALS.FCP
+          ),
+          needsImprovement: needsImprovement(
+            performanceMetrics.fcp,
+            CORE_WEB_VITALS.FCP
+          ),
+          isPoor: isPoorPerformance(
+            performanceMetrics.fcp,
+            CORE_WEB_VITALS.FCP
+          ),
+        }
+      : null,
   };
 
   return {

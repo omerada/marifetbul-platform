@@ -23,22 +23,26 @@ export function useAsyncOperation<T = unknown>(): AsyncOperationResult<T> {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const execute = useCallback(async (operation: () => Promise<T>): Promise<T> => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const result = await operation();
-      setData(result);
-      return result;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata oluştu';
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const execute = useCallback(
+    async (operation: () => Promise<T>): Promise<T> => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await operation();
+        setData(result);
+        return result;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Bilinmeyen hata oluştu';
+        setError(errorMessage);
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   const executeWithParams = useCallback(
     async <P extends unknown[]>(
@@ -80,22 +84,26 @@ export function useAsyncAction() {
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const execute = useCallback(async (operation: () => Promise<void>): Promise<void> => {
-    setIsLoading(true);
-    setError(null);
-    setIsSuccess(false);
-    
-    try {
-      await operation();
-      setIsSuccess(true);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata oluştu';
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const execute = useCallback(
+    async (operation: () => Promise<void>): Promise<void> => {
+      setIsLoading(true);
+      setError(null);
+      setIsSuccess(false);
+
+      try {
+        await operation();
+        setIsSuccess(true);
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Bilinmeyen hata oluştu';
+        setError(errorMessage);
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   const reset = useCallback(() => {
     setError(null);
@@ -121,42 +129,52 @@ export function useAsyncAction() {
  * Hook for managing multiple async operations
  */
 export function useMultipleAsyncOperations() {
-  const [operationStates, setOperationStates] = useState<Record<string, {
-    isLoading: boolean;
-    error: string | null;
-    data: unknown;
-  }>>({});
+  const [operationStates, setOperationStates] = useState<
+    Record<
+      string,
+      {
+        isLoading: boolean;
+        error: string | null;
+        data: unknown;
+      }
+    >
+  >({});
 
-  const executeOperation = useCallback(async <T>(
-    key: string,
-    operation: () => Promise<T>
-  ): Promise<T> => {
-    setOperationStates(prev => ({
-      ...prev,
-      [key]: { isLoading: true, error: null, data: prev[key]?.data || null }
-    }));
+  const executeOperation = useCallback(
+    async <T>(key: string, operation: () => Promise<T>): Promise<T> => {
+      setOperationStates((prev) => ({
+        ...prev,
+        [key]: { isLoading: true, error: null, data: prev[key]?.data || null },
+      }));
 
-    try {
-      const result = await operation();
-      setOperationStates(prev => ({
-        ...prev,
-        [key]: { isLoading: false, error: null, data: result }
-      }));
-      return result;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata oluştu';
-      setOperationStates(prev => ({
-        ...prev,
-        [key]: { isLoading: false, error: errorMessage, data: prev[key]?.data || null }
-      }));
-      throw err;
-    }
-  }, []);
+      try {
+        const result = await operation();
+        setOperationStates((prev) => ({
+          ...prev,
+          [key]: { isLoading: false, error: null, data: result },
+        }));
+        return result;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Bilinmeyen hata oluştu';
+        setOperationStates((prev) => ({
+          ...prev,
+          [key]: {
+            isLoading: false,
+            error: errorMessage,
+            data: prev[key]?.data || null,
+          },
+        }));
+        throw err;
+      }
+    },
+    []
+  );
 
   const resetOperation = useCallback((key: string) => {
-    setOperationStates(prev => ({
+    setOperationStates((prev) => ({
       ...prev,
-      [key]: { isLoading: false, error: null, data: null }
+      [key]: { isLoading: false, error: null, data: null },
     }));
   }, []);
 
@@ -164,12 +182,19 @@ export function useMultipleAsyncOperations() {
     setOperationStates({});
   }, []);
 
-  const getOperationState = useCallback((key: string) => {
-    return operationStates[key] || { isLoading: false, error: null, data: null };
-  }, [operationStates]);
+  const getOperationState = useCallback(
+    (key: string) => {
+      return (
+        operationStates[key] || { isLoading: false, error: null, data: null }
+      );
+    },
+    [operationStates]
+  );
 
-  const isAnyLoading = Object.values(operationStates).some(op => op.isLoading);
-  const hasAnyError = Object.values(operationStates).some(op => op.error);
+  const isAnyLoading = Object.values(operationStates).some(
+    (op) => op.isLoading
+  );
+  const hasAnyError = Object.values(operationStates).some((op) => op.error);
 
   return {
     executeOperation,

@@ -12,28 +12,28 @@ export const CORE_WEB_VITALS = {
     NEEDS_IMPROVEMENT: 4000,
     POOR: Infinity,
   },
-  
-  // First Input Delay (FID) - milliseconds  
+
+  // First Input Delay (FID) - milliseconds
   FID: {
     GOOD: 100,
     NEEDS_IMPROVEMENT: 300,
     POOR: Infinity,
   },
-  
+
   // Cumulative Layout Shift (CLS) - score
   CLS: {
     GOOD: 0.1,
     NEEDS_IMPROVEMENT: 0.25,
     POOR: Infinity,
   },
-  
+
   // First Contentful Paint (FCP) - milliseconds
   FCP: {
     GOOD: 1800,
     NEEDS_IMPROVEMENT: 3000,
     POOR: Infinity,
   },
-  
+
   // Time to First Byte (TTFB) - milliseconds
   TTFB: {
     GOOD: 800,
@@ -67,7 +67,7 @@ export const PERFORMANCE_BUDGETS = {
       ERROR: 6000,
     },
   },
-  
+
   // Network performance
   NETWORK: {
     REQUEST_COUNT: {
@@ -81,7 +81,7 @@ export const PERFORMANCE_BUDGETS = {
       ERROR: 0.7,
     },
   },
-  
+
   // Memory usage (MB)
   MEMORY: {
     HEAP_SIZE: {
@@ -105,14 +105,14 @@ export const UI_PERFORMANCE = {
     MIN_FPS: 30,
     FRAME_BUDGET_MS: 16.67, // 1000/60
   },
-  
+
   // List virtualization thresholds
   VIRTUALIZATION: {
     ITEM_HEIGHT: 80,
     OVERSCAN: 5,
     MIN_ITEMS_FOR_VIRTUAL: 50,
   },
-  
+
   // Debounce intervals (milliseconds)
   DEBOUNCE: {
     SEARCH: 300,
@@ -120,7 +120,7 @@ export const UI_PERFORMANCE = {
     SCROLL: 100,
     API_CALLS: 500,
   },
-  
+
   // Auto-refresh intervals (milliseconds)
   REFRESH_INTERVALS: {
     REAL_TIME: 1000,
@@ -138,20 +138,20 @@ export const API_PERFORMANCE = {
     NORMAL: 10000,
     SLOW: 30000,
   },
-  
+
   // Retry configuration
   RETRY: {
     MAX_ATTEMPTS: 3,
     DELAY_MS: 1000,
     BACKOFF_MULTIPLIER: 2,
   },
-  
+
   // Rate limiting
   RATE_LIMIT: {
     REQUESTS_PER_MINUTE: 100,
     BURST_LIMIT: 20,
   },
-  
+
   // Pagination
   PAGINATION: {
     DEFAULT_PAGE_SIZE: 12,
@@ -167,13 +167,13 @@ export const MOBILE_PERFORMANCE = {
     MIN_TARGET_SIZE: 44,
     RECOMMENDED_TARGET_SIZE: 48,
   },
-  
+
   // Network considerations
   NETWORK: {
     SLOW_3G_SPEED: 400, // kbps
     FAST_3G_SPEED: 1600, // kbps
   },
-  
+
   // Battery optimization
   BATTERY: {
     LOW_BATTERY_THRESHOLD: 0.2,
@@ -188,13 +188,13 @@ export const DEVELOPMENT = {
     SAMPLE_RATE: 0.1, // 10% of users
     SLOW_OPERATION_THRESHOLD: 1000, // ms
   },
-  
+
   // Memory leak detection
   MEMORY_LEAK: {
     CHECK_INTERVAL: 10000, // ms
     THRESHOLD_INCREASE: 1.5, // 50% increase
   },
-  
+
   // Bundle analysis
   BUNDLE_ANALYSIS: {
     SIZE_THRESHOLD_KB: 500,
@@ -220,7 +220,7 @@ export const calculatePerformanceScore = (metrics: {
   ttfb?: number;
 }): number => {
   let score = 100;
-  
+
   // LCP scoring
   if (metrics.lcp) {
     if (metrics.lcp > CORE_WEB_VITALS.LCP.NEEDS_IMPROVEMENT) {
@@ -229,7 +229,7 @@ export const calculatePerformanceScore = (metrics: {
       score -= 15 * PERFORMANCE_WEIGHTS.LCP;
     }
   }
-  
+
   // FID scoring
   if (metrics.fid) {
     if (metrics.fid > CORE_WEB_VITALS.FID.NEEDS_IMPROVEMENT) {
@@ -238,7 +238,7 @@ export const calculatePerformanceScore = (metrics: {
       score -= 15 * PERFORMANCE_WEIGHTS.FID;
     }
   }
-  
+
   // CLS scoring
   if (metrics.cls) {
     if (metrics.cls > CORE_WEB_VITALS.CLS.NEEDS_IMPROVEMENT) {
@@ -247,7 +247,7 @@ export const calculatePerformanceScore = (metrics: {
       score -= 15 * PERFORMANCE_WEIGHTS.CLS;
     }
   }
-  
+
   // FCP scoring
   if (metrics.fcp) {
     if (metrics.fcp > CORE_WEB_VITALS.FCP.NEEDS_IMPROVEMENT) {
@@ -256,7 +256,7 @@ export const calculatePerformanceScore = (metrics: {
       score -= 15 * PERFORMANCE_WEIGHTS.FCP;
     }
   }
-  
+
   // TTFB scoring
   if (metrics.ttfb) {
     if (metrics.ttfb > CORE_WEB_VITALS.TTFB.NEEDS_IMPROVEMENT) {
@@ -265,16 +265,22 @@ export const calculatePerformanceScore = (metrics: {
       score -= 15 * PERFORMANCE_WEIGHTS.TTFB;
     }
   }
-  
+
   return Math.max(0, Math.round(score));
 };
 
 // Performance check helpers
-export const isGoodPerformance = (metric: number, thresholds: { GOOD: number }) => 
-  metric <= thresholds.GOOD;
+export const isGoodPerformance = (
+  metric: number,
+  thresholds: { GOOD: number }
+) => metric <= thresholds.GOOD;
 
-export const needsImprovement = (metric: number, thresholds: { GOOD: number; NEEDS_IMPROVEMENT: number }) =>
-  metric > thresholds.GOOD && metric <= thresholds.NEEDS_IMPROVEMENT;
+export const needsImprovement = (
+  metric: number,
+  thresholds: { GOOD: number; NEEDS_IMPROVEMENT: number }
+) => metric > thresholds.GOOD && metric <= thresholds.NEEDS_IMPROVEMENT;
 
-export const isPoorPerformance = (metric: number, thresholds: { NEEDS_IMPROVEMENT: number }) =>
-  metric > thresholds.NEEDS_IMPROVEMENT;
+export const isPoorPerformance = (
+  metric: number,
+  thresholds: { NEEDS_IMPROVEMENT: number }
+) => metric > thresholds.NEEDS_IMPROVEMENT;
