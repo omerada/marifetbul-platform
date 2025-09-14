@@ -45,8 +45,8 @@ export async function GET(
         },
         reviewee: {
           id: pkg.freelancerId,
-          firstName: pkg.freelancer.firstName,
-          lastName: pkg.freelancer.lastName,
+          firstName: pkg.freelancer?.firstName || 'Unknown',
+          lastName: pkg.freelancer?.lastName || 'User',
         },
         packageId: id,
         createdAt: '2024-11-15T14:30:00Z',
@@ -64,8 +64,8 @@ export async function GET(
         },
         reviewee: {
           id: pkg.freelancerId,
-          firstName: pkg.freelancer.firstName,
-          lastName: pkg.freelancer.lastName,
+          firstName: pkg.freelancer?.firstName || 'Unknown',
+          lastName: pkg.freelancer?.lastName || 'User',
         },
         packageId: id,
         createdAt: '2024-11-10T09:15:00Z',

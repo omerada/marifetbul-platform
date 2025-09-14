@@ -51,13 +51,19 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
     fetchPaymentHistory();
   }, [fetchPaymentHistory]);
 
-  const getMethodIcon = (method: PaymentMethodType) => {
+  const getMethodIcon = (method: string | undefined) => {
     switch (method) {
       case 'credit_card':
         return <CreditCard className="h-4 w-4" />;
       case 'bank_transfer':
         return <Building2 className="h-4 w-4" />;
       case 'wallet':
+        return <Wallet className="h-4 w-4" />;
+      case 'card':
+        return <CreditCard className="h-4 w-4" />;
+      case 'bank':
+        return <Building2 className="h-4 w-4" />;
+      case 'paypal':
         return <Wallet className="h-4 w-4" />;
       default:
         return <CreditCard className="h-4 w-4" />;
@@ -67,6 +73,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
   const getStatusBadge = (status: Payment['status']) => {
     const statusConfig = {
       completed: { label: 'Tamamlandı', variant: 'success' as const },
+      paid: { label: 'Ödendi', variant: 'success' as const },
       pending: { label: 'Beklemede', variant: 'warning' as const },
       processing: { label: 'İşleniyor', variant: 'default' as const },
       failed: { label: 'Başarısız', variant: 'destructive' as const },
@@ -112,9 +119,9 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
     if (!searchQuery.trim()) return true;
     const query = searchQuery.toLowerCase();
     return (
-      payment.paymentId.toLowerCase().includes(query) ||
+      payment.paymentId?.toLowerCase().includes(query) ||
       payment.orderId.toLowerCase().includes(query) ||
-      payment.method.toLowerCase().includes(query)
+      payment.method?.toLowerCase().includes(query)
     );
   });
 

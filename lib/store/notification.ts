@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
+import { getWebSocketManager } from '@/lib/services/websocket';
 import {
   EnhancedNotification,
   NotificationCenter,
@@ -581,12 +582,42 @@ export const useNotificationStore = create<NotificationStore>()(
 
       // Real-time operations
       startRealtimeConnection: (): void => {
-        // WebSocket connection would be implemented here
-        set({ isConnected: true });
+        try {
+          const wsManager = getWebSocketManager();
+
+          // Subscribe to notification events
+          wsManager.on('notification', (data) => {
+            get().handleRealtimeNotification(
+              data as unknown as EnhancedNotification
+            );
+          });
+
+          // Connect to WebSocket
+          wsManager
+            .connect()
+            .then(() => {
+              set({ isConnected: true });
+              console.log('Notification real-time connection established');
+            })
+            .catch((error) => {
+              console.error('Failed to establish real-time connection:', error);
+              set({ isConnected: false });
+            });
+        } catch (error) {
+          console.error('Error starting real-time connection:', error);
+          set({ isConnected: false });
+        }
       },
 
       stopRealtimeConnection: (): void => {
-        set({ isConnected: false });
+        try {
+          const wsManager = getWebSocketManager();
+          wsManager.disconnect();
+          set({ isConnected: false });
+          console.log('Notification real-time connection stopped');
+        } catch (error) {
+          console.error('Error stopping real-time connection:', error);
+        }
       },
 
       handleRealtimeNotification: (
@@ -674,7 +705,9 @@ export const useNotificationSelectors = () => {
       .filter((n) => !n.isRead)
       .reduce(
         (acc, notification) => {
-          acc[notification.category] = (acc[notification.category] || 0) + 1;
+          if (notification.category) {
+            acc[notification.category] = (acc[notification.category] || 0) + 1;
+          }
           return acc;
         },
         {} as Record<string, number>

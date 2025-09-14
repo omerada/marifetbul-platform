@@ -104,7 +104,7 @@ export function usePackageOrder(packageId: string) {
     const tier = form.watch('tier');
     const addOns = form.watch('addOns') || [];
 
-    const tierPrice = currentPackage.pricing[tier];
+    const tierPrice = currentPackage.pricing?.[tier];
     const addOnCosts = addOns
       .map((addOnId) => {
         const addOn = currentPackage.addOns.find((a) => a.id === addOnId);
@@ -113,6 +113,17 @@ export function usePackageOrder(packageId: string) {
           : null;
       })
       .filter(Boolean);
+
+    if (!tierPrice) {
+      return {
+        tier: null,
+        addOns: [],
+        subtotal: 0,
+        tax: 0,
+        total: 0,
+        estimatedDelivery: new Date(),
+      };
+    }
 
     const subtotal =
       tierPrice.price +

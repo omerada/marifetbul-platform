@@ -36,8 +36,18 @@ interface AnalyticsStore {
 
 const initialState = {
   analytics: null,
-  timeframe: { period: 'month' as const },
-  filters: { timeframe: { period: 'month' as const } },
+  timeframe: {
+    period: 'month' as const,
+    start: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    end: new Date(),
+  },
+  filters: {
+    timeframe: {
+      period: 'month' as const,
+      start: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+      end: new Date(),
+    },
+  },
   isLoading: false,
   error: null,
   lastUpdated: null,

@@ -4,19 +4,26 @@
  */
 
 import { Coordinates, MapBounds } from '@/types';
+import { geocodeAddress, reverseGeocode } from '@/lib/services/geocoding';
 
 export class MapUtils {
   // Calculate distance between two coordinates using Haversine formula
   static calculateDistance(coord1: Coordinates, coord2: Coordinates): number {
     const R = 6371; // Earth's radius in kilometers
 
-    const dLat = MapUtils.toRadians(coord2.latitude - coord1.latitude);
-    const dLon = MapUtils.toRadians(coord2.longitude - coord1.longitude);
+    // Support both lat/lng and latitude/longitude properties
+    const lat1 = coord1.latitude || coord1.lat;
+    const lng1 = coord1.longitude || coord1.lng;
+    const lat2 = coord2.latitude || coord2.lat;
+    const lng2 = coord2.longitude || coord2.lng;
+
+    const dLat = MapUtils.toRadians(lat2 - lat1);
+    const dLon = MapUtils.toRadians(lng2 - lng1);
 
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(MapUtils.toRadians(coord1.latitude)) *
-        Math.cos(MapUtils.toRadians(coord2.latitude)) *
+      Math.cos(MapUtils.toRadians(lat1)) *
+        Math.cos(MapUtils.toRadians(lat2)) *
         Math.sin(dLon / 2) *
         Math.sin(dLon / 2);
 
@@ -50,8 +57,9 @@ export class MapUtils {
       z = 0;
 
     coordinates.forEach((coord) => {
-      const lat = MapUtils.toRadians(coord.latitude);
-      const lon = MapUtils.toRadians(coord.longitude);
+      // Support both lat/lng and latitude/longitude properties
+      const lat = MapUtils.toRadians(coord.latitude || coord.lat);
+      const lon = MapUtils.toRadians(coord.longitude || coord.lng);
 
       x += Math.cos(lat) * Math.cos(lon);
       y += Math.cos(lat) * Math.sin(lon);
@@ -70,6 +78,8 @@ export class MapUtils {
     return {
       latitude: MapUtils.toDegrees(centralLat),
       longitude: MapUtils.toDegrees(centralLon),
+      lat: MapUtils.toDegrees(centralLat),
+      lng: MapUtils.toDegrees(centralLon),
     };
   }
 
@@ -82,16 +92,19 @@ export class MapUtils {
       throw new Error('No coordinates provided');
     }
 
-    let minLat = coordinates[0].latitude;
-    let maxLat = coordinates[0].latitude;
-    let minLng = coordinates[0].longitude;
-    let maxLng = coordinates[0].longitude;
+    // Support both lat/lng and latitude/longitude properties for the first coordinate
+    let minLat = coordinates[0].latitude || coordinates[0].lat;
+    let maxLat = coordinates[0].latitude || coordinates[0].lat;
+    let minLng = coordinates[0].longitude || coordinates[0].lng;
+    let maxLng = coordinates[0].longitude || coordinates[0].lng;
 
     coordinates.forEach((coord) => {
-      minLat = Math.min(minLat, coord.latitude);
-      maxLat = Math.max(maxLat, coord.latitude);
-      minLng = Math.min(minLng, coord.longitude);
-      maxLng = Math.max(maxLng, coord.longitude);
+      const lat = coord.latitude || coord.lat;
+      const lng = coord.longitude || coord.lng;
+      minLat = Math.min(minLat, lat);
+      maxLat = Math.max(maxLat, lat);
+      minLng = Math.min(minLng, lng);
+      maxLng = Math.max(maxLng, lng);
     });
 
     return {
@@ -99,6 +112,18 @@ export class MapUtils {
       south: minLat - padding,
       east: maxLng + padding,
       west: minLng - padding,
+      northeast: {
+        lat: maxLat + padding,
+        lng: maxLng + padding,
+        latitude: maxLat + padding,
+        longitude: maxLng + padding,
+      },
+      southwest: {
+        lat: minLat - padding,
+        lng: minLng - padding,
+        latitude: minLat - padding,
+        longitude: minLng - padding,
+      },
     };
   }
 
@@ -140,9 +165,13 @@ export class MapUtils {
         (distance / (111 * Math.cos(MapUtils.toRadians(center.latitude)))) *
         Math.sin(angle);
 
+      const centerLat = center.latitude || center.lat;
+      const centerLng = center.longitude || center.lng;
       coordinates.push({
-        latitude: center.latitude + deltaLat,
-        longitude: center.longitude + deltaLng,
+        latitude: centerLat + deltaLat,
+        longitude: centerLng + deltaLng,
+        lat: centerLat + deltaLat,
+        lng: centerLng + deltaLng,
       });
     }
 
@@ -172,79 +201,16 @@ export class MapUtils {
     return 7;
   }
 
-  // Convert address string to approximate coordinates (mock implementation)
+  // Convert address string to coordinates using geocoding service
   static async geocodeAddress(address: string): Promise<Coordinates | null> {
-    // Mock implementation - in real app, use Google Maps Geocoding API
-    const mockLocations: Record<string, Coordinates> = {
-      istanbul: { latitude: 41.0082, longitude: 28.9784 },
-      ankara: { latitude: 39.9334, longitude: 32.8597 },
-      izmir: { latitude: 38.4192, longitude: 27.1287 },
-      bursa: { latitude: 40.1826, longitude: 29.0665 },
-      antalya: { latitude: 36.8969, longitude: 30.7133 },
-      adana: { latitude: 37.0, longitude: 35.3213 },
-      konya: { latitude: 37.8746, longitude: 32.4932 },
-      şanlıurfa: { latitude: 37.1674, longitude: 38.7955 },
-      gaziantep: { latitude: 37.0662, longitude: 37.3833 },
-      kayseri: { latitude: 38.7312, longitude: 35.4787 },
-    };
-
-    const searchKey = address.toLowerCase().trim();
-
-    // Try exact match first
-    if (mockLocations[searchKey]) {
-      return mockLocations[searchKey];
-    }
-
-    // Try partial match
-    for (const [key, coords] of Object.entries(mockLocations)) {
-      if (key.includes(searchKey) || searchKey.includes(key)) {
-        return coords;
-      }
-    }
-
-    // Return null if no match found
-    return null;
+    return await geocodeAddress(address);
   }
 
-  // Reverse geocode coordinates to address (mock implementation)
+  // Reverse geocode coordinates to address using geocoding service
   static async reverseGeocode(
     coordinates: Coordinates
   ): Promise<string | null> {
-    // Mock implementation - in real app, use Google Maps Reverse Geocoding API
-    const { latitude, longitude } = coordinates;
-
-    // Simple mock based on known cities
-    const cities = [
-      { name: 'İstanbul', lat: 41.0082, lng: 28.9784 },
-      { name: 'Ankara', lat: 39.9334, lng: 32.8597 },
-      { name: 'İzmir', lat: 38.4192, lng: 27.1287 },
-      { name: 'Bursa', lat: 40.1826, lng: 29.0665 },
-      { name: 'Antalya', lat: 36.8969, lng: 30.7133 },
-    ];
-
-    let closestCity = cities[0];
-    let minDistance = MapUtils.calculateDistance(coordinates, {
-      latitude: closestCity.lat,
-      longitude: closestCity.lng,
-    });
-
-    cities.forEach((city) => {
-      const distance = MapUtils.calculateDistance(coordinates, {
-        latitude: city.lat,
-        longitude: city.lng,
-      });
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestCity = city;
-      }
-    });
-
-    if (minDistance < 50) {
-      // Within 50km
-      return `${closestCity.name}, Türkiye`;
-    }
-
-    return `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+    return await reverseGeocode(coordinates);
   }
 }
 
@@ -287,6 +253,8 @@ export class GeolocationService {
           const coordinates: Coordinates = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
           };
           this.currentPosition = coordinates;
           resolve(coordinates);
@@ -322,6 +290,8 @@ export class GeolocationService {
           const coordinates: Coordinates = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
           };
           this.currentPosition = coordinates;
 

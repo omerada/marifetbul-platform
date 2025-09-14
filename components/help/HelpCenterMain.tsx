@@ -48,7 +48,9 @@ export function HelpCenterMain() {
     }
   };
 
-  const getCategoryIcon = (iconName: string) => {
+  const getCategoryIcon = (iconName?: string) => {
+    if (!iconName) return Book; // Default icon
+
     const icons: Record<string, React.ElementType> = {
       rocket: TrendingUp,
       user: Users,

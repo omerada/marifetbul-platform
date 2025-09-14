@@ -74,7 +74,7 @@ export const useAdminUserStore = create<AdminUserStore>()(
         }
       },
 
-      fetchUserById: async (userId: string) => {
+      fetchUserById: async (userId: string): Promise<AdminUserData | null> => {
         set((state) => {
           state.isLoading = true;
           state.error = null;
@@ -97,12 +97,16 @@ export const useAdminUserStore = create<AdminUserStore>()(
             state.selectedUser = result.data;
             state.isLoading = false;
           });
+
+          return result.data; // Return the user data
         } catch (error) {
           set((state) => {
             state.error =
               error instanceof Error ? error.message : 'Bilinmeyen hata';
             state.isLoading = false;
           });
+
+          return null; // Return null on error
         }
       },
 
@@ -220,6 +224,146 @@ export const useAdminUserStore = create<AdminUserStore>()(
         set((state) => {
           state.bulkSelectedIds = [];
         });
+      },
+
+      // Additional required methods
+      selectedUserIds: [],
+      getUserById: async (userId: string): Promise<AdminUserData | null> => {
+        try {
+          const response = await fetch(`/api/v1/admin/users/${userId}`);
+          if (!response.ok) return null;
+          const data = await response.json();
+          return data.data;
+        } catch {
+          return null;
+        }
+      },
+      updateUser: async (userId: string, updates: Partial<AdminUserData>) => {
+        await fetch(`/api/v1/admin/users/${userId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updates),
+        });
+        await get().fetchUsers();
+      },
+      suspendUser: async (userId: string, reason: string) => {
+        await fetch(`/api/v1/admin/users/${userId}/suspend`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason }),
+        });
+        await get().fetchUsers();
+      },
+      unsuspendUser: async (userId: string) => {
+        await fetch(`/api/v1/admin/users/${userId}/unsuspend`, {
+          method: 'POST',
+        });
+        await get().fetchUsers();
+      },
+      banUser: async (userId: string, reason: string) => {
+        await fetch(`/api/v1/admin/users/${userId}/ban`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason }),
+        });
+        await get().fetchUsers();
+      },
+      unbanUser: async (userId: string) => {
+        await fetch(`/api/v1/admin/users/${userId}/unban`, {
+          method: 'POST',
+        });
+        await get().fetchUsers();
+      },
+      verifyUser: async (userId: string) => {
+        await fetch(`/api/v1/admin/users/${userId}/verify`, {
+          method: 'POST',
+        });
+        await get().fetchUsers();
+      },
+      unverifyUser: async (userId: string) => {
+        await fetch(`/api/v1/admin/users/${userId}/unverify`, {
+          method: 'POST',
+        });
+        await get().fetchUsers();
+      },
+      bulkAction: async (action: BulkUserActionRequest) => {
+        return get().performBulkAction(action);
+      },
+      clearFilters: () => {
+        set((state) => {
+          state.filters = {};
+        });
+      },
+      clearSelection: () => {
+        set((state) => {
+          state.selectedUser = null;
+          state.bulkSelectedIds = [];
+        });
+      },
+      deleteUser: async (userId: string) => {
+        await fetch(`/api/v1/admin/users/${userId}`, { method: 'DELETE' });
+        await get().fetchUsers();
+      },
+      activateUser: async (userId: string) => {
+        await get().updateUser(userId, { accountStatus: 'active' });
+      },
+      deactivateUser: async (userId: string) => {
+        await get().updateUser(userId, { accountStatus: 'suspended' });
+      },
+      resetUserPassword: async (userId: string) => {
+        await fetch(`/api/v1/admin/users/${userId}/reset-password`, {
+          method: 'POST',
+        });
+      },
+      exportUsers: async () => {
+        const response = await fetch('/api/v1/admin/users/export');
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'users.csv';
+        a.click();
+      },
+      importUsers: async (users: AdminUserData[]) => {
+        await fetch('/api/v1/admin/users/import', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ users }),
+        });
+        await get().fetchUsers();
+      },
+      getUserAnalytics: async (userId: string) => {
+        const response = await fetch(`/api/v1/admin/users/${userId}/analytics`);
+        const data = await response.json();
+        return data.data;
+      },
+      sendUserNotification: async (userId: string, message: string) => {
+        await fetch(`/api/v1/admin/users/${userId}/notify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message }),
+        });
+      },
+      // Computed properties
+      get activeUsers() {
+        return get().users.filter((user) => user.accountStatus === 'active');
+      },
+      get suspendedUsers() {
+        return get().users.filter((user) => user.accountStatus === 'suspended');
+      },
+      get bannedUsers() {
+        return get().users.filter((user) => user.accountStatus === 'banned');
+      },
+      get verifiedUsers() {
+        return get().users.filter(
+          (user) => user.verificationStatus === 'verified'
+        );
+      },
+      get freelancers() {
+        return get().users.filter((user) => user.userType === 'freelancer');
+      },
+      get employers() {
+        return get().users.filter((user) => user.userType === 'employer');
       },
 
       clearError: () => {

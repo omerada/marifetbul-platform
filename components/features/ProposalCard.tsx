@@ -4,7 +4,7 @@ import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { Star, MessageCircle, CheckCircle, X } from 'lucide-react';
-import { Proposal } from '@/types';
+import { Proposal } from '@/types/core/jobs';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/Avatar';
@@ -50,7 +50,8 @@ export function ProposalCard({
     }
   };
 
-  const formatBudget = (amount: number) => {
+  const formatBudget = (amount?: number) => {
+    if (!amount) return 'Belirtilmemiş';
     return `₺${amount.toLocaleString('tr-TR')}`;
   };
 
@@ -60,26 +61,27 @@ export function ProposalCard({
       <div className="mb-4 flex items-start justify-between">
         <div className="flex items-center">
           <Avatar className="mr-3 h-10 w-10">
-            {proposal.freelancer.avatar && (
+            {proposal.freelancer?.avatar && (
               <AvatarImage
                 src={proposal.freelancer.avatar}
-                alt={`${proposal.freelancer.firstName} ${proposal.freelancer.lastName}`}
+                alt={`${proposal.freelancer?.firstName || ''} ${proposal.freelancer?.lastName || ''}`}
               />
             )}
             <AvatarFallback>
-              {proposal.freelancer.firstName.charAt(0)}
-              {proposal.freelancer.lastName.charAt(0)}
+              {proposal.freelancer?.firstName?.charAt(0) || '?'}
+              {proposal.freelancer?.lastName?.charAt(0) || '?'}
             </AvatarFallback>
           </Avatar>
           <div>
             <h4 className="font-semibold text-gray-900">
-              {proposal.freelancer.firstName} {proposal.freelancer.lastName}
+              {proposal.freelancer?.firstName || 'İsimsiz'}{' '}
+              {proposal.freelancer?.lastName || ''}
             </h4>
             <div className="flex items-center text-sm text-gray-600">
               <Star className="mr-1 h-4 w-4 text-yellow-400" />
-              <span>{proposal.freelancer.rating}</span>
+              <span>{proposal.freelancer?.rating || 0}</span>
               <span className="mx-1">•</span>
-              <span>{proposal.freelancer.reviewCount} değerlendirme</span>
+              <span>{proposal.freelancer?.reviewCount || 0} değerlendirme</span>
             </div>
           </div>
         </div>

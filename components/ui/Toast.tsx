@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from 'lucide-react';
-import { useToast } from '@/hooks/useNotifications';
+import { useToast } from '@/hooks';
 
 interface ToastProps {
   id: string;
@@ -133,7 +133,7 @@ export function ToastContainer() {
             key={toast.id}
             id={toast.id}
             type={toast.type}
-            title={toast.title}
+            title={toast.title || 'Notification'}
             message={toast.message}
             duration={toast.duration}
             onRemove={removeToast}

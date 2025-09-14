@@ -101,9 +101,9 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
-                {formatDate(article.updatedAt)}
+                {formatDate(article.updatedAt || new Date().toISOString())}
               </span>
-              {showRating && article.rating > 0 && (
+              {showRating && article.rating && article.rating > 0 && (
                 <span className="flex items-center gap-1">
                   <Star className="h-3 w-3 fill-current text-yellow-400" />
                   {article.rating.toFixed(1)}
@@ -161,7 +161,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
                   </>
                 )}
               </div>
-              {showRating && article.rating > 0 && (
+              {showRating && article.rating && article.rating > 0 && (
                 <div className="flex items-center gap-1">
                   {getRatingStars(article.rating)}
                   <span className="ml-1 text-sm text-gray-600">
@@ -197,7 +197,9 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
               {showCategory && article.category && (
                 <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800">
                   <Tag className="mr-1 h-3 w-3" />
-                  {article.category.name}
+                  {typeof article.category === 'string'
+                    ? article.category
+                    : article.category.name}
                 </span>
               )}
               <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
@@ -208,7 +210,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
               {article.title}
             </h3>
           </div>
-          {showRating && article.rating > 0 && (
+          {showRating && article.rating && article.rating > 0 && (
             <div className="flex flex-shrink-0 items-center gap-1">
               {getRatingStars(article.rating)}
               <span className="ml-1 text-sm text-gray-600">
@@ -264,12 +266,14 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
             {showAuthor && article.author && (
               <span className="flex items-center gap-1">
                 <User className="h-3 w-3" />
-                {article.author.name}
+                {typeof article.author === 'string'
+                  ? article.author
+                  : article.author.name}
               </span>
             )}
             <span className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
-              {formatDate(article.updatedAt)}
+              {formatDate(article.updatedAt || new Date().toISOString())}
             </span>
           </div>
         </div>

@@ -81,7 +81,12 @@ export function ReputationScore({
   }, [reputationScore]);
 
   const trendDirection = useMemo(() => {
-    if (!reputationScore || !reputationScore.history.length) return null;
+    if (
+      !reputationScore ||
+      !reputationScore.history ||
+      !reputationScore.history.length
+    )
+      return null;
 
     // En son iki history kaydını karşılaştır
     const latest = reputationScore.history[0];
@@ -176,13 +181,13 @@ export function ReputationScore({
                 stroke="currentColor"
                 strokeWidth="8"
                 fill="transparent"
-                strokeDasharray={`${percentage * 2.51} 251`}
+                strokeDasharray={`${(percentage || 0) * 2.51} 251`}
                 className="text-primary transition-all duration-500"
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-lg font-bold">
-                {Math.round(percentage)}%
+                {Math.round(percentage || 0)}%
               </span>
             </div>
           </div>
@@ -204,7 +209,7 @@ export function ReputationScore({
                     trendDirection === 'up' ? 'text-green-600' : 'text-red-600'
                   }`}
                 >
-                  {reputationScore.history.length > 0
+                  {reputationScore.history && reputationScore.history.length > 0
                     ? Math.abs(reputationScore.history[0].change)
                     : 0}
                 </span>
@@ -217,7 +222,7 @@ export function ReputationScore({
         <div className="grid grid-cols-3 gap-3 border-t pt-3">
           <div className="text-center">
             <div className="text-sm font-medium">
-              {reputationScore.factors.find((f) => f.name === 'reviews')
+              {reputationScore.factors?.find((f) => f.name === 'reviews')
                 ?.currentValue || 0}
             </div>
             <div className="text-muted-foreground text-xs">İnceleme</div>
@@ -227,7 +232,7 @@ export function ReputationScore({
             <div className="flex items-center justify-center gap-1 text-sm font-medium">
               <Star className="h-3 w-3 fill-current text-yellow-500" />
               {(
-                reputationScore.factors.find((f) => f.name === 'rating')
+                reputationScore.factors?.find((f) => f.name === 'rating')
                   ?.currentValue || 0
               ).toFixed(1)}
             </div>
@@ -237,7 +242,7 @@ export function ReputationScore({
           <div className="text-center">
             <div className="text-sm font-medium">
               {Math.round(
-                (reputationScore.factors.find((f) => f.name === 'completion')
+                (reputationScore.factors?.find((f) => f.name === 'completion')
                   ?.currentValue || 0) * 100
               )}
               %
@@ -251,17 +256,23 @@ export function ReputationScore({
           <div className="space-y-2">
             <h4 className="text-sm font-medium">Rozetler</h4>
             <div className="flex flex-wrap gap-1">
-              {reputationScore.badges.slice(0, 3).map((badge) => (
-                <Badge
-                  key={badge.id}
-                  variant="outline"
-                  className="gap-1 text-xs"
-                  title={badge.description}
-                >
-                  <Award className="h-3 w-3" />
-                  {badge.name}
-                </Badge>
-              ))}
+              {reputationScore.badges.slice(0, 3).map((badge) => {
+                const badgeData =
+                  typeof badge === 'string'
+                    ? { id: badge, name: badge, description: badge }
+                    : badge;
+                return (
+                  <Badge
+                    key={badgeData.id}
+                    variant="outline"
+                    className="gap-1 text-xs"
+                    title={badgeData.description}
+                  >
+                    <Award className="h-3 w-3" />
+                    {badgeData.name}
+                  </Badge>
+                );
+              })}
 
               {reputationScore.badges.length > 3 && (
                 <Badge variant="outline" className="text-xs">
@@ -278,7 +289,7 @@ export function ReputationScore({
             <h4 className="text-sm font-medium">Skor Detayları</h4>
 
             <div className="space-y-3">
-              {reputationScore.factors.map((factor) => (
+              {reputationScore.factors?.map((factor) => (
                 <div
                   key={factor.name}
                   className="flex items-center justify-between"
@@ -305,12 +316,13 @@ export function ReputationScore({
                       <div
                         className="bg-primary h-full transition-all"
                         style={{
-                          width: `${(factor.currentValue / factor.maxValue) * 100}%`,
+                          width: `${((factor.currentValue || 0) / (factor.maxValue || 1)) * 100}%`,
                         }}
                       />
                     </div>
                     <span className="w-12 text-right text-xs font-medium">
-                      {factor.currentValue.toFixed(1)}/{factor.maxValue}
+                      {(factor.currentValue || 0).toFixed(1)}/
+                      {factor.maxValue || 1}
                     </span>
                   </div>
                 </div>

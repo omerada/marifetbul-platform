@@ -14,11 +14,34 @@ export const useAdminModerationStore = create<AdminModerationStore>()(
       // State
       items: [],
       selectedItem: null,
+      selectedItems: [],
       stats: null,
       isLoading: false,
       error: null,
       filters: {},
       pagination: null,
+
+      // Computed properties (using getters)
+      get pendingItems() {
+        return get().items.filter((item) => item.status === 'pending');
+      },
+      get approvedItems() {
+        return get().items.filter((item) => item.status === 'approved');
+      },
+      get rejectedItems() {
+        return get().items.filter((item) => item.status === 'rejected');
+      },
+      get escalatedItems() {
+        return get().items.filter((item) => item.status === 'escalated');
+      },
+      get highPriorityItems() {
+        return get().items.filter(
+          (item) => item.priority === 'high' || item.priority === 'urgent'
+        );
+      },
+      get urgentItems() {
+        return get().items.filter((item) => item.priority === 'urgent');
+      },
 
       // Actions
       fetchModerationQueue: async (filters?: ModerationFilters) => {
@@ -143,7 +166,7 @@ export const useAdminModerationStore = create<AdminModerationStore>()(
           });
 
           // Refresh stats after action
-          await get().fetchModerationStats();
+          // fetchModerationStats will be called separately if needed
         } catch (error) {
           set((state) => {
             state.error =
@@ -246,6 +269,129 @@ export const useAdminModerationStore = create<AdminModerationStore>()(
       clearError: () => {
         set((state) => {
           state.error = null;
+        });
+      },
+
+      // Missing required methods
+      fetchItems: async (filters?: ModerationFilters) => {
+        await get().fetchModerationQueue(filters);
+      },
+
+      approveItem: async (itemId: string, reason?: string) => {
+        try {
+          set((state) => {
+            state.isLoading = true;
+          });
+
+          const response = await fetch(
+            `/api/v1/admin/moderation/items/${itemId}/approve`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ reason }),
+            }
+          );
+
+          if (!response.ok) throw new Error('Onay işlemi başarısız');
+
+          set((state) => {
+            const item = state.items.find((i) => i.id === itemId);
+            if (item) item.status = 'approved';
+            state.isLoading = false;
+          });
+        } catch (error) {
+          set((state) => {
+            state.error =
+              error instanceof Error ? error.message : 'Hata oluştu';
+            state.isLoading = false;
+          });
+        }
+      },
+
+      rejectItem: async (itemId: string, reason: string) => {
+        try {
+          set((state) => {
+            state.isLoading = true;
+          });
+
+          const response = await fetch(
+            `/api/v1/admin/moderation/items/${itemId}/reject`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ reason }),
+            }
+          );
+
+          if (!response.ok) throw new Error('Reddetme işlemi başarısız');
+
+          set((state) => {
+            const item = state.items.find((i) => i.id === itemId);
+            if (item) item.status = 'rejected';
+            state.isLoading = false;
+          });
+        } catch (error) {
+          set((state) => {
+            state.error =
+              error instanceof Error ? error.message : 'Hata oluştu';
+            state.isLoading = false;
+          });
+        }
+      },
+
+      bulkAction: async (
+        action: 'approve' | 'reject' | 'escalate',
+        itemIds: string[],
+        reason?: string
+      ) => {
+        try {
+          set((state) => {
+            state.isLoading = true;
+          });
+
+          const response = await fetch('/api/v1/admin/moderation/bulk-action', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action, itemIds, reason }),
+          });
+
+          if (!response.ok) throw new Error('Toplu işlem başarısız');
+
+          set((state) => {
+            itemIds.forEach((itemId) => {
+              const item = state.items.find((i) => i.id === itemId);
+              if (item) {
+                if (action === 'approve') item.status = 'approved';
+                else if (action === 'reject') item.status = 'rejected';
+                else if (action === 'escalate') item.status = 'escalated';
+              }
+            });
+            state.isLoading = false;
+          });
+        } catch (error) {
+          set((state) => {
+            state.error =
+              error instanceof Error ? error.message : 'Hata oluştu';
+            state.isLoading = false;
+          });
+        }
+      },
+
+      selectAllItems: () => {
+        set((state) => {
+          state.selectedItems = state.items.map((item) => item.id);
+        });
+      },
+
+      clearSelection: () => {
+        set((state) => {
+          state.selectedItems = [];
+        });
+      },
+
+      clearFilters: () => {
+        set((state) => {
+          state.filters = {};
         });
       },
     })),

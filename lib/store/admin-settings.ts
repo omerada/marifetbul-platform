@@ -10,6 +10,9 @@ export const useAdminSettingsStore = create<AdminSettingsStore>()(
       settings: null,
       isLoading: false,
       error: null,
+      lastUpdated: null, // Added required field
+      pendingChanges: {}, // Added required field
+      hasPendingChanges: false, // Added required field
       hasUnsavedChanges: false,
 
       // Actions
@@ -182,6 +185,33 @@ export const useAdminSettingsStore = create<AdminSettingsStore>()(
       clearError: () => {
         set((state) => {
           state.error = null;
+        });
+      },
+
+      // Required missing methods
+      savePendingChanges: async () => {
+        const state = useAdminSettingsStore.getState();
+        if (Object.keys(state.pendingChanges).length > 0) {
+          await state.updateSettings(state.pendingChanges);
+          set((draft) => {
+            draft.pendingChanges = {};
+            draft.hasPendingChanges = false;
+          });
+        }
+      },
+
+      discardPendingChanges: () => {
+        set((state) => {
+          state.pendingChanges = {};
+          state.hasPendingChanges = false;
+        });
+      },
+
+      updatePendingSetting: (key: string, value: unknown) => {
+        set((state) => {
+          state.pendingChanges = { ...state.pendingChanges, [key]: value };
+          state.hasPendingChanges =
+            Object.keys(state.pendingChanges).length > 0;
         });
       },
     })),

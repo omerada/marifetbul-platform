@@ -9,13 +9,14 @@ import {
   Freelancer,
   Job,
   ServicePackage,
+  User,
   SaveSearchRequest,
 } from '@/types';
 
 interface AdvancedSearchStore {
   // State properties
   searchQuery: string;
-  searchResults: (Freelancer | Job | ServicePackage)[];
+  searchResults: (Freelancer | Job | ServicePackage | User)[];
   suggestions: string[];
   recentSearches: string[];
   savedSearches: SavedSearch[];

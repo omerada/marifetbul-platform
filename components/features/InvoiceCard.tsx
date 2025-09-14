@@ -15,7 +15,7 @@ import {
   Wallet,
   ExternalLink,
 } from 'lucide-react';
-import { Payment, PaymentMethodType } from '@/types';
+import { Payment } from '@/types';
 
 interface InvoiceCardProps {
   payment: Payment;
@@ -32,13 +32,14 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(showDetails);
 
-  const getMethodIcon = (method: PaymentMethodType) => {
+  const getMethodIcon = (method?: string) => {
     switch (method) {
       case 'credit_card':
         return <CreditCard className="h-4 w-4" />;
       case 'bank_transfer':
         return <Building2 className="h-4 w-4" />;
-      case 'wallet':
+      case 'paypal':
+      case 'digital_wallet':
         return <Wallet className="h-4 w-4" />;
       default:
         return <CreditCard className="h-4 w-4" />;
@@ -53,9 +54,11 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
       failed: { label: 'Başarısız', variant: 'destructive' as const },
       cancelled: { label: 'İptal', variant: 'secondary' as const },
       refunded: { label: 'İade', variant: 'secondary' as const },
+      paid: { label: 'Ödendi', variant: 'success' as const },
     };
 
-    const config = statusConfig[status] || statusConfig.pending;
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
@@ -119,7 +122,8 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
               <span>
                 {payment.method === 'credit_card' && 'Kredi Kartı'}
                 {payment.method === 'bank_transfer' && 'Havale'}
-                {payment.method === 'wallet' && 'Cüzdan'}
+                {payment.method === 'paypal' && 'PayPal'}
+                {!payment.method && 'Bilinmiyor'}
               </span>
             </div>
           </div>
@@ -177,7 +181,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
                   >
                     {payment.escrowStatus === 'held' && 'Beklemede'}
                     {payment.escrowStatus === 'released' && 'Serbest Bırakıldı'}
-                    {payment.escrowStatus === 'refunded' && 'İade Edildi'}
+                    {payment.escrowStatus === 'disputed' && 'Anlaşmazlık'}
                   </Badge>
                   {payment.escrowReleaseDate && (
                     <span className="text-xs text-gray-500">
@@ -221,15 +225,6 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
             )}
           </div>
         </div>
-
-        {/* Failure Reason */}
-        {payment.failureReason && (
-          <div className="rounded border border-red-200 bg-red-50 p-3 text-sm">
-            <p className="text-red-700">
-              <strong>Hata Nedeni:</strong> {payment.failureReason}
-            </p>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

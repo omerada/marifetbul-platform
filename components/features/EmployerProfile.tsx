@@ -328,8 +328,11 @@ export function EmployerProfile({ user }: EmployerProfileProps) {
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Başarı Oranı</span>
                 <span className="font-medium text-gray-900">
-                  {user.totalJobs > 0
-                    ? Math.round((user.completedJobs / user.totalJobs) * 100)
+                  {(user.totalJobs || 0) > 0
+                    ? Math.round(
+                        ((user.completedJobs || 0) / (user.totalJobs || 1)) *
+                          100
+                      )
                     : 0}
                   %
                 </span>

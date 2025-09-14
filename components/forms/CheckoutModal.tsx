@@ -8,6 +8,18 @@ import { formatCurrency } from '@/lib/utils/payment';
 import { Order, ServicePackage, Job } from '@/types';
 import Image from 'next/image';
 
+// Helper function to get image source as string
+const getPackageImageSrc = (
+  image:
+    | string
+    | { id: string; name: string; url: string; type: string }
+    | undefined
+): string => {
+  if (!image) return '';
+  if (typeof image === 'string') return image;
+  return image.url || '';
+};
+
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -46,6 +58,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
     return {
       id: `order-${Date.now()}`,
+      packageId: type === 'package' ? item.id : '',
+      buyerId: 'current-user', // Required field
+      sellerId:
+        type === 'package' ? (item as ServicePackage).freelancerId : 'seller', // Required field
+      status: 'pending',
+      totalAmount: total, // Required field
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       userId: 'current-user',
       user: {
         id: 'current-user',
@@ -53,23 +73,18 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         lastName: 'Adı',
         email: 'user@example.com',
         userType: 'freelancer',
+        accountStatus: 'active',
+        verificationStatus: 'verified',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       },
-      packageId: type === 'package' ? item.id : undefined,
-      package: type === 'package' ? (item as ServicePackage) : undefined,
-      jobId: type === 'job' ? item.id : undefined,
-      job: type === 'job' ? (item as Job) : undefined,
       amount: total,
       subtotal,
       tax,
       discount,
       total,
       currency: 'TRY',
-      status: 'pending',
       paymentStatus: 'pending',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
     };
   };
 
@@ -108,7 +123,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         <div className="flex items-start space-x-4">
           {type === 'package' && (
             <Image
-              src={(item as ServicePackage).images?.[0] || '/placeholder.jpg'}
+              src={
+                getPackageImageSrc((item as ServicePackage).images?.[0]) ||
+                '/placeholder.jpg'
+              }
               alt={(item as ServicePackage).title}
               width={64}
               height={64}
@@ -124,7 +142,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             </p>
             <div className="mt-2">
               <span className="text-lg font-semibold text-blue-600">
-                {formatCurrency(order.subtotal, 'TRY')}
+                {formatCurrency(order.subtotal || 0, 'TRY')}
               </span>
             </div>
           </div>
@@ -136,22 +154,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span>Hizmet Bedeli:</span>
-            <span>{formatCurrency(order.subtotal, 'TRY')}</span>
+            <span>{formatCurrency(order.subtotal || 0, 'TRY')}</span>
           </div>
           <div className="flex justify-between">
             <span>KDV (%18):</span>
-            <span>{formatCurrency(order.tax, 'TRY')}</span>
+            <span>{formatCurrency(order.tax || 0, 'TRY')}</span>
           </div>
-          {order.discount > 0 && (
+          {(order.discount || 0) > 0 && (
             <div className="flex justify-between text-green-600">
               <span>İndirim:</span>
-              <span>-{formatCurrency(order.discount, 'TRY')}</span>
+              <span>-{formatCurrency(order.discount || 0, 'TRY')}</span>
             </div>
           )}
           <hr className="my-2" />
           <div className="flex justify-between text-lg font-semibold">
             <span>Toplam:</span>
-            <span>{formatCurrency(order.total, 'TRY')}</span>
+            <span>{formatCurrency(order.total || 0, 'TRY')}</span>
           </div>
         </div>
       </Card>
@@ -247,7 +265,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           </div>
           <div className="flex justify-between">
             <span>Tutar:</span>
-            <span>{formatCurrency(order.total, 'TRY')}</span>
+            <span>{formatCurrency(order.total || 0, 'TRY')}</span>
           </div>
           <div className="flex justify-between">
             <span>Tarih:</span>

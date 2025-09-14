@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { useAdvancedSearch } from '@/hooks/useAdvancedSearch';
+import { useAdvancedSearchStore } from '@/lib/store/advanced-search';
 import { AdvancedSearchRequest } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -40,12 +40,12 @@ export const AdvancedSearchForm: React.FC<AdvancedSearchFormProps> = ({
     savedSearches,
     isLoading,
     setSearchQuery,
-    performSearch,
+    performAdvancedSearch,
     getSuggestions,
     saveSearch,
     deleteSavedSearch,
     reset,
-  } = useAdvancedSearch();
+  } = useAdvancedSearchStore();
 
   const [activeFilters, setActiveFilters] = useState<FilterState>({
     category: '',
@@ -82,34 +82,32 @@ export const AdvancedSearchForm: React.FC<AdvancedSearchFormProps> = ({
 
       const searchRequest: AdvancedSearchRequest = {
         query: searchQuery,
-        category: activeFilters.category || undefined,
-        budget:
-          activeFilters.minBudget || activeFilters.maxBudget
-            ? {
-                min: activeFilters.minBudget
-                  ? Number(activeFilters.minBudget)
-                  : undefined,
-                max: activeFilters.maxBudget
-                  ? Number(activeFilters.maxBudget)
-                  : undefined,
-              }
-            : undefined,
-        location: activeFilters.location
-          ? {
-              city: activeFilters.location,
-            }
-          : undefined,
-        skills:
-          activeFilters.skills.length > 0 ? activeFilters.skills : undefined,
-        sortBy: 'relevance' as const,
+        filters: {
+          category: activeFilters.category || undefined,
+          priceRange:
+            activeFilters.minBudget || activeFilters.maxBudget
+              ? {
+                  min: activeFilters.minBudget
+                    ? Number(activeFilters.minBudget)
+                    : 0,
+                  max: activeFilters.maxBudget
+                    ? Number(activeFilters.maxBudget)
+                    : 999999,
+                }
+              : undefined,
+          location: activeFilters.location || undefined,
+          skills:
+            activeFilters.skills.length > 0 ? activeFilters.skills : undefined,
+        },
         page: 1,
+        limit: 20,
       };
 
-      await performSearch(searchRequest);
+      await performAdvancedSearch(searchRequest);
       onSearch?.(searchQuery, activeFilters);
       setShowSuggestions(false);
     },
-    [searchQuery, activeFilters, performSearch, onSearch]
+    [searchQuery, activeFilters, performAdvancedSearch, onSearch]
   );
 
   // Handle suggestion selection
@@ -124,40 +122,72 @@ export const AdvancedSearchForm: React.FC<AdvancedSearchFormProps> = ({
   // Handle saved search operations
   const handleSaveSearch = useCallback(async () => {
     if (searchName.trim()) {
-      await saveSearch(searchName.trim(), {
+      const searchRequest = {
+        name: searchName.trim(),
         query: searchQuery,
-        category: activeFilters.category || undefined,
-        budget:
-          activeFilters.minBudget || activeFilters.maxBudget
+        filters: {
+          category: activeFilters.category || undefined,
+          budget:
+            activeFilters.minBudget || activeFilters.maxBudget
+              ? {
+                  min: activeFilters.minBudget
+                    ? Number(activeFilters.minBudget)
+                    : undefined,
+                  max: activeFilters.maxBudget
+                    ? Number(activeFilters.maxBudget)
+                    : undefined,
+                }
+              : undefined,
+          location: activeFilters.location
             ? {
-                min: activeFilters.minBudget
-                  ? Number(activeFilters.minBudget)
-                  : undefined,
-                max: activeFilters.maxBudget
-                  ? Number(activeFilters.maxBudget)
-                  : undefined,
+                city: activeFilters.location,
               }
             : undefined,
-        location: activeFilters.location
-          ? {
-              city: activeFilters.location,
-            }
-          : undefined,
-        skills:
-          activeFilters.skills.length > 0 ? activeFilters.skills : undefined,
-        sortBy: 'relevance' as const,
-        page: 1,
-      });
+          skills:
+            activeFilters.skills.length > 0 ? activeFilters.skills : undefined,
+          sortBy: 'relevance' as const,
+          page: 1,
+        },
+      };
+      await saveSearch(searchRequest);
       setSearchName('');
       setShowSaveDialog(false);
     }
   }, [searchName, searchQuery, activeFilters, saveSearch]);
 
-  const handleLoadSearch = useCallback(async (searchId: string) => {
-    // TODO: Implement load search functionality
-    console.log('Loading saved search:', searchId);
-    setShowSavedSearches(false);
-  }, []);
+  const handleLoadSearch = useCallback(
+    async (searchId: string) => {
+      const savedSearch = savedSearches.find(
+        (search) => search.id === searchId
+      );
+      if (savedSearch && savedSearch.filters) {
+        // Load the saved search query and filters
+        setSearchQuery(savedSearch.query);
+
+        // Apply saved filters to the form
+        setActiveFilters({
+          category: savedSearch.filters.category || '',
+          minBudget: savedSearch.filters.priceRange?.min?.toString() || '',
+          maxBudget: savedSearch.filters.priceRange?.max?.toString() || '',
+          location: savedSearch.filters.location || '',
+          skills: savedSearch.filters.skills || [],
+        });
+
+        // Trigger a search with the loaded parameters
+        if (onSearch) {
+          onSearch(savedSearch.query, {
+            category: savedSearch.filters.category || '',
+            minBudget: savedSearch.filters.priceRange?.min?.toString() || '',
+            maxBudget: savedSearch.filters.priceRange?.max?.toString() || '',
+            location: savedSearch.filters.location || '',
+            skills: savedSearch.filters.skills || [],
+          });
+        }
+      }
+      setShowSavedSearches(false);
+    },
+    [savedSearches, setSearchQuery, onSearch]
+  );
 
   const handleDeleteSearch = useCallback(
     async (searchId: string) => {
@@ -218,21 +248,11 @@ export const AdvancedSearchForm: React.FC<AdvancedSearchFormProps> = ({
                       <button
                         key={index}
                         type="button"
-                        onClick={() =>
-                          handleSuggestionSelect(
-                            typeof suggestion === 'string'
-                              ? suggestion
-                              : suggestion.text
-                          )
-                        }
+                        onClick={() => handleSuggestionSelect(suggestion)}
                         className="hover:bg-accent flex w-full items-center gap-2 rounded-md p-2 text-left"
                       >
                         <TrendingUp className="h-4 w-4 text-orange-500" />
-                        <div className="font-medium">
-                          {typeof suggestion === 'string'
-                            ? suggestion
-                            : suggestion.text}
-                        </div>
+                        <div className="font-medium">{suggestion}</div>
                       </button>
                     ))}
                   </CardContent>

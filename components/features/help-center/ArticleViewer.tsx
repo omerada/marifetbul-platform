@@ -200,17 +200,20 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
               {article.category && (
                 <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-800">
                   <Tag className="mr-1 h-3 w-3" />
-                  {article.category.name}
+                  {typeof article.category === 'string'
+                    ? article.category
+                    : article.category.name}
                 </span>
               )}
-              {article.tags.slice(0, 3).map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center rounded bg-blue-50 px-2 py-1 text-xs text-blue-700"
-                >
-                  {tag}
-                </span>
-              ))}
+              {article.tags &&
+                article.tags.slice(0, 3).map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center rounded bg-blue-50 px-2 py-1 text-xs text-blue-700"
+                  >
+                    {tag}
+                  </span>
+                ))}
             </div>
 
             {/* Title */}
@@ -222,11 +225,17 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
             <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
               <div className="flex items-center gap-1">
                 <User className="h-4 w-4" />
-                {article.author.name}
+                {typeof article.author === 'string'
+                  ? article.author
+                  : article.author.name}
               </div>
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
-                {formatDate(article.publishedAt || article.createdAt)}
+                {formatDate(
+                  article.publishedAt ||
+                    article.createdAt ||
+                    new Date().toISOString()
+                )}
               </div>
               <div className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
@@ -236,10 +245,10 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
                 <Eye className="h-4 w-4" />
                 {article.views} görüntüleme
               </div>
-              {article.rating > 0 && (
+              {article.rating && article.rating > 0 && (
                 <div className="flex items-center gap-1">
                   <Star className="h-4 w-4 fill-current text-yellow-400" />
-                  {article.rating.toFixed(1)} ({article.ratingCount}{' '}
+                  {article.rating.toFixed(1)} ({article.ratingCount || 0}{' '}
                   değerlendirme)
                 </div>
               )}

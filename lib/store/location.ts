@@ -88,6 +88,8 @@ export const useLocationStore = create<LocationStore>()(
           const coordinates: Coordinates = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
           };
 
           set(

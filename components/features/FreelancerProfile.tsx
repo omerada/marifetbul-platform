@@ -38,7 +38,12 @@ export function FreelancerProfile({ user }: FreelancerProfileProps) {
     });
   };
 
-  const getAvailabilityColor = (status: string) => {
+  const getAvailabilityColor = (status: boolean | string | undefined) => {
+    // Boolean type compatibility
+    if (typeof status === 'boolean') {
+      return status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+    }
+
     switch (status) {
       case 'available':
         return 'bg-green-100 text-green-800';
@@ -51,7 +56,12 @@ export function FreelancerProfile({ user }: FreelancerProfileProps) {
     }
   };
 
-  const getAvailabilityText = (status: string) => {
+  const getAvailabilityText = (status: boolean | string | undefined) => {
+    // Boolean type compatibility
+    if (typeof status === 'boolean') {
+      return status ? 'Müsait' : 'Uygun Değil';
+    }
+
     switch (status) {
       case 'available':
         return 'Müsait';
@@ -64,7 +74,8 @@ export function FreelancerProfile({ user }: FreelancerProfileProps) {
     }
   };
 
-  const getExperienceText = (level: string) => {
+  const getExperienceText = (level?: string) => {
+    if (!level) return 'Belirtilmemiş';
     switch (level) {
       case 'beginner':
         return 'Başlangıç';
@@ -95,9 +106,17 @@ export function FreelancerProfile({ user }: FreelancerProfileProps) {
               <div
                 className={`absolute right-1 bottom-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white text-xs font-semibold ${getAvailabilityColor(user.availability)}`}
               >
-                {user.availability === 'available' && '✓'}
-                {user.availability === 'busy' && '⚡'}
-                {user.availability === 'not_available' && '✕'}
+                {typeof user.availability === 'boolean'
+                  ? user.availability
+                    ? '✓'
+                    : '✕'
+                  : user.availability === 'available'
+                    ? '✓'
+                    : user.availability === 'busy'
+                      ? '⚡'
+                      : user.availability === 'not_available'
+                        ? '✕'
+                        : ''}
               </div>
             </div>
 
@@ -259,7 +278,8 @@ export function FreelancerProfile({ user }: FreelancerProfileProps) {
                       >
                         <Image
                           src={
-                            item.images[0] || '/images/default-portfolio.jpg'
+                            (item.images && item.images[0]) ||
+                            '/images/default-portfolio.jpg'
                           }
                           alt={item.title}
                           width={300}

@@ -6,6 +6,8 @@ export const mockLocationResults: LocationData[] = [
     id: '1',
     name: 'Ankara, Türkiye',
     coordinates: { latitude: 39.9208, longitude: 32.8541 },
+    lat: 39.9208,
+    lng: 32.8541,
     type: 'city' as const,
     country: 'Türkiye',
     address: 'Çankaya/Ankara',
@@ -16,6 +18,8 @@ export const mockLocationResults: LocationData[] = [
     id: '2',
     name: 'İstanbul, Türkiye',
     coordinates: { latitude: 41.0082, longitude: 28.9784 },
+    lat: 41.0082,
+    lng: 28.9784,
     type: 'city' as const,
     country: 'Türkiye',
     address: 'Beşiktaş/İstanbul',
@@ -26,6 +30,8 @@ export const mockLocationResults: LocationData[] = [
     id: '3',
     name: 'İzmir, Türkiye',
     coordinates: { latitude: 38.4192, longitude: 27.1287 },
+    lat: 38.4192,
+    lng: 27.1287,
     type: 'city' as const,
     country: 'Türkiye',
     address: 'Konak/İzmir',
@@ -36,6 +42,8 @@ export const mockLocationResults: LocationData[] = [
     id: '4',
     name: 'Kızılay, Çankaya',
     coordinates: { latitude: 39.9199, longitude: 32.8543 },
+    lat: 39.9199,
+    lng: 32.8543,
     type: 'neighborhood' as const,
     country: 'Türkiye',
     address: 'Kızılay, Çankaya/Ankara',
@@ -46,6 +54,8 @@ export const mockLocationResults: LocationData[] = [
     id: '5',
     name: 'Bahçelievler',
     coordinates: { latitude: 39.94, longitude: 32.82 },
+    lat: 39.94,
+    lng: 32.82,
     type: 'district' as const,
     country: 'Türkiye',
     address: 'Bahçelievler/Ankara',
@@ -56,6 +66,8 @@ export const mockLocationResults: LocationData[] = [
     id: '6',
     name: 'Bilkent',
     coordinates: { latitude: 39.8681, longitude: 32.7489 },
+    lat: 39.8681,
+    lng: 32.7489,
     type: 'neighborhood' as const,
     country: 'Türkiye',
     address: 'Bilkent, Çankaya/Ankara',
@@ -77,9 +89,9 @@ export const searchLocations = async (
 
   return mockLocationResults.filter(
     (location) =>
-      location.name.toLowerCase().includes(query.toLowerCase()) ||
-      location.address.toLowerCase().includes(query.toLowerCase()) ||
-      location.city.toLowerCase().includes(query.toLowerCase())
+      location.name?.toLowerCase().includes(query.toLowerCase()) ||
+      location.address?.toLowerCase().includes(query.toLowerCase()) ||
+      location.city?.toLowerCase().includes(query.toLowerCase())
   );
 };
 
@@ -95,9 +107,15 @@ export const getLocationByCoordinates = async (
   let minDistance = Infinity;
 
   for (const location of mockLocationResults) {
+    if (!location.coordinates) continue;
+
+    const lat = coordinates.latitude || coordinates.lat;
+    const lng = coordinates.longitude || coordinates.lng;
+    const locLat = location.coordinates.latitude || location.lat;
+    const locLng = location.coordinates.longitude || location.lng;
+
     const distance = Math.sqrt(
-      Math.pow(location.coordinates.latitude - coordinates.latitude, 2) +
-        Math.pow(location.coordinates.longitude - coordinates.longitude, 2)
+      Math.pow(locLat - lat, 2) + Math.pow(locLng - lng, 2)
     );
 
     if (distance < minDistance) {
@@ -113,13 +131,13 @@ export const getLocationByCoordinates = async (
 export const formatLocationDisplayName = (location: LocationData): string => {
   switch (location.type) {
     case 'city':
-      return `${location.city}, ${location.country}`;
+      return `${location.city || 'Unknown'}, ${location.country || 'Unknown'}`;
     case 'district':
-      return `${location.name}, ${location.city}`;
+      return `${location.name || 'Unknown'}, ${location.city || 'Unknown'}`;
     case 'neighborhood':
-      return `${location.name}, ${location.city}`;
+      return `${location.name || 'Unknown'}, ${location.city || 'Unknown'}`;
     default:
-      return location.name;
+      return location.name || 'Unknown Location';
   }
 };
 

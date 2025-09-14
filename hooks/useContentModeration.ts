@@ -26,8 +26,8 @@ export function useContentModeration() {
   // Auto-fetch moderation queue on mount
   useEffect(() => {
     if (!selectors.hasData && !selectors.isLoading) {
-      fetchModerationQueue();
-      fetchModerationStats();
+      fetchModerationQueue?.();
+      fetchModerationStats?.();
     }
   }, [
     fetchModerationQueue,
@@ -41,7 +41,7 @@ export function useContentModeration() {
     const interval = setInterval(
       () => {
         if (selectors.hasStats) {
-          fetchModerationStats();
+          fetchModerationStats?.();
         }
       },
       2 * 60 * 1000
@@ -122,11 +122,13 @@ export function useContentModeration() {
     return {
       approve: (itemId: string, notes?: string) =>
         handleModerationAction(itemId, {
+          itemId,
           action: 'approve',
           notes,
         }),
       reject: (itemId: string, reason: string, notes?: string) =>
         handleModerationAction(itemId, {
+          itemId,
           action: 'reject',
           reason,
           notes,
@@ -135,6 +137,7 @@ export function useContentModeration() {
         handleEscalate(itemId, reason),
       dismiss: (itemId: string, notes?: string) =>
         handleModerationAction(itemId, {
+          itemId,
           action: 'dismiss',
           notes,
         }),
@@ -146,12 +149,17 @@ export function useContentModeration() {
       return {
         approve: async (notes?: string) => {
           for (const itemId of itemIds) {
-            await handleModerationAction(itemId, { action: 'approve', notes });
+            await handleModerationAction(itemId, {
+              itemId,
+              action: 'approve',
+              notes,
+            });
           }
         },
         reject: async (reason: string, notes?: string) => {
           for (const itemId of itemIds) {
             await handleModerationAction(itemId, {
+              itemId,
               action: 'reject',
               reason,
               notes,
@@ -205,7 +213,7 @@ export function useContentModeration() {
     clearError,
     refresh: () => {
       fetchModerationQueue(selectors.filters);
-      fetchModerationStats();
+      fetchModerationStats?.();
     },
 
     // Computed values

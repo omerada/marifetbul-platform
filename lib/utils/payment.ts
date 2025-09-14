@@ -161,13 +161,13 @@ export const validatePaymentCard = (
   if (
     !card.expiryMonth ||
     !card.expiryYear ||
-    !validateExpiryDate(card.expiryMonth, card.expiryYear)
+    !validateExpiryDate(String(card.expiryMonth), String(card.expiryYear))
   ) {
     errors.push('Geçersiz son kullanma tarihi');
   }
 
   // CVV validation
-  const cardType = getCardType(card.cardNumber);
+  const cardType = getCardType(card.cardNumber || '');
   if (!card.cvv || !validateCVV(card.cvv, cardType)) {
     errors.push('Geçersiz CVV kodu');
   }
@@ -235,7 +235,7 @@ export const processPayment = async (
   );
 
   // Basic validation
-  const cardValidation = validateCardNumber(card.cardNumber);
+  const cardValidation = validateCardNumber(card.cardNumber || '');
   if (!cardValidation) {
     return {
       success: false,

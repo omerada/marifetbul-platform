@@ -36,7 +36,7 @@ export function useRecommendations() {
   const fetchServiceRecommendations = useCallback(
     async (options?: Partial<RecommendationsRequest>) => {
       await fetchRecommendations({
-        type: 'services',
+        type: 'packages',
         ...options,
       });
     },
@@ -79,7 +79,7 @@ export function useRecommendations() {
 
   // Refresh recommendations
   const refreshRecommendations = useCallback(
-    async (type: 'freelancers' | 'jobs' | 'services' = 'jobs') => {
+    async (type: 'freelancers' | 'jobs' | 'packages' = 'jobs') => {
       await store.fetchRecommendations({ type });
     },
     [store]

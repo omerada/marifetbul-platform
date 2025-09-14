@@ -41,7 +41,9 @@ export function CategoryGrid({
     }
   };
 
-  const getCategoryIcon = (iconName: string) => {
+  const getCategoryIcon = (iconName?: string) => {
+    if (!iconName) return Folder; // Default icon
+
     const icons: Record<string, React.ElementType> = {
       rocket: Rocket,
       user: Users,
@@ -271,7 +273,9 @@ export function CategoryTree({
     }
   };
 
-  const getCategoryIcon = (iconName: string) => {
+  const getCategoryIcon = (iconName?: string) => {
+    if (!iconName) return Folder; // Default icon
+
     const icons: Record<string, React.ElementType> = {
       rocket: Rocket,
       user: Users,

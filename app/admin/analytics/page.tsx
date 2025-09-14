@@ -1,7 +1,15 @@
 'use client';
 
-import AdminAnalytics from '@/components/admin/AdminAnalytics';
+import { lazy } from 'react';
+import { LazyAdminWrapper } from '@/components/admin/LazyAdminWrapper';
+
+// Lazy load the heavy AdminAnalytics component
+const AdminAnalytics = lazy(() => import('@/components/admin/AdminAnalytics'));
 
 export default function AdminAnalyticsPage() {
-  return <AdminAnalytics />;
+  return (
+    <LazyAdminWrapper title="Platform Analitikleri">
+      <AdminAnalytics />
+    </LazyAdminWrapper>
+  );
 }

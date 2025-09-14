@@ -1,1111 +1,804 @@
-// Base types
+﻿// Central export hub for all types
+// Legacy compatibility - keep existing types working
+
+// Essential legacy exports
+export * from './performance';
+export * from './seo';
+
+// Core base types
+export * from './core/base';
+export type { LocationData } from './core/base';
+
+// Core types that many files depend on
 export interface User {
   id: string;
-  email: string;
+  userId?: string; // Alias for id for compatibility
   firstName: string;
   lastName: string;
+  name?: string; // Computed field from firstName + lastName or custom name
+  email: string;
   avatar?: string;
   userType: 'freelancer' | 'employer' | 'admin';
-  role?: 'user' | 'admin' | 'moderator' | 'super_admin';
-  phone?: string;
-  location?: string;
-  bio?: string;
-  website?: string;
-  socialLinks?: {
-    linkedin?: string;
-    twitter?: string;
-    github?: string;
-  };
-  permissions?: string[];
-  lastLoginAt?: string;
+  accountStatus: 'active' | 'suspended' | 'banned';
+  verificationStatus: 'verified' | 'pending' | 'unverified';
   createdAt: string;
   updatedAt: string;
-}
-
-export interface Freelancer extends User {
-  userType: 'freelancer';
-  title?: string;
-  skills: string[];
-  hourlyRate?: number;
-  experience: 'beginner' | 'intermediate' | 'expert';
-  rating: number;
-  totalReviews: number;
-  reviewCount?: number; // Alternative naming
-  totalEarnings: number;
-  completedJobs: number;
-  completedProjects?: number; // Alternative naming
-  responseTime: string; // e.g., "2 hours"
-  availability: 'available' | 'busy' | 'not_available';
-  portfolio: PortfolioItem[];
-  languages?: string[];
-  isOnline?: boolean;
-}
-
-export interface Employer extends User {
-  userType: 'employer';
-  companyName?: string;
-  companySize?: string;
-  industry?: string;
-  totalSpent: number;
-  activeJobs: number;
-  completedJobs: number;
-  rating: number;
-  totalReviews: number;
-  reviewsCount: number;
-  totalJobs: number;
-}
-
-export interface PortfolioItem {
-  id: string;
-  title: string;
-  description: string;
-  images: string[];
-  url?: string;
-  skills: string[];
-  completedAt: string;
+  lastActiveAt?: string;
+  lastLoginAt?: string; // Auth handler compatibility
+  permissions?: string[]; // Auth handler compatibility
+  role?: 'freelancer' | 'employer' | 'admin' | 'super_admin' | 'user'; // AdminSidebar component compatibility
+  // Messaging handler compatibility
+  isTyping?: boolean; // Chat messaging compatibility
+  isOnline?: boolean; // Chat messaging compatibility
+  joinedAt?: string; // Chat messaging compatibility
+  lastReadAt?: string; // Chat messaging compatibility
+  // Profile fields
+  location?: string; // Profile compatibility
+  bio?: string; // Profile compatibility
+  phone?: string; // Profile compatibility
+  website?: string; // Profile compatibility
+  portfolio?: PortfolioItem[]; // API route compatibility
+  // Additional user properties that may be accessed
+  user?: {
+    firstName: string;
+    lastName: string;
+    avatar?: string;
+  };
 }
 
 export interface Job {
   id: string;
   title: string;
   description: string;
-  category: string;
-  subcategory: string;
-  budget: {
-    type: 'fixed' | 'hourly';
-    amount: number;
-    maxAmount?: number; // For hourly jobs
-  };
-  timeline: string;
-  duration?: string; // Project duration estimate
-  skills: string[];
-  experienceLevel: 'beginner' | 'intermediate' | 'expert';
-  location?: string;
-  isRemote: boolean;
+  budget: number | JobBudget; // API route compatibility - could be number or object
   status: 'open' | 'in_progress' | 'completed' | 'cancelled';
+  categoryId?: string; // API route compatibility - can be optional
+  skillIds?: string[]; // API route compatibility - can be optional
   employerId: string;
-  employer: Employer;
-  proposalsCount: number;
+  freelancerId?: string;
   createdAt: string;
   updatedAt: string;
   deadline?: string;
-  attachments?: string[];
+  // API compatibility properties
+  skills?: string[]; // For backward compatibility with API routes
+  category?: string; // For backward compatibility
+  subcategory?: string; // For API route compatibility
+  isRemote?: boolean; // For location filtering
+  location?: string; // For location-based searches
+  proposalsCount?: number; // For job analytics
+  timeline?: string; // MSW handler compatibility - keeping as string for display
+  duration?: string; // API route compatibility
+  experienceLevel?: 'beginner' | 'intermediate' | 'expert'; // API route compatibility
+  employer?: Employer; // API route compatibility
+}
+
+// Job budget can be either a simple number or detailed object
+export interface JobBudget {
+  type: 'fixed' | 'hourly';
+  amount: number;
+  maxAmount?: number;
 }
 
 export interface ServicePackage {
   id: string;
   title: string;
   description: string;
-  category: string;
-  subcategory: string;
   price: number;
-  deliveryTime: number; // in days
-  revisions: number;
-  features: string[];
-  images: string[];
+  deliveryTime: number;
+  categoryId?: string;
+  skillIds?: string[];
   freelancerId: string;
-  freelancer: Freelancer;
-  orders: number;
-  rating: number;
-  reviews: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  // API compatibility properties
+  category?: string; // For backward compatibility with API routes
+  subcategory?: string; // Additional category field
+  tags?: string[]; // Tags for package
+  views?: number; // View count
+  orders?: number; // Order count
+  images?: string[] | { id: string; name: string; url: string; type: string }[]; // Package images
+  revisions?: number; // Number of revisions allowed
+  freelancer?: {
+    // For API route compatibility
+    id: string;
+    name?: string;
+    avatar?: string;
+    skills?: string[];
+    firstName?: string; // API route compatibility
+    lastName?: string; // API route compatibility
+    email?: string; // API route compatibility
+    userType?: string; // API route compatibility
+    title?: string; // API route compatibility
+    hourlyRate?: number; // API route compatibility
+    experience?: string; // API route compatibility
+    rating?: number; // API route compatibility - for packages route
+    reviewCount?: number; // Review count
+    totalReviews?: number; // Total reviews
+    completedJobs?: number; // Completed jobs
+    completedProjects?: number; // Completed projects
+    responseTime?: string; // Response time
+    portfolio?: PortfolioItem[]; // API route compatibility
+    languages?: string[]; // API route compatibility
+    isOnline?: boolean; // API route compatibility
+    createdAt?: string; // API route compatibility
+    updatedAt?: string; // API route compatibility
+  };
+  features?: string[]; // Package features list
+  rating?: number; // Package rating
+  reviews?: number; // Review count
+  pricing?: {
+    // Detailed pricing tiers
+    basic: {
+      price: number;
+      deliveryTime: number;
+      features?: string[];
+      title?: string;
+      description?: string;
+      revisions?: number;
+    };
+    standard?: {
+      price: number;
+      deliveryTime: number;
+      features?: string[];
+      title?: string;
+      description?: string;
+      revisions?: number;
+    };
+    premium?: {
+      price: number;
+      deliveryTime: number;
+      features?: string[];
+      title?: string;
+      description?: string;
+      revisions?: number;
+    };
+  };
 }
 
-export interface Proposal {
-  id: string;
-  jobId: string;
-  freelancerId: string;
-  freelancer: Freelancer;
-  coverLetter: string;
-  proposedBudget: number;
-  proposedTimeline: string;
-  attachments?: string[];
-  status: 'pending' | 'accepted' | 'rejected' | 'withdrawn';
-  createdAt: string;
-  updatedAt: string;
-  // Extended fields for detail pages
-  milestones?: {
-    title: string;
-    description: string;
-    amount: number;
-    dueDate: string;
-  }[];
-  questions?: {
-    question: string;
-    answer: string;
-  }[];
+export interface Freelancer extends User {
+  skills: string[];
+  hourlyRate: number;
+  completedJobs: number;
+  rating: number;
+  reviewCount: number;
+  availability: boolean;
+  // API route additional fields
+  title?: string; // API route compatibility
+  experience?: string; // API route compatibility
+  totalReviews?: number; // API route compatibility
+  totalEarnings?: number; // API route compatibility
+  completedProjects?: number; // API route compatibility
+  responseTime?: string; // API route compatibility
+  portfolio?: PortfolioItem[]; // API route compatibility
+  languages?: string[]; // API route compatibility
+  isOnline?: boolean; // API route compatibility
+  // Additional profile fields
+  name?: string; // MSW compatibility
+  bio?: string; // Profile compatibility
+  website?: string; // Profile compatibility
+  socialLinks?: { [key: string]: string }; // Social links
 }
 
-// Extended Job interface for detail pages
-export interface JobDetail {
+export interface Employer extends User {
+  companyName?: string;
+  companySize?: 'startup' | 'small' | 'medium' | 'large' | 'enterprise';
+  industry?: string;
+  website?: string;
+  postedJobs: number;
+  totalSpent: number;
+  rating: number;
+  reviewCount: number;
+  verificationStatus: 'verified' | 'unverified' | 'pending';
+  activeJobs?: number; // API route compatibility
+  completedJobs?: number; // API route compatibility
+  totalJobs?: number; // API route compatibility
+  totalReviews?: number; // API route compatibility
+  reviewsCount?: number; // API route compatibility - alias for reviewCount
+  name?: string; // MSW compatibility
+  location?: string; // Profile compatibility
+}
+
+export interface FreelancerProfile {
+  userId: string;
+  bio: string;
+  skills: string[];
+  hourlyRate: number;
+  portfolio: PortfolioItem[];
+  certifications: string[];
+  languages: string[];
+  availability: boolean;
+}
+
+export interface PortfolioItem {
   id: string;
   title: string;
   description: string;
-  category: string;
-  subcategory: string;
-  budget: {
-    type: 'fixed' | 'hourly';
-    amount: number;
-    maxAmount?: number;
-  };
-  timeline: string;
-  duration?: string;
-  skills: string[];
-  experienceLevel: 'beginner' | 'intermediate' | 'expert';
-  location?: string;
-  isRemote: boolean;
-  status: 'open' | 'in_progress' | 'completed' | 'cancelled';
-  employerId: string;
-  employer: Employer;
-  proposalsCount: number;
-  createdAt: string;
-  updatedAt: string;
-  deadline?: string;
-  // Extended fields for detail pages
-  requirements: string[];
-  attachments: {
-    id: string;
-    name: string;
-    url: string;
-    type: string;
-  }[];
+  imageUrl: string;
+  image?: string;
+  images?: string[];
+  projectUrl?: string;
+  url?: string;
   tags: string[];
-  urgency: 'low' | 'medium' | 'high';
-  expiresAt: string;
-}
-
-// Extended Package interface for detail pages
-export interface PackageDetail extends ServicePackage {
-  overview: string;
-  whatIncluded: string[];
-  faq: {
-    question: string;
-    answer: string;
-  }[];
-  pricing: {
-    basic: {
-      price: number;
-      title: string;
-      description: string;
-      features: string[];
-      deliveryTime: number;
-      revisions: number;
-    };
-    standard: {
-      price: number;
-      title: string;
-      description: string;
-      features: string[];
-      deliveryTime: number;
-      revisions: number;
-    };
-    premium: {
-      price: number;
-      title: string;
-      description: string;
-      features: string[];
-      deliveryTime: number;
-      revisions: number;
-    };
-  };
-  addOns: {
-    id: string;
-    title: string;
-    price: number;
-    deliveryTime: number;
-  }[];
-  totalOrders: number;
-  detailedReviews: Review[];
-  relatedPackages: Partial<ServicePackage>[];
+  skills?: string[];
+  category?: string;
+  client?: string;
+  completedAt?: string;
+  createdAt?: string; // Profile page compatibility
+  techStack?: string[];
+  isPrivate?: boolean;
+  isArchived?: boolean;
 }
 
 export interface Review {
   id: string;
   rating: number;
   comment: string;
-  reviewer: User;
-  reviewee: User;
+  reviewerId: string;
+  revieweeId: string;
   jobId?: string;
   packageId?: string;
   createdAt: string;
 }
 
-export interface Notification {
+export interface Proposal {
   id: string;
-  userId: string;
-  type:
-    | 'proposal_received'
-    | 'proposal_accepted'
-    | 'job_completed'
-    | 'review_received'
-    | 'message_received'
-    | 'payment_received'
-    | 'order_update'
-    | 'system_announcement';
-  title: string;
-  message: string;
-  isRead: boolean;
+  jobId: string;
+  freelancerId: string;
+  coverLetter: string;
+  proposedRate: number;
+  deliveryTime: number;
+  status: 'pending' | 'accepted' | 'rejected';
   createdAt: string;
-  actionUrl?: string;
-  metadata?: Record<string, unknown>;
-}
-
-// Push Notification types
-export interface PushNotificationData {
-  title: string;
-  message: string;
-  icon?: string;
-  badge?: string;
-  url?: string;
-  actions?: NotificationAction[];
-  tag?: string;
-  requireInteraction?: boolean;
-  silent?: boolean;
-}
-
-export interface NotificationAction {
-  action: string;
-  title: string;
-  icon?: string;
-}
-
-export interface PushSubscription {
-  id: string;
-  userId: string;
-  endpoint: string;
-  keys: {
-    p256dh: string;
-    auth: string;
+  updatedAt?: string; // Added for core/jobs compatibility
+  // Additional fields for compatibility
+  freelancer?: {
+    id: string;
+    name?: string;
+    firstName?: string;
+    lastName?: string;
+    avatar?: string;
+    rating?: number;
+    reviewCount?: number;
+    title?: string;
+    skills?: string[];
   };
-  userAgent?: string;
-  isActive: boolean;
-  createdAt: string;
-  lastUsed?: string;
+  proposedBudget?: number; // Alternative to proposedRate
+  proposedTimeline?: string; // Delivery timeline
+  attachments?: File[]; // Proposal attachments
 }
 
-export interface NotificationSettings {
-  userId: string;
-  browser: {
-    enabled: boolean;
-    proposals: boolean;
-    messages: boolean;
-    payments: boolean;
-    orders: boolean;
-    system: boolean;
+export interface JobDetail extends Omit<Job, 'employer'> {
+  employer: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar'> & {
+    companyName?: string;
+    rating?: number;
+    totalJobs?: number;
+    location?: string;
+    createdAt?: string;
   };
-  email: {
-    enabled: boolean;
-    proposals: boolean;
-    messages: boolean;
-    payments: boolean;
-    orders: boolean;
-    system: boolean;
-    digest: 'never' | 'daily' | 'weekly';
+  proposals: Proposal[];
+  attachments: FileAttachment[];
+  requirements: string[];
+  tags?: string[];
+  urgency?: 'low' | 'medium' | 'high';
+  expiresAt?: string;
+}
+
+export interface PackageDetail
+  extends Omit<ServicePackage, 'freelancer' | 'reviews' | 'pricing'> {
+  freelancer: Pick<
+    Freelancer,
+    'id' | 'firstName' | 'lastName' | 'avatar' | 'rating' | 'reviewCount'
+  > & {
+    name?: string; // For API compatibility
   };
-  sms: {
-    enabled: boolean;
-    urgent: boolean;
-    payments: boolean;
+  reviews: Review[];
+  pricing?: Record<
+    string,
+    {
+      price: number;
+      deliveryTime: number;
+      features?: string[];
+      title?: string;
+      description?: string;
+      revisions?: number;
+    }
+  >; // Optional features for compatibility
+  addOns: Array<{
+    id: string;
+    title: string;
+    description: string;
+    price: number;
+    deliveryTime: number;
+  }>;
+  faq: Array<{
+    question: string;
+    answer: string;
+  }>;
+  // Component compatibility fields
+  overview?: string;
+  whatIncluded?:
+    | string[]
+    | Array<{
+        id: string;
+        name: string;
+        description?: string;
+        isIncluded: boolean;
+      }>;
+}
+
+// Common utility types
+
+// Advanced search types for lib/store/advanced-search.ts compatibility
+export interface AdvancedSearchRequest {
+  query: string;
+  category?: string; // Added for component compatibility
+  location?: string; // Added for component compatibility
+  pageSize?: number; // Added for component compatibility
+  skills?: string[]; // Added for component compatibility
+  budget?: { min: number; max: number }; // Added for component compatibility
+  rating?: number; // Added for component compatibility
+  availability?: string; // Added for component compatibility
+  remoteOk?: boolean; // Added for component compatibility
+  deliveryTime?: number; // Added for component compatibility
+  experienceLevel?: string; // Added for component compatibility
+  sortBy?: string; // Added for component compatibility
+  page?: number; // Added for component compatibility
+  filters?: {
+    category?: string;
+    priceRange?: {
+      min: number;
+      max: number;
+    };
+    location?: string;
+    skills?: string[];
+    rating?: number;
   };
-  quietHours: {
-    enabled: boolean;
-    start: string; // HH:mm format
-    end: string; // HH:mm format
+  sort?: 'relevance' | 'price_asc' | 'price_desc' | 'rating' | 'recent';
+  limit?: number;
+}
+
+export interface AdvancedSearchResponse {
+  jobs: Job[];
+  freelancers: User[];
+  packages: ServicePackage[];
+  total: number;
+  facets: SearchFacets;
+  pagination: PaginationMeta;
+  // Store compatibility
+  success?: boolean;
+  data?: {
+    results: Job[] | User[] | ServicePackage[];
+    pagination: PaginationMeta;
+    facets: SearchFacets;
+    searchId: string;
   };
-  updatedAt: string;
-}
-
-export interface Message {
-  id: string;
-  conversationId: string;
-  senderId: string;
-  sender: User;
-  content: string;
-  attachments?: FileAttachment[];
-  isRead: boolean;
-  createdAt: string;
-}
-
-export interface FileAttachment {
-  id: string;
-  name: string;
-  url: string;
-  type: string; // MIME type
-  size: number; // File size in bytes
-  uploadedAt: string;
-}
-
-export interface Conversation {
-  id: string;
-  participants: User[];
-  lastMessage?: Message;
-  unreadCount: number;
-  jobId?: string;
-  packageId?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// API Response types
-export interface ApiResponse<T = unknown> {
-  success: boolean;
-  data?: T;
-  message?: string;
   error?: string;
 }
 
-export interface PaginatedResponse<T = unknown> {
-  data: T[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
-
-// Form types
-export interface LoginFormData {
-  email: string;
-  password: string;
-}
-
-export interface RegisterFormData {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  userType: 'freelancer' | 'employer';
-  agreeToTerms: boolean;
-}
-
-export interface JobFormData {
-  title: string;
-  description: string;
-  category: string;
-  subcategory: string;
-  budget: {
-    type: 'fixed' | 'hourly';
-    amount: number;
-    maxAmount?: number;
-  };
-  timeline: string;
+export interface SearchSuggestionsResponse {
+  queries: string[];
+  categories: string[];
   skills: string[];
-  experienceLevel: 'beginner' | 'intermediate' | 'expert';
-  location?: string;
-  isRemote: boolean;
-  deadline?: string;
+  locations: string[];
+  // Store compatibility
+  success?: boolean;
+  data?: {
+    suggestions: string[];
+  };
+  error?: string;
 }
 
-export interface PackageFormData {
-  title: string;
-  description: string;
-  category: string;
-  subcategory: string;
-  price: number;
-  deliveryTime: number;
-  revisions: number;
-  features: string[];
-  images: string[];
+export interface SavedSearch {
+  id: string;
+  name: string;
+  query: string;
+  filters: AdvancedSearchRequest['filters'];
+  createdAt: string;
+  updatedAt: string;
 }
 
-// Filter types
+export interface SearchFacets {
+  categories: Array<{
+    name: string;
+    count: number;
+  }>;
+  skills: Array<{
+    name: string;
+    count: number;
+  }>;
+  locations: Array<{
+    name: string;
+    count: number;
+  }>;
+  priceRanges: Array<{
+    range: string;
+    min: number;
+    max: number;
+    count: number;
+  }>;
+  ratings: Array<{
+    rating: number;
+    count: number;
+  }>;
+}
+
+export interface PaginationMeta {
+  page: number;
+  limit: number; // Required for store compatibility
+  total: number;
+  totalPages: number;
+  hasNext?: boolean;
+  hasPrev?: boolean;
+  pageSize?: number; // Store compatibility alias for limit
+}
+
+export interface ApiResponse<T = unknown> {
+  data: T;
+  status: number;
+  statusText: string;
+  headers: Record<string, string>;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: PaginationMeta;
+}
+
+// Search and filter types
 export interface JobFilters {
   category?: string;
-  subcategory?: string;
-  budgetMin?: number;
-  budgetMax?: number;
-  budgetType?: 'fixed' | 'hourly';
-  jobType?: 'fixed' | 'hourly';
-  experienceLevel?: 'beginner' | 'intermediate' | 'expert';
-  location?: string[];
-  isRemote?: boolean;
+  subcategory?: string; // Subcategory filter
+  budget?: { min: number; max: number };
   skills?: string[];
-  search?: string;
-  deadline?: 'urgent' | 'week' | 'month' | 'flexible';
-  sort?: 'newest' | 'budget' | 'proposals' | 'rating';
+  location?: string | string[];
+  search?: string; // MobileJobFilters compatibility
+  jobType?: 'fixed' | 'hourly'; // MobileJobFilters compatibility
+  budgetMin?: number; // MobileJobFilters compatibility
+  budgetMax?: number; // MobileJobFilters compatibility
+  budgetType?: 'fixed' | 'hourly'; // Component compatibility
+  experienceLevel?: 'beginner' | 'intermediate' | 'expert'; // MobileJobFilters compatibility
+  deadline?: string; // Deadline filter
+  sortBy?:
+    | 'recent'
+    | 'budget_desc'
+    | 'budget_asc'
+    | 'rating'
+    | 'newest'
+    | 'oldest'
+    | 'budget'
+    | 'relevance'
+    | 'price';
 }
 
 export interface PackageFilters {
   category?: string;
-  subcategory?: string;
-  priceMin?: number;
-  priceMax?: number;
+  subcategory?: string; // Subcategory filter
+  price?: { min: number; max: number };
+  priceMin?: number; // Min price filter
+  priceMax?: number; // Max price filter
   deliveryTime?: number;
+  skills?: string[];
   rating?: number;
-  search?: string;
+  search?: string; // Search filter
+  sortBy?:
+    | 'recent'
+    | 'price_desc'
+    | 'price_asc'
+    | 'rating'
+    | 'newest'
+    | 'oldest'
+    | 'budget'
+    | 'relevance'
+    | 'price';
 }
 
-// Categories
-export interface Category {
+// Basic enums and constants
+export type Currency = 'TRY' | 'USD' | 'EUR';
+export type PaymentStatus =
+  | 'pending'
+  | 'paid'
+  | 'failed'
+  | 'refunded'
+  | 'completed' // Added 'completed' for MSW handler compatibility
+  | 'cancelled'
+  | 'processing'; // Additional status values
+export type OrderStatus =
+  | 'pending'
+  | 'processing'
+  | 'completed'
+  | 'canceled'
+  | 'cancelled' // MSW handler compatibility
+  | 'refunded'
+  | 'in_progress'
+  | 'disputed'
+  | 'under_review'
+  | 'rejected'
+  | 'requires_approval' // Additional status values
+  | 'delayed'; // Added for OrderTimeline compatibility
+export type NotificationType =
+  | 'job_application'
+  | 'message'
+  | 'payment'
+  | 'review'
+  | 'system'
+  | 'payment_received' // MSW handler compatibility
+  | 'proposal_received' // MSW handler compatibility
+  | 'message_received' // MSW handler compatibility
+  | 'job_completed' // MSW handler compatibility
+  | 'system_announcement' // MSW handler compatibility
+  | 'promotion' // Added for unified notification compatibility
+  | 'system_update' // Added for features/notifications compatibility
+  | 'job_accepted' // Added for features/notifications compatibility
+  | 'review_received' // Added for features/notifications compatibility
+  | 'reminder'; // Added for features/notifications compatibility
+
+// File upload types
+export interface FileAttachment {
+  id: string;
+  name: string; // Required for utility compatibility
+  type: string; // Required for utility compatibility
+  filename: string;
+  size: number;
+  mimetype: string;
+  url: string;
+  uploadedAt: string;
+  thumbnailUrl?: string; // Optional thumbnail URL for preview
+}
+
+// Alias for ChatWindow compatibility
+export type MessageAttachment = FileAttachment;
+
+// Location types - now imported from core/base
+// Removed duplicate LocationData interface to use the one from core/base
+
+export interface LocationSearchResult {
   id: string;
   name: string;
-  slug: string;
-  description: string;
-  icon: string;
-  subcategories: Subcategory[];
-}
-
-export interface Subcategory {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  categoryId: string;
-}
-
-// Dashboard stats
-export interface FreelancerStats {
-  totalEarnings: number;
-  activeProposals: number;
-  completedJobs: number;
-  profileViews: number;
-  rating: number;
-  responseRate: number;
-}
-
-export interface EmployerStats {
-  totalSpent: number;
-  activeJobs: number;
-  completedJobs: number;
-  totalProposals: number;
-  averageRating: number;
-  savedFreelancers: number;
-}
-
-// Dashboard data interfaces
-export interface FreelancerDashboard {
-  stats: {
-    totalEarnings: number;
-    currentMonthEarnings: number;
-    activeOrders: number;
-    completedJobs: number;
-    responseRate: number;
-    rating: number;
-    profileViews: number;
-  };
-  recentOrders: Order[];
-  recentProposals: Proposal[];
-  notifications: Notification[];
-  quickStats: {
-    pendingProposals: number;
-    messagesWaiting: number;
-    reviewsPending: number;
-  };
-}
-
-export interface EmployerDashboard {
-  stats: {
-    totalSpent: number;
-    currentMonthSpending: number;
-    activeJobs: number;
-    completedJobs: number;
-    avgProjectCost: number;
-    savedFreelancers: number;
-  };
-  activeJobs: Job[];
-  recentHires: {
-    freelancerId: string;
-    jobTitle: string;
-    amount: number;
-    startDate: string;
-  }[];
-  notifications: Notification[];
-  quickStats: {
-    proposalsReceived: number;
-    messagesWaiting: number;
-    jobsExpiringSoon: number;
-  };
-}
-
-// Profile interfaces
-export interface FreelancerProfile extends Freelancer {
-  certifications?: Certification[];
-  languages?: string[];
-  memberSince: string;
-  verificationStatus: 'verified' | 'pending' | 'unverified';
-}
-
-export interface EmployerProfile extends Employer {
-  memberSince: string;
-  verificationStatus: 'verified' | 'pending' | 'unverified';
-  paymentMethods?: string[];
-}
-
-export interface Certification {
-  id: string;
-  name: string;
-  issuer: string;
-  issueDate: string;
-  url?: string;
-}
-
-// Payment System Types
-export interface PaymentMethod {
-  id: string;
-  type: 'credit_card' | 'debit_card' | 'paypal' | 'bank_transfer';
-  name: string;
-  cardNumber?: string; // Masked card number (e.g., "**** **** **** 1234")
-  expiryDate?: string;
-  cardHolderName?: string;
-  isDefault: boolean;
-  isValid: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PaymentIntent {
-  id: string;
-  amount: number;
-  currency: 'TRY' | 'USD' | 'EUR';
-  description: string;
-  status: 'pending' | 'processing' | 'succeeded' | 'failed' | 'canceled';
-  paymentMethodId: string;
-  userId: string;
-  jobId?: string;
-  packageId?: string;
-  orderId?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PaymentCard {
-  cardNumber: string;
-  expiryMonth: string;
-  expiryYear: string;
-  cvv: string;
-  cardHolderName: string;
-  billingAddress?: BillingAddress;
-}
-
-export interface BillingAddress {
-  fullName: string;
-  email: string;
-  phone?: string;
-  addressLine1: string;
-  addressLine2?: string;
+  address: string;
   city: string;
   state: string;
-  postalCode: string;
   country: string;
+  lat: number;
+  lng: number;
+  distance?: number;
 }
 
-export interface Order {
-  id: string;
-  userId: string;
-  user: User;
-  packageId?: string;
-  package?: ServicePackage;
-  jobId?: string;
-  job?: Job;
-  amount: number;
-  subtotal: number;
-  tax: number;
-  discount: number;
-  total: number;
-  currency: 'TRY' | 'USD' | 'EUR';
-  status:
-    | 'pending'
-    | 'processing'
-    | 'completed'
-    | 'canceled'
-    | 'refunded'
-    | 'in_progress'
-    | 'under_review'
-    | 'disputed';
-  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
-  paymentMethodId?: string;
-  paymentMethod?: PaymentMethod;
-  notes?: string;
-  deliverables?: string[];
-  deadlineDate?: string;
-  completedAt?: string;
-  createdAt: string;
-  updatedAt: string;
-  // Sprint 5 - Order tracking fields
-  clientId?: string;
-  freelancerId?: string;
-  title?: string;
-  description?: string;
-  totalAmount?: number;
-  deadline?: string;
-  deliveryDate?: string;
-  timeline?: OrderTimeline[];
-  progress?: OrderProgress;
-  milestones?: OrderMilestone[];
-  communications?: OrderCommunication[];
-  metadata?: {
-    category?: string;
-    subcategory?: string;
-    urgency?: 'low' | 'medium' | 'high';
-    clientRating?: number;
-    freelancerRating?: number;
-  };
+export interface LocationSearchParams {
+  query: string;
+  radius?: number;
+  center?: Coordinates;
+  limit?: number;
 }
 
-export interface Invoice {
-  id: string;
-  orderId: string;
-  order: Order;
-  invoiceNumber: string;
-  issueDate: string;
-  dueDate: string;
-  amount: number;
-  tax: number;
-  totalAmount: number;
-  currency: 'TRY' | 'USD' | 'EUR';
-  status: 'draft' | 'sent' | 'paid' | 'overdue' | 'canceled';
-  billingAddress: BillingAddress;
-  items: InvoiceItem[];
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface InvoiceItem {
-  id: string;
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  totalPrice: number;
-}
-
-export interface Wallet {
-  id: string;
-  userId: string;
-  balance: number;
-  currency: 'TRY' | 'USD' | 'EUR';
-  frozenAmount: number; // Dondurulan miktar (pending işlemler için)
-  totalEarnings: number;
-  totalSpent: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Transaction {
-  id: string;
-  walletId: string;
-  type:
-    | 'deposit'
-    | 'withdrawal'
-    | 'payment'
-    | 'refund'
-    | 'commission'
-    | 'bonus';
-  amount: number;
-  currency: 'TRY' | 'USD' | 'EUR';
-  status: 'pending' | 'completed' | 'failed' | 'canceled';
-  description: string;
-  referenceId?: string; // Order, job, or payment ID
-  fees?: number;
-  netAmount?: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// Payment Form Types
-export interface PaymentFormData {
-  amount: number;
-  currency: 'TRY' | 'USD' | 'EUR';
-  paymentMethodId?: string;
-  saveCard?: boolean;
-  cardData?: PaymentCard;
-  billingAddress?: BillingAddress;
-  notes?: string;
-}
-
-export interface CheckoutFormData {
-  packageId?: string;
-  jobId?: string;
-  amount: number;
-  currency: 'TRY' | 'USD' | 'EUR';
-  paymentMethod: PaymentCard;
-  billingAddress: BillingAddress;
-  notes?: string;
-  agreeToTerms: boolean;
-}
-
-// Location and Map Types
+// Extended Coordinates interface for compatibility with both lat/lng and latitude/longitude
 export interface Coordinates {
+  lat: number;
+  lng: number;
   latitude: number;
   longitude: number;
 }
 
-export interface LocationData {
-  id: string;
-  name: string;
-  address: string;
-  city: string;
-  state: string;
-  country: string;
-  postalCode?: string;
-  coordinates: Coordinates;
-  type: 'city' | 'district' | 'neighborhood' | 'custom';
-  parentLocation?: string;
-}
-
-export interface LocationSearchResult {
-  id: string;
-  displayName: string;
-  address: string;
-  coordinates: Coordinates;
-  distance?: number; // Distance in kilometers from search point
-  relevanceScore?: number;
-}
-
-export interface MapMarker {
-  id: string;
-  position: Coordinates;
-  title: string;
-  description?: string;
-  type: 'job' | 'freelancer' | 'service' | 'user';
-  data: Job | ServicePackage | User;
-  icon?: string;
-  color?: string;
-}
-
 export interface MapBounds {
+  northeast: Coordinates;
+  southwest: Coordinates;
   north: number;
   south: number;
   east: number;
   west: number;
 }
 
-export interface MapViewport {
-  center: Coordinates;
-  zoom: number;
-  bounds?: MapBounds;
-}
-
-export interface LocationFilter {
-  coordinates?: Coordinates;
-  radius?: number; // Radius in kilometers
-  city?: string;
-  state?: string;
-  country?: string;
-  bounds?: MapBounds;
-}
-
-export interface GeolocationSettings {
-  enabled: boolean;
-  accuracy: 'high' | 'medium' | 'low';
-  timeout: number; // milliseconds
-  maximumAge: number; // milliseconds
-  fallbackLocation?: Coordinates;
-}
-
-export interface LocationSearchParams {
-  query?: string;
-  coordinates?: Coordinates;
-  radius?: number;
-  bounds?: MapBounds;
-  types?: string[];
-  type?: string;
-  category?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  page?: number;
+// Location request interfaces - Store compatibility
+export interface LocationSearchRequest {
+  query: string;
   limit?: number;
+  country?: string;
+  coordinates?: Coordinates; // Store compatibility
+  radius?: number; // Store compatibility
+  bounds?: MapBounds; // Store compatibility
+  types?: LocationType[];
   language?: string;
 }
 
-// Extended Job and Service types with location
-export interface JobWithLocation extends Omit<Job, 'location'> {
-  location?: LocationData;
-  locationString?: string; // Keep the original location field as locationString
-  allowRemote?: boolean;
-  preferredRadius?: number; // in kilometers
+export interface LocationAutocompleteRequest {
+  input: string;
+  limit?: number;
+  country?: string;
+  coordinates?: Coordinates; // Store compatibility
+  radius?: number; // Store compatibility
+  types?: LocationType[];
+  language?: string; // Store compatibility
 }
 
-export interface ServicePackageWithLocation extends ServicePackage {
-  serviceLocation?: LocationData;
-  serviceRadius?: number; // Service area radius in kilometers
-  allowRemote?: boolean;
-  travelFee?: number; // Additional fee for travel
+export interface GeocodeRequest {
+  address?: string;
+  coordinates?: Coordinates; // Store compatibility
+  language?: string;
+  placeId?: string; // Store compatibility
 }
 
-export interface FreelancerWithLocation extends Omit<Freelancer, 'location'> {
-  location?: string; // Keep original location field
-  baseLocation?: LocationData;
-  serviceAreas?: LocationData[];
-  maxTravelDistance?: number; // in kilometers
-  travelRate?: number; // per kilometer
+export type LocationType = 'city' | 'district' | 'neighborhood' | 'address';
+
+// Payment types
+export interface PaymentCard {
+  id: string;
+  last4: string;
+  brand: string;
+  expiryMonth: number | string; // Component compatibility - can be number or string
+  expiryYear: number | string; // Component compatibility - can be number or string
+  cardNumber?: string;
+  cvv?: string;
+  cardHolderName?: string;
 }
 
-// ========================================
-// SPRINT 5: MESSAGING & ORDER TRACKING TYPES
-// ========================================
+export interface BillingAddress {
+  country: string;
+  city: string;
+  line1: string;
+  line2?: string;
+  postalCode: string;
+  fullName?: string;
+  addressLine1?: string;
+  state?: string;
+  email?: string; // Email field
+  phone?: string; // Phone field
+}
 
-// Messaging Types - Enhanced for Sprint 5
+// Basic types that can be extended
 export interface ChatMessage {
   id: string;
   conversationId: string;
   senderId: string;
-  receiverId: string;
   content: string;
-  type: 'text' | 'file' | 'image' | 'system';
-  sentAt: string;
+  type: 'text' | 'file' | 'image';
+  createdAt: string;
+  sentAt: string; // MSW handler compatibility
+  isRead: boolean;
   readAt?: string;
-  editedAt?: string;
-  attachments?: MessageAttachment[];
-  metadata?: MessageMetadata;
-}
-
-export interface MessageAttachment {
-  id: string;
-  name: string;
-  url: string;
-  type: string; // MIME type
-  size: number; // bytes
-  thumbnailUrl?: string;
-}
-
-export interface MessageMetadata {
-  isEdited?: boolean;
-  replyTo?: string; // Message ID being replied to
-  mentions?: string[]; // User IDs mentioned
-  reactions?: MessageReaction[];
-}
-
-export interface MessageReaction {
-  emoji: string;
-  userId: string;
-  timestamp: string;
+  editedAt?: string; // Added for ChatWindow compatibility
+  attachments?: FileAttachment[] | string[]; // MSW handler compatibility - can be object array or string array
+  receiverId?: string; // MSW handler compatibility
+  from?: string; // MSW handler compatibility
+  to?: string; // MSW handler compatibility
+  message?: string; // MSW handler compatibility
+  timestamp?: string; // MSW handler compatibility
+  sender?: {
+    id: string;
+    name?: string; // Make name optional to match User type
+    avatar?: string;
+  }; // Component compatibility
 }
 
 export interface ChatConversation {
   id: string;
-  type: 'direct' | 'order'; // order-based or direct messaging
-  participants: ConversationParticipant[];
+  type?: string; // MSW handler compatibility
+  participants: User[];
   lastMessage?: ChatMessage;
-  lastActivity: string;
+  lastActivity: string; // MSW handler compatibility
   unreadCount: number;
-  isArchived: boolean;
-  isPinned: boolean;
-  orderId?: string; // If conversation is order-related
-  metadata?: ConversationMetadata;
-}
-
-export interface ConversationParticipant {
-  userId: string;
-  user: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar' | 'userType'>;
-  joinedAt: string;
-  lastReadAt?: string;
-  isTyping?: boolean;
-  isOnline?: boolean;
-}
-
-export interface ConversationMetadata {
-  title?: string;
-  description?: string;
-  tags?: string[];
-  priority?: 'low' | 'normal' | 'high' | 'urgent';
-}
-
-export interface TypingIndicator {
-  conversationId: string;
-  userId: string;
-  isTyping: boolean;
-  timestamp: string;
-}
-
-export interface MessageSearchParams {
-  query?: string;
-  conversationId?: string;
-  senderId?: string;
-  type?: ChatMessage['type'];
-  hasAttachments?: boolean;
-  dateFrom?: string;
-  dateTo?: string;
-  page?: number;
-  limit?: number;
-}
-
-export interface MessageSearchResult {
-  message: ChatMessage;
-  conversation: Pick<ChatConversation, 'id' | 'type' | 'participants'>;
-  matches: string[]; // Highlighted text matches
-}
-
-// Order Tracking Types
-export interface OrderTracking {
-  id: string;
-  orderNumber: string;
-  packageId?: string;
-  jobId?: string;
-  package?: ServicePackage;
-  job?: Job;
-  buyerId: string;
-  sellerId: string;
-  buyer: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar' | 'userType'>;
-  seller: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar' | 'userType'>;
-  status: OrderTrackingStatus;
-  price: number;
-  currency: 'TRY' | 'USD' | 'EUR';
-  deliveryDate: string;
-  completedAt?: string;
-  files: OrderFile[];
-  timeline: OrderTimelineEvent[];
-  conversationId: string;
-  invoiceUrl?: string;
-  paymentStatus: OrderPaymentStatus;
-  revisionCount: number;
-  maxRevisions: number;
-  requirements?: string;
-  description?: string;
-  metadata?: OrderTrackingMetadata;
   createdAt: string;
   updatedAt: string;
+  isArchived?: boolean;
+  isPinned?: boolean;
+  orderId?: string; // MSW handler compatibility
+  jobId?: string; // Component compatibility
+  packageId?: string; // Component compatibility
+  title?: string; // MSW handler compatibility
+  metadata?: Record<string, unknown>; // MSW handler compatibility
 }
 
-export type OrderTrackingStatus =
-  | 'pending_payment'
-  | 'active'
-  | 'in_progress'
-  | 'delivered'
-  | 'revision_requested'
-  | 'revision_in_progress'
-  | 'completed'
-  | 'cancelled'
-  | 'disputed';
-
-export type OrderPaymentStatus =
-  | 'pending'
-  | 'processing'
-  | 'paid'
-  | 'failed'
-  | 'refunded'
-  | 'partially_refunded';
-
-export interface OrderFile {
+export interface Order {
   id: string;
-  orderId: string;
-  name: string;
-  url: string;
-  type: string; // MIME type
-  size: number; // bytes
-  uploadedBy: string; // User ID
-  uploadedAt: string;
-  version?: number;
-  description?: string;
-  isDeliverable: boolean; // Final delivery files vs work files
-}
-
-export interface OrderTimelineEvent {
-  id: string;
-  orderId: string;
-  type: OrderEventType;
-  status?: OrderTrackingStatus;
-  title: string;
-  description?: string;
-  userId?: string; // Who triggered the event
-  user?: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar'>;
-  timestamp: string;
-  metadata?: OrderEventMetadata;
-}
-
-export type OrderEventType =
-  | 'order_created'
-  | 'payment_received'
-  | 'work_started'
-  | 'file_uploaded'
-  | 'delivery_submitted'
-  | 'revision_requested'
-  | 'revision_submitted'
-  | 'order_completed'
-  | 'order_cancelled'
-  | 'dispute_opened'
-  | 'dispute_resolved'
-  | 'message_sent';
-
-export interface OrderEventMetadata {
-  fileIds?: string[];
-  messageId?: string;
-  revisionReason?: string;
-  paymentAmount?: number;
-  disputeReason?: string;
-}
-
-export interface OrderTrackingMetadata {
-  priority?: 'low' | 'normal' | 'high' | 'urgent';
-  tags?: string[];
-  customFields?: Record<string, string | number | boolean>;
-  externalOrderId?: string;
-  source?: 'web' | 'mobile' | 'api';
-}
-
-export interface RevisionRequest {
-  id: string;
-  orderId: string;
-  requestedBy: string;
-  reason: string;
-  description?: string;
-  requestedFiles?: string[]; // File IDs to revise
-  requestedAt: string;
-  respondedAt?: string;
-  status: 'pending' | 'accepted' | 'rejected' | 'completed';
-}
-
-export interface DeliverySubmission {
-  id: string;
-  orderId: string;
-  submittedBy: string;
-  files: OrderFile[];
-  message?: string;
-  submittedAt: string;
-  acceptedAt?: string;
-  status: 'submitted' | 'accepted' | 'revision_requested';
-}
-
-// Pagination Helper Type
-export interface PaginationMeta {
-  page: number;
-  pageSize: number;
-  total: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrev: boolean;
-}
-
-// Form Types for Messaging & Orders
-export interface SendMessageRequest {
-  conversationId: string;
-  content: string;
-  type: 'text' | 'file' | 'image';
-  attachments?: Omit<MessageAttachment, 'id'>[];
-  replyTo?: string;
-}
-
-export interface CreateConversationRequest {
-  type: 'direct' | 'order';
-  participantIds: string[];
-  orderId?: string;
-  initialMessage?: string;
+  packageId: string;
+  buyerId: string;
+  sellerId: string;
+  status: OrderStatus;
+  totalAmount: number;
+  createdAt: string;
+  updatedAt: string;
+  timeline?: OrderTimeline[];
+  milestones?: OrderTimeline[];
+  // MSW handler compatibility
   title?: string;
+  description?: string; // Added for dashboard compatibility
+  amount?: number;
+  deliveryDate?: string; // Added for dashboard compatibility
+  userId?: string;
+  user?: User;
+  subtotal?: number;
+  tax?: number;
+  discount?: number;
+  total?: number; // Alternative to totalAmount
+  currency?: string;
+  paymentStatus?: string;
+  clientId?: string; // Alternative to buyerId
+  freelancerId?: string; // Alternative to sellerId
+  communications?: ChatMessage[]; // MSW handler communications
+  progress?: {
+    percentage: number;
+    stagesCompleted: number;
+    currentStage?: string; // MSW handler compatibility
+    totalStages?: number; // MSW handler compatibility
+  }; // MSW handler progress tracking
 }
 
-export interface SubmitDeliveryRequest {
-  orderId: string;
-  files: File[];
-  message?: string;
+export interface SupportTicket {
+  id: string;
+  userId: string;
+  subject: string;
+  description: string;
+  status:
+    | 'open'
+    | 'pending'
+    | 'in_progress'
+    | 'waiting_user'
+    | 'resolved'
+    | 'closed';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  category:
+    | 'account'
+    | 'billing'
+    | 'payment'
+    | 'technical'
+    | 'dispute'
+    | 'feature_request'
+    | 'bug_report'
+    | 'general'
+    | 'abuse'
+    | 'refund'
+    | 'report_user';
+  createdAt: string;
+  updatedAt: string;
+  ticketNumber?: string; // MSW handler compatibility
+  estimatedResolutionTime?: string; // MSW handler compatibility
+  assignedAgent?: string; // MSW handler compatibility
+  // Additional fields for compatibility
+  user: {
+    id: string;
+    name?: string;
+    firstName: string;
+    lastName: string;
+    email?: string;
+    avatar?: string;
+    userType?: 'freelancer' | 'employer' | 'admin'; // MSW handler compatibility
+  };
+  responses?: TicketResponse[]; // Support responses
+  attachments?: Array<{
+    id?: string;
+    name: string;
+    url?: string;
+    size?: number;
+    type?: string;
+  }>; // Support attachments
 }
 
-export interface RequestRevisionRequest {
-  orderId: string;
-  reason: string;
-  description?: string;
-  requestedFiles?: string[];
+export interface TicketResponse {
+  id: string;
+  ticketId: string;
+  content: string;
+  isPublic: boolean;
+  createdAt: string;
+  updatedAt: string;
+  agent?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    avatar?: string;
+    role?: string;
+  };
+  attachments?: Array<{
+    id?: string;
+    name: string;
+    url?: string;
+    size?: number;
+    type?: string;
+  }>;
 }
 
-export interface AcceptDeliveryRequest {
-  orderId: string;
-  rating?: number;
-  review?: string;
-}
+// Missing types to satisfy imports
+export type Message = ChatMessage; // Alias for compatibility
+export type Conversation = ChatConversation; // Alias for compatibility
 
-// API Response Types
 export interface MessagesResponse {
   messages: ChatMessage[];
   pagination: PaginationMeta;
@@ -1116,761 +809,1263 @@ export interface ConversationsResponse {
   pagination: PaginationMeta;
 }
 
+export interface SendMessageRequest {
+  conversationId: string;
+  content: string;
+  type?: 'text' | 'file' | 'image';
+  attachments?: FileAttachment[]; // MSW handler compatibility
+}
+
+export interface CreateConversationRequest {
+  participantIds: string[];
+  initialMessage?: string;
+  type?: string; // MSW handler compatibility
+  orderId?: string; // MSW handler compatibility
+  title?: string; // MSW handler compatibility
+}
+
 export interface MessageSearchResponse {
   results: MessageSearchResult[];
   pagination: PaginationMeta;
-  totalMatches: number;
+  // MSW handler compatibility
+  success?: boolean;
+  data?: MessageSearchResult[];
+  error?: string;
 }
 
-// WebSocket Events (for real-time messaging)
-export interface WebSocketEvent {
-  type: string;
-  payload: Record<string, unknown>;
-  timestamp: string;
+export interface MessageSearchResult {
+  message: ChatMessage;
+  conversation: ChatConversation;
+  highlights: string[];
 }
 
-export interface MessageEvent extends WebSocketEvent {
-  type: 'message_sent' | 'message_read' | 'message_edited' | 'message_deleted';
-  payload: {
-    conversationId: string;
-    message: ChatMessage;
-  };
-}
-
-export interface TypingEvent extends WebSocketEvent {
-  type: 'typing_start' | 'typing_stop';
-  payload: {
-    conversationId: string;
-    userId: string;
-    isTyping: boolean;
-    timestamp: string;
-  };
-}
-
-export interface OrderEvent extends WebSocketEvent {
-  type: 'order_updated' | 'delivery_submitted' | 'revision_requested';
-  payload: {
-    orderId: string;
-    order: OrderTracking;
-    event: OrderTimelineEvent;
-  };
-}
-
-export interface OnlineStatusEvent extends WebSocketEvent {
-  type: 'user_online' | 'user_offline';
-  payload: {
-    userId: string;
-    isOnline: boolean;
-  };
-}
-
-// Sprint 5 - Additional Order Tracking Types
 export interface OrderTimeline {
   id: string;
   orderId: string;
-  status:
-    | 'pending'
-    | 'processing'
-    | 'completed'
-    | 'canceled'
-    | 'refunded'
-    | 'in_progress'
-    | 'under_review'
-    | 'disputed';
-  eventType:
-    | 'milestone_completed'
-    | 'payment_received'
-    | 'revision_requested'
-    | 'communication'
+  type:
     | 'status_change'
-    | 'order_created'
-    | 'work_started'
-    | 'delivery_submitted'
-    | 'order_completed'
-    | 'review_submitted'
-    | 'dispute_created'
-    | 'message_sent';
+    | 'message'
+    | 'delivery'
+    | 'milestone'
+    | 'payment'
+    | 'dispute'
+    | 'status_update' // MSW handler compatibility
+    | 'communication' // MSW handler compatibility
+    | 'revision' // MSW handler compatibility
+    | 'completion'; // MSW handler compatibility
   title: string;
   description: string;
+  eventType?: string; // MSW handler compatibility
+  actor:
+    | 'buyer'
+    | 'seller'
+    | 'system'
+    | {
+        id: string;
+        name: string;
+        avatar: string;
+        role: string;
+      }; // Enhanced for MSW handler compatibility
+  actorId?: string;
+  actorName?: string;
+  metadata?: Record<string, unknown>;
   timestamp: string;
-  actor: {
-    id: string;
-    name: string;
-    avatar: string;
-    role: 'client' | 'freelancer' | 'system';
+  dueDate?: string; // MSW handler compatibility
+  completedAt?: string; // MSW handler compatibility
+  amount?: number; // MSW handler compatibility
+  status?: OrderStatus; // MSW handler compatibility
+}
+
+export interface OrdersResponse {
+  data?: Order[];
+  meta?: PaginationMeta;
+  orders: Order[];
+  pagination: PaginationMeta;
+  stats: {
+    total: number;
+    pending: number;
+    inProgress: number;
+    completed: number;
+    cancelled: number;
   };
-  metadata?: {
-    amount?: number;
-    files?: Array<{
-      id: string;
-      name: string;
-      url: string;
-      type: string;
-    }>;
-    [key: string]: unknown;
-  };
-}
-
-export interface OrderProgress {
-  percentage: number;
-  currentStage: string;
-  stagesCompleted: number;
-  totalStages: number;
-  status:
-    | 'pending'
-    | 'in_progress'
-    | 'completed'
-    | 'cancelled'
-    | 'requires_approval'
-    | 'rejected'
-    | 'delayed';
-  estimatedCompletion?: string;
-}
-
-export interface OrderMilestone {
-  id: string;
-  title: string;
-  description?: string;
-  status:
-    | 'pending'
-    | 'in_progress'
-    | 'completed'
-    | 'cancelled'
-    | 'requires_approval'
-    | 'rejected';
-  dueDate: string;
-  completedAt?: string;
-  amount: number;
-  deliverables?: Array<{
-    id: string;
-    name: string;
-    type: string;
-    url: string;
-    uploadedAt: string;
-  }>;
-}
-
-export interface OrderCommunication {
-  id: string;
-  from: string;
-  to: string;
-  message: string;
-  timestamp: string;
-  attachments: string[];
 }
 
 export interface OrderUpdate {
-  from: string;
-  to: string;
-  message: string;
-  attachments?: string[];
+  orderId: string;
+  status?: OrderStatus;
+  milestone?: OrderTimeline;
+  deliverable?: FileAttachment;
+  message?: string;
+  estimatedDelivery?: string;
+  // MSW handler compatibility
+  from?: string; // user ID who sent the update
+  to?: string; // user ID who received the update
+  attachments?: string[]; // attached files
+  id?: string; // optional ID for MSW handlers
+  type?:
+    | 'status_change'
+    | 'milestone_completed'
+    | 'file_uploaded'
+    | 'message'
+    | 'payment_released';
+  userId?: string;
+  timestamp?: string;
 }
 
 export interface OrderDispute {
   id: string;
   orderId: string;
-  raisedBy: string;
   reason: string;
   description: string;
-  status: 'open' | 'in_review' | 'resolved' | 'closed';
+  status: 'open' | 'resolved' | 'closed';
   createdAt: string;
-  evidence?: string[];
+  // MSW handler compatibility
+  evidence?: Array<{
+    type: string;
+    url: string;
+    description?: string;
+  }>;
+  raisedBy?: string; // User ID who raised the dispute
 }
 
-export interface OrdersResponse {
-  data: Order[];
-  meta: PaginationMeta;
+// Notification types
+export interface EnhancedNotification {
+  id: string;
+  userId?: string; // MSW handler compatibility
+  type: NotificationType;
+  title: string;
+  message: string;
+  data?: Record<string, unknown>;
+  isRead: boolean;
+  createdAt: string;
+  actionUrl?: string;
+  category?: string; // Required for notification center compatibility
+  // MSW handler compatibility
+  priority?: string;
+  readAt?: string;
+  deliveryStatus?: string;
+  deliveryAttempts?:
+    | number
+    | Array<{
+        id: string;
+        notificationId: string;
+        channel?: string;
+        status: string;
+        attemptedAt: string;
+        deliveredAt?: string; // MSW handler compatibility
+      }>; // MSW handler compatibility
+  channel?: string;
+  expiresAt?: string;
+  actionText?: string;
+  imageUrl?: string;
+  tags?: string[]; // MSW handler compatibility
+  metadata?: Record<string, unknown>; // MSW handler compatibility
 }
 
-// ========================================
-// SPRINT 6: PAYMENT SYSTEM & NOTIFICATIONS
-// ========================================
-
-// Enhanced Payment Types for Sprint 6
-export type PaymentMethodType = 'credit_card' | 'bank_transfer' | 'wallet';
-
-export interface CreatePaymentRequest {
-  orderId: string;
-  method: PaymentMethodType;
-  amount: number;
-  currency?: 'TRY' | 'USD' | 'EUR';
-  saveCard?: boolean;
-  cardDetails?: PaymentCard;
-  billingAddress?: BillingAddress;
-  metadata?: Record<string, unknown>;
-}
-
-export interface CreatePaymentResponse {
-  success: boolean;
-  data?: {
-    paymentId: string;
-    status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
-    paymentUrl?: string;
-    invoiceUrl?: string;
-    redirectUrl?: string;
-    estimatedCompletionTime?: string;
+export interface NotificationCenter {
+  notifications: EnhancedNotification[];
+  unreadCount: number;
+  lastFetched: string;
+  // MSW handler compatibility
+  summary?: {
+    byCategory: Record<string, number>;
+    byPriority: Record<string, number>;
+    total?: number; // MSW handler compatibility
+    unread?: number; // MSW handler compatibility
   };
-  error?: string;
-  message?: string;
+  pagination?: PaginationMeta; // MSW handler compatibility
 }
 
+export interface NotificationPreferences {
+  userId?: string; // MSW handler compatibility
+  browser?: {
+    enabled: boolean;
+    proposals: boolean;
+    messages: boolean;
+    payments: boolean;
+    orders: boolean;
+    system: boolean;
+    marketing: boolean;
+  }; // MSW handler compatibility
+  email:
+    | boolean
+    | {
+        enabled: boolean;
+        proposals: boolean;
+        messages: boolean;
+        payments: boolean;
+        orders: boolean;
+        system: boolean;
+        marketing: boolean;
+        digest: string;
+        digestTime: string;
+      }; // MSW handler compatibility
+  push:
+    | boolean
+    | {
+        enabled?: boolean;
+        immediate?: string[];
+        batched?: string[];
+        batchInterval?: number;
+        proposals?: boolean; // MSW handler compatibility
+        messages?: boolean; // MSW handler compatibility
+        payments?: boolean; // MSW handler compatibility
+        orders?: boolean; // MSW handler compatibility
+        system?: boolean; // MSW handler compatibility
+        sound?: boolean; // MSW handler compatibility
+        vibration?: boolean; // MSW handler compatibility
+      }; // MSW handler compatibility
+  sms:
+    | boolean
+    | {
+        enabled: boolean;
+        urgent: boolean;
+        payments: boolean;
+        security: boolean;
+      }; // MSW handler compatibility
+  inApp?: boolean; // MSW handler compatibility
+  frequency:
+    | 'immediate'
+    | 'daily'
+    | 'weekly'
+    | 'never'
+    | { immediate: string[]; batched: string[]; batchInterval: number }; // MSW handler compatibility
+  quietHours?: {
+    enabled: boolean;
+    start: string;
+    end: string;
+    timezone: string;
+    daysOfWeek: string[];
+  }; // MSW handler compatibility
+  updatedAt?: string; // MSW handler compatibility
+}
+
+export interface NotificationFilters {
+  type?: NotificationType[];
+  isRead?: boolean;
+  dateRange?: {
+    start: string;
+    end: string;
+  };
+}
+
+export interface NotificationError {
+  code: string;
+  message: string;
+  details?: Record<string, unknown>;
+  userMessage?: string; // Store compatibility
+}
+
+export interface PushSubscriptionData {
+  id?: string; // MSW handler compatibility
+  endpoint: string;
+  keys: {
+    p256dh: string;
+    auth: string;
+  };
+  // MSW handler compatibility
+  userId?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  lastUsed?: string; // MSW handler compatibility
+  userAgent?: string;
+  deviceType?: string;
+  isActive?: boolean;
+  failureCount?: number; // Store compatibility
+  metadata?: Record<string, unknown>; // MSW handler compatibility
+}
+
+export interface NotificationBatch {
+  notifications: EnhancedNotification[];
+  total: number;
+  hasMore: boolean;
+}
+
+// Payment related types
 export interface Payment {
   id: string;
-  paymentId: string;
-  orderId: string;
-  userId: string;
   amount: number;
-  currency: 'TRY' | 'USD' | 'EUR';
-  method: PaymentMethodType;
-  status:
-    | 'pending'
-    | 'processing'
-    | 'completed'
-    | 'failed'
-    | 'cancelled'
-    | 'refunded';
-  failureReason?: string;
-  transactionId?: string;
-  gatewayReference?: string;
-  paymentMethodDetails?: PaymentMethodDetails;
-  escrowStatus?: 'held' | 'released' | 'refunded';
-  escrowReleaseDate?: string;
+  currency: Currency;
+  status: PaymentStatus;
+  orderId: string;
+  payerId: string;
+  payeeId: string;
+  createdAt: string;
+  updatedAt: string;
+  completedAt?: string; // MSW handler compatibility
+  paymentId?: string; // MSW handler compatibility
+  gatewayReference?: string; // MSW handler compatibility
+  receiptUrl?: string; // MSW handler compatibility
+  method?: 'credit_card' | 'bank_transfer' | 'paypal'; // Store compatibility
+  escrowStatus?: 'held' | 'released' | 'disputed' | 'pending'; // MSW handler compatibility
+  escrowReleaseDate?: string; // MSW handler compatibility
+  refundableAmount?: number; // Store compatibility
+  userId?: string; // MSW handler compatibility
+  transactionId?: string; // MSW handler compatibility
+  isValid?: boolean; // MSW handler compatibility
   fees?: {
     platformFee: number;
     processingFee: number;
     total: number;
-  };
-  invoiceUrl?: string;
-  receiptUrl?: string;
-  refundableAmount?: number;
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-  completedAt?: string;
+  }; // MSW handler compatibility
+  metadata?: Record<string, unknown>; // MSW handler compatibility
+  paymentMethodDetails?: {
+    type: string;
+    last4?: string;
+    brand?: string;
+    expMonth?: number;
+    expYear?: number;
+    holderName?: string; // MSW handler compatibility
+    bankName?: string; // MSW handler compatibility
+    expiryMonth?: string; // MSW handler compatibility - string format for month
+    expiryYear?: string; // MSW handler compatibility - string format for year
+    accountNumber?: string; // MSW handler compatibility - bank account
+  }; // MSW handler compatibility
+  invoiceUrl?: string; // MSW handler compatibility
 }
 
-export interface PaymentMethodDetails {
-  type: PaymentMethodType;
-  last4?: string; // Last 4 digits for cards
-  brand?: string; // Visa, Mastercard, etc.
-  bankName?: string; // For bank transfers
-  accountNumber?: string; // Masked account number
-  holderName?: string;
-  expiryMonth?: string;
-  expiryYear?: string;
+export interface PaymentHistory {
+  payments: Payment[];
+  pagination: PaginationMeta;
+  totalAmount: number;
+  summary?:
+    | {
+        // Required core properties
+        totalEarnings: number;
+        totalSpent: number;
+        pendingAmount: number;
+        completedTransactions: number;
+        failedTransactions: number;
+        averageTransactionAmount: number;
+        // MSW handler compatibility - additional properties
+        totalPayments?: number;
+        successfulPayments?: number;
+        failedPayments?: number;
+        totalAmount?: number;
+        refundedAmount?: number;
+        escrowAmount?: number;
+      }
+    | {
+        // Alternative MSW handler format
+        totalPayments: number;
+        totalAmount: number;
+        successfulPayments: number;
+        failedPayments: number;
+        refundedAmount: number;
+        escrowAmount: number;
+      };
+}
+
+export interface CreatePaymentRequest {
+  orderId: string;
+  amount: number;
+  currency: Currency;
+  paymentMethodId: string;
+  payerId?: string; // MSW handler compatibility
+  payeeId?: string; // MSW handler compatibility
+  method?: 'credit_card' | 'bank_transfer' | 'paypal'; // MSW handler compatibility
+}
+
+export interface CreatePaymentResponse {
+  payment: Payment;
+  success: boolean;
+  error?: string;
+  clientSecret?: string;
+  data?: {
+    status: string;
+    paymentId?: string; // MSW handler compatibility
+    paymentUrl?: string; // MSW handler compatibility
+    invoiceUrl?: string; // MSW handler compatibility
+    redirectUrl?: string; // MSW handler compatibility
+    estimatedCompletionTime?: string; // MSW handler compatibility
+  };
+}
+
+export interface PaymentFilters {
+  status?: PaymentStatus[];
+  dateRange?: {
+    start: string;
+    end: string;
+  };
+  minAmount?: number;
+  maxAmount?: number;
+}
+
+export interface InvoiceDetails {
+  id: string;
+  paymentId: string;
+  orderId?: string; // MSW handler compatibility
+  invoiceNumber?: string; // MSW handler compatibility
+  issueDate?: string; // MSW handler compatibility
+  createdAt?: string; // MSW handler compatibility
+  updatedAt?: string; // MSW handler compatibility
+  amount?: number; // MSW handler compatibility
+  currency?: string; // MSW handler compatibility
+  status?: 'paid' | 'unpaid' | 'overdue' | 'cancelled'; // MSW handler compatibility
+  items: Array<{
+    id?: string; // MSW handler compatibility
+    description: string;
+    amount: number;
+    quantity: number;
+    unitPrice?: number; // MSW handler compatibility
+    totalPrice?: number; // MSW handler compatibility
+  }>;
+  tax: number;
+  total: number;
+  totalAmount?: number; // MSW handler compatibility
+  dueDate: string;
 }
 
 export interface EscrowDetails {
   id: string;
   paymentId: string;
   amount: number;
-  currency: 'TRY' | 'USD' | 'EUR';
-  status: 'held' | 'released' | 'disputed' | 'refunded' | 'cancelled';
-  holdStartDate: string;
+  releaseConditions: string[];
+  status: 'pending' | 'released' | 'disputed' | 'held'; // Enhanced with 'held' status
+  createdAt?: string;
+  updatedAt?: string; // MSW handler compatibility
   releaseDate?: string;
-  releaseTrigger: 'manual' | 'automatic' | 'milestone' | 'dispute_resolution';
-  disputeId?: string;
-  releaseConditions?: string[];
-  fees: {
-    escrowFee: number;
-    platformFee: number;
-  };
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PaymentHistory {
-  payments: Payment[];
-  summary: {
-    totalPayments: number;
-    totalAmount: number;
-    successfulPayments: number;
-    failedPayments: number;
-    refundedAmount: number;
-    escrowAmount: number;
-  };
-  pagination: PaginationMeta;
-}
-
-export interface PaymentFilters {
-  status?: Payment['status'][];
-  method?: Payment['method'][];
-  amountMin?: number;
-  amountMax?: number;
-  dateFrom?: string;
-  dateTo?: string;
+  disputeReason?: string;
+  releasedBy?: string;
   orderId?: string;
-  search?: string;
-  currency?: 'TRY' | 'USD' | 'EUR';
-}
-
-// Enhanced Invoice Types
-export interface InvoiceGeneration {
-  orderId: string;
-  paymentId: string;
-  templateType: 'standard' | 'detailed' | 'simple';
-  language: 'tr' | 'en';
-  includeItemizedBreakdown: boolean;
-  includeTaxBreakdown: boolean;
-  customFields?: Record<string, string>;
-}
-
-export interface InvoiceDetails extends Invoice {
-  escrowInfo?: {
-    amount: number;
-    status: 'held' | 'released';
-    releaseDate?: string;
-  };
-  paymentBreakdown: {
-    subtotal: number;
-    platformFee: number;
-    processingFee: number;
-    tax: number;
-    discount: number;
-    total: number;
-  };
-  downloadUrls: {
-    pdf: string;
-    xml?: string;
-    print: string;
-  };
-  emailStatus?: {
-    sent: boolean;
-    sentAt?: string;
-    recipientEmail?: string;
+  milestoneId?: string;
+  autoReleaseDate?: string;
+  metadata?: Record<string, unknown>; // Store compatibility
+  currency?: string; // MSW handler compatibility
+  holdStartDate?: string; // MSW handler compatibility
+  releaseTrigger?: string; // MSW handler compatibility
+  fees?: {
+    escrowFee: number;
+    processingFee?: number; // Made optional for MSW handler compatibility
+    platformFee?: number; // MSW handler compatibility
   };
 }
 
-// Notification Types for Sprint 6
-export interface NotificationPreferences {
-  userId: string;
-  browser: {
-    enabled: boolean;
-    proposals: boolean;
-    messages: boolean;
-    payments: boolean;
-    orders: boolean;
-    system: boolean;
-    marketing: boolean;
-  };
-  email: {
-    enabled: boolean;
-    proposals: boolean;
-    messages: boolean;
-    payments: boolean;
-    orders: boolean;
-    system: boolean;
-    marketing: boolean;
-    digest: 'never' | 'daily' | 'weekly' | 'monthly';
-    digestTime?: string; // HH:mm format
-  };
-  sms: {
-    enabled: boolean;
-    urgent: boolean;
-    payments: boolean;
-    security: boolean;
-  };
-  push: {
-    enabled: boolean;
-    proposals: boolean;
-    messages: boolean;
-    payments: boolean;
-    orders: boolean;
-    system: boolean;
-    sound: boolean;
-    vibration: boolean;
-  };
-  quietHours: {
-    enabled: boolean;
-    start: string; // HH:mm format
-    end: string; // HH:mm format
-    timezone: string;
-    daysOfWeek: string[]; // ['monday', 'tuesday', ...]
-  };
-  frequency: {
-    immediate: string[]; // Notification types for immediate delivery
-    batched: string[]; // Notification types for batched delivery
-    batchInterval: number; // Minutes between batches
-  };
-  updatedAt: string;
+export interface PaymentError {
+  code: string;
+  message: string;
+  details?: Record<string, unknown>;
+  retryable?: boolean; // Store compatibility
+  userMessage?: string; // Store compatibility
 }
 
-export interface NotificationTemplate {
+export interface PaymentMethod {
   id: string;
-  type: NotificationTypeEnum;
-  channel: 'browser' | 'email' | 'sms' | 'push';
-  language: 'tr' | 'en';
-  subject?: string; // For email
+  type: 'card' | 'bank' | 'paypal' | 'credit_card'; // Added 'credit_card' for MSW handler compatibility
+  isDefault: boolean;
+  metadata?: Record<string, unknown>; // Made optional for MSW handler compatibility
+  createdAt?: string; // MSW handler compatibility
+  updatedAt?: string; // MSW handler compatibility
+  name?: string; // MSW handler compatibility - display name like "Visa ****1234"
+  cardNumber?: string; // MSW handler compatibility
+  expiryDate?: string; // MSW handler compatibility - card expiry date
+  cardHolderName?: string; // MSW handler compatibility
+  isValid?: boolean; // MSW handler compatibility
+}
+
+// Payment method type alias for compatibility
+export type PaymentMethodType = PaymentMethod;
+
+// Notification interface for compatibility
+export interface InAppNotification {
+  id: string;
+  userId: string;
   title: string;
-  body: string;
+  message: string;
+  type: NotificationType;
+  isRead: boolean;
+  createdAt: string;
   actionUrl?: string;
-  actionText?: string;
-  variables: string[]; // Template variables like {{userName}}, {{amount}}
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export type NotificationTypeEnum =
-  | 'payment_received'
-  | 'payment_completed'
-  | 'payment_failed'
-  | 'escrow_released'
-  | 'invoice_generated'
-  | 'refund_processed'
-  | 'proposal_received'
-  | 'proposal_accepted'
-  | 'proposal_rejected'
-  | 'order_created'
-  | 'order_updated'
-  | 'order_completed'
-  | 'order_cancelled'
-  | 'delivery_submitted'
-  | 'revision_requested'
-  | 'message_received'
-  | 'review_received'
-  | 'dispute_opened'
-  | 'dispute_resolved'
-  | 'system_maintenance'
-  | 'security_alert'
-  | 'account_verification'
-  | 'password_reset'
-  | 'login_attempt'
-  | 'subscription_expiring'
-  | 'welcome'
-  | 'onboarding_step'
-  | 'marketing_announcement';
-
-export interface EnhancedNotification extends Notification {
-  category:
-    | 'payment'
-    | 'order'
-    | 'message'
-    | 'system'
-    | 'security'
-    | 'marketing';
-  priority: 'low' | 'normal' | 'high' | 'urgent';
-  channel: 'browser' | 'email' | 'sms' | 'push';
-  templateId?: string;
-  variables?: Record<string, string>;
-  actionUrl?: string;
-  actionText?: string;
-  imageUrl?: string;
-  expiresAt?: string;
-  readAt?: string;
-  clickedAt?: string;
-  dismissedAt?: string;
-  retryCount?: number;
-  scheduledFor?: string;
-  deliveryStatus: 'pending' | 'sent' | 'delivered' | 'failed' | 'cancelled';
-  deliveryAttempts: NotificationDeliveryAttempt[];
-  tags?: string[];
-}
-
-export interface NotificationDeliveryAttempt {
-  id: string;
-  notificationId: string;
-  channel: 'browser' | 'email' | 'sms' | 'push';
-  status: 'pending' | 'sent' | 'delivered' | 'failed' | 'bounced' | 'clicked';
-  attemptedAt: string;
-  deliveredAt?: string;
-  failureReason?: string;
-  gatewayResponse?: Record<string, unknown>;
   metadata?: Record<string, unknown>;
 }
 
-export interface NotificationCenter {
-  notifications: EnhancedNotification[];
-  summary: {
-    total: number;
-    unread: number;
-    byCategory: Record<string, number>;
-    byPriority: Record<string, number>;
-  };
-  pagination: PaginationMeta;
-}
+// Notification alias for compatibility
+export type Notification = InAppNotification;
 
-export interface NotificationFilters {
-  category?: NotificationTypeEnum[];
-  priority?: ('low' | 'normal' | 'high' | 'urgent')[];
-  isRead?: boolean;
-  dateFrom?: string;
-  dateTo?: string;
-  search?: string;
-  tags?: string[];
-}
-
-export interface NotificationBatch {
-  id: string;
-  userId: string;
-  type: 'digest' | 'batch' | 'scheduled';
-  notifications: EnhancedNotification[];
-  scheduledFor: string;
-  sentAt?: string;
-  status: 'pending' | 'sent' | 'failed' | 'cancelled';
-  channel: 'email' | 'sms' | 'push';
-  metadata?: Record<string, unknown>;
-}
-
-// Push Notification Enhanced Types
-export interface PushNotificationPayload {
-  title: string;
-  body: string;
-  icon?: string;
-  badge?: string;
-  image?: string;
-  data?: Record<string, unknown>;
-  actions?: PushNotificationAction[];
-  tag?: string;
-  requireInteraction?: boolean;
-  silent?: boolean;
-  timestamp?: number;
-  vibrate?: number[];
-  sound?: string;
-}
-
-export interface PushNotificationAction {
-  action: string;
-  title: string;
-  icon?: string;
-}
-
-export interface PushSubscriptionData {
-  id: string;
-  userId: string;
-  endpoint: string;
-  keys: {
-    p256dh: string;
-    auth: string;
-  };
-  userAgent?: string;
-  deviceType: 'desktop' | 'mobile' | 'tablet';
-  isActive: boolean;
-  lastUsed?: string;
-  failureCount: number;
-  metadata?: {
-    browser?: string;
-    os?: string;
-    device?: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-
-// Notification Event Types
-export interface NotificationEvent {
-  id: string;
-  type: NotificationTypeEnum;
-  userId: string;
-  triggeredBy?: string; // User ID who triggered the event
-  data: Record<string, unknown>;
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-}
-
-export interface PaymentNotificationData {
-  paymentId: string;
-  orderId: string;
-  amount: number;
-  currency: string;
-  method: string;
-  status: string;
-  userRole: 'buyer' | 'seller';
-}
-
-export interface OrderNotificationData {
-  orderId: string;
-  orderNumber: string;
-  title: string;
-  amount: number;
-  status: string;
-  userRole: 'buyer' | 'seller';
-  deadline?: string;
-}
-
-// Form Types for Sprint 6
-export interface PaymentFormData {
-  orderId: string;
-  method: PaymentMethodType;
-  amount: number;
-  currency: 'TRY' | 'USD' | 'EUR';
-  saveCard?: boolean;
-  cardDetails?: PaymentCard;
-  billingAddress?: BillingAddress;
-  agreeToTerms: boolean;
-}
-
-export interface NotificationSettingsFormData {
-  browser: {
-    enabled: boolean;
-    proposals: boolean;
-    messages: boolean;
-    payments: boolean;
-    orders: boolean;
-    system: boolean;
-  };
-  email: {
-    enabled: boolean;
-    proposals: boolean;
-    messages: boolean;
-    payments: boolean;
-    orders: boolean;
-    system: boolean;
-    digest: 'never' | 'daily' | 'weekly';
-  };
+// Notification settings interface for compatibility
+export interface NotificationSettings {
+  push: boolean;
+  email: boolean;
+  sms: boolean;
+  inApp: boolean;
+  marketing?: boolean;
+  updates?: boolean;
+  reminders?: boolean;
   quietHours: {
     enabled: boolean;
     start: string;
     end: string;
   };
+  browser: {
+    enabled: boolean;
+    [key: string]: string | boolean;
+  };
 }
 
-// API Response Types for Sprint 6
-export interface PaymentHistoryResponse {
+// Notification type enum for compatibility
+export enum NotificationTypeEnum {
+  INFO = 'info',
+  SUCCESS = 'success',
+  WARNING = 'warning',
+  ERROR = 'error',
+  MESSAGE = 'message',
+  ORDER = 'order',
+  PAYMENT = 'payment',
+  SYSTEM = 'system',
+}
+
+// Order milestone and progress types for compatibility
+export interface OrderMilestone {
+  id: string;
+  title: string;
+  description?: string;
+  status:
+    | 'completed'
+    | 'in_progress'
+    | 'pending'
+    | 'requires_approval'
+    | 'rejected'
+    | 'cancelled'
+    | 'delayed'; // Added for OrderTimeline compatibility
+  dueDate?: string;
+  completedAt?: string;
+  amount?: number;
+  deliverables?: Array<{
+    id: string;
+    name: string;
+    description?: string;
+    isCompleted: boolean;
+    completedAt?: string;
+  }>;
+}
+
+export interface OrderProgress {
+  percentage: number;
+  status?:
+    | 'completed'
+    | 'in_progress'
+    | 'pending'
+    | 'requires_approval'
+    | 'rejected'
+    | 'cancelled';
+  estimatedCompletion?: string;
+  stagesCompleted?: number;
+  currentStage?: string;
+  totalStages?: number;
+  milestones: Array<{
+    id: string;
+    title: string;
+    status:
+      | 'completed'
+      | 'in_progress'
+      | 'pending'
+      | 'requires_approval'
+      | 'rejected'
+      | 'cancelled';
+    completedAt?: string;
+  }>;
+}
+
+// Analytics types
+export interface FreelancerAnalytics {
+  earnings: {
+    total: number;
+    thisMonth: number;
+    lastMonth: number;
+    trend: 'up' | 'down' | 'stable';
+    timeframe?: { period: string }; // MSW handler compatibility
+    totalEarnings?: number; // MSW handler compatibility
+    earningsTrend?: unknown; // Additional field for MSW compatibility
+    earningsByCategory?: unknown[]; // MSW handler compatibility
+    projectedEarnings?: number; // MSW handler compatibility
+  };
+  jobs: {
+    completed: number;
+    active: number;
+    successRate: number;
+  };
+  profile: {
+    views: number;
+    rating: number;
+    responseTime: number;
+  };
+  overview?: {
+    [key: string]: unknown; // Overview data
+  };
+  orders?:
+    | unknown[]
+    | {
+        total?: number; // MSW handler compatibility
+        [key: string]: unknown;
+      }; // Orders data
+  performance?: {
+    [key: string]: unknown; // Performance data
+  };
+  clients?: {
+    [key: string]: unknown; // Clients data
+  };
+  growth?: {
+    [key: string]: unknown; // Growth data
+  };
+}
+
+export interface EmployerAnalytics {
+  spending: {
+    total: number;
+    thisMonth: number;
+    lastMonth: number;
+    trend: 'up' | 'down' | 'stable';
+    spendingTrend?: unknown; // Additional field for MSW compatibility
+  };
+  jobs: {
+    posted: number;
+    completed: number;
+    activeHires: number;
+  };
+  hiring: {
+    avgTimeToHire: number;
+    freelancerRetention: number;
+    satisfaction: number;
+  };
+  overview?: {
+    [key: string]: unknown; // Overview data
+  };
+  projects?: unknown[]; // Projects data
+}
+
+// More missing types
+export interface RecommendationsRequest {
+  type: 'jobs' | 'freelancers' | 'packages';
+  userId?: string; // Made optional for compatibility
+  limit?: number;
+  excludeIds?: string[];
+  basedOn?: string; // Additional field
+  targetItemId?: string; // Additional field
+}
+
+export interface RecommendationsResponse {
+  success?: boolean;
+  data?: Recommendation[];
+  error?: string;
+  recommendations: Recommendation[];
+  total: number;
+  nextPage?: string;
+}
+
+export interface Recommendation {
+  id: string;
+  type: 'job' | 'freelancer' | 'package';
+  targetId: string;
+  score: number;
+  reasons: string[];
+  metadata: Record<string, unknown>;
+  // Additional fields for compatibility
+  item?: unknown; // The recommended item
+  reason?:
+    | string
+    | {
+        type: string;
+        description: string;
+      }; // Single reason field - can be string or object
+}
+
+export interface RecommendationFeedback {
+  recommendationId: string;
+  feedback: 'helpful' | 'not_helpful' | 'irrelevant' | 'like' | 'dislike'; // Component compatibility
+  reason?: string;
+  userId?: string; // Component compatibility
+  timestamp?: string; // Component compatibility
+}
+
+// Additional missing types for reputation and security
+export interface ReputationScore {
+  userId: string;
+  score: number;
+  overallScore?: number; // For component compatibility
+  level: 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
+  badges:
+    | string[]
+    | Array<{
+        id: string;
+        name: string;
+        description: string;
+        icon: string;
+        color: string;
+        category: string;
+        earnedAt: string;
+        isVisible?: boolean;
+      }>; // MSW handler compatibility - can be string array or object array
+  reviews: {
+    total: number;
+    average: number;
+    breakdown: Record<number, number>;
+  };
+  calculatedAt?: string; // MSW handler compatibility
+  expiresAt?: string; // MSW handler compatibility
+  history?: Array<{
+    date: string;
+    score: number;
+    change: number;
+    reason: string;
+    factors?: unknown[]; // MSW handler compatibility
+  }>; // For component compatibility
+  factors?: Array<{
+    name: string;
+    score: number;
+    description: string;
+    weight: number;
+    currentValue?: number; // Component compatibility
+    maxValue?: number; // Component compatibility
+    trend?: string; // MSW handler compatibility
+  }>; // For component compatibility
+  nextLevelRequirements?: Array<{
+    name?: string; // MSW handler compatibility
+    type: string;
+    current: number;
+    required: number;
+    description: string;
+    currentProgress?: number; // Component compatibility
+    targetValue?: number; // Component compatibility
+  }>; // For component compatibility
+}
+
+export interface SecurityStatus {
+  userId: string;
+  verifications: SecurityVerification[];
+  alerts: SecurityAlert[];
+  riskLevel: 'low' | 'medium' | 'high';
+  level?: 'good' | 'fair' | 'poor'; // MSW handler compatibility
+  lastUpdated: string;
+  nextAssessment?: string; // MSW handler compatibility
+  overallScore?: number; // For component compatibility
+  recommendations?:
+    | string[]
+    | Array<{
+        id: string;
+        type: string;
+        priority: string;
+        title: string;
+        description: string;
+        impact: string;
+        actionText: string;
+        actionUrl: string;
+        isCompleted: boolean;
+        estimatedTime: string;
+      }>; // MSW handler compatibility - can be string array or object array
+}
+
+export interface SecurityAlert {
+  id: string;
+  type:
+    | 'login'
+    | 'payment'
+    | 'profile'
+    | 'security'
+    | 'verification'
+    | 'account'
+    | 'error'
+    | 'warning'; // Enhanced for component compatibility
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  priority?: 'critical' | 'high' | 'medium' | 'low'; // Store compatibility
+  title: string;
+  description: string;
+  isResolved: boolean;
+  isRead?: boolean; // Store compatibility
+  createdAt: string;
+  message?: string; // AdminDashboard component compatibility
+  userId?: string; // MSW handler compatibility
+  recommendations?: string[]; // MSW handler compatibility
+  actionRequired?: boolean; // MSW handler compatibility
+  actionUrl?: string; // MSW handler compatibility
+  actionText?: string; // MSW handler compatibility
+  dismissible?: boolean; // MSW handler compatibility
+  isDismissed?: boolean; // MSW handler compatibility
+  expiresAt?: string; // For component compatibility
+  category?: string; // For MSW handler compatibility
+}
+
+export interface TrustIndicators {
+  isVerified: boolean;
+  hasCompletedJobs: boolean;
+  hasPositiveReviews: boolean;
+  isFreelancerPlus: boolean;
+  securityScore: number;
+  overallTrustScore?: number; // For component compatibility
+  activityScore?: number; // For MSW handler compatibility
+  userId?: string; // MSW handler compatibility
+  profileCompletion?: number; // MSW handler compatibility
+  verificationLevel?: number; // MSW handler compatibility
+  reviewScore?: number; // MSW handler compatibility
+  paymentHistory?: number; // MSW handler compatibility
+  communityStanding?: number; // MSW handler compatibility
+  publicBadges?: unknown[]; // MSW handler compatibility
+  calculatedAt?: string; // MSW handler compatibility
+}
+
+export interface SecurityVerification {
+  id: string;
+  type: 'identity' | 'phone' | 'email' | 'address' | 'bank' | '2fa'; // Added '2fa' for MSW handler compatibility
+  status: 'pending' | 'verified' | 'failed' | 'not_started'; // Added 'not_started' for MSW handler compatibility
+  verifiedAt?: string;
+  metadata?: Record<string, unknown>;
+  // MSW handler compatibility
+  retryCount?: number;
+  maxRetries?: number;
+}
+
+export interface GetReputationResponse {
+  success?: boolean;
+  data?: {
+    score: ReputationScore;
+    status: SecurityStatus;
+    trustIndicators: TrustIndicators;
+  };
+  error?: string;
+  // Core required fields
+  reputation?: ReputationScore; // Made optional for MSW handler compatibility
+  trustIndicators?: TrustIndicators; // Made optional for MSW handler compatibility
+  securityStatus?: SecurityStatus; // Made optional for MSW handler compatibility
+}
+
+export interface GetSecurityAlertsResponse {
+  success?: boolean;
+  data?: SecurityAlert[];
+  error?: string;
+  // Core required fields - made optional for MSW handler compatibility
+  alerts?: SecurityAlert[];
+  unreadCount?: number;
+  pagination?: PaginationMeta;
+}
+
+// Review related types
+export interface ReviewData {
+  id: string;
+  rating: number;
+  comment: string;
+  reviewerId: string;
+  revieweeId: string;
+  orderId?: string;
+  jobId?: string;
+  packageId?: string;
+  isPublic: boolean;
+  response?: string;
+  createdAt: string;
+  updatedAt?: string; // Made optional for MSW handler compatibility
+  status?: 'active' | 'hidden' | 'flagged' | 'deleted'; // MSW handler compatibility
+  reportCount?: number; // MSW handler compatibility
+  // MSW handler compatibility - alternative format
+  reviewer?: {
+    id: string;
+    name: string;
+    avatar: string;
+    firstName?: string; // MSW handler compatibility
+    lastName?: string; // Component compatibility
+    userType?: string; // Component compatibility
+  };
+  reviewee?: {
+    id: string;
+    name: string;
+    avatar: string;
+    firstName?: string; // MSW handler compatibility
+    lastName?: string; // Component compatibility
+  };
+  categories?: string[] | Record<string, number>; // MSW handler compatibility - can be array or object
+  helpfulCount?: number; // MSW handler compatibility
+  verifiedPurchase?: boolean; // Component compatibility
+  projectTitle?: string; // Component compatibility
+  projectCategory?: string; // Component compatibility
+  reply?: {
+    id: string;
+    reviewId?: string; // MSW handler compatibility
+    userId?: string; // MSW handler compatibility
+    comment: string;
+    content?: string; // Component compatibility
+    createdAt: string;
+    authorId: string;
+    authorName: string;
+    user?: {
+      id: string;
+      name: string;
+      avatar: string;
+      firstName?: string;
+      lastName?: string;
+    }; // Component compatibility
+  }; // Component compatibility
+}
+
+export interface ReviewSummary {
+  averageRating: number;
+  totalReviews: number;
+  ratingDistribution: Record<number, number>;
+  recentReviews: ReviewData[];
+  qualityScores: {
+    communication: number;
+    quality: number;
+    timeliness: number;
+    professionalism: number;
+  };
+  verifiedPurchasePercentage?: number; // MSW handler compatibility
+  // MSW handler compatibility
+  categoryAverages?: {
+    communication: number;
+    quality: number;
+    timeliness: number;
+    professionalism: number;
+    timing?: number; // MSW handler compatibility
+  };
+}
+
+export interface CreateReviewRequest {
+  orderId: string;
+  rating: number;
+  comment: string;
+  qualityScores?: {
+    communication: number;
+    quality: number;
+    timeliness: number;
+    professionalism: number;
+  };
+  // MSW handler compatibility
+  reviewerId?: string;
+  revieweeId?: string;
+  categories?:
+    | string[]
+    | {
+        communication: number;
+        quality: number;
+        timing: number;
+        professionalism?: number;
+        value?: number;
+      }; // Component compatibility - can be array or object
+  isPublic?: boolean;
+}
+
+export interface CreateReviewResponse {
+  review: ReviewData;
   success: boolean;
-  data: PaymentHistory;
+  error?: string;
   message?: string;
+  data?: ReviewData;
+  // MSW handler compatibility - required properties
+  id?: string;
+  status?: string;
+  timestamp?: string;
 }
 
-export interface NotificationCenterResponse {
-  success: boolean;
-  data: NotificationCenter;
-  message?: string;
+export interface ReviewFilters {
+  rating?: number[];
+  dateRange?: {
+    start: string;
+    end: string;
+  };
+  orderBy?: 'newest' | 'oldest' | 'highest_rating' | 'lowest_rating';
 }
 
-export interface NotificationPreferencesResponse {
-  success: boolean;
-  data: NotificationPreferences;
-  message?: string;
+export interface ReviewsResponse {
+  success?: boolean;
+  data?: {
+    reviews: ReviewData[];
+    summary: ReviewSummary;
+    pagination?: PaginationMeta; // MSW handler compatibility
+  };
+  error?: string;
+  reviews: ReviewData[];
+  summary: ReviewSummary;
+  pagination: PaginationMeta;
 }
 
-export interface InvoiceResponse {
-  success: boolean;
-  data: InvoiceDetails;
-  message?: string;
+// Help center and support types
+export interface HelpCategory {
+  id: string;
+  name: string;
+  slug?: string; // MSW handler compatibility
+  description?: string; // MSW handler compatibility
+  icon?: string; // MSW handler compatibility
+  articleCount?: number; // Keep for existing usage
+  isPopular?: boolean; // Keep for existing usage
+  order?: number; // Keep for existing usage
+  parentId?: string; // For hierarchical categories
+  articles?: HelpArticle[]; // MSW handler compatibility
+  isVisible?: boolean; // MSW handler compatibility
+  color?: string; // MSW handler compatibility
+  createdAt?: string; // MSW handler compatibility
+  updatedAt?: string; // MSW handler compatibility
+  // Additional fields for compatibility
+  children?: HelpCategory[]; // Child categories
 }
 
-// Error Types
-export interface PaymentError {
-  code: string;
+export interface HelpArticle {
+  id: string;
+  categoryId?: string; // MSW handler compatibility
+  title: string;
+  content: string;
+  slug?: string; // MSW handler compatibility
+  excerpt?: string; // MSW handler compatibility
+  tags?: string[]; // MSW handler compatibility
+  isPublished?: boolean; // MSW handler compatibility
+  views?: number; // MSW handler compatibility
+  helpfulVotes?: number; // MSW handler compatibility
+  totalVotes?: number; // MSW handler compatibility
+  lastUpdated?: string; // MSW handler compatibility
+  publishedAt?: string; // Added for ArticleViewer compatibility
+  relatedArticles?: string[]; // Added for ArticleViewer compatibility
+  author: string | { id: string; name: string; avatar: string }; // MSW handler compatibility
+  featured?: boolean; // MSW handler compatibility
+  rating?: number; // MSW handler compatibility
+  ratingCount?: number; // MSW handler compatibility
+  createdAt?: string; // MSW handler compatibility
+  updatedAt?: string; // Article update time
+  estimatedReadTime?: number; // Reading time estimation
+  language?: string; // MSW handler compatibility
+  category?: string | HelpCategory; // Category name or object
+}
+
+export interface ArticleRatingFormData {
+  articleId: string;
+  isHelpful: boolean;
+  feedback?: string;
+}
+
+// Help Support Types
+export interface SupportAnalytics {
+  totalTickets: number;
+  openTickets: number;
+  resolvedTickets: number;
+  avgResponseTime: number;
+  satisfactionScore: number;
+  averageResolutionTime?: number; // MSW handler compatibility
+  customerSatisfaction?: number; // MSW handler compatibility
+  ticketsByCategory?: Array<{
+    category: string;
+    count: number;
+    percentage: number;
+  }>; // MSW handler compatibility
+  responseTimeMetrics?: Array<{
+    metric: string;
+    value: number;
+    trend: string;
+  }>; // Added for SupportStats component
+  chatMetrics?: {
+    averageResponseTime: number;
+    averageSessionDuration: number;
+    customerSatisfactionScore: number;
+  }; // Added for SupportStats component
+  resolutionTrend?: Array<{
+    date: string;
+    resolved: number;
+    created: number;
+  }>; // MSW handler compatibility
+  satisfactionTrend?: Array<{
+    date: string;
+    score: number;
+  }>; // MSW handler compatibility
+  // Additional fields for compatibility
+  overview?: {
+    totalTickets?: number;
+    openTickets?: number;
+    resolvedTickets?: number;
+    averageResolutionTime?: number;
+    customerSatisfaction?: number;
+    firstCallResolution?: number;
+    responseTimeMetrics?: unknown;
+    chatMetrics?: unknown;
+    averageResponseTime?: number; // MSW handler compatibility
+  };
+}
+
+export interface SupportDepartment {
+  id: string;
+  name: string;
+  isAvailable: boolean;
+  estimatedWaitTime?: number | string;
+  message?: string;
+  queueLength?: number;
+}
+
+export interface CreateTicketRequest {
+  subject: string;
   message: string;
-  details?: Record<string, unknown>;
-  retryable: boolean;
-  userMessage: string;
+  description?: string; // MSW handler compatibility
+  category: string;
+  priority: 'low' | 'medium' | 'high';
+  attachments?: string[];
+  userId?: string; // MSW handler compatibility
 }
 
-export interface NotificationError {
-  code: string;
+export interface CreateTicketResponse {
+  success: boolean;
+  data: SupportTicket;
+}
+
+export interface StartChatRequest {
   message: string;
-  channel: 'browser' | 'email' | 'sms' | 'push';
-  retryable: boolean;
-  userMessage: string;
-}
-
-// ========================================
-// SPRINT 7: ADVANCED SEARCH & LOCATION-BASED FILTERING TYPES
-// ========================================
-
-// Advanced Search Types
-export interface AdvancedSearchRequest {
-  query?: string;
   category?: string;
-  skills?: string[];
-  location?: {
-    city?: string;
-    district?: string;
-    coordinates?: {
-      lat: number;
-      lng: number;
-    };
-    radius?: number; // km
-  };
-  budget?: {
-    min?: number;
-    max?: number;
-  };
-  rating?: number;
-  availability?: 'available' | 'busy' | 'any';
-  remoteOk?: boolean;
-  sortBy?: 'relevance' | 'rating' | 'price' | 'distance';
+}
+
+export interface StartChatResponse {
+  success: boolean;
+  data: ChatSession;
+}
+
+export interface ArticleRatingRequest {
+  articleId: string;
+  rating: number;
+  feedback?: string;
+}
+
+export interface ArticleRatingResponse {
+  success: boolean;
+  message?: string; // Made optional for MSW handler compatibility
+  data?: {
+    avgRating: number;
+    ratingCount: number;
+  }; // MSW handler compatibility
+}
+
+// Favorites types
+export interface FavoriteItem {
+  id: string;
+  type: 'job' | 'freelancer' | 'package';
+  targetId: string;
+  folderId?: string;
+  notes?: string;
+  note?: string; // Alias for notes for backward compatibility
+  createdAt: string;
+  addedAt?: string; // When the item was added to favorites
+  tags?: string[]; // Tags associated with the favorite item
+  item?: Job | Freelancer | ServicePackage; // The actual favorited item data
+}
+
+export interface FavoriteFolder {
+  id: string;
+  name: string;
+  description?: string;
+  color: string;
+  isDefault: boolean;
+  itemCount: number;
+  createdAt: string;
+}
+
+export interface FavoritesRequest {
+  type?: 'job' | 'freelancer' | 'package';
+  folderId?: string;
   page?: number;
-  pageSize?: number;
-  deliveryTime?: number; // for services
-  experienceLevel?: 'beginner' | 'intermediate' | 'expert'; // for jobs
-}
-
-export interface AdvancedSearchResponse {
-  success: boolean;
-  data?: {
-    results: (Freelancer | Job | ServicePackage)[];
-    pagination: PaginationMeta;
-    facets: SearchFacets;
-    searchId: string; // For analytics
-  };
-  error?: string;
-}
-
-export interface SearchFacets {
-  categories: { name: string; count: number }[];
-  locations: { name: string; count: number }[];
-  skills: { name: string; count: number }[];
-  priceRanges: { range: string; count: number }[];
-  ratings: { rating: number; count: number }[];
-  experienceLevels: { level: string; count: number }[];
-}
-
-export interface SearchSuggestionsRequest {
-  query: string;
-  type: 'freelancers' | 'jobs' | 'services' | 'skills' | 'locations';
   limit?: number;
 }
 
-export interface SearchSuggestionsResponse {
-  success: boolean;
-  data?: {
-    suggestions: string[];
-    trending: string[];
-    recent: string[];
-  };
+export interface FavoritesResponse {
+  items: FavoriteItem[];
+  folders: FavoriteFolder[];
+  pagination: PaginationMeta;
+  // Store compatibility
+  success?: boolean;
+  data?: FavoriteItem[];
   error?: string;
 }
 
-export interface SearchAnalytics {
-  searchId: string;
-  query?: string;
-  filters: AdvancedSearchRequest;
-  resultsCount: number;
-  clickedResults: string[];
-  searchTime: number; // milliseconds
-  userId?: string;
-  sessionId: string;
-  timestamp: string;
+export interface AddToFavoritesRequest {
+  type: 'job' | 'freelancer' | 'package';
+  targetId: string;
+  folderId?: string;
+  notes?: string;
+  itemType?: string; // Additional field for compatibility
+  itemId?: string; // Hook compatibility
 }
 
-// Location-Based Types
-export interface LocationSearchRequest {
-  query?: string;
-  coordinates?: Coordinates;
-  radius?: number;
-  bounds?: MapBounds;
-  types?: ('city' | 'district' | 'neighborhood')[];
-  limit?: number;
-  language?: 'tr' | 'en';
+// Dashboard types
+export interface FreelancerDashboard {
+  overview: {
+    totalEarnings: number;
+    completedJobs: number;
+    activeJobs: number;
+    profileViews: number;
+    successRate: number;
+    responseTime: number;
+  };
+  stats: {
+    totalEarnings: number;
+    currentMonthEarnings: number;
+    activeOrders: number;
+    completedJobs: number;
+    rating: number;
+    profileViews: number;
+    responseRate: number;
+  };
+  quickStats: {
+    messagesWaiting: number;
+    pendingProposals: number;
+    reviewsPending: number;
+  };
+  recentJobs: Job[];
+  recentOrders: Order[];
+  recentProposals: Proposal[];
+  earnings: Record<string, number>;
+  analytics: FreelancerAnalytics;
+  recommendations: Recommendation[];
+  notifications: EnhancedNotification[];
 }
 
+export interface EmployerDashboard {
+  overview: {
+    totalSpent: number;
+    jobsPosted: number;
+    activeJobs: number;
+    completedJobs: number;
+    avgTimeToHire: number;
+    freelancerRetention: number;
+  };
+  stats: {
+    activeJobs: number;
+    totalSpent: number;
+    savedFreelancers: number;
+    completedJobs: number;
+  };
+  activeJobs: Job[];
+  recentJobs: Job[];
+  spending: Record<string, number>;
+  analytics: EmployerAnalytics;
+  recommendations: Recommendation[];
+  notifications: EnhancedNotification[];
+}
+
+// Chat and session types
+export interface ChatSession {
+  id: string;
+  participants: User[];
+  isActive: boolean;
+  startedAt: string;
+  endedAt?: string;
+  metadata?: Record<string, unknown>;
+  userId?: string; // MSW handler compatibility
+  user?: User; // MSW handler compatibility
+  chatId?: string; // MSW handler compatibility
+  agentId?: string; // MSW handler compatibility
+  queuePosition?: number; // MSW handler compatibility
+  department?: string; // MSW handler compatibility
+  status?: 'active' | 'waiting' | 'ended'; // MSW handler compatibility
+  messages?: unknown[]; // MSW handler compatibility
+}
+
+export interface ChatAvailability {
+  isOnline: boolean;
+  status: 'available' | 'busy' | 'away' | 'offline';
+  lastSeen?: string;
+  customMessage?: string;
+  departments?: Array<{
+    id: string;
+    name: string;
+    isAvailable: boolean;
+    estimatedWaitTime?: string | number; // MSW handler compatibility - can be string or number
+    message?: string; // MSW handler compatibility
+    queueLength?: number; // MSW handler compatibility
+  }>; // Support department availability
+}
+
+// Location search response types
 export interface LocationSearchResponse {
   success: boolean;
   data?: LocationSearchResult[];
   error?: string;
-}
-
-export interface LocationAutocompleteRequest {
-  input: string;
-  coordinates?: Coordinates;
-  radius?: number;
-  types?: string[];
-  language?: 'tr' | 'en';
 }
 
 export interface LocationAutocompleteResponse {
@@ -1881,2663 +2076,592 @@ export interface LocationAutocompleteResponse {
   error?: string;
 }
 
-export interface LocationPrediction {
-  id: string;
-  description: string;
-  mainText: string;
-  secondaryText: string;
-  types: string[];
-  matchedSubstrings: {
-    offset: number;
-    length: number;
-  }[];
-  placeId?: string;
-}
-
-export interface GeocodeRequest {
-  address?: string;
-  placeId?: string;
-  coordinates?: Coordinates;
-}
-
 export interface GeocodeResponse {
   success: boolean;
   data?: {
-    location: LocationData;
-    formattedAddress: string;
-    components: AddressComponent[];
+    location: import('./core/base').LocationData;
   };
   error?: string;
 }
 
-export interface AddressComponent {
-  longName: string;
-  shortName: string;
+// Location search types - Secondary definition for compatibility
+export interface LocationSearchRequestOld {
+  query: string;
+  types?: string[];
+  country?: string;
+  language?: string;
+  limit?: number;
+}
+
+// Location result types
+export interface LocationSearchResult {
+  id: string;
+  name: string;
+  formattedAddress: string;
   types: string[];
+  geometry: {
+    location: Coordinates;
+    bounds?: MapBounds;
+  };
+  placeId: string;
 }
 
-// Recommendation System Types
-export interface RecommendationsRequest {
-  type: 'freelancers' | 'jobs' | 'services';
-  userId?: string;
-  basedOn?: 'profile' | 'activity' | 'similar' | 'collaborative';
-  targetItemId?: string; // For "similar to this" recommendations
-  limit?: number;
-  excludeIds?: string[];
-}
-
-export interface RecommendationsResponse {
-  success: boolean;
-  data?: Recommendation[];
-  error?: string;
-}
-
-export interface Recommendation {
-  item: Freelancer | Job | ServicePackage;
-  score: number; // 0-1 confidence score
-  reason: RecommendationReason;
-  metadata?: RecommendationMetadata;
-}
-
-export interface RecommendationReason {
-  type:
-    | 'skill_match'
-    | 'location_proximity'
-    | 'rating_similarity'
-    | 'price_range'
-    | 'category_preference'
-    | 'collaborative_filtering';
+export interface LocationPrediction {
+  id: string;
   description: string;
-  factors: RecommendationFactor[];
+  types: string[];
+  mainText: string;
+  secondaryText: string;
+  placeId: string;
+  distance_meters?: number;
 }
 
-export interface RecommendationFactor {
-  name: string;
-  weight: number; // 0-1
-  value: string | number;
-  contribution: number; // How much this factor contributed to the score
-}
-
-export interface RecommendationMetadata {
-  algorithm: string;
-  version: string;
-  generatedAt: string;
-  expiresAt: string;
-  debug?: Record<string, unknown>;
-}
-
-export interface RecommendationFeedback {
-  recommendationId: string;
-  userId: string;
-  feedback:
-    | 'like'
-    | 'dislike'
-    | 'not_relevant'
-    | 'already_contacted'
-    | 'too_expensive';
-  timestamp: string;
-  metadata?: Record<string, unknown>;
-}
-
-// Favorites System Types
-export interface FavoritesRequest {
-  type?: 'freelancers' | 'jobs' | 'services';
-  folderId?: string;
-  page?: number;
-  limit?: number;
-}
-
-export interface FavoritesResponse {
-  success: boolean;
-  data?: {
-    freelancers: Freelancer[];
-    jobs: Job[];
-    services: ServicePackage[];
-    folders: FavoriteFolder[];
-  };
-  error?: string;
-}
-
-// ========================================
-// SPRINT 17: HELP CENTER & SUPPORT SYSTEM TYPES
-// ========================================
-
-// Help Center & Knowledge Base Types
-export interface HelpCategory {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  articleCount: number;
-  parentId?: string;
-  children?: HelpCategory[];
-  order: number;
-  isVisible: boolean;
-  slug: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface HelpArticle {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  content: string;
-  categoryId: string;
-  category?: HelpCategory;
-  author: {
-    id: string;
-    name: string;
-    avatar?: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-  publishedAt?: string;
-  views: number;
-  rating: number;
-  ratingCount: number;
-  tags: string[];
-  featured: boolean;
-  status: 'published' | 'draft' | 'archived' | 'under_review';
-  estimatedReadTime: number; // minutes
-  language: 'tr' | 'en';
-  relatedArticles?: string[]; // Article IDs
-  attachments?: ArticleAttachment[];
-  seoTitle?: string;
-  seoDescription?: string;
-  lastReviewedAt?: string;
-  nextReviewDate?: string;
-  version: number;
-}
-
-export interface ArticleAttachment {
-  id: string;
-  name: string;
-  url: string;
-  type: string; // MIME type
-  size: number;
-  description?: string;
-  downloadCount: number;
-  uploadedAt: string;
-}
-
-export interface ArticleRating {
-  id: string;
-  articleId: string;
-  userId: string;
-  rating: number; // 1-5
-  feedback?: string;
-  isHelpful: boolean;
-  createdAt: string;
-}
-
-export interface ArticleView {
-  id: string;
-  articleId: string;
-  userId?: string;
-  sessionId: string;
-  viewedAt: string;
-  timeSpent?: number; // seconds
-  userAgent?: string;
-  ipAddress?: string;
-  referrer?: string;
-}
-
-// Support Ticket System Types
-export interface SupportTicket {
-  id: string;
-  ticketNumber: string;
-  subject: string;
-  description: string;
-  category:
-    | 'technical'
-    | 'billing'
-    | 'account'
-    | 'general'
-    | 'report_user'
-    | 'feature_request'
-    | 'bug_report';
-  subcategory?: string;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  status:
-    | 'open'
-    | 'pending'
-    | 'in_progress'
-    | 'waiting_user'
-    | 'resolved'
-    | 'closed';
-  userId: string;
-  user: Pick<
-    User,
-    'id' | 'firstName' | 'lastName' | 'email' | 'avatar' | 'userType'
-  >;
-  assignedAgentId?: string;
-  assignedAgent?: SupportAgent;
-  attachments: TicketAttachment[];
-  responses: TicketResponse[];
-  tags: string[];
-  metadata?: TicketMetadata;
-  slaDetails: SLADetails;
-  satisfaction?: TicketSatisfaction;
-  createdAt: string;
-  updatedAt: string;
-  resolvedAt?: string;
-  closedAt?: string;
-  firstResponseAt?: string;
-  lastUserResponseAt?: string;
-  lastAgentResponseAt?: string;
-}
-
-export interface SupportAgent {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  title: string;
-  department: string;
-  specialties: string[];
-  languages: string[];
-  isOnline: boolean;
-  currentLoad: number; // Number of active tickets
-  maxLoad: number;
-  rating: number;
-  totalTicketsResolved: number;
-  averageResponseTime: number; // minutes
-  isAvailable: boolean;
-  workingHours: {
-    timezone: string;
-    schedule: DailySchedule[];
-  };
-  lastActiveAt: string;
-}
-
-export interface DailySchedule {
-  day:
-    | 'monday'
-    | 'tuesday'
-    | 'wednesday'
-    | 'thursday'
-    | 'friday'
-    | 'saturday'
-    | 'sunday';
-  isWorkingDay: boolean;
-  startTime: string; // HH:mm format
-  endTime: string; // HH:mm format
-  breaks?: {
-    startTime: string;
-    endTime: string;
-    title: string;
-  }[];
-}
-
-export interface TicketAttachment {
-  id: string;
-  ticketId: string;
-  responseId?: string;
-  name: string;
-  url: string;
-  type: string; // MIME type
-  size: number;
-  uploadedBy: string;
-  uploadedAt: string;
-  isPublic: boolean;
-  scanStatus: 'pending' | 'clean' | 'malware' | 'suspicious';
-}
-
-export interface TicketResponse {
-  id: string;
-  ticketId: string;
-  responseType:
-    | 'agent_reply'
-    | 'user_reply'
-    | 'system_note'
-    | 'status_change'
-    | 'assignment_change';
-  content: string;
-  authorId: string;
-  author: (
-    | Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar'>
-    | Pick<SupportAgent, 'id' | 'name' | 'avatar'>
-  ) & { role: 'user' | 'agent' | 'system' };
-  isPublic: boolean; // Internal notes vs public responses
-  attachments: TicketAttachment[];
-  mentions?: string[]; // User/Agent IDs mentioned
-  metadata?: ResponseMetadata;
-  createdAt: string;
-  editedAt?: string;
-}
-
-export interface ResponseMetadata {
-  isAutoResponse?: boolean;
-  templateId?: string;
-  macroId?: string;
-  escalationLevel?: number;
-  timeToResponse?: number; // minutes
-  responseChannel?: 'web' | 'email' | 'chat' | 'phone';
-  priority?: 'low' | 'medium' | 'high' | 'urgent';
-}
-
-export interface TicketMetadata {
-  source: 'web' | 'email' | 'chat' | 'phone' | 'mobile_app';
-  urgency?: 'low' | 'medium' | 'high' | 'critical';
-  businessImpact?: 'low' | 'medium' | 'high' | 'critical';
-  customerType?: 'free' | 'premium' | 'enterprise';
-  originalCategory?: string;
-  escalationPath?: string[];
-  customFields?: Record<string, string | number | boolean>;
-  relatedTickets?: string[];
-  duplicateOf?: string;
-  mergedTickets?: string[];
-}
-
-export interface SLADetails {
-  responseTime: {
-    target: number; // minutes
-    remaining: number;
-    status: 'within_sla' | 'approaching_breach' | 'breached';
-  };
-  resolutionTime: {
-    target: number; // minutes
-    remaining: number;
-    status: 'within_sla' | 'approaching_breach' | 'breached';
-  };
-  escalationThresholds: {
-    level: number;
-    triggerTime: number; // minutes
-    triggered: boolean;
-    triggeredAt?: string;
-  }[];
-}
-
-export interface TicketSatisfaction {
-  rating: number; // 1-5
-  feedback?: string;
-  categories?: {
-    responsiveness: number;
-    helpfulness: number;
-    professionalism: number;
-    resolution: number;
-  };
-  wouldRecommend: boolean;
-  submittedAt: string;
-}
-
-// Live Chat System Types
-export interface ChatSession {
-  id: string;
-  userId: string;
-  user: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar' | 'userType'>;
-  agentId?: string;
-  agent?: Pick<SupportAgent, 'id' | 'name' | 'avatar' | 'title'>;
-  status: 'queued' | 'connected' | 'ended' | 'transferred' | 'abandoned';
-  topic?: string;
-  department: 'technical' | 'billing' | 'sales' | 'general';
-  priority: 'normal' | 'high' | 'urgent';
-  queuePosition?: number;
-  estimatedWaitTime?: number; // minutes
-  actualWaitTime?: number; // minutes
-  sessionDuration?: number; // minutes
-  metadata?: ChatSessionMetadata;
-  startedAt: string;
-  connectedAt?: string;
-  endedAt?: string;
-  lastActivityAt: string;
-  rating?: ChatRating;
-  transcript?: string;
-  tags?: string[];
-}
-
-export interface ChatSessionMetadata {
-  source: 'website' | 'mobile_app' | 'widget';
-  pageUrl?: string;
-  userAgent?: string;
-  referrer?: string;
-  currentOrder?: string;
-  customerValue?: 'low' | 'medium' | 'high';
-  transferHistory?: {
-    fromAgentId: string;
-    toAgentId: string;
-    reason: string;
-    transferredAt: string;
-  }[];
-  proactiveChat?: boolean;
-  automation?: {
-    botHandled: boolean;
-    botDuration?: number;
-    escalatedReason?: string;
-  };
-}
-
-export interface SupportChatMessage {
-  id: string;
-  chatId: string;
-  from: 'user' | 'agent' | 'system' | 'bot';
-  senderId: string; // Made required to match earlier declaration
-  sender?:
-    | Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar'>
-    | Pick<SupportAgent, 'id' | 'name' | 'avatar'>; // Fixed type constraint
-  message: string;
-  messageType:
-    | 'text'
-    | 'file'
-    | 'image'
-    | 'system'
-    | 'automated'
-    | 'quick_reply'
-    | 'card';
-  timestamp: string;
-  readAt?: string;
-  deliveredAt?: string;
-  attachments?: MessageAttachment[]; // Use consistent type
-  quickReplies?: QuickReply[];
-  cardData?: ChatCard;
-  metadata?: MessageMetadata; // Use consistent type
-  isEdited?: boolean;
-  editedAt?: string;
-  replyTo?: string; // Message ID being replied to
-}
-
-export interface ChatAttachment {
-  id: string;
-  name: string;
-  url: string;
-  type: string; // MIME type
-  size: number;
-  thumbnailUrl?: string;
-  uploadedAt: string;
-}
-
-export interface QuickReply {
-  id: string;
-  title: string;
-  payload: string;
-  imageUrl?: string;
-}
-
-export interface ChatCard {
-  title: string;
-  subtitle?: string;
-  imageUrl?: string;
-  buttons: {
-    title: string;
-    type: 'url' | 'postback';
-    url?: string;
-    payload?: string;
-  }[];
-}
-
-export interface ChatMessageMetadata {
-  deliveryChannel?: 'web' | 'mobile';
-  messageSource?: 'manual' | 'template' | 'macro' | 'automation';
-  templateId?: string;
-  confidence?: number; // For bot messages
-  intent?: string; // For bot messages
-  entities?: Record<string, unknown>; // For bot messages
-}
-
-export interface ChatRating {
-  rating: number; // 1-5
-  feedback?: string;
-  categories?: {
-    responsiveness: number;
-    helpfulness: number;
-    professionalism: number;
-  };
-  wouldRecommend: boolean;
-  submittedAt: string;
-}
-
-export interface ChatQueue {
-  department: string;
-  queueLength: number;
-  averageWaitTime: number; // minutes
-  availableAgents: number;
-  totalAgents: number;
-  longestWaitTime: number; // minutes
-  estimatedWaitTime: number; // minutes
-}
-
-export interface ChatAvailability {
-  isOnline: boolean;
-  departments: {
-    name: string;
-    isAvailable: boolean;
-    queueLength: number;
-    estimatedWaitTime: number;
-    message?: string;
-  }[];
-  businessHours: {
-    timezone: string;
-    currentTime: string;
-    isBusinessHours: boolean;
-    nextAvailable?: string;
-    schedule: DailySchedule[];
-  };
-  maintenance?: {
-    isScheduled: boolean;
-    startTime?: string;
-    endTime?: string;
-    message?: string;
-  };
-}
-
-export interface UserReputation {
-  userId: string;
-  reputation: number;
-  level: number;
-  stats: {
-    threadsCreated: number;
-    postsWritten: number;
-    bestAnswers: number;
-    helpfulVotes: number;
-    thanksReceived: number;
-  };
-  history: ReputationChange[];
-}
-
-export interface ReputationChange {
-  id: string;
-  userId: string;
-  change: number;
-  reason: string;
-  sourceId?: string; // Thread, post, or badge ID
-  timestamp: string;
-}
-
-// Support Analytics Types
-export interface SupportAnalytics {
-  overview: {
-    totalTickets: number;
-    openTickets: number;
-    resolvedTickets: number;
-    averageResolutionTime: number; // hours
-    averageResponseTime: number; // minutes
-    customerSatisfaction: number; // 1-5
-    firstCallResolution: number; // percentage
-  };
-  ticketsByCategory: {
-    category: string;
-    count: number;
-    percentage: number;
-    averageResolutionTime: number;
-  }[];
-  ticketsByPriority: {
-    priority: string;
-    count: number;
-    percentage: number;
-  }[];
-  responseTimeMetrics: {
-    period: string;
-    averageTime: number;
-    target: number;
-    performance: number; // percentage
-  }[];
-  agentPerformance: {
-    agentId: string;
-    agentName: string;
-    ticketsHandled: number;
-    averageResolutionTime: number;
-    customerSatisfaction: number;
-    responseTime: number;
-  }[];
-  chatMetrics: {
-    totalSessions: number;
-    averageWaitTime: number;
-    averageSessionDuration: number;
-    abandonmentRate: number;
-    satisfactionRating: number;
-    transferRate: number;
-  };
-  knowledgeBaseMetrics: {
-    totalArticles: number;
-    totalViews: number;
-    averageRating: number;
-    searchQueries: number;
-    successfulSearches: number; // percentage
-    topArticles: {
-      articleId: string;
-      title: string;
-      views: number;
-      rating: number;
-    }[];
-  };
-  trends: {
-    period: string;
-    tickets: number;
-    resolutionTime: number;
-    satisfaction: number;
-  }[];
-}
-
-// API Request/Response Types
-export interface HelpCategoriesResponse {
-  data: HelpCategory[];
-  success: boolean;
-  message?: string;
-}
-
-export interface HelpArticlesResponse {
-  data: HelpArticle[];
-  pagination: PaginationMeta;
-  success: boolean;
-  message?: string;
-}
-
-export interface CreateTicketRequest {
-  subject: string;
-  description: string;
-  category: 'technical' | 'billing' | 'account' | 'general';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  attachments?: {
-    name: string;
-    url: string;
-    size: number;
-  }[];
-  metadata?: Record<string, unknown>;
-}
-
-export interface CreateTicketResponse {
-  success: boolean;
-  data?: {
-    id: string;
-    ticketNumber: string;
-    subject: string;
-    status: 'open';
-    priority: string;
-    createdAt: string;
-    estimatedResolutionTime: string;
-  };
-  error?: string;
-  message?: string;
-}
-
-export interface UserTicketsResponse {
-  data: SupportTicket[];
-  pagination: PaginationMeta;
-  success: boolean;
-  message?: string;
-}
-
-export interface StartChatRequest {
-  topic?: string;
-  department?: 'technical' | 'billing' | 'sales' | 'general';
-  priority?: 'normal' | 'high' | 'urgent';
-  metadata?: Record<string, unknown>;
-}
-
-export interface StartChatResponse {
-  success: boolean;
-  data?: {
-    chatId: string;
-    queuePosition: number;
-    estimatedWaitTime: number; // minutes
-    availableAgents: number;
-    sessionToken?: string;
-  };
-  error?: string;
-  message?: string;
-}
-
-export interface ChatMessagesResponse {
-  data: SupportChatMessage[];
-  pagination: PaginationMeta;
-  success: boolean;
-  message?: string;
-}
-
-export interface ArticleSearchRequest {
-  query?: string;
-  categoryId?: string;
-  tags?: string[];
-  featured?: boolean;
-  language?: 'tr' | 'en';
-  page?: number;
-  limit?: number;
-  sortBy?: 'relevance' | 'views' | 'rating' | 'date';
-}
-
-export interface TicketSearchRequest {
-  status?: SupportTicket['status'][];
-  category?: SupportTicket['category'][];
-  priority?: SupportTicket['priority'][];
-  dateFrom?: string;
-  dateTo?: string;
-  search?: string;
-  assignedAgent?: string;
-  page?: number;
-  limit?: number;
-  sortBy?: 'created' | 'updated' | 'priority' | 'status';
-}
-
-export interface ArticleRatingRequest {
-  articleId: string;
-  rating: number; // 1-5
-  feedback?: string;
-  isHelpful: boolean;
-}
-
-export interface ArticleRatingResponse {
-  success: boolean;
-  data?: {
-    averageRating: number;
-    ratingCount: number;
-  };
-  message?: string;
-}
-
-// Form Data Types
-export interface CreateTicketFormData {
-  subject: string;
-  description: string;
-  category: 'technical' | 'billing' | 'account' | 'general';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  attachments?: File[];
-}
-
-export interface ArticleRatingFormData {
-  articleId: string;
-  rating: number;
-  feedback?: string;
-  isHelpful: boolean;
-}
-
-export interface ChatFeedbackFormData {
-  chatId: string;
-  rating: number;
-  feedback?: string;
-  categories?: {
-    responsiveness: number;
-    helpfulness: number;
-    professionalism: number;
-  };
-  wouldRecommend: boolean;
-}
-
-export interface TicketResponseFormData {
-  ticketId: string;
-  content: string;
-  attachments?: File[];
-  isPublic: boolean;
-}
-
-// Error Types
-export interface HelpCenterError {
-  code: string;
-  message: string;
-  details?: Record<string, unknown>;
-  userMessage: string;
-}
-
-export interface SupportError {
-  code: string;
-  message: string;
-  category: 'ticket' | 'chat' | 'knowledge_base';
-  retryable: boolean;
-  userMessage: string;
-}
-
-export interface FavoriteFolder {
-  id: string;
-  name: string;
-  color?: string;
-  icon?: string;
-  itemCount: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// ========================================
-// SPRINT 8: REVIEW & RATING SYSTEM TYPES
-// ========================================
-
-// Review System Types
-export interface ReviewCategories {
-  communication: number; // 1-5
-  quality: number; // 1-5
-  timing: number; // 1-5
-  professionalism?: number; // 1-5
-  value?: number; // 1-5
-}
-
-export interface ReviewData {
-  id: string;
-  orderId: string;
-  reviewerId: string;
-  revieweeId: string;
-  reviewer: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar' | 'userType'>;
-  reviewee: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar' | 'userType'>;
-  rating: number; // Overall rating 1-5
-  categories: ReviewCategories;
-  comment: string;
-  isPublic: boolean;
-  reply?: ReviewReply;
-  status: 'active' | 'hidden' | 'disputed' | 'spam';
-  helpfulCount?: number;
-  reportCount?: number;
-  verifiedPurchase: boolean;
-  projectTitle?: string;
-  projectCategory?: string;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface ReviewReply {
-  id: string;
-  reviewId: string;
-  userId: string;
-  user: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar'>;
-  content: string;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface ReviewSummary {
-  averageRating: number;
-  totalReviews: number;
-  categoryAverages: ReviewCategories;
-  ratingDistribution: {
-    5: number;
-    4: number;
-    3: number;
-    2: number;
-    1: number;
-  };
-  recentReviews: ReviewData[];
-  verifiedPurchasePercentage: number;
-}
-
-export interface CreateReviewRequest {
-  orderId: string;
-  reviewerId: string;
-  revieweeId: string;
-  rating: number;
-  categories: ReviewCategories;
-  comment: string;
-  isPublic: boolean;
-}
-
-export interface CreateReviewResponse {
-  success: boolean;
-  data?: ReviewData;
-  error?: string;
-  message?: string;
-}
-
-export interface ReviewFilters {
-  rating?: number; // Filter by minimum rating
-  category?: string; // Filter by project category
-  dateFrom?: string;
-  dateTo?: string;
-  verified?: boolean; // Only verified purchases
-  hasReply?: boolean;
-  search?: string;
-  sortBy?: 'newest' | 'oldest' | 'rating_high' | 'rating_low' | 'helpful';
-}
-
-export interface ReviewsResponse {
-  success: boolean;
-  data?: {
-    reviews: ReviewData[];
-    summary: ReviewSummary;
-    pagination: PaginationMeta;
-  };
-  error?: string;
-}
-
-export interface ReviewModerationRequest {
-  reviewId: string;
-  action: 'approve' | 'hide' | 'mark_spam' | 'dispute';
-  reason?: string;
-  moderatorNote?: string;
-}
-
-export interface ReviewReportRequest {
-  reviewId: string;
-  reason: 'spam' | 'offensive' | 'fake' | 'inappropriate' | 'other';
-  description?: string;
-  reporterId: string;
-}
-
-// ========================================
-// ANALYTICS DASHBOARD TYPES
-// ========================================
-
-// Base Analytics Types
-export interface AnalyticsTimeframe {
-  period: 'week' | 'month' | 'quarter' | 'year' | 'custom';
-  startDate?: string;
-  endDate?: string;
-}
-
-export interface KPICard {
-  id: string;
-  title: string;
-  value: number | string;
-  formattedValue: string;
-  unit?: string;
-  trend?: {
-    direction: 'up' | 'down' | 'neutral';
-    percentage: number;
-    periodComparison: string; // e.g., "vs last month"
-  };
-  icon?: string;
-  color?: 'green' | 'red' | 'blue' | 'orange' | 'purple';
-  description?: string;
-}
-
-export interface ChartDataPoint {
-  date: string;
-  value: number;
-  label?: string;
-  metadata?: Record<string, unknown>;
-}
-
-export interface ChartConfig {
-  type: 'line' | 'bar' | 'area' | 'pie' | 'donut';
-  title: string;
-  description?: string;
-  data: ChartDataPoint[];
-  colors?: string[];
-  yAxisLabel?: string;
-  xAxisLabel?: string;
-  formatValue?: (value: number) => string;
-}
-
-// Freelancer Analytics
-export interface FreelancerAnalytics {
-  overview: {
-    totalEarnings: number;
-    currentMonthEarnings: number;
-    averageOrderValue: number;
-    completedOrders: number;
-    activeOrders: number;
-    clientSatisfaction: number;
-    repeatClientRate: number;
-    responseTime: string; // e.g., "2 hours"
-    profileViews: number;
-    proposalAcceptanceRate: number;
-  };
-  earnings: {
-    timeframe: AnalyticsTimeframe;
-    totalEarnings: number;
-    earningsTrend: ChartDataPoint[];
-    earningsByCategory: {
-      category: string;
-      amount: number;
-      percentage: number;
-    }[];
-    monthlyRecurring: number;
-    projectedEarnings: number;
-  };
-  orders: {
-    total: number;
-    completed: number;
-    inProgress: number;
-    cancelled: number;
-    averageOrderValue: number;
-    ordersTrend: ChartDataPoint[];
-    ordersByCategory: {
-      category: string;
-      count: number;
-      percentage: number;
-    }[];
-    averageDeliveryTime: number; // days
-    onTimeDeliveryRate: number; // percentage
-  };
-  clients: {
-    totalClients: number;
-    newClients: number;
-    repeatClients: number;
-    repeatClientRate: number;
-    clientSatisfaction: number;
-    clientRetentionRate: number;
-    topClients: {
-      clientId: string;
-      name: string;
-      avatar?: string;
-      totalSpent: number;
-      orderCount: number;
-      lastOrderDate: string;
-    }[];
-  };
-  performance: {
-    rating: number;
-    totalReviews: number;
-    ratingTrend: ChartDataPoint[];
-    reviewsByRating: {
-      rating: number;
-      count: number;
-      percentage: number;
-    }[];
-    skills: {
-      skillName: string;
-      proficiency: number;
-      demandScore: number;
-      earningsContribution: number;
-    }[];
-    responseTime: number; // hours
-    proposalWinRate: number; // percentage
-  };
-  growth: {
-    profileViews: ChartDataPoint[];
-    proposalsSent: ChartDataPoint[];
-    conversionRate: ChartDataPoint[];
-    marketShare: number; // in category
-    rankInCategory: number;
-    growthRate: number; // monthly percentage
-    opportunities: GrowthOpportunity[];
-  };
-}
-
-// Employer Analytics
-export interface EmployerAnalytics {
-  overview: {
-    totalSpent: number;
-    currentMonthSpending: number;
-    averageProjectCost: number;
-    completedProjects: number;
-    activeProjects: number;
-    freelancerSatisfaction: number;
-    projectSuccessRate: number;
-    averageProjectDuration: number; // days
-    savedFreelancers: number;
-    repeatFreelancers: number;
-  };
-  spending: {
-    timeframe: AnalyticsTimeframe;
-    totalSpent: number;
-    spendingTrend: ChartDataPoint[];
-    spendingByCategory: {
-      category: string;
-      amount: number;
-      percentage: number;
-    }[];
-    budgetUtilization: number; // percentage
-    costSavings: number; // vs traditional hiring
-  };
-  projects: {
-    total: number;
-    completed: number;
-    inProgress: number;
-    cancelled: number;
-    averageProjectCost: number;
-    projectsTrend: ChartDataPoint[];
-    projectsByCategory: {
-      category: string;
-      count: number;
-      percentage: number;
-    }[];
-    averageCompletionTime: number; // days
-    onTimeCompletionRate: number; // percentage
-    budgetAdherenceRate: number; // percentage
-  };
-  freelancers: {
-    totalFreelancers: number;
-    activeFreelancers: number;
-    repeatFreelancers: number;
-    freelancerRetentionRate: number;
-    averageFreelancerRating: number;
-    freelancerSatisfaction: number;
-    topFreelancers: {
-      freelancerId: string;
-      name: string;
-      avatar?: string;
-      totalPaid: number;
-      projectCount: number;
-      rating: number;
-      lastProjectDate: string;
-    }[];
-  };
-  hiring: {
-    jobsPosted: number;
-    proposalsReceived: number;
-    averageProposalsPerJob: number;
-    hireRate: number; // percentage of jobs that result in hires
-    timeToHire: number; // days
-    hiringTrend: ChartDataPoint[];
-    proposalQualityScore: number; // 1-10
-    freelancerSourceBreakdown: {
-      source: 'search' | 'recommendations' | 'favorites' | 'direct';
-      count: number;
-      percentage: number;
-    }[];
-  };
-  performance: {
-    projectSuccessRate: number;
-    budgetAccuracy: number; // how close final cost is to budget
-    timelineAccuracy: number; // how close delivery is to deadline
-    qualitySatisfaction: number;
-    communicationSatisfaction: number;
-    performanceTrend: ChartDataPoint[];
-    categoryPerformance: {
-      category: string;
-      successRate: number;
-      averageRating: number;
-      averageCost: number;
-    }[];
-  };
-}
-
-export interface GrowthOpportunity {
-  id: string;
-  type: 'skill' | 'market' | 'pricing' | 'service';
-  title: string;
-  description: string;
-  potentialImpact: 'low' | 'medium' | 'high';
-  effort: 'low' | 'medium' | 'high';
-  priority: number;
-  actionItems: string[];
-  estimatedValue?: number;
-  timeframe?: string;
-}
-
-export interface AnalyticsFilters {
-  timeframe: AnalyticsTimeframe;
-  category?: string;
-  clientType?: 'new' | 'repeat' | 'all';
-  projectSize?: 'small' | 'medium' | 'large' | 'all';
-  region?: string;
-}
-
-export interface AnalyticsExport {
-  format: 'pdf' | 'excel' | 'csv' | 'json';
-  sections: string[];
-  timeframe: AnalyticsTimeframe;
-  includeCharts: boolean;
-  includeRawData: boolean;
-}
-
-export interface AnalyticsExportResponse {
-  success: boolean;
-  data?: {
-    downloadUrl: string;
-    filename: string;
-    expiresAt: string;
-  };
-  error?: string;
-}
-
-// ========================================
-// REPUTATION & SECURITY TYPES
-// ========================================
-
-// Reputation System Types
-export interface ReputationScore {
-  userId: string;
-  overallScore: number; // 0-100
-  level: 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
-  badges: ReputationBadge[];
-  factors: ReputationFactor[];
-  history: ReputationHistory[];
-  nextLevelRequirements?: ReputationRequirement[];
-  calculatedAt: string;
-  expiresAt: string;
-}
-
-export interface ReputationBadge {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  color: string;
-  category: 'achievement' | 'verification' | 'milestone' | 'quality';
-  earnedAt: string;
-  isVisible: boolean;
-  requirements?: string[];
-}
-
-export interface ReputationFactor {
-  name: string;
-  currentValue: number;
-  maxValue: number;
-  weight: number; // Contribution to overall score
-  trend: 'improving' | 'stable' | 'declining';
-  description: string;
-}
-
-export interface ReputationHistory {
-  date: string;
-  score: number;
-  change: number;
-  reason: string;
-  factors: {
-    name: string;
-    oldValue: number;
-    newValue: number;
-  }[];
-}
-
-export interface ReputationRequirement {
-  name: string;
-  description: string;
-  currentProgress: number;
-  targetValue: number;
-  isCompleted: boolean;
-}
-
-// Security System Types
-export interface SecurityAlert {
-  id: string;
-  userId: string;
-  type: 'account' | 'payment' | 'verification' | 'activity' | 'policy';
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  title: string;
-  description: string;
-  recommendations: string[];
-  actionRequired: boolean;
-  actionUrl?: string;
-  actionText?: string;
-  dismissible: boolean;
-  isDismissed: boolean;
-  dismissedAt?: string;
-  createdAt: string;
-  expiresAt?: string;
-}
-
-export interface SecurityStatus {
-  userId: string;
-  overallScore: number; // 0-100
-  level: 'poor' | 'fair' | 'good' | 'excellent';
-  verifications: SecurityVerification[];
-  alerts: SecurityAlert[];
-  recommendations: SecurityRecommendation[];
-  lastAssessment: string;
-  nextAssessment: string;
-}
-
-export interface SecurityVerification {
-  type: 'email' | 'phone' | 'identity' | '2fa' | 'payment' | 'address';
-  status: 'verified' | 'pending' | 'failed' | 'not_started';
-  verifiedAt?: string;
-  expiresAt?: string;
-  documents?: VerificationDocument[];
-  failureReason?: string;
-  retryCount: number;
-  maxRetries: number;
-}
-
-export interface VerificationDocument {
-  id: string;
-  type:
-    | 'passport'
-    | 'id_card'
-    | 'driver_license'
-    | 'utility_bill'
-    | 'bank_statement';
-  status: 'uploaded' | 'reviewing' | 'approved' | 'rejected';
-  uploadedAt: string;
-  reviewedAt?: string;
-  rejectionReason?: string;
-  expiresAt?: string;
-  fileName: string;
-  fileUrl: string;
-}
-
-export interface SecurityRecommendation {
-  id: string;
-  type: 'verification' | 'password' | '2fa' | 'profile' | 'privacy';
-  priority: 'low' | 'medium' | 'high';
-  title: string;
-  description: string;
-  impact: string; // What completing this will improve
-  actionText: string;
-  actionUrl: string;
-  isCompleted: boolean;
-  completedAt?: string;
-  estimatedTime: string; // e.g., "5 minutes"
-}
-
-export interface TrustIndicators {
-  userId: string;
-  profileCompletion: number; // 0-100
-  verificationLevel: number; // 0-100
-  activityScore: number; // 0-100
-  reviewScore: number; // 0-100
-  responseReliability: number; // 0-100
-  paymentHistory: number; // 0-100
-  communityStanding: number; // 0-100
-  overallTrustScore: number; // 0-100
-  publicBadges: ReputationBadge[];
-  calculatedAt: string;
-}
-
-// ========================================
-// FORM VALIDATION TYPES
-// ========================================
-
-export interface ReviewFormData {
-  orderId: string;
-  reviewerId: string;
-  revieweeId: string;
-  rating: number;
-  categories: ReviewCategories;
-  comment: string;
-  isPublic: boolean;
-}
-
-export interface ReviewReplyFormData {
-  reviewId: string;
-  content: string;
-}
-
-export interface ReviewModerationFormData {
-  action: 'approve' | 'hide' | 'mark_spam' | 'dispute';
-  reason?: string;
-  moderatorNote?: string;
-}
-
-export interface SecurityVerificationFormData {
-  type: SecurityVerification['type'];
-  documents?: File[];
-  additionalInfo?: Record<string, string>;
-}
-
-// ========================================
-// API RESPONSE TYPES
-// ========================================
-
-export interface GetAnalyticsResponse {
-  success: boolean;
-  data?: FreelancerAnalytics | EmployerAnalytics;
-  error?: string;
-  message?: string;
-}
-
-export interface GetReputationResponse {
-  success: boolean;
-  data?: {
-    score: ReputationScore;
-    status: SecurityStatus;
-    trustIndicators: TrustIndicators;
-  };
-  error?: string;
-  message?: string;
-}
-
-export interface GetSecurityAlertsResponse {
-  success: boolean;
-  data?: SecurityAlert[];
-  error?: string;
-  message?: string;
-}
-
-export interface FavoriteFolder {
-  id: string;
-  name: string;
-  description?: string;
-  color?: string;
-  icon?: string;
-  itemCount: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CreateFolderRequest {
-  name: string;
-  description?: string;
-  color?: string;
-  icon?: string;
-  isPublic?: boolean;
-  userId: string;
-}
-
-export interface UpdateFolderRequest {
-  folderId: string;
-  name?: string;
-  description?: string;
-  color?: string;
-  icon?: string;
-  isPublic?: boolean;
-}
-
-// Favorite type for component usage
-export interface Favorite {
-  id: string;
-  userId: string;
-  itemId: string;
-  itemType: 'freelancer' | 'job' | 'service';
-  item: Freelancer | Job | ServicePackage;
-  folderId?: string;
-  folder?: FavoriteFolder;
-  notes?: string;
-  tags?: string[];
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface AddToFavoritesRequest {
-  itemId: string;
-  itemType: 'freelancer' | 'job' | 'service';
-  folderId?: string;
-  note?: string;
-}
-
-export interface AddToFavoritesResponse {
-  success: boolean;
-  data?: {
-    favoriteId: string;
-    message: string;
-  };
-  error?: string;
-}
-
-export interface FavoriteItem {
-  id: string;
-  userId: string;
-  itemId: string;
-  itemType: 'freelancer' | 'job' | 'service';
-  item: Freelancer | Job | ServicePackage;
-  folderId?: string;
-  folder?: FavoriteFolder;
-  note?: string;
-  addedAt: string;
-  tags?: string[];
-}
-
-// Saved Searches Types
-export interface SavedSearch {
-  id: string;
-  userId: string;
-  name: string;
-  query?: string;
-  filters: AdvancedSearchRequest;
-  alertEnabled: boolean;
-  alertFrequency: 'immediate' | 'daily' | 'weekly';
-  lastRun?: string;
-  resultsCount?: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface SaveSearchRequest {
-  name: string;
-  query?: string;
-  filters: AdvancedSearchRequest;
-  alertEnabled?: boolean;
-  alertFrequency?: 'immediate' | 'daily' | 'weekly';
-}
-
-export interface SaveSearchResponse {
-  success: boolean;
-  data?: {
-    id: string;
-    name: string;
-    savedAt: string;
-  };
-  error?: string;
-}
-
-export interface SavedSearchAlert {
-  id: string;
-  savedSearchId: string;
-  userId: string;
-  newResults: (Freelancer | Job | ServicePackage)[];
-  triggeredAt: string;
-  sent: boolean;
-  sentAt?: string;
-}
-
-// Map Integration Types
-export interface MapConfig {
-  apiKey: string;
-  defaultCenter: Coordinates;
-  defaultZoom: number;
-  maxZoom: number;
-  minZoom: number;
-  enableGeolocation: boolean;
-  enableSearch: boolean;
-  enableClustering: boolean;
-  style?: 'default' | 'satellite' | 'terrain' | 'hybrid';
-}
-
-export interface MapInstance {
-  id: string;
-  center: Coordinates;
-  zoom: number;
-  bounds: MapBounds;
-  markers: MapMarker[];
-  clusterer?: MarkerClusterer;
-}
-
-export interface MarkerClusterer {
-  enabled: boolean;
-  maxZoom: number;
-  gridSize: number;
-  style: ClusterStyle[];
-}
-
-export interface ClusterStyle {
-  url: string;
-  height: number;
-  width: number;
-  textColor: string;
-  textSize: number;
-}
-
-export interface MapMarkerData {
-  freelancer?: Freelancer;
-  job?: Job;
-  service?: ServicePackage;
-  user?: User;
-}
-
-export interface MapSearchParams {
-  bounds: MapBounds;
-  zoom: number;
-  center: Coordinates;
-  type: 'freelancers' | 'jobs' | 'services';
-  filters?: AdvancedSearchRequest;
-}
-
-export interface MapSearchResponse {
-  success: boolean;
-  data?: {
-    markers: MapMarker[];
-    clusters: MarkerCluster[];
-    bounds: MapBounds;
-  };
-  error?: string;
-}
-
-export interface MarkerCluster {
-  id: string;
-  position: Coordinates;
-  count: number;
-  bounds: MapBounds;
-  markers: MapMarker[];
-}
-
-// Trending & Popular Types
-export interface TrendingSearches {
-  timeframe: 'hour' | 'day' | 'week' | 'month';
-  searches: TrendingSearch[];
-  updatedAt: string;
-}
-
-export interface TrendingSearch {
-  query: string;
-  count: number;
-  growth: number; // Percentage growth compared to previous period
-  category?: string;
-  rank: number;
-}
-
-export interface PopularItems {
-  type: 'freelancers' | 'jobs' | 'services';
-  timeframe: 'day' | 'week' | 'month';
-  items: PopularItem[];
-  updatedAt: string;
-}
-
-export interface PopularItem {
-  item: Freelancer | Job | ServicePackage;
-  score: number;
-  metrics: {
-    views: number;
-    contacts: number;
-    favorites: number;
-    proposals?: number; // for jobs
-    orders?: number; // for services
-  };
-  rank: number;
-}
-
-// Search Filters UI Types
-export interface FilterOption {
-  value: string;
-  label: string;
-  count?: number;
-  disabled?: boolean;
-}
-
-export interface FilterGroup {
-  id: string;
-  name: string;
-  type:
-    | 'select'
-    | 'multi-select'
-    | 'range'
-    | 'checkbox'
-    | 'radio'
-    | 'location'
-    | 'rating';
-  options?: FilterOption[];
-  min?: number;
-  max?: number;
-  step?: number;
-  placeholder?: string;
-  required?: boolean;
-  dependencies?: string[]; // Other filter IDs that this depends on
-}
-
-export interface ActiveFilter {
-  groupId: string;
-  value: string | number | string[] | { min: number; max: number };
-  label: string;
-  removable: boolean;
-}
-
-// Search History Types
-export interface SearchHistory {
-  searches: SearchHistoryItem[];
-  pagination: PaginationMeta;
-}
-
-export interface SearchHistoryItem {
-  id: string;
-  userId: string;
-  query?: string;
-  filters: AdvancedSearchRequest;
-  resultsCount: number;
-  searchedAt: string;
-  clickedResults: string[];
-  bookmarked: boolean;
-}
-
-// Form Data Types for Sprint 7
-export interface AdvancedSearchFormData {
-  query?: string;
-  category?: string;
-  skills?: string[];
-  location?: {
-    city?: string;
-    district?: string;
-    coordinates?: { lat: number; lng: number };
-    radius?: number;
-  };
-  budget?: { min?: number; max?: number };
-  rating?: number;
-  availability?: 'available' | 'busy' | 'any';
-  remoteOk?: boolean;
-  sortBy?: 'relevance' | 'rating' | 'price' | 'distance';
-  deliveryTime?: number;
-  experienceLevel?: 'beginner' | 'intermediate' | 'expert';
-}
-
-export interface SaveSearchFormData {
-  name: string;
-  filters: AdvancedSearchFormData;
-  alertEnabled?: boolean;
-  alertFrequency?: 'immediate' | 'daily' | 'weekly';
-}
-
-export interface LocationPickerFormData {
-  query: string;
-  selectedLocation?: LocationData;
-  useCurrentLocation?: boolean;
-  radius?: number;
-}
-
-export interface FavoriteFolderFormData {
-  name: string;
-  description?: string;
-  color?: string;
-  icon?: string;
-  isPublic?: boolean;
-}
-
-// Component Props Types
-export interface AdvancedSearchProps {
-  mode: 'freelancers' | 'jobs' | 'services';
-  defaultFilters?: Partial<AdvancedSearchFormData>;
-  onSearch?: (filters: AdvancedSearchRequest) => void;
-  onResults?: (results: (Freelancer | Job | ServicePackage)[]) => void;
-  showSaveSearch?: boolean;
-  showMapToggle?: boolean;
-  className?: string;
-}
-
-export interface LocationPickerProps {
-  value?: LocationData;
-  onChange: (location: LocationData | null) => void;
-  placeholder?: string;
-  showRadius?: boolean;
-  defaultRadius?: number;
-  disabled?: boolean;
-  className?: string;
-}
-
-export interface RecommendationCardProps {
-  recommendation: Recommendation;
-  onContact?: (item: Freelancer | Job | ServicePackage) => void;
-  onFavorite?: (item: Freelancer | Job | ServicePackage) => void;
-  onFeedback?: (feedback: RecommendationFeedback) => void;
-  showReason?: boolean;
-  className?: string;
-}
-
-export interface SearchSuggestionsProps {
-  query: string;
-  suggestions: string[];
-  trending: string[];
-  recent: string[];
-  onSelect: (suggestion: string) => void;
-  loading?: boolean;
-  className?: string;
-}
-
-export interface FavoritesListProps {
-  type?: 'freelancers' | 'jobs' | 'services';
-  folderId?: string;
-  onItemClick?: (item: FavoriteItem) => void;
-  onFolderChange?: (folderId: string) => void;
-  showFolders?: boolean;
-  className?: string;
-}
-
-export interface MapViewProps {
-  searchParams: MapSearchParams;
-  markers: MapMarker[];
-  onMarkerClick?: (marker: MapMarker) => void;
-  onBoundsChange?: (bounds: MapBounds) => void;
-  showSearch?: boolean;
-  showFilters?: boolean;
-  className?: string;
-}
-
-// Store Types
-export interface AdvancedSearchStore {
-  // State
-  searchQuery: string;
-  searchResults: (Freelancer | Job | ServicePackage)[];
-  suggestions: string[];
-  recentSearches: string[];
-  savedSearches: SavedSearch[];
-  isLoading: boolean;
-  isLoadingSuggestions: boolean;
-  error: string | null;
-  facets: SearchFacets | null;
-  searchId: string | null;
-
-  // Actions
-  setSearchQuery: (query: string) => void;
-  getSuggestions: (query: string) => Promise<void>;
-  performAdvancedSearch: (filters: AdvancedSearchRequest) => Promise<void>;
-  saveSearch: (name: string, filters: AdvancedSearchRequest) => Promise<void>;
-  deleteSavedSearch: (id: string) => Promise<void>;
-  addToRecentSearches: (query: string) => void;
-  clearSearchResults: () => void;
-  clearError: () => void;
-}
+export {}; // Export marker for module
 
-export interface RecommendationStore {
-  // State
-  recommendations: Recommendation[];
+// Admin Types
+export interface AdminDashboardStore {
+  data: AdminDashboardData | null;
   isLoading: boolean;
   error: string | null;
-
-  // Actions
-  fetchRecommendations: (request: RecommendationsRequest) => Promise<void>;
-  refreshRecommendations: () => Promise<void>;
-  provideFeedback: (feedback: RecommendationFeedback) => Promise<void>;
+  lastUpdated: string | null;
+  fetchDashboard: () => Promise<void>;
+  refreshDashboard: () => Promise<void>;
+  markAlertAsRead: (alertId: string) => Promise<void>;
+  dismissAlert: (alertId: string) => Promise<void>;
+  clearAllAlerts: () => Promise<void>;
   clearError: () => void;
+  // Computed
+  unreadAlerts: SecurityAlert[];
+  criticalAlerts: SecurityAlert[];
+  charts?: Record<string, unknown>; // Store compatibility
 }
 
-export interface FavoritesStore {
-  // State
-  favorites: {
-    freelancers: Freelancer[];
-    jobs: Job[];
-    services: ServicePackage[];
-    folders: FavoriteFolder[];
-  };
-  isLoading: boolean;
-  error: string | null;
-
-  // Actions
-  fetchFavorites: () => Promise<void>;
-  addToFavorites: (request: AddToFavoritesRequest) => Promise<void>;
-  removeFromFavorites: (
-    itemId: string,
-    itemType: 'freelancer' | 'job' | 'service'
-  ) => Promise<void>;
-  createFolder: (
-    folder: Omit<FavoriteFolder, 'id' | 'itemCount' | 'createdAt' | 'updatedAt'>
-  ) => Promise<void>;
-  moveToFolder: (itemId: string, folderId: string) => Promise<void>;
-  clearError: () => void;
-}
-
-export interface LocationStore {
-  // State
-  currentLocation: Coordinates | null;
-  selectedLocation: LocationData | null;
-  searchResults: LocationSearchResult[];
-  predictions: LocationPrediction[];
-  isLoading: boolean;
-  error: string | null;
-
-  // Actions
-  getCurrentLocation: () => Promise<void>;
-  searchLocations: (request: LocationSearchRequest) => Promise<void>;
-  getAutocomplete: (request: LocationAutocompleteRequest) => Promise<void>;
-  geocode: (request: GeocodeRequest) => Promise<void>;
-  setSelectedLocation: (location: LocationData | null) => void;
-  clearError: () => void;
-}
-
-// ========================================
-// SPRINT 10: ADMIN PANEL TYPES
-// ========================================
-
-// Admin User Types
-export interface AdminUser extends User {
-  userType: 'admin';
-  role: 'admin' | 'moderator' | 'super_admin';
-  permissions: string[];
-  adminLevel: 'admin' | 'moderator' | 'super_admin';
-  managedDepartments?: string[];
-  accessLevel: 'full' | 'limited';
-  lastAdminAction?: string;
-  adminMetadata?: Record<string, unknown>;
-}
-
-export interface AdminPermission {
-  id: string;
-  name: string;
-  resource: string;
-  action: 'create' | 'read' | 'update' | 'delete' | 'manage';
-  scope?: 'own' | 'all';
-}
-
-// Admin Dashboard Types
 export interface AdminDashboardData {
-  stats: AdminStats;
-  charts: AdminCharts;
-  alerts: AdminAlert[];
-  recentActivity: AdminActivity[];
-  systemHealth: SystemHealth;
+  stats: {
+    totalUsers: number;
+    activeUsers: number;
+    totalJobs: number;
+    activeJobs: number;
+    totalRevenue: number;
+    pendingPayouts: number;
+    // Additional stats for AdminDashboard component
+    newUsersToday?: number;
+    monthlyRevenue?: number;
+    revenueGrowth?: number;
+    pendingOrders?: number;
+    completedOrders?: number;
+    conversionRate?: number;
+    userRetentionRate?: number;
+  };
+  alerts?: SecurityAlert[];
+  recentActivity: SecurityAlert[];
+  systemHealth: {
+    status: 'healthy' | 'warning' | 'critical';
+    uptime: number;
+    lastChecked: string;
+    issues?: string[]; // For AdminDashboard component
+  };
+  charts?: Record<string, unknown>; // AdminDashboard component compatibility
 }
 
-export interface AdminStats {
+export interface AdminModerationStore {
+  items: ModerationItem[];
+  filters: ModerationFilters;
+  isLoading: boolean;
+  error: string | null;
+  pagination: PaginationMeta | null;
+  selectedItems: string[];
+  selectedItem?: ModerationItem | null; // Store compatibility
+  // Store compatibility - additional required methods
+  fetchModerationQueue: (filters?: ModerationFilters) => Promise<void>;
+  fetchItems: (filters?: ModerationFilters) => Promise<void>;
+  fetchModerationStats?: () => Promise<void>; // Store compatibility
+  approveItem: (itemId: string, reason?: string) => Promise<void>;
+  rejectItem: (itemId: string, reason: string) => Promise<void>;
+  escalateItem: (itemId: string, reason: string) => Promise<void>;
+  performModerationAction: (
+    itemId: string,
+    action: ModerationActionRequest
+  ) => Promise<void>; // Hook compatibility
+  assignModerator: (itemId: string, moderatorId: string) => Promise<void>; // Hook compatibility
+  bulkAction: (
+    action: 'approve' | 'reject' | 'escalate',
+    itemIds: string[],
+    reason?: string
+  ) => Promise<void>;
+  setFilters: (filters: Partial<ModerationFilters>) => void;
+  clearFilters: () => void;
+  clearError: () => void; // Store compatibility
+  selectItem: (item: ModerationItem | null) => void; // Changed signature for store compatibility
+  selectAllItems: () => void;
+  clearSelection: () => void;
+  // Computed
+  pendingItems: ModerationItem[];
+  approvedItems: ModerationItem[];
+  rejectedItems: ModerationItem[];
+  escalatedItems: ModerationItem[];
+  highPriorityItems: ModerationItem[];
+  urgentItems: ModerationItem[];
+  stats: {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+    escalated: number;
+    reviewItems: number;
+    jobItems: number;
+    serviceItems: number;
+    profileItems: number;
+    totalItems?: number; // Store compatibility
+    averageReviewTime?: number; // Store compatibility
+    automatedFlagAccuracy?: number; // Store compatibility
+  } | null; // Store compatibility - can be null initially
+}
+
+export interface ModerationItem {
+  id: string;
+  type: 'review' | 'job' | 'service' | 'profile' | 'message';
+  content: Record<string, unknown>;
+  reportReason: string;
+  status: 'pending' | 'approved' | 'rejected' | 'escalated' | 'dismissed'; // Added 'dismissed'
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  reportedBy: string;
+  reportedAt: string;
+  moderatedBy?: string;
+  moderatedAt?: string;
+  notes?: string;
+  moderatorNotes?: string; // MSW handler compatibility
+  updatedAt?: string; // MSW handler compatibility
+  resolvedAt?: string; // MSW handler compatibility
+  // ContentModerationQueue component compatibility
+  reason?: string; // Alternative to reportReason
+  reporterInfo?: User; // Reporter information
+  createdAt?: string; // Alternative to reportedAt
+}
+
+export interface ModerationFilters {
+  status?: 'pending' | 'approved' | 'rejected' | 'escalated';
+  type?: 'review' | 'job' | 'service' | 'profile' | 'message';
+  priority?: 'low' | 'medium' | 'high' | 'urgent';
+  dateFrom?: string;
+  dateTo?: string;
+  search?: string; // ContentModerationQueue component compatibility
+  sort?: string; // Hook compatibility
+}
+
+export interface ModerationActionRequest {
+  itemId: string;
+  action: 'approve' | 'reject' | 'escalate' | 'dismiss' | 'request_changes'; // Extended for component compatibility
+  reason?: string;
+  notes?: string;
+}
+
+export interface AdminSettingsStore {
+  settings: PlatformSettings | null;
+  isLoading: boolean;
+  error: string | null;
+  lastUpdated: string | null;
+  pendingChanges: Partial<PlatformSettings>;
+  hasPendingChanges: boolean;
+  hasUnsavedChanges?: boolean; // Store compatibility
+  fetchSettings: () => Promise<void>;
+  updateSettings: (settings: Partial<PlatformSettings>) => Promise<void>;
+  resetSettings: () => Promise<void>;
+  savePendingChanges: () => Promise<void>;
+  discardPendingChanges: () => void;
+  updatePendingSetting: (key: string, value: unknown) => void;
+  exportSettings: () => Promise<void>; // Store compatibility
+  importSettings: (settings: PlatformSettings) => Promise<void>; // Store compatibility
+  clearError: () => void; // Hook compatibility
+}
+
+// Admin User Analytics interface for store compatibility
+export interface UserAnalytics {
+  userId: string;
+  userStats: {
+    totalJobs: number;
+    completedJobs: number;
+    cancelledJobs: number;
+    totalEarnings: number;
+    avgRating: number;
+  };
+  activityStats: {
+    loginCount: number;
+    lastLoginDate: string;
+    averageSessionDuration: number;
+    profileViews: number;
+  };
+  engagementStats: {
+    messagesExchanged: number;
+    reviewsGiven: number;
+    reviewsReceived: number;
+    referralsCount: number;
+  };
+}
+
+export interface PlatformSettings {
+  general: {
+    siteName: string;
+    siteDescription: string;
+    contactEmail: string;
+    supportEmail: string;
+    maintenanceMode: boolean;
+    maintenanceMessage: string;
+    maxFileUploadSize?: number; // MSW handler compatibility
+  };
+  features: {
+    enableJobPosting: boolean;
+    enableServicePackages: boolean;
+    enableEscrow: boolean;
+    enableDirectPayments: boolean;
+    enableReviews: boolean;
+    enableMessaging: boolean;
+    emailVerificationRequired?: boolean; // Store compatibility
+    userRegistration?: boolean; // MSW handler compatibility
+    profileVerification?: boolean; // MSW handler compatibility
+  };
+  payments: {
+    commissionRate: number;
+    minimumPayout: number;
+    paymentMethods: string[];
+    currencies: string[];
+    defaultCurrency: string;
+    platformFee?: number; // Store compatibility
+  };
+  // Store compatibility - additional settings sections
+  payment?: {
+    platformFee: number;
+    minimumWithdrawal?: number; // MSW handler compatibility
+  };
+  security?: {
+    twoFactorAuth: boolean;
+    passwordRequirements?: {
+      minLength: number;
+      requireNumbers: boolean;
+      requireSymbols: boolean;
+      requireUppercase: boolean;
+    }; // MSW handler compatibility
+  };
+  email?: Record<string, unknown>;
+  content?: Record<string, unknown>;
+  api?: Record<string, unknown>;
+  integrations?: Record<string, unknown>;
+  maintenance?: {
+    isMaintenanceMode: boolean;
+    maintenanceMessage?: string; // MSW handler compatibility
+    scheduledMaintenance?: unknown[]; // MSW handler compatibility
+  };
+  moderation: {
+    autoModeration: boolean;
+    moderationQueue: boolean;
+    requireApproval: boolean;
+    contentFilters: string[];
+  };
+}
+
+export interface AdminUserStore {
+  users: AdminUserData[];
+  filters: UserFilters;
+  isLoading: boolean;
+  error: string | null;
+  pagination: PaginationMeta | null;
+  selectedUserIds: string[];
+  bulkSelectedIds: string[];
+  selectedUser: AdminUserData | null; // Store compatibility
+  userStats?: UserStats | null; // Store compatibility
+  totalUsers?: number; // Store compatibility
+  fetchUsers: (filters?: UserFilters) => Promise<void>;
+  fetchUserStats?: () => Promise<void>; // Store compatibility
+  getUserById: (userId: string) => Promise<AdminUserData | null>;
+  fetchUserById: (userId: string) => Promise<AdminUserData | null>; // Hook compatibility
+  updateUser: (
+    userId: string,
+    updates: Partial<AdminUserData>
+  ) => Promise<void>;
+  suspendUser: (userId: string, reason: string) => Promise<void>;
+  unsuspendUser: (userId: string) => Promise<void>;
+  banUser: (userId: string, reason: string) => Promise<void>;
+  unbanUser: (userId: string) => Promise<void>;
+  verifyUser: (userId: string) => Promise<void>;
+  unverifyUser: (userId: string) => Promise<void>;
+  performUserAction: (
+    userId: string,
+    action: UserActionRequest
+  ) => Promise<void>; // Hook compatibility
+  performBulkAction: (action: BulkUserActionRequest) => Promise<void>; // Hook compatibility
+  bulkAction: (action: BulkUserActionRequest) => Promise<void>;
+  setFilters: (filters: Partial<UserFilters>) => void;
+  clearFilters: () => void;
+  clearError: () => void; // Store compatibility
+  selectUser: (user: AdminUserData | null) => void; // Enhanced signature compatibility
+  toggleBulkSelection: (userId: string) => void; // Hook compatibility
+  selectAllUsers: () => void;
+  clearBulkSelection: () => void; // Hook compatibility
+  clearSelection: () => void;
+  deleteUser: (userId: string) => Promise<void>; // Store compatibility
+  activateUser: (userId: string) => Promise<void>; // Store compatibility
+  deactivateUser: (userId: string) => Promise<void>; // Store compatibility
+  resetUserPassword: (userId: string) => Promise<void>; // Store compatibility
+  exportUsers: () => Promise<void>; // Store compatibility
+  importUsers: (users: AdminUserData[]) => Promise<void>; // Store compatibility
+  getUserAnalytics: (userId: string) => Promise<UserAnalytics>; // Store compatibility
+  sendUserNotification: (userId: string, message: string) => Promise<void>; // Store compatibility
+  // Computed
+  activeUsers: AdminUserData[];
+  suspendedUsers: AdminUserData[];
+  bannedUsers: AdminUserData[];
+  verifiedUsers: AdminUserData[];
+  freelancers: AdminUserData[];
+  employers: AdminUserData[];
+  stats?: {
+    total: number;
+    active: number;
+    suspended: number;
+    banned: number;
+    verified: number;
+    unverified: number;
+    freelancers: number;
+    employers: number;
+    newThisMonth: number;
+    activeThisMonth: number;
+    totalRevenue?: number;
+    averageRating?: number;
+    conversionRate?: number;
+  };
+}
+
+export interface AdminUserData {
+  id: string;
+  email: string;
+  name: string;
+  userType: 'freelancer' | 'employer';
+  accountStatus: 'active' | 'suspended' | 'banned';
+  verificationStatus: 'verified' | 'unverified' | 'pending';
+  createdAt: string;
+  lastLoginAt?: string;
+  lastActiveAt?: string; // UserManagement component compatibility
+  profileCompletion: number;
+  totalJobs?: number;
+  totalEarnings?: number;
+  rating?: number;
+  reviewCount?: number;
+  // UserManagement component compatibility
+  firstName?: string;
+  lastName?: string;
+  location?: string;
+  joinDate?: string; // Alternative to createdAt
+  totalOrders?: number; // Alternative to totalJobs
+  successRate?: number;
+  disputeCount?: number;
+  riskScore?: number;
+  totalSpent?: number;
+  verificationBadges?: string[];
+  loginCount?: number; // UserManagement component compatibility
+  warningCount?: number; // UserManagement component compatibility
+  updatedAt?: string; // MSW handler compatibility
+  suspensionHistory?: Array<{
+    id: string;
+    reason: string;
+    startDate: string;
+    endDate?: string;
+    isActive: boolean;
+    moderatorId: string;
+  }>; // MSW handler compatibility
+}
+
+export interface UserStats {
   totalUsers: number;
   activeUsers: number;
-  newUsersToday: number;
   newUsersThisMonth: number;
-  totalRevenue: number;
-  monthlyRevenue: number;
-  revenueGrowth: number;
-  totalJobs: number;
-  activeJobs: number;
-  jobsToday: number;
-  totalOrders: number;
-  completedOrders: number;
-  pendingOrders: number;
-  totalServices: number;
-  activeServices: number;
-  averageOrderValue: number;
-  conversionRate: number;
-  userRetentionRate: number;
-}
-
-export interface AdminCharts {
-  userGrowth: Array<{ date: string; users: number; newUsers: number }>;
-  revenue: Array<{ date: string; amount: number; orders: number }>;
-  activity: Array<{
-    date: string;
-    jobs: number;
-    orders: number;
-    messages: number;
-  }>;
-  userTypes: Array<{
-    type: 'freelancer' | 'employer';
+  userGrowthRate: number;
+  averageSessionDuration: number;
+  topLocations: Array<{
+    location: string;
     count: number;
-    percentage: number;
   }>;
-  topCategories: Array<{
-    category: string;
-    jobCount: number;
-    orderCount: number;
-  }>;
-  orderStatus: Array<{ status: string; count: number; percentage: number }>;
-  geographicDistribution: Array<{
-    country: string;
-    region: string;
-    userCount: number;
-  }>;
-}
-
-export interface AdminAlert {
-  id: string;
-  type: 'info' | 'warning' | 'error' | 'success';
-  title: string;
-  message: string;
-  category: 'system' | 'security' | 'moderation' | 'finance' | 'user';
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  isRead: boolean;
-  actionRequired: boolean;
-  actionUrl?: string;
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  expiresAt?: string;
-}
-
-export interface AdminActivity {
-  id: string;
-  type:
-    | 'user_action'
-    | 'system_event'
-    | 'moderation_action'
-    | 'financial_transaction';
-  userId?: string;
-  adminId?: string;
-  action: string;
-  description: string;
-  details?: Record<string, unknown>;
-  ipAddress?: string;
-  userAgent?: string;
-  timestamp: string;
-}
-
-export interface SystemHealth {
-  status: 'healthy' | 'warning' | 'critical';
-  uptime: number; // seconds
-  responseTime: number; // milliseconds
-  apiStatus: 'operational' | 'degraded' | 'down';
-  databaseStatus: 'healthy' | 'slow' | 'down';
-  cacheStatus: 'healthy' | 'degraded' | 'down';
-  paymentGatewayStatus: 'operational' | 'degraded' | 'down';
-  notificationServiceStatus: 'operational' | 'degraded' | 'down';
-  lastCheckedAt: string;
-  issues: SystemIssue[];
-}
-
-export interface SystemIssue {
-  id: string;
-  component: string;
-  description: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  startedAt: string;
-  resolvedAt?: string;
-  status: 'ongoing' | 'resolved' | 'investigating';
-}
-
-// User Management Types
-export interface AdminUserData extends User {
-  accountStatus: 'active' | 'suspended' | 'banned' | 'pending_verification';
-  verificationStatus: 'verified' | 'pending' | 'rejected' | 'unverified';
-  verificationBadges: VerificationBadge[];
-  joinDate: string;
-  lastActiveAt: string;
-  lastLoginAt: string;
-  loginCount: number;
-  totalOrders: number;
-  totalEarnings: number;
-  totalSpent: number;
-  successRate: number;
-  disputeCount: number;
-  warningCount: number;
-  reputationScore: number;
-  riskScore: number;
-  notes: AdminUserNote[];
-  suspensionHistory: SuspensionRecord[];
-  metadata?: UserMetadata;
-}
-
-export interface VerificationBadge {
-  id: string;
-  type: 'email' | 'phone' | 'identity' | 'payment' | 'professional' | 'premium';
-  status: 'verified' | 'pending' | 'rejected' | 'expired';
-  verifiedAt?: string;
-  expiresAt?: string;
-  verifiedBy?: string;
-  metadata?: Record<string, unknown>;
-}
-
-export interface AdminUserNote {
-  id: string;
-  adminId: string;
-  adminName: string;
-  note: string;
-  category: 'general' | 'warning' | 'positive' | 'security' | 'finance';
-  isPublic: boolean;
-  createdAt: string;
-}
-
-export interface SuspensionRecord {
-  id: string;
-  adminId: string;
-  adminName: string;
-  reason: string;
-  startDate: string;
-  endDate?: string;
-  isActive: boolean;
-  type: 'warning' | 'temporary_suspension' | 'permanent_ban';
-  metadata?: Record<string, unknown>;
-}
-
-export interface UserMetadata {
-  registrationIp?: string;
-  registrationUserAgent?: string;
-  referralSource?: string;
-  marketingCampaign?: string;
-  deviceInfo?: Record<string, unknown>;
-  behaviorFlags?: string[];
-  customFields?: Record<string, unknown>;
+  userRetention: {
+    day1: number;
+    day7: number;
+    day30: number;
+  };
+  userEngagement: {
+    dailyActiveUsers: number;
+    weeklyActiveUsers: number;
+    monthlyActiveUsers: number;
+  };
 }
 
 export interface UserFilters {
   search?: string;
   userType?: 'freelancer' | 'employer';
-  status?: ('active' | 'suspended' | 'banned' | 'pending_verification')[];
-  verificationStatus?: ('verified' | 'pending' | 'rejected' | 'unverified')[];
-  joinDateFrom?: string;
-  joinDateTo?: string;
-  lastActiveFrom?: string;
-  lastActiveTo?: string;
-  location?: string[];
-  minOrders?: number;
-  maxOrders?: number;
-  minEarnings?: number;
-  maxEarnings?: number;
-  riskScore?: 'low' | 'medium' | 'high';
-  hasDisputes?: boolean;
-  sort?:
-    | 'newest'
-    | 'oldest'
-    | 'most_active'
-    | 'highest_earnings'
-    | 'risk_score';
-  page?: number;
-  limit?: number;
+  accountStatus?: 'active' | 'suspended' | 'banned';
+  verificationStatus?: 'verified' | 'unverified' | 'pending';
+  status?: string[] | string; // UserTable component compatibility
+  dateFrom?: string;
+  dateTo?: string;
+  sortBy?: 'name' | 'email' | 'createdAt' | 'lastLoginAt';
+  sortOrder?: 'asc' | 'desc';
+  sort?: string; // Additional sort field
 }
 
 export interface UserActionRequest {
-  action:
-    | 'suspend'
-    | 'unsuspend'
-    | 'ban'
-    | 'unban'
-    | 'verify'
-    | 'unverify'
-    | 'add_note'
-    | 'reset_password';
+  userId: string;
+  action: 'suspend' | 'unsuspend' | 'ban' | 'unban' | 'verify' | 'unverify';
   reason?: string;
-  duration?: number; // For suspensions in days
-  endDate?: string;
-  note?: string;
-  notifyUser?: boolean;
-  metadata?: Record<string, unknown>;
+  endDate?: string; // End date for suspension
 }
 
 export interface BulkUserActionRequest {
   userIds: string[];
-  action: UserActionRequest;
-}
-
-// Content Moderation Types
-export interface ModerationItem {
-  id: string;
-  type: 'review' | 'job' | 'service' | 'profile' | 'message' | 'portfolio';
-  contentId: string;
-  content: ModerationContent;
-  reportedBy?: string;
-  reporterInfo?: Pick<User, 'id' | 'firstName' | 'lastName' | 'userType'>;
-  reason: ModerationReason;
-  category: ModerationCategory;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  status: 'pending' | 'approved' | 'rejected' | 'escalated' | 'dismissed';
-  assignedTo?: string;
-  moderatorId?: string;
-  moderatorNotes?: string;
-  automatedFlags: AutomatedFlag[];
-  reviewHistory: ModerationReview[];
-  createdAt: string;
-  updatedAt: string;
-  resolvedAt?: string;
-  metadata?: Record<string, unknown>;
-}
-
-export interface ModerationContent {
-  title?: string;
-  description?: string;
-  images?: string[];
-  text?: string;
-  rating?: number;
-  originalContent?: Record<string, unknown>;
-  userContent?: UserGeneratedContent;
-}
-
-export interface UserGeneratedContent {
-  userId: string;
-  userName: string;
-  userType: 'freelancer' | 'employer';
-  submittedAt: string;
-  ipAddress?: string;
-  userAgent?: string;
-}
-
-export type ModerationReason =
-  | 'spam'
-  | 'inappropriate_content'
-  | 'false_information'
-  | 'copyright_violation'
-  | 'harassment'
-  | 'hate_speech'
-  | 'scam'
-  | 'fake_reviews'
-  | 'price_manipulation'
-  | 'duplicate_content'
-  | 'off_topic'
-  | 'low_quality'
-  | 'policy_violation'
-  | 'other';
-
-export type ModerationCategory =
-  | 'content_quality'
-  | 'user_safety'
-  | 'platform_integrity'
-  | 'legal_compliance'
-  | 'community_standards'
-  | 'business_policy';
-
-export interface AutomatedFlag {
-  id: string;
-  type:
-    | 'keyword_detection'
-    | 'image_analysis'
-    | 'pattern_matching'
-    | 'sentiment_analysis'
-    | 'duplicate_detection';
-  severity: 'low' | 'medium' | 'high';
-  confidence: number; // 0-1
-  details: string;
-  metadata?: Record<string, unknown>;
-  flaggedAt: string;
-}
-
-export interface ModerationReview {
-  id: string;
-  moderatorId: string;
-  moderatorName: string;
-  action:
-    | 'approved'
-    | 'rejected'
-    | 'escalated'
-    | 'requested_changes'
-    | 'dismissed';
-  notes: string;
-  reviewTime: number; // seconds spent reviewing
-  timestamp: string;
-}
-
-export interface ModerationActionRequest {
-  action: 'approve' | 'reject' | 'escalate' | 'dismiss' | 'request_changes';
+  action: 'suspend' | 'unsuspend' | 'ban' | 'unban' | 'verify' | 'unverify';
   reason?: string;
-  notes?: string;
-  notifyUser?: boolean;
-  notifyReporter?: boolean;
-  additionalActions?: UserActionRequest[];
-  metadata?: Record<string, unknown>;
 }
 
-export interface ModerationFilters {
-  type?: ('review' | 'job' | 'service' | 'profile' | 'message' | 'portfolio')[];
-  status?: ('pending' | 'approved' | 'rejected' | 'escalated' | 'dismissed')[];
-  priority?: ('low' | 'medium' | 'high' | 'urgent')[];
-  reason?: ModerationReason[];
-  category?: ModerationCategory[];
-  assignedTo?: string;
-  reportedBy?: string;
-  dateFrom?: string;
-  dateTo?: string;
-  hasAutomatedFlags?: boolean;
-  search?: string;
-  sort?: 'newest' | 'oldest' | 'priority' | 'most_reported';
-  page?: number;
-  limit?: number;
+// Analytics additional types
+export interface AnalyticsTimeframe {
+  start: Date;
+  end: Date;
+  period: 'day' | 'week' | 'month' | 'quarter' | 'year';
+  startDate?: string; // Store compatibility
+  endDate?: string; // Store compatibility
 }
 
-export interface ModerationStats {
-  totalItems: number;
-  pendingItems: number;
-  approvedItems: number;
-  rejectedItems: number;
-  averageReviewTime: number;
-  automatedFlagAccuracy: number;
-  topModerationReasons: Array<{ reason: ModerationReason; count: number }>;
-  moderatorPerformance: Array<{
-    moderatorId: string;
-    moderatorName: string;
-    reviewedItems: number;
-    averageTime: number;
-    accuracy: number;
-  }>;
+export interface AnalyticsFilters {
+  timeframe: AnalyticsTimeframe;
+  metrics?: string[];
+  userType?: 'freelancer' | 'employer';
 }
 
-// Platform Settings Types
-export interface PlatformSettings {
-  general: GeneralSettings;
-  payment: PaymentSettings;
-  security: SecuritySettings;
-  email: EmailSettings;
-  features: FeatureSettings;
-  content: ContentSettings;
-  api: ApiSettings;
-  integrations: IntegrationSettings;
-  maintenance: MaintenanceSettings;
+export interface AnalyticsExport {
+  format: 'csv' | 'xlsx' | 'pdf';
+  sections?: string[]; // Added for component compatibility
+  timeframe?: Record<string, unknown>; // Added for component compatibility
+  includeCharts?: boolean; // Added for component compatibility
+  includeRawData?: boolean; // Added for component compatibility
+  data?: Record<string, unknown>; // Made optional for compatibility
+  filename?: string; // Made optional for compatibility
+  createdAt?: string; // Made optional for compatibility
 }
 
-export interface GeneralSettings {
-  siteName: string;
-  siteDescription: string;
-  supportEmail: string;
-  maxFileUploadSize: number; // bytes
-  allowedFileTypes: string[];
-  defaultLanguage: 'tr' | 'en';
-  supportedLanguages: string[];
-  timezone: string;
-  currency: 'TRY' | 'USD' | 'EUR';
-  supportedCurrencies: string[];
-  termsOfServiceUrl: string;
-  privacyPolicyUrl: string;
-  cookiePolicyUrl: string;
+export interface AnalyticsExportResponse {
+  downloadUrl: string;
+  expiresAt: string;
+  fileSize: number;
+  // Store compatibility
+  success?: boolean;
+  error?: string;
 }
 
-export interface PaymentSettings {
-  platformFee: number; // percentage
-  minimumWithdrawal: number;
-  withdrawalFee: number;
-  escrowPeriod: number; // days
-  automaticRelease: boolean;
-  supportedPaymentMethods: string[];
-  taxCalculation: boolean;
-  invoiceGeneration: boolean;
-  refundPolicy: RefundPolicySettings;
+export interface GetAnalyticsResponse {
+  freelancer?: FreelancerAnalytics;
+  employer?: EmployerAnalytics;
+  timeframe?: AnalyticsTimeframe | string; // MSW handler compatibility - can be string
+  lastUpdated?: string; // Made optional for MSW handler compatibility
+  // MSW handler compatibility
+  success?: boolean;
+  data?: FreelancerAnalytics | EmployerAnalytics;
+  error?: string;
 }
 
-export interface RefundPolicySettings {
-  allowRefunds: boolean;
-  refundPeriod: number; // days
-  partialRefunds: boolean;
-  automaticRefunds: boolean;
-  refundFee: number; // percentage
-}
-
-export interface SecuritySettings {
-  twoFactorAuth: boolean;
-  passwordRequirements: PasswordRequirements;
-  sessionTimeout: number; // minutes
-  maxLoginAttempts: number;
-  lockoutDuration: number; // minutes
-  ipWhitelist: string[];
-  ipBlacklist: string[];
-  enableCaptcha: boolean;
-  dataRetentionPeriod: number; // days
-}
-
-export interface PasswordRequirements {
-  minLength: number;
-  requireUppercase: boolean;
-  requireLowercase: boolean;
-  requireNumbers: boolean;
-  requireSpecialChars: boolean;
-  preventCommonPasswords: boolean;
-}
-
-export interface EmailSettings {
-  smtpHost: string;
-  smtpPort: number;
-  smtpUsername: string;
-  smtpPassword: string;
-  fromEmail: string;
-  fromName: string;
-  enableEmailVerification: boolean;
-  emailTemplates: EmailTemplateSettings[];
-}
-
-export interface EmailTemplateSettings {
-  id: string;
+// Search Types - manually added for compatibility
+export interface SaveSearchRequest {
+  query: string;
+  filters?: Record<string, unknown>;
   name: string;
-  subject: string;
-  template: string;
-  variables: string[];
-  isActive: boolean;
+  alertFrequency?: 'daily' | 'weekly' | 'monthly' | 'never';
 }
 
-export interface FeatureSettings {
-  userRegistration: boolean;
-  emailVerificationRequired: boolean;
-  profileVerification: boolean;
-  servicePackages: boolean;
-  jobPosting: boolean;
-  directMessaging: boolean;
-  videoChat: boolean;
-  mobileApp: boolean;
-  apiAccess: boolean;
-  affiliateProgram: boolean;
-  loyaltyProgram: boolean;
-  multiLanguage: boolean;
-  darkMode: boolean;
-  notificationSystem: boolean;
-  searchEngine: boolean;
-  analyticsTracking: boolean;
-}
+// Toast system types
+export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
-export interface ContentSettings {
-  moderationEnabled: boolean;
-  autoModeration: boolean;
-  userGeneratedContent: boolean;
-  allowUserProfiles: boolean;
-  allowPortfolio: boolean;
-  allowCustomCategories: boolean;
-  contentFiltering: boolean;
-  spamDetection: boolean;
-  duplicateDetection: boolean;
-  imageModeration: boolean;
-  textAnalysis: boolean;
-}
-
-export interface ApiSettings {
-  enablePublicApi: boolean;
-  enableWebhooks: boolean;
-  rateLimiting: RateLimitSettings;
-  apiVersioning: boolean;
-  apiDocumentation: boolean;
-  apiKeys: ApiKeySettings[];
-}
-
-export interface RateLimitSettings {
-  requestsPerMinute: number;
-  requestsPerHour: number;
-  requestsPerDay: number;
-  burst: number;
-}
-
-export interface ApiKeySettings {
+export interface Toast {
   id: string;
-  name: string;
-  keyPrefix: string;
-  permissions: string[];
-  rateLimits: RateLimitSettings;
-  isActive: boolean;
-  createdAt: string;
-  lastUsedAt?: string;
+  message: string;
+  type: ToastType;
+  duration?: number;
+  title?: string;
 }
 
-export interface IntegrationSettings {
-  paymentGateways: PaymentGatewaySettings[];
-  emailProviders: EmailProviderSettings[];
-  smsProviders: SmsProviderSettings[];
-  analyticsProviders: AnalyticsProviderSettings[];
-  socialLogins: SocialLoginSettings[];
-}
-
-export interface PaymentGatewaySettings {
-  id: string;
-  name: string;
-  isActive: boolean;
-  configuration: Record<string, unknown>;
-  supportedCurrencies: string[];
-  fees: {
-    percentage: number;
-    fixed: number;
-  };
-}
-
-export interface EmailProviderSettings {
-  id: string;
-  name: string;
-  isActive: boolean;
-  configuration: Record<string, unknown>;
-  isDefault: boolean;
-}
-
-export interface SmsProviderSettings {
-  id: string;
-  name: string;
-  isActive: boolean;
-  configuration: Record<string, unknown>;
-  isDefault: boolean;
-  supportedCountries: string[];
-}
-
-export interface AnalyticsProviderSettings {
-  id: string;
-  name: string;
-  isActive: boolean;
-  configuration: Record<string, unknown>;
-  trackingId: string;
-}
-
-export interface SocialLoginSettings {
-  provider: 'google' | 'facebook' | 'linkedin' | 'twitter' | 'github';
-  isActive: boolean;
-  clientId: string;
-  clientSecret: string;
-  scopes: string[];
-}
-
-export interface MaintenanceSettings {
-  isMaintenanceMode: boolean;
-  maintenanceMessage: string;
-  scheduledMaintenance: ScheduledMaintenance[];
-  allowedIps: string[];
-  allowedRoles: string[];
-}
-
-export interface ScheduledMaintenance {
+// Enhanced Search Types
+export interface EnhancedSearchResult {
   id: string;
   title: string;
   description: string;
-  startTime: string;
-  endTime: string;
-  affectedServices: string[];
-  notifyUsers: boolean;
-  isActive: boolean;
+  type: 'job' | 'freelancer' | 'package';
+  relevanceScore: number;
+  matchedFields: string[];
+  highlights: Record<string, string[]>;
 }
 
-// Audit Log Types
-export interface AuditLog {
-  id: string;
-  userId?: string;
-  adminId?: string;
-  action: string;
-  resource: string;
-  resourceId?: string;
-  details: AuditLogDetails;
-  ipAddress: string;
-  userAgent: string;
-  timestamp: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  category: 'user_action' | 'admin_action' | 'system_event' | 'security_event';
+export interface EnhancedSearchFilters {
+  query?: string;
+  type?: string[];
+  category?: string[];
+  skills?: string[];
+  location?: string[];
+  priceRange?: {
+    min: number;
+    max: number;
+  };
+  rating?: number;
+  availability?: boolean;
+  experienceLevel?: string[];
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
-export interface AuditLogDetails {
-  before?: Record<string, unknown>;
-  after?: Record<string, unknown>;
-  changes?: Array<{
-    field: string;
-    oldValue: unknown;
-    newValue: unknown;
+export interface UseEnhancedSearchReturn {
+  results: EnhancedSearchResult[];
+  isLoading: boolean;
+  error: string | null;
+  hasMore: boolean;
+  search: (filters: EnhancedSearchFilters) => Promise<void>;
+  loadMore: () => Promise<void>;
+  clearResults: () => void;
+  query: string;
+  filters: EnhancedSearchFilters;
+  setQuery: (query: string) => void;
+  applyFilter: (key: string, value: unknown) => void;
+  removeFilter: (key: string) => void;
+  clearSearch: () => void;
+  saveCurrentSearch: (name: string) => Promise<void>;
+  getSearchAnalytics: () => Promise<SearchAnalytics>;
+}
+
+export interface SearchAnalytics {
+  popularQueries: Array<{
+    query: string;
+    count: number;
   }>;
-  metadata?: Record<string, unknown>;
+  searchTrends: Array<{
+    period: string;
+    searches: number;
+  }>;
+  conversionRate: number;
 }
 
-export interface AuditLogFilters {
-  userId?: string;
-  adminId?: string;
-  action?: string[];
-  resource?: string[];
-  severity?: ('low' | 'medium' | 'high' | 'critical')[];
-  category?: (
-    | 'user_action'
-    | 'admin_action'
-    | 'system_event'
-    | 'security_event'
-  )[];
-  dateFrom?: string;
-  dateTo?: string;
-  ipAddress?: string;
-  search?: string;
-  page?: number;
-  limit?: number;
-}
-
-// Admin Store Interfaces
-export interface AdminDashboardStore {
-  // State
-  data: AdminDashboardData | null;
-  isLoading: boolean;
-  error: string | null;
-  lastUpdated: string | null;
-
-  // Actions
-  fetchDashboard: () => Promise<void>;
-  refreshDashboard: () => Promise<void>;
-  markAlertAsRead: (alertId: string) => Promise<void>;
-  dismissAlert: (alertId: string) => Promise<void>;
-  clearError: () => void;
-}
-
-export interface AdminUserStore {
-  // State
-  users: AdminUserData[];
-  selectedUser: AdminUserData | null;
-  isLoading: boolean;
-  error: string | null;
-  filters: UserFilters;
-  pagination: PaginationMeta | null;
-  bulkSelectedIds: string[];
-
-  // Actions
-  fetchUsers: (filters?: UserFilters) => Promise<void>;
-  fetchUserById: (userId: string) => Promise<void>;
-  performUserAction: (
-    userId: string,
-    action: UserActionRequest
-  ) => Promise<void>;
-  performBulkAction: (action: BulkUserActionRequest) => Promise<void>;
-  setFilters: (filters: Partial<UserFilters>) => void;
-  selectUser: (user: AdminUserData | null) => void;
-  toggleBulkSelection: (userId: string) => void;
-  selectAllUsers: () => void;
-  clearBulkSelection: () => void;
-  clearError: () => void;
-}
-
-export interface AdminModerationStore {
-  // State
-  items: ModerationItem[];
-  selectedItem: ModerationItem | null;
-  stats: ModerationStats | null;
-  isLoading: boolean;
-  error: string | null;
-  filters: ModerationFilters;
-  pagination: PaginationMeta | null;
-
-  // Actions
-  fetchModerationQueue: (filters?: ModerationFilters) => Promise<void>;
-  fetchModerationStats: () => Promise<void>;
-  performModerationAction: (
-    itemId: string,
-    action: ModerationActionRequest
-  ) => Promise<void>;
-  assignModerator: (itemId: string, moderatorId: string) => Promise<void>;
-  escalateItem: (itemId: string, reason: string) => Promise<void>;
-  setFilters: (filters: Partial<ModerationFilters>) => void;
-  selectItem: (item: ModerationItem | null) => void;
-  clearError: () => void;
-}
-
-export interface AdminSettingsStore {
-  // State
-  settings: PlatformSettings | null;
-  isLoading: boolean;
-  error: string | null;
-  hasUnsavedChanges: boolean;
-
-  // Actions
-  fetchSettings: () => Promise<void>;
-  updateSettings: (settings: Partial<PlatformSettings>) => Promise<void>;
-  resetSettings: () => Promise<void>;
-  exportSettings: () => Promise<void>;
-  importSettings: (settings: PlatformSettings) => Promise<void>;
-  clearError: () => void;
-}
-
-export interface AdminAuditStore {
-  // State
-  logs: AuditLog[];
-  isLoading: boolean;
-  error: string | null;
-  filters: AuditLogFilters;
-  pagination: PaginationMeta | null;
-
-  // Actions
-  fetchAuditLogs: (filters?: AuditLogFilters) => Promise<void>;
-  exportAuditLogs: (filters?: AuditLogFilters) => Promise<void>;
-  setFilters: (filters: Partial<AuditLogFilters>) => void;
-  clearError: () => void;
-}
-
-// Admin API Response Types
-export interface AdminDashboardResponse {
-  success: boolean;
-  data: AdminDashboardData;
-  message?: string;
-}
-
-export interface AdminUsersResponse {
-  success: boolean;
-  data: {
-    users: AdminUserData[];
-    pagination: PaginationMeta;
+export interface SearchResult {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  location: string;
+  budget: number;
+  rating: number;
+  type: 'job' | 'freelancer' | 'package';
+  skills: string[];
+  freelancer?: {
+    id: string;
+    name: string;
+    avatar: string;
+    rating: number;
   };
-  message?: string;
-}
-
-export interface AdminUserResponse {
-  success: boolean;
-  data: AdminUserData;
-  message?: string;
-}
-
-export interface AdminUserActionResponse {
-  success: boolean;
-  data?: {
-    user: AdminUserData;
-    auditLog: AuditLog;
+  employer?: {
+    id: string;
+    name: string;
+    avatar: string;
   };
-  message: string;
-}
-
-export interface AdminModerationResponse {
-  success: boolean;
-  data: {
-    items: ModerationItem[];
-    pagination: PaginationMeta;
-  };
-  message?: string;
-}
-
-export interface AdminModerationStatsResponse {
-  success: boolean;
-  data: ModerationStats;
-  message?: string;
-}
-
-export interface AdminModerationActionResponse {
-  success: boolean;
-  data?: {
-    item: ModerationItem;
-    auditLog: AuditLog;
-  };
-  message: string;
-}
-
-export interface AdminSettingsResponse {
-  success: boolean;
-  data: PlatformSettings;
-  message?: string;
-}
-
-export interface AdminAuditLogsResponse {
-  success: boolean;
-  data: {
-    logs: AuditLog[];
-    pagination: PaginationMeta;
-  };
-  message?: string;
+  price?: number;
+  deliveryTime?: number;
+  createdAt: string;
 }

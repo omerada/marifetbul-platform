@@ -304,14 +304,151 @@ export function EnhancedSearchSystem({
       setQuery(finalQuery);
 
       try {
-        await search(finalQuery);
+        await search({
+          query: finalQuery,
+          type: filters.type,
+          filters: filters.filters,
+          sort: filters.sort,
+          location: filters.location,
+        });
 
         if (enableAnalytics) {
-          const analytics = getSearchAnalytics();
+          const analytics = await getSearchAnalytics();
           onMetrics?.(searchMetrics!);
         }
 
-        onResults?.(results);
+        // Convert results to expected format if needed
+        const searchResults = results.map((result) => ({
+          id: result.id,
+          title: result.title,
+          description: result.description || '',
+          category: result.type,
+          location: 'location' in result ? (result.location as string) : '',
+          budget:
+            'budget' in result
+              ? typeof result.budget === 'object'
+                ? (result.budget as {
+                    min: number;
+                    max: number;
+                    currency: string;
+                  })
+                : {
+                    min: result.budget as number,
+                    max: result.budget as number,
+                    currency: 'TRY',
+                  }
+              : { min: 0, max: 0, currency: 'TRY' },
+          rating: 'rating' in result ? (result.rating as number) : 0,
+          type:
+            result.type === 'package'
+              ? 'service'
+              : (result.type as 'job' | 'freelancer' | 'service'),
+          skills: 'skills' in result ? (result.skills as string[]) : [],
+          freelancer:
+            'freelancer' in result && result.freelancer
+              ? {
+                  id:
+                    ((result.freelancer as Record<string, unknown>)
+                      ?.id as string) || '',
+                  name:
+                    ((result.freelancer as Record<string, unknown>)
+                      ?.name as string) || '',
+                  avatar:
+                    ((result.freelancer as Record<string, unknown>)
+                      ?.avatar as string) || '',
+                  title:
+                    ((result.freelancer as Record<string, unknown>)
+                      ?.title as string) || '',
+                  hourlyRate:
+                    ((result.freelancer as Record<string, unknown>)
+                      ?.hourlyRate as number) || 0,
+                  availability:
+                    ((result.freelancer as Record<string, unknown>)
+                      ?.availability as string) || 'available',
+                  level:
+                    ((result.freelancer as Record<string, unknown>)
+                      ?.level as string) || 'beginner',
+                }
+              : undefined,
+          employer:
+            'employer' in result && result.employer
+              ? {
+                  id:
+                    ((result.employer as Record<string, unknown>)
+                      ?.id as string) || '',
+                  name:
+                    ((result.employer as Record<string, unknown>)
+                      ?.name as string) || '',
+                  avatar:
+                    ((result.employer as Record<string, unknown>)
+                      ?.avatar as string) || '',
+                  verified:
+                    ((result.employer as Record<string, unknown>)
+                      ?.verified as boolean) || false,
+                  rating:
+                    ((result.employer as Record<string, unknown>)
+                      ?.rating as number) || 0,
+                }
+              : undefined,
+          price: 'price' in result ? (result.price as number) : undefined,
+          deliveryTime:
+            'deliveryTime' in result
+              ? (result.deliveryTime as number)
+              : undefined,
+          createdAt:
+            'createdAt' in result
+              ? (result.createdAt as string)
+              : new Date().toISOString(),
+          // Default values for missing properties
+          reviews: 'reviews' in result ? (result.reviews as number) : 0,
+          featured: 'featured' in result ? (result.featured as boolean) : false,
+          urgent: 'urgent' in result ? (result.urgent as boolean) : false,
+          verified: 'verified' in result ? (result.verified as boolean) : false,
+          tags: 'tags' in result ? (result.tags as string[]) : [],
+          status: 'status' in result ? (result.status as string) : 'active',
+          views: 'views' in result ? (result.views as number) : 0,
+          postedAt:
+            'postedAt' in result
+              ? (result.postedAt as string)
+              : new Date().toISOString(),
+          metrics:
+            'metrics' in result && result.metrics
+              ? {
+                  views:
+                    ((result.metrics as Record<string, unknown>)
+                      ?.views as number) || 0,
+                  applications:
+                    ((result.metrics as Record<string, unknown>)
+                      ?.applications as number) || 0,
+                  responseTime:
+                    ((result.metrics as Record<string, unknown>)
+                      ?.responseTime as string) || '24h',
+                }
+              : { views: 0, applications: 0, responseTime: '24h' },
+          user:
+            'user' in result && result.user
+              ? {
+                  id:
+                    ((result.user as Record<string, unknown>)?.id as string) ||
+                    '',
+                  name:
+                    ((result.user as Record<string, unknown>)
+                      ?.name as string) || '',
+                  avatar:
+                    ((result.user as Record<string, unknown>)
+                      ?.avatar as string) || undefined,
+                  rating:
+                    ((result.user as Record<string, unknown>)
+                      ?.rating as number) || undefined,
+                }
+              : { id: '', name: '' },
+          updatedAt:
+            'updatedAt' in result
+              ? (result.updatedAt as string)
+              : new Date().toISOString(),
+        }));
+
+        onResults?.(searchResults);
       } catch (error) {
         console.error('Search error:', error);
       }
@@ -326,6 +463,10 @@ export function EnhancedSearchSystem({
       searchMetrics,
       enableAnalytics,
       getSearchAnalytics,
+      filters.filters,
+      filters.location,
+      filters.sort,
+      filters.type,
     ]
   );
 

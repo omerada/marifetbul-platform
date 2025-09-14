@@ -1,9 +1,9 @@
 'use client';
 
 import useSWR from 'swr';
-import { useState } from 'react';
 import { Message, Conversation, ApiResponse } from '@/types';
 import { apiClient } from '@/lib/api/client';
+import { useAsyncOperation, useAsyncAction } from './useAsyncOperation';
 
 // Hook to fetch conversations
 export function useConversations() {
@@ -52,23 +52,20 @@ export function useMessages(conversationId: string) {
   };
 }
 
-// Hook to send messages
+// Hook to send messages - REFACTORED to use useAsyncOperation
 export function useMessaging() {
-  const [isLoading, setIsLoading] = useState(false);
+  const sendMessageOperation = useAsyncOperation<ApiResponse<Message>>();
+  const createConversationOperation = useAsyncOperation<ApiResponse<Conversation>>();
+  const markAsReadAction = useAsyncAction();
 
   const sendMessage = async (conversationId: string, content: string) => {
-    setIsLoading(true);
-    try {
+    return await sendMessageOperation.execute(async () => {
       const response = await apiClient.post<ApiResponse<Message>>(
         `/api/conversations/${conversationId}/messages`,
         { content }
       );
-      return response.data;
-    } catch (error) {
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
+      return response;
+    });
   };
 
   const createConversation = async (
@@ -77,8 +74,7 @@ export function useMessaging() {
     jobId?: string,
     packageId?: string
   ) => {
-    setIsLoading(true);
-    try {
+    return await createConversationOperation.execute(async () => {
       const response = await apiClient.post<ApiResponse<Conversation>>(
         '/api/conversations',
         {
@@ -88,27 +84,22 @@ export function useMessaging() {
           initialMessage,
         }
       );
-      return response.data;
-    } catch (error) {
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
+      return response;
+    });
   };
 
   const markAsRead = async (conversationId: string) => {
-    try {
+    await markAsReadAction.execute(async () => {
       await apiClient.patch(`/api/conversations/${conversationId}/mark-read`);
-    } catch (error) {
-      console.error('Failed to mark as read:', error);
-    }
+    });
   };
 
   return {
     sendMessage,
     createConversation,
     markAsRead,
-    isLoading,
+    isLoading: sendMessageOperation.isLoading || createConversationOperation.isLoading || markAsReadAction.isLoading,
+    error: sendMessageOperation.error || createConversationOperation.error || markAsReadAction.error,
   };
 }
 

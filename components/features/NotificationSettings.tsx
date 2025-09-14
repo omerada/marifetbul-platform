@@ -10,35 +10,26 @@ interface NotificationSettingsProps {
 }
 
 const defaultSettings: NotificationSettings = {
-  userId: 'user-1',
-  browser: {
-    enabled: true,
-    proposals: true,
-    messages: true,
-    payments: true,
-    orders: true,
-    system: false,
-  },
-  email: {
-    enabled: true,
-    proposals: true,
-    messages: false,
-    payments: true,
-    orders: true,
-    system: true,
-    digest: 'daily',
-  },
-  sms: {
-    enabled: false,
-    urgent: false,
-    payments: true,
-  },
+  push: true,
+  email: true,
+  sms: false,
+  inApp: true,
+  marketing: false,
+  updates: true,
+  reminders: true,
   quietHours: {
-    enabled: true,
+    enabled: false,
     start: '22:00',
     end: '08:00',
   },
-  updatedAt: new Date().toISOString(),
+  browser: {
+    enabled: true,
+    proposals: 'true',
+    messages: 'true',
+    payments: 'true',
+    orders: 'true',
+    system: 'false',
+  },
 };
 
 export function NotificationSettingsPanel({
@@ -232,8 +223,8 @@ export function NotificationSettingsPanel({
           <ChannelSection
             title="📧 E-posta Bildirimleri"
             channel="email"
-            channelSettings={settings.email}
-            mainEnabled={settings.email.enabled}
+            channelSettings={{ enabled: settings.email }}
+            mainEnabled={settings.email}
           />
         </Card>
 
@@ -242,8 +233,8 @@ export function NotificationSettingsPanel({
           <ChannelSection
             title="📱 SMS Bildirimleri"
             channel="sms"
-            channelSettings={settings.sms}
-            mainEnabled={settings.sms.enabled}
+            channelSettings={{ enabled: settings.sms }}
+            mainEnabled={settings.sms}
           />
         </Card>
 

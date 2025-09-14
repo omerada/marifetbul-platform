@@ -40,11 +40,12 @@ export function SupportStats({
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Toplam Destek Talepleri"
-          value={overview.totalTickets.toLocaleString()}
-          subtitle={`${overview.openTickets} açık`}
+          value={overview?.totalTickets?.toLocaleString() || '0'}
+          subtitle={`${overview?.openTickets || 0} açık`}
           icon={<MessageSquare className="h-4 w-4" />}
           trend={
-            overview.resolvedTickets > overview.totalTickets * 0.8
+            (overview?.resolvedTickets || 0) >
+            (overview?.totalTickets || 0) * 0.8
               ? 'positive'
               : 'neutral'
           }
@@ -52,26 +53,35 @@ export function SupportStats({
 
         <StatsCard
           title="Ortalama Çözüm Süresi"
-          value={`${overview.averageResolutionTime}s`}
+          value={`${overview?.averageResolutionTime || 0}s`}
           subtitle="hedef: 24s"
           icon={<Clock className="h-4 w-4" />}
-          trend={overview.averageResolutionTime <= 24 ? 'positive' : 'negative'}
+          trend={
+            (overview?.averageResolutionTime || 0) <= 24
+              ? 'positive'
+              : 'negative'
+          }
         />
 
         <StatsCard
           title="Müşteri Memnuniyeti"
-          value={`${overview.customerSatisfaction}/5`}
-          subtitle={`${overview.firstCallResolution}% ilk çözüm`}
+          value={`${overview?.customerSatisfaction || 0}/5`}
+          subtitle={`${overview?.firstCallResolution || 0}% ilk çözüm`}
           icon={<Star className="h-4 w-4" />}
-          trend={overview.customerSatisfaction >= 4.5 ? 'positive' : 'neutral'}
+          trend={
+            (overview?.customerSatisfaction || 0) >= 4.5
+              ? 'positive'
+              : 'neutral'
+          }
         />
 
         <StatsCard
           title="Çözümlenen Talepler"
           value={`${Math.round(
-            (overview.resolvedTickets / overview.totalTickets) * 100
+            ((overview?.resolvedTickets || 0) / (overview?.totalTickets || 1)) *
+              100
           )}%`}
-          subtitle={`${overview.resolvedTickets} / ${overview.totalTickets}`}
+          subtitle={`${overview?.resolvedTickets || 0} / ${overview?.totalTickets || 0}`}
           icon={<CheckCircle className="h-4 w-4" />}
           trend="positive"
         />
@@ -87,7 +97,7 @@ export function SupportStats({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {ticketsByCategory.map((category, index) => (
+            {ticketsByCategory?.map((category, index) => (
               <div key={category.category} className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-medium capitalize">
@@ -104,7 +114,7 @@ export function SupportStats({
                 </div>
                 <Progress value={category.percentage} className="h-2" />
                 <div className="text-muted-foreground text-xs">
-                  Ortalama çözüm: {category.averageResolutionTime}s
+                  {category.count} talep
                 </div>
               </div>
             ))}
@@ -120,31 +130,22 @@ export function SupportStats({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {responseTimeMetrics.map((metric) => (
-              <div key={metric.period} className="space-y-2">
+            {responseTimeMetrics?.map((metric, index) => (
+              <div key={metric.metric || index} className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium capitalize">
-                    {getPeriodLabel(metric.period)}
+                    {metric.metric}
                   </span>
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground text-sm">
-                      {metric.averageTime}s / {metric.target}s
+                      {metric.value}
                     </span>
-                    <Badge
-                      variant={
-                        metric.performance >= 90
-                          ? 'default'
-                          : metric.performance >= 70
-                            ? 'secondary'
-                            : 'destructive'
-                      }
-                      className="text-xs"
-                    >
-                      %{metric.performance}
+                    <Badge variant="secondary" className="text-xs">
+                      {metric.trend}
                     </Badge>
                   </div>
                 </div>
-                <Progress value={metric.performance} className="h-2" />
+                <Progress value={metric.value} className="h-2" />
               </div>
             ))}
           </CardContent>
@@ -163,14 +164,16 @@ export function SupportStats({
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-6">
             <div className="text-center">
               <div className="text-primary text-2xl font-bold">
-                {chatMetrics.totalSessions.toLocaleString()}
+                {chatMetrics?.averageResponseTime?.toLocaleString() || 0}
               </div>
-              <div className="text-muted-foreground text-xs">Toplam Oturum</div>
+              <div className="text-muted-foreground text-xs">
+                Ortalama Yanıt
+              </div>
             </div>
 
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">
-                {chatMetrics.averageWaitTime.toFixed(1)}dk
+                {(chatMetrics?.averageSessionDuration || 0).toFixed(1)}dk
               </div>
               <div className="text-muted-foreground text-xs">
                 Ortalama Bekleme
@@ -179,28 +182,28 @@ export function SupportStats({
 
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
-                {chatMetrics.averageSessionDuration.toFixed(1)}dk
+                {(chatMetrics?.averageSessionDuration || 0).toFixed(1)}dk
               </div>
               <div className="text-muted-foreground text-xs">Ortalama Süre</div>
             </div>
 
             <div className="text-center">
               <div className="text-2xl font-bold text-yellow-600">
-                %{(100 - chatMetrics.abandonmentRate).toFixed(1)}
+                %{(100 - (chatMetrics?.averageResponseTime || 0)).toFixed(1)}
               </div>
               <div className="text-muted-foreground text-xs">Başarı Oranı</div>
             </div>
 
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-600">
-                {chatMetrics.satisfactionRating.toFixed(1)}/5
+                {(chatMetrics?.customerSatisfactionScore || 0).toFixed(1)}/5
               </div>
               <div className="text-muted-foreground text-xs">Memnuniyet</div>
             </div>
 
             <div className="text-center">
               <div className="text-2xl font-bold text-orange-600">
-                %{chatMetrics.transferRate.toFixed(1)}
+                %{(chatMetrics?.averageResponseTime || 0).toFixed(1)}
               </div>
               <div className="text-muted-foreground text-xs">
                 Transfer Oranı
@@ -303,17 +306,6 @@ function getCategoryLabel(category: string): string {
     bug_report: 'Hata Bildirimi',
   };
   return labels[category] || category;
-}
-
-function getPeriodLabel(period: string): string {
-  const labels: Record<string, string> = {
-    today: 'Bugün',
-    week: 'Bu Hafta',
-    month: 'Bu Ay',
-    quarter: 'Bu Çeyrek',
-    year: 'Bu Yıl',
-  };
-  return labels[period] || period;
 }
 
 export default SupportStats;

@@ -38,12 +38,14 @@ const FavoriteItemCard: React.FC<FavoriteItemCardProps> = ({
   className = '',
 }) => {
   const getItemType = (): 'freelancer' | 'job' | 'service' => {
+    if (!favorite.item) return 'job'; // Default fallback
     if ('firstName' in favorite.item) return 'freelancer';
     if ('employerId' in favorite.item) return 'job';
     return 'service';
   };
 
   const getItemTitle = () => {
+    if (!favorite.item) return 'Bilinmeyen öğe';
     const item = favorite.item;
     if ('firstName' in item) {
       return `${item.firstName} ${item.lastName}`;
@@ -52,6 +54,7 @@ const FavoriteItemCard: React.FC<FavoriteItemCardProps> = ({
   };
 
   const getItemDescription = () => {
+    if (!favorite.item) return undefined;
     const item = favorite.item;
     if ('bio' in item) return item.bio;
     if ('description' in item) return item.description;
@@ -99,9 +102,10 @@ const FavoriteItemCard: React.FC<FavoriteItemCardProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onView(favorite.item)}
+          onClick={() => favorite.item && onView(favorite.item)}
           className="h-6 w-6 p-0"
           title="Görüntüle"
+          disabled={!favorite.item}
         >
           <Eye className="h-3 w-3" />
         </Button>
@@ -147,24 +151,26 @@ const FavoriteItemCard: React.FC<FavoriteItemCardProps> = ({
         {/* Item Details */}
         <div className="mb-3 space-y-2">
           {/* Freelancer specific info */}
-          {itemType === 'freelancer' && 'rating' in favorite.item && (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Star className="h-4 w-4 text-yellow-500" />
-                <span className="text-sm font-medium">
-                  {favorite.item.rating || 'N/A'}
-                </span>
-              </div>
-              {'hourlyRate' in favorite.item && favorite.item.hourlyRate && (
-                <div className="text-sm font-medium">
-                  {formatBudget(favorite.item.hourlyRate)}
+          {itemType === 'freelancer' &&
+            favorite.item &&
+            'rating' in favorite.item && (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Star className="h-4 w-4 text-yellow-500" />
+                  <span className="text-sm font-medium">
+                    {favorite.item.rating || 'N/A'}
+                  </span>
                 </div>
-              )}
-            </div>
-          )}
+                {'hourlyRate' in favorite.item && favorite.item.hourlyRate && (
+                  <div className="text-sm font-medium">
+                    {formatBudget(favorite.item.hourlyRate)}
+                  </div>
+                )}
+              </div>
+            )}
 
           {/* Job specific info */}
-          {itemType === 'job' && (
+          {itemType === 'job' && favorite.item && (
             <div className="space-y-1">
               {'budget' in favorite.item && favorite.item.budget && (
                 <div className="flex items-center gap-2">
@@ -178,7 +184,7 @@ const FavoriteItemCard: React.FC<FavoriteItemCardProps> = ({
           )}
 
           {/* Service specific info */}
-          {itemType === 'service' && (
+          {itemType === 'service' && favorite.item && (
             <div className="flex items-center justify-between">
               {'price' in favorite.item && favorite.item.price && (
                 <div className="text-sm font-medium">
@@ -189,17 +195,19 @@ const FavoriteItemCard: React.FC<FavoriteItemCardProps> = ({
           )}
 
           {/* Location */}
-          {'location' in favorite.item && favorite.item.location && (
-            <div className="flex items-center gap-2">
-              <MapPin className="text-muted-foreground h-4 w-4" />
-              <span className="text-sm">
-                {typeof favorite.item.location === 'string'
-                  ? favorite.item.location
-                  : (favorite.item.location as { city?: string })?.city ||
-                    'Konum belirtilmemiş'}
-              </span>
-            </div>
-          )}
+          {favorite.item &&
+            'location' in favorite.item &&
+            favorite.item.location && (
+              <div className="flex items-center gap-2">
+                <MapPin className="text-muted-foreground h-4 w-4" />
+                <span className="text-sm">
+                  {typeof favorite.item.location === 'string'
+                    ? favorite.item.location
+                    : (favorite.item.location as { city?: string })?.city ||
+                      'Konum belirtilmemiş'}
+                </span>
+              </div>
+            )}
         </div>
 
         {/* Tags */}
@@ -219,12 +227,12 @@ const FavoriteItemCard: React.FC<FavoriteItemCardProps> = ({
         )}
 
         {/* Notes */}
-        {favorite.note && (
+        {(favorite.note || favorite.notes) && (
           <div className="bg-muted/50 rounded p-2 text-sm">
             <div className="text-muted-foreground mb-1 text-xs font-medium">
               Not:
             </div>
-            {favorite.note}
+            {favorite.note || favorite.notes}
           </div>
         )}
       </CardContent>
@@ -264,6 +272,7 @@ export const FavoritesManager: React.FC<FavoritesManagerProps> = ({
     // Filter by type
     if (filterType !== 'all') {
       filtered = filtered.filter((fav: FavoriteItem) => {
+        if (!fav.item) return false;
         if (filterType === 'freelancer') return 'firstName' in fav.item;
         if (filterType === 'job') return 'employerId' in fav.item;
         if (filterType === 'service') return 'providerId' in fav.item;
@@ -276,6 +285,8 @@ export const FavoritesManager: React.FC<FavoritesManagerProps> = ({
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter((fav: FavoriteItem) => {
         const item = fav.item;
+
+        if (!item) return false;
 
         // Search in title/name
         const title =
@@ -303,7 +314,11 @@ export const FavoritesManager: React.FC<FavoritesManagerProps> = ({
           return true;
 
         // Search in notes
-        if (fav.note && fav.note.toLowerCase().includes(query)) return true;
+        if (
+          (fav.note || fav.notes) &&
+          (fav.note || fav.notes)?.toLowerCase().includes(query)
+        )
+          return true;
 
         return false;
       });

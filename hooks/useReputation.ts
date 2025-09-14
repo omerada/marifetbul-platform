@@ -137,7 +137,10 @@ export function useReputation(userId?: string, autoLoad = true) {
     ),
     recommendations: securityStatus?.recommendations || [],
     incompleteRecommendations:
-      securityStatus?.recommendations.filter((r) => !r.isCompleted) || [],
+      securityStatus?.recommendations?.filter((r) => {
+        if (typeof r === 'string') return false;
+        return !r.isCompleted;
+      }) || [],
   };
 }
 

@@ -7,8 +7,6 @@ import {
   InvoiceDetails,
   EscrowDetails,
   PaymentMethod,
-  Order,
-  User,
 } from '@/types';
 
 // Mock data generators
@@ -51,6 +49,8 @@ const mockPayments: Payment[] = [
     id: 'payment_1',
     paymentId: 'pay_abc123',
     orderId: 'order_1',
+    payerId: 'user_1',
+    payeeId: 'user_2',
     userId: 'user_1',
     amount: 1500,
     currency: 'TRY',
@@ -88,6 +88,8 @@ const mockPayments: Payment[] = [
     id: 'payment_2',
     paymentId: 'pay_def456',
     orderId: 'order_2',
+    payerId: 'user_1',
+    payeeId: 'user_2',
     userId: 'user_1',
     amount: 2500,
     currency: 'TRY',
@@ -120,31 +122,7 @@ const mockInvoices: InvoiceDetails[] = [
   {
     id: 'invoice_1',
     orderId: 'order_1',
-    order: {
-      id: 'order_1',
-      title: 'Web Tasarım Hizmeti',
-      amount: 1500,
-      status: 'completed',
-      userId: 'user_1',
-      user: {
-        id: 'user_1',
-        email: 'john@example.com',
-        firstName: 'John',
-        lastName: 'Doe',
-        userType: 'employer',
-        createdAt: '2024-01-01T00:00:00Z',
-        updatedAt: '2024-01-01T00:00:00Z',
-      } as User,
-      packageId: 'package_1',
-      subtotal: 1500,
-      tax: 270,
-      discount: 0,
-      total: 1770,
-      currency: 'TRY',
-      paymentStatus: 'paid',
-      createdAt: '2024-09-05T10:00:00Z',
-      updatedAt: '2024-09-05T10:00:00Z',
-    } as Order,
+    paymentId: 'payment_1',
     invoiceNumber: 'INV-2024-001',
     issueDate: '2024-09-05',
     dueDate: '2024-09-05',
@@ -153,51 +131,17 @@ const mockInvoices: InvoiceDetails[] = [
     totalAmount: 1770,
     currency: 'TRY',
     status: 'paid',
-    billingAddress: {
-      fullName: 'John Doe',
-      email: 'john@example.com',
-      phone: '+90 555 123 4567',
-      addressLine1: 'Test Mahallesi Test Caddesi No:1',
-      city: 'İstanbul',
-      state: 'İstanbul',
-      postalCode: '34000',
-      country: 'Türkiye',
-    },
     items: [
       {
         id: 'item_1',
         description: 'Web Tasarım Hizmeti',
+        amount: 1500,
         quantity: 1,
         unitPrice: 1500,
         totalPrice: 1500,
       },
     ],
-    notes: 'Web sitesi tasarım ve geliştirme hizmeti',
-    createdAt: '2024-09-05T10:00:00Z',
-    updatedAt: '2024-09-05T10:00:00Z',
-    escrowInfo: {
-      amount: 1500,
-      status: 'released',
-      releaseDate: '2024-09-10T10:00:00Z',
-    },
-    paymentBreakdown: {
-      subtotal: 1500,
-      platformFee: 75,
-      processingFee: 30,
-      tax: 270,
-      discount: 0,
-      total: 1770,
-    },
-    downloadUrls: {
-      pdf: '/api/v1/invoices/invoice_1/download?format=pdf',
-      xml: '/api/v1/invoices/invoice_1/download?format=xml',
-      print: '/api/v1/invoices/invoice_1/print',
-    },
-    emailStatus: {
-      sent: true,
-      sentAt: '2024-09-05T10:05:00Z',
-      recipientEmail: 'john@example.com',
-    },
+    total: 1770,
   },
 ];
 
@@ -260,6 +204,18 @@ export const paymentHandlers = [
 
     const response: CreatePaymentResponse = {
       success: true,
+      payment: {
+        id: paymentId,
+        paymentId,
+        orderId: body.orderId,
+        payerId: body.payerId || 'user_1',
+        payeeId: body.payeeId || 'user_2',
+        amount: body.amount,
+        currency: 'TRY',
+        status: isInstantPayment ? 'completed' : 'pending',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
       data: {
         paymentId,
         status: isInstantPayment ? 'completed' : 'pending',
@@ -295,7 +251,7 @@ export const paymentHandlers = [
     }
     if (method.length > 0) {
       filteredPayments = filteredPayments.filter((p) =>
-        method.includes(p.method)
+        p.method ? method.includes(p.method) : false
       );
     }
 
@@ -307,6 +263,7 @@ export const paymentHandlers = [
 
     const paymentHistory: PaymentHistory = {
       payments: paginatedPayments,
+      totalAmount: filteredPayments.reduce((sum, p) => sum + p.amount, 0),
       summary: {
         totalPayments: mockPayments.length,
         totalAmount: mockPayments.reduce((sum, p) => sum + p.amount, 0),
@@ -322,6 +279,7 @@ export const paymentHandlers = [
       pagination: {
         page,
         pageSize: limit,
+        limit, // Required for store compatibility
         total,
         totalPages,
         hasNext: page < totalPages,

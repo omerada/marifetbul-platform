@@ -79,22 +79,22 @@ export function ReviewCard({
           <div className="flex items-start gap-3">
             <Avatar className="h-10 w-10">
               <AvatarImage
-                src={review.reviewer.avatar || ''}
-                alt={review.reviewer.firstName}
+                src={review.reviewer?.avatar || ''}
+                alt={review.reviewer?.firstName || 'Reviewer'}
               />
               <AvatarFallback>
-                {review.reviewer.firstName[0]}
-                {review.reviewer.lastName[0]}
+                {review.reviewer?.firstName?.[0] || 'R'}
+                {review.reviewer?.lastName?.[0] || ''}
               </AvatarFallback>
             </Avatar>
 
             <div className="flex-1 space-y-1">
               <div className="flex items-center gap-2">
                 <h4 className="text-sm font-medium">
-                  {review.reviewer.firstName} {review.reviewer.lastName}
+                  {review.reviewer?.firstName} {review.reviewer?.lastName}
                 </h4>
                 <Badge variant="secondary" className="text-xs">
-                  {review.reviewer.userType === 'employer'
+                  {review.reviewer?.userType === 'employer'
                     ? 'İşveren'
                     : 'Freelancer'}
                 </Badge>
@@ -149,33 +149,36 @@ export function ReviewCard({
       <CardContent className="space-y-4">
         {/* Category Ratings */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {Object.entries(review.categories).map(([category, rating]) => {
-            const Icon = categoryIcons[category as keyof typeof categoryIcons];
-            const label =
-              categoryLabels[category as keyof typeof categoryLabels];
+          {review.categories &&
+            typeof review.categories === 'object' &&
+            Object.entries(review.categories).map(([category, rating]) => {
+              const Icon =
+                categoryIcons[category as keyof typeof categoryIcons];
+              const label =
+                categoryLabels[category as keyof typeof categoryLabels];
 
-            if (!rating || rating === 0) return null;
+              if (!rating || rating === 0) return null;
 
-            return (
-              <div key={category} className="flex items-center gap-2">
-                <Icon className="text-muted-foreground h-3 w-3" />
-                <span className="text-muted-foreground text-xs">{label}</span>
-                <div className="flex items-center">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={`h-3 w-3 ${
-                        star <= rating
-                          ? 'fill-current text-yellow-500'
-                          : 'text-gray-300'
-                      }`}
-                    />
-                  ))}
-                  <span className="ml-1 text-xs">{rating}</span>
+              return (
+                <div key={category} className="flex items-center gap-2">
+                  <Icon className="text-muted-foreground h-3 w-3" />
+                  <span className="text-muted-foreground text-xs">{label}</span>
+                  <div className="flex items-center">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        className={`h-3 w-3 ${
+                          star <= rating
+                            ? 'fill-current text-yellow-500'
+                            : 'text-gray-300'
+                        }`}
+                      />
+                    ))}
+                    <span className="ml-1 text-xs">{rating}</span>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
 
         {/* Comment */}
@@ -237,16 +240,16 @@ export function ReviewCard({
             <div className="mb-2 flex items-center gap-2">
               <Avatar className="h-6 w-6">
                 <AvatarImage
-                  src={review.reply.user.avatar || ''}
-                  alt={review.reply.user.firstName}
+                  src={review.reply?.user?.avatar || ''}
+                  alt={review.reply?.user?.firstName || 'User'}
                 />
                 <AvatarFallback className="text-xs">
-                  {review.reply.user.firstName[0]}
-                  {review.reply.user.lastName[0]}
+                  {review.reply?.user?.firstName?.[0] || 'U'}
+                  {review.reply?.user?.lastName?.[0] || ''}
                 </AvatarFallback>
               </Avatar>
               <span className="text-xs font-medium">
-                {review.reply.user.firstName} {review.reply.user.lastName}
+                {review.reply?.user?.firstName} {review.reply?.user?.lastName}
               </span>
               <Badge variant="outline" className="text-xs">
                 Yanıt

@@ -82,10 +82,26 @@ export const useFavoritesStore = create<FavoritesStore>()(
 
           if (data.success && data.data) {
             set(
-              {
-                favorites: data.data,
+              (state) => ({
+                ...state,
+                freelancers:
+                  data.data
+                    ?.filter((item) => item.type === 'freelancer')
+                    .map((item) => item.item as Freelancer)
+                    .filter(Boolean) || [],
+                jobs:
+                  data.data
+                    ?.filter((item) => item.type === 'job')
+                    .map((item) => item.item as Job)
+                    .filter(Boolean) || [],
+                services:
+                  data.data
+                    ?.filter((item) => item.type === 'package')
+                    .map((item) => item.item as ServicePackage)
+                    .filter(Boolean) || [],
+                folders: [], // Initialize empty folders for now
                 isLoading: false,
-              },
+              }),
               false,
               'fetchFavorites/success'
             );

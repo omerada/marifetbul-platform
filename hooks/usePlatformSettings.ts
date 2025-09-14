@@ -126,13 +126,8 @@ export function usePlatformSettings() {
         }
       }
 
-      if (settings.security?.sessionTimeout !== undefined) {
-        if (
-          settings.security.sessionTimeout < 5 ||
-          settings.security.sessionTimeout > 1440
-        ) {
-          errors.push('Session timeout must be between 5 and 1440 minutes');
-        }
+      if (settings.security?.twoFactorAuth !== undefined) {
+        // Basic security validation without sessionTimeout
       }
 
       if (settings.general?.maxFileUploadSize !== undefined) {

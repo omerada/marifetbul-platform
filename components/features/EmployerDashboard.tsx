@@ -9,6 +9,7 @@ import { EmployerDashboard as EmployerDashboardType } from '@/types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { isJobBudgetObject } from '@/lib/utils/typeGuards';
 import { QuickActions } from '@/components/features/QuickActions';
 import { StatsCard } from '@/components/features/StatsCard';
 import { DashboardSkeleton } from '@/components/features/DashboardSkeleton';
@@ -215,8 +216,14 @@ export function EmployerDashboard({}: EmployerDashboardProps) {
                         </h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                           Aktif proje • ₺
-                          {job.budget.amount.toLocaleString('tr-TR')}{' '}
-                          {job.budget.type === 'hourly' ? '/saat' : ''} bütçe
+                          {isJobBudgetObject(job.budget)
+                            ? job.budget.amount.toLocaleString('tr-TR')
+                            : job.budget.toLocaleString('tr-TR')}{' '}
+                          {isJobBudgetObject(job.budget) &&
+                          job.budget.type === 'hourly'
+                            ? '/saat'
+                            : ''}{' '}
+                          bütçe
                         </p>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -262,7 +269,7 @@ export function EmployerDashboard({}: EmployerDashboardProps) {
                             {conversation.participants
                               .filter((p) => p.userId !== 'current-user')
                               .map((p) =>
-                                `${p.user.firstName} ${p.user.lastName}`.trim()
+                                `${p.user?.firstName || ''} ${p.user?.lastName || ''}`.trim()
                               )
                               .join(', ')}
                           </h3>
@@ -356,7 +363,7 @@ export function EmployerDashboard({}: EmployerDashboardProps) {
                     <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                       <span className="flex items-center gap-1">
                         <DollarSign className="h-4 w-4" />₺
-                        {order.amount.toLocaleString('tr-TR')}
+                        {order.amount?.toLocaleString('tr-TR') || '0'}
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="h-4 w-4" />

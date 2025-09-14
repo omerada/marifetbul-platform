@@ -247,13 +247,13 @@ export const notificationHandlers = [
 
     // Apply filters
     if (category.length > 0) {
-      filteredNotifications = filteredNotifications.filter((n) =>
-        category.includes(n.category)
+      filteredNotifications = filteredNotifications.filter(
+        (n) => n.category && category.includes(n.category)
       );
     }
     if (priority.length > 0) {
-      filteredNotifications = filteredNotifications.filter((n) =>
-        priority.includes(n.priority)
+      filteredNotifications = filteredNotifications.filter(
+        (n) => n.priority && priority.includes(n.priority)
       );
     }
     if (isRead !== null) {
@@ -290,14 +290,18 @@ export const notificationHandlers = [
     const unreadCount = mockNotifications.filter((n) => !n.isRead).length;
     const byCategory = mockNotifications.reduce(
       (acc, n) => {
-        acc[n.category] = (acc[n.category] || 0) + 1;
+        if (n.category) {
+          acc[n.category] = (acc[n.category] || 0) + 1;
+        }
         return acc;
       },
       {} as Record<string, number>
     );
     const byPriority = mockNotifications.reduce(
       (acc, n) => {
-        acc[n.priority] = (acc[n.priority] || 0) + 1;
+        if (n.priority) {
+          acc[n.priority] = (acc[n.priority] || 0) + 1;
+        }
         return acc;
       },
       {} as Record<string, number>
@@ -305,6 +309,8 @@ export const notificationHandlers = [
 
     const notificationCenter: NotificationCenter = {
       notifications: paginatedNotifications,
+      unreadCount,
+      lastFetched: new Date().toISOString(),
       summary: {
         total: mockNotifications.length,
         unread: unreadCount,
@@ -313,6 +319,7 @@ export const notificationHandlers = [
       },
       pagination: {
         page,
+        limit, // Required for PaginationMeta compatibility
         pageSize: limit,
         total,
         totalPages,

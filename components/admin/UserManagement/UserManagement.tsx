@@ -181,7 +181,10 @@ function UserDetailModal({
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-gray-400" />
                 <span className="text-sm">
-                  Kayıt: {new Date(user.joinDate).toLocaleDateString('tr-TR')}
+                  Kayıt:{' '}
+                  {user.joinDate
+                    ? new Date(user.joinDate).toLocaleDateString('tr-TR')
+                    : 'Belirtilmemiş'}
                 </span>
               </div>
             </CardContent>
@@ -209,14 +212,14 @@ function UserDetailModal({
                 <span className="text-sm text-gray-600">Risk Skoru:</span>
                 <Badge
                   variant={
-                    user.riskScore > 70
+                    (user.riskScore ?? 0) > 70
                       ? 'destructive'
-                      : user.riskScore > 30
+                      : (user.riskScore ?? 0) > 30
                         ? 'warning'
                         : 'success'
                   }
                 >
-                  {user.riskScore}
+                  {user.riskScore ?? 0}
                 </Badge>
               </div>
               {user.userType === 'freelancer' && (
@@ -245,30 +248,22 @@ function UserDetailModal({
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {user.verificationBadges.map((badge) => (
+                {user.verificationBadges?.map((badge, index) => (
                   <div
-                    key={badge.id}
+                    key={index}
                     className="flex items-center justify-between rounded bg-gray-50 p-2"
                   >
                     <div className="flex items-center gap-2">
                       <Shield className="h-4 w-4 text-gray-500" />
-                      <span className="text-sm capitalize">
-                        {badge.type === 'email'
-                          ? 'E-posta'
-                          : badge.type === 'phone'
-                            ? 'Telefon'
-                            : badge.type === 'identity'
-                              ? 'Kimlik'
-                              : badge.type === 'payment'
-                                ? 'Ödeme'
-                                : badge.type === 'professional'
-                                  ? 'Profesyonel'
-                                  : 'Premium'}
-                      </span>
+                      <span className="text-sm capitalize">{badge}</span>
                     </div>
-                    <VerificationBadge status={badge.status} />
+                    <VerificationBadge status="verified" />
                   </div>
-                ))}
+                )) || (
+                  <div className="text-sm text-gray-500">
+                    Doğrulama rozeti bulunamadı
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -283,23 +278,27 @@ function UserDetailModal({
                 <Activity className="h-4 w-4 text-gray-400" />
                 <span className="text-sm">
                   Son Giriş:{' '}
-                  {new Date(user.lastLoginAt).toLocaleDateString('tr-TR')}
+                  {user.lastLoginAt
+                    ? new Date(user.lastLoginAt).toLocaleDateString('tr-TR')
+                    : 'Belirtilmemiş'}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-gray-400" />
                 <span className="text-sm">
                   Son Aktivite:{' '}
-                  {new Date(user.lastActiveAt).toLocaleDateString('tr-TR')}
+                  {user.lastActiveAt
+                    ? new Date(user.lastActiveAt).toLocaleDateString('tr-TR')
+                    : 'Belirtilmemiş'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Giriş Sayısı:</span>
-                <span className="font-medium">{user.loginCount}</span>
+                <span className="font-medium">{user.loginCount ?? 0}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Uyarı Sayısı:</span>
-                <span className="font-medium">{user.warningCount}</span>
+                <span className="font-medium">{user.warningCount ?? 0}</span>
               </div>
             </CardContent>
           </Card>
@@ -367,11 +366,14 @@ function UserManagement() {
     if (bulkSelection.hasSelection) {
       const bulkAction: BulkUserActionRequest = {
         userIds: bulkSelection.selectedIds,
-        action: {
-          action: actionType as 'suspend' | 'unsuspend' | 'ban',
-          reason: `Bulk ${actionType} action`,
-          notifyUser: true,
-        },
+        action: actionType as
+          | 'suspend'
+          | 'unsuspend'
+          | 'ban'
+          | 'unban'
+          | 'verify'
+          | 'unverify',
+        reason: `Bulk ${actionType} action`,
       };
       onBulkAction(bulkAction);
     }
@@ -682,17 +684,19 @@ function UserManagement() {
                     </TableCell>
                     <TableCell>
                       <span className="text-sm text-gray-500">
-                        {new Date(user.lastActiveAt).toLocaleDateString(
-                          'tr-TR'
-                        )}
+                        {user.lastActiveAt
+                          ? new Date(user.lastActiveAt).toLocaleDateString(
+                              'tr-TR'
+                            )
+                          : 'Belirtilmemiş'}
                       </span>
                     </TableCell>
                     <TableCell>
                       <Badge
                         variant={
-                          user.riskScore > 70
+                          (user.riskScore ?? 0) > 70
                             ? 'destructive'
-                            : user.riskScore > 30
+                            : (user.riskScore ?? 0) > 30
                               ? 'warning'
                               : 'success'
                         }

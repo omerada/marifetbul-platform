@@ -619,10 +619,10 @@ export const usePaymentSelectors = () => {
     // Computed values
     hasPayments: store.payments.length > 0,
     hasInvoices: store.invoices.length > 0,
-    totalPaymentAmount: store.paymentHistory?.summary.totalAmount || 0,
+    totalPaymentAmount: store.paymentHistory?.summary?.totalAmount || 0,
     successfulPaymentsCount:
-      store.paymentHistory?.summary.successfulPayments || 0,
-    failedPaymentsCount: store.paymentHistory?.summary.failedPayments || 0,
+      store.paymentHistory?.summary?.successfulPayments || 0,
+    failedPaymentsCount: store.paymentHistory?.summary?.failedPayments || 0,
     hasActiveEscrow: store.escrowDetails.some((e) => e.status === 'held'),
 
     // Loading states

@@ -30,7 +30,7 @@ import {
   formatFileSize,
   getFileIcon,
 } from '@/lib/utils/fileUpload';
-import { useToast } from '@/hooks/useNotifications';
+import { useToast } from '@/hooks';
 
 interface ChatInterfaceProps {
   conversationId: string;
@@ -103,7 +103,7 @@ export function ChatInterface({
       }
     } catch (error) {
       console.error('Failed to send message:', error);
-      toast.error('Mesaj gönderilemedi', 'Lütfen tekrar deneyin');
+      toast.error('Mesaj gönderilemedi', 5000);
     }
   };
 
@@ -118,7 +118,7 @@ export function ChatInterface({
 
   const handleFileUploadError = (error: string) => {
     console.error('File upload error:', error);
-    toast.error('Dosya yükleme hatası', error);
+    toast.error('Dosya yükleme hatası', 5000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -384,10 +384,10 @@ function MessageBubble({
         <div className="h-8 w-8 flex-shrink-0">
           {showAvatar && !isOwn && (
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300">
-              {message.sender.avatar ? (
+              {message.sender?.avatar ? (
                 <Image
                   src={message.sender.avatar}
-                  alt={`${message.sender.firstName} ${message.sender.lastName}`}
+                  alt={message.sender.name || 'User'}
                   width={32}
                   height={32}
                   className="h-8 w-8 rounded-full object-cover"

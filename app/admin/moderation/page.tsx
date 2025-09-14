@@ -1,7 +1,15 @@
 'use client';
 
-import AdminModeration from '@/components/admin/AdminModeration';
+import { lazy } from 'react';
+import { LazyAdminWrapper } from '@/components/admin/LazyAdminWrapper';
+
+// Lazy load the heavy AdminModeration component
+const AdminModeration = lazy(() => import('@/components/admin/AdminModeration'));
 
 export default function AdminModerationPage() {
-  return <AdminModeration />;
+  return (
+    <LazyAdminWrapper title="İçerik Denetimi">
+      <AdminModeration />
+    </LazyAdminWrapper>
+  );
 }

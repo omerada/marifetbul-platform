@@ -9,6 +9,7 @@ interface Toast {
   message: string;
   type: ToastType;
   duration?: number;
+  title?: string;
 }
 
 let toastCounter = 0;
@@ -99,6 +100,7 @@ export const useToast = () => {
     toasts: toastList,
     showToast,
     hideToast,
+    removeToast: hideToast,
     success,
     error,
     warning,

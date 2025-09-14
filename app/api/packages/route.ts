@@ -35,11 +35,10 @@ const mockPackages: ServicePackage[] = [
       rating: 4.8,
       totalReviews: 46,
       reviewCount: 46,
-      totalEarnings: 125000,
       completedJobs: 23,
       completedProjects: 23,
       responseTime: '2 saatte',
-      availability: 'available',
+
       portfolio: [],
       languages: ['Türkçe', 'İngilizce'],
       isOnline: true,
@@ -85,11 +84,11 @@ const mockPackages: ServicePackage[] = [
       rating: 4.9,
       totalReviews: 38,
       reviewCount: 38,
-      totalEarnings: 78000,
+
       completedJobs: 31,
       completedProjects: 31,
       responseTime: '1 saatte',
-      availability: 'available',
+
       portfolio: [],
       languages: ['Türkçe'],
       isOnline: false,
@@ -130,11 +129,11 @@ const mockPackages: ServicePackage[] = [
       rating: 4.7,
       totalReviews: 29,
       reviewCount: 29,
-      totalEarnings: 95000,
+
       completedJobs: 18,
       completedProjects: 18,
       responseTime: '3 saatte',
-      availability: 'busy',
+
       portfolio: [],
       languages: ['Türkçe', 'İngilizce'],
       isOnline: true,
@@ -180,11 +179,11 @@ const mockPackages: ServicePackage[] = [
       rating: 4.6,
       totalReviews: 24,
       reviewCount: 24,
-      totalEarnings: 52000,
+
       completedJobs: 19,
       completedProjects: 19,
       responseTime: '4 saatte',
-      availability: 'available',
+
       portfolio: [],
       languages: ['Türkçe', 'İngilizce'],
       isOnline: false,
@@ -230,11 +229,11 @@ const mockPackages: ServicePackage[] = [
       rating: 4.8,
       totalReviews: 31,
       reviewCount: 31,
-      totalEarnings: 67000,
+
       completedJobs: 22,
       completedProjects: 22,
       responseTime: '2 saatte',
-      availability: 'available',
+
       portfolio: [],
       languages: ['Türkçe'],
       isOnline: true,
@@ -285,11 +284,11 @@ const mockPackages: ServicePackage[] = [
       rating: 4.4,
       totalReviews: 16,
       reviewCount: 16,
-      totalEarnings: 28000,
+
       completedJobs: 14,
       completedProjects: 14,
       responseTime: '6 saatte',
-      availability: 'available',
+
       portfolio: [],
       languages: ['Türkçe'],
       isOnline: false,
@@ -331,12 +330,14 @@ export async function GET(request: NextRequest) {
         (pkg) =>
           pkg.title.toLowerCase().includes(searchLower) ||
           pkg.description.toLowerCase().includes(searchLower) ||
-          pkg.freelancer.skills.some((skill) =>
-            skill.toLowerCase().includes(searchLower)
-          ) ||
-          pkg.features.some((feature) =>
-            feature.toLowerCase().includes(searchLower)
-          )
+          (pkg.freelancer?.skills &&
+            pkg.freelancer.skills.some((skill) =>
+              skill.toLowerCase().includes(searchLower)
+            )) ||
+          (pkg.features &&
+            pkg.features.some((feature) =>
+              feature.toLowerCase().includes(searchLower)
+            ))
       );
     }
 
@@ -375,7 +376,7 @@ export async function GET(request: NextRequest) {
     if (rating) {
       const minRating = parseFloat(rating);
       filteredPackages = filteredPackages.filter(
-        (pkg) => pkg.rating >= minRating
+        (pkg) => (pkg.rating ?? 0) >= minRating
       );
     }
 
@@ -396,13 +397,13 @@ export async function GET(request: NextRequest) {
           comparison = b.price - a.price;
           break;
         case 'rating':
-          comparison = b.rating - a.rating;
+          comparison = (b.rating ?? 0) - (a.rating ?? 0);
           break;
         case 'delivery':
           comparison = a.deliveryTime - b.deliveryTime;
           break;
         case 'popular':
-          comparison = b.reviews - a.reviews;
+          comparison = (b.reviews ?? 0) - (a.reviews ?? 0);
           break;
         default:
           comparison = 0;

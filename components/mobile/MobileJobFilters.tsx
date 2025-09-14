@@ -98,9 +98,13 @@ export function MobileJobFilters({
   };
 
   const handleLocationToggle = (location: string) => {
-    const currentLocations = localFilters.location || [];
+    const currentLocations = Array.isArray(localFilters.location)
+      ? localFilters.location
+      : localFilters.location
+        ? [localFilters.location]
+        : [];
     const newLocations = currentLocations.includes(location)
-      ? currentLocations.filter((l) => l !== location)
+      ? currentLocations.filter((l: string) => l !== location)
       : [...currentLocations, location];
 
     handleFilterChange(

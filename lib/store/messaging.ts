@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import { getCurrentUserId } from '@/lib/utils/auth';
 import type {
   ChatMessage,
   ChatConversation,
@@ -694,8 +695,8 @@ export const useMessagingStore = create<MessagingStore>()(
             // Note: updatedAt will be handled by real-time updates
 
             // Only increment unread if it's not from current user
-            if (message.senderId !== 'current-user-id') {
-              // TODO: Get from auth store
+            const currentUserId = getCurrentUserId();
+            if (message.senderId !== currentUserId) {
               state.conversations[convIndex].unreadCount =
                 (state.conversations[convIndex].unreadCount || 0) + 1;
               state.totalUnreadCount += 1;

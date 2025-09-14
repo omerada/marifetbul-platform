@@ -14,7 +14,7 @@ import {
 } from '@/types';
 import { detailHandlers } from './handlers/details';
 import { messagingHandlers } from './handlers/messaging';
-import { ordersHandlers } from './handlers/orders';
+import { orderHandlers } from './handlers/orders';
 import { paymentHandlers } from './handlers/payment';
 import { notificationHandlers } from './handlers/notification';
 import { adminHandlers } from './handlers/admin';
@@ -36,13 +36,17 @@ const mockEmployer: Employer = {
   location: 'Ankara, Türkiye',
   createdAt: new Date('2024-01-01').toISOString(),
   updatedAt: new Date('2024-01-01').toISOString(),
+  accountStatus: 'active' as const,
+  verificationStatus: 'verified' as const,
   companyName: 'Teknoloji Çözümleri Ltd.',
   industry: 'Teknoloji',
   totalSpent: 15000,
   activeJobs: 3,
   completedJobs: 12,
+  postedJobs: 15,
   rating: 4.7,
   totalReviews: 15,
+  reviewCount: 15,
   reviewsCount: 15,
   totalJobs: 15,
 };
@@ -53,12 +57,15 @@ const mockFreelancer: Freelancer = {
   email: 'freelancer@example.com',
   firstName: 'Ahmet',
   lastName: 'Yılmaz',
-  userType: 'freelancer',
+  name: 'Ahmet Yılmaz',
+  userType: 'freelancer' as const,
   avatar:
     'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
   location: 'İstanbul, Türkiye',
   createdAt: new Date('2024-01-01').toISOString(),
   updatedAt: new Date('2024-01-01').toISOString(),
+  accountStatus: 'active' as const,
+  verificationStatus: 'verified' as const,
   title: 'Full Stack Geliştirici',
   skills: ['React', 'Node.js', 'TypeScript', 'Next.js'],
   hourlyRate: 50,
@@ -67,8 +74,9 @@ const mockFreelancer: Freelancer = {
   totalReviews: 127,
   totalEarnings: 45000,
   completedJobs: 89,
+  reviewCount: 127,
+  availability: true,
   responseTime: '2 saat',
-  availability: 'available',
   portfolio: [],
 };
 
@@ -256,6 +264,8 @@ export const mockPackages: ServicePackage[] = [
     title: 'Profesyonel Web Sitesi Geliştirme',
     description:
       'React ve Next.js kullanarak modern, responsive web sitesi oluşturacağım. İşletmenizin online varlığını güçlendirmek için mükemmel çözüm.',
+    categoryId: 'web-development',
+    skillIds: ['react', 'nextjs', 'typescript'],
     category: 'Web Geliştirme',
     subcategory: 'Frontend Geliştirme',
     price: 1500,
@@ -286,6 +296,8 @@ export const mockPackages: ServicePackage[] = [
     title: 'Logo Tasarım & Marka Kimliği',
     description:
       'İşletmeniz için benzersiz logo ve eksiksiz marka kimliği tasarlayacağım. Öne çıkan profesyonel görünüm elde edin.',
+    categoryId: 'design',
+    skillIds: ['logo-design', 'brand-identity', 'graphic-design'],
     category: 'Tasarım',
     subcategory: 'Logo Tasarım',
     price: 300,
@@ -463,6 +475,8 @@ export const mockPackages: ServicePackage[] = [
       'Shopify veya WooCommerce ile profesyonel e-ticaret mağazası kurulumu. Ödeme sistemleri ve kargo entegrasyonları dahil.',
     category: 'E-ticaret',
     subcategory: 'Mağaza Kurulumu',
+    categoryId: 'category-ecommerce',
+    skillIds: ['shopify', 'woocommerce', 'payment-integration'],
     price: 1200,
     deliveryTime: 12,
     revisions: 3,
@@ -495,44 +509,56 @@ const mockUsers: User[] = [
     email: 'freelancer@example.com',
     firstName: 'Ahmet',
     lastName: 'Yılmaz',
-    userType: 'freelancer',
+    name: 'Ahmet Yılmaz',
+    userType: 'freelancer' as const,
     avatar: '/avatars/freelancer-1.jpg',
     location: 'İstanbul, Türkiye',
     createdAt: new Date('2024-01-01').toISOString(),
     updatedAt: new Date('2024-01-01').toISOString(),
+    accountStatus: 'active' as const,
+    verificationStatus: 'verified' as const,
   },
   {
     id: 'employer-1',
     email: 'isveren@example.com',
     firstName: 'Fatma',
     lastName: 'Kaya',
-    userType: 'employer',
+    name: 'Fatma Kaya',
+    userType: 'employer' as const,
     avatar: '/avatars/employer-1.jpg',
     location: 'Ankara, Türkiye',
     createdAt: new Date('2024-01-01').toISOString(),
     updatedAt: new Date('2024-01-01').toISOString(),
+    accountStatus: 'active' as const,
+    verificationStatus: 'verified' as const,
   },
   {
     id: 'employer-2',
     email: 'zeynep@example.com',
     firstName: 'Zeynep',
     lastName: 'Demir',
-    userType: 'employer',
+    name: 'Zeynep Demir',
+    userType: 'employer' as const,
     avatar: '/avatars/employer-2.jpg',
     location: 'İzmir, Türkiye',
     createdAt: new Date('2024-01-01').toISOString(),
     updatedAt: new Date('2024-01-01').toISOString(),
+    accountStatus: 'active' as const,
+    verificationStatus: 'verified' as const,
   },
   {
     id: 'employer-3',
     email: 'mehmet@example.com',
     firstName: 'Mehmet',
     lastName: 'Özkan',
-    userType: 'employer',
+    name: 'Mehmet Özkan',
+    userType: 'employer' as const,
     avatar: '/avatars/employer-3.jpg',
     location: 'Ankara, Türkiye',
     createdAt: new Date('2024-01-01').toISOString(),
     updatedAt: new Date('2024-01-01').toISOString(),
+    accountStatus: 'active' as const,
+    verificationStatus: 'verified' as const,
   },
 ];
 
@@ -548,9 +574,12 @@ const mockConversations: Conversation[] = [
       sender: mockUsers[1],
       content:
         'Mükemmel! Hemen başlayabilirsiniz. Hangi bilgilere ihtiyacınız var?',
+      type: 'text' as const,
+      sentAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
       isRead: false,
       createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5 minutes ago
     },
+    lastActivity: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
     unreadCount: 2,
     jobId: '1',
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
@@ -565,9 +594,12 @@ const mockConversations: Conversation[] = [
       senderId: 'freelancer-1',
       sender: mockUsers[0],
       content: 'Tasarım revizelerini tamamladım. İnceleyebilirsiniz.',
+      type: 'text' as const,
+      sentAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
       isRead: true,
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
     },
+    lastActivity: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
     unreadCount: 0,
     packageId: '2',
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
@@ -582,9 +614,12 @@ const mockConversations: Conversation[] = [
       senderId: 'employer-3',
       sender: mockUsers[3],
       content: 'Teşekkürler, proje harika oldu!',
+      type: 'text' as const,
+      sentAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
       isRead: true,
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(), // 3 days ago
     },
+    lastActivity: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
     unreadCount: 0,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(), // 1 week ago
     updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
@@ -599,6 +634,8 @@ const mockMessages: Record<string, Message[]> = {
       senderId: 'employer-1',
       sender: mockUsers[1],
       content: 'Merhaba Ahmet! React projesi için teklifinizi inceledim.',
+      type: 'text' as const,
+      sentAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
       isRead: true,
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
     },
@@ -608,6 +645,8 @@ const mockMessages: Record<string, Message[]> = {
       senderId: 'freelancer-1',
       sender: mockUsers[0],
       content: 'Merhaba Fatma Hanım! Teklifimi incelediğiniz için teşekkürler.',
+      type: 'text' as const,
+      sentAt: new Date(Date.now() - 1000 * 60 * 60 * 23).toISOString(),
       isRead: true,
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 23).toISOString(),
     },
@@ -618,6 +657,8 @@ const mockMessages: Record<string, Message[]> = {
       sender: mockUsers[0],
       content:
         'Projeyi 2 hafta içinde teslim edebilirim. Responsive tasarım ve performans optimizasyonu dahil.',
+      type: 'text' as const,
+      sentAt: new Date(Date.now() - 1000 * 60 * 60 * 23).toISOString(),
       isRead: true,
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 23).toISOString(),
     },
@@ -627,6 +668,8 @@ const mockMessages: Record<string, Message[]> = {
       senderId: 'employer-1',
       sender: mockUsers[1],
       content: 'Süre uygun. SEO optimizasyonu da ekleyebilir misiniz?',
+      type: 'text' as const,
+      sentAt: new Date(Date.now() - 1000 * 60 * 10).toISOString(),
       isRead: true,
       createdAt: new Date(Date.now() - 1000 * 60 * 10).toISOString(),
     },
@@ -637,6 +680,8 @@ const mockMessages: Record<string, Message[]> = {
       sender: mockUsers[1],
       content:
         'Mükemmel! Hemen başlayabilirsiniz. Hangi bilgilere ihtiyacınız var?',
+      type: 'text' as const,
+      sentAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
       isRead: false,
       createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
     },
@@ -648,6 +693,8 @@ const mockMessages: Record<string, Message[]> = {
       senderId: 'employer-2',
       sender: mockUsers[2],
       content: 'Logo tasarımlarını gördüm, çok beğendim!',
+      type: 'text' as const,
+      sentAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
       isRead: true,
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
     },
@@ -657,6 +704,8 @@ const mockMessages: Record<string, Message[]> = {
       senderId: 'freelancer-1',
       sender: mockUsers[0],
       content: 'Teşekkürler! Küçük bir revizyon istediğinizi belirtmiştiniz.',
+      type: 'text' as const,
+      sentAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
       isRead: true,
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
     },
@@ -666,6 +715,8 @@ const mockMessages: Record<string, Message[]> = {
       senderId: 'freelancer-1',
       sender: mockUsers[0],
       content: 'Tasarım revizelerini tamamladım. İnceleyebilirsiniz.',
+      type: 'text' as const,
+      sentAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
       isRead: true,
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
     },
@@ -677,6 +728,8 @@ const mockMessages: Record<string, Message[]> = {
       senderId: 'employer-3',
       sender: mockUsers[3],
       content: 'Mobil uygulamanın son halini test ettim.',
+      type: 'text' as const,
+      sentAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
       isRead: true,
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
     },
@@ -686,6 +739,8 @@ const mockMessages: Record<string, Message[]> = {
       senderId: 'freelancer-1',
       sender: mockUsers[0],
       content: 'Nasıl buldunuz? Herhangi bir sorun var mı?',
+      type: 'text' as const,
+      sentAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6).toISOString(),
       isRead: true,
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6).toISOString(),
     },
@@ -695,6 +750,8 @@ const mockMessages: Record<string, Message[]> = {
       senderId: 'employer-3',
       sender: mockUsers[3],
       content: 'Her şey mükemmel çalışıyor. Performans da harika.',
+      type: 'text' as const,
+      sentAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4).toISOString(),
       isRead: true,
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4).toISOString(),
     },
@@ -704,6 +761,8 @@ const mockMessages: Record<string, Message[]> = {
       senderId: 'employer-3',
       sender: mockUsers[3],
       content: 'Teşekkürler, proje harika oldu!',
+      type: 'text' as const,
+      sentAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
       isRead: true,
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
     },
@@ -916,8 +975,23 @@ function createPaginatedResponse<
 
 // Helper function to convert Job to JobDetail
 function createJobDetail(job: Job): JobDetail {
+  const employer = mockUsers.find((u) => u.id === job.employerId);
   return {
     ...job,
+    employer: employer
+      ? {
+          id: employer.id,
+          firstName: employer.firstName,
+          lastName: employer.lastName,
+          avatar: employer.avatar,
+        }
+      : {
+          id: 'unknown',
+          firstName: 'Unknown',
+          lastName: 'User',
+          avatar: undefined,
+        },
+    proposals: [], // Mock empty proposals array
     // Extended fields for detail pages
     requirements: [
       'Proje gereksinimlerini detaylı olarak anlayabilme',
@@ -927,42 +1001,57 @@ function createJobDetail(job: Job): JobDetail {
     ],
     attachments: [
       {
-        id: 'att-1',
+        id: '1',
         name: 'proje-detaylari.pdf',
-        url: '/attachments/proje-detaylari.pdf',
         type: 'application/pdf',
+        filename: 'proje-detaylari.pdf',
+        size: 2048576,
+        mimetype: 'application/pdf',
+        url: '/attachments/proje-detaylari.pdf',
+        uploadedAt: new Date().toISOString(),
       },
       {
-        id: 'att-2',
+        id: '2',
         name: 'tasarim-ornekleri.zip',
-        url: '/attachments/tasarim-ornekleri.zip',
         type: 'application/zip',
+        filename: 'tasarim-ornekleri.zip',
+        size: 5242880,
+        mimetype: 'application/zip',
+        url: '/attachments/tasarim-ornekleri.zip',
+        uploadedAt: new Date().toISOString(),
       },
     ],
-    tags: [
-      ...job.skills.slice(0, 3), // İlk 3 skill'i tag olarak kullan
-      job.experienceLevel === 'expert'
-        ? 'uzman'
-        : job.experienceLevel === 'intermediate'
-          ? 'orta'
-          : 'başlangıç',
-      job.isRemote ? 'uzaktan' : 'yerinde',
-      job.category.toLowerCase().replace(' ', '-'),
-    ],
-    urgency:
-      job.timeline.includes('acil') || job.timeline.includes('hızlı')
-        ? 'high'
-        : job.timeline.includes('ay')
-          ? 'low'
-          : 'medium',
-    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 gün sonra
   };
 }
 
 // Helper function to convert ServicePackage to PackageDetail
 function createPackageDetail(servicePackage: ServicePackage): PackageDetail {
+  const defaultFreelancer = {
+    id: 'unknown',
+    firstName: 'Unknown',
+    lastName: 'Freelancer',
+    avatar: undefined,
+    rating: 0,
+    reviewCount: 0,
+    name: 'Unknown Freelancer',
+  };
+
   return {
     ...servicePackage,
+    freelancer: servicePackage.freelancer
+      ? {
+          id: servicePackage.freelancer.id,
+          firstName: servicePackage.freelancer.firstName || 'Unknown',
+          lastName: servicePackage.freelancer.lastName || 'Freelancer',
+          avatar: servicePackage.freelancer.avatar,
+          rating: servicePackage.freelancer.rating || 0,
+          reviewCount: servicePackage.freelancer.reviewCount || 0,
+          name:
+            servicePackage.freelancer.name ||
+            `${servicePackage.freelancer.firstName || 'Unknown'} ${servicePackage.freelancer.lastName || 'Freelancer'}`,
+        }
+      : defaultFreelancer,
+    reviews: [], // Empty reviews array for now
     overview: `${servicePackage.description}\n\nBu hizmet paketi, profesyonel ihtiyaçlarınızı karşılamak için özenle tasarlanmıştır. Deneyimli ekibimizle kaliteli sonuçlar elde edeceksiniz.`,
     whatIncluded: servicePackage.features,
     faq: [
@@ -985,7 +1074,7 @@ function createPackageDetail(servicePackage: ServicePackage): PackageDetail {
         price: servicePackage.price,
         title: 'Temel Paket',
         description: 'Başlangıç seviyesi çözüm',
-        features: servicePackage.features.slice(0, 3),
+        features: servicePackage.features?.slice(0, 3) || [],
         deliveryTime: servicePackage.deliveryTime,
         revisions: servicePackage.revisions,
       },
@@ -993,9 +1082,9 @@ function createPackageDetail(servicePackage: ServicePackage): PackageDetail {
         price: Math.round(servicePackage.price * 1.5),
         title: 'Standart Paket',
         description: 'Kapsamlı çözüm',
-        features: servicePackage.features.slice(0, 4),
+        features: servicePackage.features?.slice(0, 4) || [],
         deliveryTime: Math.round(servicePackage.deliveryTime * 0.8),
-        revisions: servicePackage.revisions + 2,
+        revisions: (servicePackage.revisions || 1) + 2,
       },
       premium: {
         price: Math.round(servicePackage.price * 2.2),
@@ -1003,41 +1092,42 @@ function createPackageDetail(servicePackage: ServicePackage): PackageDetail {
         description: 'Tam kapsamlı premium çözüm',
         features: servicePackage.features,
         deliveryTime: Math.round(servicePackage.deliveryTime * 0.6),
-        revisions: servicePackage.revisions + 5,
+        revisions: (servicePackage.revisions || 1) + 5,
       },
     },
     addOns: [
       {
         id: 'addon-1',
         title: 'Hızlı Teslimat',
+        description: 'Proje teslimat süresini kısaltın',
         price: Math.round(servicePackage.price * 0.3),
         deliveryTime: -2,
       },
       {
         id: 'addon-2',
         title: 'Ek Revizyon',
+        description: 'İlave revizyon hakkı',
         price: Math.round(servicePackage.price * 0.1),
         deliveryTime: 0,
       },
       {
         id: 'addon-3',
         title: 'Kaynak Dosyalar',
+        description: 'Proje kaynak dosyalarını alın',
         price: Math.round(servicePackage.price * 0.2),
         deliveryTime: 1,
       },
     ],
-    totalOrders: servicePackage.orders,
-    detailedReviews: [],
-    relatedPackages: [],
   };
 }
 
 // Helper function to create API response
-function createApiResponse<T>(data: T, message = 'Başarılı'): ApiResponse<T> {
+function createApiResponse<T>(data: T): ApiResponse<T> {
   return {
-    success: true,
     data,
-    message,
+    status: 200,
+    statusText: 'OK',
+    headers: {},
   };
 }
 
@@ -1104,11 +1194,14 @@ export const handlers = [
       email,
       firstName,
       lastName,
+      name: `${firstName} ${lastName}`,
       userType,
       avatar: `/avatars/default-${userType}.jpg`,
       location: 'Türkiye',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      accountStatus: 'active' as const,
+      verificationStatus: 'unverified' as const,
     };
 
     // Add to mock users array
@@ -1175,9 +1268,7 @@ export const handlers = [
   }),
 
   http.post('/api/auth/logout', () => {
-    return HttpResponse.json(
-      createApiResponse(null as null, 'Başarıyla çıkış yapıldı')
-    );
+    return HttpResponse.json(createApiResponse(null));
   }),
 
   // Jobs handlers
@@ -1774,6 +1865,8 @@ export const handlers = [
       senderId: userId,
       sender,
       content: content.trim(),
+      type: 'text' as const,
+      sentAt: new Date().toISOString(),
       isRead: false,
       createdAt: new Date().toISOString(),
     };
@@ -1857,6 +1950,7 @@ export const handlers = [
     const newConversation: Conversation = {
       id: `conv-${Date.now()}`,
       participants: [currentUser, participant],
+      lastActivity: new Date().toISOString(),
       unreadCount: 0,
       jobId,
       packageId,
@@ -1872,6 +1966,8 @@ export const handlers = [
         senderId: userId,
         sender: currentUser,
         content: initialMessage.trim(),
+        type: 'text' as const,
+        sentAt: new Date().toISOString(),
         isRead: false,
         createdAt: new Date().toISOString(),
       };
@@ -2775,7 +2871,7 @@ export const handlers = [
 
   // Sprint 5 - Messaging and Order tracking handlers
   ...messagingHandlers,
-  ...ordersHandlers,
+  ...orderHandlers,
 
   // Sprint 6 - Payment and Notification handlers
   ...paymentHandlers,

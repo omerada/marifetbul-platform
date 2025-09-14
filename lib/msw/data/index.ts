@@ -21,6 +21,10 @@ export const mockEmployer: Employer = {
   totalReviews: 15,
   reviewsCount: 15,
   totalJobs: 15,
+  postedJobs: 15,
+  reviewCount: 15,
+  verificationStatus: 'verified',
+  accountStatus: 'active',
 };
 
 // Mock freelancer data
@@ -44,8 +48,12 @@ export const mockFreelancer: Freelancer = {
   totalEarnings: 45000,
   completedJobs: 89,
   responseTime: '2 saat',
-  availability: 'available',
+  availability: true,
   portfolio: [],
+  reviewCount: 127,
+  accountStatus: 'active',
+  verificationStatus: 'verified',
+  name: 'Ahmet Yılmaz',
 };
 
 // Mock data - İş İlanları (Türkçe)
@@ -127,6 +135,8 @@ export const mockPackages: ServicePackage[] = [
     price: 1500,
     deliveryTime: 14,
     revisions: 3,
+    categoryId: 'web-gelistirme',
+    skillIds: ['react', 'nextjs', 'typescript', 'tailwindcss'],
     features: [
       'Responsive Tasarım',
       'SEO Optimizasyonu',
@@ -135,7 +145,10 @@ export const mockPackages: ServicePackage[] = [
       'Performans Optimizasyonu',
     ],
     freelancerId: 'freelancer-1',
-    freelancer: mockFreelancer,
+    freelancer: {
+      ...mockFreelancer,
+      name: mockFreelancer.name!,
+    },
     orders: 89,
     rating: 4.9,
     reviews: 127,
@@ -154,6 +167,8 @@ export const mockPackages: ServicePackage[] = [
     price: 300,
     deliveryTime: 5,
     revisions: 5,
+    categoryId: 'tasarim',
+    skillIds: ['logo-tasarimi', 'marka-kimligi', 'grafik-tasarim'],
     features: [
       'Logo Tasarımı',
       'Marka Rehberi',
@@ -162,7 +177,10 @@ export const mockPackages: ServicePackage[] = [
       'Sosyal Medya Kiti',
     ],
     freelancerId: 'freelancer-1',
-    freelancer: mockFreelancer,
+    freelancer: {
+      ...mockFreelancer,
+      name: mockFreelancer.name!,
+    },
     orders: 156,
     rating: 4.8,
     reviews: 203,

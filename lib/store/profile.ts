@@ -218,7 +218,24 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
       throw new Error('Freelancer profili gerekli');
     }
 
-    const freelancerProfile = currentProfile as FreelancerProfile;
+    if (!currentProfile || currentProfile.userType !== 'freelancer') {
+      throw new Error('Freelancer profili bulunamadı');
+    }
+
+    // Safely handle the profile type - use partial types for incomplete profiles
+    const freelancerProfile = {
+      ...currentProfile,
+      skills: 'skills' in currentProfile ? currentProfile.skills : [],
+      hourlyRate:
+        'hourlyRate' in currentProfile ? currentProfile.hourlyRate : 0,
+      certifications:
+        'certifications' in currentProfile ? currentProfile.certifications : [],
+      languages: 'languages' in currentProfile ? currentProfile.languages : [],
+      availability:
+        'availability' in currentProfile ? currentProfile.availability : false,
+      portfolio: 'portfolio' in currentProfile ? currentProfile.portfolio : [],
+    } as FreelancerProfile;
+
     const newItem: PortfolioItem = {
       ...item,
       id: `portfolio-${Date.now()}`,
@@ -243,7 +260,18 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
       throw new Error('Freelancer profili gerekli');
     }
 
-    const freelancerProfile = currentProfile as FreelancerProfile;
+    const freelancerProfile = {
+      ...currentProfile,
+      skills: 'skills' in currentProfile ? currentProfile.skills : [],
+      hourlyRate:
+        'hourlyRate' in currentProfile ? currentProfile.hourlyRate : 0,
+      certifications:
+        'certifications' in currentProfile ? currentProfile.certifications : [],
+      languages: 'languages' in currentProfile ? currentProfile.languages : [],
+      availability:
+        'availability' in currentProfile ? currentProfile.availability : false,
+      portfolio: 'portfolio' in currentProfile ? currentProfile.portfolio : [],
+    } as FreelancerProfile;
     const updatedPortfolio = (freelancerProfile.portfolio || []).map(
       (portfolioItem) =>
         portfolioItem.id === id ? { ...portfolioItem, ...item } : portfolioItem
@@ -266,7 +294,18 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
       throw new Error('Freelancer profili gerekli');
     }
 
-    const freelancerProfile = currentProfile as FreelancerProfile;
+    const freelancerProfile = {
+      ...currentProfile,
+      skills: 'skills' in currentProfile ? currentProfile.skills : [],
+      hourlyRate:
+        'hourlyRate' in currentProfile ? currentProfile.hourlyRate : 0,
+      certifications:
+        'certifications' in currentProfile ? currentProfile.certifications : [],
+      languages: 'languages' in currentProfile ? currentProfile.languages : [],
+      availability:
+        'availability' in currentProfile ? currentProfile.availability : false,
+      portfolio: 'portfolio' in currentProfile ? currentProfile.portfolio : [],
+    } as FreelancerProfile;
     const updatedPortfolio = (freelancerProfile.portfolio || []).filter(
       (item) => item.id !== id
     );

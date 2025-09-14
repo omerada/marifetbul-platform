@@ -80,12 +80,13 @@ export function Sprint8AnalyticsDashboard({
     if (userType === 'freelancer' && 'totalEarnings' in overview) {
       const freelancerData = data as FreelancerAnalytics;
       const trends = {
-        revenue: freelancerData.earnings?.totalEarnings > 0 ? 'up' : 'stable',
-        projects: overview.completedOrders > 0 ? 'up' : 'stable',
+        revenue:
+          (freelancerData.earnings?.totalEarnings || 0) > 0 ? 'up' : 'stable',
+        projects: Number(overview.completedOrders || 0) > 0 ? 'up' : 'stable',
         rating:
-          overview.clientSatisfaction >= 4.5
+          Number(overview.clientSatisfaction || 0) >= 4.5
             ? 'excellent'
-            : overview.clientSatisfaction >= 4.0
+            : Number(overview.clientSatisfaction || 0) >= 4.0
               ? 'good'
               : 'needs-improvement',
         responses: 'fast', // responseTime string olduğu için basit yaklaşım
@@ -105,10 +106,20 @@ export function Sprint8AnalyticsDashboard({
           profileViews: overview.profileViews || 0,
           repeatClientRate: overview.repeatClientRate || 0,
           topCategories:
-            freelancerData.orders?.ordersByCategory?.map((cat) => ({
-              name: cat.category,
-              count: cat.count,
-            })) || [],
+            (freelancerData.orders as Record<string, unknown>)
+              ?.ordersByCategory &&
+            Array.isArray(
+              (freelancerData.orders as Record<string, unknown>)
+                .ordersByCategory
+            )
+              ? (
+                  (freelancerData.orders as Record<string, unknown>)
+                    .ordersByCategory as Record<string, unknown>[]
+                ).map((cat: Record<string, unknown>) => ({
+                  name: (cat.category as string) || 'Unknown',
+                  count: (cat.count as number) || 0,
+                }))
+              : [],
         },
         trends,
       };
@@ -116,9 +127,15 @@ export function Sprint8AnalyticsDashboard({
 
     if (userType === 'employer' && 'totalSpent' in overview) {
       const employerData = data as EmployerAnalytics;
+      const overviewData = overview as Record<string, unknown>; // Type assertion for unknown properties
       const trends = {
-        revenue: employerData.spending?.totalSpent > 0 ? 'up' : 'stable',
-        projects: overview.completedProjects > 0 ? 'up' : 'stable',
+        revenue: employerData.spending?.total
+          ? employerData.spending.total > 0
+            ? 'up'
+            : 'stable'
+          : 'stable',
+        projects:
+          (overviewData.completedProjects as number) > 0 ? 'up' : 'stable',
         rating: 4.5, // Mock rating
         responses: 'fast',
       };
@@ -126,21 +143,26 @@ export function Sprint8AnalyticsDashboard({
       return {
         data: {
           revenue: {
-            current: employerData.spending?.totalSpent || 0,
-            previous: (employerData.spending?.totalSpent || 0) * 0.8,
+            current: employerData.spending?.total || 0,
+            previous: (employerData.spending?.total || 0) * 0.8,
           },
-          totalProjects: overview.completedProjects || 0,
-          activeProjects: overview.activeProjects || 0,
-          completedProjects: overview.completedProjects || 0,
+          totalProjects: overviewData.completedProjects || 0,
+          activeProjects: overviewData.activeProjects || 0,
+          completedProjects: overviewData.completedProjects || 0,
           averageRating: 4.5, // Mock rating
           averageResponseTime: 12, // Mock response time
           profileViews: 0, // Not applicable for employers
           repeatClientRate: 75, // Mock value
-          topCategories:
-            employerData.projects?.projectsByCategory?.map((cat) => ({
-              name: cat.category,
-              count: cat.count,
-            })) || [],
+          topCategories: Array.isArray(employerData.projects)
+            ? employerData.projects
+                .filter((p): p is Record<string, unknown> =>
+                  Boolean(p && typeof p === 'object')
+                )
+                .map((cat) => ({
+                  name: (cat.category as string) || 'Unknown',
+                  count: (cat.count as number) || 0,
+                }))
+            : [],
         },
         trends,
       };
@@ -283,9 +305,11 @@ export function Sprint8AnalyticsDashboard({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data.totalProjects}</div>
+            <div className="text-2xl font-bold">
+              {(data.totalProjects as number) || 0}
+            </div>
             <div className="text-muted-foreground text-xs">
-              {data.activeProjects} aktif proje
+              {(data.activeProjects as number) || 0} aktif proje
             </div>
           </CardContent>
         </Card>
@@ -302,7 +326,9 @@ export function Sprint8AnalyticsDashboard({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {data.averageRating.toFixed(1)}
+              {typeof data.averageRating === 'number'
+                ? data.averageRating.toFixed(1)
+                : '0.0'}
             </div>
             <div className="flex items-center gap-1">
               <Badge
@@ -344,8 +370,8 @@ export function Sprint8AnalyticsDashboard({
           <CardContent>
             <div className="text-2xl font-bold">
               {userType === 'freelancer'
-                ? `${data.averageResponseTime}sa`
-                : data.profileViews}
+                ? `${(data.averageResponseTime as number) || 0}sa`
+                : (data.profileViews as number) || 0}
             </div>
             <div className="text-muted-foreground text-xs">
               {userType === 'freelancer'
@@ -391,22 +417,26 @@ export function Sprint8AnalyticsDashboard({
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {data.topCategories.map((category) => (
-                <div key={category.name} className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>{category.name}</span>
-                    <span className="font-medium">{category.count} proje</span>
+              {data.topCategories.map(
+                (category: { name: string; count: number }) => (
+                  <div key={category.name} className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span>{category.name}</span>
+                      <span className="font-medium">
+                        {category.count} proje
+                      </span>
+                    </div>
+                    <div className="bg-muted h-2 w-full rounded-full">
+                      <div
+                        className="bg-primary h-2 rounded-full transition-all"
+                        style={{
+                          width: `${(category.count / ((data.totalProjects as number) || 1)) * 100}%`,
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="bg-muted h-2 w-full rounded-full">
-                    <div
-                      className="bg-primary h-2 rounded-full transition-all"
-                      style={{
-                        width: `${(category.count / data.totalProjects) * 100}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
+                )
+              )}
             </div>
           </CardContent>
         </Card>
@@ -425,15 +455,25 @@ export function Sprint8AnalyticsDashboard({
                 En İyi Performans
               </h4>
               <div className="text-muted-foreground space-y-1 text-xs">
-                <div>• Ortalama puan: {data.averageRating.toFixed(1)}/5</div>
+                <div>
+                  • Ortalama puan:{' '}
+                  {typeof data.averageRating === 'number'
+                    ? data.averageRating.toFixed(1)
+                    : '0.0'}
+                  /5
+                </div>
                 <div>
                   • Tamamlanma oranı: %
                   {(
-                    (data.completedProjects / data.totalProjects) *
+                    (((data.completedProjects as number) || 0) /
+                      ((data.totalProjects as number) || 1)) *
                     100
                   ).toFixed(1)}
                 </div>
-                <div>• Tekrar çalışma oranı: %{data.repeatClientRate}</div>
+                <div>
+                  • Tekrar çalışma oranı: %
+                  {(data.repeatClientRate as number) || 0}
+                </div>
               </div>
             </div>
 

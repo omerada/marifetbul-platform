@@ -1,6 +1,15 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import { 
+  CORE_WEB_VITALS, 
+  PERFORMANCE_BUDGETS, 
+  UI_PERFORMANCE,
+  calculatePerformanceScore,
+  isGoodPerformance,
+  needsImprovement,
+  isPoorPerformance 
+} from '@/lib/constants/performance';
 
 interface PerformanceMetrics {
   fcp?: number; // First Contentful Paint
@@ -198,63 +207,89 @@ export function useNetworkStatus() {
   };
 }
 
-// Performance budgets and warnings
-export const performanceBudgets = {
-  fcp: 1800, // 1.8s
-  lcp: 2500, // 2.5s
-  fid: 100, // 100ms
-  cls: 0.1, // 0.1
-  ttfb: 800, // 800ms
-};
-
+// Performance budgets and warnings - REFACTORED to use unified constants
 export function checkPerformanceBudget(metrics: PerformanceMetrics) {
   const warnings = [];
 
-  if (metrics.fcp && metrics.fcp > performanceBudgets.fcp) {
+  if (metrics.fcp && metrics.fcp > CORE_WEB_VITALS.FCP.GOOD) {
     warnings.push(
-      `First Contentful Paint (${metrics.fcp.toFixed(0)}ms) exceeds budget (${performanceBudgets.fcp}ms)`
+      `First Contentful Paint (${metrics.fcp.toFixed(0)}ms) exceeds budget (${CORE_WEB_VITALS.FCP.GOOD}ms)`
     );
   }
 
-  if (metrics.lcp && metrics.lcp > performanceBudgets.lcp) {
+  if (metrics.lcp && metrics.lcp > CORE_WEB_VITALS.LCP.GOOD) {
     warnings.push(
-      `Largest Contentful Paint (${metrics.lcp.toFixed(0)}ms) exceeds budget (${performanceBudgets.lcp}ms)`
+      `Largest Contentful Paint (${metrics.lcp.toFixed(0)}ms) exceeds budget (${CORE_WEB_VITALS.LCP.GOOD}ms)`
     );
   }
 
-  if (metrics.fid && metrics.fid > performanceBudgets.fid) {
+  if (metrics.fid && metrics.fid > CORE_WEB_VITALS.FID.GOOD) {
     warnings.push(
-      `First Input Delay (${metrics.fid.toFixed(0)}ms) exceeds budget (${performanceBudgets.fid}ms)`
+      `First Input Delay (${metrics.fid.toFixed(0)}ms) exceeds budget (${CORE_WEB_VITALS.FID.GOOD}ms)`
     );
   }
 
-  if (metrics.cls && metrics.cls > performanceBudgets.cls) {
+  if (metrics.cls && metrics.cls > CORE_WEB_VITALS.CLS.GOOD) {
     warnings.push(
-      `Cumulative Layout Shift (${metrics.cls.toFixed(3)}) exceeds budget (${performanceBudgets.cls})`
+      `Cumulative Layout Shift (${metrics.cls.toFixed(3)}) exceeds budget (${CORE_WEB_VITALS.CLS.GOOD})`
     );
   }
 
-  if (metrics.ttfb && metrics.ttfb > performanceBudgets.ttfb) {
+  if (metrics.ttfb && metrics.ttfb > CORE_WEB_VITALS.TTFB.GOOD) {
     warnings.push(
-      `Time to First Byte (${metrics.ttfb.toFixed(0)}ms) exceeds budget (${performanceBudgets.ttfb}ms)`
+      `Time to First Byte (${metrics.ttfb.toFixed(0)}ms) exceeds budget (${CORE_WEB_VITALS.TTFB.GOOD}ms)`
     );
   }
 
   return warnings;
 }
 
-// Main performance hook export
+// Main performance hook export - ENHANCED with unified constants
 export function usePerformance() {
   const performanceMetrics = usePerformanceMonitoring();
   const pageLoadTime = usePageLoadTime();
   const memoryUsage = useMemoryUsage();
   const networkStatus = useNetworkStatus();
 
+  // Calculate performance score using unified function
+  const performanceScore = calculatePerformanceScore(performanceMetrics);
+
+  // Check if metrics are good, need improvement, or poor
+  const metricsStatus = {
+    lcp: performanceMetrics.lcp ? {
+      isGood: isGoodPerformance(performanceMetrics.lcp, CORE_WEB_VITALS.LCP),
+      needsImprovement: needsImprovement(performanceMetrics.lcp, CORE_WEB_VITALS.LCP),
+      isPoor: isPoorPerformance(performanceMetrics.lcp, CORE_WEB_VITALS.LCP),
+    } : null,
+    fid: performanceMetrics.fid ? {
+      isGood: isGoodPerformance(performanceMetrics.fid, CORE_WEB_VITALS.FID),
+      needsImprovement: needsImprovement(performanceMetrics.fid, CORE_WEB_VITALS.FID),
+      isPoor: isPoorPerformance(performanceMetrics.fid, CORE_WEB_VITALS.FID),
+    } : null,
+    cls: performanceMetrics.cls ? {
+      isGood: isGoodPerformance(performanceMetrics.cls, CORE_WEB_VITALS.CLS),
+      needsImprovement: needsImprovement(performanceMetrics.cls, CORE_WEB_VITALS.CLS),
+      isPoor: isPoorPerformance(performanceMetrics.cls, CORE_WEB_VITALS.CLS),
+    } : null,
+    fcp: performanceMetrics.fcp ? {
+      isGood: isGoodPerformance(performanceMetrics.fcp, CORE_WEB_VITALS.FCP),
+      needsImprovement: needsImprovement(performanceMetrics.fcp, CORE_WEB_VITALS.FCP),
+      isPoor: isPoorPerformance(performanceMetrics.fcp, CORE_WEB_VITALS.FCP),
+    } : null,
+  };
+
   return {
     performanceMetrics,
     pageLoadTime,
     memoryUsage,
     networkStatus,
+    performanceScore,
+    metricsStatus,
     checkBudget: () => checkPerformanceBudget(performanceMetrics),
+    constants: {
+      CORE_WEB_VITALS,
+      PERFORMANCE_BUDGETS,
+      UI_PERFORMANCE,
+    },
   };
 }

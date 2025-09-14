@@ -29,7 +29,6 @@ export { ProfileView } from './ProfileView';
 // Mobile & Touch Optimization
 export { MobileFilters } from './MobileFilters';
 export { MobileNavigation } from './MobileNavigation';
-// export { MobileDashboard } from './MobileDashboard'; // TODO: Sprint 6+ responsive design
 export { MobileLayout } from './MobileLayout';
 export { MobileMarketplace } from './marketplace/MobileMarketplace';
 export { MobileFiltersSheet } from './MobileFiltersSheet';

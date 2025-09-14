@@ -44,7 +44,9 @@ const mockMessages: ChatMessage[] = [
     content:
       'Merhaba, web tasarım projenizle ilgileniyorum. Detayları görüşebilir miyiz?',
     type: 'text',
+    createdAt: '2025-09-10T10:00:00Z',
     sentAt: '2025-09-10T10:00:00Z',
+    isRead: true,
     readAt: '2025-09-10T10:01:00Z',
     attachments: [],
   },
@@ -55,7 +57,9 @@ const mockMessages: ChatMessage[] = [
     receiverId: 'user-1',
     content: 'Tabii ki! Projenin kapsamını daha detaylı anlatabilir misiniz?',
     type: 'text',
+    createdAt: '2025-09-10T10:02:00Z',
     sentAt: '2025-09-10T10:02:00Z',
+    isRead: true,
     readAt: '2025-09-10T10:02:30Z',
     attachments: [],
   },
@@ -67,7 +71,9 @@ const mockMessages: ChatMessage[] = [
     content:
       'E-ticaret sitesi için modern bir tasarım istiyorum. Referans dosyalarını paylaşıyorum.',
     type: 'text',
+    createdAt: '2025-09-10T10:05:00Z',
     sentAt: '2025-09-10T10:05:00Z',
+    isRead: true,
     readAt: '2025-09-10T10:06:00Z',
     attachments: [
       {
@@ -76,6 +82,9 @@ const mockMessages: ChatMessage[] = [
         url: '/uploads/messages/references.pdf',
         type: 'application/pdf',
         size: 2048000,
+        filename: 'references.pdf',
+        mimetype: 'application/pdf',
+        uploadedAt: '2025-09-10T10:05:00Z',
         thumbnailUrl: '/uploads/messages/references-thumb.jpg',
       },
     ],
@@ -88,7 +97,9 @@ const mockMessages: ChatMessage[] = [
     content:
       'Logo tasarımı teslim edildi. İnceleyip geri dönüş yapabilir misiniz?',
     type: 'text',
+    createdAt: '2025-09-11T14:30:00Z',
     sentAt: '2025-09-11T14:30:00Z',
+    isRead: false,
     readAt: undefined,
     attachments: [
       {
@@ -97,6 +108,9 @@ const mockMessages: ChatMessage[] = [
         url: '/uploads/messages/logo-final.ai',
         type: 'application/illustrator',
         size: 5120000,
+        filename: 'logo-final.ai',
+        mimetype: 'application/illustrator',
+        uploadedAt: '2025-09-11T14:30:00Z',
         thumbnailUrl: '/uploads/messages/logo-preview.jpg',
       },
     ],
@@ -109,7 +123,9 @@ const mockMessages: ChatMessage[] = [
     content:
       'Harika referanslar! 2 hafta içinde teslim edebilirim. Başlangıç ücreti 5000 TL.',
     type: 'text',
+    createdAt: '2025-09-10T10:10:00Z',
     sentAt: '2025-09-10T10:10:00Z',
+    isRead: false,
     readAt: undefined,
     attachments: [],
   },
@@ -121,16 +137,26 @@ const mockConversations: ChatConversation[] = [
     type: 'order',
     participants: [
       {
+        ...mockUsers[0],
+        email: 'ahmet.yilmaz@example.com',
+        accountStatus: 'active' as const,
+        verificationStatus: 'verified' as const,
+        createdAt: '2025-08-01T10:00:00Z',
+        updatedAt: '2025-09-10T09:55:00Z',
         userId: 'user-1',
-        user: mockUsers[0],
         joinedAt: '2025-09-10T09:55:00Z',
         lastReadAt: '2025-09-10T10:10:30Z',
         isTyping: false,
         isOnline: true,
       },
       {
+        ...mockUsers[1],
+        email: 'zeynep.kaya@example.com',
+        accountStatus: 'active' as const,
+        verificationStatus: 'verified' as const,
+        createdAt: '2025-08-15T10:00:00Z',
+        updatedAt: '2025-09-10T09:55:00Z',
         userId: 'user-2',
-        user: mockUsers[1],
         joinedAt: '2025-09-10T09:55:00Z',
         lastReadAt: '2025-09-10T10:09:00Z',
         isTyping: false,
@@ -140,6 +166,8 @@ const mockConversations: ChatConversation[] = [
     lastMessage: mockMessages[4],
     lastActivity: '2025-09-10T10:10:00Z',
     unreadCount: 1,
+    createdAt: '2025-09-10T09:55:00Z',
+    updatedAt: '2025-09-10T10:10:00Z',
     isArchived: false,
     isPinned: true,
     orderId: 'order-123',
@@ -154,16 +182,26 @@ const mockConversations: ChatConversation[] = [
     type: 'order',
     participants: [
       {
+        ...mockUsers[0],
+        email: 'ahmet.yilmaz@example.com',
+        accountStatus: 'active' as const,
+        verificationStatus: 'verified' as const,
+        createdAt: '2025-08-01T10:00:00Z',
+        updatedAt: '2025-09-11T14:00:00Z',
         userId: 'user-1',
-        user: mockUsers[0],
         joinedAt: '2025-09-11T14:00:00Z',
         lastReadAt: '2025-09-11T14:20:00Z',
         isTyping: false,
         isOnline: true,
       },
       {
+        ...mockUsers[2],
+        email: 'mehmet.ozkan@example.com',
+        accountStatus: 'active' as const,
+        verificationStatus: 'verified' as const,
+        createdAt: '2025-08-20T10:00:00Z',
+        updatedAt: '2025-09-11T14:00:00Z',
         userId: 'user-3',
-        user: mockUsers[2],
         joinedAt: '2025-09-11T14:00:00Z',
         lastReadAt: '2025-09-11T14:30:00Z',
         isTyping: false,
@@ -173,6 +211,8 @@ const mockConversations: ChatConversation[] = [
     lastMessage: mockMessages[3],
     lastActivity: '2025-09-11T14:30:00Z',
     unreadCount: 1,
+    createdAt: '2025-09-11T14:00:00Z',
+    updatedAt: '2025-09-11T14:30:00Z',
     isArchived: false,
     isPinned: false,
     orderId: 'order-124',
@@ -195,6 +235,7 @@ const generatePagination = (
   total: number
 ): PaginationMeta => ({
   page,
+  limit: pageSize, // Required for PaginationMeta compatibility
   pageSize,
   total,
   totalPages: Math.ceil(total / pageSize),
@@ -287,12 +328,14 @@ export const messagingHandlers = [
         senderId: messageData.content?.includes('sistem') ? 'system' : 'user-1', // Mock current user
         receiverId: 'user-2', // Mock receiver
         content: messageData.content,
-        type: messageData.type,
+        type: messageData.type || 'text', // Default to text if not provided
+        createdAt: new Date().toISOString(),
         sentAt: new Date().toISOString(),
+        isRead: false,
         attachments:
           messageData.attachments?.map((att, index) => ({
-            id: `att-${Date.now()}-${index}`,
             ...att,
+            id: att.id || `att-${Date.now()}-${index}`, // Use existing id or generate new one
           })) || [],
       };
 
@@ -324,10 +367,15 @@ export const messagingHandlers = [
       id: `conv-${Date.now()}`,
       type: conversationData.type,
       participants: conversationData.participantIds.map((userId) => {
-        const user = mockUsers.find((u) => u.id === userId);
+        const user = mockUsers.find((u) => u.id === userId) || mockUsers[0];
         return {
+          ...user,
+          email: `${user.firstName.toLowerCase()}.${user.lastName.toLowerCase()}@example.com`,
+          accountStatus: 'active' as const,
+          verificationStatus: 'verified' as const,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
           userId,
-          user: user || mockUsers[0],
           joinedAt: new Date().toISOString(),
           isTyping: false,
           isOnline: Math.random() > 0.5,
@@ -335,12 +383,12 @@ export const messagingHandlers = [
       }),
       lastActivity: new Date().toISOString(),
       unreadCount: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       isArchived: false,
       isPinned: false,
       orderId: conversationData.orderId,
-      metadata: {
-        title: conversationData.title,
-      },
+      title: conversationData.title,
     };
 
     // Create initial message if provided
@@ -352,7 +400,9 @@ export const messagingHandlers = [
         receiverId: conversationData.participantIds[1],
         content: conversationData.initialMessage,
         type: 'text',
+        createdAt: new Date().toISOString(),
         sentAt: new Date().toISOString(),
+        isRead: false,
         attachments: [],
       };
 
@@ -443,10 +493,9 @@ export const messagingHandlers = [
         conversation: mockConversations.find(
           (conv) => conv.id === message.conversationId
         )!,
-        matches: [query], // Simplified highlighting
+        highlights: [query], // Simplified highlighting
       })),
       pagination: generatePagination(page, pageSize, searchResults.length),
-      totalMatches: searchResults.length,
     };
 
     return HttpResponse.json(response);

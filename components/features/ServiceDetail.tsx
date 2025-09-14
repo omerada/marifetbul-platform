@@ -24,6 +24,18 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/Avatar';
 import { Loading } from '@/components/ui';
 import { OrderForm } from './OrderForm';
 
+// Helper function to get image source as string
+const getPackageImageSrc = (
+  image:
+    | string
+    | { id: string; name: string; url: string; type: string }
+    | undefined
+): string => {
+  if (!image) return '';
+  if (typeof image === 'string') return image;
+  return image.url || '';
+};
+
 interface ServiceDetailProps {
   packageId: string;
   className?: string;
@@ -129,19 +141,26 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
                 <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 sm:gap-4">
                   <div className="flex items-center">
                     <User className="mr-1 h-4 w-4 flex-shrink-0" />
-                    <Link
-                      href={`/profile/${servicePackage.freelancer.id}`}
-                      className="truncate font-medium hover:text-blue-600"
-                    >
-                      {servicePackage.freelancer.firstName}{' '}
-                      {servicePackage.freelancer.lastName}
-                    </Link>
+                    {servicePackage.freelancer ? (
+                      <Link
+                        href={`/profile/${servicePackage.freelancer.id}`}
+                        className="truncate font-medium hover:text-blue-600"
+                      >
+                        {servicePackage.freelancer.firstName || 'N/A'}{' '}
+                        {servicePackage.freelancer.lastName || ''}
+                      </Link>
+                    ) : (
+                      <span className="truncate">Freelancer Bilgisi Yok</span>
+                    )}
                   </div>
                   <div className="flex items-center">
                     <Star className="mr-1 h-4 w-4 flex-shrink-0 text-yellow-400" />
                     <span className="truncate">
-                      {servicePackage.rating.toFixed(1)} (
-                      {servicePackage.reviews} değerlendirme)
+                      {(servicePackage.rating || 0).toFixed(1)} (
+                      {Array.isArray(servicePackage.reviews)
+                        ? servicePackage.reviews.length
+                        : servicePackage.reviews || 0}{' '}
+                      değerlendirme)
                     </span>
                   </div>
                   <div className="flex items-center">
@@ -186,7 +205,11 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
               <div className="mb-4 sm:mb-6">
                 <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-gray-100">
                   <Image
-                    src={servicePackage.images[currentImageIndex]}
+                    src={
+                      getPackageImageSrc(
+                        servicePackage.images?.[currentImageIndex]
+                      ) || '/placeholder.jpg'
+                    }
                     alt={servicePackage.title}
                     fill
                     className="object-cover"
@@ -275,7 +298,7 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
                           </div>
                         </div>
                         <ul className="mt-3 space-y-1">
-                          {details.features.map((feature, index) => (
+                          {details.features?.map((feature, index) => (
                             <li
                               key={index}
                               className="flex items-start text-sm"
@@ -346,7 +369,7 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
                   {servicePackage.whatIncluded.map((item, index) => (
                     <li key={index} className="flex items-start">
                       <Check className="mt-0.5 mr-2 h-4 w-4 text-green-500" />
-                      {item}
+                      {typeof item === 'string' ? item : item.name}
                     </li>
                   ))}
                 </ul>
@@ -386,46 +409,51 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
               <Avatar className="h-10 w-10 flex-shrink-0 sm:h-12 sm:w-12">
                 <AvatarImage
                   src={
-                    servicePackage.freelancer.avatar || '/avatars/default.jpg'
+                    servicePackage.freelancer?.avatar || '/avatars/default.jpg'
                   }
-                  alt={`${servicePackage.freelancer.firstName} ${servicePackage.freelancer.lastName}`}
+                  alt={`${servicePackage.freelancer?.firstName} ${servicePackage.freelancer?.lastName}`}
                 />
                 <AvatarFallback>
-                  {servicePackage.freelancer.firstName.charAt(0)}
-                  {servicePackage.freelancer.lastName.charAt(0)}
+                  {servicePackage.freelancer?.firstName?.charAt(0) || 'F'}
+                  {servicePackage.freelancer?.lastName?.charAt(0) || ''}
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
                 <h3 className="truncate font-semibold">
-                  {servicePackage.freelancer.firstName}{' '}
-                  {servicePackage.freelancer.lastName}
+                  {servicePackage.freelancer?.firstName}{' '}
+                  {servicePackage.freelancer?.lastName}
                 </h3>
-                {'title' in servicePackage.freelancer && (
-                  <p className="truncate text-sm text-gray-600">
-                    {servicePackage.freelancer.title}
-                  </p>
-                )}
-                {'location' in servicePackage.freelancer && (
-                  <div className="flex items-center text-sm text-gray-500">
-                    <MapPin className="mr-1 h-3 w-3 flex-shrink-0" />
-                    <span className="truncate">
-                      {servicePackage.freelancer.location}
-                    </span>
-                  </div>
-                )}
+                {servicePackage.freelancer &&
+                  'title' in servicePackage.freelancer && (
+                    <p className="truncate text-sm text-gray-600">
+                      {servicePackage.freelancer.title}
+                    </p>
+                  )}
+                {servicePackage.freelancer &&
+                  'location' in servicePackage.freelancer && (
+                    <div className="flex items-center text-sm text-gray-500">
+                      <MapPin className="mr-1 h-3 w-3 flex-shrink-0" />
+                      <span className="truncate">
+                        {String(servicePackage.freelancer.location)}
+                      </span>
+                    </div>
+                  )}
               </div>
             </div>
 
             <div className="mt-3 grid grid-cols-2 gap-3 text-center sm:mt-4 sm:gap-4">
               <div>
                 <div className="text-base font-semibold sm:text-lg">
-                  {servicePackage.freelancer.rating}
+                  {servicePackage.freelancer?.rating || 0}
                 </div>
                 <div className="text-xs text-gray-600 sm:text-sm">Puan</div>
               </div>
               <div>
                 <div className="text-base font-semibold sm:text-lg">
-                  {servicePackage.freelancer.totalReviews}
+                  {servicePackage.freelancer &&
+                  'reviewCount' in servicePackage.freelancer
+                    ? servicePackage.freelancer.reviewCount
+                    : 0}
                 </div>
                 <div className="text-xs text-gray-600 sm:text-sm">
                   Değerlendirme
@@ -434,7 +462,7 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
             </div>
 
             <div className="mt-3 space-y-2 sm:mt-4">
-              <Link href={`/profile/${servicePackage.freelancer.id}`}>
+              <Link href={`/profile/${servicePackage.freelancer?.id || ''}`}>
                 <Button
                   className="w-full text-sm sm:text-base"
                   variant="outline"
@@ -459,7 +487,9 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
               <div className="flex justify-between text-xs sm:text-sm">
                 <span>Seçili Paket:</span>
                 <span className="ml-2 text-right font-medium">
-                  {'pricing' in servicePackage && servicePackage.pricing
+                  {'pricing' in servicePackage &&
+                  servicePackage.pricing &&
+                  servicePackage.pricing[selectedTier]
                     ? servicePackage.pricing[selectedTier].title
                     : 'Temel Paket'}
                 </span>
@@ -475,7 +505,9 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
               <div className="flex justify-between text-xs sm:text-sm">
                 <span>Revizyon:</span>
                 <span className="ml-2 text-right font-medium">
-                  {'pricing' in servicePackage && servicePackage.pricing
+                  {'pricing' in servicePackage &&
+                  servicePackage.pricing &&
+                  servicePackage.pricing[selectedTier]
                     ? `${servicePackage.pricing[selectedTier].revisions} kez`
                     : `${servicePackage.revisions} kez`}
                 </span>

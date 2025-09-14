@@ -30,10 +30,15 @@ export function JobCard({ job, layout }: JobCardProps) {
   const isFavorite = isFavoriteJob(job.id);
 
   const formatBudget = () => {
-    if (job.budget.type === 'hourly') {
-      return `${formatCurrency(job.budget.amount)}/saat`;
+    // Type guard for budget object vs number
+    if (typeof job.budget === 'object' && job.budget !== null) {
+      if (job.budget.type === 'hourly') {
+        return `${formatCurrency(job.budget.amount)}/saat`;
+      }
+      return formatCurrency(job.budget.amount);
     }
-    return formatCurrency(job.budget.amount);
+    // Handle legacy number budget
+    return formatCurrency(job.budget);
   };
 
   const timeAgo = formatDistanceToNow(new Date(job.createdAt), {
@@ -42,9 +47,9 @@ export function JobCard({ job, layout }: JobCardProps) {
   });
 
   const isUrgent =
-    job.proposalsCount < 5 &&
+    (job.proposalsCount || 0) < 5 &&
     new Date(job.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000);
-  const isPopular = job.proposalsCount > 20;
+  const isPopular = (job.proposalsCount || 0) > 20;
 
   if (layout === 'list') {
     return (
@@ -87,7 +92,7 @@ export function JobCard({ job, layout }: JobCardProps) {
                     <div className="flex items-center">
                       <Briefcase className="mr-1 h-4 w-4" />
                       <span className="font-medium">
-                        {job.employer.companyName || 'Şirket'}
+                        {job.employer?.companyName || 'Şirket'}
                       </span>
                     </div>
                     <span className="text-gray-400">•</span>
@@ -121,7 +126,11 @@ export function JobCard({ job, layout }: JobCardProps) {
                 </div>
                 <div className="flex items-center rounded-full bg-gray-50 px-3 py-1">
                   <Clock className="mr-1 h-4 w-4" />
-                  <span className="font-medium">{job.timeline}</span>
+                  <span className="font-medium">
+                    {typeof job.timeline === 'string'
+                      ? job.timeline
+                      : 'Belirtilmemiş'}
+                  </span>
                 </div>
                 <div className="flex items-center rounded-full bg-gray-50 px-3 py-1">
                   <Users className="mr-1 h-4 w-4" />
@@ -138,22 +147,26 @@ export function JobCard({ job, layout }: JobCardProps) {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                {job.skills.slice(0, 5).map((skill) => (
-                  <Badge
-                    key={skill}
-                    variant="outline"
-                    className="border-gray-200 bg-white text-xs"
-                  >
-                    {skill}
-                  </Badge>
-                ))}
-                {job.skills.length > 5 && (
-                  <Badge
-                    variant="outline"
-                    className="border-gray-300 bg-gray-100 text-xs"
-                  >
-                    +{job.skills.length - 5} daha
-                  </Badge>
+                {job.skills && job.skills.length > 0 && (
+                  <div className="flex flex-wrap gap-1 sm:gap-2">
+                    {job.skills.slice(0, 5).map((skill) => (
+                      <Badge
+                        key={skill}
+                        variant="outline"
+                        className="border-gray-200 bg-white text-xs"
+                      >
+                        {skill}
+                      </Badge>
+                    ))}
+                    {job.skills.length > 5 && (
+                      <Badge
+                        variant="outline"
+                        className="border-gray-300 bg-gray-100 text-xs"
+                      >
+                        +{job.skills.length - 5} daha
+                      </Badge>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
@@ -165,7 +178,8 @@ export function JobCard({ job, layout }: JobCardProps) {
                   {formatBudget()}
                 </div>
                 <div className="text-sm text-gray-500">
-                  {job.budget.type === 'hourly'
+                  {typeof job.budget === 'object' &&
+                  job.budget.type === 'hourly'
                     ? 'saatlik ücret'
                     : 'toplam bütçe'}
                 </div>
@@ -261,7 +275,7 @@ export function JobCard({ job, layout }: JobCardProps) {
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <Briefcase className="mr-1 h-4 w-4" />
           <span className="font-medium">
-            {job.employer.companyName || 'Şirket'}
+            {job.employer?.companyName || 'Şirket'}
           </span>
           <span className="text-gray-400">•</span>
           <span className="text-gray-500">{timeAgo}</span>
@@ -294,7 +308,11 @@ export function JobCard({ job, layout }: JobCardProps) {
         <div className="flex items-center justify-between rounded-lg bg-green-50 px-3 py-2">
           <div className="flex items-center text-green-700">
             <Clock className="mr-1 h-4 w-4" />
-            <span className="text-sm font-medium">{job.timeline}</span>
+            <span className="text-sm font-medium">
+              {typeof job.timeline === 'string'
+                ? job.timeline
+                : 'Belirtilmemiş'}
+            </span>
           </div>
           {job.location && (
             <div className="flex items-center text-green-700">
@@ -305,22 +323,26 @@ export function JobCard({ job, layout }: JobCardProps) {
         </div>
 
         <div className="flex flex-wrap gap-1">
-          {job.skills.slice(0, 3).map((skill) => (
-            <Badge
-              key={skill}
-              variant="outline"
-              className="border-gray-200 bg-white text-xs"
-            >
-              {skill}
-            </Badge>
-          ))}
-          {job.skills.length > 3 && (
-            <Badge
-              variant="outline"
-              className="border-gray-300 bg-gray-100 text-xs"
-            >
-              +{job.skills.length - 3}
-            </Badge>
+          {job.skills && job.skills.length > 0 && (
+            <>
+              {job.skills.slice(0, 3).map((skill) => (
+                <Badge
+                  key={skill}
+                  variant="outline"
+                  className="border-gray-200 bg-white text-xs"
+                >
+                  {skill}
+                </Badge>
+              ))}
+              {job.skills.length > 3 && (
+                <Badge
+                  variant="outline"
+                  className="border-gray-300 bg-gray-100 text-xs"
+                >
+                  +{job.skills.length - 3}
+                </Badge>
+              )}
+            </>
           )}
         </div>
 

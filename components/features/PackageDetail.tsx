@@ -20,7 +20,7 @@ import {
   Shield,
 } from 'lucide-react';
 import { usePackageDetail } from '@/hooks';
-import type { ServicePackage, PackageDetail } from '@/types';
+import type { ServicePackage, PackageDetail, Freelancer } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -81,7 +81,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
     );
   }
 
-  const currentTierData = currentPackage.pricing[selectedTier];
+  const currentTierData = currentPackage.pricing?.[selectedTier];
 
   const getTierColor = (tier: string) => {
     switch (tier) {
@@ -164,7 +164,8 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
               </span>
               <span className="flex items-center">
                 <MapPin className="mr-1 h-4 w-4" />
-                {currentPackage.freelancer.location}
+                {(currentPackage.freelancer as Freelancer)?.location ||
+                  'Belirtilmemiş'}
               </span>
               <span className="flex items-center">
                 <Users className="mr-1 h-4 w-4" />
@@ -174,17 +175,17 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
 
             {/* Features */}
             <div className="mb-4 flex flex-wrap gap-2">
-              {currentPackage.features.map((feature, index) => (
+              {currentPackage.features?.map((feature, index) => (
                 <Badge key={index} variant="outline">
                   {feature}
                 </Badge>
-              ))}
+              )) || null}
             </div>
           </div>
 
           <div className="text-right">
             <div className="mb-1 text-2xl font-bold text-green-600">
-              ₺{currentTierData.price.toLocaleString('tr-TR')}
+              ₺{currentTierData?.price?.toLocaleString('tr-TR') || '0'}
               {selectedAddOnDetails.length > 0 && (
                 <span className="text-lg">
                   +{' '}
@@ -198,7 +199,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
               {getTierName(selectedTier)} Paket
             </div>
             <div className="text-sm font-medium text-gray-700">
-              {currentTierData.deliveryTime} gün
+              {currentTierData?.deliveryTime || 0} gün
             </div>
           </div>
         </div>
@@ -240,7 +241,8 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
             <CardContent>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 {(['basic', 'standard', 'premium'] as const).map((tierKey) => {
-                  const tier = currentPackage.pricing[tierKey];
+                  const tier = currentPackage.pricing?.[tierKey];
+                  if (!tier) return null;
                   return (
                     <div
                       key={tierKey}
@@ -272,12 +274,12 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                       </div>
 
                       <ul className="space-y-2">
-                        {tier.features.map((feature, index) => (
+                        {tier.features?.map((feature, index) => (
                           <li key={index} className="flex items-start text-sm">
                             <CheckCircle className="mt-0.5 mr-2 h-4 w-4 flex-shrink-0 text-green-500" />
                             <span>{feature}</span>
                           </li>
-                        ))}
+                        )) || null}
                       </ul>
 
                       <div className="mt-3 border-t pt-3 text-sm text-gray-600">
@@ -373,7 +375,9 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                           {currentPackage.whatIncluded.map((item, index) => (
                             <li key={index} className="flex items-start">
                               <CheckCircle className="mt-0.5 mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
-                              <span>{item}</span>
+                              <span>
+                                {typeof item === 'string' ? item : item.name}
+                              </span>
                             </li>
                           ))}
                         </ul>
@@ -414,8 +418,10 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
             <CardContent>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span>{currentTierData.title}</span>
-                  <span>₺{currentTierData.price.toLocaleString('tr-TR')}</span>
+                  <span>{currentTierData?.title || 'Paket'}</span>
+                  <span>
+                    ₺{currentTierData?.price?.toLocaleString('tr-TR') || '0'}
+                  </span>
                 </div>
 
                 {selectedAddOnDetails.map((addon) => (
@@ -494,7 +500,10 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
               <div className="mb-4 space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Toplam Proje:</span>
-                  <span>{currentPackage.freelancer.completedJobs}</span>
+                  <span>
+                    {(currentPackage.freelancer as Freelancer)?.completedJobs ||
+                      0}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Başarı Oranı:</span>
@@ -506,7 +515,10 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                 </div>
                 <div className="flex justify-between">
                   <span>Konum:</span>
-                  <span>{currentPackage.freelancer.location}</span>
+                  <span>
+                    {(currentPackage.freelancer as Freelancer)?.location ||
+                      'Belirtilmemiş'}
+                  </span>
                 </div>
               </div>
 

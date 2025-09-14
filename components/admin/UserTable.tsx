@@ -135,21 +135,58 @@ export function UserTable({ className }: UserTableProps) {
     try {
       switch (action) {
         case 'activate':
-          await onUserAction(actionUser.id, { action: 'unsuspend' });
+          await onUserAction(actionUser.id, {
+            userId: actionUser.id,
+            action: 'unsuspend',
+          });
           break;
         case 'suspend':
-          await onUserAction(actionUser.id, { action: 'suspend' });
+          await onUserAction(actionUser.id, {
+            userId: actionUser.id,
+            action: 'suspend',
+          });
           break;
         case 'ban':
-          await onUserAction(actionUser.id, { action: 'ban' });
+          await onUserAction(actionUser.id, {
+            userId: actionUser.id,
+            action: 'ban',
+          });
           break;
         case 'delete':
-          // Delete işlemi için farklı bir endpoint olabilir
-          console.log('Delete action not implemented in current API');
+          // Delete API endpoint'ini çağır
+          try {
+            const response = await fetch(
+              `/api/v1/admin/users/${actionUser.id}`,
+              {
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error('Delete operation failed');
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+              // Successfully deleted, refresh the user list
+              window.location.reload();
+            } else {
+              console.error('Delete failed:', result.message);
+            }
+          } catch (error) {
+            console.error('Error deleting user:', error);
+          }
           setShowDeleteDialog(false);
           break;
         case 'verify':
-          await onUserAction(actionUser.id, { action: 'verify' });
+          await onUserAction(actionUser.id, {
+            userId: actionUser.id,
+            action: 'verify',
+          });
           break;
         default:
           break;
@@ -161,11 +198,11 @@ export function UserTable({ className }: UserTableProps) {
     }
   };
 
-  const handleSelectUser = (userId: string, _checked: boolean) => {
+  const handleSelectUser = (userId: string) => {
     onBulkToggle(userId);
   };
 
-  const handleSelectAll = (_checked: boolean) => {
+  const handleSelectAll = () => {
     onSelectAll();
   };
 
@@ -223,7 +260,30 @@ export function UserTable({ className }: UserTableProps) {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => console.log('Export not implemented')}
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/v1/admin/users/export', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        format: 'csv',
+                        filters: filters,
+                      }),
+                    });
+
+                    if (response.ok) {
+                      const result = await response.json();
+                      if (result.success && result.data.downloadUrl) {
+                        // In a real app, this would trigger download
+                        window.open(result.data.downloadUrl, '_blank');
+                      }
+                    }
+                  } catch (error) {
+                    console.error('Export failed:', error);
+                  }
+                }}
                 disabled={isLoading}
               >
                 <Download className="mr-2 h-4 w-4" />
@@ -330,17 +390,13 @@ export function UserTable({ className }: UserTableProps) {
               onAction={(action: string) =>
                 onBulkAction({
                   userIds: bulkSelection.selectedIds,
-                  action: {
-                    action: action as
-                      | 'suspend'
-                      | 'unsuspend'
-                      | 'ban'
-                      | 'unban'
-                      | 'verify'
-                      | 'unverify'
-                      | 'add_note'
-                      | 'reset_password',
-                  },
+                  action: action as
+                    | 'suspend'
+                    | 'unsuspend'
+                    | 'ban'
+                    | 'unban'
+                    | 'verify'
+                    | 'unverify',
                 })
               }
               onClear={() =>
@@ -361,7 +417,7 @@ export function UserTable({ className }: UserTableProps) {
                   <TableHead className="w-12">
                     <Checkbox
                       checked={bulkSelection.isAllSelected}
-                      onChange={(e) => handleSelectAll(e.target.checked)}
+                      onChange={() => handleSelectAll()}
                     />
                   </TableHead>
                   <TableHead>User</TableHead>
@@ -397,20 +453,21 @@ export function UserTable({ className }: UserTableProps) {
                       <TableCell>
                         <Checkbox
                           checked={bulkSelection.selectedIds.includes(user.id)}
-                          onChange={(e) =>
-                            handleSelectUser(user.id, e.target.checked)
-                          }
+                          onChange={() => handleSelectUser(user.id)}
                         />
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-3">
                           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200">
-                            {user.firstName.charAt(0).toUpperCase()}
+                            {(user.firstName || user.name || 'U')
+                              .charAt(0)
+                              .toUpperCase()}
                           </div>
                           <div>
                             <div className="flex items-center space-x-1 font-medium">
                               <span>
-                                {user.firstName} {user.lastName}
+                                {user.firstName || user.name}{' '}
+                                {user.lastName || ''}
                               </span>
                               {user.verificationStatus === 'verified' && (
                                 <UserCheck className="h-4 w-4 text-blue-500" />

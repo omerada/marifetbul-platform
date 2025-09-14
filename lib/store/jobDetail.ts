@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { JobDetail, Proposal } from '@/types';
+import { JobDetail } from '@/types';
+import { Proposal } from '@/types/core/jobs';
 import { ProposalFormData } from '@/lib/validations/details';
 
 interface JobDetailStore {

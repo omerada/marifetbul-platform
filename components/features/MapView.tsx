@@ -60,7 +60,12 @@ export const MapView: React.FC<MapViewProps> = ({
   className = '',
 }) => {
   const [mapCenter, setMapCenter] = useState<Coordinates>(
-    center || { latitude: 39.9334, longitude: 32.8597 }
+    center || {
+      latitude: 39.9334,
+      longitude: 32.8597,
+      lat: 39.9334,
+      lng: 32.8597,
+    }
   ); // Default: Ankara
   const [mapZoom, setMapZoom] = useState(zoom);
   const [selectedMarker, setSelectedMarker] = useState<MapMarker | null>(null);
@@ -109,7 +114,9 @@ export const MapView: React.FC<MapViewProps> = ({
   const handleResetView = useCallback(() => {
     if (markers.length > 0) {
       const coordinates = markers.map((m) => m.coordinates);
-      fitToCoordinates(coordinates);
+      if (fitToCoordinates) {
+        fitToCoordinates(coordinates);
+      }
 
       const center = MapUtils.calculateCenter(coordinates);
       setMapCenter(center);
@@ -117,7 +124,12 @@ export const MapView: React.FC<MapViewProps> = ({
       const newZoom = MapUtils.getZoomLevel(50); // Default radius for fit
       setMapZoom(newZoom);
     } else {
-      setMapCenter({ latitude: 39.9334, longitude: 32.8597 });
+      setMapCenter({
+        latitude: 39.9334,
+        longitude: 32.8597,
+        lat: 39.9334,
+        lng: 32.8597,
+      });
       setMapZoom(10);
     }
   }, [markers, fitToCoordinates]);
@@ -125,10 +137,17 @@ export const MapView: React.FC<MapViewProps> = ({
   // Handle current location
   const handleCurrentLocation = useCallback(async () => {
     try {
+      if (!getCurrentPosition) {
+        console.warn('getCurrentPosition not available');
+        return;
+      }
+
       const position = await getCurrentPosition();
-      setUserLocation(position);
-      setMapCenter(position);
-      setMapZoom(15);
+      if (position) {
+        setUserLocation(position);
+        setMapCenter(position);
+        setMapZoom(15);
+      }
     } catch (error) {
       console.error('Failed to get current location:', error);
     }
@@ -139,7 +158,9 @@ export const MapView: React.FC<MapViewProps> = ({
     if (markers.length > 0) {
       const coordinates = markers.map((m) => m.coordinates);
       const bounds = MapUtils.calculateBounds(coordinates);
-      setBounds(bounds);
+      if (setBounds) {
+        setBounds(bounds);
+      }
 
       if (onBoundsChange) {
         onBoundsChange(bounds);
@@ -229,7 +250,12 @@ export const MapView: React.FC<MapViewProps> = ({
                 mapCenter.longitude +
                 (x / rect.width - 0.5) * 0.01 * Math.pow(2, 15 - mapZoom);
 
-              handleMapClick({ latitude: lat, longitude: lng });
+              handleMapClick({
+                latitude: lat,
+                longitude: lng,
+                lat: lat,
+                lng: lng,
+              });
             }}
           />
         )}

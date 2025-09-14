@@ -400,7 +400,7 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
                           {conversation.participants
                             .filter((p) => p.userId !== 'current-user') // Filter out current user
                             .map((p) =>
-                              `${p.user.firstName} ${p.user.lastName}`.trim()
+                              `${p.user?.firstName || ''} ${p.user?.lastName || ''}`.trim()
                             )
                             .join(', ')}
                         </h3>
@@ -482,7 +482,7 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
                       <div className="mt-4 flex items-center gap-4 text-sm text-gray-500">
                         <span className="flex items-center gap-1">
                           <DollarSign className="h-4 w-4" />₺
-                          {order.amount.toLocaleString('tr-TR')}
+                          {order.amount?.toLocaleString('tr-TR') || '0'}
                         </span>
                         <span className="flex items-center gap-1">
                           <Clock className="h-4 w-4" />

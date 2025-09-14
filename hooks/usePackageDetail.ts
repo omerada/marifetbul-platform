@@ -20,7 +20,7 @@ export function usePackageDetail(packageId: string) {
   }, [packageId]);
 
   // Derived state
-  const isPackageOwner = user?.id === store.currentPackage?.freelancer.id;
+  const isPackageOwner = user?.id === store.currentPackage?.freelancer?.id;
   const canOrder = user?.userType === 'employer' && !isPackageOwner;
 
   return {

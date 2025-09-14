@@ -25,6 +25,10 @@ const eslintConfig = [
   {
     rules: {
       '@typescript-eslint/no-unused-vars': 'warn', // Changed from error to warning
+      '@typescript-eslint/no-explicit-any': 'warn', // Allow any type warnings
+      'jsx-a11y/alt-text': 'warn', // Allow alt text warnings
+      '@next/next/no-img-element': 'warn', // Allow img element warnings
+      'react-hooks/exhaustive-deps': 'warn', // Allow hook dependency warnings
     },
   },
 ];

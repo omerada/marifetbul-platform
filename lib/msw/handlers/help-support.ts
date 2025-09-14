@@ -3,198 +3,68 @@ import type {
   HelpCategory,
   HelpArticle,
   SupportTicket,
-  ChatSession,
-  SupportAnalytics,
   CreateTicketRequest,
   CreateTicketResponse,
-  StartChatRequest,
+  SupportDepartment,
+  ChatSession,
   StartChatResponse,
-  ArticleRatingRequest,
+  SupportAnalytics,
   ArticleRatingResponse,
-  ChatAvailability,
-} from '@/types';
+} from '../../../types';
 
-// Local interface for chat messages in MSW context
-interface HelpCenterChatMessage {
-  id: string;
-  chatId: string;
-  from: 'user' | 'agent' | 'system' | 'bot';
-  senderId: string;
-  sender?: {
-    id: string;
-    firstName?: string;
-    lastName?: string;
-    name?: string;
-    avatar: string;
-  };
-  message: string;
-  messageType:
-    | 'text'
-    | 'file'
-    | 'image'
-    | 'system'
-    | 'automated'
-    | 'quick_reply'
-    | 'card';
-  timestamp: string;
-  readAt?: string;
-  deliveredAt?: string;
-  attachments?: Array<{
-    id: string;
-    name: string;
-    url: string;
-    type: string;
-    size: number;
-    thumbnailUrl?: string;
-    uploadedAt: string;
-  }>;
-}
-
-// Mock Data - Help Categories
-const mockHelpCategories: HelpCategory[] = [
+// Mock Help Categories
+const mockCategories: HelpCategory[] = [
   {
     id: 'getting-started',
-    name: 'Başlangıç Rehberi',
-    description: 'Yeni kullanıcılar için temel rehberler',
+    name: 'Başlangıç',
+    description: 'Platform kullanımına başlama rehberi',
     icon: 'rocket',
-    articleCount: 12,
-    parentId: undefined,
+    articleCount: 8,
     order: 1,
-    isVisible: true,
-    slug: 'baslangic-rehberi',
-    createdAt: '2025-09-01T10:00:00Z',
-    updatedAt: '2025-09-10T15:30:00Z',
-    children: [
-      {
-        id: 'account-setup',
-        name: 'Hesap Kurulumu',
-        description: 'Hesabınızı nasıl oluşturup yapılandıracağınız',
-        icon: 'user',
-        articleCount: 5,
-        parentId: 'getting-started',
-        order: 1,
-        isVisible: true,
-        slug: 'hesap-kurulumu',
-        createdAt: '2025-09-01T10:00:00Z',
-        updatedAt: '2025-09-10T15:30:00Z',
-      },
-      {
-        id: 'first-steps',
-        name: 'İlk Adımlar',
-        description: 'Platformdaki ilk adımlarınız',
-        icon: 'footprints',
-        articleCount: 7,
-        parentId: 'getting-started',
-        order: 2,
-        isVisible: true,
-        slug: 'ilk-adimlar',
-        createdAt: '2025-09-01T10:00:00Z',
-        updatedAt: '2025-09-10T15:30:00Z',
-      },
-    ],
   },
   {
     id: 'freelancer-guide',
     name: 'Freelancer Rehberi',
-    description: 'Freelancerların bilmesi gereken her şey',
-    icon: 'briefcase',
-    articleCount: 25,
-    parentId: undefined,
+    description: 'Freelancerlar için detaylı kılavuzlar',
+    icon: 'user',
+    articleCount: 12,
     order: 2,
-    isVisible: true,
-    slug: 'freelancer-rehberi',
-    createdAt: '2025-09-01T10:00:00Z',
-    updatedAt: '2025-09-10T15:30:00Z',
-    children: [
-      {
-        id: 'profile-optimization',
-        name: 'Profil Optimizasyonu',
-        description: 'Profilinizi öne çıkarın',
-        icon: 'star',
-        articleCount: 8,
-        parentId: 'freelancer-guide',
-        order: 1,
-        isVisible: true,
-        slug: 'profil-optimizasyonu',
-        createdAt: '2025-09-01T10:00:00Z',
-        updatedAt: '2025-09-10T15:30:00Z',
-      },
-    ],
   },
   {
     id: 'employer-guide',
     name: 'İşveren Rehberi',
-    description: 'İşverenler için kapsamlı kılavuz',
-    icon: 'building',
-    articleCount: 18,
-    parentId: undefined,
+    description: 'İşverenler için platform kullanım kılavuzu',
+    icon: 'briefcase',
+    articleCount: 10,
     order: 3,
-    isVisible: true,
-    slug: 'isveren-rehberi',
-    createdAt: '2025-09-01T10:00:00Z',
-    updatedAt: '2025-09-10T15:30:00Z',
   },
   {
-    id: 'payment-billing',
-    name: 'Ödeme ve Faturalandırma',
-    description: 'Ödeme süreçleri ve faturalandırma',
+    id: 'payments',
+    name: 'Ödemeler',
+    description: 'Ödeme işlemleri ve güvenliği',
     icon: 'credit-card',
-    articleCount: 15,
-    parentId: undefined,
+    articleCount: 6,
     order: 4,
-    isVisible: true,
-    slug: 'odeme-faturalandirma',
-    createdAt: '2025-09-01T10:00:00Z',
-    updatedAt: '2025-09-10T15:30:00Z',
-  },
-  {
-    id: 'technical-support',
-    name: 'Teknik Destek',
-    description: 'Teknik sorunlar ve çözümleri',
-    icon: 'wrench',
-    articleCount: 22,
-    parentId: undefined,
-    order: 5,
-    isVisible: true,
-    slug: 'teknik-destek',
-    createdAt: '2025-09-01T10:00:00Z',
-    updatedAt: '2025-09-10T15:30:00Z',
   },
 ];
 
-// Mock Data - Help Articles
-const mockHelpArticles: HelpArticle[] = [
+// Mock Help Articles
+const mockArticles: HelpArticle[] = [
   {
     id: 'article-1',
-    title: 'İlk Profilinizi Nasıl Oluşturacaksınız',
-    slug: 'ilk-profilinizi-nasil-olusturacaksiniz',
-    excerpt:
-      'Etkileyici bir freelancer profili oluşturmak için adım adım rehber',
-    content: `# İlk Profilinizi Nasıl Oluşturacaksınız
-
-Platformumuzda başarılı olmak için etkileyici bir profil oluşturmak çok önemlidir. İşte nasıl başlayacağınız:
-
-## 1. Profil Fotoğrafı
-Yüzünüzü net bir şekilde gösteren profesyonel bir fotoğraf yükleyin...
-
-## 2. Meslek Başlığı
-Ne yaptığınızı açıkça belirten, özel bir başlık seçin...
-
-## 3. Yetenek ve Deneyim
-En güçlü yanlarınızı vurgulayın...`,
-    categoryId: 'account-setup',
-    category: {
-      id: 'account-setup',
-      name: 'Hesap Kurulumu',
-      description: 'Hesap oluşturma ve kurulumu rehberleri',
-      icon: 'UserPlus',
-      articleCount: 12,
-      order: 1,
-      isVisible: true,
-      slug: 'hesap-kurulumu',
-      createdAt: '2024-01-01T00:00:00Z',
-      updatedAt: '2024-01-15T00:00:00Z',
-    },
+    title: 'Profil Oluşturma Rehberi',
+    slug: 'profil-olusturma-rehberi',
+    categoryId: 'getting-started',
+    excerpt: 'Etkili bir profil oluşturmak için adım adım rehber',
+    content: `<h2>Profil Oluşturma Adımları</h2>
+    <p>Bu rehberde, platform üzerinde etkili bir profil oluşturmak için izlemeniz gereken adımları bulacaksınız.</p>
+    <ol>
+      <li>Kişisel bilgilerinizi eksiksiz doldurun</li>
+      <li>Profesyonel bir profil fotoğrafı yükleyin</li>
+      <li>Becerilerinizi ve deneyimlerinizi detaylı olarak yazın</li>
+      <li>Portfolio örneklerini ekleyin</li>
+      <li>Referanslarınızı ekleyin</li>
+    </ol>`,
     author: {
       id: 'support-team',
       name: 'Destek Ekibi',
@@ -202,411 +72,187 @@ En güçlü yanlarınızı vurgulayın...`,
     },
     createdAt: '2025-09-01T10:00:00Z',
     updatedAt: '2025-09-10T15:30:00Z',
-    publishedAt: '2025-09-01T10:00:00Z',
     views: 1547,
     rating: 4.6,
     ratingCount: 89,
     tags: ['profil', 'başlangıç', 'freelancer'],
     featured: true,
-    status: 'published',
+    isPublished: true,
     estimatedReadTime: 5,
     language: 'tr',
-    relatedArticles: ['article-2', 'article-3'],
-    version: 1,
   },
   {
     id: 'article-2',
     title: 'İş Başvurusu Nasıl Yapılır',
     slug: 'is-basvurusu-nasil-yapilir',
-    excerpt: 'Etkili iş başvuruları oluşturmak için ipuçları ve stratejiler',
-    content: `# İş Başvurusu Nasıl Yapılır
-
-Doğru işleri bulup başarılı başvurular yapmak için...`,
     categoryId: 'freelancer-guide',
+    excerpt: 'Başarılı iş başvuruları için ipuçları ve stratejiler',
+    content: `<h2>Başarılı İş Başvurusu İçin İpuçları</h2>
+    <p>Bu makalede, iş başvurularınızın onaylanma şansını artıracak stratejileri öğreneceksiniz.</p>`,
     author: {
       id: 'support-team',
       name: 'Destek Ekibi',
       avatar: '/avatars/support.png',
     },
     createdAt: '2025-09-02T14:00:00Z',
-    updatedAt: '2025-09-08T09:15:00Z',
-    publishedAt: '2025-09-02T14:00:00Z',
-    views: 983,
+    updatedAt: '2025-09-11T09:15:00Z',
+    views: 892,
     rating: 4.3,
-    ratingCount: 67,
-    tags: ['başvuru', 'iş', 'teklif'],
+    ratingCount: 54,
+    tags: ['başvuru', 'freelancer', 'iş'],
     featured: false,
-    status: 'published',
+    isPublished: true,
     estimatedReadTime: 7,
     language: 'tr',
-    relatedArticles: ['article-1', 'article-4'],
-    version: 2,
-  },
-  {
-    id: 'article-3',
-    title: 'Ödeme Sistemi Kullanım Kılavuzu',
-    slug: 'odeme-sistemi-kullanim-kilavuzu',
-    excerpt: 'Güvenli ödeme işlemleri ve cüzdan yönetimi hakkında bilgiler',
-    content: `# Ödeme Sistemi Kullanım Kılavuzu
-
-Platformumuzda güvenli ödeme işlemleri yapma...`,
-    categoryId: 'payment-billing',
-    author: {
-      id: 'support-team',
-      name: 'Destek Ekibi',
-      avatar: '/avatars/support.png',
-    },
-    createdAt: '2025-09-03T11:30:00Z',
-    updatedAt: '2025-09-09T16:45:00Z',
-    publishedAt: '2025-09-03T11:30:00Z',
-    views: 1205,
-    rating: 4.8,
-    ratingCount: 124,
-    tags: ['ödeme', 'güvenlik', 'cüzdan'],
-    featured: true,
-    status: 'published',
-    estimatedReadTime: 6,
-    language: 'tr',
-    relatedArticles: ['article-5'],
-    version: 1,
   },
 ];
 
-// Mock Data - Support Tickets
-const mockSupportTickets: SupportTicket[] = [
+// Mock Support Tickets
+const mockTickets: SupportTicket[] = [
   {
-    id: 'ticket-123',
-    ticketNumber: 'TKT-2025-001547',
-    subject: 'Portföy resimlerini yükleyemiyorum',
-    description:
-      'Profil sayfamda portföy resimleri yüklemeye çalışıyorum ancak "dosya formatı desteklenmiyor" hatası alıyorum. JPEG ve PNG formatlarını denedim.',
-    category: 'technical',
-    subcategory: 'file-upload',
-    priority: 'medium',
-    status: 'in_progress',
-    userId: 'user-456',
+    id: 'ticket-1',
+    ticketNumber: 'TKT-001234',
+    userId: 'user-1',
+    subject: 'Ödeme problemi',
+    description: 'Kartımdan para çekildi ama sipariş oluşmadı',
+    category: 'payment',
+    priority: 'high',
+    status: 'open',
+    assignedAgent: 'agent-1',
+    createdAt: '2025-09-12T10:30:00Z',
+    updatedAt: '2025-09-12T11:15:00Z',
+    estimatedResolutionTime: '2025-09-12T18:00:00Z',
     user: {
-      id: 'user-456',
-      firstName: 'Ahmet',
-      lastName: 'Yılmaz',
-      email: 'ahmet@example.com',
-      avatar: '/avatars/user-456.png',
+      id: 'user-1',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@example.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=john',
       userType: 'freelancer',
     },
-    assignedAgentId: 'agent-sarah',
-    assignedAgent: {
-      id: 'agent-sarah',
-      name: 'Sarah Johnson',
-      email: 'sarah@support.com',
-      avatar: '/avatars/agent-sarah.png',
-      title: 'Teknik Destek Uzmanı',
-      department: 'Technical',
-      specialties: ['file-upload', 'profile-issues'],
-      languages: ['tr', 'en'],
-      isOnline: true,
-      currentLoad: 5,
-      maxLoad: 10,
-      rating: 4.8,
-      totalTicketsResolved: 1247,
-      averageResponseTime: 15,
-      isAvailable: true,
-      workingHours: {
-        timezone: 'Europe/Istanbul',
-        schedule: [
-          {
-            day: 'monday',
-            isWorkingDay: true,
-            startTime: '09:00',
-            endTime: '18:00',
-          },
-        ],
-      },
-      lastActiveAt: '2025-09-11T14:30:00Z',
-    },
-    attachments: [
-      {
-        id: 'attach-1',
-        ticketId: 'ticket-123',
-        name: 'screenshot-error.png',
-        url: '/uploads/tickets/screenshot-error.png',
-        type: 'image/png',
-        size: 245760,
-        uploadedBy: 'user-456',
-        uploadedAt: '2025-09-11T10:05:00Z',
-        isPublic: true,
-        scanStatus: 'clean',
-      },
-    ],
-    responses: [
-      {
-        id: 'response-1',
-        ticketId: 'ticket-123',
-        responseType: 'agent_reply',
-        content:
-          'Sorunu analiz ettim. Dosya boyutu sınırını aştığınız için bu hata oluşuyor. Lütfen dosya boyutunu 5MB altına düşürün.',
-        authorId: 'agent-sarah',
-        author: {
-          id: 'agent-sarah',
-          name: 'Sarah Johnson',
-          avatar: '/avatars/agent-sarah.png',
-          role: 'agent',
-        },
-        isPublic: true,
-        attachments: [],
-        createdAt: '2025-09-11T14:30:00Z',
-      },
-    ],
-    tags: ['file-upload', 'portfolio'],
-    metadata: {
-      source: 'web',
-      urgency: 'medium',
-      customerType: 'premium',
-    },
-    slaDetails: {
-      responseTime: {
-        target: 240, // 4 hours
-        remaining: 85,
-        status: 'within_sla',
-      },
-      resolutionTime: {
-        target: 1440, // 24 hours
-        remaining: 560,
-        status: 'within_sla',
-      },
-      escalationThresholds: [
-        {
-          level: 1,
-          triggerTime: 480,
-          triggered: false,
-        },
-      ],
-    },
-    createdAt: '2025-09-11T10:00:00Z',
-    updatedAt: '2025-09-11T14:30:00Z',
-    firstResponseAt: '2025-09-11T14:30:00Z',
-    lastAgentResponseAt: '2025-09-11T14:30:00Z',
   },
 ];
 
-// Mock Data - Chat Sessions
-const mockChatSessions: ChatSession[] = [
+// Mock Support Departments
+const mockDepartments: SupportDepartment[] = [
   {
-    id: 'chat-789',
-    userId: 'user-456',
-    user: {
-      id: 'user-456',
-      firstName: 'Ahmet',
-      lastName: 'Yılmaz',
-      avatar: '/avatars/user-456.png',
-      userType: 'freelancer',
-    },
-    agentId: 'agent-sarah',
-    agent: {
-      id: 'agent-sarah',
-      name: 'Sarah Johnson',
-      avatar: '/avatars/agent-sarah.png',
-      title: 'Teknik Destek Uzmanı',
-    },
-    status: 'connected',
-    topic: 'Dosya yükleme sorunu',
-    department: 'technical',
-    priority: 'normal',
-    startedAt: '2025-09-11T10:15:00Z',
-    connectedAt: '2025-09-11T10:15:30Z',
-    lastActivityAt: '2025-09-11T10:35:00Z',
-    actualWaitTime: 0.5,
-    sessionDuration: 20,
-    metadata: {
-      source: 'website',
-      pageUrl: '/profile/edit',
-    },
+    id: 'technical',
+    name: 'technical',
+    isAvailable: true,
+    queueLength: 2,
+    estimatedWaitTime: 3,
+  },
+  {
+    id: 'billing',
+    name: 'billing',
+    isAvailable: true,
+    queueLength: 1,
+    estimatedWaitTime: 2,
+  },
+  {
+    id: 'sales',
+    name: 'sales',
+    isAvailable: false,
+    queueLength: 0,
+    estimatedWaitTime: 0,
+    message: 'Satış departmanımız mesai saatleri dışında.',
+  },
+  {
+    id: 'general',
+    name: 'general',
+    isAvailable: true,
+    queueLength: 0,
+    estimatedWaitTime: 1,
   },
 ];
 
-// Mock Data - Chat Messages
-const mockChatMessages: HelpCenterChatMessage[] = [
-  {
-    id: 'msg-1',
-    chatId: 'chat-789',
-    from: 'system',
-    senderId: 'system',
-    message: 'Destek ekibimizden Sarah ile bağlantınız kuruldu.',
-    messageType: 'system',
-    timestamp: '2025-09-11T10:15:00Z',
-  },
-  {
-    id: 'msg-2',
-    chatId: 'chat-789',
-    from: 'agent',
-    senderId: 'agent-sarah',
-    sender: {
-      id: 'agent-sarah',
-      name: 'Sarah Johnson',
-      avatar: '/avatars/agent-sarah.png',
-    },
-    message: 'Merhaba! Size nasıl yardımcı olabilirim?',
-    messageType: 'text',
-    timestamp: '2025-09-11T10:15:30Z',
-  },
-  {
-    id: 'msg-3',
-    chatId: 'chat-789',
-    from: 'user',
-    senderId: 'user-456',
-    sender: {
-      id: 'user-456',
-      firstName: 'Ahmet',
-      lastName: 'Yılmaz',
-      avatar: '/avatars/user-456.png',
-    },
-    message: 'Portföy resimlerimi yüklemeye çalışıyorum ama hata alıyorum.',
-    messageType: 'text',
-    timestamp: '2025-09-11T10:16:00Z',
-  },
-];
-
-// Mock Data - Chat Availability
-const mockChatAvailability: ChatAvailability = {
-  isOnline: true,
-  departments: [
-    {
-      name: 'technical',
-      isAvailable: true,
-      queueLength: 2,
-      estimatedWaitTime: 3,
-    },
-    {
-      name: 'billing',
-      isAvailable: true,
-      queueLength: 1,
-      estimatedWaitTime: 2,
-    },
-    {
-      name: 'sales',
-      isAvailable: false,
-      queueLength: 0,
-      estimatedWaitTime: 0,
-      message: 'Satış departmanımız mesai saatleri dışında.',
-    },
-    {
-      name: 'general',
-      isAvailable: true,
-      queueLength: 0,
-      estimatedWaitTime: 1,
-    },
-  ],
-  businessHours: {
-    timezone: 'Europe/Istanbul',
-    currentTime: '2025-09-11T14:30:00Z',
-    isBusinessHours: true,
-    schedule: [
-      {
-        day: 'monday',
-        isWorkingDay: true,
-        startTime: '09:00',
-        endTime: '18:00',
-      },
-    ],
-  },
-};
-
-// API Handlers
+// MSW Handlers
 export const helpSupportHandlers = [
-  // Help Center - Categories
+  // Help Categories
   http.get('/api/v1/help/categories', () => {
     return HttpResponse.json({
-      data: mockHelpCategories,
       success: true,
+      data: mockCategories,
     });
   }),
 
-  // Help Center - Articles
+  // Help Articles
   http.get('/api/v1/help/articles', ({ request }) => {
     const url = new URL(request.url);
-    const category = url.searchParams.get('category');
-    const search = url.searchParams.get('search');
-    const featured = url.searchParams.get('featured');
-    const page = Number(url.searchParams.get('page')) || 1;
-    const limit = Number(url.searchParams.get('limit')) || 20;
+    const categoryId = url.searchParams.get('category');
+    const query = url.searchParams.get('q');
 
-    let filteredArticles = [...mockHelpArticles];
+    let filteredArticles = mockArticles;
 
-    if (category) {
+    if (categoryId) {
       filteredArticles = filteredArticles.filter(
-        (article) => article.categoryId === category
+        (article) => article.categoryId === categoryId
       );
     }
 
-    if (search) {
-      const query = search.toLowerCase();
+    if (query) {
+      const lowerQuery = query.toLowerCase();
       filteredArticles = filteredArticles.filter(
         (article) =>
-          article.title.toLowerCase().includes(query) ||
-          article.content.toLowerCase().includes(query) ||
-          article.excerpt.toLowerCase().includes(query)
+          article.title.toLowerCase().includes(lowerQuery) ||
+          (article.excerpt &&
+            article.excerpt.toLowerCase().includes(lowerQuery))
       );
     }
 
-    if (featured === 'true') {
-      filteredArticles = filteredArticles.filter((article) => article.featured);
-    }
-
-    const total = filteredArticles.length;
-    const start = (page - 1) * limit;
-    const paginatedArticles = filteredArticles.slice(start, start + limit);
-
     return HttpResponse.json({
-      data: paginatedArticles,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-        hasNext: start + limit < total,
-        hasPrev: page > 1,
-      },
       success: true,
+      data: {
+        articles: filteredArticles,
+        pagination: {
+          page: 1,
+          pageSize: 20,
+          total: filteredArticles.length,
+          totalPages: 1,
+          hasNext: false,
+          hasPrev: false,
+        },
+      },
     });
   }),
 
-  // Help Center - Article Detail
   http.get('/api/v1/help/articles/:id', ({ params }) => {
-    const article = mockHelpArticles.find((a) => a.id === params.id);
+    const article = mockArticles.find((a) => a.id === params.id);
+
     if (!article) {
       return HttpResponse.json(
-        { success: false, error: 'Article not found' },
+        { success: false, error: 'Makale bulunamadı' },
         { status: 404 }
       );
     }
 
     return HttpResponse.json({
-      data: article,
       success: true,
+      data: article,
     });
   }),
 
   // Article Rating
-  http.post('/api/v1/help/articles/:id/rating', async ({ request, params }) => {
-    const body = (await request.json()) as ArticleRatingRequest;
+  http.post('/api/v1/help/articles/:id/rate', async ({ params, request }) => {
+    const body = (await request.json()) as { rating: number };
+    const article = mockArticles.find((a) => a.id === params.id);
 
-    // Simulate saving rating
-    const article = mockHelpArticles.find((a) => a.id === params.id);
     if (!article) {
       return HttpResponse.json(
-        { success: false, error: 'Article not found' },
+        { success: false, error: 'Makale bulunamadı' },
         { status: 404 }
       );
     }
 
-    // Update article rating (mock calculation)
-    const newRatingCount = article.ratingCount + 1;
+    const newRatingCount = (article.ratingCount || 0) + 1;
     const newAverageRating =
-      (article.rating * article.ratingCount + body.rating) / newRatingCount;
+      ((article.rating || 0) * (article.ratingCount || 0) + body.rating) /
+      newRatingCount;
 
     const response: ArticleRatingResponse = {
       success: true,
       data: {
-        averageRating: Math.round(newAverageRating * 10) / 10,
+        avgRating: Math.round(newAverageRating * 10) / 10,
         ratingCount: newRatingCount,
       },
     };
@@ -614,307 +260,170 @@ export const helpSupportHandlers = [
     return HttpResponse.json(response);
   }),
 
-  // Support Tickets - Create
+  // Support Tickets
   http.post('/api/v1/support/tickets', async ({ request }) => {
     const body = (await request.json()) as CreateTicketRequest;
 
-    const ticketNumber = `TKT-2025-${String(Date.now()).slice(-6)}`;
+    const validCategories = [
+      'payment',
+      'technical',
+      'billing',
+      'account',
+      'general',
+      'report_user',
+      'feature_request',
+      'bug_report',
+    ] as const;
+    type ValidCategory = (typeof validCategories)[number];
+
+    const isValidCategory = (category: string): category is ValidCategory => {
+      return validCategories.includes(category as ValidCategory);
+    };
+
+    const newTicket: SupportTicket = {
+      id: `ticket-${Date.now()}`,
+      ticketNumber: `TKT-${Math.random().toString().substr(2, 6)}`,
+      userId: body.userId || 'current-user',
+      subject: body.subject,
+      description: body.description || 'Açıklama sağlanmadı',
+      category: isValidCategory(body.category) ? body.category : 'general',
+      priority: body.priority || 'medium',
+      status: 'open',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      estimatedResolutionTime: new Date(
+        Date.now() + 24 * 60 * 60 * 1000
+      ).toISOString(),
+      user: {
+        id: body.userId || 'current-user',
+        firstName: 'User',
+        lastName: 'Name',
+        email: 'user@example.com',
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user',
+        userType: 'freelancer',
+      },
+    };
+
     const response: CreateTicketResponse = {
       success: true,
-      data: {
-        id: `ticket-${Date.now()}`,
-        ticketNumber,
-        subject: body.subject,
-        status: 'open',
-        priority: body.priority,
-        createdAt: new Date().toISOString(),
-        estimatedResolutionTime: new Date(
-          Date.now() + 24 * 60 * 60 * 1000
-        ).toISOString(),
-      },
+      data: newTicket,
     };
 
     return HttpResponse.json(response);
   }),
 
-  // Support Tickets - List User Tickets
   http.get('/api/v1/support/tickets', ({ request }) => {
     const url = new URL(request.url);
-    const status = url.searchParams.getAll('status');
-    const page = Number(url.searchParams.get('page')) || 1;
-    const limit = Number(url.searchParams.get('limit')) || 20;
+    const userId = url.searchParams.get('userId');
 
-    let filteredTickets = [...mockSupportTickets];
-
-    if (status.length > 0) {
-      filteredTickets = filteredTickets.filter((ticket) =>
-        status.includes(ticket.status)
-      );
-    }
-
-    const total = filteredTickets.length;
-    const start = (page - 1) * limit;
-    const paginatedTickets = filteredTickets.slice(start, start + limit);
-
-    return HttpResponse.json({
-      data: paginatedTickets,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-        hasNext: start + limit < total,
-        hasPrev: page > 1,
-      },
-      success: true,
-    });
-  }),
-
-  // Support Tickets - Get Ticket Detail
-  http.get('/api/v1/support/tickets/:id', ({ params }) => {
-    const ticket = mockSupportTickets.find((t) => t.id === params.id);
-    if (!ticket) {
+    if (!userId) {
       return HttpResponse.json(
-        { success: false, error: 'Ticket not found' },
-        { status: 404 }
+        { success: false, error: 'User ID gereklidir' },
+        { status: 400 }
       );
     }
 
     return HttpResponse.json({
-      data: ticket,
       success: true,
+      data: {
+        tickets: mockTickets,
+        pagination: {
+          page: 1,
+          pageSize: 10,
+          total: mockTickets.length,
+          totalPages: 1,
+          hasNext: false,
+          hasPrev: false,
+        },
+      },
     });
   }),
 
-  // Support Tickets - Add Response
-  http.post(
-    '/api/v1/support/tickets/:id/responses',
-    async ({ request, params }) => {
-      const body = (await request.json()) as {
-        content: string;
-        attachments?: unknown[];
-      };
+  // Live Chat
+  http.get('/api/v1/support/departments', () => {
+    return HttpResponse.json({
+      success: true,
+      data: mockDepartments,
+    });
+  }),
 
-      const response = {
-        id: `response-${Date.now()}`,
-        ticketId: params.id,
-        responseType: 'user_reply' as const,
-        content: body.content,
-        authorId: 'user-456',
-        author: {
-          id: 'user-456',
-          firstName: 'Ahmet',
-          lastName: 'Yılmaz',
-          avatar: '/avatars/user-456.png',
-          role: 'user' as const,
+  http.post('/api/v1/support/chat/start', async ({ request }) => {
+    const body = (await request.json()) as { department: string };
+
+    const session: ChatSession = {
+      id: `session-${Date.now()}`,
+      userId: 'current-user',
+      agentId: 'agent-1',
+      department: body.department,
+      status: 'active',
+      startedAt: new Date().toISOString(),
+      messages: [],
+      participants: [
+        {
+          id: 'current-user',
+          email: 'user@example.com',
+          firstName: 'Kullanıcı',
+          lastName: 'Test',
+          userType: 'freelancer',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          accountStatus: 'active',
+          verificationStatus: 'verified',
         },
-        isPublic: true,
-        attachments: body.attachments || [],
-        createdAt: new Date().toISOString(),
-      };
-
-      return HttpResponse.json({
-        data: response,
-        success: true,
-      });
-    }
-  ),
-
-  // Chat - Start Chat
-  http.post('/api/v1/chat/start', async ({ request }) => {
-    (await request.json()) as StartChatRequest; // Parse but don't use for mock
+        {
+          id: 'agent-1',
+          email: 'agent@example.com',
+          firstName: 'Destek',
+          lastName: 'Temsilcisi',
+          userType: 'admin',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          accountStatus: 'active',
+          verificationStatus: 'verified',
+        },
+      ],
+      isActive: true,
+    };
 
     const response: StartChatResponse = {
       success: true,
-      data: {
-        chatId: `chat-${Date.now()}`,
-        queuePosition: 2,
-        estimatedWaitTime: 3,
-        availableAgents: 5,
-      },
+      data: session,
     };
 
     return HttpResponse.json(response);
   }),
 
-  // Chat - Get Messages
-  http.get('/api/v1/chat/:id/messages', ({ params, request }) => {
-    const url = new URL(request.url);
-    const page = Number(url.searchParams.get('page')) || 1;
-    const limit = Number(url.searchParams.get('limit')) || 50;
-
-    const chatMessages = mockChatMessages.filter(
-      (msg) => msg.chatId === params.id
-    );
-
-    const total = chatMessages.length;
-    const start = (page - 1) * limit;
-    const paginatedMessages = chatMessages.slice(start, start + limit);
-
-    return HttpResponse.json({
-      data: paginatedMessages,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-        hasNext: start + limit < total,
-        hasPrev: page > 1,
-      },
-      success: true,
-    });
-  }),
-
-  // Chat - Send Message
-  http.post('/api/v1/chat/:id/messages', async ({ request, params }) => {
-    const body = (await request.json()) as {
-      message: string;
-      messageType?: string;
-      attachments?: unknown[];
-    };
-
-    const message: HelpCenterChatMessage = {
-      id: `msg-${Date.now()}`,
-      chatId: params.id as string,
-      from: 'user',
-      senderId: 'user-456',
-      sender: {
-        id: 'user-456',
-        firstName: 'Ahmet',
-        lastName: 'Yılmaz',
-        avatar: '/avatars/user-456.png',
-      },
-      message: body.message,
-      messageType: (body.messageType as 'text' | 'file' | 'image') || 'text',
-      timestamp: new Date().toISOString(),
-      attachments:
-        (body.attachments as HelpCenterChatMessage['attachments']) || [],
-    };
-
-    return HttpResponse.json({
-      data: message,
-      success: true,
-    });
-  }),
-
-  // Chat - End Chat
-  http.post('/api/v1/chat/:id/end', () => {
-    return HttpResponse.json({
-      success: true,
-      message: 'Chat ended successfully',
-    });
-  }),
-
-  // Chat - Submit Feedback
-  http.post('/api/v1/chat/:id/feedback', async ({ request }) => {
-    await request.json(); // Parse but don't use for mock
-
-    return HttpResponse.json({
-      success: true,
-      message: 'Feedback submitted successfully',
-    });
-  }),
-
-  // Chat - Get Availability
-  http.get('/api/v1/chat/availability', () => {
-    return HttpResponse.json({
-      data: mockChatAvailability,
-      success: true,
-    });
-  }),
-
-  // Support Analytics (for admin)
+  // Support Analytics
   http.get('/api/v1/support/analytics', () => {
     const analytics: SupportAnalytics = {
-      overview: {
-        totalTickets: 1547,
-        openTickets: 234,
-        resolvedTickets: 1290,
-        averageResolutionTime: 18.5,
-        averageResponseTime: 12,
-        customerSatisfaction: 4.6,
-        firstCallResolution: 78,
-      },
+      totalTickets: 1247,
+      openTickets: 89,
+      resolvedTickets: 1158,
+      averageResolutionTime: 4.2,
+      avgResponseTime: 2.1,
+      customerSatisfaction: 4.6,
+      satisfactionScore: 4.6,
       ticketsByCategory: [
-        {
-          category: 'technical',
-          count: 456,
-          percentage: 29.5,
-          averageResolutionTime: 22,
-        },
-        {
-          category: 'billing',
-          count: 312,
-          percentage: 20.2,
-          averageResolutionTime: 15,
-        },
-        {
-          category: 'account',
-          count: 289,
-          percentage: 18.7,
-          averageResolutionTime: 12,
-        },
-        {
-          category: 'general',
-          count: 490,
-          percentage: 31.6,
-          averageResolutionTime: 18,
-        },
+        { category: 'technical', count: 456, percentage: 36 },
+        { category: 'billing', count: 312, percentage: 25 },
+        { category: 'account', count: 234, percentage: 19 },
+        { category: 'general', count: 245, percentage: 20 },
       ],
-      ticketsByPriority: [
-        { priority: 'low', count: 387, percentage: 25 },
-        { priority: 'medium', count: 774, percentage: 50 },
-        { priority: 'high', count: 310, percentage: 20 },
-        { priority: 'urgent', count: 76, percentage: 5 },
+      resolutionTrend: [
+        { date: '2025-09-01', resolved: 45, created: 52 },
+        { date: '2025-09-02', resolved: 38, created: 41 },
+        { date: '2025-09-03', resolved: 56, created: 49 },
       ],
-      responseTimeMetrics: [
-        { period: 'today', averageTime: 12, target: 15, performance: 80 },
-        { period: 'week', averageTime: 14, target: 15, performance: 93 },
-        { period: 'month', averageTime: 16, target: 15, performance: 87 },
-      ],
-      agentPerformance: [
-        {
-          agentId: 'agent-sarah',
-          agentName: 'Sarah Johnson',
-          ticketsHandled: 156,
-          averageResolutionTime: 18,
-          customerSatisfaction: 4.8,
-          responseTime: 11,
-        },
-      ],
-      chatMetrics: {
-        totalSessions: 892,
-        averageWaitTime: 2.5,
-        averageSessionDuration: 15.3,
-        abandonmentRate: 8.2,
-        satisfactionRating: 4.7,
-        transferRate: 3.1,
-      },
-      knowledgeBaseMetrics: {
-        totalArticles: 156,
-        totalViews: 45672,
-        averageRating: 4.4,
-        searchQueries: 8934,
-        successfulSearches: 78,
-        topArticles: [
-          {
-            articleId: 'article-1',
-            title: 'İlk Profilinizi Nasıl Oluşturacaksınız',
-            views: 1547,
-            rating: 4.6,
-          },
-        ],
-      },
-      trends: [
-        { period: 'Jan', tickets: 1200, resolutionTime: 20, satisfaction: 4.4 },
-        { period: 'Feb', tickets: 1350, resolutionTime: 19, satisfaction: 4.5 },
-        { period: 'Mar', tickets: 1547, resolutionTime: 18, satisfaction: 4.6 },
+      satisfactionTrend: [
+        { date: '2025-09-01', score: 4.5 },
+        { date: '2025-09-02', score: 4.6 },
+        { date: '2025-09-03', score: 4.7 },
       ],
     };
 
     return HttpResponse.json({
-      data: analytics,
       success: true,
+      data: analytics,
     });
   }),
 ];

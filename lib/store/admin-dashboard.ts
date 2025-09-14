@@ -113,10 +113,51 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
         }
       },
 
+      clearAllAlerts: async () => {
+        try {
+          const response = await fetch('/api/v1/admin/alerts/clear-all', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error('Tüm alertler temizlenemedi');
+          }
+
+          set((state) => {
+            if (state.data?.alerts) {
+              state.data.alerts = [];
+            }
+          });
+        } catch (error) {
+          set((state) => {
+            state.error =
+              error instanceof Error ? error.message : 'Bilinmeyen hata';
+          });
+        }
+      },
+
       clearError: () => {
         set((state) => {
           state.error = null;
         });
+      },
+
+      // Computed properties
+      get unreadAlerts() {
+        const state = get();
+        return state.data?.alerts?.filter((alert) => !alert.isRead) || [];
+      },
+
+      get criticalAlerts() {
+        const state = get();
+        return (
+          state.data?.alerts?.filter(
+            (alert) => alert.priority === 'critical'
+          ) || []
+        );
       },
     })),
     {

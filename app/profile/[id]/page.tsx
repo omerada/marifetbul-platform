@@ -29,6 +29,8 @@ export default function ProfilePage() {
           lastName: 'Yılmaz',
           avatar: '',
           userType: 'freelancer',
+          accountStatus: 'active',
+          verificationStatus: 'verified',
           phone: '+90 555 123 4567',
           location: 'İstanbul, Türkiye',
           bio: 'Deneyimli bir web geliştirici olarak 5+ yıldır modern web teknolojileriyle çalışıyorum. React, Node.js ve TypeScript konularında uzmanım. Müşteri memnuniyetini ön planda tutarak, kaliteli ve zamanında teslim edilen projeler üretmeyi hedefliyorum.',
@@ -59,15 +61,17 @@ export default function ProfilePage() {
           completedJobs: 89,
           completedProjects: 89,
           responseTime: '2 saat',
-          availability: 'available',
+          availability: true,
           portfolio: [
             {
               id: '1',
               title: 'E-ticaret Platformu',
               description:
                 'Modern ve kullanıcı dostu e-ticaret sitesi. React ve Node.js kullanılarak geliştirildi.',
+              imageUrl: '/images/portfolio-1.jpg',
               images: ['/images/portfolio-1.jpg'],
               url: 'https://example-ecommerce.com',
+              tags: ['Web Geliştirme', 'E-ticaret'],
               skills: ['React', 'Node.js', 'MongoDB', 'Stripe'],
               completedAt: '2024-01-10T00:00:00Z',
             },
@@ -76,8 +80,10 @@ export default function ProfilePage() {
               title: 'Kurumsal Web Sitesi',
               description:
                 'Şirket için responsive kurumsal web sitesi tasarımı ve geliştirilmesi.',
+              imageUrl: '/images/portfolio-2.jpg',
               images: ['/images/portfolio-2.jpg'],
               url: 'https://example-corporate.com',
+              tags: ['Web Tasarım', 'Kurumsal'],
               skills: ['Next.js', 'TypeScript', 'Tailwind CSS'],
               completedAt: '2023-12-15T00:00:00Z',
             },

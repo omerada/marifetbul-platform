@@ -18,6 +18,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { useJobDetail } from '@/hooks';
+import { formatJobBudget, getBudgetType } from '@/lib/utils/typeGuards';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -62,20 +63,11 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
   }
 
   const formatBudget = (budget: typeof currentJob.budget) => {
-    if (budget.type === 'fixed') {
-      const maxAmount = budget.maxAmount
-        ? ` - ₺${budget.maxAmount.toLocaleString('tr-TR')}`
-        : '';
-      return `₺${budget.amount.toLocaleString('tr-TR')}${maxAmount}`;
-    } else {
-      const maxAmount = budget.maxAmount
-        ? ` - ₺${budget.maxAmount.toLocaleString('tr-TR')}`
-        : '';
-      return `₺${budget.amount.toLocaleString('tr-TR')}${maxAmount}/saat`;
-    }
+    return formatJobBudget(budget);
   };
 
-  const getExperienceLevelText = (level: string) => {
+  const getExperienceLevelText = (level?: string) => {
+    if (!level) return 'Belirtilmemiş';
     switch (level) {
       case 'beginner':
         return 'Başlangıç';
@@ -181,7 +173,9 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
               {formatBudget(currentJob.budget)}
             </div>
             <div className="mb-2 text-xs text-gray-600 sm:text-sm">
-              {currentJob.budget.type === 'fixed' ? 'Sabit fiyat' : 'Saatlik'}
+              {getBudgetType(currentJob.budget) === 'fixed'
+                ? 'Sabit fiyat'
+                : 'Saatlik'}
             </div>
             <div className="text-xs font-medium text-gray-700 sm:text-sm">
               {getExperienceLevelText(currentJob.experienceLevel)} seviye
@@ -272,11 +266,15 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {currentJob.skills.map((skill) => (
-                  <Badge key={skill} variant="secondary">
-                    {skill}
-                  </Badge>
-                ))}
+                {currentJob.skills && currentJob.skills.length > 0 ? (
+                  currentJob.skills.map((skill) => (
+                    <Badge key={skill} variant="secondary">
+                      {skill}
+                    </Badge>
+                  ))
+                ) : (
+                  <span className="text-gray-500">Beceri belirtilmemiş</span>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -393,7 +391,7 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
                   <span>Üyelik:</span>
                   <span>
                     {formatDistanceToNow(
-                      new Date(currentJob.employer.createdAt),
+                      new Date(currentJob.employer.createdAt || Date.now()),
                       {
                         locale: tr,
                       }

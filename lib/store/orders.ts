@@ -163,8 +163,8 @@ export const useOrderStore = create<OrderStore>()(
           const data: OrdersResponse = await response.json();
 
           set((state) => {
-            state.orders = data.data;
-            state.pagination = data.meta;
+            state.orders = data.data || [];
+            state.pagination = data.meta || null;
             state.isLoadingOrders = false;
           });
         } catch (error) {
@@ -209,8 +209,10 @@ export const useOrderStore = create<OrderStore>()(
           const data: OrdersResponse = await response.json();
 
           set((state) => {
-            state.orders.push(...data.data);
-            state.pagination = data.meta;
+            if (data.data) {
+              state.orders.push(...data.data);
+            }
+            state.pagination = data.meta || null;
             state.isLoadingOrders = false;
           });
         } catch (error) {

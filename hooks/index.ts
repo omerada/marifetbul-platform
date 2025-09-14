@@ -2,10 +2,13 @@
 export { useAuth } from './useAuth';
 export { useAuthGuard, usePermissions } from './useAuthGuard';
 
+// Async Operations - NEW: Generic async operation management
+export { useAsyncOperation, useAsyncAction, useMultipleAsyncOperations } from './useAsyncOperation';
+
 // Search & Filtering - Sprint 7
 export { useAdvancedSearch } from './useAdvancedSearch';
 export { useEnhancedSearch } from './useEnhancedSearch';
-export { useGeolocation } from './useLocation';
+export { useGeolocation, useLocation } from './useLocation';
 
 // Recommendations & Favorites - Sprint 7
 export { useRecommendations } from './useRecommendations';
@@ -61,13 +64,12 @@ export { usePackageOrder } from './usePackageOrder';
 export { useProposalForm } from './useProposalForm';
 
 // User & Profile Management
-// export { useProfile } from './useProfile'; // TODO: Create if needed
-// export { useDashboard } from './useDashboard'; // TODO: Create if needed
+export { useProfile } from './useProfile';
+export { useDashboard } from './useDashboard';
 
 // Communication
-// export { useMessages } from './useMessages'; // TODO: Create if needed
-// export { useNotifications } from './useNotifications'; // TODO: Create if needed
-export { useNotification } from './useNotification';
+export { useMessages } from './useMessages';
+export { useNotifications } from './useNotification';
 export { useWebSocket } from './useWebSocket';
 
 // Marketplace
@@ -79,14 +81,14 @@ export {
 } from './useMarketplace';
 
 // Location Services
-// export { useLocation } from './useLocation'; // TODO: Create if needed
+// Already exported above in Search & Filtering section
 
 // UI & UX
-// export { useToast } from './useToast'; // TODO: Create if needed
+export { useToast } from './useToast';
 export { useResponsive } from './useResponsive';
 export { useAccessibility } from './useAccessibility';
 export { useHapticFeedback } from './useHapticFeedback';
-// export { usePullToRefresh } from './usePullToRefresh'; // TODO: Sprint 6+
+export { usePullToRefresh } from './usePullToRefresh';
 
 // Payment
 export { usePayment } from './usePayment';
@@ -95,4 +97,4 @@ export { usePayment } from './usePayment';
 // Moved to SEO & Performance section above
 
 // Push Notifications
-// export { usePushNotifications } from './usePushNotifications'; // TODO: Create if needed
+export { usePushNotifications } from './usePushNotifications';

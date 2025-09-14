@@ -347,8 +347,8 @@ export const usePayment = (): UsePaymentReturn => {
         (payment) =>
           payment.id.toLowerCase().includes(lowerQuery) ||
           payment.orderId.toLowerCase().includes(lowerQuery) ||
-          payment.paymentId.toLowerCase().includes(lowerQuery) ||
-          payment.method.toLowerCase().includes(lowerQuery)
+          payment.paymentId?.toLowerCase().includes(lowerQuery) ||
+          payment.method?.toLowerCase().includes(lowerQuery)
       );
     },
     [payments]

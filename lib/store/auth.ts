@@ -23,6 +23,7 @@ interface AuthState {
   updateUser: (userData: Partial<User>) => void;
   refreshAuth: () => Promise<void>;
   checkAuthStatus: () => Promise<void>;
+  getCurrentUserId: () => string | null;
 }
 
 interface RegisterData {
@@ -250,6 +251,12 @@ const useAuthStore = create<AuthState>()(
         if (token) {
           await refreshAuth();
         }
+      },
+
+      // Get current user ID
+      getCurrentUserId: () => {
+        const { user } = get();
+        return user?.id || null;
       },
     }),
     {

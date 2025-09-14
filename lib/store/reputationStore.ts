@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { getCurrentUserId } from '@/lib/utils/auth';
 import { devtools } from 'zustand/middleware';
 import type {
   ReputationScore,
@@ -194,29 +195,53 @@ export const useReputationStore = create<ReputationStore>()(
       },
 
       markRecommendationCompleted: (recommendationId: string) => {
-        set((state) => ({
-          securityStatus: state.securityStatus
-            ? {
-                ...state.securityStatus,
-                recommendations: state.securityStatus.recommendations.map(
-                  (r) =>
-                    r.id === recommendationId
-                      ? {
-                          ...r,
-                          isCompleted: true,
-                          completedAt: new Date().toISOString(),
-                        }
-                      : r
-                ),
+        set((state) => {
+          if (!state.securityStatus || !state.securityStatus.recommendations) {
+            return state;
+          }
+
+          const recommendations = state.securityStatus.recommendations;
+
+          // Handle both string array and object array formats
+          if (Array.isArray(recommendations)) {
+            const updatedRecommendations = recommendations.map((r) => {
+              if (
+                typeof r === 'object' &&
+                r &&
+                'id' in r &&
+                r.id === recommendationId
+              ) {
+                return {
+                  ...r,
+                  isCompleted: true,
+                  completedAt: new Date().toISOString(),
+                };
               }
-            : null,
-        }));
+              return r;
+            });
+
+            return {
+              ...state,
+              securityStatus: {
+                ...state.securityStatus,
+                recommendations:
+                  updatedRecommendations as typeof recommendations,
+              },
+            };
+          }
+
+          return state;
+        });
       },
 
       refreshReputation: async () => {
-        // Refresh için kullanıcı ID'sini almak gerekiyor
-        // Bu normalde auth store'dan alınır
-        const userId = 'current-user-id'; // Bu gerçek implementasyonda auth'dan gelecek
+        // Refresh için kullanıcı ID'sini auth store'dan al
+        const userId = getCurrentUserId();
+        if (!userId) {
+          set({ error: 'Kullanıcı kimlik doğrulaması gerekli' });
+          return;
+        }
+
         await get().fetchReputation(userId);
         await get().fetchSecurityAlerts(userId);
       },

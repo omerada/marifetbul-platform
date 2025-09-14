@@ -78,8 +78,8 @@ export function useFavorites() {
         return false;
       } else {
         await addToFavorites({
-          itemType: 'freelancer',
-          itemId: freelancer.id,
+          type: 'freelancer',
+          targetId: freelancer.id,
           folderId: store.selectedFolderId || undefined,
         });
         return true;
@@ -103,8 +103,8 @@ export function useFavorites() {
         return false;
       } else {
         await addToFavorites({
-          itemType: 'job',
-          itemId: job.id,
+          type: 'job',
+          targetId: job.id,
           folderId: store.selectedFolderId || undefined,
         });
         return true;
@@ -130,8 +130,8 @@ export function useFavorites() {
         return false;
       } else {
         await addToFavorites({
-          itemType: 'service',
-          itemId: service.id,
+          type: 'package',
+          targetId: service.id,
           folderId: store.selectedFolderId || undefined,
         });
         return true;

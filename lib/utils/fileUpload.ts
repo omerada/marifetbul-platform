@@ -1,9 +1,10 @@
 /**
  * File upload utilities
- * Mock implementation for file upload functionality
+ * Production-ready file upload functionality with service integration
  */
 
 import { FileAttachment } from '@/types';
+import { getFileUploadService } from '@/lib/services/fileUpload';
 
 // Allowed file types
 export const ALLOWED_FILE_TYPES = {
@@ -140,39 +141,47 @@ export function getFileIcon(fileType: string): string {
 }
 
 /**
- * Mock file upload function
- * In a real app, this would upload to a cloud storage service
+ * Upload a single file using the file upload service
  */
 export async function uploadFile(file: File): Promise<FileAttachment> {
-  // Simulate upload delay
-  await new Promise((resolve) =>
-    setTimeout(resolve, 1000 + Math.random() * 2000)
-  );
+  const uploadService = getFileUploadService();
+  const result = await uploadService.uploadFile(file);
 
-  // Simulate random upload failures (10% chance)
-  if (Math.random() < 0.1) {
-    throw new Error('Dosya yüklenemedi. Lütfen tekrar deneyin.');
+  if (!result.success) {
+    throw new Error(result.error || 'Dosya yüklenemedi');
   }
 
-  // Create mock file URL
-  const mockUrl = URL.createObjectURL(file);
+  const attachment = uploadService.resultToAttachment(result, file);
+  if (!attachment) {
+    throw new Error('Dosya yüklenirken bir hata oluştu');
+  }
 
-  return {
-    id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-    name: file.name,
-    url: mockUrl,
-    type: file.type,
-    size: file.size,
-    uploadedAt: new Date().toISOString(),
-  };
+  return attachment;
 }
 
 /**
- * Mock multiple file upload function
+ * Upload multiple files using the file upload service
  */
 export async function uploadFiles(files: File[]): Promise<FileAttachment[]> {
-  const uploadPromises = files.map((file) => uploadFile(file));
-  return Promise.all(uploadPromises);
+  const uploadService = getFileUploadService();
+  const results = await uploadService.uploadFiles(files);
+
+  const attachments: FileAttachment[] = [];
+
+  for (let i = 0; i < results.length; i++) {
+    const result = results[i];
+    const file = files[i];
+
+    if (result.success) {
+      const attachment = uploadService.resultToAttachment(result, file);
+      if (attachment) {
+        attachments.push(attachment);
+      }
+    }
+    // Silently skip failed uploads - could be enhanced with error handling
+  }
+
+  return attachments;
 }
 
 /**

@@ -76,21 +76,36 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
             id: '1',
             displayName: 'Kızılay, Çankaya',
             address: 'Kızılay, Çankaya, Ankara, Türkiye',
-            coordinates: { latitude: 39.9199, longitude: 32.8543 },
+            coordinates: {
+              latitude: 39.9199,
+              longitude: 32.8543,
+              lat: 39.9199,
+              lng: 32.8543,
+            },
             type: 'neighborhood',
           },
           {
             id: '2',
             displayName: 'Bahçelievler',
             address: 'Bahçelievler, Ankara, Türkiye',
-            coordinates: { latitude: 39.94, longitude: 32.82 },
+            coordinates: {
+              latitude: 39.94,
+              longitude: 32.82,
+              lat: 39.94,
+              lng: 32.82,
+            },
             type: 'district',
           },
           {
             id: '3',
             displayName: 'Bilkent',
             address: 'Bilkent, Çankaya, Ankara, Türkiye',
-            coordinates: { latitude: 39.8681, longitude: 32.7489 },
+            coordinates: {
+              latitude: 39.8681,
+              longitude: 32.7489,
+              lat: 39.8681,
+              lng: 32.7489,
+            },
             type: 'neighborhood',
           },
         ].filter(
@@ -113,11 +128,23 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
   // Handle current location
   const handleCurrentLocation = useCallback(async () => {
     try {
+      if (!getCurrentPosition) {
+        throw new Error('getCurrentPosition not available');
+      }
+
       const position = await getCurrentPosition();
+      if (!position) {
+        throw new Error('Could not get current position');
+      }
+
       setSelectedLocation(position);
 
       // Get address for current location
-      const address = await reverseGeocode(position);
+      let address: string | null = null;
+      if (reverseGeocode && position.latitude && position.longitude) {
+        address = await reverseGeocode(position.latitude, position.longitude);
+      }
+
       onLocationSelect(position, address || undefined);
 
       setSearchQuery(

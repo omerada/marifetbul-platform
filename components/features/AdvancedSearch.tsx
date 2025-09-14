@@ -1,7 +1,10 @@
 ﻿'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { useAdvancedSearch } from '@/hooks/useAdvancedSearch';
+import {
+  useAdvancedSearch,
+  type AdvancedSearchResult,
+} from '@/hooks/useAdvancedSearch';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
@@ -19,6 +22,7 @@ import {
   Bookmark,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { isJobBudgetObject } from '@/lib/utils/typeGuards';
 import type {
   AdvancedSearchRequest,
   Job,
@@ -163,36 +167,8 @@ export function AdvancedSearch({
   // Perform search
   const handleSearch = useCallback(
     async (query?: string) => {
-      const searchRequest: AdvancedSearchRequest = {
-        query: query || searchInput,
-        category: filters.categories[0],
-        skills: filters.skills,
-        location: filters.location
-          ? {
-              city: filters.location,
-            }
-          : undefined,
-        budget: {
-          min: filters.priceRange[0],
-          max: filters.priceRange[1],
-        },
-        rating: filters.rating,
-        availability: filters.availability as 'available' | 'busy' | 'any',
-        remoteOk: filters.remote,
-        deliveryTime: filters.deliveryTime
-          ? parseInt(filters.deliveryTime)
-          : undefined,
-        experienceLevel: filters.experienceLevel as
-          | 'beginner'
-          | 'intermediate'
-          | 'expert',
-        sortBy: 'relevance',
-        page: 1,
-        pageSize: 20,
-      };
-
       try {
-        await performSearch(searchRequest);
+        await performSearch(query || searchInput || '');
         if (query || searchInput) {
           addToRecentSearches(query || searchInput);
         }
@@ -200,7 +176,7 @@ export function AdvancedSearch({
         console.error('Search failed:', err);
       }
     },
-    [searchInput, filters, performSearch, addToRecentSearches]
+    [searchInput, performSearch, addToRecentSearches]
   );
 
   // Handle search input changes with suggestions
@@ -210,21 +186,37 @@ export function AdvancedSearch({
       setSearchQuery(value);
 
       if (value.length >= 2) {
-        getSuggestions(
-          value,
-          mode as 'skills' | 'freelancers' | 'jobs' | 'services' | 'locations'
-        );
+        getSuggestions(value);
         setShowSuggestions(true);
       } else {
         setShowSuggestions(false);
       }
     },
-    [setSearchQuery, getSuggestions, mode]
+    [setSearchQuery, getSuggestions]
   );
 
   // Helper function to get display data from any result type
-  const getResultDisplayData = (result: Job | ServicePackage | Freelancer) => {
-    if ('firstName' in result) {
+  const getResultDisplayData = (
+    result: Job | ServicePackage | Freelancer | AdvancedSearchResult
+  ) => {
+    // If it's an AdvancedSearchResult, map it directly
+    if (
+      'title' in result &&
+      'description' in result &&
+      !('firstName' in result) &&
+      !('deliveryTime' in result)
+    ) {
+      const searchResult = result as AdvancedSearchResult;
+      return {
+        title: searchResult.title,
+        description: searchResult.description,
+        category: searchResult.category,
+        rating: searchResult.rating,
+        location: searchResult.location,
+        price: searchResult.price,
+        priceLabel: '',
+      };
+    } else if ('firstName' in result) {
       // Freelancer
       const freelancer = result as Freelancer;
       return {
@@ -257,8 +249,11 @@ export function AdvancedSearch({
         category: job.category,
         rating: undefined,
         location: job.location,
-        price: job.budget.amount,
-        priceLabel: job.budget.type === 'hourly' ? '/hr' : '',
+        price: isJobBudgetObject(job.budget) ? job.budget.amount : job.budget,
+        priceLabel:
+          isJobBudgetObject(job.budget) && job.budget.type === 'hourly'
+            ? '/hr'
+            : '',
       };
     }
   };
@@ -315,8 +310,36 @@ export function AdvancedSearch({
 
   // Handle result click
   const handleResultClick = useCallback(
-    (result: Job | ServicePackage | Freelancer) => {
-      onResultSelect?.(result);
+    (result: Job | ServicePackage | Freelancer | AdvancedSearchResult) => {
+      // Convert AdvancedSearchResult to compatible type if needed
+      if (
+        'title' in result &&
+        'description' in result &&
+        !('firstName' in result) &&
+        !('deliveryTime' in result)
+      ) {
+        // This is an AdvancedSearchResult, create a compatible object for onResultSelect
+        const searchResult = result as AdvancedSearchResult;
+        const compatibleResult = {
+          id: searchResult.id,
+          title: searchResult.title,
+          description: searchResult.description,
+          category: searchResult.category,
+          rating: searchResult.rating || 0,
+          location: searchResult.location,
+          price: searchResult.price || 0,
+          skills: searchResult.skills || [],
+          // Add required properties for ServicePackage type
+          deliveryTime: 7, // default
+          freelancerId: searchResult.id,
+          isActive: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        } as ServicePackage;
+        onResultSelect?.(compatibleResult);
+      } else {
+        onResultSelect?.(result as Job | ServicePackage | Freelancer);
+      }
     },
     [onResultSelect]
   );
@@ -327,7 +350,7 @@ export function AdvancedSearch({
       query: searchInput,
       category: filters.categories[0],
       skills: filters.skills,
-      location: filters.location ? { city: filters.location } : undefined,
+      location: filters.location,
       budget: { min: filters.priceRange[0], max: filters.priceRange[1] },
       rating: filters.rating,
       availability: filters.availability as 'available' | 'busy' | 'any',

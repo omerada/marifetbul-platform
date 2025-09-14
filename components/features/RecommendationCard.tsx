@@ -65,11 +65,15 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   );
 
   const handleView = useCallback(() => {
-    onView?.(recommendation.item);
+    if (recommendation.item) {
+      onView?.(recommendation.item as Job | Freelancer | ServicePackage);
+    }
   }, [recommendation.item, onView]);
 
   const handleDismiss = useCallback(() => {
-    onDismiss?.(recommendation.item);
+    if (recommendation.item) {
+      onDismiss?.(recommendation.item as Job | Freelancer | ServicePackage);
+    }
   }, [recommendation.item, onDismiss]);
 
   const getReasonIcon = (reason: string) => {
@@ -87,10 +91,24 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
     }
   };
 
+  // Type guard fonksiyonları
+  const isFreelancer = (item: unknown): item is Freelancer => {
+    return typeof item === 'object' && item !== null && 'firstName' in item;
+  };
+
+  const isJob = (item: unknown): item is Job => {
+    return typeof item === 'object' && item !== null && 'employerId' in item;
+  };
+
+  const isServicePackage = (item: unknown): item is ServicePackage => {
+    return typeof item === 'object' && item !== null && 'providerId' in item;
+  };
+
   const getItemType = () => {
-    if ('firstName' in recommendation.item) return 'freelancer';
-    if ('employerId' in recommendation.item) return 'job';
-    return 'service';
+    if (!recommendation.item) return 'package';
+    if (isFreelancer(recommendation.item)) return 'freelancer';
+    if (isJob(recommendation.item)) return 'job';
+    return 'package';
   };
 
   const getItemTypeIcon = (type: string) => {
@@ -107,18 +125,51 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   };
 
   const getItemTitle = () => {
-    const item = recommendation.item;
-    if ('firstName' in item) {
-      return `${item.firstName} ${item.lastName}`;
+    if (!recommendation.item) return 'Bilinmiyor';
+
+    if (isFreelancer(recommendation.item)) {
+      return `${recommendation.item.firstName} ${recommendation.item.lastName}`;
     }
-    return item.title;
+
+    if (isJob(recommendation.item)) {
+      return recommendation.item.title;
+    }
+
+    if (isServicePackage(recommendation.item)) {
+      return recommendation.item.title;
+    }
+
+    return 'Bilinmiyor';
+  };
+
+  const getReasonType = () => {
+    if (!recommendation.reason) return 'general';
+    if (typeof recommendation.reason === 'string') return 'general';
+    return recommendation.reason.type || 'general';
+  };
+
+  const getReasonDescription = () => {
+    if (!recommendation.reason) return '';
+    if (typeof recommendation.reason === 'string') return recommendation.reason;
+    return recommendation.reason.description || '';
   };
 
   const getItemDescription = () => {
-    const item = recommendation.item;
-    if ('bio' in item) return item.bio;
-    if ('description' in item) return item.description;
-    return undefined;
+    if (!recommendation.item) return '';
+
+    if (isFreelancer(recommendation.item)) {
+      return recommendation.item.bio || '';
+    }
+
+    if (isJob(recommendation.item)) {
+      return recommendation.item.description || '';
+    }
+
+    if (isServicePackage(recommendation.item)) {
+      return recommendation.item.description || '';
+    }
+
+    return '';
   };
 
   const formatBudget = (budget: unknown) => {
@@ -162,7 +213,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
         <div className="flex items-start gap-3">
           {/* Recommendation Score Badge */}
           <div className="bg-primary/10 flex items-center gap-1 rounded-full px-2 py-1">
-            {getReasonIcon(recommendation.reason.type)}
+            {getReasonIcon(getReasonType())}
             <span className="text-primary text-xs font-medium">
               {Math.round(recommendation.score * 100)}% eşleşme
             </span>
@@ -189,97 +240,116 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
         {/* Item Details */}
         <div className="mb-4 space-y-3">
           {/* Freelancer specific info */}
-          {itemType === 'freelancer' && 'rating' in recommendation.item && (
+          {itemType === 'freelancer' && isFreelancer(recommendation.item) && (
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Star className="h-4 w-4 text-yellow-500" />
                 <span className="text-sm font-medium">
-                  {recommendation.item.rating || 'N/A'}
+                  {(recommendation.item as Freelancer).rating || 'N/A'}
                 </span>
                 <span className="text-muted-foreground text-xs">
                   (değerlendirme)
                 </span>
               </div>
-              {'hourlyRate' in recommendation.item &&
-                recommendation.item.hourlyRate && (
-                  <div className="flex items-center gap-1 text-sm font-medium">
-                    <DollarSign className="h-4 w-4" />
-                    {formatBudget(recommendation.item.hourlyRate)}
-                  </div>
-                )}
+              {(recommendation.item as Freelancer).hourlyRate && (
+                <div className="flex items-center gap-1 text-sm font-medium">
+                  <DollarSign className="h-4 w-4" />
+                  {formatBudget((recommendation.item as Freelancer).hourlyRate)}
+                </div>
+              )}
             </div>
           )}
 
           {/* Job specific info */}
-          {itemType === 'job' && (
+          {itemType === 'job' && isJob(recommendation.item) ? (
             <div className="space-y-2">
-              {'employerId' in recommendation.item && (
+              <div className="flex items-center gap-2">
+                <Briefcase className="text-muted-foreground h-4 w-4" />
+                <span className="text-sm">İş İlanı</span>
+              </div>
+              {(recommendation.item as Job).budget && (
                 <div className="flex items-center gap-2">
-                  <Briefcase className="text-muted-foreground h-4 w-4" />
-                  <span className="text-sm">İş İlanı</span>
+                  <DollarSign className="text-muted-foreground h-4 w-4" />
+                  <span className="text-sm font-medium">
+                    {formatBudget((recommendation.item as Job).budget)}
+                  </span>
                 </div>
               )}
-              {'budget' in recommendation.item &&
-                recommendation.item.budget && (
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="text-muted-foreground h-4 w-4" />
-                    <span className="text-sm font-medium">
-                      {formatBudget(recommendation.item.budget)}
-                    </span>
-                  </div>
-                )}
             </div>
-          )}
+          ) : null}
 
-          {/* Service specific info */}
-          {itemType === 'service' && (
+          {/* Package specific info */}
+          {itemType === 'package' && isServicePackage(recommendation.item) ? (
             <div className="flex items-center justify-between">
-              {'providerId' in recommendation.item && (
-                <div className="flex items-center gap-2">
-                  <User className="text-muted-foreground h-4 w-4" />
-                  <span className="text-sm">Hizmet Paketi</span>
-                </div>
-              )}
-              {'price' in recommendation.item && recommendation.item.price && (
+              <div className="flex items-center gap-2">
+                <User className="text-muted-foreground h-4 w-4" />
+                <span className="text-sm">Hizmet Paketi</span>
+              </div>
+              {(recommendation.item as ServicePackage).price && (
                 <div className="flex items-center gap-1 text-sm font-medium">
                   <DollarSign className="h-4 w-4" />
-                  {formatBudget(recommendation.item.price)}
+                  {formatBudget((recommendation.item as ServicePackage).price)}
                 </div>
               )}
             </div>
-          )}
+          ) : null}
 
           {/* Location */}
-          {'location' in recommendation.item &&
-            recommendation.item.location && (
-              <div className="flex items-center gap-2">
-                <MapPin className="text-muted-foreground h-4 w-4" />
-                <span className="text-sm">
-                  {typeof recommendation.item.location === 'string'
-                    ? recommendation.item.location
-                    : (recommendation.item.location as { city?: string })
-                        ?.city || 'Konum belirtilmemiş'}
-                </span>
-              </div>
-            )}
+          {recommendation.item &&
+          typeof recommendation.item === 'object' &&
+          'location' in recommendation.item &&
+          (recommendation.item as Record<string, unknown>).location ? (
+            <div className="flex items-center gap-2">
+              <MapPin className="text-muted-foreground h-4 w-4" />
+              <span className="text-sm">
+                {typeof (recommendation.item as Record<string, unknown>)
+                  .location === 'string'
+                  ? String(
+                      (recommendation.item as Record<string, unknown>).location
+                    )
+                  : (
+                      (recommendation.item as Record<string, unknown>)
+                        .location as { city?: string }
+                    )?.city || 'Konum belirtilmemiş'}
+              </span>
+            </div>
+          ) : null}
 
           {/* Skills/Tags */}
-          {'skills' in recommendation.item &&
-            recommendation.item.skills &&
-            recommendation.item.skills.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {recommendation.item.skills.slice(0, 3).map((skill, index) => (
+          {recommendation.item &&
+          typeof recommendation.item === 'object' &&
+          'skills' in recommendation.item &&
+          Array.isArray(
+            (recommendation.item as Record<string, unknown>).skills
+          ) &&
+          ((recommendation.item as Record<string, unknown>).skills as unknown[])
+            .length > 0 ? (
+            <div className="flex flex-wrap gap-1">
+              {(
+                (recommendation.item as Record<string, unknown>)
+                  .skills as string[]
+              )
+                .slice(0, 3)
+                .map((skill: string, index: number) => (
                   <Badge key={index} variant="secondary" className="text-xs">
                     {skill}
                   </Badge>
                 ))}
-                {recommendation.item.skills.length > 3 && (
-                  <Badge variant="secondary" className="text-xs">
-                    +{recommendation.item.skills.length - 3} daha
-                  </Badge>
-                )}
-              </div>
-            )}
+              {(
+                (recommendation.item as Record<string, unknown>)
+                  .skills as string[]
+              ).length > 3 && (
+                <Badge variant="secondary" className="text-xs">
+                  +
+                  {(
+                    (recommendation.item as Record<string, unknown>)
+                      .skills as string[]
+                  ).length - 3}{' '}
+                  daha
+                </Badge>
+              )}
+            </div>
+          ) : null}
         </div>
 
         {/* Recommendation Reason */}
@@ -287,7 +357,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
           <div className="text-muted-foreground mb-1 text-xs font-medium">
             Öneri Sebebi:
           </div>
-          <div className="text-sm">{recommendation.reason.description}</div>
+          <div className="text-sm">{getReasonDescription()}</div>
         </div>
 
         {/* Action Buttons */}

@@ -195,7 +195,8 @@ const MessageItem: React.FC<MessageItemProps> = ({
               <p className="text-sm break-words whitespace-pre-wrap">
                 {message.content}
               </p>
-              {renderAttachments(message.attachments || [])}
+              {message.attachments &&
+                renderAttachments(message.attachments as never)}
             </>
           )}
 
@@ -367,11 +368,15 @@ const MessageComposer: React.FC<MessageComposerProps> = ({
       conversationId,
       content: message.trim(),
       type: files.length > 0 ? ('file' as const) : ('text' as const),
-      attachments: files.map((file) => ({
+      attachments: files.map((file, index) => ({
+        id: `temp-${index}`,
         name: file.name,
+        filename: file.name,
         url: URL.createObjectURL(file),
         type: file.type,
+        mimetype: file.type,
         size: file.size,
+        uploadedAt: new Date().toISOString(),
       })),
       replyTo: replyingTo?.id,
     };
@@ -622,9 +627,10 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   const otherParticipant = conversation.participants.find(
     (p) => p.userId !== user?.id
   );
-  const isOnline = otherParticipant
-    ? onlineUsers.has(otherParticipant.userId)
-    : false;
+  const isOnline =
+    otherParticipant && otherParticipant.userId
+      ? onlineUsers.has(otherParticipant.userId)
+      : false;
 
   return (
     <div
@@ -635,16 +641,18 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       <div className="flex items-center gap-3 border-b bg-gray-50 p-4">
         <Avatar className="h-10 w-10">
           <AvatarImage
-            src={otherParticipant?.user.avatar || ''}
-            alt={`${otherParticipant?.user.firstName} ${otherParticipant?.user.lastName}`}
+            src={otherParticipant?.user?.avatar || ''}
+            alt={`${otherParticipant?.user?.firstName || ''} ${otherParticipant?.user?.lastName || ''}`}
           />
           <AvatarFallback>
-            {otherParticipant?.user.firstName?.slice(0, 2).toUpperCase()}
+            {otherParticipant?.user?.firstName?.slice(0, 2).toUpperCase() ||
+              'U'}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1">
           <div className="font-medium">
-            {otherParticipant?.user.firstName} {otherParticipant?.user.lastName}
+            {otherParticipant?.user?.firstName || ''}{' '}
+            {otherParticipant?.user?.lastName || ''}
           </div>
           <div className="flex items-center gap-2">
             <div

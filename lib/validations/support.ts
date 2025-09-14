@@ -12,13 +12,17 @@ export const createTicketSchema = z.object({
     .max(2000, 'Açıklama en fazla 2000 karakter olabilir'),
   category: z
     .enum([
-      'technical',
-      'billing',
       'account',
-      'general',
-      'report_user',
+      'billing',
+      'payment',
+      'technical',
+      'dispute',
       'feature_request',
       'bug_report',
+      'general',
+      'abuse',
+      'refund',
+      'report_user',
     ])
     .refine((val) => val, { message: 'Geçerli bir kategori seçiniz' }),
   priority: z
@@ -76,13 +80,17 @@ export const ticketSearchSchema = z.object({
   category: z
     .array(
       z.enum([
-        'technical',
-        'billing',
         'account',
-        'general',
-        'report_user',
+        'billing',
+        'payment',
+        'technical',
+        'dispute',
         'feature_request',
         'bug_report',
+        'general',
+        'abuse',
+        'refund',
+        'report_user',
       ])
     )
     .optional(),

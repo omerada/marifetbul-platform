@@ -25,6 +25,14 @@ interface PackageCardProps {
 }
 
 export function PackageCard({ package: pkg, layout }: PackageCardProps) {
+  // Helper function to get image source
+  const getImageSrc = (
+    image: string | { id: string; name: string; url: string; type: string }
+  ) => {
+    if (typeof image === 'string') return image;
+    return image.url;
+  };
+
   const { isFavoritePackage, togglePackageFavorite } = useMarketplace();
   const isFavorite = isFavoritePackage(pkg.id);
 
@@ -45,7 +53,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
               <div className="w-full shrink-0 sm:w-32">
                 <div className="relative h-48 w-full overflow-hidden rounded-xl shadow-md sm:h-32 sm:w-32">
                   <Image
-                    src={pkg.images[0]}
+                    src={getImageSrc(pkg.images[0])}
                     alt={pkg.title}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -67,7 +75,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
                     >
                       {pkg.category}
                     </Badge>
-                    {pkg.rating >= 4.8 && (
+                    {pkg.rating && pkg.rating >= 4.8 && (
                       <Badge className="border-amber-200 bg-amber-100 text-xs text-amber-800">
                         <Award className="mr-1 h-3 w-3" />
                         Öne Çıkan
@@ -86,17 +94,17 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
                     <div className="flex items-center">
                       <User className="mr-1 h-4 w-4" />
                       <Link
-                        href={`/profile/${pkg.freelancer.id}`}
+                        href={`/profile/${pkg.freelancer?.id || ''}`}
                         className="font-medium transition-colors hover:text-blue-600"
                       >
-                        {pkg.freelancer.firstName} {pkg.freelancer.lastName}
+                        {pkg.freelancer?.firstName} {pkg.freelancer?.lastName}
                       </Link>
                     </div>
                     <span className="text-gray-400">•</span>
                     <div className="flex items-center">
                       <Star className="mr-1 h-4 w-4 fill-current text-amber-400" />
                       <span className="font-medium">
-                        {pkg.rating.toFixed(1)}
+                        {pkg.rating?.toFixed(1) || 'N/A'}
                       </span>
                       <span className="text-gray-500">({pkg.reviews})</span>
                     </div>
@@ -141,22 +149,26 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                {pkg.features.slice(0, 4).map((feature) => (
-                  <Badge
-                    key={feature}
-                    variant="outline"
-                    className="border-gray-200 bg-white text-xs"
-                  >
-                    {feature}
-                  </Badge>
-                ))}
-                {pkg.features.length > 4 && (
-                  <Badge
-                    variant="outline"
-                    className="border-gray-300 bg-gray-100 text-xs"
-                  >
-                    +{pkg.features.length - 4} daha
-                  </Badge>
+                {pkg.features && pkg.features.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {pkg.features.slice(0, 4).map((feature) => (
+                      <Badge
+                        key={feature}
+                        variant="outline"
+                        className="border-gray-200 bg-white text-xs"
+                      >
+                        {feature}
+                      </Badge>
+                    ))}
+                    {pkg.features.length > 4 && (
+                      <Badge
+                        variant="outline"
+                        className="border-gray-300 bg-gray-100 text-xs"
+                      >
+                        +{pkg.features.length - 4} daha
+                      </Badge>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
@@ -209,7 +221,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
       {pkg.images && pkg.images.length > 0 && (
         <div className="relative h-48 overflow-hidden">
           <Image
-            src={pkg.images[0]}
+            src={getImageSrc(pkg.images[0])}
             alt={pkg.title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -225,7 +237,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
             >
               {pkg.category}
             </Badge>
-            {pkg.rating >= 4.8 && (
+            {pkg.rating && pkg.rating >= 4.8 && (
               <Badge className="border-amber-600 bg-amber-500 text-xs text-white">
                 <Award className="mr-1 h-3 w-3" />
                 Öne Çıkan
@@ -280,10 +292,10 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
         <div className="flex items-center text-sm text-gray-600">
           <User className="mr-1 h-4 w-4" />
           <Link
-            href={`/profile/${pkg.freelancer.id}`}
+            href={`/profile/${pkg.freelancer?.id || ''}`}
             className="font-medium transition-colors hover:text-blue-600"
           >
-            {pkg.freelancer.firstName} {pkg.freelancer.lastName}
+            {pkg.freelancer?.firstName} {pkg.freelancer?.lastName}
           </Link>
         </div>
       </CardHeader>
@@ -297,7 +309,9 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
           <div className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2">
             <div className="flex items-center text-gray-600">
               <Star className="mr-1 h-4 w-4 fill-current text-amber-400" />
-              <span className="font-medium">{pkg.rating.toFixed(1)}</span>
+              <span className="font-medium">
+                {pkg.rating?.toFixed(1) || 'N/A'}
+              </span>
             </div>
             <span className="text-xs text-gray-500">({pkg.reviews})</span>
           </div>
@@ -326,22 +340,26 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
         </div>
 
         <div className="flex flex-wrap gap-1">
-          {pkg.features.slice(0, 3).map((feature) => (
-            <Badge
-              key={feature}
-              variant="outline"
-              className="border-gray-200 bg-white text-xs"
-            >
-              {feature}
-            </Badge>
-          ))}
-          {pkg.features.length > 3 && (
-            <Badge
-              variant="outline"
-              className="border-gray-300 bg-gray-100 text-xs"
-            >
-              +{pkg.features.length - 3}
-            </Badge>
+          {pkg.features && pkg.features.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {pkg.features.slice(0, 3).map((feature) => (
+                <Badge
+                  key={feature}
+                  variant="outline"
+                  className="border-gray-200 bg-white text-xs"
+                >
+                  {feature}
+                </Badge>
+              ))}
+              {pkg.features.length > 3 && (
+                <Badge
+                  variant="outline"
+                  className="border-gray-300 bg-gray-100 text-xs"
+                >
+                  +{pkg.features.length - 3}
+                </Badge>
+              )}
+            </div>
           )}
         </div>
 

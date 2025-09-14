@@ -24,25 +24,24 @@ const mockReviews: ReviewData[] = [
     revieweeId: 'user-2',
     reviewer: {
       id: 'user-1',
+      name: 'Ahmet Yılmaz',
       firstName: 'Ahmet',
       lastName: 'Yılmaz',
       avatar: '/images/avatars/avatar-1.jpg',
-      userType: 'employer',
     },
     reviewee: {
       id: 'user-2',
+      name: 'Ayşe Kaya',
       firstName: 'Ayşe',
       lastName: 'Kaya',
       avatar: '/images/avatars/avatar-2.jpg',
-      userType: 'freelancer',
     },
     rating: 5,
     categories: {
       communication: 5,
       quality: 5,
-      timing: 5,
+      timeliness: 5,
       professionalism: 5,
-      value: 4,
     },
     comment: 'Çok memnun kaldım, hızlı ve kaliteli iş! Tavsiye ederim.',
     isPublic: true,
@@ -61,25 +60,24 @@ const mockReviews: ReviewData[] = [
     revieweeId: 'user-2',
     reviewer: {
       id: 'user-3',
+      name: 'Mehmet Öz',
       firstName: 'Mehmet',
       lastName: 'Öz',
       avatar: '/images/avatars/avatar-3.jpg',
-      userType: 'employer',
     },
     reviewee: {
       id: 'user-2',
+      name: 'Ayşe Kaya',
       firstName: 'Ayşe',
       lastName: 'Kaya',
       avatar: '/images/avatars/avatar-2.jpg',
-      userType: 'freelancer',
     },
     rating: 4,
     categories: {
       communication: 4,
       quality: 5,
-      timing: 3,
+      timeliness: 3,
       professionalism: 4,
-      value: 4,
     },
     comment: 'İyi bir çalışma oldu, sadece teslimat biraz gecikti.',
     isPublic: true,
@@ -87,8 +85,13 @@ const mockReviews: ReviewData[] = [
       id: 'reply-1',
       reviewId: 'rev-124',
       userId: 'user-2',
+      comment:
+        'Teşekkür ederim. Gecikme için özür dilerim, bir sonraki projede daha dikkatli olacağım.',
+      authorId: 'user-2',
+      authorName: 'Ayşe Kaya',
       user: {
         id: 'user-2',
+        name: 'Ayşe Kaya',
         firstName: 'Ayşe',
         lastName: 'Kaya',
         avatar: '/images/avatars/avatar-2.jpg',
@@ -109,19 +112,11 @@ const mockReviews: ReviewData[] = [
 
 // Mock Analytics Data
 const mockFreelancerAnalytics: FreelancerAnalytics = {
-  overview: {
-    totalEarnings: 125000,
-    currentMonthEarnings: 15000,
-    averageOrderValue: 2500,
-    completedOrders: 89,
-    activeOrders: 5,
-    clientSatisfaction: 4.9,
-    repeatClientRate: 0.32,
-    responseTime: '2 saat',
-    profileViews: 1250,
-    proposalAcceptanceRate: 0.75,
-  },
   earnings: {
+    total: 125000,
+    thisMonth: 15000,
+    lastMonth: 12000,
+    trend: 'up',
     timeframe: { period: 'month' },
     totalEarnings: 125000,
     earningsTrend: [
@@ -141,8 +136,29 @@ const mockFreelancerAnalytics: FreelancerAnalytics = {
       { category: 'Content Writing', amount: 25000, percentage: 20 },
       { category: 'Mobile Development', amount: 20000, percentage: 16 },
     ],
-    monthlyRecurring: 8500,
     projectedEarnings: 180000,
+  },
+  jobs: {
+    completed: 89,
+    active: 5,
+    successRate: 0.94,
+  },
+  profile: {
+    views: 1250,
+    rating: 4.9,
+    responseTime: 2,
+  },
+  overview: {
+    totalEarnings: 125000,
+    currentMonthEarnings: 15000,
+    averageOrderValue: 2500,
+    completedOrders: 89,
+    activeOrders: 5,
+    clientSatisfaction: 4.9,
+    repeatClientRate: 0.32,
+    responseTime: '2 saat',
+    profileViews: 1250,
+    proposalAcceptanceRate: 0.75,
   },
   orders: {
     total: 94,
@@ -301,8 +317,14 @@ const mockFreelancerAnalytics: FreelancerAnalytics = {
 // Mock Reputation Data
 const mockReputationScore: ReputationScore = {
   userId: 'user-2',
+  score: 92,
   overallScore: 92,
   level: 'gold',
+  reviews: {
+    total: 89,
+    average: 4.9,
+    breakdown: { 5: 67, 4: 18, 3: 3, 2: 1, 1: 0 },
+  },
   badges: [
     {
       id: 'badge-1',
@@ -328,43 +350,48 @@ const mockReputationScore: ReputationScore = {
   factors: [
     {
       name: 'Profil Tamamlama',
+      score: 95,
+      description: 'Profil bilgilerinin eksiksizliği',
+      weight: 0.2,
       currentValue: 95,
       maxValue: 100,
-      weight: 0.2,
       trend: 'stable',
-      description: 'Profil bilgilerinin eksiksizliği',
     },
     {
       name: 'Müşteri Memnuniyeti',
+      score: 98,
+      description: 'Ortalama müşteri puanı',
+      weight: 0.3,
       currentValue: 4.9,
       maxValue: 5,
-      weight: 0.3,
       trend: 'improving',
-      description: 'Ortalama müşteri puanı',
     },
     {
       name: 'Zamanında Teslimat',
+      score: 94,
+      description: 'Projeler zamanında teslim edilme oranı',
+      weight: 0.25,
       currentValue: 94,
       maxValue: 100,
-      weight: 0.25,
       trend: 'stable',
-      description: 'Projeler zamanında teslim edilme oranı',
     },
     {
       name: 'İletişim Kalitesi',
+      score: 88,
+      description: 'Müşteri iletişim değerlendirmesi',
+      weight: 0.15,
       currentValue: 88,
       maxValue: 100,
-      weight: 0.15,
       trend: 'improving',
-      description: 'Müşteri iletişim değerlendirmesi',
     },
     {
       name: 'Platform Aktivitesi',
+      score: 82,
+      description: 'Platform kullanım sıklığı',
+      weight: 0.1,
       currentValue: 82,
       maxValue: 100,
-      weight: 0.1,
       trend: 'stable',
-      description: 'Platform kullanım sıklığı',
     },
   ],
   history: [
@@ -386,10 +413,12 @@ const mockReputationScore: ReputationScore = {
   nextLevelRequirements: [
     {
       name: '10+ Proje Tamamla',
+      type: 'completion',
       description: 'Platinum seviye için',
+      current: 8,
+      required: 10,
       currentProgress: 8,
       targetValue: 10,
-      isCompleted: false,
     },
   ],
   calculatedAt: '2025-09-12T10:00:00Z',
@@ -408,6 +437,7 @@ const mockSecurityAlerts: SecurityAlert[] = [
       'Hesabınızın güvenliği için iki faktörlü kimlik doğrulamayı etkinleştirin.',
     recommendations: ['SMS doğrulama ekle', 'Authenticator uygulaması kullan'],
     actionRequired: false,
+    isResolved: false,
     actionUrl: '/profile/security',
     actionText: 'Güvenlik Ayarları',
     dismissible: true,
@@ -427,6 +457,7 @@ const mockSecurityAlerts: SecurityAlert[] = [
       'Deneyim bilgilerini güncelle',
     ],
     actionRequired: false,
+    isResolved: false,
     actionUrl: '/profile/edit',
     actionText: 'Profili Düzenle',
     dismissible: true,
@@ -443,15 +474,15 @@ export const reviewsAnalyticsHandlers = [
 
     const newReview: ReviewData = {
       id: `rev-${Date.now()}`,
-      orderId: body.orderId,
-      reviewerId: body.reviewerId,
-      revieweeId: body.revieweeId,
+      orderId: body.orderId || 'default-order',
+      reviewerId: body.reviewerId || 'default-reviewer',
+      revieweeId: body.revieweeId || 'default-reviewee',
       reviewer: mockReviews[0].reviewer,
       reviewee: mockReviews[0].reviewee,
       rating: body.rating,
       categories: body.categories,
       comment: body.comment,
-      isPublic: body.isPublic,
+      isPublic: body.isPublic ?? true,
       status: 'active',
       helpfulCount: 0,
       reportCount: 0,
@@ -463,6 +494,7 @@ export const reviewsAnalyticsHandlers = [
 
     const response: CreateReviewResponse = {
       success: true,
+      review: newReview,
       data: newReview,
     };
 
@@ -482,36 +514,40 @@ export const reviewsAnalyticsHandlers = [
 
     const response: ReviewsResponse = {
       success: true,
-      data: {
-        reviews: mockReviews,
-        summary: {
-          averageRating: 4.6,
-          totalReviews: mockReviews.length,
-          categoryAverages: {
-            communication: 4.5,
-            quality: 5.0,
-            timing: 4.0,
-            professionalism: 4.5,
-            value: 4.0,
-          },
-          ratingDistribution: {
-            5: 1,
-            4: 1,
-            3: 0,
-            2: 0,
-            1: 0,
-          },
-          recentReviews: mockReviews.slice(0, 3),
-          verifiedPurchasePercentage: 100,
+      reviews: mockReviews, // Required at top level
+      summary: {
+        averageRating: 4.6,
+        totalReviews: mockReviews.length,
+        qualityScores: {
+          communication: 4.5,
+          quality: 5.0,
+          timeliness: 4.0,
+          professionalism: 4.5,
         },
-        pagination: {
-          page: 1,
-          pageSize: 10,
-          total: mockReviews.length,
-          totalPages: 1,
-          hasNext: false,
-          hasPrev: false,
+        categoryAverages: {
+          communication: 4.5,
+          quality: 5.0,
+          timeliness: 4.0,
+          professionalism: 4.5,
         },
+        ratingDistribution: {
+          5: 1,
+          4: 1,
+          3: 0,
+          2: 0,
+          1: 0,
+        },
+        recentReviews: mockReviews.slice(0, 3),
+        verifiedPurchasePercentage: 100,
+      },
+      pagination: {
+        page: 1,
+        pageSize: 10,
+        limit: 10, // Required field for store compatibility
+        total: mockReviews.length,
+        totalPages: 1,
+        hasNext: false,
+        hasPrev: false,
       },
     };
 
@@ -528,6 +564,7 @@ export const reviewsAnalyticsHandlers = [
       userId: 'current-user',
       user: {
         id: 'current-user',
+        name: 'Current User',
         firstName: 'Current',
         lastName: 'User',
         avatar: '/images/avatars/current-user.jpg',
@@ -559,6 +596,8 @@ export const reviewsAnalyticsHandlers = [
         userType === 'freelancer'
           ? mockFreelancerAnalytics
           : ({} as EmployerAnalytics),
+      timeframe: 'month',
+      lastUpdated: new Date().toISOString(),
     };
 
     return HttpResponse.json(response);
@@ -593,8 +632,11 @@ export const reviewsAnalyticsHandlers = [
       userId,
       overallScore: 85,
       level: 'good',
+      riskLevel: 'low',
+      lastUpdated: new Date().toISOString(),
       verifications: [
         {
+          id: 'verification-1',
           type: 'email',
           status: 'verified',
           verifiedAt: '2025-08-01T10:00:00Z',
@@ -602,14 +644,27 @@ export const reviewsAnalyticsHandlers = [
           maxRetries: 3,
         },
         {
+          id: 'verification-2',
           type: 'phone',
           status: 'verified',
           verifiedAt: '2025-08-02T10:00:00Z',
           retryCount: 0,
           maxRetries: 3,
         },
-        { type: 'identity', status: 'pending', retryCount: 1, maxRetries: 3 },
-        { type: '2fa', status: 'not_started', retryCount: 0, maxRetries: 3 },
+        {
+          id: 'verification-3',
+          type: 'identity',
+          status: 'pending',
+          retryCount: 1,
+          maxRetries: 3,
+        },
+        {
+          id: 'verification-4',
+          type: '2fa',
+          status: 'not_started',
+          retryCount: 0,
+          maxRetries: 3,
+        },
       ],
       alerts: mockSecurityAlerts,
       recommendations: [
@@ -626,17 +681,20 @@ export const reviewsAnalyticsHandlers = [
           estimatedTime: '5 dakika',
         },
       ],
-      lastAssessment: '2025-09-12T10:00:00Z',
       nextAssessment: '2025-09-19T10:00:00Z',
     };
 
     const mockTrustIndicators: TrustIndicators = {
       userId,
+      isVerified: true,
+      hasCompletedJobs: true,
+      hasPositiveReviews: true,
+      isFreelancerPlus: false,
+      securityScore: 85,
       profileCompletion: 95,
       verificationLevel: 75,
       activityScore: 88,
       reviewScore: 92,
-      responseReliability: 94,
       paymentHistory: 100,
       communityStanding: 85,
       overallTrustScore: 89,

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
+import { isJobBudgetObject } from '@/lib/utils/typeGuards';
 
 interface ProposalModalProps {
   isOpen: boolean;
@@ -280,10 +281,16 @@ export function ProposalModal({
                               İşverenin Bütçesi
                             </div>
                             <div className="font-semibold">
-                              ₺{job.budget.amount.toLocaleString('tr-TR')}
-                              {job.budget.maxAmount &&
+                              ₺
+                              {isJobBudgetObject(job.budget)
+                                ? job.budget.amount.toLocaleString('tr-TR')
+                                : job.budget.toLocaleString('tr-TR')}
+                              {isJobBudgetObject(job.budget) &&
+                                job.budget.maxAmount &&
                                 ` - ₺${job.budget.maxAmount.toLocaleString('tr-TR')}`}
-                              {job.budget.type === 'hourly' && '/saat'}
+                              {isJobBudgetObject(job.budget) &&
+                                job.budget.type === 'hourly' &&
+                                '/saat'}
                             </div>
                           </div>
                           {formData.proposedBudget && (

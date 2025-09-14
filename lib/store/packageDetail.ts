@@ -212,7 +212,10 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
         let total = 0;
         if (isPackageDetail(currentPackage)) {
           // PackageDetail type with pricing tiers
-          total = currentPackage.pricing[selectedTier].price;
+          const pricing = currentPackage.pricing;
+          if (pricing && pricing[selectedTier]) {
+            total = pricing[selectedTier].price;
+          }
         } else {
           // ServicePackage type with simple price
           total = currentPackage.price;
@@ -240,7 +243,10 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
         let deliveryTime = 0;
         if (isPackageDetail(currentPackage)) {
           // PackageDetail type with pricing tiers
-          deliveryTime = currentPackage.pricing[selectedTier].deliveryTime;
+          const pricing = currentPackage.pricing;
+          if (pricing && pricing[selectedTier]) {
+            deliveryTime = pricing[selectedTier].deliveryTime;
+          }
         } else {
           // ServicePackage type with simple deliveryTime
           deliveryTime = currentPackage.deliveryTime;

@@ -32,10 +32,14 @@ const mockJobs: Job[] = [
       userType: 'employer',
       companyName: 'TechStart Şirketi',
       industry: 'Teknoloji',
+      postedJobs: 15,
       totalSpent: 250000,
+      rating: 4.8,
+      reviewCount: 24,
+      verificationStatus: 'verified',
+      accountStatus: 'active',
       activeJobs: 3,
       completedJobs: 12,
-      rating: 4.8,
       totalReviews: 24,
       reviewsCount: 24,
       totalJobs: 15,
@@ -72,10 +76,14 @@ const mockJobs: Job[] = [
       userType: 'employer',
       companyName: 'Digital Medya Ajansı',
       industry: 'Pazarlama',
+      postedJobs: 10,
       totalSpent: 150000,
+      rating: 4.5,
+      reviewCount: 18,
+      verificationStatus: 'verified',
+      accountStatus: 'active',
       activeJobs: 2,
       completedJobs: 8,
-      rating: 4.5,
       totalReviews: 18,
       reviewsCount: 18,
       totalJobs: 10,
@@ -112,10 +120,14 @@ const mockJobs: Job[] = [
       userType: 'employer',
       companyName: 'StartupCo',
       industry: 'Teknoloji',
+      postedJobs: 3,
       totalSpent: 35000,
+      rating: 4.9,
+      reviewCount: 8,
+      verificationStatus: 'verified',
+      accountStatus: 'active',
       activeJobs: 1,
       completedJobs: 2,
-      rating: 4.9,
       totalReviews: 8,
       reviewsCount: 8,
       totalJobs: 3,
@@ -152,10 +164,14 @@ const mockJobs: Job[] = [
       userType: 'employer',
       companyName: 'Araştırma Enstitüsü',
       industry: 'Eğitim',
+      postedJobs: 22,
       totalSpent: 180000,
+      rating: 4.7,
+      reviewCount: 32,
+      verificationStatus: 'verified',
+      accountStatus: 'active',
       activeJobs: 4,
       completedJobs: 18,
-      rating: 4.7,
       totalReviews: 32,
       reviewsCount: 32,
       totalJobs: 22,
@@ -192,10 +208,14 @@ const mockJobs: Job[] = [
       userType: 'employer',
       companyName: 'E-Ticaret Çözümleri Ltd.',
       industry: 'E-Ticaret',
+      postedJobs: 9,
       totalSpent: 95000,
+      rating: 4.6,
+      reviewCount: 15,
+      verificationStatus: 'verified',
+      accountStatus: 'active',
       activeJobs: 2,
       completedJobs: 7,
-      rating: 4.6,
       totalReviews: 15,
       reviewsCount: 15,
       totalJobs: 9,
@@ -232,10 +252,14 @@ const mockJobs: Job[] = [
       userType: 'employer',
       companyName: 'Dijital Pazarlama Ajansı',
       industry: 'Pazarlama',
+      postedJobs: 14,
       totalSpent: 75000,
+      rating: 4.4,
+      reviewCount: 22,
+      verificationStatus: 'verified',
+      accountStatus: 'active',
       activeJobs: 3,
       completedJobs: 11,
-      rating: 4.4,
       totalReviews: 22,
       reviewsCount: 22,
       totalJobs: 14,
@@ -271,7 +295,10 @@ export async function GET(request: NextRequest) {
         (job) =>
           job.title.toLowerCase().includes(searchLower) ||
           job.description.toLowerCase().includes(searchLower) ||
-          job.skills.some((skill) => skill.toLowerCase().includes(searchLower))
+          (job.skills &&
+            job.skills.some((skill) =>
+              skill.toLowerCase().includes(searchLower)
+            ))
       );
     }
 
@@ -296,8 +323,17 @@ export async function GET(request: NextRequest) {
     // Budget filter
     if (minBudget || maxBudget) {
       filteredJobs = filteredJobs.filter((job) => {
-        const jobMinBudget = job.budget.amount;
-        const jobMaxBudget = job.budget.maxAmount || job.budget.amount;
+        // Handle budget as union type (number | JobBudget)
+        let jobMinBudget: number;
+        let jobMaxBudget: number;
+
+        if (typeof job.budget === 'number') {
+          jobMinBudget = job.budget;
+          jobMaxBudget = job.budget;
+        } else {
+          jobMinBudget = job.budget.amount;
+          jobMaxBudget = job.budget.maxAmount || job.budget.amount;
+        }
 
         if (minBudget && maxBudget) {
           return (
@@ -317,7 +353,7 @@ export async function GET(request: NextRequest) {
     if (skills.length > 0) {
       filteredJobs = filteredJobs.filter((job) =>
         skills.some((skill) =>
-          job.skills.some((jobSkill) =>
+          job.skills?.some((jobSkill) =>
             jobSkill.toLowerCase().includes(skill.toLowerCase())
           )
         )
@@ -338,12 +374,18 @@ export async function GET(request: NextRequest) {
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
           break;
         case 'budget':
-          comparison =
-            (b.budget.maxAmount || b.budget.amount) -
-            (a.budget.maxAmount || a.budget.amount);
+          const budgetA =
+            typeof a.budget === 'object'
+              ? a.budget.maxAmount || a.budget.amount
+              : a.budget;
+          const budgetB =
+            typeof b.budget === 'object'
+              ? b.budget.maxAmount || b.budget.amount
+              : b.budget;
+          comparison = budgetB - budgetA;
           break;
         case 'proposals':
-          comparison = b.proposalsCount - a.proposalsCount;
+          comparison = (b.proposalsCount || 0) - (a.proposalsCount || 0);
           break;
         default:
           comparison = 0;

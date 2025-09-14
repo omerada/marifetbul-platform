@@ -64,10 +64,13 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
       const portfolioData: Omit<PortfolioItem, 'id'> = {
         title: data.title,
         description: data.description,
+        imageUrl: images[0] || '',
         url: data.url || undefined,
         skills,
         images,
         completedAt: new Date(data.completedAt).toISOString(),
+        tags: skills, // Use skills as tags for compatibility
+        createdAt: new Date().toISOString(),
       };
 
       await onSave(portfolioData);

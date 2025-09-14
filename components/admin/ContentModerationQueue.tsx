@@ -78,6 +78,7 @@ export function ContentModerationQueue({
 
     try {
       await onModerationAction(actionItem.id, {
+        itemId: actionItem.id,
         action: action as
           | 'approve'
           | 'reject'
@@ -223,22 +224,22 @@ export function ContentModerationQueue({
                   All Statuses
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => onFilterChange({ status: ['pending'] })}
+                  onClick={() => onFilterChange({ status: 'pending' })}
                 >
                   Pending
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => onFilterChange({ status: ['approved'] })}
+                  onClick={() => onFilterChange({ status: 'approved' })}
                 >
                   Approved
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => onFilterChange({ status: ['rejected'] })}
+                  onClick={() => onFilterChange({ status: 'rejected' })}
                 >
                   Rejected
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => onFilterChange({ status: ['escalated'] })}
+                  onClick={() => onFilterChange({ status: 'escalated' })}
                 >
                   Escalated
                 </DropdownMenuItem>
@@ -260,17 +261,17 @@ export function ContentModerationQueue({
                   All Priorities
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => onFilterChange({ priority: ['high'] })}
+                  onClick={() => onFilterChange({ priority: 'high' })}
                 >
                   High
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => onFilterChange({ priority: ['medium'] })}
+                  onClick={() => onFilterChange({ priority: 'medium' })}
                 >
                   Medium
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => onFilterChange({ priority: ['low'] })}
+                  onClick={() => onFilterChange({ priority: 'low' })}
                 >
                   Low
                 </DropdownMenuItem>
@@ -292,27 +293,27 @@ export function ContentModerationQueue({
                   All Types
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => onFilterChange({ type: ['job'] })}
+                  onClick={() => onFilterChange({ type: 'job' })}
                 >
                   Job Posts
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => onFilterChange({ type: ['service'] })}
+                  onClick={() => onFilterChange({ type: 'service' })}
                 >
                   Service Listings
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => onFilterChange({ type: ['review'] })}
+                  onClick={() => onFilterChange({ type: 'review' })}
                 >
                   Reviews
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => onFilterChange({ type: ['profile'] })}
+                  onClick={() => onFilterChange({ type: 'profile' })}
                 >
                   User Profiles
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => onFilterChange({ type: ['message'] })}
+                  onClick={() => onFilterChange({ type: 'message' })}
                 >
                   Messages
                 </DropdownMenuItem>
@@ -408,12 +409,18 @@ export function ContentModerationQueue({
                       <TableCell>
                         <div className="max-w-md">
                           <div className="mb-1 text-sm font-medium">
-                            {item.content.title || 'Untitled Content'}
+                            {String(
+                              (item.content as Record<string, unknown>)
+                                ?.title || 'Untitled Content'
+                            )}
                           </div>
                           <div className="line-clamp-2 text-xs text-gray-500">
-                            {item.content.text ||
-                              item.content.description ||
-                              'No content preview'}
+                            {String(
+                              (item.content as Record<string, unknown>)?.text ||
+                                (item.content as Record<string, unknown>)
+                                  ?.description ||
+                                'No content preview'
+                            )}
                           </div>
                           {item.reason && (
                             <Badge variant="secondary" className="mt-1 text-xs">
@@ -454,19 +461,23 @@ export function ContentModerationQueue({
                       <TableCell>
                         <div className="text-sm">
                           <div>
-                            {new Date(item.createdAt).toLocaleDateString(
-                              'tr-TR'
-                            )}
+                            {item.createdAt
+                              ? new Date(item.createdAt).toLocaleDateString(
+                                  'tr-TR'
+                                )
+                              : 'Tarih belirtilmemiş'}
                           </div>
                           <div className="flex items-center text-gray-500">
                             <Clock className="mr-1 h-3 w-3" />
-                            {new Date(item.createdAt).toLocaleTimeString(
-                              'tr-TR',
-                              {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              }
-                            )}
+                            {item.createdAt
+                              ? new Date(item.createdAt).toLocaleTimeString(
+                                  'tr-TR',
+                                  {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  }
+                                )
+                              : 'Saat belirtilmemiş'}
                           </div>
                         </div>
                       </TableCell>
@@ -584,7 +595,6 @@ export function ContentModerationQueue({
             </AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to {actionType} this content?
-              {actionItem?.content.title && ` "${actionItem.content.title}"`}
               <div className="mt-3">
                 <Input
                   placeholder="Reason for this action (optional)"

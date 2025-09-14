@@ -28,7 +28,15 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
   onError,
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [cardData, setCardData] = useState<PaymentCard>({
+  const [cardData, setCardData] = useState<
+    Partial<PaymentCard> & {
+      cardNumber: string;
+      expiryMonth: string;
+      expiryYear: string;
+      cvv: string;
+      cardHolderName: string;
+    }
+  >({
     cardNumber: '',
     expiryMonth: '',
     expiryYear: '',
@@ -36,7 +44,18 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
     cardHolderName: '',
   });
 
-  const [billingAddress, setBillingAddress] = useState<BillingAddress>({
+  const [billingAddress, setBillingAddress] = useState<
+    Partial<BillingAddress> & {
+      fullName: string;
+      email: string;
+      phone: string;
+      addressLine1: string;
+      city: string;
+      state: string;
+      postalCode: string;
+      country: string;
+    }
+  >({
     fullName: '',
     email: '',
     phone: '',
@@ -70,7 +89,10 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
     }
 
     // Billing address validation using utility
-    const addressValidation = validateBillingAddress(billingAddress);
+    const addressValidation = validateBillingAddress({
+      ...billingAddress,
+      line1: billingAddress.addressLine1,
+    } as BillingAddress);
     if (!addressValidation.valid) {
       // Map validation errors to form field errors
       addressValidation.errors.forEach((error) => {
@@ -104,11 +126,16 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
 
     try {
       const total = calculateOrderTotal(
-        order.subtotal,
-        order.tax,
-        order.discount
+        order.subtotal || 0,
+        order.tax || 0,
+        order.discount || 0
       );
-      const result = await processPayment(total, order.currency, cardData);
+      const result = await processPayment(total, order.currency || 'TRY', {
+        ...cardData,
+        id: 'temp_' + Date.now(),
+        last4: cardData.cardNumber.slice(-4),
+        brand: 'unknown',
+      } as PaymentCard);
 
       if (result.success && result.transactionId) {
         onSuccess(result.transactionId);
@@ -146,9 +173,9 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
   };
 
   const orderTotal = calculateOrderTotal(
-    order.subtotal,
-    order.tax,
-    order.discount
+    order.subtotal || 0,
+    order.tax || 0,
+    order.discount || 0
   );
 
   return (
@@ -160,22 +187,22 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
           <div className="flex justify-between">
             <span>Ara Toplam:</span>
             <span>
-              {order.subtotal.toFixed(2)} {order.currency}
+              {(order.subtotal || 0).toFixed(2)} {order.currency || 'TRY'}
             </span>
           </div>
-          {order.tax > 0 && (
+          {(order.tax || 0) > 0 && (
             <div className="flex justify-between">
               <span>KDV:</span>
               <span>
-                {order.tax.toFixed(2)} {order.currency}
+                {(order.tax || 0).toFixed(2)} {order.currency || 'TRY'}
               </span>
             </div>
           )}
-          {order.discount > 0 && (
+          {(order.discount || 0) > 0 && (
             <div className="flex justify-between text-green-600">
               <span>İndirim:</span>
               <span>
-                -{order.discount.toFixed(2)} {order.currency}
+                -{(order.discount || 0).toFixed(2)} {order.currency || 'TRY'}
               </span>
             </div>
           )}

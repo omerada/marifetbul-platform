@@ -16,18 +16,8 @@ interface UserFilters {
 // Mock user data generator
 const generateMockUsers = (): AdminUserData[] => {
   const userTypes = ['freelancer', 'employer'] as const;
-  const accountStatuses = [
-    'active',
-    'suspended',
-    'banned',
-    'pending_verification',
-  ] as const;
-  const verificationStatuses = [
-    'verified',
-    'pending',
-    'rejected',
-    'unverified',
-  ] as const;
+  const accountStatuses = ['active', 'suspended', 'banned'] as const;
+  const verificationStatuses = ['verified', 'pending', 'unverified'] as const;
   const locations = [
     'İstanbul, Türkiye',
     'Ankara, Türkiye',
@@ -124,9 +114,11 @@ const generateMockUsers = (): AdminUserData[] => {
     return {
       id: `user_${index + 1}`,
       email,
+      name: `${firstName} ${lastName}`, // Added required name field
       firstName,
       lastName,
       userType,
+      profileCompletion: Math.floor(Math.random() * 40) + 60, // Added required field: 60-99%
       avatar: `https://images.unsplash.com/photo-${1500000000000 + index}?w=150&h=150&fit=crop&crop=face`,
       location: locations[Math.floor(Math.random() * locations.length)],
       createdAt: joinDate,
@@ -140,38 +132,9 @@ const generateMockUsers = (): AdminUserData[] => {
           Math.floor(Math.random() * verificationStatuses.length)
         ],
       verificationBadges: [
-        {
-          id: `badge_${index}_email`,
-          type: 'email' as const,
-          status: 'verified' as const,
-          verifiedAt: joinDate,
-        },
-        ...(Math.random() > 0.3
-          ? [
-              {
-                id: `badge_${index}_phone`,
-                type: 'phone' as const,
-                status:
-                  Math.random() > 0.2
-                    ? ('verified' as const)
-                    : ('pending' as const),
-                verifiedAt: Math.random() > 0.2 ? lastActiveAt : undefined,
-              },
-            ]
-          : []),
-        ...(Math.random() > 0.7
-          ? [
-              {
-                id: `badge_${index}_identity`,
-                type: 'identity' as const,
-                status:
-                  Math.random() > 0.5
-                    ? ('verified' as const)
-                    : ('pending' as const),
-                verifiedAt: Math.random() > 0.5 ? lastActiveAt : undefined,
-              },
-            ]
-          : []),
+        'email', // Always verified email
+        ...(Math.random() > 0.3 ? ['phone'] : []), // 70% chance of phone verification
+        ...(Math.random() > 0.7 ? ['identity'] : []), // 30% chance of identity verification
       ],
       joinDate,
       lastActiveAt,
@@ -211,8 +174,8 @@ function filterAndPaginateUsers(
     const searchTerm = filters.search.toLowerCase();
     filteredUsers = filteredUsers.filter(
       (user) =>
-        user.firstName.toLowerCase().includes(searchTerm) ||
-        user.lastName.toLowerCase().includes(searchTerm) ||
+        (user.firstName?.toLowerCase().includes(searchTerm) ?? false) ||
+        (user.lastName?.toLowerCase().includes(searchTerm) ?? false) ||
         user.email.toLowerCase().includes(searchTerm)
     );
   }
@@ -243,13 +206,15 @@ function filterAndPaginateUsers(
 
   if (filters.dateFrom) {
     filteredUsers = filteredUsers.filter(
-      (user) => new Date(user.joinDate) >= new Date(filters.dateFrom!)
+      (user) =>
+        user.joinDate && new Date(user.joinDate) >= new Date(filters.dateFrom!)
     );
   }
 
   if (filters.dateTo) {
     filteredUsers = filteredUsers.filter(
-      (user) => new Date(user.joinDate) <= new Date(filters.dateTo!)
+      (user) =>
+        user.joinDate && new Date(user.joinDate) <= new Date(filters.dateTo!)
     );
   }
 
@@ -261,7 +226,7 @@ function filterAndPaginateUsers(
           ? 30
           : 0;
     filteredUsers = filteredUsers.filter(
-      (user) => user.riskScore >= riskThreshold
+      (user) => (user.riskScore ?? 0) >= riskThreshold
     );
   }
 
@@ -271,28 +236,28 @@ function filterAndPaginateUsers(
 
     switch (sortBy) {
       case 'name':
-        aValue = `${a.firstName} ${a.lastName}`.toLowerCase();
-        bValue = `${b.firstName} ${b.lastName}`.toLowerCase();
+        aValue = `${a.firstName || ''} ${a.lastName || ''}`.toLowerCase();
+        bValue = `${b.firstName || ''} ${b.lastName || ''}`.toLowerCase();
         break;
       case 'email':
         aValue = a.email.toLowerCase();
         bValue = b.email.toLowerCase();
         break;
       case 'joinDate':
-        aValue = new Date(a.joinDate).getTime();
-        bValue = new Date(b.joinDate).getTime();
+        aValue = a.joinDate ? new Date(a.joinDate).getTime() : 0;
+        bValue = b.joinDate ? new Date(b.joinDate).getTime() : 0;
         break;
       case 'lastActiveAt':
-        aValue = new Date(a.lastActiveAt).getTime();
-        bValue = new Date(b.lastActiveAt).getTime();
+        aValue = a.lastActiveAt ? new Date(a.lastActiveAt).getTime() : 0;
+        bValue = b.lastActiveAt ? new Date(b.lastActiveAt).getTime() : 0;
         break;
       case 'totalOrders':
-        aValue = a.totalOrders;
-        bValue = b.totalOrders;
+        aValue = a.totalOrders ?? 0;
+        bValue = b.totalOrders ?? 0;
         break;
       case 'riskScore':
-        aValue = a.riskScore;
-        bValue = b.riskScore;
+        aValue = a.riskScore ?? 0;
+        bValue = b.riskScore ?? 0;
         break;
       default:
         aValue = new Date(a.createdAt).getTime();
@@ -427,6 +392,40 @@ export const userHandlers = [
     });
   }),
 
+  // Delete user (soft delete)
+  http.delete('/api/v1/admin/users/:id', async ({ params }) => {
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    const userIndex = mockUsers.findIndex((u) => u.id === params.id);
+
+    if (userIndex === -1) {
+      return HttpResponse.json(
+        {
+          success: false,
+          message: 'User not found',
+        },
+        { status: 404 }
+      );
+    }
+
+    // Soft delete: mark as banned instead of actual deletion
+    mockUsers[userIndex] = {
+      ...mockUsers[userIndex],
+      accountStatus: 'banned',
+      updatedAt: new Date().toISOString(),
+      // Note: deletedAt added in types but avoiding it here to prevent type errors
+    };
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        id: mockUsers[userIndex].id,
+        deleted: true,
+      },
+      message: 'User deleted successfully',
+    });
+  }),
+
   // Bulk actions on users
   http.post('/api/v1/admin/users/bulk-action', async ({ request }) => {
     const { action, userIds } = (await request.json()) as {
@@ -508,18 +507,20 @@ export const userHandlers = [
       (u) => u.userType === 'freelancer'
     ).length;
     const employers = mockUsers.filter((u) => u.userType === 'employer').length;
-    const highRiskUsers = mockUsers.filter((u) => u.riskScore > 70).length;
+    const highRiskUsers = mockUsers.filter(
+      (u) => (u.riskScore ?? 0) > 70
+    ).length;
 
     // New users in last 30 days
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const newUsersThisMonth = mockUsers.filter(
-      (u) => new Date(u.joinDate) >= thirtyDaysAgo
+      (u) => u.joinDate && new Date(u.joinDate) >= thirtyDaysAgo
     ).length;
 
     // Active users in last 7 days
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const activeUsersThisWeek = mockUsers.filter(
-      (u) => new Date(u.lastActiveAt) >= sevenDaysAgo
+      (u) => u.lastActiveAt && new Date(u.lastActiveAt) >= sevenDaysAgo
     ).length;
 
     return HttpResponse.json({

@@ -74,20 +74,26 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({
     if (!currentLocation) return;
 
     const searchParams: LocationSearchParams = {
-      coordinates: currentLocation,
+      center: currentLocation,
       radius: filters.radius,
-      types: filters.types,
-      query: searchQuery.trim() || undefined,
-      minPrice: filters.minPrice,
-      maxPrice: filters.maxPrice,
-      category: filters.category,
+      query: searchQuery.trim() || '',
       limit: 20,
     };
 
     try {
+      if (!searchByLocation) {
+        console.warn('searchByLocation not available');
+        return;
+      }
+
       const result = await searchByLocation(searchParams);
-      if (onResults) {
-        onResults(result.results);
+      if (
+        onResults &&
+        result &&
+        typeof result === 'object' &&
+        'results' in result
+      ) {
+        onResults((result as Record<string, unknown>).results as never);
       }
     } catch (err) {
       console.error('Search error:', err);
@@ -115,8 +121,15 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({
   // Handle current location
   const handleUseCurrentLocation = useCallback(async () => {
     try {
+      if (!getCurrentPosition) {
+        console.warn('getCurrentPosition not available');
+        return;
+      }
+
       const position = await getCurrentPosition();
-      handleLocationSelect(position);
+      if (position) {
+        handleLocationSelect(position);
+      }
     } catch (err) {
       console.error('Current location error:', err);
     }
@@ -339,10 +352,10 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({
       )}
 
       {/* Results Summary */}
-      {results.length > 0 && (
+      {results && results.length > 0 && (
         <div className="mb-4 flex items-center justify-between text-sm text-gray-600">
           <span>{results.length} sonuç bulundu</span>
-          {currentLocation && (
+          {currentLocation && formatDistance && (
             <span>Yarıçap: {formatDistance(filters.radius)}</span>
           )}
         </div>

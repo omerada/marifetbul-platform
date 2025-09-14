@@ -116,7 +116,11 @@ export function JobFilters({
   };
 
   const handleLocationToggle = (location: string) => {
-    const currentLocations = filters.location || [];
+    const currentLocations = Array.isArray(filters.location)
+      ? filters.location
+      : filters.location
+        ? [filters.location]
+        : [];
     const newLocations = currentLocations.includes(location)
       ? currentLocations.filter((l) => l !== location)
       : [...currentLocations, location];
