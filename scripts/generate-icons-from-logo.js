@@ -12,7 +12,7 @@ try {
 }
 
 // Logo dosyasının yolu
-const LOGO_PATH = path.join(__dirname, '..', 'public', 'logo.png');
+const LOGO_PATH = path.join(__dirname, '..', 'public', 'mf-icon.png');
 
 // Logo dosyasının varlığını kontrol et
 if (!fs.existsSync(LOGO_PATH)) {
