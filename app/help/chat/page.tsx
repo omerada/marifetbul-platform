@@ -37,12 +37,12 @@ export default function ChatPage() {
       <HelpCenterLayout title="Canlı Destek" showSearch={false}>
         <div className="container mx-auto px-4 py-8">
           <ChatWindow
-            conversation={{ 
-              id: activeChatId, 
-              participants: [], 
+            conversation={{
+              id: activeChatId,
+              participants: [],
               unreadCount: 0,
               createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString()
+              updatedAt: new Date().toISOString(),
             }}
           />
         </div>

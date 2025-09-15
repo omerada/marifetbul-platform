@@ -6,5 +6,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Export everything from utils/index.ts to avoid circular imports
+// Export everything from shared/utils and lib/utils for consistency
+export * from './shared/utils';
 export * from './utils/index';

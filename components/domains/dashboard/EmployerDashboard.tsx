@@ -9,7 +9,7 @@ import { EmployerDashboard as EmployerDashboardType } from '@/types';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
-import { isJobBudgetObject } from '@/lib/utils/typeGuards';
+import { isJobBudgetObject } from '@/lib/shared/utils/typeGuards';
 import { QuickActions } from './QuickActions';
 import { StatsCard } from './StatsCard';
 import { SkeletonDashboard as DashboardSkeleton } from '@/components/ui/UnifiedSkeleton';

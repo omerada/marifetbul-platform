@@ -7,7 +7,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
-import { isJobBudgetObject } from '@/lib/utils/typeGuards';
+import { isJobBudgetObject } from '@/lib/shared/utils/typeGuards';
 
 interface ProposalModalProps {
   isOpen: boolean;

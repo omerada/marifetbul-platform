@@ -191,7 +191,9 @@ export function useCriticalComponentsPreloader() {
       try {
         await Promise.all([
           import('@/components/domains/notifications').catch(() => {}),
-          import('@/components/shared/utilities/PerformanceMonitor').catch(() => {}),
+          import('@/components/shared/utilities/PerformanceMonitor').catch(
+            () => {}
+          ),
           import('@/components/ui/UnifiedButton').catch(() => {}),
           import('@/components/ui/UnifiedImage').catch(() => {}),
         ]);

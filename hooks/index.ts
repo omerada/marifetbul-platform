@@ -73,7 +73,6 @@ export {
 
 // LEGACY COMPATIBILITY - For backwards compatibility
 export * from './api';
-export * from './auth';
 export * from './base';
 export * from './profile';
 export * from './business';

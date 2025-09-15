@@ -3,8 +3,9 @@
 import { ReactNode } from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
-import { MobileNavigation } from './MobileNavigation';
+import { MobileNavigation } from '../shared/mobile/MobileNavigation';
 import { useResponsive } from '@/hooks';
+import { useAuth } from '@/hooks/shared/useAuth';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -22,6 +23,7 @@ export function MainLayout({
   className = '',
 }: MainLayoutProps) {
   const { isMobile } = useResponsive();
+  const { user, isAuthenticated } = useAuth();
 
   return (
     <div className={`min-h-screen bg-gray-50 ${className}`}>
@@ -39,7 +41,9 @@ export function MainLayout({
       {showFooter && !isMobile && <Footer />}
 
       {/* Mobile Navigation */}
-      {showMobileNav && isMobile && <MobileNavigation />}
+      {showMobileNav && isMobile && (
+        <MobileNavigation user={user} isAuthenticated={isAuthenticated} />
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuthState } from '@/hooks/business';
+import { useAuthState } from '@/hooks/shared/useAuth';
 import { Card, CardContent } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Loader2, AlertTriangle, RefreshCw, ShieldX } from 'lucide-react';

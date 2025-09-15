@@ -19,8 +19,8 @@ import {
 interface MobileNavigationProps {
   user?: {
     id: string;
-    userType: 'freelancer' | 'employer';
-    name: string;
+    userType: 'freelancer' | 'employer' | 'admin';
+    name?: string;
   } | null;
   isAuthenticated: boolean;
 }
