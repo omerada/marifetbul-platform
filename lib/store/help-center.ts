@@ -7,8 +7,16 @@ import type {
   PaginationMeta,
 } from '@/types';
 import type { ArticleSearchFormData } from '@/lib/validations/support';
+import {
+  createInitialAsyncState,
+  createBaseAsyncActions,
+  withAsyncHandler,
+  createApiCall,
+  type BaseAsyncState,
+  type BaseAsyncActions,
+} from './utils/store-patterns';
 
-interface HelpCenterState {
+interface HelpCenterState extends BaseAsyncState {
   // Categories
   categories: HelpCategory[];
   categoriesLoading: boolean;
@@ -39,7 +47,9 @@ interface HelpCenterState {
   // Popular/Trending
   popularArticles: HelpArticle[];
   recentlyViewed: HelpArticle[];
+}
 
+interface HelpCenterActions {
   // Actions
   fetchCategories: () => Promise<void>;
   fetchArticles: (params?: ArticleSearchFormData) => Promise<void>;
@@ -58,7 +68,9 @@ interface HelpCenterState {
   ) => void;
 }
 
-export const useHelpCenterStore = create<HelpCenterState>()(
+type HelpCenterStore = HelpCenterState & HelpCenterActions;
+
+export const useHelpCenterStore = create<HelpCenterStore>()(
   devtools(
     (set, get) => ({
       // Initial state

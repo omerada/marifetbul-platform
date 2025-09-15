@@ -329,13 +329,13 @@ export function useRealTimeMessages(conversationId: string) {
     messages: messages.data,
     conversation: conversation.data,
     unreadCount: unreadCount.data,
-    isLoading: messages.isLoading || conversation.isLoading,
-    error: messages.error || conversation.error,
+    isLoading: messages.data.isLoading || conversation.isLoading,
+    error: messages.data.error || conversation.error,
     refetch: async () => {
       await Promise.all([
         messages.refetch(),
-        conversation.refetch(),
-        unreadCount.refetch(),
+        conversation.refetch?.(),
+        unreadCount.refetch?.(),
       ]);
     },
   };

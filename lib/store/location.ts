@@ -19,10 +19,13 @@ interface LocationStore {
   selectedLocation: LocationData | null;
   searchResults: LocationSearchResult[];
   predictions: LocationPrediction[];
+  permissionStatus: 'granted' | 'denied' | 'prompt' | 'unknown';
+
+  // Base async state
   isLoading: boolean;
   isGettingLocation: boolean;
   error: string | null;
-  permissionStatus: 'granted' | 'denied' | 'prompt' | 'unknown';
+  lastFetch: string | null;
 
   // Actions
   getCurrentLocation: () => Promise<void>;
@@ -32,6 +35,10 @@ interface LocationStore {
   setSelectedLocation: (location: LocationData | null) => void;
   clearSearchResults: () => void;
   clearPredictions: () => void;
+
+  // Base actions
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
   clearError: () => void;
   reset: () => void;
 }
@@ -41,10 +48,11 @@ const initialState = {
   selectedLocation: null,
   searchResults: [],
   predictions: [],
+  permissionStatus: 'unknown' as const,
   isLoading: false,
   isGettingLocation: false,
   error: null,
-  permissionStatus: 'unknown' as const,
+  lastFetch: null,
 };
 
 export const useLocationStore = create<LocationStore>()(
@@ -52,27 +60,33 @@ export const useLocationStore = create<LocationStore>()(
     (set, get) => ({
       ...initialState,
 
+      // Base actions
+      setLoading: (loading: boolean) => {
+        set({ isLoading: loading });
+      },
+
+      setError: (error: string | null) => {
+        set({ error, isLoading: false, isGettingLocation: false });
+      },
+
+      clearError: () => {
+        set({ error: null });
+      },
+
+      reset: () => {
+        set(initialState);
+      },
+
       getCurrentLocation: async () => {
         if (!navigator.geolocation) {
-          set(
-            {
-              error: 'Tarayıcınız konum bilgisini desteklemiyor',
-              permissionStatus: 'denied',
-            },
-            false,
-            'getCurrentLocation/notSupported'
-          );
+          set({
+            error: 'Tarayıcınız konum bilgisini desteklemiyor',
+            permissionStatus: 'denied',
+          });
           return;
         }
 
-        set(
-          {
-            isGettingLocation: true,
-            error: null,
-          },
-          false,
-          'getCurrentLocation/start'
-        );
+        set({ isGettingLocation: true, error: null });
 
         try {
           const position = await new Promise<GeolocationPosition>(
@@ -92,15 +106,12 @@ export const useLocationStore = create<LocationStore>()(
             lng: position.coords.longitude,
           };
 
-          set(
-            {
-              currentLocation: coordinates,
-              isGettingLocation: false,
-              permissionStatus: 'granted',
-            },
-            false,
-            'getCurrentLocation/success'
-          );
+          set({
+            currentLocation: coordinates,
+            isGettingLocation: false,
+            permissionStatus: 'granted',
+            lastFetch: new Date().toISOString(),
+          });
 
           // Optionally geocode to get location details
           await get().geocode({ coordinates });
@@ -124,27 +135,16 @@ export const useLocationStore = create<LocationStore>()(
             }
           }
 
-          set(
-            {
-              error: errorMessage,
-              isGettingLocation: false,
-              permissionStatus,
-            },
-            false,
-            'getCurrentLocation/error'
-          );
+          set({
+            error: errorMessage,
+            isGettingLocation: false,
+            permissionStatus,
+          });
         }
       },
 
       searchLocations: async (request: LocationSearchRequest) => {
-        set(
-          {
-            isLoading: true,
-            error: null,
-          },
-          false,
-          'searchLocations/start'
-        );
+        set({ isLoading: true, error: null });
 
         try {
           const params = new URLSearchParams();
@@ -178,46 +178,32 @@ export const useLocationStore = create<LocationStore>()(
           const data: LocationSearchResponse = await response.json();
 
           if (data.success && data.data) {
-            set(
-              {
-                searchResults: data.data,
-                isLoading: false,
-              },
-              false,
-              'searchLocations/success'
-            );
+            set({
+              searchResults: data.data,
+              isLoading: false,
+              lastFetch: new Date().toISOString(),
+            });
           } else {
             throw new Error(data.error || 'Lokasyon arama başarısız');
           }
         } catch (error) {
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Lokasyon araması başarısız',
-              isLoading: false,
-            },
-            false,
-            'searchLocations/error'
-          );
+          set({
+            error:
+              error instanceof Error
+                ? error.message
+                : 'Lokasyon araması başarısız',
+            isLoading: false,
+          });
         }
       },
 
       getAutocomplete: async (request: LocationAutocompleteRequest) => {
         if (request.input.length < 2) {
-          set({ predictions: [] }, false, 'getAutocomplete/clearPredictions');
+          set({ predictions: [] });
           return;
         }
 
-        set(
-          {
-            isLoading: true,
-            error: null,
-          },
-          false,
-          'getAutocomplete/start'
-        );
+        set({ isLoading: true, error: null });
 
         try {
           const params = new URLSearchParams();
@@ -244,41 +230,27 @@ export const useLocationStore = create<LocationStore>()(
           const data: LocationAutocompleteResponse = await response.json();
 
           if (data.success && data.data) {
-            set(
-              {
-                predictions: data.data.predictions,
-                isLoading: false,
-              },
-              false,
-              'getAutocomplete/success'
-            );
+            set({
+              predictions: data.data.predictions,
+              isLoading: false,
+              lastFetch: new Date().toISOString(),
+            });
           } else {
             throw new Error(data.error || 'Lokasyon önerileri alınamadı');
           }
         } catch (error) {
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Lokasyon önerileri alınamadı',
-              isLoading: false,
-            },
-            false,
-            'getAutocomplete/error'
-          );
+          set({
+            error:
+              error instanceof Error
+                ? error.message
+                : 'Lokasyon önerileri alınamadı',
+            isLoading: false,
+          });
         }
       },
 
       geocode: async (request: GeocodeRequest) => {
-        set(
-          {
-            isLoading: true,
-            error: null,
-          },
-          false,
-          'geocode/start'
-        );
+        set({ isLoading: true, error: null });
 
         try {
           const params = new URLSearchParams();
@@ -300,48 +272,33 @@ export const useLocationStore = create<LocationStore>()(
           const data: GeocodeResponse = await response.json();
 
           if (data.success && data.data) {
-            set(
-              {
-                selectedLocation: data.data.location,
-                isLoading: false,
-              },
-              false,
-              'geocode/success'
-            );
+            set({
+              selectedLocation: data.data.location,
+              isLoading: false,
+              lastFetch: new Date().toISOString(),
+            });
           } else {
             throw new Error(data.error || 'Geocoding başarısız');
           }
         } catch (error) {
-          set(
-            {
-              error:
-                error instanceof Error ? error.message : 'Geocoding başarısız',
-              isLoading: false,
-            },
-            false,
-            'geocode/error'
-          );
+          set({
+            error:
+              error instanceof Error ? error.message : 'Geocoding başarısız',
+            isLoading: false,
+          });
         }
       },
 
       setSelectedLocation: (location: LocationData | null) => {
-        set({ selectedLocation: location }, false, 'setSelectedLocation');
+        set({ selectedLocation: location });
       },
 
       clearSearchResults: () => {
-        set({ searchResults: [] }, false, 'clearSearchResults');
+        set({ searchResults: [] });
       },
 
       clearPredictions: () => {
-        set({ predictions: [] }, false, 'clearPredictions');
-      },
-
-      clearError: () => {
-        set({ error: null }, false, 'clearError');
-      },
-
-      reset: () => {
-        set(initialState, false, 'reset');
+        set({ predictions: [] });
       },
     }),
     {

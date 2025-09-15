@@ -20,9 +20,12 @@ interface FavoritesStore {
     folders: FavoriteFolder[];
   };
   favoriteItems: FavoriteItem[];
+  selectedFolderId: string | null;
+
+  // Base async state
   isLoading: boolean;
   error: string | null;
-  selectedFolderId: string | null;
+  lastFetch: string | null;
 
   // Actions
   fetchFavorites: (request?: FavoritesRequest) => Promise<void>;
@@ -38,6 +41,10 @@ interface FavoritesStore {
   deleteFolder: (id: string) => Promise<void>;
   moveToFolder: (itemId: string, folderId: string | null) => Promise<void>;
   setSelectedFolder: (folderId: string | null) => void;
+
+  // Base actions
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
   clearError: () => void;
   reset: () => void;
 }
@@ -50,9 +57,10 @@ const initialState = {
     folders: [],
   },
   favoriteItems: [],
+  selectedFolderId: null,
   isLoading: false,
   error: null,
-  selectedFolderId: null,
+  lastFetch: null,
 };
 
 export const useFavoritesStore = create<FavoritesStore>()(
@@ -60,8 +68,25 @@ export const useFavoritesStore = create<FavoritesStore>()(
     (set, get) => ({
       ...initialState,
 
+      // Base actions
+      setLoading: (loading: boolean) => {
+        set({ isLoading: loading });
+      },
+
+      setError: (error: string | null) => {
+        set({ error, isLoading: false });
+      },
+
+      clearError: () => {
+        set({ error: null });
+      },
+
+      reset: () => {
+        set(initialState);
+      },
+
       fetchFavorites: async (request?: FavoritesRequest) => {
-        set({ isLoading: true, error: null }, false, 'fetchFavorites/start');
+        set({ isLoading: true, error: null });
 
         try {
           const params = new URLSearchParams();
@@ -81,9 +106,8 @@ export const useFavoritesStore = create<FavoritesStore>()(
           const data: FavoritesResponse = await response.json();
 
           if (data.success && data.data) {
-            set(
-              (state) => ({
-                ...state,
+            set({
+              favorites: {
                 freelancers:
                   data.data
                     ?.filter((item) => item.type === 'freelancer')
@@ -99,31 +123,26 @@ export const useFavoritesStore = create<FavoritesStore>()(
                     ?.filter((item) => item.type === 'package')
                     .map((item) => item.item as ServicePackage)
                     .filter(Boolean) || [],
-                folders: [], // Initialize empty folders for now
-                isLoading: false,
-              }),
-              false,
-              'fetchFavorites/success'
-            );
+                folders: [],
+              },
+              isLoading: false,
+              lastFetch: new Date().toISOString(),
+            });
           } else {
             throw new Error(data.error || 'Favoriler yüklenemedi');
           }
         } catch (error) {
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Favoriler yüklenemedi',
-              isLoading: false,
-            },
-            false,
-            'fetchFavorites/error'
-          );
+          set({
+            error:
+              error instanceof Error ? error.message : 'Favoriler yüklenemedi',
+            isLoading: false,
+          });
         }
       },
 
       addToFavorites: async (request: AddToFavoritesRequest) => {
+        set({ isLoading: true, error: null });
+
         try {
           const response = await fetch('/api/v1/favorites', {
             method: 'POST',
@@ -138,22 +157,18 @@ export const useFavoritesStore = create<FavoritesStore>()(
           const data = await response.json();
 
           if (data.success) {
+            set({ isLoading: false });
             // Refresh favorites to get updated list
             await get().fetchFavorites();
           } else {
             throw new Error(data.error || 'Favorilere eklenemedi');
           }
         } catch (error) {
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Favorilere eklenemedi',
-            },
-            false,
-            'addToFavorites/error'
-          );
+          set({
+            error:
+              error instanceof Error ? error.message : 'Favorilere eklenemedi',
+            isLoading: false,
+          });
         }
       },
 
@@ -161,6 +176,8 @@ export const useFavoritesStore = create<FavoritesStore>()(
         itemId: string,
         itemType: 'freelancer' | 'job' | 'service'
       ) => {
+        set({ isLoading: true, error: null });
+
         try {
           const response = await fetch(`/api/v1/favorites/${itemId}`, {
             method: 'DELETE',
@@ -176,46 +193,41 @@ export const useFavoritesStore = create<FavoritesStore>()(
 
           if (data.success) {
             // Update state immediately for better UX
-            set(
-              (state) => {
-                const updatedFavorites = { ...state.favorites };
+            set((state) => {
+              const updatedFavorites = { ...state.favorites };
 
-                if (itemType === 'freelancer') {
-                  updatedFavorites.freelancers =
-                    updatedFavorites.freelancers.filter((f) => f.id !== itemId);
-                } else if (itemType === 'job') {
-                  updatedFavorites.jobs = updatedFavorites.jobs.filter(
-                    (j) => j.id !== itemId
-                  );
-                } else if (itemType === 'service') {
-                  updatedFavorites.services = updatedFavorites.services.filter(
-                    (s) => s.id !== itemId
-                  );
-                }
+              if (itemType === 'freelancer') {
+                updatedFavorites.freelancers =
+                  updatedFavorites.freelancers.filter((f) => f.id !== itemId);
+              } else if (itemType === 'job') {
+                updatedFavorites.jobs = updatedFavorites.jobs.filter(
+                  (j) => j.id !== itemId
+                );
+              } else if (itemType === 'service') {
+                updatedFavorites.services = updatedFavorites.services.filter(
+                  (s) => s.id !== itemId
+                );
+              }
 
-                return { favorites: updatedFavorites };
-              },
-              false,
-              'removeFromFavorites/success'
-            );
+              return { favorites: updatedFavorites, isLoading: false };
+            });
           } else {
             throw new Error(data.error || 'Favorilerden kaldırılamadı');
           }
         } catch (error) {
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Favorilerden kaldırılamadı',
-            },
-            false,
-            'removeFromFavorites/error'
-          );
+          set({
+            error:
+              error instanceof Error
+                ? error.message
+                : 'Favorilerden kaldırılamadı',
+            isLoading: false,
+          });
         }
       },
 
       createFolder: async (folder) => {
+        set({ isLoading: true, error: null });
+
         try {
           const response = await fetch('/api/v1/favorites/folders', {
             method: 'POST',
@@ -231,34 +243,28 @@ export const useFavoritesStore = create<FavoritesStore>()(
 
           if (data.success && data.data) {
             // Add new folder to state
-            set(
-              (state) => ({
-                favorites: {
-                  ...state.favorites,
-                  folders: [...state.favorites.folders, data.data],
-                },
-              }),
-              false,
-              'createFolder/success'
-            );
+            set((state) => ({
+              favorites: {
+                ...state.favorites,
+                folders: [...state.favorites.folders, data.data],
+              },
+              isLoading: false,
+            }));
           } else {
             throw new Error(data.error || 'Klasör oluşturulamadı');
           }
         } catch (error) {
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Klasör oluşturulamadı',
-            },
-            false,
-            'createFolder/error'
-          );
+          set({
+            error:
+              error instanceof Error ? error.message : 'Klasör oluşturulamadı',
+            isLoading: false,
+          });
         }
       },
 
       updateFolder: async (id: string, updates: Partial<FavoriteFolder>) => {
+        set({ isLoading: true, error: null });
+
         try {
           const response = await fetch(`/api/v1/favorites/folders/${id}`, {
             method: 'PUT',
@@ -274,36 +280,30 @@ export const useFavoritesStore = create<FavoritesStore>()(
 
           if (data.success && data.data) {
             // Update folder in state
-            set(
-              (state) => ({
-                favorites: {
-                  ...state.favorites,
-                  folders: state.favorites.folders.map((folder) =>
-                    folder.id === id ? { ...folder, ...data.data } : folder
-                  ),
-                },
-              }),
-              false,
-              'updateFolder/success'
-            );
+            set((state) => ({
+              favorites: {
+                ...state.favorites,
+                folders: state.favorites.folders.map((folder) =>
+                  folder.id === id ? { ...folder, ...data.data } : folder
+                ),
+              },
+              isLoading: false,
+            }));
           } else {
             throw new Error(data.error || 'Klasör güncellenemedi');
           }
         } catch (error) {
-          set(
-            {
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Klasör güncellenemedi',
-            },
-            false,
-            'updateFolder/error'
-          );
+          set({
+            error:
+              error instanceof Error ? error.message : 'Klasör güncellenemedi',
+            isLoading: false,
+          });
         }
       },
 
       deleteFolder: async (id: string) => {
+        set({ isLoading: true, error: null });
+
         try {
           const response = await fetch(`/api/v1/favorites/folders/${id}`, {
             method: 'DELETE',
@@ -317,36 +317,31 @@ export const useFavoritesStore = create<FavoritesStore>()(
 
           if (data.success) {
             // Remove folder from state
-            set(
-              (state) => ({
-                favorites: {
-                  ...state.favorites,
-                  folders: state.favorites.folders.filter(
-                    (folder) => folder.id !== id
-                  ),
-                },
-                selectedFolderId:
-                  state.selectedFolderId === id ? null : state.selectedFolderId,
-              }),
-              false,
-              'deleteFolder/success'
-            );
+            set((state) => ({
+              favorites: {
+                ...state.favorites,
+                folders: state.favorites.folders.filter(
+                  (folder) => folder.id !== id
+                ),
+              },
+              selectedFolderId:
+                state.selectedFolderId === id ? null : state.selectedFolderId,
+              isLoading: false,
+            }));
           } else {
             throw new Error(data.error || 'Klasör silinemedi');
           }
         } catch (error) {
-          set(
-            {
-              error:
-                error instanceof Error ? error.message : 'Klasör silinemedi',
-            },
-            false,
-            'deleteFolder/error'
-          );
+          set({
+            error: error instanceof Error ? error.message : 'Klasör silinemedi',
+            isLoading: false,
+          });
         }
       },
 
       moveToFolder: async (itemId: string, folderId: string | null) => {
+        set({ isLoading: true, error: null });
+
         try {
           const response = await fetch(`/api/v1/favorites/${itemId}/move`, {
             method: 'PUT',
@@ -361,32 +356,22 @@ export const useFavoritesStore = create<FavoritesStore>()(
           const data = await response.json();
 
           if (data.success) {
+            set({ isLoading: false });
             // Refresh favorites to get updated folder counts
             await get().fetchFavorites();
           } else {
             throw new Error(data.error || 'Öğe taşınamadı');
           }
         } catch (error) {
-          set(
-            {
-              error: error instanceof Error ? error.message : 'Öğe taşınamadı',
-            },
-            false,
-            'moveToFolder/error'
-          );
+          set({
+            error: error instanceof Error ? error.message : 'Öğe taşınamadı',
+            isLoading: false,
+          });
         }
       },
 
       setSelectedFolder: (folderId: string | null) => {
-        set({ selectedFolderId: folderId }, false, 'setSelectedFolder');
-      },
-
-      clearError: () => {
-        set({ error: null }, false, 'clearError');
-      },
-
-      reset: () => {
-        set(initialState, false, 'reset');
+        set({ selectedFolderId: folderId });
       },
     }),
     {

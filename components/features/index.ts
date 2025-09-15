@@ -99,7 +99,7 @@ export {
   MapViewWithLoading,
   useComponentPreloader,
   useCriticalComponentsPreloader,
-} from './LazyComponents';
+} from '@/components/shared/LazyComponents';
 
 // Advanced Features
 export { default as AdvancedSearch } from './AdvancedSearch';

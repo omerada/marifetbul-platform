@@ -1,386 +1,191 @@
+/**
+ * Performance Monitor Component
+ * Displays real-time performance metrics and alerts
+ */
+
 'use client';
 
-import { useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Progress } from '@/components/ui/Progress';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
-import {
-  Activity,
-  Zap,
-  Timer,
-  Gauge,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  RefreshCw,
-} from 'lucide-react';
-import { usePerformanceStore } from '@/lib/store/performance';
-import { cn } from '@/lib/utils';
+import React from 'react';
+import { useEnhancedPerformance } from '@/hooks/useEnhancedPerformanceUnified';
 
 interface PerformanceMonitorProps {
-  autoRefresh?: boolean;
-  refreshInterval?: number;
   className?: string;
+  showDetailsPanel?: boolean;
+  autoStart?: boolean;
 }
 
 export function PerformanceMonitor({
-  autoRefresh = false,
-  refreshInterval = 30000,
-  className,
+  className = '',
+  showDetailsPanel = false,
+  autoStart = true,
 }: PerformanceMonitorProps) {
   const {
     metrics,
     score,
-    alerts,
     isLoading,
+    isTracking,
     error,
-    resourceTimings,
-    fetchMetrics,
-    clearAlerts,
-    clearError,
-  } = usePerformanceStore();
-
-  useEffect(() => {
-    fetchMetrics();
-
-    if (autoRefresh) {
-      const interval = setInterval(fetchMetrics, refreshInterval);
-      return () => clearInterval(interval);
-    }
-  }, [fetchMetrics, autoRefresh, refreshInterval]);
-
-  const getScoreColor = (score: number) => {
-    if (score >= 90) return 'text-green-600';
-    if (score >= 75) return 'text-yellow-600';
-    if (score >= 50) return 'text-orange-600';
-    return 'text-red-600';
-  };
-
-  const getGradeIcon = (grade: string) => {
-    switch (grade) {
-      case 'excellent':
-        return <CheckCircle className="h-5 w-5 text-green-600" />;
-      case 'good':
-        return <CheckCircle className="h-5 w-5 text-yellow-600" />;
-      case 'needs-improvement':
-        return <AlertTriangle className="h-5 w-5 text-orange-600" />;
-      case 'poor':
-        return <XCircle className="h-5 w-5 text-red-600" />;
-      default:
-        return <Gauge className="h-5 w-5 text-gray-600" />;
-    }
-  };
-
-  const formatMetricValue = (value: number, metric: string) => {
-    switch (metric) {
-      case 'lcp':
-      case 'fcp':
-        return `${(value * 1000).toFixed(0)}ms`;
-      case 'fid':
-      case 'ttfb':
-        return `${value.toFixed(0)}ms`;
-      case 'cls':
-        return value.toFixed(3);
-      default:
-        return value.toString();
-    }
-  };
+    performanceGrade,
+    activeAlerts,
+    recommendations,
+    startTracking,
+    stopTracking,
+    dismissAlert,
+    dismissAllAlerts,
+  } = useEnhancedPerformance({ autoStart });
 
   if (error) {
     return (
-      <Card className={className}>
-        <CardContent className="p-6">
-          <Alert variant="destructive">
-            <XCircle className="h-4 w-4" />
-            <AlertTitle>Performance izleme hatası</AlertTitle>
-            <AlertDescription>
-              {error}
-              <Button
-                variant="outline"
-                size="sm"
-                className="mt-2"
-                onClick={() => {
-                  clearError();
-                  fetchMetrics();
-                }}
-              >
-                Tekrar dene
-              </Button>
-            </AlertDescription>
-          </Alert>
-        </CardContent>
-      </Card>
+      <div
+        className={`rounded-lg border border-red-200 bg-red-50 p-4 ${className}`}
+      >
+        <h3 className="font-medium text-red-800">Performance Monitor Error</h3>
+        <p className="mt-1 text-sm text-red-600">{error}</p>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div
+        className={`rounded-lg border border-gray-200 bg-gray-50 p-4 ${className}`}
+      >
+        <div className="animate-pulse">
+          <div className="mb-2 h-4 w-1/4 rounded bg-gray-300"></div>
+          <div className="h-3 w-1/2 rounded bg-gray-300"></div>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className={cn('space-y-6', className)}>
-      {/* Overall Score */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-lg font-medium">
-            Performance Skoru
-          </CardTitle>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={fetchMetrics}
-              disabled={isLoading}
+    <div
+      className={`rounded-lg border border-gray-200 bg-white p-4 ${className}`}
+    >
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-lg font-medium text-gray-900">
+          Performance Monitor
+        </h3>
+
+        <div className="flex items-center gap-2">
+          {score !== null && (
+            <div
+              className={`rounded px-2 py-1 text-sm font-medium ${
+                score >= 90
+                  ? 'bg-green-100 text-green-800'
+                  : score >= 70
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-red-100 text-red-800'
+              }`}
             >
-              <RefreshCw
-                className={cn('h-4 w-4', isLoading && 'animate-spin')}
-              />
-              Yenile
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {score ? (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                {getGradeIcon(score.grade)}
-                <div>
-                  <div
-                    className={cn(
-                      'text-3xl font-bold',
-                      getScoreColor(score.overall)
-                    )}
-                  >
-                    {score.overall}
-                  </div>
-                  <div className="text-muted-foreground text-sm capitalize">
-                    {score.grade.replace('-', ' ')}
-                  </div>
-                </div>
-              </div>
-              <Progress value={score.overall} className="w-32" />
-            </div>
-          ) : (
-            <div className="flex items-center justify-center py-8">
-              <div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2"></div>
+              {performanceGrade} ({score})
             </div>
           )}
-        </CardContent>
-      </Card>
 
-      {/* Alerts */}
-      {alerts.length > 0 && (
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-lg font-medium">
-              Performance Uyarıları
-            </CardTitle>
-            <Button variant="outline" size="sm" onClick={clearAlerts}>
-              Temizle
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {alerts.map((alert) => (
-              <Alert
-                key={alert.id}
-                variant={alert.type === 'error' ? 'destructive' : 'default'}
-              >
-                <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>{alert.message}</AlertTitle>
-                <AlertDescription>{alert.recommendation}</AlertDescription>
-              </Alert>
-            ))}
-          </CardContent>
-        </Card>
+          <button
+            onClick={isTracking ? stopTracking : startTracking}
+            className={`rounded px-3 py-1 text-sm font-medium ${
+              isTracking
+                ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                : 'bg-green-100 text-green-700 hover:bg-green-200'
+            }`}
+          >
+            {isTracking ? 'Stop' : 'Start'} Tracking
+          </button>
+        </div>
+      </div>
+
+      {/* Core Web Vitals */}
+      {metrics && (
+        <div className="mb-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-blue-600">
+              {metrics.coreWebVitals.lcp?.toFixed(1) || 'N/A'}
+            </div>
+            <div className="text-xs text-gray-500">LCP (ms)</div>
+          </div>
+
+          <div className="text-center">
+            <div className="text-2xl font-bold text-green-600">
+              {metrics.coreWebVitals.fid?.toFixed(1) || 'N/A'}
+            </div>
+            <div className="text-xs text-gray-500">FID (ms)</div>
+          </div>
+
+          <div className="text-center">
+            <div className="text-2xl font-bold text-purple-600">
+              {metrics.coreWebVitals.cls?.toFixed(3) || 'N/A'}
+            </div>
+            <div className="text-xs text-gray-500">CLS</div>
+          </div>
+
+          <div className="text-center">
+            <div className="text-2xl font-bold text-orange-600">
+              {metrics.coreWebVitals.fcp?.toFixed(1) || 'N/A'}
+            </div>
+            <div className="text-xs text-gray-500">FCP (ms)</div>
+          </div>
+        </div>
       )}
 
-      {/* Detailed Metrics */}
-      {metrics && score && (
-        <Tabs defaultValue="vitals" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="vitals">Core Web Vitals</TabsTrigger>
-            <TabsTrigger value="timings">Load Timings</TabsTrigger>
-            <TabsTrigger value="resources">Resources</TabsTrigger>
-          </TabsList>
+      {/* Active Alerts */}
+      {activeAlerts.length > 0 && (
+        <div className="mb-4">
+          <div className="mb-2 flex items-center justify-between">
+            <h4 className="text-sm font-medium text-gray-700">
+              Active Alerts ({activeAlerts.length})
+            </h4>
+            <button
+              onClick={dismissAllAlerts}
+              className="text-xs text-gray-500 hover:text-gray-700"
+            >
+              Dismiss All
+            </button>
+          </div>
 
-          <TabsContent value="vitals" className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <MetricCard
-                title="LCP"
-                description="Largest Contentful Paint"
-                value={formatMetricValue(metrics.coreWebVitals.lcp, 'lcp')}
-                score={score.breakdown.lcp}
-                icon={<Timer className="h-4 w-4" />}
-              />
-              <MetricCard
-                title="FID"
-                description="First Input Delay"
-                value={formatMetricValue(metrics.coreWebVitals.fid, 'fid')}
-                score={score.breakdown.fid}
-                icon={<Zap className="h-4 w-4" />}
-              />
-              <MetricCard
-                title="CLS"
-                description="Cumulative Layout Shift"
-                value={formatMetricValue(metrics.coreWebVitals.cls, 'cls')}
-                score={score.breakdown.cls}
-                icon={<Activity className="h-4 w-4" />}
-              />
-            </div>
-          </TabsContent>
+          <div className="space-y-2">
+            {activeAlerts.slice(0, 3).map((alert) => (
+              <div
+                key={alert.id}
+                className={`flex items-center justify-between rounded p-2 text-sm ${
+                  alert.type === 'error'
+                    ? 'bg-red-50 text-red-700'
+                    : alert.type === 'warning'
+                      ? 'bg-yellow-50 text-yellow-700'
+                      : 'bg-blue-50 text-blue-700'
+                }`}
+              >
+                <span>{alert.message}</span>
+                <button
+                  onClick={() => dismissAlert(alert.id)}
+                  className="text-xs opacity-70 hover:opacity-100"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-          <TabsContent value="timings" className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <MetricCard
-                title="TTFB"
-                description="Time to First Byte"
-                value={formatMetricValue(metrics.loadTimes.ttfb, 'ttfb')}
-                score={score.breakdown.ttfb}
-                icon={<Timer className="h-4 w-4" />}
-              />
-              <MetricCard
-                title="FCP"
-                description="First Contentful Paint"
-                value={formatMetricValue(metrics.coreWebVitals.fcp, 'fcp')}
-                score={score.breakdown.fcp}
-                icon={<Activity className="h-4 w-4" />}
-              />
-              <MetricCard
-                title="DOM Ready"
-                description="DOM Content Loaded"
-                value={`${metrics.loadTimes.domReady}ms`}
-                icon={<Gauge className="h-4 w-4" />}
-              />
-              <MetricCard
-                title="Load Complete"
-                description="Full Page Load"
-                value={`${metrics.loadTimes.loadComplete}ms`}
-                icon={<CheckCircle className="h-4 w-4" />}
-              />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="resources" className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm">Bundle Size</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-sm">JavaScript</span>
-                    <Badge variant="outline">{metrics.bundleSize.js}KB</Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">CSS</span>
-                    <Badge variant="outline">{metrics.bundleSize.css}KB</Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Images</span>
-                    <Badge variant="outline">
-                      {metrics.bundleSize.images}KB
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between font-medium">
-                    <span className="text-sm">Total</span>
-                    <Badge>{metrics.bundleSize.total}KB</Badge>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm">Cache Performance</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-sm">Hit Rate</span>
-                      <Badge variant="outline">
-                        {(metrics.cacheHitRate * 100).toFixed(1)}%
-                      </Badge>
-                    </div>
-                    <Progress value={metrics.cacheHitRate * 100} />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {resourceTimings.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm">
-                    Recent Resource Timings
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="max-h-48 space-y-2 overflow-y-auto">
-                    {resourceTimings.slice(-10).map((resource, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between text-sm"
-                      >
-                        <span className="max-w-48 truncate">
-                          {resource.name}
-                        </span>
-                        <div className="flex items-center space-x-2">
-                          <Badge variant="outline" className="text-xs">
-                            {resource.type}
-                          </Badge>
-                          <span className="text-muted-foreground">
-                            {resource.loadTime}ms
-                          </span>
-                          {resource.cached && (
-                            <Badge variant="secondary" className="text-xs">
-                              cached
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
-        </Tabs>
+      {/* Recommendations */}
+      {recommendations.length > 0 && showDetailsPanel && (
+        <div>
+          <h4 className="mb-2 text-sm font-medium text-gray-700">
+            Recommendations
+          </h4>
+          <ul className="space-y-1 text-xs text-gray-600">
+            {recommendations.slice(0, 5).map((recommendation, index) => (
+              <li key={index} className="flex items-start">
+                <span className="mt-2 mr-2 h-1 w-1 flex-shrink-0 rounded-full bg-gray-400"></span>
+                {recommendation}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );
 }
 
-interface MetricCardProps {
-  title: string;
-  description: string;
-  value: string;
-  score?: number;
-  icon: React.ReactNode;
-}
-
-function MetricCard({
-  title,
-  description,
-  value,
-  score,
-  icon,
-}: MetricCardProps) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {icon}
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-        <p className="text-muted-foreground text-xs">{description}</p>
-        {score !== undefined && (
-          <div className="mt-2">
-            <Progress value={score} className="h-2" />
-            <p className="text-muted-foreground mt-1 text-xs">
-              Score: {score}/100
-            </p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
+export default PerformanceMonitor;

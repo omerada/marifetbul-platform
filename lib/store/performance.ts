@@ -1,5 +1,4 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { createOptimizedStore } from './optimized';
 import {
   PerformanceMetrics,
   PerformanceScore,
@@ -7,6 +6,7 @@ import {
   PerformanceConfig,
   PerformanceThresholds,
   ResourceTiming,
+  CoreWebVitals,
 } from '@/types/performance';
 
 interface PerformanceStore {
@@ -21,13 +21,14 @@ interface PerformanceStore {
 
   // Actions
   fetchMetrics: () => Promise<void>;
-  trackMetric: (name: string, value: number) => void;
+  trackMetric: (metric: keyof CoreWebVitals, value: number) => void;
   calculateScore: (metrics: PerformanceMetrics) => PerformanceScore;
   addAlert: (alert: Omit<PerformanceAlert, 'id' | 'timestamp'>) => void;
   clearAlerts: () => void;
   updateConfig: (config: Partial<PerformanceConfig>) => void;
   trackResourceTiming: (resource: ResourceTiming) => void;
   clearError: () => void;
+  reset: () => void;
 }
 
 const defaultThresholds: PerformanceThresholds = {
@@ -45,182 +46,163 @@ const defaultConfig: PerformanceConfig = {
   sampleRate: 0.1, // Track 10% of sessions
 };
 
-export const usePerformanceStore = create<PerformanceStore>()(
-  devtools(
-    (set, get) => ({
-      // Initial state
-      metrics: null,
-      score: null,
-      alerts: [],
-      isLoading: false,
-      error: null,
-      config: defaultConfig,
-      resourceTimings: [],
+export const usePerformanceStore = createOptimizedStore<PerformanceStore>(
+  (set, get) => ({
+    // Initial state
+    metrics: null,
+    score: null,
+    alerts: [],
+    isLoading: false,
+    error: null,
+    config: defaultConfig,
+    resourceTimings: [],
 
-      // Actions
-      fetchMetrics: async () => {
-        set({ isLoading: true, error: null });
-        try {
-          const response = await fetch('/api/v1/performance/metrics');
-          if (!response.ok)
-            throw new Error('Failed to fetch performance metrics');
+    // Actions
+    fetchMetrics: async () => {
+      set((draft) => {
+        draft.isLoading = true;
+        draft.error = null;
+      });
+      try {
+        const response = await fetch('/api/v1/performance/metrics');
+        if (!response.ok)
+          throw new Error('Failed to fetch performance metrics');
 
-          const data = await response.json();
-          const metrics = data.data;
-          const score = get().calculateScore(metrics);
+        const data = await response.json();
+        const metrics = data.data;
+        const score = get().calculateScore(metrics);
 
-          set({
-            metrics,
-            score,
-            isLoading: false,
-          });
+        set((draft) => {
+          draft.metrics = metrics;
+          draft.score = score;
+          draft.isLoading = false;
+        });
+      } catch (error) {
+        set((draft) => {
+          draft.error =
+            error instanceof Error ? error.message : 'Unknown error';
+          draft.isLoading = false;
+        });
+      }
+    },
 
-          // Check for performance issues and create alerts
-          const addAlert = get().addAlert;
-          const thresholds = get().config.thresholds;
+    // Optimized metric tracking with proper typing
+    trackMetric: (metric: keyof CoreWebVitals, value: number) => {
+      const { config } = get();
+      if (!config.enableTracking) return;
 
-          // Check LCP
-          if (
-            metrics.coreWebVitals.lcp * 1000 >
-            thresholds.lcp.needsImprovement
-          ) {
-            addAlert({
-              type: 'error',
-              metric: 'lcp',
-              message: `LCP çok yavaş: ${(metrics.coreWebVitals.lcp * 1000).toFixed(0)}ms`,
-              recommendation:
-                "Büyük görselleri optimize edin ve kritik CSS'i inline yapın.",
-            });
-          }
+      // Sample based on configured rate
+      if (Math.random() > config.sampleRate) return;
 
-          // Check FID
-          if (metrics.coreWebVitals.fid > thresholds.fid.needsImprovement) {
-            addAlert({
-              type: 'error',
-              metric: 'fid',
-              message: `FID çok yüksek: ${metrics.coreWebVitals.fid}ms`,
-              recommendation:
-                "JavaScript execution time'ını azaltın ve code splitting kullanın.",
-            });
-          }
-
-          // Check CLS
-          if (metrics.coreWebVitals.cls > thresholds.cls.needsImprovement) {
-            addAlert({
-              type: 'error',
-              metric: 'cls',
-              message: `CLS çok yüksek: ${metrics.coreWebVitals.cls.toFixed(3)}`,
-              recommendation:
-                'Görseller için boyut belirtin ve dinamik içerik eklemelerini optimize edin.',
-            });
-          }
-        } catch (error) {
-          set({
-            error: error instanceof Error ? error.message : 'Unknown error',
-            isLoading: false,
-          });
+      set((draft) => {
+        if (!draft.metrics) {
+          draft.metrics = {
+            coreWebVitals: {
+              lcp: 0,
+              fid: 0,
+              cls: 0,
+              fcp: 0,
+              ttfb: 0,
+            },
+            loadTimes: { ttfb: 0, fcp: 0, domReady: 0, loadComplete: 0 },
+            bundleSize: { js: 0, css: 0, images: 0, fonts: 0, total: 0 },
+            cacheHitRate: 0,
+            networkType: 'unknown',
+            deviceType: 'desktop',
+            timestamp: new Date().toISOString(),
+          };
         }
-      },
+        draft.metrics.coreWebVitals[metric] = value;
+        draft.metrics.timestamp = new Date().toISOString();
+      });
+    },
 
-      trackMetric: (name: string, value: number) => {
-        // Send metric to analytics service
-        if (typeof window !== 'undefined' && get().config.enableTracking) {
-          // In a real app, this would send to analytics
-          console.log(`Performance metric: ${name} = ${value}`);
-        }
-      },
+    calculateScore: (metrics: PerformanceMetrics): PerformanceScore => {
+      const { thresholds } = get().config;
+      const vitals = metrics.coreWebVitals;
 
-      calculateScore: (metrics: PerformanceMetrics): PerformanceScore => {
-        const { thresholds } = get().config;
+      const scores = {
+        lcp: calculateMetricScore(vitals.lcp, thresholds.lcp),
+        fid: calculateMetricScore(vitals.fid, thresholds.fid),
+        cls: calculateMetricScore(vitals.cls, thresholds.cls, true),
+        fcp: calculateMetricScore(vitals.fcp, thresholds.fcp),
+        ttfb: calculateMetricScore(vitals.ttfb, thresholds.ttfb),
+      };
 
-        // Calculate individual scores (0-100)
-        const lcpScore = calculateMetricScore(
-          metrics.coreWebVitals.lcp * 1000,
-          thresholds.lcp
-        );
-        const fidScore = calculateMetricScore(
-          metrics.coreWebVitals.fid,
-          thresholds.fid
-        );
-        const clsScore = calculateMetricScore(
-          metrics.coreWebVitals.cls,
-          thresholds.cls,
-          true
-        );
-        const fcpScore = calculateMetricScore(
-          metrics.coreWebVitals.fcp,
-          thresholds.fcp
-        );
-        const ttfbScore = calculateMetricScore(
-          metrics.loadTimes.ttfb,
-          thresholds.ttfb
-        );
+      const overallScore = Math.round(
+        (scores.lcp + scores.fid + scores.cls + scores.fcp + scores.ttfb) / 5
+      );
 
-        // Weighted overall score (LCP and CLS have higher weight)
-        const overall = Math.round(
-          lcpScore * 0.25 +
-            fidScore * 0.2 +
-            clsScore * 0.25 +
-            fcpScore * 0.15 +
-            ttfbScore * 0.15
-        );
-
-        const grade =
-          overall >= 90
+      return {
+        overall: overallScore,
+        breakdown: scores,
+        grade:
+          overallScore >= 90
             ? 'excellent'
-            : overall >= 75
+            : overallScore >= 80
               ? 'good'
-              : overall >= 50
+              : overallScore >= 60
                 ? 'needs-improvement'
-                : 'poor';
+                : 'poor',
+      };
+    },
 
-        return {
-          overall,
-          breakdown: {
-            lcp: lcpScore,
-            fid: fidScore,
-            cls: clsScore,
-            fcp: fcpScore,
-            ttfb: ttfbScore,
-          },
-          grade,
-        };
-      },
+    addAlert: (alert: Omit<PerformanceAlert, 'id' | 'timestamp'>) => {
+      const { config } = get();
+      if (!config.enableAlerts) return;
 
-      addAlert: (alert: Omit<PerformanceAlert, 'id' | 'timestamp'>) => {
-        if (!get().config.enableAlerts) return;
+      const newAlert: PerformanceAlert = {
+        ...alert,
+        id: crypto.randomUUID(),
+        timestamp: new Date().toISOString(),
+      };
 
-        const newAlert: PerformanceAlert = {
-          ...alert,
-          id: Math.random().toString(36).substr(2, 9),
-          timestamp: new Date().toISOString(),
-        };
+      set((draft) => {
+        draft.alerts.push(newAlert);
+        // Keep only last 20 alerts
+        if (draft.alerts.length > 20) {
+          draft.alerts = draft.alerts.slice(-20);
+        }
+      });
+    },
 
-        set((state) => ({
-          alerts: [...state.alerts, newAlert],
-        }));
-      },
+    clearAlerts: () =>
+      set((draft) => {
+        draft.alerts = [];
+      }),
 
-      clearAlerts: () => set({ alerts: [] }),
+    updateConfig: (newConfig: Partial<PerformanceConfig>) => {
+      set((draft) => {
+        Object.assign(draft.config, newConfig);
+      });
+    },
 
-      updateConfig: (newConfig: Partial<PerformanceConfig>) => {
-        set((state) => ({
-          config: { ...state.config, ...newConfig },
-        }));
-      },
+    trackResourceTiming: (resource: ResourceTiming) => {
+      set((draft) => {
+        draft.resourceTimings.push(resource);
+        // Keep last 50 resource timings
+        if (draft.resourceTimings.length > 50) {
+          draft.resourceTimings = draft.resourceTimings.slice(-50);
+        }
+      });
+    },
 
-      trackResourceTiming: (resource: ResourceTiming) => {
-        set((state) => ({
-          resourceTimings: [...state.resourceTimings, resource].slice(-50), // Keep last 50
-        }));
-      },
+    clearError: () =>
+      set((draft) => {
+        draft.error = null;
+      }),
 
-      clearError: () => set({ error: null }),
-    }),
-    {
-      name: 'performance-store',
-    }
-  )
+    reset: () =>
+      set((draft) => {
+        draft.metrics = null;
+        draft.score = null;
+        draft.alerts = [];
+        draft.isLoading = false;
+        draft.error = null;
+        draft.resourceTimings = [];
+      }),
+  }),
+  'performance-store'
 );
 
 // Helper function to calculate individual metric scores
@@ -242,4 +224,61 @@ function calculateMetricScore(
     if (value >= needsImprovement) return 0;
     return Math.round(100 - ((value - good) / (needsImprovement - good)) * 100);
   }
+}
+
+// Performance monitoring hook
+export function usePerformanceMonitoring() {
+  const store = usePerformanceStore();
+
+  return {
+    ...store,
+    // Additional utility methods
+    trackPageLoad: () => {
+      const navigation = performance.getEntriesByType(
+        'navigation'
+      )[0] as PerformanceNavigationTiming;
+      if (navigation) {
+        store.trackMetric(
+          'ttfb',
+          navigation.responseStart - navigation.fetchStart
+        );
+        store.trackMetric(
+          'fcp',
+          navigation.loadEventEnd - navigation.fetchStart
+        );
+      }
+    },
+
+    trackLargestContentfulPaint: () => {
+      if ('PerformanceObserver' in window) {
+        const observer = new PerformanceObserver((entryList) => {
+          const entries = entryList.getEntries();
+          const lastEntry = entries[entries.length - 1];
+          store.trackMetric('lcp', lastEntry.startTime);
+        });
+        observer.observe({ type: 'largest-contentful-paint', buffered: true });
+        return () => observer.disconnect();
+      }
+    },
+
+    trackCumulativeLayoutShift: () => {
+      if ('PerformanceObserver' in window) {
+        let clsValue = 0;
+        const observer = new PerformanceObserver((entryList) => {
+          for (const entry of entryList.getEntries()) {
+            const layoutShiftEntry = entry as PerformanceEntry & {
+              value: number;
+              hadRecentInput: boolean;
+            };
+            if (!layoutShiftEntry.hadRecentInput) {
+              clsValue += layoutShiftEntry.value;
+            }
+          }
+          store.trackMetric('cls', clsValue);
+        });
+        observer.observe({ type: 'layout-shift', buffered: true });
+        return () => observer.disconnect();
+      }
+    },
+  };
 }

@@ -590,16 +590,12 @@ export function useFocusTrap(isActive: boolean) {
 // ================================================
 
 export function useVisibility(threshold = 0.1) {
-  const elementRef = useRef<Element | null>(null);
-  const entry = useIntersectionObserver(
-    elementRef as React.RefObject<Element>,
-    { threshold }
-  );
+  const [elementRef, isVisible] = useIntersectionObserver({ threshold });
 
   return {
     elementRef,
-    isVisible: entry?.isIntersecting ?? false,
-    intersectionRatio: entry?.intersectionRatio ?? 0,
+    isVisible,
+    intersectionRatio: isVisible ? 1 : 0, // Simplification since we don't have exact ratio
   };
 }
 

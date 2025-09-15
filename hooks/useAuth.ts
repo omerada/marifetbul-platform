@@ -1,45 +1,115 @@
-import { useMemo } from 'react';
-import useAuthStore from '@/lib/store/auth';
-
 /**
- * Custom hook for authentication state and actions
- * Provides easy access to user data and authentication status
+ * Authentication hook
+ * Provides authentication state and methods
  */
+
+'use client';
+
+import { useCallback } from 'react';
+import { useAuthStore } from '@/lib/store/auth';
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterData {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  userType: 'freelancer' | 'employer';
+}
+
 export function useAuth() {
-  const store = useAuthStore();
+  const {
+    user,
+    isAuthenticated,
+    isLoading,
+    error,
+    login,
+    register,
+    logout,
+    refreshAuth,
+    clearError,
+  } = useAuthStore();
 
-  // Computed values for user roles
-  const isEmployer = useMemo(
-    () => store.user?.userType === 'employer',
-    [store.user]
+  const handleLogin = useCallback(
+    async (credentials: LoginCredentials) => {
+      try {
+        clearError();
+        await login(credentials);
+        return { success: true };
+      } catch (error) {
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Login failed',
+        };
+      }
+    },
+    [login, clearError]
   );
 
-  const isFreelancer = useMemo(
-    () => store.user?.userType === 'freelancer',
-    [store.user]
+  const handleRegister = useCallback(
+    async (data: RegisterData) => {
+      try {
+        clearError();
+        await register(data);
+        return { success: true };
+      } catch (error) {
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Registration failed',
+        };
+      }
+    },
+    [register, clearError]
   );
 
-  // User display name
-  const displayName = useMemo(() => {
-    if (!store.user) return '';
-    return `${store.user.firstName} ${store.user.lastName}`.trim();
-  }, [store.user]);
+  const handleLogout = useCallback(async () => {
+    try {
+      await logout();
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Logout failed',
+      };
+    }
+  }, [logout]);
 
-  // Avatar URL with fallback
-  const avatarUrl = useMemo(() => {
-    if (store.user?.avatar) return store.user.avatar;
-    const userType = store.user?.userType || 'user';
-    return `/avatars/default-${userType}.jpg`;
-  }, [store.user]);
+  const handleRefreshToken = useCallback(async () => {
+    try {
+      await refreshAuth();
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Token refresh failed',
+      };
+    }
+  }, [refreshAuth]);
 
   return {
     // State
-    ...store,
+    user,
+    isAuthenticated,
+    isLoading,
+    error,
+
+    // Actions
+    login: handleLogin,
+    register: handleRegister,
+    logout: handleLogout,
+    refreshToken: handleRefreshToken,
+    clearError,
 
     // Computed values
-    isEmployer,
-    isFreelancer,
-    displayName,
-    avatarUrl,
+    isGuest: !isAuthenticated,
+    isAdmin: user?.role === 'admin',
+    isFreelancer: user?.role === 'freelancer',
+    isEmployer: user?.role === 'employer',
   };
 }
+
+export default useAuth;

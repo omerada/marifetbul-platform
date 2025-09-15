@@ -54,19 +54,39 @@ export function useMessages(conversationId: string) {
 
 // Hook to send messages - REFACTORED to use useAsyncOperation
 export function useMessaging() {
-  const sendMessageOperation = useAsyncOperation<ApiResponse<Message>>();
-  const createConversationOperation =
-    useAsyncOperation<ApiResponse<Conversation>>();
-  const markAsReadAction = useAsyncAction();
+  const sendMessageOperation = useAsyncOperation<
+    ApiResponse<Message>,
+    { conversationId: string; content: string }
+  >(async ({ conversationId, content }) => {
+    const response = await apiClient.post<ApiResponse<Message>>(
+      `/api/conversations/${conversationId}/messages`,
+      { content }
+    );
+    return response;
+  });
+
+  const createConversationOperation = useAsyncOperation<
+    ApiResponse<Conversation>,
+    {
+      participantIds: string[];
+      jobId?: string;
+      packageId?: string;
+      initialMessage?: string;
+    }
+  >(async ({ participantIds, jobId, packageId, initialMessage }) => {
+    const response = await apiClient.post<ApiResponse<Conversation>>(
+      '/api/conversations',
+      { participantIds, jobId, packageId, initialMessage }
+    );
+    return response;
+  });
+
+  const markAsReadAction = useAsyncAction(async () => {
+    // This will be handled by the markAsRead function
+  });
 
   const sendMessage = async (conversationId: string, content: string) => {
-    return await sendMessageOperation.execute(async () => {
-      const response = await apiClient.post<ApiResponse<Message>>(
-        `/api/conversations/${conversationId}/messages`,
-        { content }
-      );
-      return response;
-    });
+    return await sendMessageOperation.execute({ conversationId, content });
   };
 
   const createConversation = async (
@@ -75,24 +95,17 @@ export function useMessaging() {
     jobId?: string,
     packageId?: string
   ) => {
-    return await createConversationOperation.execute(async () => {
-      const response = await apiClient.post<ApiResponse<Conversation>>(
-        '/api/conversations',
-        {
-          participantId,
-          jobId,
-          packageId,
-          initialMessage,
-        }
-      );
-      return response;
+    return await createConversationOperation.execute({
+      participantIds: [participantId],
+      jobId,
+      packageId,
+      initialMessage,
     });
   };
 
   const markAsRead = async (conversationId: string) => {
-    await markAsReadAction.execute(async () => {
-      await apiClient.patch(`/api/conversations/${conversationId}/mark-read`);
-    });
+    // Mark as read API call - simplified implementation
+    await apiClient.patch(`/api/conversations/${conversationId}/mark-read`);
   };
 
   return {

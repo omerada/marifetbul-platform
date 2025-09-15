@@ -1,52 +1,56 @@
 // ================================================
 // UNIFIED HOOKS SYSTEM - MAIN EXPORT INDEX
 // ================================================
-// Central export for all standardized hooks with consistent patterns
-// Replaces: 44 individual hook files with duplicate patterns
+// Central export for all standardized hooks
 
 // ================================================
-// BASE HOOKS - CORE PATTERNS
+// CORE ASYNC HOOKS (PREFERRED)
 // ================================================
-export * from './base';
-export { default as BaseHooks } from './base';
+export {
+  useAsyncOperation,
+  useAsyncAction,
+  useMultipleAsyncOperations,
+  useMutation, // Legacy compatibility
+} from './core/useUnifiedAsync';
 
 // ================================================
-// API HOOKS - STANDARDIZED API INTERACTIONS
+// API HOOKS
 // ================================================
 export * from './api';
-export { default as ApiHooks } from './api';
 
 // ================================================
-// UI HOOKS - USER INTERFACE PATTERNS
+// UI HOOKS
 // ================================================
 export * from './ui';
-export { default as UIHooks } from './ui';
 
 // ================================================
-// BUSINESS HOOKS - DOMAIN LOGIC PATTERNS
+// BUSINESS HOOKS
 // ================================================
 export * from './business';
-export { default as BusinessHooks } from './business';
 
 // ================================================
-// LEGACY HOOK COMPATIBILITY
+// LEGACY COMPATIBILITY ALIASES
 // ================================================
-// Maintain backward compatibility for existing components
+export {
+  useApiAuth as useAuth,
+  useApiCurrentUser as useCurrentUser,
+} from './api';
+export { useBusinessAuthState as useAuthState } from './business';
 
-// Auth hooks (legacy compatibility)
-export { useAuth, useCurrentUser } from './api';
-export { useAuthState } from './business';
-
-// Admin hooks (legacy compatibility)
+// Individual hooks for backward compatibility
 export { useAdminDashboard } from './useAdminDashboard';
-
-// Job/Package detail hooks (legacy compatibility)
 export { useJobDetail } from './useJobDetail';
 export { usePackageDetail } from './usePackageDetail';
-
-// Search hooks (legacy compatibility)
 export { useJobsSearch, usePackagesSearch, useUserSearch } from './api';
 export { useUnifiedSearch } from './business';
+
+// ================================================
+// DEFAULTS
+// ================================================
+export { default as ApiHooks } from './api';
+export { default as UIHooks } from './ui';
+export { default as BusinessHooks } from './business';
+export { default as UnifiedAsyncHooks } from './core/useUnifiedAsync';
 
 // UI interaction hooks (legacy compatibility)
 export { useModal, useForm, useTheme, useSidebar, useClipboard } from './ui';
@@ -60,8 +64,6 @@ export { useResponsive } from './useResponsive';
 
 // Base utility hooks (legacy compatibility)
 export {
-  useAsyncOperation,
-  useMutation,
   usePagination,
   useDebounce,
   useDebouncedCallback,
@@ -101,8 +103,8 @@ export const BasePatterns = {
 
 // API interaction patterns
 export const ApiPatterns = {
-  useAuth: () => import('./api').then((m) => m.useAuth),
-  useCurrentUser: () => import('./api').then((m) => m.useCurrentUser),
+  useAuth: () => import('./api').then((m) => m.useApiAuth),
+  useCurrentUser: () => import('./api').then((m) => m.useApiCurrentUser),
   useJobsSearch: () => import('./api').then((m) => m.useJobsSearch),
   usePackagesSearch: () => import('./api').then((m) => m.usePackagesSearch),
   useUserSearch: () => import('./api').then((m) => m.useUserSearch),
@@ -119,7 +121,7 @@ export const UIPatterns = {
 
 // Business logic patterns
 export const BusinessPatterns = {
-  useAuthState: () => import('./business').then((m) => m.useAuthState),
+  useAuthState: () => import('./business').then((m) => m.useBusinessAuthState),
   useUnifiedSearch: () => import('./business').then((m) => m.useUnifiedSearch),
   useFavoritesManager: () =>
     import('./business').then((m) => m.useFavoritesManager),

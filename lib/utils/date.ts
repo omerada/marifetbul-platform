@@ -1,62 +1,111 @@
-// Date utility functions
+/**
+ * Date utilities
+ */
 
+import { format, formatDistance, parseISO, isValid } from 'date-fns';
+import { tr } from 'date-fns/locale';
+
+/**
+ * Format a date using date-fns
+ */
 export function formatDate(
   date: Date | string | number,
-  options?: Intl.DateTimeFormatOptions
+  formatStr: string = 'dd/MM/yyyy'
 ): string {
-  const d = new Date(date);
-  if (isNaN(d.getTime())) return 'Invalid Date';
+  try {
+    const dateObj = typeof date === 'string' ? parseISO(date) : new Date(date);
 
-  const defaultOptions: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    ...options,
-  };
+    if (!isValid(dateObj)) {
+      return 'Geçersiz tarih';
+    }
 
-  return new Intl.DateTimeFormat('tr-TR', defaultOptions).format(d);
+    return format(dateObj, formatStr, { locale: tr });
+  } catch {
+    return 'Geçersiz tarih';
+  }
 }
 
+/**
+ * Format relative time (e.g., "2 saat önce")
+ */
 export function formatRelativeTime(date: Date | string | number): string {
-  const d = new Date(date);
-  if (isNaN(d.getTime())) return 'Invalid Date';
+  try {
+    const dateObj = typeof date === 'string' ? parseISO(date) : new Date(date);
 
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - d.getTime()) / 1000);
+    if (!isValid(dateObj)) {
+      return 'Bilinmiyor';
+    }
 
-  const rtf = new Intl.RelativeTimeFormat('tr-TR', { numeric: 'auto' });
-
-  if (diffInSeconds < 60) return rtf.format(-diffInSeconds, 'second');
-  if (diffInSeconds < 3600)
-    return rtf.format(-Math.floor(diffInSeconds / 60), 'minute');
-  if (diffInSeconds < 86400)
-    return rtf.format(-Math.floor(diffInSeconds / 3600), 'hour');
-  if (diffInSeconds < 2592000)
-    return rtf.format(-Math.floor(diffInSeconds / 86400), 'day');
-  if (diffInSeconds < 31536000)
-    return rtf.format(-Math.floor(diffInSeconds / 2592000), 'month');
-
-  return rtf.format(-Math.floor(diffInSeconds / 31536000), 'year');
+    return formatDistance(dateObj, new Date(), {
+      addSuffix: true,
+      locale: tr,
+    });
+  } catch {
+    return 'Bilinmiyor';
+  }
 }
 
-export function isValidDate(date: unknown): boolean {
-  return date instanceof Date && !isNaN(date.getTime());
+/**
+ * Check if a date is today
+ */
+export function isToday(date: Date | string | number): boolean {
+  try {
+    const dateObj = typeof date === 'string' ? parseISO(date) : new Date(date);
+    const today = new Date();
+
+    return (
+      dateObj.getDate() === today.getDate() &&
+      dateObj.getMonth() === today.getMonth() &&
+      dateObj.getFullYear() === today.getFullYear()
+    );
+  } catch {
+    return false;
+  }
 }
 
-export function addDays(date: Date, days: number): Date {
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
-}
+/**
+ * Get time ago string in Turkish
+ */
+export function getTimeAgo(date: Date | string | number): string {
+  try {
+    const dateObj = typeof date === 'string' ? parseISO(date) : new Date(date);
+    const now = new Date();
+    const diffInSeconds = Math.floor(
+      (now.getTime() - dateObj.getTime()) / 1000
+    );
 
-export function startOfDay(date: Date): Date {
-  const result = new Date(date);
-  result.setHours(0, 0, 0, 0);
-  return result;
-}
+    if (diffInSeconds < 60) {
+      return 'Az önce';
+    }
 
-export function endOfDay(date: Date): Date {
-  const result = new Date(date);
-  result.setHours(23, 59, 59, 999);
-  return result;
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes} dakika önce`;
+    }
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+      return `${diffInHours} saat önce`;
+    }
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) {
+      return `${diffInDays} gün önce`;
+    }
+
+    if (diffInDays < 30) {
+      const diffInWeeks = Math.floor(diffInDays / 7);
+      return `${diffInWeeks} hafta önce`;
+    }
+
+    const diffInMonths = Math.floor(diffInDays / 30);
+    if (diffInMonths < 12) {
+      return `${diffInMonths} ay önce`;
+    }
+
+    const diffInYears = Math.floor(diffInMonths / 12);
+    return `${diffInYears} yıl önce`;
+  } catch {
+    return 'Bilinmiyor';
+  }
 }

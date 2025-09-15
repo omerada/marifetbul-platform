@@ -3,7 +3,6 @@
 // ================================================
 // Unified hooks for all API interactions using consistent patterns
 
-import { useCallback } from 'react';
 import {
   useAsyncOperation,
   useMutation,
@@ -147,11 +146,14 @@ export interface LoginResponse {
 // ================================================
 // AUTH HOOKS
 // ================================================
+// NOTE: Main auth hooks moved to /hooks/shared/useAuth.tsx
+// These are kept for API-specific auth operations only
 
 /**
- * Unified authentication hook
+ * @deprecated Use useAuth from '/hooks/shared/useAuth' instead
+ * Basic API auth operations - kept for legacy compatibility
  */
-export function useAuth() {
+export function useApiAuth() {
   const login = useMutation<LoginResponse, AuthCredentials>(
     async (credentials) => {
       return await apiClient.post<LoginResponse>('/auth/login', credentials);
@@ -192,9 +194,10 @@ export function useAuth() {
 }
 
 /**
- * Current user hook
+ * @deprecated Use useCurrentUser from '/hooks/shared/useAuth' instead
+ * Current user API hook - kept for legacy compatibility
  */
-export function useCurrentUser(): AsyncHookReturn<User> {
+export function useApiCurrentUser(): AsyncHookReturn<User> {
   return useAsyncOperation(
     async () => {
       return await apiClient.get<User>('/auth/me');
@@ -235,37 +238,31 @@ export function useUserSearch(
   filters: SearchFilters,
   options: { pageSize?: number; enabled?: boolean } = {}
 ): PaginatedHookReturn<User> {
-  const { pageSize = 10, enabled = true } = options;
+  const { pageSize = 10 } = options;
 
-  return usePagination(
-    async (page: number, limit: number) => {
-      const queryParams: Record<string, string> = {
-        page: page.toString(),
-        limit: limit.toString(),
-      };
+  return usePagination(async (page: number, limit: number) => {
+    const queryParams: Record<string, string> = {
+      page: page.toString(),
+      limit: limit.toString(),
+    };
 
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          queryParams[key] = Array.isArray(value)
-            ? value.join(',')
-            : String(value);
-        }
-      });
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        queryParams[key] = Array.isArray(value)
+          ? value.join(',')
+          : String(value);
+      }
+    });
 
-      const response = await apiClient.get<{ users: User[]; total: number }>(
-        '/users',
-        queryParams
-      );
-      return {
-        items: response.users,
-        total: response.total,
-      };
-    },
-    {
-      pageSize,
-      enabled: enabled && Object.keys(filters).length > 0,
-    }
-  );
+    const response = await apiClient.get<{ users: User[]; total: number }>(
+      '/users',
+      queryParams
+    );
+    return {
+      items: response.users,
+      total: response.total,
+    };
+  }, pageSize);
 }
 
 // ================================================
@@ -288,37 +285,31 @@ export function useJobsSearch(
   filters: SearchFilters,
   options: { pageSize?: number; enabled?: boolean } = {}
 ): PaginatedHookReturn<Job> {
-  const { pageSize = 10, enabled = true } = options;
+  const { pageSize = 10 } = options;
 
-  return usePagination(
-    async (page: number, limit: number) => {
-      const queryParams: Record<string, string> = {
-        page: page.toString(),
-        limit: limit.toString(),
-      };
+  return usePagination(async (page: number, limit: number) => {
+    const queryParams: Record<string, string> = {
+      page: page.toString(),
+      limit: limit.toString(),
+    };
 
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          queryParams[key] = Array.isArray(value)
-            ? value.join(',')
-            : String(value);
-        }
-      });
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        queryParams[key] = Array.isArray(value)
+          ? value.join(',')
+          : String(value);
+      }
+    });
 
-      const response = await apiClient.get<{ jobs: Job[]; total: number }>(
-        '/jobs',
-        queryParams
-      );
-      return {
-        items: response.jobs,
-        total: response.total,
-      };
-    },
-    {
-      pageSize,
-      enabled,
-    }
-  );
+    const response = await apiClient.get<{ jobs: Job[]; total: number }>(
+      '/jobs',
+      queryParams
+    );
+    return {
+      items: response.jobs,
+      total: response.total,
+    };
+  }, pageSize);
 }
 
 export function useCreateJob(): MutationHookReturn<
@@ -366,37 +357,31 @@ export function usePackagesSearch(
   filters: SearchFilters,
   options: { pageSize?: number; enabled?: boolean } = {}
 ): PaginatedHookReturn<Package> {
-  const { pageSize = 10, enabled = true } = options;
+  const { pageSize = 10 } = options;
 
-  return usePagination(
-    async (page: number, limit: number) => {
-      const queryParams: Record<string, string> = {
-        page: page.toString(),
-        limit: limit.toString(),
-      };
+  return usePagination(async (page: number, limit: number) => {
+    const queryParams: Record<string, string> = {
+      page: page.toString(),
+      limit: limit.toString(),
+    };
 
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          queryParams[key] = Array.isArray(value)
-            ? value.join(',')
-            : String(value);
-        }
-      });
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        queryParams[key] = Array.isArray(value)
+          ? value.join(',')
+          : String(value);
+      }
+    });
 
-      const response = await apiClient.get<{
-        packages: Package[];
-        total: number;
-      }>('/packages', queryParams);
-      return {
-        items: response.packages,
-        total: response.total,
-      };
-    },
-    {
-      pageSize,
-      enabled,
-    }
-  );
+    const response = await apiClient.get<{
+      packages: Package[];
+      total: number;
+    }>('/packages', queryParams);
+    return {
+      items: response.packages,
+      total: response.total,
+    };
+  }, pageSize);
 }
 
 export function useCreatePackage(): MutationHookReturn<
@@ -467,29 +452,23 @@ export function useConversationMessages(
   conversationId: string,
   options: { pageSize?: number; enabled?: boolean } = {}
 ): PaginatedHookReturn<Message> {
-  const { pageSize = 20, enabled = true } = options;
+  const { pageSize = 20 } = options;
 
-  return usePagination(
-    async (page: number, limit: number) => {
-      const queryParams = {
-        page: page.toString(),
-        limit: limit.toString(),
-      };
+  return usePagination(async (page: number, limit: number) => {
+    const queryParams = {
+      page: page.toString(),
+      limit: limit.toString(),
+    };
 
-      const response = await apiClient.get<{
-        messages: Message[];
-        total: number;
-      }>(`/messages/conversations/${conversationId}/messages`, queryParams);
-      return {
-        items: response.messages,
-        total: response.total,
-      };
-    },
-    {
-      pageSize,
-      enabled: enabled && !!conversationId,
-    }
-  );
+    const response = await apiClient.get<{
+      messages: Message[];
+      total: number;
+    }>(`/messages/conversations/${conversationId}/messages`, queryParams);
+    return {
+      items: response.messages,
+      total: response.total,
+    };
+  }, pageSize);
 }
 
 export function useSendMessage(): MutationHookReturn<
@@ -585,37 +564,31 @@ export function useAdminUsers(
   filters: SearchFilters,
   options: { pageSize?: number; enabled?: boolean } = {}
 ): PaginatedHookReturn<User> {
-  const { pageSize = 20, enabled = true } = options;
+  const { pageSize = 20 } = options;
 
-  return usePagination(
-    async (page: number, limit: number) => {
-      const queryParams: Record<string, string> = {
-        page: page.toString(),
-        limit: limit.toString(),
-      };
+  return usePagination(async (page: number, limit: number) => {
+    const queryParams: Record<string, string> = {
+      page: page.toString(),
+      limit: limit.toString(),
+    };
 
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          queryParams[key] = Array.isArray(value)
-            ? value.join(',')
-            : String(value);
-        }
-      });
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        queryParams[key] = Array.isArray(value)
+          ? value.join(',')
+          : String(value);
+      }
+    });
 
-      const response = await apiClient.get<{ users: User[]; total: number }>(
-        '/admin/users',
-        queryParams
-      );
-      return {
-        items: response.users,
-        total: response.total,
-      };
-    },
-    {
-      pageSize,
-      enabled,
-    }
-  );
+    const response = await apiClient.get<{ users: User[]; total: number }>(
+      '/admin/users',
+      queryParams
+    );
+    return {
+      items: response.users,
+      total: response.total,
+    };
+  }, pageSize);
 }
 
 // ================================================
@@ -623,9 +596,9 @@ export function useAdminUsers(
 // ================================================
 
 const ApiHooks = {
-  // Auth
-  useAuth,
-  useCurrentUser,
+  // Auth (deprecated - use shared/useAuth instead)
+  useApiAuth,
+  useApiCurrentUser,
 
   // Users
   useUserProfile,

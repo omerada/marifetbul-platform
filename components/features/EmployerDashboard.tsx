@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/Badge';
 import { isJobBudgetObject } from '@/lib/utils/typeGuards';
 import { QuickActions } from '@/components/features/QuickActions';
 import { StatsCard } from '@/components/features/StatsCard';
-import { DashboardSkeleton } from '@/components/features/DashboardSkeleton';
+import { SkeletonDashboard as DashboardSkeleton } from '@/components/ui/UnifiedSkeleton';
 import { ErrorState } from '@/components/features/ErrorState';
 import {
   DollarSign,

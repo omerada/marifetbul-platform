@@ -1,350 +1,192 @@
 // ================================================
-// UNIFIED HOOK ARCHITECTURE SYSTEM
+// BASE UTILITY HOOKS SYSTEM
 // ================================================
 // Base patterns and utilities for consistent hook design
-// across the entire application
+// Async operations are handled by unified async system
 
-import { useEffect, useRef, useCallback, useState, useMemo } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 
 // ================================================
-// CORE HOOK TYPES
+// ASYNC OPERATION HOOKS (UNIFIED SYSTEM)
+// ================================================
+// Re-export from unified async system to maintain backward compatibility
+export {
+  useAsyncOperation,
+  useMutation,
+  useAsyncAction,
+  useMultipleAsyncOperations,
+  type AsyncOperationHook,
+  type AsyncActionHook,
+  type AsyncState as UnifiedAsyncState,
+  type MutationOptions,
+} from '../core/useUnifiedAsync';
+
+// ================================================
+// BASE TYPES (NON-ASYNC)
 // ================================================
 
-export interface AsyncState<T> {
+// Legacy type aliases for backward compatibility
+export type AsyncHookReturn<T> = {
   data: T | null;
   isLoading: boolean;
   error: Error | null;
-  isInitialized: boolean;
-}
+  refetch?: () => Promise<void>;
+};
 
-export interface MutationState<T> {
-  data: T | null;
+export type MutationHookReturn<TData, TParams> = {
+  mutate: (params: TParams) => Promise<TData>;
+  data: TData | null;
   isLoading: boolean;
   error: Error | null;
-  isSuccess: boolean;
-}
+  reset: () => void;
+};
+
+export type PaginatedHookReturn<T> = PaginationHookReturn<T>;
+
+// ================================================
+// BASE TYPES (NON-ASYNC)
+// ================================================
 
 export interface PaginatedState<T> {
   items: T[];
   total: number;
   page: number;
   pageSize: number;
-  hasNext: boolean;
-  hasPrev: boolean;
+  isLoading: boolean;
+  error: Error | null;
+  hasMore: boolean;
 }
 
-export interface AsyncHookReturn<T> extends AsyncState<T> {
-  refetch: () => Promise<T | undefined>;
+export interface PaginationHookReturn<T> {
+  data: PaginatedState<T>;
+  setPage: (page: number) => void;
+  setPageSize: (size: number) => void;
+  nextPage: () => void;
+  previousPage: () => void;
+  refetch: () => Promise<void>;
   reset: () => void;
 }
 
-export interface MutationHookReturn<TData, TParams>
-  extends MutationState<TData> {
-  mutate: (params: TParams) => Promise<TData>;
-  mutateAsync: (params: TParams) => Promise<TData>;
-  reset: () => void;
-}
-
-export interface PaginatedHookReturn<T>
-  extends AsyncHookReturn<PaginatedState<T>> {
-  nextPage: () => Promise<void>;
-  prevPage: () => Promise<void>;
-  goToPage: (page: number) => Promise<void>;
-  refresh: () => Promise<void>;
-}
-
 // ================================================
-// BASE HOOK PATTERNS
+// PAGINATION HOOK
 // ================================================
 
 /**
- * Base async state hook
- * Provides consistent async state management
+ * Pagination hook with consistent pagination logic
  */
-export function useAsyncState<T>(
-  initialData: T | null = null
-): [AsyncState<T>, (newState: Partial<AsyncState<T>>) => void] {
-  const [state, setState] = useState<AsyncState<T>>({
-    data: initialData,
+export function usePagination<T>(
+  fetchData: (
+    page: number,
+    pageSize: number
+  ) => Promise<{
+    items: T[];
+    total: number;
+  }>,
+  initialPageSize: number = 10
+): PaginationHookReturn<T> {
+  const [state, setState] = useState<PaginatedState<T>>({
+    items: [],
+    total: 0,
+    page: 1,
+    pageSize: initialPageSize,
     isLoading: false,
     error: null,
-    isInitialized: false,
+    hasMore: false,
   });
 
-  const updateState = useCallback((newState: Partial<AsyncState<T>>) => {
-    setState((prev) => ({ ...prev, ...newState }));
+  const updateState = useCallback((updates: Partial<PaginatedState<T>>) => {
+    setState((prev) => ({ ...prev, ...updates }));
   }, []);
 
-  return [state, updateState];
-}
-
-/**
- * Base mutation state hook
- * Provides consistent mutation state management
- */
-export function useMutationState<T>(
-  initialData: T | null = null
-): [MutationState<T>, (newState: Partial<MutationState<T>>) => void] {
-  const [state, setState] = useState<MutationState<T>>({
-    data: initialData,
-    isLoading: false,
-    error: null,
-    isSuccess: false,
-  });
-
-  const updateState = useCallback((newState: Partial<MutationState<T>>) => {
-    setState((prev) => ({ ...prev, ...newState }));
-  }, []);
-
-  return [state, updateState];
-}
-
-/**
- * Generic async operation hook
- * Provides consistent async operation handling
- */
-export function useAsyncOperation<T, P = void>(
-  operation: (params: P) => Promise<T>,
-  options: {
-    dependencies?: React.DependencyList;
-    enabled?: boolean;
-  } = {}
-): AsyncHookReturn<T> {
-  const { dependencies = [], enabled = true } = options;
-  const [state, updateState] = useAsyncState<T>();
-  const abortControllerRef = useRef<AbortController | null>(null);
-
-  const execute = useCallback(
-    async (params?: P): Promise<T | undefined> => {
-      // Cancel previous operation
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-
-      abortControllerRef.current = new AbortController();
-
+  const loadData = useCallback(
+    async (page: number, pageSize: number): Promise<void> => {
       updateState({ isLoading: true, error: null });
 
       try {
-        const result = await operation(params as P);
+        const { items, total } = await fetchData(page, pageSize);
+        const hasMore = page * pageSize < total;
 
-        if (!abortControllerRef.current.signal.aborted) {
-          updateState({
-            data: result,
-            isLoading: false,
-            isInitialized: true,
-          });
-        }
-
-        return result;
+        updateState({
+          items,
+          total,
+          page,
+          pageSize,
+          hasMore,
+          isLoading: false,
+        });
       } catch (error) {
-        if (!abortControllerRef.current.signal.aborted) {
-          updateState({
-            error: error instanceof Error ? error : new Error(String(error)),
-            isLoading: false,
-            isInitialized: true,
-          });
-        }
-        throw error;
+        updateState({
+          error: error instanceof Error ? error : new Error(String(error)),
+          isLoading: false,
+        });
       }
     },
-    [operation, updateState, ...dependencies]
+    [fetchData, updateState]
   );
 
-  const refetch = useCallback(async (): Promise<T | undefined> => {
-    if (enabled) {
-      return execute();
+  const setPage = useCallback(
+    (page: number) => {
+      if (page !== state.page && page > 0) {
+        loadData(page, state.pageSize);
+      }
+    },
+    [state.page, state.pageSize, loadData]
+  );
+
+  const setPageSize = useCallback(
+    (pageSize: number) => {
+      if (pageSize !== state.pageSize && pageSize > 0) {
+        loadData(1, pageSize);
+      }
+    },
+    [state.pageSize, loadData]
+  );
+
+  const nextPage = useCallback(() => {
+    if (state.hasMore) {
+      setPage(state.page + 1);
     }
-  }, [execute, enabled]);
+  }, [state.hasMore, state.page, setPage]);
+
+  const previousPage = useCallback(() => {
+    if (state.page > 1) {
+      setPage(state.page - 1);
+    }
+  }, [state.page, setPage]);
+
+  const refetch = useCallback(() => {
+    return loadData(state.page, state.pageSize);
+  }, [state.page, state.pageSize, loadData]);
 
   const reset = useCallback(() => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    updateState({
-      data: null,
+    setState({
+      items: [],
+      total: 0,
+      page: 1,
+      pageSize: initialPageSize,
       isLoading: false,
       error: null,
-      isInitialized: false,
+      hasMore: false,
     });
-  }, [updateState]);
-
-  // Auto-execute on mount if enabled
-  useEffect(() => {
-    if (enabled) {
-      execute();
-    }
-  }, [enabled]); // intentionally not including execute to avoid re-runs
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, []);
+  }, [initialPageSize]);
 
   return {
-    ...state,
+    data: state,
+    setPage,
+    setPageSize,
+    nextPage,
+    previousPage,
     refetch,
     reset,
   };
 }
 
-/**
- * Generic mutation hook
- * Provides consistent mutation operation handling
- */
-export function useMutation<TData, TParams = void>(
-  mutationFn: (params: TParams) => Promise<TData>,
-  options: {
-    onSuccess?: (data: TData, params: TParams) => void;
-    onError?: (error: Error, params: TParams) => void;
-    onSettled?: (
-      data: TData | null,
-      error: Error | null,
-      params: TParams
-    ) => void;
-  } = {}
-): MutationHookReturn<TData, TParams> {
-  const [state, updateState] = useMutationState<TData>();
-  const { onSuccess, onError, onSettled } = options;
-
-  const mutate = useCallback(
-    async (params: TParams): Promise<TData> => {
-      updateState({ isLoading: true, error: null, isSuccess: false });
-
-      try {
-        const result = await mutationFn(params);
-
-        updateState({
-          data: result,
-          isLoading: false,
-          isSuccess: true,
-        });
-
-        onSuccess?.(result, params);
-        onSettled?.(result, null, params);
-
-        return result;
-      } catch (error) {
-        const errorObj =
-          error instanceof Error ? error : new Error(String(error));
-
-        updateState({
-          error: errorObj,
-          isLoading: false,
-          isSuccess: false,
-        });
-
-        onError?.(errorObj, params);
-        onSettled?.(null, errorObj, params);
-
-        throw error;
-      }
-    },
-    [mutationFn, onSuccess, onError, onSettled, updateState]
-  );
-
-  const mutateAsync = useMemo(() => mutate, [mutate]);
-
-  const reset = useCallback(() => {
-    updateState({
-      data: null,
-      isLoading: false,
-      error: null,
-      isSuccess: false,
-    });
-  }, [updateState]);
-
-  return {
-    ...state,
-    mutate,
-    mutateAsync,
-    reset,
-  };
-}
-
-/**
- * Pagination hook
- * Provides consistent pagination logic
- */
-export function usePagination<T>(
-  fetchFn: (
-    page: number,
-    pageSize: number
-  ) => Promise<{ items: T[]; total: number }>,
-  options: {
-    initialPage?: number;
-    pageSize?: number;
-    enabled?: boolean;
-  } = {}
-): PaginatedHookReturn<T> {
-  const { initialPage = 1, pageSize = 10, enabled = true } = options;
-
-  const [page, setPage] = useState(initialPage);
-
-  const fetchData = useCallback(async () => {
-    const result = await fetchFn(page, pageSize);
-    return {
-      ...result,
-      page,
-      pageSize,
-      hasNext: page * pageSize < result.total,
-      hasPrev: page > 1,
-    };
-  }, [fetchFn, page, pageSize]);
-
-  const asyncHook = useAsyncOperation(fetchData, {
-    dependencies: [page, pageSize],
-  });
-
-  // Auto-fetch when enabled
-  useEffect(() => {
-    if (enabled) {
-      void asyncHook.refetch();
-    }
-  }, [enabled, asyncHook]);
-
-  const nextPage = useCallback(async () => {
-    if (asyncHook.data?.hasNext) {
-      setPage((prev) => prev + 1);
-    }
-  }, [asyncHook.data?.hasNext]);
-
-  const prevPage = useCallback(async () => {
-    if (asyncHook.data?.hasPrev) {
-      setPage((prev) => prev - 1);
-    }
-  }, [asyncHook.data?.hasPrev]);
-
-  const goToPage = useCallback(async (newPage: number) => {
-    if (newPage >= 1) {
-      setPage(newPage);
-    }
-  }, []);
-
-  const refresh = useCallback(async () => {
-    await asyncHook.refetch();
-  }, [asyncHook]);
-
-  return {
-    ...asyncHook,
-    nextPage,
-    prevPage,
-    goToPage,
-    refresh,
-  };
-}
-
 // ================================================
-// DEBOUNCE & THROTTLE HOOKS
+// DEBOUNCE HOOKS
 // ================================================
 
 /**
  * Debounced value hook
- * Provides consistent debouncing
  */
 export function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
@@ -364,14 +206,13 @@ export function useDebounce<T>(value: T, delay: number): T {
 
 /**
  * Debounced callback hook
- * Provides consistent callback debouncing
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export function useDebouncedCallback<T extends (...args: any[]) => any>(
+export function useDebouncedCallback<T extends (...args: unknown[]) => void>(
   callback: T,
-  delay: number
+  delay: number,
+  deps: React.DependencyList = []
 ): T {
-  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const debouncedCallback = useCallback(
     (...args: Parameters<T>) => {
@@ -383,7 +224,8 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
         callback(...args);
       }, delay);
     },
-    [callback, delay]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [callback, delay, ...deps]
   ) as T;
 
   useEffect(() => {
@@ -399,42 +241,63 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
 
 /**
  * Throttled callback hook
- * Provides consistent callback throttling
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export function useThrottledCallback<T extends (...args: any[]) => any>(
+export function useThrottledCallback<T extends (...args: unknown[]) => void>(
   callback: T,
-  delay: number
+  delay: number,
+  deps: React.DependencyList = []
 ): T {
-  const lastCallTime = useRef<number>(0);
+  const lastExecuted = useRef<number>(0);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const throttledCallback = useCallback(
     (...args: Parameters<T>) => {
       const now = Date.now();
 
-      if (now - lastCallTime.current >= delay) {
-        lastCallTime.current = now;
+      if (now - lastExecuted.current >= delay) {
+        lastExecuted.current = now;
         callback(...args);
+      } else {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+
+        timeoutRef.current = setTimeout(
+          () => {
+            lastExecuted.current = Date.now();
+            callback(...args);
+          },
+          delay - (now - lastExecuted.current)
+        );
       }
     },
-    [callback, delay]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [callback, delay, ...deps]
   ) as T;
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return throttledCallback;
 }
 
 // ================================================
-// LOCAL STORAGE HOOKS
+// LOCAL STORAGE HOOK
 // ================================================
 
 /**
- * Local storage hook with TypeScript support
- * Provides consistent local storage management
+ * Local storage hook with error handling
  */
 export function useLocalStorage<T>(
   key: string,
   initialValue: T
-): [T, (value: T | ((prev: T) => T)) => void, () => void] {
+): [T, (value: T | ((val: T) => T)) => void, () => void] {
+  // Get initial value from localStorage or use provided initial value
   const [storedValue, setStoredValue] = useState<T>(() => {
     if (typeof window === 'undefined') {
       return initialValue;
@@ -449,13 +312,16 @@ export function useLocalStorage<T>(
     }
   });
 
+  // Return a wrapped version of useState's setter function that persists the new value to localStorage
   const setValue = useCallback(
-    (value: T | ((prev: T) => T)) => {
+    (value: T | ((val: T) => T)) => {
       try {
+        // Allow value to be a function so we have the same API as useState
         const valueToStore =
           value instanceof Function ? value(storedValue) : value;
         setStoredValue(valueToStore);
 
+        // Save to localStorage
         if (typeof window !== 'undefined') {
           window.localStorage.setItem(key, JSON.stringify(valueToStore));
         }
@@ -466,10 +332,10 @@ export function useLocalStorage<T>(
     [key, storedValue]
   );
 
+  // Remove item from localStorage
   const removeValue = useCallback(() => {
     try {
       setStoredValue(initialValue);
-
       if (typeof window !== 'undefined') {
         window.localStorage.removeItem(key);
       }
@@ -487,7 +353,6 @@ export function useLocalStorage<T>(
 
 /**
  * Previous value hook
- * Provides access to previous value
  */
 export function usePrevious<T>(value: T): T | undefined {
   const ref = useRef<T | undefined>(undefined);
@@ -505,30 +370,29 @@ export function usePrevious<T>(value: T): T | undefined {
 
 /**
  * Intersection observer hook
- * Provides consistent intersection observation
  */
 export function useIntersectionObserver(
-  elementRef: React.RefObject<Element>,
   options: IntersectionObserverInit = {}
-): IntersectionObserverEntry | null {
-  const [entry, setEntry] = useState<IntersectionObserverEntry | null>(null);
+): [React.RefObject<Element | null>, boolean] {
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const targetRef = useRef<Element | null>(null);
 
   useEffect(() => {
-    const element = elementRef.current;
+    const element = targetRef.current;
     if (!element) return;
 
-    const observer = new IntersectionObserver(([entry]) => setEntry(entry), {
-      threshold: options.threshold,
-      root: options.root,
-      rootMargin: options.rootMargin,
-    });
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsIntersecting(entry.isIntersecting);
+    }, options);
 
     observer.observe(element);
 
-    return () => observer.disconnect();
-  }, [elementRef, options.threshold, options.root, options.rootMargin]);
+    return () => {
+      observer.unobserve(element);
+    };
+  }, [options]);
 
-  return entry;
+  return [targetRef, isIntersecting];
 }
 
 // ================================================
@@ -567,10 +431,7 @@ export function useMediaQuery(query: string): boolean {
 // ================================================
 
 const BaseHooks = {
-  useAsyncState,
-  useMutationState,
-  useAsyncOperation,
-  useMutation,
+  // Base utilities (defined in this file)
   usePagination,
   useDebounce,
   useDebouncedCallback,

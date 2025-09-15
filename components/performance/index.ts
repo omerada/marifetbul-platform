@@ -3,23 +3,19 @@
 // ================================================
 // Centralized performance optimization utilities and components
 
-// Lazy loading and code splitting
+// Core components
+export { default as PerformanceMonitor } from './PerformanceMonitor';
+
+// Unified performance monitoring system
 export {
-  LazyWrapper,
-  createLazyComponent,
-  createComponentLazy,
-  preloadCriticalComponents,
-  PerformanceMonitor,
-  withMemo,
-  getCachedComponent,
-} from './LazyComponents';
+  useEnhancedPerformance as usePerformance,
+  useEnhancedPerformance,
+  usePerformanceMonitoring,
+  useSearchPerformance,
+} from '../../hooks/useEnhancedPerformanceUnified';
 
-// Performance hooks (from existing hooks)
-export { useEnhancedPerformance as usePerformance } from '../../hooks/useEnhancedPerformance';
-export { useEnhancedPerformance } from '../../hooks/useEnhancedPerformance';
-
-// Import default utilities
-import performanceUtils from './LazyComponents';
-
-// Re-export for convenience
-export default performanceUtils;
+export type {
+  PerformanceMetrics,
+  PerformanceAlert,
+  PerformanceConfig,
+} from '@/lib/store/unified-performance';

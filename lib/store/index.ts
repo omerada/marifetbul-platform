@@ -70,6 +70,21 @@ export { usePerformanceStore } from './performance';
 export { useSearchStore } from './search';
 export { useSEOStore } from './seo';
 
+// === OPTIMIZED UTILITIES ===
+// Performance and optimization tools
+
+export {
+  createOptimizedStore,
+  createCleanupStore,
+  StorePerformanceMonitor,
+  globalPerformanceMonitor,
+  createDebouncedAction,
+  createThrottledAction,
+  createBatchedAction,
+  shallowEqual,
+  createMemoizedSelector,
+} from './optimized';
+
 // === LEGACY EXPORTS ===
 // Backward compatibility
 

@@ -110,11 +110,11 @@ export function createDataHook<T, P = void>(
       if (!enabled || !refetchInterval) return;
 
       const interval = setInterval(() => {
-        void asyncHook.refetch();
+        void asyncHook.execute();
       }, refetchInterval);
 
       return () => clearInterval(interval);
-    }, [enabled, refetchInterval, asyncHook.refetch]);
+    }, [enabled, refetchInterval, asyncHook]);
 
     const lastFetchTime = useMemo(
       () => (asyncHook.data ? new Date() : null),
@@ -169,12 +169,9 @@ export function createPaginationHook<T>(
   return function usePaginatedData(
     options: { pageSize?: number; enabled?: boolean } = {}
   ): PaginatedHookReturn<T> {
-    const { pageSize = defaultPageSize, enabled = true } = options;
+    const { pageSize = defaultPageSize } = options;
 
-    return usePagination(fetchFn, {
-      pageSize,
-      enabled,
-    });
+    return usePagination(fetchFn, pageSize);
   };
 }
 

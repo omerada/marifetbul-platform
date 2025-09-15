@@ -6,12 +6,12 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useLocalStorage, useDebounce } from '../base';
 import {
-  useCurrentUser,
   useUserSearch,
   useJobsSearch,
   usePackagesSearch,
   useFavorites,
   useToggleFavorite,
+  useApiCurrentUser as useCurrentUser,
   type User,
   type SearchFilters,
 } from '../api';
@@ -19,8 +19,14 @@ import {
 // ================================================
 // AUTHENTICATION BUSINESS LOGIC
 // ================================================
+// NOTE: Main auth hooks moved to /hooks/shared/useAuth.tsx
+// This function kept for legacy compatibility
 
-export function useAuthState() {
+/**
+ * @deprecated Use useAuthState from '/hooks/shared/useAuth' instead
+ * Legacy auth state hook - kept for compatibility
+ */
+export function useBusinessAuthState() {
   const currentUser = useCurrentUser();
   const [isAuthenticated, setIsAuthenticated] = useLocalStorage(
     'isAuthenticated',
@@ -156,7 +162,7 @@ export function useUnifiedSearch() {
 // ================================================
 
 export function useFavoritesManager() {
-  const { user } = useAuthState();
+  const { user } = useBusinessAuthState();
   const favorites = useFavorites(user?.id || '');
   const toggleFavorite = useToggleFavorite();
 
@@ -202,7 +208,7 @@ export function useFavoritesManager() {
       try {
         await toggleFavorite.mutate({ type: 'job', id: jobId });
         // Refetch to get updated data
-        favorites.refetch();
+        await favorites.refetch?.();
       } catch {
         // Revert optimistic update on error
         setOptimisticFavorites((prev) => ({
@@ -229,7 +235,7 @@ export function useFavoritesManager() {
       try {
         await toggleFavorite.mutate({ type: 'package', id: packageId });
         // Refetch to get updated data
-        favorites.refetch();
+        await favorites.refetch?.();
       } catch {
         // Revert optimistic update on error
         setOptimisticFavorites((prev) => ({
@@ -354,7 +360,7 @@ export function useBreadcrumbs() {
 // ================================================
 
 export function useAnalyticsTracker() {
-  const { user } = useAuthState();
+  const { user } = useBusinessAuthState();
 
   const track = useCallback(
     (event: string, properties?: Record<string, unknown>) => {
@@ -547,8 +553,11 @@ export function usePerformanceMonitor() {
 // EXPORTS
 // ================================================
 
+// Re-export auth state from auth hooks
+export { useAuthState } from '../auth';
+
 const BusinessHooks = {
-  useAuthState,
+  useBusinessAuthState,
   useUnifiedSearch,
   useFavoritesManager,
   useFilterManager,

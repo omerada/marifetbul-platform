@@ -1,85 +1,120 @@
-// Format utility functions
+/**
+ * Format utilities
+ */
 
+/**
+ * Convert string to URL-friendly slug
+ */
 export function slugify(text: string): string {
   return text
+    .toString()
     .toLowerCase()
     .trim()
-    .replace(/[^\w\s-]/g, '') // Remove special characters
-    .replace(/[\s_-]+/g, '-') // Replace spaces, underscores, and hyphens with single hyphen
-    .replace(/^-+|-+$/g, ''); // Remove leading and trailing hyphens
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
 }
 
+/**
+ * Truncate text to specified length
+ */
 export function truncateText(
   text: string,
   maxLength: number,
-  suffix = '...'
+  suffix: string = '...'
 ): string {
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength - suffix.length).trim() + suffix;
+  if (text.length <= maxLength) {
+    return text;
+  }
+
+  return text.slice(0, maxLength - suffix.length) + suffix;
 }
 
-export function capitalizeFirst(text: string): string {
-  if (!text) return text;
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-}
+/**
+ * Format currency in Turkish Lira
+ */
+export function formatCurrency(
+  amount: number,
+  options: {
+    showSymbol?: boolean;
+    minimumFractionDigits?: number;
+    maximumFractionDigits?: number;
+  } = {}
+): string {
+  const {
+    showSymbol = true,
+    minimumFractionDigits = 0,
+    maximumFractionDigits = 2,
+  } = options;
 
-export function capitalizeWords(text: string): string {
-  return text
-    .split(' ')
-    .map((word) => capitalizeFirst(word))
-    .join(' ');
-}
-
-export function formatCurrency(amount: number, currency = 'TRY'): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
+  const formatted = new Intl.NumberFormat('tr-TR', {
+    minimumFractionDigits,
+    maximumFractionDigits,
   }).format(amount);
+
+  return showSymbol ? `₺${formatted}` : formatted;
 }
 
-export function formatNumber(
-  num: number,
-  options?: Intl.NumberFormatOptions
-): string {
-  return new Intl.NumberFormat('tr-TR', options).format(num);
+/**
+ * Format phone number for Turkish numbers
+ */
+export function formatPhoneNumber(phoneNumber: string): string {
+  // Remove all non-digits
+  const cleaned = phoneNumber.replace(/\D/g, '');
+
+  // Handle Turkish mobile numbers
+  if (cleaned.length === 11 && cleaned.startsWith('90')) {
+    return `+${cleaned.slice(0, 2)} ${cleaned.slice(2, 5)} ${cleaned.slice(5, 8)} ${cleaned.slice(8, 10)} ${cleaned.slice(10)}`;
+  }
+
+  // Handle Turkish mobile numbers without country code
+  if (cleaned.length === 10 && cleaned.startsWith('5')) {
+    return `+90 ${cleaned.slice(0, 3)} ${cleaned.slice(3, 6)} ${cleaned.slice(6, 8)} ${cleaned.slice(8)}`;
+  }
+
+  return phoneNumber;
 }
 
-export function formatBytes(bytes: number, decimals = 2): string {
+/**
+ * Capitalize first letter of each word
+ */
+export function capitalizeWords(text: string): string {
+  return text.replace(
+    /\w\S*/g,
+    (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+  );
+}
+
+/**
+ * Format file size in human readable format
+ */
+export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes';
 
   const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-export function removeHtmlTags(html: string): string {
-  return html.replace(/<[^>]*>/g, '');
+/**
+ * Remove HTML tags from string
+ */
+export function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>?/gm, '');
 }
 
-export function extractInitials(name: string, maxChars = 2): string {
+/**
+ * Generate initials from name
+ */
+export function getInitials(name: string): string {
   return name
     .split(' ')
-    .map((word) => word.charAt(0).toUpperCase())
-    .slice(0, maxChars)
-    .join('');
-}
-
-export function formatPhoneNumber(phone: string): string {
-  // Remove all non-digit characters
-  const cleaned = phone.replace(/\D/g, '');
-
-  // Check if it's a Turkish phone number
-  if (cleaned.length === 11 && cleaned.startsWith('0')) {
-    // Format: 0 (5XX) XXX XX XX
-    return `${cleaned.slice(0, 1)} (${cleaned.slice(1, 4)}) ${cleaned.slice(4, 7)} ${cleaned.slice(7, 9)} ${cleaned.slice(9)}`;
-  }
-
-  // Return original if not a valid Turkish number
-  return phone;
+    .map((part) => part.charAt(0))
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
 }

@@ -202,7 +202,11 @@ export function AuthLayoutWrapper({
   if (error && !isLoading) {
     return (
       <AuthErrorDisplay
-        error={error?.message || 'Bilinmeyen bir hata oluştu'}
+        error={
+          typeof error === 'string'
+            ? error
+            : (error as Error)?.message || 'Bilinmeyen bir hata oluştu'
+        }
         onRetry={handleRetry}
         onGoHome={handleGoHome}
       />
@@ -354,7 +358,7 @@ export function useAuthRedirect() {
       admin: '/admin',
     };
 
-    const redirectPath = roleRedirects[user.role] || '/dashboard';
+    const redirectPath = roleRedirects[user?.role || ''] || '/dashboard';
     router.push(redirectPath);
   };
 

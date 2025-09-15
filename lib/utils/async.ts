@@ -1,142 +1,185 @@
-// Async utilities and performance helpers
+/**
+ * Async utilities
+ */
 
-// Debounce utility function
+/**
+ * Debounce function - delays execution until after wait milliseconds
+ */
 export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
-  delay: number
-): T & { cancel: () => void } {
+  wait: number
+): (...args: Parameters<T>) => void {
   let timeoutId: NodeJS.Timeout | null = null;
 
-  const debouncedFunction = ((...args: Parameters<T>) => {
+  return (...args: Parameters<T>) => {
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
 
     timeoutId = setTimeout(() => {
       func(...args);
-    }, delay);
-  }) as T & { cancel: () => void };
-
-  debouncedFunction.cancel = () => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      timeoutId = null;
-    }
+    }, wait);
   };
-
-  return debouncedFunction;
 }
 
-// Specific debounce for async functions
+/**
+ * Debounce async function - returns a promise
+ */
 export function debounceAsync<
   T extends (...args: unknown[]) => Promise<unknown>,
->(func: T, delay: number): T & { cancel: () => void } {
+>(func: T, wait: number): (...args: Parameters<T>) => Promise<ReturnType<T>> {
   let timeoutId: NodeJS.Timeout | null = null;
+  let resolveCallback: ((value: ReturnType<T>) => void) | null = null;
+  let rejectCallback: ((reason: Error) => void) | null = null;
 
-  const debouncedFunction = ((...args: Parameters<T>) => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
+  return (...args: Parameters<T>): Promise<ReturnType<T>> => {
+    return new Promise((resolve, reject) => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        if (rejectCallback) {
+          rejectCallback(new Error('Debounced'));
+        }
+      }
 
-    return new Promise<ReturnType<T>>((resolve, reject) => {
+      resolveCallback = resolve;
+      rejectCallback = reject;
+
       timeoutId = setTimeout(async () => {
         try {
           const result = await func(...args);
-          resolve(result as ReturnType<T>);
+          if (resolveCallback) {
+            resolveCallback(result as ReturnType<T>);
+          }
         } catch (error) {
-          reject(error);
+          if (rejectCallback) {
+            rejectCallback(
+              error instanceof Error ? error : new Error(String(error))
+            );
+          }
         }
-      }, delay);
+      }, wait);
     });
-  }) as T & { cancel: () => void };
-
-  debouncedFunction.cancel = () => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      timeoutId = null;
-    }
   };
-
-  return debouncedFunction;
 }
 
-// Throttle utility function
+/**
+ * Throttle function - limits execution to once per wait milliseconds
+ */
 export function throttle<T extends (...args: unknown[]) => unknown>(
   func: T,
-  delay: number
-): T {
-  let isThrottled = false;
+  wait: number
+): (...args: Parameters<T>) => void {
+  let lastCallTime = 0;
+  let timeoutId: NodeJS.Timeout | null = null;
 
-  return ((...args: Parameters<T>) => {
-    if (!isThrottled) {
+  return (...args: Parameters<T>) => {
+    const now = Date.now();
+
+    if (now - lastCallTime >= wait) {
+      lastCallTime = now;
       func(...args);
-      isThrottled = true;
-      setTimeout(() => {
-        isThrottled = false;
-      }, delay);
+    } else if (!timeoutId) {
+      timeoutId = setTimeout(
+        () => {
+          lastCallTime = Date.now();
+          timeoutId = null;
+          func(...args);
+        },
+        wait - (now - lastCallTime)
+      );
     }
-  }) as T;
+  };
 }
 
-// Retry utility with exponential backoff
+/**
+ * Sleep utility for async operations
+ */
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Retry async operation with exponential backoff
+ */
 export async function retry<T>(
-  fn: () => Promise<T>,
-  maxAttempts = 3,
-  baseDelay = 1000
+  operation: () => Promise<T>,
+  options: {
+    retries?: number;
+    delay?: number;
+    backoffMultiplier?: number;
+    shouldRetry?: (error: Error) => boolean;
+  } = {}
 ): Promise<T> {
-  let lastError: Error;
+  const {
+    retries = 3,
+    delay = 1000,
+    backoffMultiplier = 2,
+    shouldRetry = () => true,
+  } = options;
 
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+  let lastError: Error = new Error('Unknown error');
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      return await fn();
+      return await operation();
     } catch (error) {
-      lastError = error as Error;
+      const errorObj =
+        error instanceof Error ? error : new Error(String(error));
+      lastError = errorObj;
 
-      if (attempt === maxAttempts) {
-        throw lastError;
+      if (attempt === retries || !shouldRetry(errorObj)) {
+        throw errorObj;
       }
 
-      // Exponential backoff
-      const delay = baseDelay * Math.pow(2, attempt - 1);
-      await new Promise((resolve) => setTimeout(resolve, delay));
+      const waitTime = delay * Math.pow(backoffMultiplier, attempt);
+      await sleep(waitTime);
     }
   }
 
-  throw lastError!;
+  throw lastError;
 }
 
-// Promise timeout utility
-export function withTimeout<T>(
+/**
+ * Create a promise that resolves/rejects after a timeout
+ */
+export function timeout<T>(
   promise: Promise<T>,
-  timeoutMs: number,
-  timeoutMessage = 'Operation timed out'
+  ms: number,
+  timeoutError: Error = new Error('Operation timed out')
 ): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs)
-    ),
-  ]);
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => reject(timeoutError), ms);
+  });
+
+  return Promise.race([promise, timeoutPromise]);
 }
 
-// Batch async operations
+/**
+ * Batch async operations with concurrency limit
+ */
 export async function batchAsync<T, R>(
   items: T[],
-  batchSize: number,
-  fn: (batch: T[]) => Promise<R[]>
+  operation: (item: T) => Promise<R>,
+  options: {
+    batchSize?: number;
+    delay?: number;
+  } = {}
 ): Promise<R[]> {
+  const { batchSize = 5, delay = 0 } = options;
   const results: R[] = [];
 
   for (let i = 0; i < items.length; i += batchSize) {
     const batch = items.slice(i, i + batchSize);
-    const batchResults = await fn(batch);
+    const batchResults = await Promise.all(
+      batch.map((item) => operation(item))
+    );
+
     results.push(...batchResults);
+
+    if (delay > 0 && i + batchSize < items.length) {
+      await sleep(delay);
+    }
   }
 
   return results;
-}
-
-// Sleep utility
-export function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
