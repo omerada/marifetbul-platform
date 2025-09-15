@@ -6,7 +6,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
-import { formatDate } from '@/lib/utils';
+import { formatDate } from '@/lib/shared/utils/date';
 import { TicketChat } from './TicketChat';
 
 interface TicketDetailProps {

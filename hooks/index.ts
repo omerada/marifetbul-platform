@@ -2,7 +2,8 @@
 // Clean, organized export structure by category
 
 // CORE HOOKS - Essential app functionality
-export { useAuth } from './core/useAuth';
+// Updated to use unified auth from shared
+export { useAuth } from './shared/useAuth';
 export { useAuthGuard } from './core/useAuthGuard';
 export { useToast, ToastContext } from './core/useToast';
 export type {

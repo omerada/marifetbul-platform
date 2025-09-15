@@ -3,7 +3,8 @@
  * Handles all payment-related API calls with caching and error handling
  */
 
-import { BaseRepository, ApiResponse } from './base';
+import { BaseRepository, PaginatedResult } from './BaseRepository';
+import { ApiResponse } from '../api/UnifiedApiClient';
 import type {
   Payment,
   PaymentHistory,

@@ -1,41 +1,12 @@
 /**
- * Optimized Utils Index
- * Clean utility exports organized by functional domains
+ * Utils Index - SIMPLIFIED
+ * All utilities now come from shared/utils for consistency
  */
 
-// ================================================
-// CORE UTILITIES (MOST COMMONLY USED)
-// ================================================
-// cn utility is exported from parent ../utils.ts to avoid circular import
+// Re-export everything from shared utils
+export * from '../shared/utils';
 
-// Date utilities
-export * from './date';
-
-// Format utilities
-export * from './format';
-
-// Async utilities
-export * from './async';
-
-// Validation utilities
-export * from './validation';
-
-// Type guards
-export * from './typeGuards';
-
-// ================================================
-// LAZY LOADING UTILITIES
-// ================================================
-// These utilities moved to components/shared/LazyComponents.tsx
-
-// ================================================
-// PERFORMANCE OPTIMIZATION UTILITIES
-// ================================================
-// These utilities moved to components/shared/LazyComponents.tsx
-
-// ================================================
-// PRODUCTION OPTIMIZATION UTILITIES
-// ================================================
+// Production optimization utilities (unique to lib/utils)
 export {
   BundleAnalyzer,
   TreeShakingAnalyzer,
@@ -56,12 +27,3 @@ export type {
   ActionItem,
   PerformanceMetrics,
 } from './production-types';
-
-// ================================================
-// DEFAULT EXPORT FOR ORGANIZED IMPORTS
-// ================================================
-const UnifiedUtils = {
-  // Add utils here as they are confirmed to exist
-};
-
-export default UnifiedUtils;

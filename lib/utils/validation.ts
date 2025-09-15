@@ -1,10 +1,16 @@
-/**
- * Validation utilities
- */
+// ================================================/**
+
+// VALIDATION UTILITIES - MOVED FROM SHARED * Validation utilities
+
+// ================================================ */
+
+// Re-export from shared utils to maintain compatibility
 
 /**
- * Email validation
- */
+
+export * from '../shared/utils/validation'; * Email validation
+
+export { ValidationUtils as default } from '../shared/utils/validation'; */
 export function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);

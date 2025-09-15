@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { usePackageDetailStore } from '@/lib/store';
-import { useAuth } from '../core/useAuth';
+import { useAuth } from '../shared/useAuth';
 
 export function usePackageDetail(packageId: string) {
   const store = usePackageDetailStore();

@@ -3,7 +3,8 @@
  * Handles all messaging-related API calls with caching and error handling
  */
 
-import { BaseRepository, ApiResponse } from './base';
+import { BaseRepository, PaginatedResult } from './BaseRepository';
+import { ApiResponse } from '../api/UnifiedApiClient';
 import type { ChatMessage, ChatConversation } from '../../types';
 import type { PaginationOptions, PaginatedResult } from '../services/base';
 
@@ -326,9 +327,7 @@ export class MessagingRepository extends BaseRepository {
   /**
    * Get conversation participants
    */
-  async getParticipants(
-    conversationId: string
-  ): Promise<
+  async getParticipants(conversationId: string): Promise<
     ApiResponse<{
       participants: Array<{ id: string; joinedAt: string; role?: string }>;
     }>
