@@ -2,7 +2,7 @@
 
 import { ReactNode, useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { useIntersectionObserver, useReducedMotion } from '@/lib/animations';
+import { useIntersectionObserver, useReducedMotion } from '@/lib/shared/animations';
 
 interface AnimatedContainerProps {
   children: ReactNode;

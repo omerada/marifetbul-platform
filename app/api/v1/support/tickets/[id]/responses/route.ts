@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ticketResponseSchema } from '@/lib/validations/support';
+import { ticketResponseSchema } from '@/lib/core/validations/support';
 import type { TicketResponse } from '@/types';
 
 // Mock storage for responses

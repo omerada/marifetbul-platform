@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { usePackageDetailStore } from '@/lib/store';
-import { OrderFormData, orderSchema } from '@/lib/validations/details';
+import { usePackageDetailStore } from '@/lib/core/store';
+import { OrderFormData, orderSchema } from '@/lib/core/validations/details';
 import { useRouter } from 'next/navigation';
 import type { PackageDetail, ServicePackage } from '@/types';
 

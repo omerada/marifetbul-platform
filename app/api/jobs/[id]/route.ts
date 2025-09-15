@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mockJobs } from '@/lib/msw/data';
+import { mockJobs } from '@/lib/infrastructure/msw/data';
 
 export async function GET(
   request: NextRequest,

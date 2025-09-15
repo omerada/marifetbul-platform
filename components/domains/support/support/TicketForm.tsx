@@ -14,7 +14,7 @@ import {
 import { useSupport } from '@/hooks';
 import { cn } from '@/lib/utils';
 
-import type { CreateTicketFormData } from '@/lib/validations/support';
+import type { CreateTicketFormData } from '@/lib/core/validations/support';
 
 interface TicketFormProps {
   onBack?: () => void;

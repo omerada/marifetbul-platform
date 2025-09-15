@@ -15,16 +15,30 @@ export * from './infrastructure/websocket';
 export * from './infrastructure/geocoding';
 
 // === CORE SYSTEM ===
-export * from './store';
-// export * from './types'; // Removed - use types/index.ts instead
-export * from './validations';
+// Store exports (avoiding conflicts with domain stores)
+export {} from // Add specific non-conflicting store exports here if needed
+'./core/store';
+
+export * from './core/validations';
 
 // === UTILITIES ===
-// Use shared utils as primary, legacy as fallback
-// export * from './shared/utils'; // Commented out to avoid conflicts
+// Use shared utils but avoid conflicts
+export {
+  // Core utilities that don't conflict
+  debounce,
+  throttle,
+  sleep,
+  isString,
+  isNumber,
+  isArray,
+  isObject,
+} from './shared/utils';
+
+// Core utility from utils.ts
+export { cn } from './utils';
 
 // Animation utilities
-export * from './animations';
+export * from './shared/animations';
 
 // === LEGACY COMPATIBILITY ===
 // These are available but may have naming conflicts

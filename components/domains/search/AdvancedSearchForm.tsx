@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { useAdvancedSearchStore } from '@/lib/store/advanced-search';
+import { useAdvancedSearchStore } from '@/lib/core/store/advanced-search';
 import { AdvancedSearchRequest } from '@/types';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';

@@ -5,7 +5,7 @@ import {
   PaginatedResponse,
   ApiResponse,
 } from '@/types';
-import { apiClient } from '@/lib/api/client';
+import { apiClient } from '@/lib/infrastructure/api/client';
 
 // Typed fetchers for packages
 const packageFetcher = async (

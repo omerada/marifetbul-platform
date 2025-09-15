@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Star, MessageSquare, Clock, Users, DollarSign } from 'lucide-react';
-import { reviewSchema, type ReviewFormData } from '@/lib/validations/reviews';
+import { reviewSchema, type ReviewFormData } from '@/lib/core/validations/reviews';
 import { useReviewForm } from '@/hooks';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';

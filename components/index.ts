@@ -74,8 +74,8 @@ export * from './layout';
 export * from './forms';
 
 // ================================================
-// LEGACY EXPORTS (DEPRECATED)
+// PROVIDER COMPONENTS
 // ================================================
-// Backward compatibility - use domain imports instead
+// Context providers and wrappers
 
-export * from './features';
+// export * from './providers'; // Temporarily disabled

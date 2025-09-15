@@ -3,7 +3,7 @@
  * Handles all notification-related business logic
  */
 
-import { BaseService } from '../base';
+import { BaseService } from '../../../lib/shared/base';
 import type { InAppNotification } from '@/types';
 
 export class NotificationService extends BaseService {

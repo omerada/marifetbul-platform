@@ -5,7 +5,7 @@ import { PackageCard } from './PackageCard';
 import { Loading } from '@/components/ui';
 import { EmptyState } from './EmptyState';
 import type { Job, ServicePackage } from '@/types';
-import type { ViewPreferences } from '@/lib/validations/marketplace';
+import type { ViewPreferences } from '@/lib/core/validations/marketplace';
 
 interface MarketplaceListProps {
   mode: 'jobs' | 'packages';

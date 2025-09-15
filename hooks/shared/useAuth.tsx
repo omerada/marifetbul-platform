@@ -1,5 +1,5 @@
 import { useMemo, useCallback } from 'react';
-import useAuthStore from '@/lib/store/auth';
+import useAuthStore from '@/lib/core/store/auth';
 import type { User } from '@/types';
 
 // ================================================

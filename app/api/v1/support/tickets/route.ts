@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   createTicketSchema,
   ticketSearchSchema,
-} from '@/lib/validations/support';
+} from '@/lib/core/validations/support';
 import type { SupportTicket, PaginationMeta } from '@/types';
 
 // Mock data for development

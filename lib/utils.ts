@@ -6,6 +6,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Export everything from shared/utils and lib/utils for consistency
+// Export everything from shared/utils and extended-utils for consistency
 export * from './shared/utils';
-export * from './utils/index';
+export * from './shared/extended-utils/index';

@@ -15,7 +15,7 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
           // Add a small delay to ensure proper initialization
           await new Promise((resolve) => setTimeout(resolve, 100));
 
-          const { worker } = await import('../../lib/msw/browser');
+          const { worker } = await import('../../lib/infrastructure/msw/browser');
 
           await worker.start({
             onUnhandledRequest: (req) => {

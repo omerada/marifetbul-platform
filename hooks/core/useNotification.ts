@@ -5,7 +5,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useNotificationStore } from '@/lib/store/notification';
+import { useNotificationStore } from '@/lib/core/store/notification';
 import type {
   EnhancedNotification,
   NotificationPreferences,

@@ -2,9 +2,9 @@ import { useCallback, useMemo } from 'react';
 import {
   useJobsStore,
   usePackagesStore,
-} from '@/lib/store/domains/marketplace/marketplaceStore';
+} from '@/lib/core/store/domains/marketplace/marketplaceStore';
 import type { JobFilters, PackageFilters } from '@/types';
-import type { ViewPreferences } from '@/lib/validations/marketplace';
+import type { ViewPreferences } from '@/lib/core/validations/marketplace';
 
 export function useMarketplace() {
   // Store state

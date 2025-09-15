@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   JobService,
   type JobSearchParams,
-} from '@/lib/services/api/jobService';
+} from '@/lib/infrastructure/services/api/jobService';
 
 export async function GET(request: NextRequest) {
   try {

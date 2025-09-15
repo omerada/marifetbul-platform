@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Card, Button, Input, Textarea } from '@/components/ui';
 import { Badge } from '@/components/ui';
-import useAuthStore from '@/lib/store/auth';
+import useAuthStore from '@/lib/core/store/auth';
 import { useToast } from '@/hooks';
 import {
   Briefcase,

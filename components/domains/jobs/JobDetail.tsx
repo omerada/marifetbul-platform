@@ -23,7 +23,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
-import { SocialShare } from '@/components/social/SocialShare';
+import { SocialShare } from '@/components/shared/social/SocialShare';
 import { ProposalModal } from './ProposalModal';
 import { ProposalCard } from './ProposalCard';
 import { Loading } from '@/components/ui';

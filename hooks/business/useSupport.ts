@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
-import { useSupportStore } from '@/lib/store/support';
+import { useSupportStore } from '@/lib/core/store/support';
 import type { SupportTicket, PaginationMeta } from '@/types';
 import type {
   CreateTicketFormData,
   TicketResponseFormData,
   TicketSearchFormData,
-} from '@/lib/validations/support';
+} from '@/lib/core/validations/support';
 
 export interface UseSupportReturn {
   // Tickets

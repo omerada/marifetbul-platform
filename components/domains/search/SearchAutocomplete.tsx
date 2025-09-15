@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
 import { useUnifiedSearch } from '@/hooks';
-import type { SearchSuggestion } from '@/types/search';
+import type { SearchSuggestion } from '@/types/shared/search';
 
 interface SearchAutocompleteProps {
   placeholder?: string;

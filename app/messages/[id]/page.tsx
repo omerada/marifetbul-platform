@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/layout';
 import { Loading } from '@/components/ui';
-import useAuthStore from '@/lib/store/auth';
+import useAuthStore from '@/lib/core/store/auth';
 import { ChatInterface } from '@/components/domains/messaging';
 
 export default function ConversationPage() {

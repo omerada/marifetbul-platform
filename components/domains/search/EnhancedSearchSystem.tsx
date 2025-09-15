@@ -19,11 +19,12 @@ import {
   Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { SearchResult, SearchFilters } from '@/types/search';
+import type { SearchResult, SearchFilters } from '@/types/shared/search';
 
 interface EnhancedSearchSystemProps {
   className?: string;
   onResults?: (results: SearchResult[]) => void;
+  onSearch?: (query: string, type?: string) => void;
   placeholder?: string;
   defaultFilters?: Partial<SearchFilters>;
   showFilters?: boolean;
@@ -56,6 +57,7 @@ const sortOptions = [
 export function EnhancedSearchSystem({
   className,
   onResults,
+  onSearch,
   placeholder = 'İş, hizmet veya freelancer arayın...',
   defaultFilters = {},
   showFilters: initialShowFilters = false,
@@ -99,6 +101,10 @@ export function EnhancedSearchSystem({
     }
 
     setQuery(localQuery);
+
+    // Notify parent component about search action
+    onSearch?.(localQuery, filters.type);
+
     await search(localQuery, searchFilters);
 
     // Notify parent component
@@ -112,6 +118,7 @@ export function EnhancedSearchSystem({
     setQuery,
     search,
     onResults,
+    onSearch,
     results,
   ]);
 

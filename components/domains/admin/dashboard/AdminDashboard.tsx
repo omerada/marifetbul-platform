@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { PerformanceMonitor } from '@/components/performance/PerformanceMonitor';
+import { PerformanceMonitor } from '@/components/shared/performance/PerformanceMonitor';
 import SystemHealthWidget from './SystemHealthWidget';
 import { useAdminDashboard } from '@/hooks';
 import type { SecurityAlert } from '@/types';

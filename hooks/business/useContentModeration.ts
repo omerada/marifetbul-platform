@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   useAdminModerationStore,
   useAdminModerationSelectors,
-} from '@/lib/store/admin-moderation';
+} from '@/lib/core/store/admin-moderation';
 import type { ModerationFilters, ModerationActionRequest } from '@/types';
 
 /**

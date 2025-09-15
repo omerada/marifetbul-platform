@@ -8,8 +8,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
 
 import { Button, Input, Checkbox } from '@/components/ui';
-import useAuthStore from '@/lib/store/auth';
-import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
+import useAuthStore from '@/lib/core/store/auth';
+import { loginSchema, type LoginFormData } from '@/lib/core/validations/auth';
 
 export function LoginForm() {
   const router = useRouter();

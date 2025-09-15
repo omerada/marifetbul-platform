@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { usePaymentStore } from '@/lib/store/payment';
+import { usePaymentStore } from '@/lib/core/store/payment';
 import {
   CreatePaymentRequest,
   Payment,
@@ -10,8 +10,8 @@ import {
   createPaymentRequestSchema,
   paymentFiltersSchema,
   paymentCardSchema,
-} from '@/lib/validations/payment';
-import { useToast } from '@/hooks/ui';
+} from '@/lib/core/validations/payment';
+import { useToast } from '@/hooks/shared/ui';
 import { ZodError } from 'zod';
 
 type PaymentStatus =

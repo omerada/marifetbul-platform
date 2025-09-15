@@ -4,17 +4,17 @@ import React, { useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { FileAttachment } from '@/types';
 import {
-  validateFiles,
+  validateFilesWithResult,
   uploadFiles,
   formatFileSize,
   getFileIcon,
-  isImageFile,
+  isImageFileType,
   createPreviewUrl,
   cleanupPreviewUrl,
   FileUploadOptions,
   FileUploadResult,
   ALLOWED_FILE_TYPES,
-} from '@/lib/utils/fileUpload';
+} from '@/lib/shared/utils/fileUpload';
 
 interface FileUploadProps {
   onFilesUploaded: (files: FileAttachment[]) => void;
@@ -56,7 +56,7 @@ export default function FileUpload({
       const fileArray = Array.from(files);
 
       // Validate files
-      const validation = validateFiles(fileArray, options);
+      const validation = validateFilesWithResult(fileArray, options);
       if (!validation.isValid) {
         onError?.(validation.errors.join('\n'));
         return;
@@ -65,7 +65,9 @@ export default function FileUpload({
       // Create previews
       const newPreviews: FilePreview[] = fileArray.map((file) => ({
         file,
-        previewUrl: isImageFile(file.type) ? createPreviewUrl(file) : undefined,
+        previewUrl: isImageFileType(file.type)
+          ? createPreviewUrl(file)
+          : undefined,
       }));
 
       setPreviews(newPreviews);

@@ -3,7 +3,7 @@
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Grid, List, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { ViewPreferences } from '@/lib/validations/marketplace';
+import type { ViewPreferences } from '@/lib/core/validations/marketplace';
 
 interface MarketplaceStatsProps {
   mode: 'jobs' | 'packages';

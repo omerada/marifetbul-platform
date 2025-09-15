@@ -18,7 +18,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 import { Coordinates, MapBounds } from '@/types';
 import { useUnifiedLocation } from '@/hooks';
-import { MapUtils } from '@/lib/utils/map-utils';
+import { MapUtils } from '@/lib/shared/utils/map-utils';
 
 interface MapMarker {
   id: string;
@@ -128,7 +128,9 @@ export const MapView: React.FC<MapViewProps> = ({
       }
 
       const center = MapUtils.calculateCenter(coordinates);
-      setMapCenter(center);
+      if (center) {
+        setMapCenter(center);
+      }
 
       const newZoom = MapUtils.getZoomLevel(50); // Default radius for fit
       setMapZoom(newZoom);
@@ -178,7 +180,7 @@ export const MapView: React.FC<MapViewProps> = ({
         setBounds(bounds);
       }
 
-      if (onBoundsChange) {
+      if (onBoundsChange && bounds) {
         onBoundsChange(bounds);
       }
     }

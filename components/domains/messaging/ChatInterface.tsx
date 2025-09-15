@@ -25,7 +25,7 @@ import {
   ALLOWED_FILE_TYPES,
   formatFileSize,
   getFileIcon,
-} from '@/lib/utils/fileUpload';
+} from '@/lib/shared/utils/fileUpload';
 import { useToast } from '@/hooks';
 
 interface ChatInterfaceProps {

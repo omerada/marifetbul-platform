@@ -7,8 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronLeft, ChevronRight, Check, User, Building } from 'lucide-react';
 
 import { Button, Input, Card, Checkbox } from '@/components/ui';
-import useAuthStore from '@/lib/store/auth';
-import { registerSchema, type RegisterFormData } from '@/lib/validations/auth';
+import useAuthStore from '@/lib/core/store/auth';
+import { registerSchema, type RegisterFormData } from '@/lib/core/validations/auth';
 import Link from 'next/link';
 
 // Steps configuration

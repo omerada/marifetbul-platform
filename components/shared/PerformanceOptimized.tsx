@@ -1,6 +1,6 @@
 import React, { memo, useMemo, useCallback } from 'react';
 import Image from 'next/image';
-import { shallowEqual } from '@/lib/store/optimized';
+import { shallowEqual } from '@/lib/core/store/optimized';
 
 // ================================================
 // PERFORMANCE OPTIMIZED COMPONENTS

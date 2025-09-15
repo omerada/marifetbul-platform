@@ -5,7 +5,7 @@ import { TicketForm } from '@/components/domains/support';
 import { useSupport } from '@/hooks';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
-import type { CreateTicketFormData } from '@/lib/validations/support';
+import type { CreateTicketFormData } from '@/lib/core/validations/support';
 
 export default function CreateTicketPage() {
   const router = useRouter();

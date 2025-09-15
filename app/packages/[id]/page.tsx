@@ -1,6 +1,6 @@
 'use client';
 
-import { ServiceDetail } from '@/components/features';
+import { ServiceDetail } from '@/components/shared/features';
 import { useParams } from 'next/navigation';
 
 export default function PackageDetailPage() {

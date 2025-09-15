@@ -10,4 +10,4 @@ export * from './service';
 export * from './push-notifications';
 
 // Store (main export)
-export { useNotificationStore } from '../../store/notification';
+export { useNotificationStore } from '../../core/store/notification';

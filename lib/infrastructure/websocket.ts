@@ -3,7 +3,7 @@
  * Handles WebSocket connections, reconnection logic, and event management
  */
 
-import { getCurrentUserId, getAuthToken } from '@/lib/utils/auth';
+import { getCurrentUserId, getAuthToken } from '@/lib/shared/utils/auth';
 
 export interface WebSocketMessage {
   type: string;

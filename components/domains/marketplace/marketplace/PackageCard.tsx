@@ -13,7 +13,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { useMarketplace } from '@/hooks';
-import { formatCurrency } from '@/lib/utils/payment';
+import { formatCurrency } from '@/lib/shared/utils/payment';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { ServicePackage } from '@/types';

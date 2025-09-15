@@ -22,7 +22,7 @@ import {
   ERROR_MESSAGES,
   type ValidationResult,
   type ValidationErrorDetail,
-} from '@/lib/validations';
+} from '@/lib/core/validations';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
@@ -37,7 +37,7 @@ import {
 } from '@/components/ui/Select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
-import { useToast } from '@/hooks/ui';
+import { useToast } from '@/hooks/shared/ui';
 
 // ================================================
 // UNIFIED FORM SCHEMA EXAMPLE

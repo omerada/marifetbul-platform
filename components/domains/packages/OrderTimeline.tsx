@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useOrderStore } from '@/lib/store/orders';
-import useAuthStore from '@/lib/store/auth';
+import { useOrderStore } from '@/lib/core/store/orders';
+import useAuthStore from '@/lib/core/store/auth';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow, format } from 'date-fns';
 import { tr } from 'date-fns/locale';

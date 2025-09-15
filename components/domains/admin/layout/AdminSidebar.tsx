@@ -475,11 +475,11 @@ export function AdminSidebar({
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-gray-900">
-                    {user.firstName} {user.lastName}
+                    {user.name}
                   </p>
                   <p className="truncate text-xs text-gray-500">{user.email}</p>
                   <Badge variant="outline" size="sm" className="mt-1">
-                    {user.role === 'super_admin' ? 'Süper Admin' : 'Admin'}
+                    Admin
                   </Badge>
                 </div>
               </div>

@@ -28,8 +28,5 @@ export { TouchJobCard, TouchServiceCard } from './TouchCards';
 export { LocationPicker } from './LocationPicker';
 export { MapView } from './MapView';
 
-// Performance
-export { PerformanceMonitor } from './PerformanceMonitor';
-
 // Error Handling
 export { ErrorState } from './ErrorState';

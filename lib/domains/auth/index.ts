@@ -7,4 +7,4 @@
 export * from './utils';
 
 // Auth store (main export)
-export { default as useAuthStore } from '../../store/auth';
+export { default as useAuthStore } from '../../core/store/auth';

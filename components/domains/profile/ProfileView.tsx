@@ -6,7 +6,7 @@ import { Freelancer } from '@/types';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
-import { PortfolioGallery } from '@/components/features';
+import { PortfolioGallery } from '@/components/shared/features';
 import {
   MapPin,
   Star,

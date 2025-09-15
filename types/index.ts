@@ -2,8 +2,8 @@
 // Legacy compatibility - keep existing types working
 
 // Essential legacy exports
-export * from './performance';
-export * from './seo';
+export * from './shared/performance';
+export * from './shared/seo';
 
 // Core base types
 export * from './core/base';
@@ -11,17 +11,24 @@ export type { LocationData } from './core/base';
 
 // Import core types for internal usage
 import type { User, Freelancer } from './core/base';
-import type { Job, ServicePackage, Proposal } from './features/marketplace';
-import type { ChatMessage, ChatConversation } from './features/messaging';
+import type {
+  Job,
+  ServicePackage,
+  Proposal,
+} from './business/features/marketplace';
+import type {
+  ChatMessage,
+  ChatConversation,
+} from './business/features/messaging';
 
 // Analytics types - consolidated
-export * from './features/analytics';
+export * from './business/features/analytics';
 
 // Marketplace types (Job, ServicePackage, etc.)
-export * from './features/marketplace';
+export * from './business/features/marketplace';
 
 // Messaging and chat types
-export * from './features/messaging';
+export * from './business/features/messaging';
 
 // Common utility types
 
@@ -1914,7 +1921,7 @@ export interface ModerationActionRequest {
 
 // Admin types moved to types/features/admin.ts to avoid duplication
 // Re-export for compatibility
-export type { UserAnalytics } from './features/admin';
+export type { UserAnalytics } from './business/features/admin';
 export type {
   AdminUserStore,
   AdminUserData,
@@ -1923,8 +1930,11 @@ export type {
   UserFilters,
   UserActionRequest,
   BulkUserActionRequest,
-} from './features/admin';
-export type { PlatformSettings, AdminSettingsStore } from './features/admin';
+} from './business/features/admin';
+export type {
+  PlatformSettings,
+  AdminSettingsStore,
+} from './business/features/admin';
 
 // Analytics additional types
 export interface AnalyticsTimeframe {

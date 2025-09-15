@@ -1,5 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mockPackages } from '@/lib/msw/handlers';
+
+// Simple mock package data for reviews
+const mockPackages = [
+  {
+    id: '1',
+    title: 'Web Development Service',
+    freelancerId: 'freelancer-1',
+    freelancer: {
+      firstName: 'John',
+      lastName: 'Smith',
+    },
+  },
+  {
+    id: '2',
+    title: 'Logo Design Service',
+    freelancerId: 'freelancer-2',
+    freelancer: {
+      firstName: 'Jane',
+      lastName: 'Doe',
+    },
+  },
+];
 
 export async function GET(
   request: NextRequest,
@@ -24,7 +45,7 @@ export async function GET(
       return NextResponse.json(
         {
           success: false,
-          error: 'Hizmet paketi bulunamadı',
+          error: 'Package not found',
         },
         { status: 404 }
       );
@@ -36,11 +57,11 @@ export async function GET(
         id: 'review-1',
         rating: 5,
         comment:
-          'Harika bir çalışma oldu. Tam istediğim gibi modern ve etkileyici bir logo tasarladı.',
+          'Great work! Designed exactly the modern and impressive logo I wanted.',
         reviewer: {
           id: 'user-1',
-          firstName: 'Mehmet',
-          lastName: 'Öz',
+          firstName: 'John',
+          lastName: 'Smith',
           avatar: '/avatars/user-1.jpg',
         },
         reviewee: {
@@ -55,11 +76,11 @@ export async function GET(
         id: 'review-2',
         rating: 5,
         comment:
-          'Çok profesyonel yaklaşım, zamanında teslimat ve mükemmel kalite. Kesinlikle tavsiye ederim.',
+          'Very professional approach, on-time delivery and excellent quality. Definitely recommend.',
         reviewer: {
           id: 'user-2',
-          firstName: 'Fatma',
-          lastName: 'Kara',
+          firstName: 'Jane',
+          lastName: 'Wilson',
           avatar: '/avatars/user-2.jpg',
         },
         reviewee: {
@@ -90,8 +111,8 @@ export async function GET(
     return NextResponse.json(
       {
         success: false,
-        error: 'Sunucu hatası',
-        message: 'Değerlendirmeler getirilirken hata oluştu',
+        error: 'Server error',
+        message: 'Error occurred while fetching reviews',
       },
       { status: 500 }
     );

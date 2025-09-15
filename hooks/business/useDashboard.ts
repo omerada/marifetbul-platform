@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import useDashboardStore from '@/lib/store/dashboard';
-import useAuthStore from '@/lib/store/auth';
+import useDashboardStore from '@/lib/core/store/dashboard';
+import useAuthStore from '@/lib/core/store/auth';
 
 export function useDashboard() {
   const store = useDashboardStore();

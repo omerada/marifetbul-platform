@@ -4,7 +4,7 @@ import {
   ServiceOptions,
   createSuccessResult,
   createErrorResult,
-} from '../../services/base';
+} from '../../infrastructure/services/base';
 
 export interface PaymentData {
   orderId: string;

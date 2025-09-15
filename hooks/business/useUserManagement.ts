@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   useAdminUserStore,
   useAdminUserSelectors,
-} from '@/lib/store/admin-users';
+} from '@/lib/core/store/admin-users';
 import type {
   UserFilters,
   UserActionRequest,

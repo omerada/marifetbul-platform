@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { useMessagingStore } from '@/lib/store/messaging';
-import useAuthStore from '@/lib/store/auth';
+import { useMessagingStore } from '@/lib/core/store/messaging';
+import useAuthStore from '@/lib/core/store/auth';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';

@@ -4,8 +4,8 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { User, Freelancer, Employer } from '@/types';
 import { AppLayout } from '@/components/layout';
-import { ProfileView } from '@/components/features';
-import { EmployerProfile } from '@/components/features';
+import { ProfileView } from '@/components/shared/features';
+import { EmployerProfile } from '@/components/shared/features';
 import { Loading } from '@/components/ui';
 import { useProfile } from '@/hooks';
 

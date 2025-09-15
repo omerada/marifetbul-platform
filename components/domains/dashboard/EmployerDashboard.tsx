@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { useDashboard } from '@/hooks';
-import { useMessagingStore } from '@/lib/store/messaging';
-import { useOrderStore } from '@/lib/store/orders';
+import { useMessagingStore } from '@/lib/core/store/messaging';
+import { useOrderStore } from '@/lib/core/store/orders';
 import { useWebSocket } from '@/hooks';
 import { EmployerDashboard as EmployerDashboardType } from '@/types';
 import { Card } from '@/components/ui/Card';

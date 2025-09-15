@@ -2,7 +2,7 @@ import { useCallback, useEffect } from 'react';
 import {
   useAdminDashboardStore,
   useAdminDashboardSelectors,
-} from '@/lib/store/admin-dashboard';
+} from '@/lib/core/store/admin-dashboard';
 
 /**
  * Hook for admin dashboard functionality

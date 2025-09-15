@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
-import { useHelpCenterStore } from '@/lib/store/help-center';
+import { useHelpCenterStore } from '@/lib/core/store/help-center';
 import type { HelpCategory, HelpArticle, PaginationMeta } from '@/types';
 import type {
   ArticleRatingFormData,
   ArticleSearchFormData,
-} from '@/lib/validations/support';
+} from '@/lib/core/validations/support';
 
 export interface UseHelpCenterReturn {
   // Categories

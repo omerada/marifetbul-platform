@@ -159,7 +159,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
       content: currentMessage.trim(),
       author: {
         id: user?.id || 'anonymous',
-        name: user ? `${user.firstName} ${user.lastName}` : 'Kullanıcı',
+        name: user?.name || 'Kullanıcı',
         role: 'user',
       },
       timestamp: new Date().toISOString(),
@@ -240,7 +240,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         content: `📎 ${file.name}`,
         author: {
           id: user?.id || 'anonymous',
-          name: user ? `${user.firstName} ${user.lastName}` : 'Kullanıcı',
+          name: user?.name || 'Kullanıcı',
           role: 'user',
         },
         timestamp: new Date().toISOString(),

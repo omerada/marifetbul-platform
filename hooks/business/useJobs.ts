@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { Job, JobFilters, PaginatedResponse, ApiResponse } from '@/types';
-import { apiClient } from '@/lib/api/client';
+import { apiClient } from '@/lib/infrastructure/api/client';
 
 // Typed fetchers for jobs
 const jobFetcher = async (url: string): Promise<ApiResponse<Job>> => {

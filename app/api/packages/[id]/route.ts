@@ -1,5 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mockPackages } from '@/lib/msw/handlers';
+
+// Simple mock package without special characters
+const mockPackages = [
+  {
+    id: '1',
+    title: 'Web Development Service',
+    description: 'Professional web development using React and Next.js',
+    price: 1500,
+    deliveryTime: 14,
+    revisions: 3,
+    features: ['Responsive Design', 'SEO Optimization', 'Admin Panel'],
+    rating: 4.9,
+    orders: 89,
+  },
+  {
+    id: '2',
+    title: 'Logo Design Service',
+    description: 'Professional logo and brand identity design',
+    price: 300,
+    deliveryTime: 5,
+    revisions: 5,
+    features: ['Logo Design', 'Brand Colors', 'Style Guide'],
+    rating: 4.8,
+    orders: 156,
+  },
+];
 
 export async function GET(
   request: NextRequest,
@@ -15,8 +40,8 @@ export async function GET(
       return NextResponse.json(
         {
           success: false,
-          error: 'Hizmet paketi bulunamadı',
-          message: `ID: ${id} ile hizmet paketi mevcut değil`,
+          error: 'Package not found',
+          message: `Package with ID: ${id} does not exist`,
         },
         { status: 404 }
       );
@@ -31,8 +56,8 @@ export async function GET(
     return NextResponse.json(
       {
         success: false,
-        error: 'Sunucu hatası',
-        message: 'Hizmet paketi getirilirken hata oluştu',
+        error: 'Server error',
+        message: 'Error occurred while fetching package',
       },
       { status: 500 }
     );

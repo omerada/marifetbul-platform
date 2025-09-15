@@ -26,7 +26,7 @@ export default function AdminLoginPage() {
   // Redirect if already authenticated as admin
   useEffect(() => {
     if (isAuthenticated && user) {
-      if (user.userType === 'admin') {
+      if (user.role === 'admin') {
         router.push('/admin');
       } else {
         // Non-admin user tried to access admin area

@@ -32,7 +32,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         return;
       }
 
-      if (user?.userType !== 'admin') {
+      if (user?.role !== 'admin') {
         router.push('/dashboard');
         return;
       }
@@ -99,7 +99,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   // Show loading if not authenticated or not admin (will redirect)
-  if (!isAuthenticated || user?.userType !== 'admin') {
+  if (!isAuthenticated || user?.role !== 'admin') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <Card className="w-96">
@@ -131,7 +131,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 {/* User info */}
                 <div className="mx-2 mt-4 rounded-lg bg-gray-50 px-4 py-3">
                   <p className="text-sm font-medium text-gray-900">
-                    {user?.firstName} {user?.lastName}
+                    {user?.name}
                   </p>
                   <p className="text-xs text-gray-500">{user?.email}</p>
                 </div>

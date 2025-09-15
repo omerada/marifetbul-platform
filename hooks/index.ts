@@ -34,49 +34,52 @@ export { useReviews, useReviewForm } from './business/useReviews';
 export { useReputation } from './business/useReputation';
 
 // DATA HOOKS - Analytics, search, and data management
-export { useAnalytics } from './data/useAnalytics';
-export { useJobFilters, useSearchSuggestions } from './data/useFilters';
-export { useJobFilters as useFilters } from './data/useFilters'; // Alias for backward compatibility
-export { useUnifiedSearch } from './data/useUnifiedSearch';
-export { useRecommendations } from './data/useRecommendations';
-export { useFavorites } from './data/useFavorites';
-export { useEnhancedPerformance } from './data/useEnhancedPerformanceUnified';
+export { useAnalytics } from './infrastructure/data/useAnalytics';
+export {
+  useJobFilters,
+  useSearchSuggestions,
+} from './infrastructure/data/useFilters';
+export { useJobFilters as useFilters } from './infrastructure/data/useFilters'; // Alias for backward compatibility
+export { useUnifiedSearch } from './infrastructure/data/useUnifiedSearch';
+export { useRecommendations } from './infrastructure/data/useRecommendations';
+export { useFavorites } from './infrastructure/data/useFavorites';
+export { useEnhancedPerformance } from './infrastructure/data/useEnhancedPerformanceUnified';
 
 // UI HOOKS - User interface and experience
-export { useResponsive } from './ui/useResponsive';
+export { useResponsive } from './shared/ui/useResponsive';
 export {
   useAccessibility,
   useFocusTrap,
   useSkipToContent,
   useAnnouncer,
-} from './ui/useAccessibility';
-export { useHapticFeedback } from './ui/useHapticFeedback';
-export { usePullToRefresh } from './ui/usePullToRefresh';
+} from './shared/ui/useAccessibility';
+export { useHapticFeedback } from './shared/ui/useHapticFeedback';
+export { usePullToRefresh } from './shared/ui/usePullToRefresh';
 
 // INTEGRATION HOOKS - External services and APIs
-export { useWebSocket } from './integrations/useWebSocket';
-export { usePushNotifications } from './integrations/usePushNotifications';
-export { useSocialShare } from './integrations/useSocialShare';
-export { useSEO } from './integrations/useSEO';
-export { useUnifiedLocation } from './integrations/useUnifiedLocation';
-export { usePlatformSettings } from './integrations/usePlatformSettings';
+export { useWebSocket } from './infrastructure/integrations/useWebSocket';
+export { usePushNotifications } from './infrastructure/integrations/usePushNotifications';
+export { useSocialShare } from './infrastructure/integrations/useSocialShare';
+export { useSEO } from './infrastructure/integrations/useSEO';
+export { useUnifiedLocation } from './infrastructure/integrations/useUnifiedLocation';
+export { usePlatformSettings } from './infrastructure/integrations/usePlatformSettings';
 
 // MESSAGING HOOKS - Chat and communication
-export { useChat } from './messaging/useChat';
+export { useChat } from './business/messaging/useChat';
 export {
   useMessages,
   useConversations,
   useConversation,
   useMessaging,
   useUnreadCount,
-} from './messaging/useMessages';
+} from './business/messaging/useMessages';
 
 // LEGACY COMPATIBILITY - For backwards compatibility
-export * from './api';
-export * from './base';
-export * from './profile';
+export * from './infrastructure/api';
+export * from './shared/base';
+export * from './business/profile';
 export * from './business';
-export * from './ui';
+export * from './shared/ui';
 
 // Hook categories
 export const CoreHooks = [

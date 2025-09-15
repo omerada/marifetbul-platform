@@ -4,7 +4,7 @@ import React, { useState, useCallback } from 'react';
 import { Heart, Bookmark, Share2, Copy, Check } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { useSocialShare } from '@/hooks';
-import { useClipboard } from '@/hooks/ui';
+import { useClipboard } from '@/hooks/shared/ui';
 import { cn } from '@/lib/utils';
 
 // ================================================

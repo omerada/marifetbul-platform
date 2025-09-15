@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useJobDetailStore } from '@/lib/store';
-import { ProposalFormData, proposalSchema } from '@/lib/validations/details';
+import { useJobDetailStore } from '@/lib/core/store';
+import { ProposalFormData, proposalSchema } from '@/lib/core/validations/details';
 
 interface FileUploadProgress {
   [fileName: string]: number;

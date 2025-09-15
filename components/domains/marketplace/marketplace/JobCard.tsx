@@ -13,7 +13,7 @@ import {
   Award,
 } from 'lucide-react';
 import { useMarketplace } from '@/hooks';
-import { formatCurrency } from '@/lib/utils/payment';
+import { formatCurrency } from '@/lib/shared/utils/payment';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import Link from 'next/link';

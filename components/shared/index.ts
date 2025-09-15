@@ -15,6 +15,24 @@ export { default as InteractionComponents } from './InteractionButtons';
 export { ImageCarousel } from './ImageCarousel';
 export { default as ImageCarouselComponent } from './ImageCarousel';
 
+// Performance components
+export * from './performance';
+
+// SEO components
+export * from './seo';
+
+// Social components
+export * from './social';
+
+// Mobile components
+export * from './mobile';
+
+// Filter components
+export * from './filters';
+
+// Utility components
+export * from './utilities';
+
 // Unified lazy loading system
 export {
   LazyWrapper,

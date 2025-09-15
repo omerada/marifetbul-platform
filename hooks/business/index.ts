@@ -4,7 +4,7 @@
 // Unified hooks for business logic and domain operations
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import { useLocalStorage, useDebounce } from '../base';
+import { useLocalStorage, useDebounce } from '../../lib/shared/base';
 import {
   useUserSearch,
   useJobsSearch,
@@ -14,7 +14,7 @@ import {
   useApiCurrentUser as useCurrentUser,
   type User,
   type SearchFilters,
-} from '../api';
+} from '../infrastructure/api';
 
 // ================================================
 // AUTHENTICATION BUSINESS LOGIC
@@ -41,7 +41,7 @@ export function useBusinessAuthState() {
     }
   }, [currentUser.data, currentUser.error, setIsAuthenticated]);
 
-  const isLoading = currentUser.isLoading;
+  const isLoading = currentUser.loading;
   const user = currentUser.data;
   const error = currentUser.error;
 
@@ -112,7 +112,7 @@ export function useUnifiedSearch() {
 
   const updateFilter = useCallback(
     <K extends keyof SearchFilters>(key: K, value: SearchFilters[K]) => {
-      setFilters((prev) => ({ ...prev, [key]: value }));
+      setFilters((prev: SearchFilters) => ({ ...prev, [key]: value }));
     },
     []
   );
@@ -175,8 +175,14 @@ export function useFavoritesManager() {
   useEffect(() => {
     if (favorites.data) {
       setOptimisticFavorites({
-        jobs: favorites.data.jobs.map((job) => job.id),
-        packages: favorites.data.packages.map((pkg) => pkg.id),
+        jobs:
+          favorites.data?.jobs?.map(
+            (job: unknown) => (job as { id: string }).id
+          ) || [],
+        packages:
+          favorites.data?.packages?.map(
+            (pkg: unknown) => (pkg as { id: string }).id
+          ) || [],
       });
     }
   }, [favorites.data]);
@@ -208,7 +214,9 @@ export function useFavoritesManager() {
       try {
         await toggleFavorite.mutate({ type: 'job', id: jobId });
         // Refetch to get updated data
-        await favorites.refetch?.();
+        if (favorites.execute) {
+          await favorites.execute();
+        }
       } catch {
         // Revert optimistic update on error
         setOptimisticFavorites((prev) => ({
@@ -235,7 +243,9 @@ export function useFavoritesManager() {
       try {
         await toggleFavorite.mutate({ type: 'package', id: packageId });
         // Refetch to get updated data
-        await favorites.refetch?.();
+        if (favorites.execute) {
+          await favorites.execute();
+        }
       } catch {
         // Revert optimistic update on error
         setOptimisticFavorites((prev) => ({
@@ -251,13 +261,13 @@ export function useFavoritesManager() {
 
   return {
     favorites: favorites.data,
-    isLoading: favorites.isLoading,
+    isLoading: favorites.loading,
     error: favorites.error,
     isJobFavorite,
     isPackageFavorite,
     toggleJobFavorite,
     togglePackageFavorite,
-    refetch: favorites.refetch,
+    refetch: favorites.execute,
   };
 }
 
