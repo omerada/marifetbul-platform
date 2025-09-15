@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { JobDetail } from '@/components/features/JobDetail';
+import { JobDetail } from '@/components/domains/jobs';
 
 export default function JobDetailPage() {
   const params = useParams();

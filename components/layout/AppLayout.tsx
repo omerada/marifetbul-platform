@@ -3,7 +3,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
-import { MobileLayout } from '../features/MobileLayout';
+import { MobileLayout } from '@/components/shared/mobile';
 
 interface AppLayoutProps {
   children: ReactNode;

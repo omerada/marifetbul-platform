@@ -1,3 +1,10 @@
+// ================================================
+// SHARED COMPONENTS INDEX
+// ================================================
+// Central export hub for all shared/common components
+// These components are used across multiple domains
+
+// Legacy shared components
 export { ArticleCard } from './ArticleCard';
 
 // Interaction components
@@ -38,3 +45,13 @@ export {
 } from './LazyComponents';
 
 export { default as LazyComponentsUtils } from './LazyComponents';
+
+// New organized shared components
+// Mobile Components
+export * from './mobile';
+
+// Filter Components
+export * from './filters';
+
+// Utility Components
+export * from './utilities';

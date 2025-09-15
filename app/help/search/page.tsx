@@ -1,7 +1,7 @@
 'use client';
 
-import { HelpCenterLayout } from '@/components/help';
-import { SearchResults } from '@/components/help';
+import { HelpCenterLayout } from '@/components/domains/support';
+import { HelpSearchResults } from '@/components/domains/support';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
@@ -15,7 +15,7 @@ function SearchContent() {
       showSearch={false}
     >
       <div className="container mx-auto px-4 py-8">
-        <SearchResults initialQuery={query} />
+        <HelpSearchResults initialQuery={query} />
       </div>
     </HelpCenterLayout>
   );

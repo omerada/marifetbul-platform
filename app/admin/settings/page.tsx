@@ -6,7 +6,7 @@ import { LoadingPageSkeleton } from '@/components/ui/UnifiedLoadingSystem';
 
 // Lazy load the heavy AdminSettings component
 const AdminSettings = lazy(() =>
-  import('@/components/admin').then((module) => ({
+  import('@/components/domains/admin').then((module) => ({
     default: module.AdminSettings,
   }))
 );

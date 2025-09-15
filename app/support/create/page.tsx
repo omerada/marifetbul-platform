@@ -1,7 +1,7 @@
 'use client';
 
-import { SupportLayout } from '@/components/features/support';
-import { TicketForm } from '@/components/features/support';
+import { SupportLayout } from '@/components/domains/support';
+import { TicketForm } from '@/components/domains/support';
 import { useSupport } from '@/hooks';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/Card';

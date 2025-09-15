@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { ServiceDetail } from '@/components/features/ServiceDetail';
+import { ServiceDetail } from '@/components/domains/packages';
 
 export default function ServiceDetailPage() {
   const params = useParams();

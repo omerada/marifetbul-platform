@@ -1,7 +1,7 @@
 'use client';
 
-import { SupportLayout } from '@/components/features/support';
-import { TicketDetail } from '@/components/features/support';
+import { SupportLayout } from '@/components/domains/support';
+import { TicketDetail } from '@/components/domains/support';
 import { useParams } from 'next/navigation';
 
 export default function TicketDetailPage() {

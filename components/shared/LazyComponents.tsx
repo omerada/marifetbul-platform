@@ -83,31 +83,31 @@ export function withSuspense<T extends Record<string, unknown>>(
 
 // Feature components
 export const LazyPerformanceMonitor = lazy(() =>
-  import('@/components/features/PerformanceMonitor').then((module) => ({
+  import('@/components/shared/utilities/PerformanceMonitor').then((module) => ({
     default: module.PerformanceMonitor,
   }))
 );
 
 export const LazyAnalyticsDashboard = lazy(() =>
-  import('@/components/features/AnalyticsDashboard').then((module) => ({
+  import('@/components/domains/analytics').then((module) => ({
     default: module.AnalyticsDashboard,
   }))
 );
 
 export const LazyPortfolioGallery = lazy(() =>
-  import('@/components/features/PortfolioGallery').then((module) => ({
+  import('@/components/domains/profile').then((module) => ({
     default: module.PortfolioGallery,
   }))
 );
 
 export const LazyNotificationCenter = lazy(() =>
-  import('@/components/features/NotificationCenter').then((module) => ({
+  import('@/components/domains/notifications').then((module) => ({
     default: module.NotificationCenter,
   }))
 );
 
 export const LazyMapView = lazy(() =>
-  import('@/components/features/MapView').then((module) => ({
+  import('@/components/shared/utilities/MapView').then((module) => ({
     default: module.MapView,
   }))
 );
@@ -147,19 +147,19 @@ export function useComponentPreloader() {
     try {
       switch (componentName) {
         case 'performance-monitor':
-          await import('@/components/features/PerformanceMonitor');
+          await import('@/components/shared/utilities/PerformanceMonitor');
           break;
         case 'analytics-dashboard':
-          await import('@/components/features/AnalyticsDashboard');
+          await import('@/components/domains/analytics');
           break;
         case 'portfolio-gallery':
-          await import('@/components/features/PortfolioGallery');
+          await import('@/components/domains/profile');
           break;
         case 'notification-center':
-          await import('@/components/features/NotificationCenter');
+          await import('@/components/domains/notifications');
           break;
         case 'map-view':
-          await import('@/components/features/MapView');
+          await import('@/components/shared/utilities/MapView');
           break;
         default:
           console.warn(`Unknown component: ${componentName}`);
@@ -190,8 +190,8 @@ export function useCriticalComponentsPreloader() {
       // Preload components likely to be used within 3 seconds
       try {
         await Promise.all([
-          import('@/components/features/NotificationCenter').catch(() => {}),
-          import('@/components/features/PerformanceMonitor').catch(() => {}),
+          import('@/components/domains/notifications').catch(() => {}),
+          import('@/components/shared/utilities/PerformanceMonitor').catch(() => {}),
           import('@/components/ui/UnifiedButton').catch(() => {}),
           import('@/components/ui/UnifiedImage').catch(() => {}),
         ]);

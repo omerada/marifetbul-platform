@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/layout';
 import { Loading } from '@/components/ui';
 import useAuthStore from '@/lib/store/auth';
-import { ChatInterface } from '@/components/messaging/ChatInterface';
+import { ChatInterface } from '@/components/domains/messaging';
 
 export default function ConversationPage() {
   const params = useParams();

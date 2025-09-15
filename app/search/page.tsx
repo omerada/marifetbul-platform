@@ -3,8 +3,8 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AppLayout } from '@/components/layout';
-import { UniversalSearch } from '@/components/features/UniversalSearch';
-import { SearchResults } from '@/components/features/search/SearchResults';
+import { UniversalSearch } from '@/components/domains/search';
+import { SearchSearchResults } from '@/components/domains/search';
 import { Card, Button, Loading } from '@/components/ui';
 import { useResponsive } from '@/hooks';
 import {
@@ -352,7 +352,7 @@ function SearchContent() {
                   showFilters && !isMobile ? 'lg:col-span-3' : 'lg:col-span-4'
                 }
               >
-                <SearchResults
+                <SearchSearchResults
                   query={searchQuery}
                   activeTab={activeTab}
                   sortBy={sortBy}

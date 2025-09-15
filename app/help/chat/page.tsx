@@ -1,7 +1,7 @@
 'use client';
 
-import { HelpCenterLayout } from '@/components/help';
-import { ChatWindow } from '@/components/features/chat';
+import { HelpCenterLayout } from '@/components/domains/support';
+import { ChatWindow } from '@/components/domains/messaging';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { useChat } from '@/hooks';
@@ -37,9 +37,13 @@ export default function ChatPage() {
       <HelpCenterLayout title="Canlı Destek" showSearch={false}>
         <div className="container mx-auto px-4 py-8">
           <ChatWindow
-            conversationId={activeChatId}
-            isOpen={true}
-            isMinimized={false}
+            conversation={{ 
+              id: activeChatId, 
+              participants: [], 
+              unreadCount: 0,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            }}
           />
         </div>
       </HelpCenterLayout>

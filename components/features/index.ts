@@ -1,132 +1,217 @@
-export { JobDetail } from './JobDetail';
-export { ServiceDetail } from './ServiceDetail';
-export { ProposalForm } from './ProposalForm';
-export { OrderForm } from './OrderForm';
-export { FreelancerProfile } from './FreelancerProfile';
-export { EmployerProfile } from './EmployerProfile';
-export { DashboardStats } from './DashboardStats';
-export { QuickActions } from './QuickActions';
-export { ActivityTimeline } from './ActivityTimeline';
-export { DashboardCharts } from './DashboardCharts';
-export { AvatarUpload } from './AvatarUpload';
-export { ProfileAvatarSection } from './ProfileAvatarSection';
-export { AvatarGallery } from './AvatarGallery';
-export { AvatarModal } from './AvatarModal';
+// ================================================
+// FEATURES INDEX (DEPRECATED)
+// ================================================
+// This file is deprecated. Components have been moved to domain-based structure.
+// Please import from appropriate domains:
+//
+// - Admin components: @/components/domains/admin
+// - Analytics components: @/components/domains/analytics
+// - Auth components: @/components/domains/auth
+// - Dashboard components: @/components/domains/dashboard
+// - Jobs components: @/components/domains/jobs
+// - Marketplace components: @/components/domains/marketplace
+// - Messaging components: @/components/domains/messaging
+// - Notifications components: @/components/domains/notifications
+// - Packages components: @/components/domains/packages
+// - Profile components: @/components/domains/profile
+// - Search components: @/components/domains/search
+// - Support components: @/components/domains/support
+// - Shared components: @/components/shared
 
-// Dashboard Components
-export { FreelancerDashboard } from './FreelancerDashboard';
-export { EmployerDashboard } from './EmployerDashboard';
-export { StatsCard } from './StatsCard';
-export { DashboardSkeleton } from './DashboardSkeleton';
+// Temporary re-exports for backward compatibility
+// TODO: Update all imports to use domain-based structure
 
-// Portfolio Components
-export { PortfolioGallery } from './PortfolioGallery';
-export { PortfolioModal } from './PortfolioModal';
-export { ProfileEditForm } from './ProfileEditForm';
-export { ProfileView } from './ProfileView';
+// Admin domain
+export {
+  AdminLayout,
+  AdminHeader,
+  AdminFooter,
+  AdminSidebar,
+  AdminDashboard,
+  AdminAnalytics,
+  AdminReports,
+  SystemHealthWidget,
+  UserTable,
+  UserManagement,
+  UserReportManagement,
+  BulkActions,
+  AdminModeration,
+  ContentModerationQueue,
+  ContentAppealSystem,
+  ModerationAnalytics,
+  ModerationDashboard,
+  ModerationRulesEngine,
+  AutomatedFiltering,
+  AdminSettings,
+  SystemSettings,
+  AdminSecurity,
+  AdminFinancialManagement,
+  AdminLogs,
+  AdminSupportTickets,
+} from '@/components/domains/admin';
 
-// Mobile & Touch Optimization
-export { MobileFilters } from './MobileFilters';
-export { MobileNavigation } from './MobileNavigation';
-export { MobileLayout } from './MobileLayout';
-export { MobileMarketplace } from './marketplace/MobileMarketplace';
-export { MobileFiltersSheet } from './MobileFiltersSheet';
-export { default as MobileFiltersSheetDefault } from './MobileFiltersSheet';
-export { TouchJobCard, TouchServiceCard } from './TouchCards';
+// Analytics domain
+export {
+  AnalyticsDashboard,
+  Sprint8AnalyticsDashboard,
+  SearchAnalyticsDashboard,
+} from '@/components/domains/analytics';
 
-// Enhanced Marketplace Components
-export { MarketplaceHeader } from './MarketplaceHeader';
-export { EnhancedFilters } from './EnhancedFilters';
+// Dashboard domain
+export {
+  ActivityTimeline,
+  DashboardCharts,
+  DashboardSkeleton,
+  DashboardStats,
+  EmployerDashboard,
+  FreelancerDashboard,
+  MobileDashboard,
+  QuickActions,
+  StatsCard,
+} from '@/components/domains/dashboard';
 
-// Sprint 6: Mobile Experience & Polish Components
+// Jobs domain
 export {
-  PullToRefresh,
-  AnimatedPullToRefresh,
-  usePullToRefreshComponent,
-} from './PullToRefresh';
+  JobDetail,
+  JobDetailSkeleton,
+  ProposalForm,
+  ProposalCard,
+  ProposalModal,
+} from '@/components/domains/jobs';
+
+// Marketplace domain
 export {
-  UnifiedLoading,
-  ProgressLoader,
-  LoadingButton,
-  LoadingOverlay,
-  LoadingCard,
-  useLoadingState,
-} from '@/components/ui/UnifiedLoadingSystem';
+  MarketplaceHeader,
+  MobileMarketplace,
+  RecommendationCard,
+  FavoritesManager,
+} from '@/components/domains/marketplace';
+
+// Messaging domain
 export {
-  UnifiedErrorBoundary,
-  UnifiedErrorBoundary as ErrorBoundaryFallback,
-  useErrorHandler,
-  withErrorBoundary,
-  ErrorBoundaryConfigProvider,
-  useErrorBoundaryConfig,
-} from '@/components/ui/UnifiedErrorBoundary';
+  ChatWindow,
+  ChatInterface,
+  MessagesList,
+} from '@/components/domains/messaging';
+
+// Notifications domain
 export {
-  UnifiedImage,
-  UnifiedImage as OptimizedImage,
-  AvatarImage,
-  HeroImage,
-  GalleryImage,
-  ThumbnailImage,
-  BackgroundImage,
-  ProfileImage,
-  LogoImage,
-  ProductImage,
-  useImagePreloader,
-  useLazyImage,
-} from '@/components/ui/UnifiedImage';
-export { PerformanceMonitor } from './PerformanceMonitor';
+  NotificationCenter,
+  NotificationModal,
+  NotificationItem,
+  NotificationSettingsPanel,
+  PushNotificationToggle,
+} from '@/components/domains/notifications';
+
+// Packages domain
 export {
-  AccessibilityProvider,
-  useAccessibility,
-  AccessibilitySettings,
-  AccessibleButton,
-  AccessibleHeading,
-  useFocusManagement,
-  SkipLink,
-  Landmark,
-} from './AccessibilityProvider';
+  PackageDetail,
+  ServiceDetail,
+  OrderForm,
+  OrderTimeline,
+  PaymentHistory,
+  InvoiceCard,
+} from '@/components/domains/packages';
+
+// Profile domain
 export {
+  FreelancerProfile,
+  EmployerProfile,
+  ProfileView,
+  ProfileEditForm,
+  ProfileAvatarSection,
+  AvatarUpload,
+  AvatarGallery,
+  AvatarModal,
+  PortfolioGallery,
+  PortfolioModal,
+  ReputationScore,
+  ReviewCard,
+  ReviewForm,
+  ReviewList,
+  ReviewReply,
+} from '@/components/domains/profile';
+
+// Search domain
+export {
+  AdvancedSearch,
+  AdvancedSearchForm,
+  UniversalSearch,
+  LocationSearch,
+  EnhancedFilters,
+  EnhancedSearchSystem,
+  SearchAutocomplete,
+} from '@/components/domains/search';
+
+// Support domain
+export {
+  HelpCenterMain,
+  HelpCenterLayout,
+  ArticleCard,
+  CategoryGrid,
+  HelpSearchResults,
+  ArticleRating,
+} from '@/components/domains/support';
+
+// Shared components
+export {
+  // Legacy shared components
+  ArticleCard as SharedArticleCard,
+  InteractionButtons,
+  SocialShareButton,
+  InteractionComponents,
+  ImageCarousel,
+  ImageCarouselComponent,
+
+  // Lazy loading system
+  LazyWrapper,
+  createLazyComponent,
+  withSuspense,
+  useComponentPreloader,
+  useCriticalComponentsPreloader,
+  ComponentPerformanceMonitor,
+  withMemo,
+  getCachedComponent,
+  preloadCriticalComponents,
+  optimizeBundle,
+  createComponentLazy,
   LazyPerformanceMonitor,
   LazyAnalyticsDashboard,
   LazyPortfolioGallery,
   LazyNotificationCenter,
   LazyMapView,
-  withSuspense,
   PerformanceMonitorWithLoading,
   AnalyticsDashboardWithLoading,
   PortfolioGalleryWithLoading,
   NotificationCenterWithLoading,
   MapViewWithLoading,
-  useComponentPreloader,
-  useCriticalComponentsPreloader,
-} from '@/components/shared/LazyComponents';
+  LazyComponentsUtils,
 
-// Advanced Features
-export { default as AdvancedSearch } from './AdvancedSearch';
-export { UniversalSearch } from './UniversalSearch';
-export { NotificationCenter } from './NotificationCenter';
-export { NotificationModal } from './NotificationModal';
-export { NotificationItem } from './NotificationItem';
-export { NotificationSettingsPanel } from './NotificationSettings';
-export { PushNotificationToggle } from './PushNotificationToggle';
-export { AnimatedInteractions } from './AnimatedInteractions';
-export { AnalyticsDashboard } from './AnalyticsDashboard';
-export { PWAManager } from './PWAManager';
+  // Mobile components
+  MobileLayout,
+  MobileNavigation,
+  MobileFilters,
+  MobileFiltersSheet,
+  MobileFiltersSheetDefault,
+  MobileJobFilters,
+  MobilePackageFilters,
 
-// Payment System (Sprint 6)
-export { InvoiceCard } from './InvoiceCard';
-export { PaymentHistory } from './PaymentHistory';
+  // Filter components
+  JobFilters,
+  PackageFiltersComponent,
+  PackageFilters,
 
-// Location & Map Features
-export { LocationPicker } from './LocationPicker';
-export { LocationSearch } from './LocationSearch';
-export { MapView } from './MapView';
-
-// Help Center Components (Sprint 17)
-export * from './help-center';
-
-// Support System Components (Sprint 17)
-export * from './support';
-
-// Live Chat Components (Sprint 17)
-export * from './chat';
+  // Utility components
+  Progress,
+  PullToRefresh,
+  PWAManager,
+  SecurityAlert,
+  AccessibilityProvider,
+  AnimatedInteractions,
+  TouchJobCard,
+  TouchServiceCard,
+  LocationPicker,
+  MapView,
+  PerformanceMonitor,
+  ErrorState,
+} from '@/components/shared';

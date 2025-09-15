@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/layout';
 import { Loading } from '@/components/ui';
 import useAuthStore from '@/lib/store/auth';
-import { MessagesList } from '@/components/messaging/MessagesList';
+import { MessagesList } from '@/components/domains/messaging';
 
 export default function MessagesPage() {
   const router = useRouter();

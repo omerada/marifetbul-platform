@@ -1,7 +1,7 @@
 'use client';
 
-import { SupportLayout } from '@/components/features/support';
-import { TicketList } from '@/components/features/support';
+import { SupportLayout } from '@/components/domains/support';
+import { TicketList } from '@/components/domains/support';
 import { Card } from '@/components/ui/Card';
 
 export default function TicketsPage() {

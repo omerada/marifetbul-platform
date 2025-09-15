@@ -1,7 +1,7 @@
 'use client';
 
-import { HelpCenterLayout } from '@/components/help';
-import { CategoryGrid } from '@/components/help';
+import { HelpCenterLayout } from '@/components/domains/support';
+import { CategoryGrid } from '@/components/domains/support';
 import { useHelpCenter } from '@/hooks';
 import { useEffect } from 'react';
 

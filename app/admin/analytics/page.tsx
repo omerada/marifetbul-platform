@@ -6,7 +6,7 @@ import { LoadingPageSkeleton } from '@/components/ui/UnifiedLoadingSystem';
 
 // Lazy load the heavy AdminAnalytics component
 const AdminAnalytics = lazy(() =>
-  import('@/components/admin').then((module) => ({
+  import('@/components/domains/admin').then((module) => ({
     default: module.AdminAnalytics,
   }))
 );
