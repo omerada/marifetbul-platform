@@ -2,7 +2,7 @@
 
 import React, { ReactNode } from 'react';
 import { RefreshCw, ChevronDown } from 'lucide-react';
-import { usePullToRefresh } from '@/hooks/usePullToRefresh';
+import { usePullToRefresh } from '@/hooks';
 import { useHapticFeedback } from '@/hooks';
 import { cn } from '@/lib/utils';
 

@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { LocationPicker } from '@/components/features/LocationPicker';
 import { Coordinates, LocationSearchParams, LocationData } from '@/types';
-import { useUnifiedLocation } from '@/hooks/useUnifiedLocation';
+import { useUnifiedLocation } from '@/hooks';
 
 interface LocationSearchProps {
   onResults?: (results: LocationData[]) => void;

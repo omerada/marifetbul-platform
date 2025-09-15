@@ -6,7 +6,7 @@ import { AppLayout } from '@/components/layout';
 import { UniversalSearch } from '@/components/features/UniversalSearch';
 import { SearchResults } from '@/components/features/search/SearchResults';
 import { Card, Button, Loading } from '@/components/ui';
-import { useResponsive } from '@/hooks/useResponsive';
+import { useResponsive } from '@/hooks';
 import {
   Search,
   Filter,

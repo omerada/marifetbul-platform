@@ -11,7 +11,7 @@ import {
   Image,
   File,
 } from 'lucide-react';
-import { useSupport } from '@/hooks/useSupport';
+import { useSupport } from '@/hooks';
 import { cn } from '@/lib/utils';
 
 import type { CreateTicketFormData } from '@/lib/validations/support';

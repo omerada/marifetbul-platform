@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useUserManagement } from '@/hooks/useUserManagement';
+import { useUserManagement } from '@/hooks';
 import { AdminUserData } from '@/types';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';

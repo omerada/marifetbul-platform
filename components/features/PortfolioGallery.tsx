@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { useProfile } from '@/hooks/useProfile';
+import { useProfile } from '@/hooks';
 import { Freelancer, PortfolioItem } from '@/types';
 import { PortfolioModal } from './PortfolioModal';
 import {

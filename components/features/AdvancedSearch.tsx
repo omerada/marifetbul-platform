@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useUnifiedSearch } from '@/hooks/useUnifiedSearch';
+import { useUnifiedSearch } from '@/hooks';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';

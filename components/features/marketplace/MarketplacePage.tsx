@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { useMarketplace } from '@/hooks/useMarketplace';
-import { useResponsive } from '@/hooks/useResponsive';
+import { useMarketplace } from '@/hooks';
+import { useResponsive } from '@/hooks';
 import { MarketplaceFilters } from './MarketplaceFilters';
 import { MarketplaceList } from './MarketplaceList';
 import { MarketplacePagination } from './MarketplacePagination';
@@ -367,10 +367,8 @@ export function MarketplacePage() {
                   pagination={currentPagination}
                   onPageChange={(page: number) => {
                     if (mode === 'jobs') {
-                      // @ts-expect-error - page will be added to filters in next update
                       applyJobFilters({ ...jobFilters, page });
                     } else {
-                      // @ts-expect-error - page will be added to filters in next update
                       applyPackageFilters({ ...packageFilters, page });
                     }
                   }}

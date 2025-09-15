@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useContentModeration } from '@/hooks/useContentModeration';
+import { useContentModeration } from '@/hooks';
 import { ModerationItem } from '@/types';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';

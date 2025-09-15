@@ -6,7 +6,7 @@
 'use client';
 
 import React from 'react';
-import { useEnhancedPerformance } from '@/hooks/useEnhancedPerformanceUnified';
+import { useEnhancedPerformance } from '@/hooks';
 
 interface PerformanceMonitorProps {
   className?: string;

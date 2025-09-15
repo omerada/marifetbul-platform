@@ -5,11 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { User, Message, FileAttachment } from '@/types';
 import { Card, Button, Loading, FileUpload } from '@/components/ui';
-import {
-  useConversation,
-  useMessages,
-  useMessaging,
-} from '@/hooks/useMessages';
+import { useConversation, useMessages, useMessaging } from '@/hooks';
 import {
   ArrowLeft,
   Send,

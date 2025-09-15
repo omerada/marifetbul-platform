@@ -5,7 +5,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
-import { useMarketplace } from '@/hooks/useMarketplace';
+import { useMarketplace } from '@/hooks';
 import { JobCard } from './JobCard';
 import { PackageCard } from './PackageCard';
 import { EmptyState } from './EmptyState';

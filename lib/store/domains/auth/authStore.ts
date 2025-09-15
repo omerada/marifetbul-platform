@@ -398,22 +398,7 @@ export const authSelectors = {
 // HOOKS
 // ================================
 
-// Main auth hook
-export function useAuth() {
-  const user = authSelectors.useUser();
-  const isAuthenticated = authSelectors.useIsAuthenticated();
-  const isLoading = authSelectors.useIsLoading();
-  const error = authSelectors.useError();
-  const actions = authSelectors.useActions();
-
-  return {
-    user,
-    isAuthenticated,
-    isLoading,
-    error,
-    ...actions,
-  };
-}
+// Main auth hook moved to hooks/useAuth.ts to avoid duplication
 
 // Session management hook
 export function useAuthSession() {

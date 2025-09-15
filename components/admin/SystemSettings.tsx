@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { usePlatformSettings } from '@/hooks/usePlatformSettings';
+import { usePlatformSettings } from '@/hooks';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';

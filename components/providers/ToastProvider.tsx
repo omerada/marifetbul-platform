@@ -7,7 +7,7 @@ import {
   ToastData,
   ToastOptions,
   ToastContextType,
-} from '@/hooks/useToast';
+} from '@/hooks';
 
 interface ToastProviderProps {
   children: ReactNode;

@@ -15,7 +15,7 @@ import {
   Mail,
   MessageCircle,
 } from 'lucide-react';
-import { useSupport } from '@/hooks/useSupport';
+import { useSupport } from '@/hooks';
 import { cn } from '@/lib/utils';
 
 interface SupportLayoutProps {

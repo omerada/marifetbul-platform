@@ -8,43 +8,13 @@ export * from './seo';
 // Core base types
 export * from './core/base';
 export type { LocationData } from './core/base';
+// Import core types for internal usage
+import type { User, Freelancer, Employer, PortfolioItem } from './core/base';
 
-// Core types that many files depend on
-export interface User {
-  id: string;
-  userId?: string; // Alias for id for compatibility
-  firstName: string;
-  lastName: string;
-  name?: string; // Computed field from firstName + lastName or custom name
-  email: string;
-  avatar?: string;
-  userType: 'freelancer' | 'employer' | 'admin';
-  accountStatus: 'active' | 'suspended' | 'banned';
-  verificationStatus: 'verified' | 'pending' | 'unverified';
-  createdAt: string;
-  updatedAt: string;
-  lastActiveAt?: string;
-  lastLoginAt?: string; // Auth handler compatibility
-  permissions?: string[]; // Auth handler compatibility
-  role?: 'freelancer' | 'employer' | 'admin' | 'super_admin' | 'user'; // AdminSidebar component compatibility
-  // Messaging handler compatibility
-  isTyping?: boolean; // Chat messaging compatibility
-  isOnline?: boolean; // Chat messaging compatibility
-  joinedAt?: string; // Chat messaging compatibility
-  lastReadAt?: string; // Chat messaging compatibility
-  // Profile fields
-  location?: string; // Profile compatibility
-  bio?: string; // Profile compatibility
-  phone?: string; // Profile compatibility
-  website?: string; // Profile compatibility
-  portfolio?: PortfolioItem[]; // API route compatibility
-  // Additional user properties that may be accessed
-  user?: {
-    firstName: string;
-    lastName: string;
-    avatar?: string;
-  };
-}
+// Analytics types - consolidated
+export * from './features/analytics';
+
+// User, Freelancer, Employer types moved to types/core/base.ts to avoid duplication
 
 export interface Job {
   id: string;
@@ -156,48 +126,7 @@ export interface ServicePackage {
   };
 }
 
-export interface Freelancer extends User {
-  skills: string[];
-  hourlyRate: number;
-  completedJobs: number;
-  rating: number;
-  reviewCount: number;
-  availability: boolean;
-  // API route additional fields
-  title?: string; // API route compatibility
-  experience?: string; // API route compatibility
-  totalReviews?: number; // API route compatibility
-  totalEarnings?: number; // API route compatibility
-  completedProjects?: number; // API route compatibility
-  responseTime?: string; // API route compatibility
-  portfolio?: PortfolioItem[]; // API route compatibility
-  languages?: string[]; // API route compatibility
-  isOnline?: boolean; // API route compatibility
-  // Additional profile fields
-  name?: string; // MSW compatibility
-  bio?: string; // Profile compatibility
-  website?: string; // Profile compatibility
-  socialLinks?: { [key: string]: string }; // Social links
-}
-
-export interface Employer extends User {
-  companyName?: string;
-  companySize?: 'startup' | 'small' | 'medium' | 'large' | 'enterprise';
-  industry?: string;
-  website?: string;
-  postedJobs: number;
-  totalSpent: number;
-  rating: number;
-  reviewCount: number;
-  verificationStatus: 'verified' | 'unverified' | 'pending';
-  activeJobs?: number; // API route compatibility
-  completedJobs?: number; // API route compatibility
-  totalJobs?: number; // API route compatibility
-  totalReviews?: number; // API route compatibility
-  reviewsCount?: number; // API route compatibility - alias for reviewCount
-  name?: string; // MSW compatibility
-  location?: string; // Profile compatibility
-}
+// Freelancer and Employer interfaces are now in types/core/base.ts
 
 export interface FreelancerProfile {
   userId: string;
@@ -210,25 +139,7 @@ export interface FreelancerProfile {
   availability: boolean;
 }
 
-export interface PortfolioItem {
-  id: string;
-  title: string;
-  description: string;
-  imageUrl: string;
-  image?: string;
-  images?: string[];
-  projectUrl?: string;
-  url?: string;
-  tags: string[];
-  skills?: string[];
-  category?: string;
-  client?: string;
-  completedAt?: string;
-  createdAt?: string; // Profile page compatibility
-  techStack?: string[];
-  isPrivate?: boolean;
-  isArchived?: boolean;
-}
+// PortfolioItem interface moved to types/core/base.ts
 
 export interface Review {
   id: string;
@@ -459,6 +370,7 @@ export interface JobFilters {
   budgetType?: 'fixed' | 'hourly'; // Component compatibility
   experienceLevel?: 'beginner' | 'intermediate' | 'expert'; // MobileJobFilters compatibility
   deadline?: string; // Deadline filter
+  page?: number; // Pagination
   sortBy?:
     | 'recent'
     | 'budget_desc'
@@ -481,6 +393,7 @@ export interface PackageFilters {
   skills?: string[];
   rating?: number;
   search?: string; // Search filter
+  page?: number; // Pagination
   sortBy?:
     | 'recent'
     | 'price_desc'
@@ -2532,36 +2445,7 @@ export interface AnalyticsFilters {
   userType?: 'freelancer' | 'employer';
 }
 
-export interface AnalyticsExport {
-  format: 'csv' | 'xlsx' | 'pdf';
-  sections?: string[]; // Added for component compatibility
-  timeframe?: Record<string, unknown>; // Added for component compatibility
-  includeCharts?: boolean; // Added for component compatibility
-  includeRawData?: boolean; // Added for component compatibility
-  data?: Record<string, unknown>; // Made optional for compatibility
-  filename?: string; // Made optional for compatibility
-  createdAt?: string; // Made optional for compatibility
-}
-
-export interface AnalyticsExportResponse {
-  downloadUrl: string;
-  expiresAt: string;
-  fileSize: number;
-  // Store compatibility
-  success?: boolean;
-  error?: string;
-}
-
-export interface GetAnalyticsResponse {
-  freelancer?: FreelancerAnalytics;
-  employer?: EmployerAnalytics;
-  timeframe?: AnalyticsTimeframe | string; // MSW handler compatibility - can be string
-  lastUpdated?: string; // Made optional for MSW handler compatibility
-  // MSW handler compatibility
-  success?: boolean;
-  data?: FreelancerAnalytics | EmployerAnalytics;
-  error?: string;
-}
+// Analytics interfaces moved to types/features/analytics.ts to avoid duplication
 
 // Search Types - manually added for compatibility
 export interface SaveSearchRequest {

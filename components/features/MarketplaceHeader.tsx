@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, X, TrendingUp, Zap, Users, Star } from 'lucide-react';
 import { Button, Input, Card } from '@/components/ui';
-import { useSearchSuggestions } from '@/hooks/useFilters';
+import { useSearchSuggestions } from '@/hooks';
 
 interface MarketplaceHeaderProps {
   searchQuery: string;

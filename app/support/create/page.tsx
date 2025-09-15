@@ -2,7 +2,7 @@
 
 import { SupportLayout } from '@/components/features/support';
 import { TicketForm } from '@/components/features/support';
-import { useSupport } from '@/hooks/useSupport';
+import { useSupport } from '@/hooks';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import type { CreateTicketFormData } from '@/lib/validations/support';

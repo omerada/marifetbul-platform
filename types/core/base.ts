@@ -1,12 +1,20 @@
 // Core base types for the entire application
 export interface User {
   id: string;
+  userId?: string; // Alias for id for compatibility
   email: string;
   firstName: string;
   lastName: string;
+  name?: string; // Computed field from firstName + lastName or custom name
   avatar?: string;
   userType: 'freelancer' | 'employer' | 'admin';
-  role?: 'user' | 'admin' | 'moderator' | 'super_admin';
+  role?:
+    | 'user'
+    | 'admin'
+    | 'moderator'
+    | 'super_admin'
+    | 'freelancer'
+    | 'employer';
   phone?: string;
   location?: string;
   bio?: string;
@@ -18,8 +26,23 @@ export interface User {
   };
   permissions?: string[];
   lastLoginAt?: string;
+  lastActiveAt?: string;
   createdAt: string;
   updatedAt: string;
+  // Additional compatibility fields
+  accountStatus?: 'active' | 'suspended' | 'banned';
+  verificationStatus?: 'verified' | 'pending' | 'unverified';
+  // Messaging handler compatibility
+  isTyping?: boolean;
+  isOnline?: boolean;
+  joinedAt?: string;
+  lastReadAt?: string;
+  // Additional user properties that may be accessed
+  user?: {
+    firstName: string;
+    lastName: string;
+    avatar?: string;
+  };
 }
 
 export interface Freelancer extends User {
@@ -27,22 +50,30 @@ export interface Freelancer extends User {
   title?: string;
   skills: string[];
   hourlyRate?: number;
-  experience: 'beginner' | 'intermediate' | 'expert';
+  experience?: 'beginner' | 'intermediate' | 'expert';
   rating: number;
   totalReviews: number;
   totalEarnings: number;
   completedJobs: number;
-  responseTime: string;
-  availability: 'available' | 'busy' | 'not_available';
-  portfolio: PortfolioItem[];
+  responseTime?: string;
+  availability?: 'available' | 'busy' | 'not_available' | boolean; // compatibility with boolean
+  portfolio?: PortfolioItem[];
   languages?: string[];
-  isOnline?: boolean;
+  // Additional compatibility fields
+  reviewCount?: number; // Alias for totalReviews
+  completedProjects?: number; // Alias for completedJobs
 }
 
 export interface Employer extends User {
   userType: 'employer';
   companyName?: string;
-  companySize?: string;
+  companySize?:
+    | string
+    | 'startup'
+    | 'small'
+    | 'medium'
+    | 'large'
+    | 'enterprise';
   industry?: string;
   totalSpent: number;
   activeJobs: number;
@@ -50,6 +81,10 @@ export interface Employer extends User {
   totalJobs?: number; // For API compatibility
   rating: number;
   totalReviews: number;
+  // Additional compatibility fields
+  reviewCount?: number; // Alias for totalReviews
+  reviewsCount?: number; // Additional alias
+  postedJobs?: number; // Alias for activeJobs + completedJobs
 }
 
 export interface PortfolioItem {
@@ -60,6 +95,17 @@ export interface PortfolioItem {
   url?: string;
   skills: string[];
   completedAt: string;
+  // Additional compatibility fields
+  imageUrl?: string; // Alias for first image
+  image?: string; // Alias for first image
+  projectUrl?: string; // Alias for url
+  tags?: string[]; // Alias for skills
+  category?: string;
+  client?: string;
+  createdAt?: string;
+  techStack?: string[];
+  isPrivate?: boolean;
+  isArchived?: boolean;
 }
 
 // Location types

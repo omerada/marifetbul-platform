@@ -16,10 +16,10 @@ import {
   FileText,
   File,
 } from 'lucide-react';
-import { useSupportTicket } from '@/hooks/useSupport';
+import { useSupportTicket } from '@/hooks';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
-import { useWebSocket } from '@/hooks/useWebSocket';
+import { useWebSocket } from '@/hooks';
 import type { TicketResponse } from '@/types';
 import { cn } from '@/lib/utils';
 

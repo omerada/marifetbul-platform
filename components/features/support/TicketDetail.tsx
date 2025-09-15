@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useSupport } from '@/hooks/useSupport';
+import { useSupport } from '@/hooks';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';

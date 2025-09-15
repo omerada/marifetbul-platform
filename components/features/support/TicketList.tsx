@@ -19,7 +19,7 @@ import {
   RefreshCw,
   Plus,
 } from 'lucide-react';
-import { useSupport } from '@/hooks/useSupport';
+import { useSupport } from '@/hooks';
 import { cn } from '@/lib/utils';
 import type { SupportTicket } from '@/types';
 

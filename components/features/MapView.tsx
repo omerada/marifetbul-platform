@@ -17,7 +17,7 @@ import {
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 import { Coordinates, MapBounds } from '@/types';
-import { useUnifiedLocation } from '@/hooks/useUnifiedLocation';
+import { useUnifiedLocation } from '@/hooks';
 import { MapUtils } from '@/lib/utils/map-utils';
 
 interface MapMarker {

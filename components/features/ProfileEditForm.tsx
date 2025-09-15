@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, Freelancer, Employer } from '@/types';
-import { useProfile, useProfileValidation } from '@/hooks/useProfile';
+import { useProfile, useProfileValidation } from '@/hooks';
 import { useToast } from '@/hooks';
 import { AvatarUpload } from '@/components/features/AvatarUpload';
 import { Card } from '@/components/ui/Card';

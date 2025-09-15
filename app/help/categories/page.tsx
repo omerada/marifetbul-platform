@@ -2,7 +2,7 @@
 
 import { HelpCenterLayout } from '@/components/help';
 import { CategoryGrid } from '@/components/help';
-import { useHelpCenter } from '@/hooks/useHelpCenter';
+import { useHelpCenter } from '@/hooks';
 import { useEffect } from 'react';
 
 export default function CategoriesPage() {

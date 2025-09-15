@@ -51,91 +51,12 @@ export function useModal<T = unknown>() {
 }
 
 // ================================================
-// TOAST HOOKS
+// TOAST HOOKS - moved to hooks/core/useToast.ts
 // ================================================
 
-export interface Toast {
-  id: string;
-  type: 'success' | 'error' | 'warning' | 'info';
-  title: string;
-  message?: string;
-  duration?: number;
-  action?: {
-    label: string;
-    onClick: () => void;
-  };
-}
-
-let toastId = 0;
-
-export function useToast() {
-  const [toasts, setToasts] = useState<Toast[]>([]);
-
-  const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
-    const id = `toast-${++toastId}`;
-    const newToast: Toast = { ...toast, id };
-
-    setToasts((prev) => [...prev, newToast]);
-
-    // Auto remove after duration
-    const duration = toast.duration ?? 5000;
-    if (duration > 0) {
-      setTimeout(() => {
-        setToasts((prev) => prev.filter((t) => t.id !== id));
-      }, duration);
-    }
-
-    return id;
-  }, []);
-
-  const removeToast = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  }, []);
-
-  const clearToasts = useCallback(() => {
-    setToasts([]);
-  }, []);
-
-  // Convenience methods
-  const success = useCallback(
-    (title: string, message?: string, options?: Partial<Toast>) => {
-      return addToast({ type: 'success', title, message, ...options });
-    },
-    [addToast]
-  );
-
-  const error = useCallback(
-    (title: string, message?: string, options?: Partial<Toast>) => {
-      return addToast({ type: 'error', title, message, ...options });
-    },
-    [addToast]
-  );
-
-  const warning = useCallback(
-    (title: string, message?: string, options?: Partial<Toast>) => {
-      return addToast({ type: 'warning', title, message, ...options });
-    },
-    [addToast]
-  );
-
-  const info = useCallback(
-    (title: string, message?: string, options?: Partial<Toast>) => {
-      return addToast({ type: 'info', title, message, ...options });
-    },
-    [addToast]
-  );
-
-  return {
-    toasts,
-    addToast,
-    removeToast,
-    clearToasts,
-    success,
-    error,
-    warning,
-    info,
-  };
-}
+// Toast functionality moved to hooks/core/useToast.ts to avoid duplication
+// Re-export for backwards compatibility
+export { useToast, type Toast, type ToastType } from '../core/useToast';
 
 // ================================================
 // FORM HOOKS
@@ -647,7 +568,7 @@ export function useKeyboardShortcut(
 
 const UIHooks = {
   useModal,
-  useToast,
+  // useToast moved to hooks/core/useToast.ts
   useForm,
   usePaginationUI,
   useTheme,

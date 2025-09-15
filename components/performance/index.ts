@@ -12,7 +12,7 @@ export {
   useEnhancedPerformance,
   usePerformanceMonitoring,
   useSearchPerformance,
-} from '../../hooks/useEnhancedPerformanceUnified';
+} from '../../hooks/data/useEnhancedPerformanceUnified';
 
 export type {
   PerformanceMetrics,

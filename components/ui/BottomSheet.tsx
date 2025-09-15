@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, ReactNode } from 'react';
-import { useFocusTrap } from '@/hooks/useAccessibility';
+import { useFocusTrap } from '@/hooks';
 import { useReducedMotion } from '@/lib/animations';
 import { X } from 'lucide-react';
 

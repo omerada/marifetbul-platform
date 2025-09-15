@@ -1,4 +1,4 @@
-import { ApiResponse } from '../utils/api';
+import type { BaseApiResponse } from '../../lib/types/enhanced/api-responses';
 
 // Analytics Types
 export interface FreelancerAnalytics {
@@ -54,11 +54,29 @@ export interface AnalyticsExport {
   format: 'csv' | 'excel' | 'pdf';
   data: Record<string, unknown>[];
   filename: string;
+  // Compatibility fields
+  sections?: string[];
+  timeframe?: Record<string, unknown>;
+  includeCharts?: boolean;
+  includeRawData?: boolean;
+  createdAt?: string;
 }
 
-export type AnalyticsExportResponse = ApiResponse<{ downloadUrl: string }>;
+export interface AnalyticsExportResponse
+  extends BaseApiResponse<{ downloadUrl: string }> {
+  // Additional compatibility fields
+  expiresAt?: string;
+  fileSize?: number;
+  error?: string;
+}
 
-export type GetAnalyticsResponse = ApiResponse<{
-  freelancer?: FreelancerAnalytics;
-  employer?: EmployerAnalytics;
-}>;
+export interface GetAnalyticsResponse
+  extends BaseApiResponse<{
+    freelancer?: FreelancerAnalytics;
+    employer?: EmployerAnalytics;
+  }> {
+  // Compatibility fields for MSW handlers and stores
+  timeframe?: AnalyticsTimeframe | string;
+  lastUpdated?: string;
+  error?: string;
+}

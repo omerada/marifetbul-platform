@@ -17,7 +17,7 @@ import {
   Award,
   Clock,
 } from 'lucide-react';
-import { useAnalytics } from '@/hooks/useAnalytics';
+import { useAnalytics } from '@/hooks';
 import type { FreelancerAnalytics, EmployerAnalytics } from '@/types';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -51,6 +51,8 @@ export function Sprint8AnalyticsDashboard({
     try {
       await exportData({
         format: 'pdf',
+        data: [],
+        filename: `analytics-${userType}-${Date.now()}.pdf`,
         sections: ['overview', 'charts'],
         timeframe: { period: 'month' },
         includeCharts: true,

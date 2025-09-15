@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useJobDetailStore } from '@/lib/store';
-import { useAuth } from './useAuth';
+import { useAuth } from '../core/useAuth';
 
 export function useJobDetail(jobId: string) {
   const store = useJobDetailStore();

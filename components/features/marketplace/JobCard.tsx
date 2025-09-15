@@ -12,7 +12,7 @@ import {
   Briefcase,
   Award,
 } from 'lucide-react';
-import { useMarketplace } from '@/hooks/useMarketplace';
+import { useMarketplace } from '@/hooks';
 import { formatCurrency } from '@/lib/utils/payment';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';

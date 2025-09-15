@@ -4,7 +4,13 @@
  */
 'use client';
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import {
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  createContext,
+} from 'react';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -19,6 +25,34 @@ export interface Toast {
     onClick: () => void;
   };
 }
+
+// Backwards compatibility exports for ToastProvider
+export interface ToastOptions {
+  title?: string;
+  description?: string;
+  variant?: ToastType;
+  duration?: number;
+  closable?: boolean;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+}
+
+export interface ToastData extends ToastOptions {
+  id: string;
+  createdAt: number;
+}
+
+export interface ToastContextType {
+  toasts: ToastData[];
+  addToast: (options: ToastOptions) => string;
+  removeToast: (id: string) => void;
+  clearAllToasts: () => void;
+}
+
+// Real context for ToastProvider
+export const ToastContext = createContext<ToastContextType | null>(null);
 
 interface ToastStore {
   toasts: Toast[];

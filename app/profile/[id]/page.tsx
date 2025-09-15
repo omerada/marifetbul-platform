@@ -7,7 +7,7 @@ import { AppLayout } from '@/components/layout';
 import { ProfileView } from '@/components/features';
 import { EmployerProfile } from '@/components/features';
 import { Loading } from '@/components/ui';
-import { useProfile } from '@/hooks/useProfile';
+import { useProfile } from '@/hooks';
 
 export default function ProfilePage() {
   const params = useParams();

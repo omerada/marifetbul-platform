@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, X, Filter, SortAsc, SortDesc } from 'lucide-react';
-import { useHelpCenter } from '@/hooks/useHelpCenter';
+import { useHelpCenter } from '@/hooks';
 import { ArticleCard } from './ArticleCard';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';

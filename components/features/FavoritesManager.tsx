@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { useFavorites } from '@/hooks/useFavorites';
+import { useFavorites } from '@/hooks';
 import { FavoriteItem, Freelancer, Job, ServicePackage } from '@/types';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';

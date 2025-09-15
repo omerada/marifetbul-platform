@@ -87,8 +87,13 @@ export const useAnalyticsStore = create<AnalyticsStore>()(
           const data: GetAnalyticsResponse = await response.json();
 
           if (data.success && data.data) {
+            // Extract specific analytics based on user type
+            const analytics = (data.data.freelancer ||
+              data.data.employer ||
+              null) as FreelancerAnalytics | EmployerAnalytics | null;
+
             set({
-              analytics: data.data,
+              analytics,
               timeframe: currentTimeframe,
               filters: { ...get().filters, timeframe: currentTimeframe },
               isLoading: false,

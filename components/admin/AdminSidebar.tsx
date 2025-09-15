@@ -29,7 +29,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { useAdminDashboard } from '@/hooks';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks';
 
 interface AdminSidebarProps {
   isOpen: boolean;

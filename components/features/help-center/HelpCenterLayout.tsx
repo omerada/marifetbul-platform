@@ -12,7 +12,7 @@ import {
   Clock,
   Star,
 } from 'lucide-react';
-import { useHelpCenter } from '@/hooks/useHelpCenter';
+import { useHelpCenter } from '@/hooks';
 import { cn } from '@/lib/utils';
 
 interface HelpCenterLayoutProps {

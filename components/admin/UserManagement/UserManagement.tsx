@@ -58,7 +58,7 @@ import {
   RefreshCw,
   Plus,
 } from 'lucide-react';
-import { useUserManagement } from '@/hooks/useUserManagement';
+import { useUserManagement } from '@/hooks';
 import type { AdminUserData, BulkUserActionRequest } from '@/types';
 
 // User status badge component

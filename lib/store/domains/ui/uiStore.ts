@@ -308,27 +308,7 @@ export function useUI() {
   };
 }
 
-// Toast hook
-export function useToast() {
-  const { addToast, removeToast, clearToasts } = uiSelectors.useActions();
-
-  const toast = {
-    success: (title: string, description?: string) =>
-      addToast({ type: 'success', title, description }),
-    error: (title: string, description?: string) =>
-      addToast({ type: 'error', title, description }),
-    warning: (title: string, description?: string) =>
-      addToast({ type: 'warning', title, description }),
-    info: (title: string, description?: string) =>
-      addToast({ type: 'info', title, description }),
-  };
-
-  return {
-    toast,
-    removeToast,
-    clearToasts,
-  };
-}
+// Toast hook moved to hooks/core/useToast.ts to avoid duplication
 
 // Modal hook
 export function useModal() {

@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useDashboard } from '@/hooks/useDashboard';
+import { useDashboard } from '@/hooks';
 import { useMessagingStore } from '@/lib/store/messaging';
 import { useOrderStore } from '@/lib/store/orders';
-import { useWebSocket } from '@/hooks/useWebSocket';
+import { useWebSocket } from '@/hooks';
 import { FreelancerDashboard as FreelancerDashboardType } from '@/types';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';

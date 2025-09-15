@@ -12,7 +12,7 @@ import {
   Award,
   CheckCircle,
 } from 'lucide-react';
-import { useMarketplace } from '@/hooks/useMarketplace';
+import { useMarketplace } from '@/hooks';
 import { formatCurrency } from '@/lib/utils/payment';
 import Link from 'next/link';
 import Image from 'next/image';

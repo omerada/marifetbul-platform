@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { useRecommendations } from '@/hooks/useRecommendations';
+import { useRecommendations } from '@/hooks';
 import {
   Recommendation,
   RecommendationFeedback,

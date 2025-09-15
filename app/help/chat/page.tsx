@@ -4,7 +4,7 @@ import { HelpCenterLayout } from '@/components/help';
 import { ChatWindow } from '@/components/features/chat';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { useChat } from '@/hooks/useChat';
+import { useChat } from '@/hooks';
 import { useRouter } from 'next/navigation';
 import {
   MessageCircle,

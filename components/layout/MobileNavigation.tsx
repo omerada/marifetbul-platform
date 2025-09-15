@@ -10,7 +10,7 @@ export function MobileNavigation() {
   const pathname = usePathname();
   const { isAuthenticated, user } = useAuthState();
 
-  const isEmployer = user?.role === 'client';
+  const isEmployer = user?.role === 'employer';
   const isFreelancer = user?.role === 'freelancer';
 
   // Get navigation items based on authentication and user role

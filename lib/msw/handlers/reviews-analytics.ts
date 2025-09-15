@@ -1,590 +1,56 @@
 import { http, HttpResponse } from 'msw';
-import type {
-  ReviewData,
-  CreateReviewRequest,
-  CreateReviewResponse,
-  ReviewsResponse,
-  FreelancerAnalytics,
-  EmployerAnalytics,
-  GetAnalyticsResponse,
-  ReputationScore,
-  SecurityStatus,
-  TrustIndicators,
-  GetReputationResponse,
-  SecurityAlert,
-  GetSecurityAlertsResponse,
-} from '@/types';
-
-// Mock Reviews Data
-const mockReviews: ReviewData[] = [
-  {
-    id: 'rev-123',
-    orderId: 'order-123',
-    reviewerId: 'user-1',
-    revieweeId: 'user-2',
-    reviewer: {
-      id: 'user-1',
-      name: 'Ahmet Yılmaz',
-      firstName: 'Ahmet',
-      lastName: 'Yılmaz',
-      avatar: '/images/avatars/avatar-1.jpg',
-    },
-    reviewee: {
-      id: 'user-2',
-      name: 'Ayşe Kaya',
-      firstName: 'Ayşe',
-      lastName: 'Kaya',
-      avatar: '/images/avatars/avatar-2.jpg',
-    },
-    rating: 5,
-    categories: {
-      communication: 5,
-      quality: 5,
-      timeliness: 5,
-      professionalism: 5,
-    },
-    comment: 'Çok memnun kaldım, hızlı ve kaliteli iş! Tavsiye ederim.',
-    isPublic: true,
-    status: 'active',
-    helpfulCount: 12,
-    reportCount: 0,
-    verifiedPurchase: true,
-    projectTitle: 'Website Tasarımı',
-    projectCategory: 'Web Development',
-    createdAt: '2025-09-11T10:00:00Z',
-  },
-  {
-    id: 'rev-124',
-    orderId: 'order-124',
-    reviewerId: 'user-3',
-    revieweeId: 'user-2',
-    reviewer: {
-      id: 'user-3',
-      name: 'Mehmet Öz',
-      firstName: 'Mehmet',
-      lastName: 'Öz',
-      avatar: '/images/avatars/avatar-3.jpg',
-    },
-    reviewee: {
-      id: 'user-2',
-      name: 'Ayşe Kaya',
-      firstName: 'Ayşe',
-      lastName: 'Kaya',
-      avatar: '/images/avatars/avatar-2.jpg',
-    },
-    rating: 4,
-    categories: {
-      communication: 4,
-      quality: 5,
-      timeliness: 3,
-      professionalism: 4,
-    },
-    comment: 'İyi bir çalışma oldu, sadece teslimat biraz gecikti.',
-    isPublic: true,
-    reply: {
-      id: 'reply-1',
-      reviewId: 'rev-124',
-      userId: 'user-2',
-      comment:
-        'Teşekkür ederim. Gecikme için özür dilerim, bir sonraki projede daha dikkatli olacağım.',
-      authorId: 'user-2',
-      authorName: 'Ayşe Kaya',
-      user: {
-        id: 'user-2',
-        name: 'Ayşe Kaya',
-        firstName: 'Ayşe',
-        lastName: 'Kaya',
-        avatar: '/images/avatars/avatar-2.jpg',
-      },
-      content:
-        'Teşekkür ederim. Gecikme için özür dilerim, bir sonraki projede daha dikkatli olacağım.',
-      createdAt: '2025-09-10T16:30:00Z',
-    },
-    status: 'active',
-    helpfulCount: 5,
-    reportCount: 0,
-    verifiedPurchase: true,
-    projectTitle: 'Logo Tasarımı',
-    projectCategory: 'Graphic Design',
-    createdAt: '2025-09-10T14:00:00Z',
-  },
-];
+import type { GetAnalyticsResponse } from '@/types/features/analytics';
 
 // Mock Analytics Data
-const mockFreelancerAnalytics: FreelancerAnalytics = {
-  earnings: {
-    total: 125000,
-    thisMonth: 15000,
-    lastMonth: 12000,
-    trend: 'up',
-    timeframe: { period: 'month' },
-    totalEarnings: 125000,
-    earningsTrend: [
-      { date: '2025-01', value: 8000 },
-      { date: '2025-02', value: 9500 },
-      { date: '2025-03', value: 11000 },
-      { date: '2025-04', value: 13500 },
-      { date: '2025-05', value: 12000 },
-      { date: '2025-06', value: 14000 },
-      { date: '2025-07', value: 16000 },
-      { date: '2025-08', value: 18000 },
-      { date: '2025-09', value: 15000 },
-    ],
-    earningsByCategory: [
-      { category: 'Web Development', amount: 45000, percentage: 36 },
-      { category: 'Graphic Design', amount: 35000, percentage: 28 },
-      { category: 'Content Writing', amount: 25000, percentage: 20 },
-      { category: 'Mobile Development', amount: 20000, percentage: 16 },
-    ],
-    projectedEarnings: 180000,
-  },
-  jobs: {
-    completed: 89,
-    active: 5,
-    successRate: 0.94,
-  },
-  profile: {
-    views: 1250,
-    rating: 4.9,
-    responseTime: 2,
-  },
-  overview: {
-    totalEarnings: 125000,
-    currentMonthEarnings: 15000,
-    averageOrderValue: 2500,
-    completedOrders: 89,
-    activeOrders: 5,
-    clientSatisfaction: 4.9,
-    repeatClientRate: 0.32,
-    responseTime: '2 saat',
-    profileViews: 1250,
-    proposalAcceptanceRate: 0.75,
-  },
-  orders: {
-    total: 94,
-    completed: 89,
-    inProgress: 5,
-    cancelled: 0,
-    averageOrderValue: 2500,
-    ordersTrend: [
-      { date: '2025-01', value: 8 },
-      { date: '2025-02', value: 12 },
-      { date: '2025-03', value: 10 },
-      { date: '2025-04', value: 15 },
-      { date: '2025-05', value: 9 },
-      { date: '2025-06', value: 11 },
-      { date: '2025-07', value: 13 },
-      { date: '2025-08', value: 14 },
-      { date: '2025-09', value: 12 },
-    ],
-    ordersByCategory: [
-      { category: 'Web Development', count: 35, percentage: 37 },
-      { category: 'Graphic Design', count: 28, percentage: 30 },
-      { category: 'Content Writing', count: 20, percentage: 21 },
-      { category: 'Mobile Development', count: 11, percentage: 12 },
-    ],
-    averageDeliveryTime: 5.2,
-    onTimeDeliveryRate: 0.94,
-  },
-  clients: {
-    totalClients: 67,
-    newClients: 8,
-    repeatClients: 21,
-    repeatClientRate: 0.31,
-    clientSatisfaction: 4.9,
-    clientRetentionRate: 0.78,
-    topClients: [
-      {
-        clientId: 'client-1',
-        name: 'TechCorp Ltd.',
-        avatar: '/images/companies/techcorp.jpg',
-        totalSpent: 25000,
-        orderCount: 8,
-        lastOrderDate: '2025-09-10',
-      },
-      {
-        clientId: 'client-2',
-        name: 'Creative Agency',
-        avatar: '/images/companies/creative.jpg',
-        totalSpent: 18000,
-        orderCount: 6,
-        lastOrderDate: '2025-09-08',
-      },
-    ],
-  },
-  performance: {
-    rating: 4.9,
-    totalReviews: 89,
-    ratingTrend: [
-      { date: '2025-01', value: 4.7 },
-      { date: '2025-02', value: 4.8 },
-      { date: '2025-03', value: 4.8 },
-      { date: '2025-04', value: 4.9 },
-      { date: '2025-05', value: 4.9 },
-      { date: '2025-06', value: 5.0 },
-      { date: '2025-07', value: 4.9 },
-      { date: '2025-08', value: 4.9 },
-      { date: '2025-09', value: 4.9 },
-    ],
-    reviewsByRating: [
-      { rating: 5, count: 67, percentage: 75 },
-      { rating: 4, count: 18, percentage: 20 },
-      { rating: 3, count: 3, percentage: 3 },
-      { rating: 2, count: 1, percentage: 1 },
-      { rating: 1, count: 0, percentage: 1 },
-    ],
-    skills: [
-      {
-        skillName: 'React',
-        proficiency: 95,
-        demandScore: 90,
-        earningsContribution: 35000,
-      },
-      {
-        skillName: 'Node.js',
-        proficiency: 90,
-        demandScore: 85,
-        earningsContribution: 28000,
-      },
-      {
-        skillName: 'TypeScript',
-        proficiency: 88,
-        demandScore: 80,
-        earningsContribution: 25000,
-      },
-    ],
-    responseTime: 2,
-    proposalWinRate: 0.75,
-  },
-  growth: {
-    profileViews: [
-      { date: '2025-01', value: 120 },
-      { date: '2025-02', value: 145 },
-      { date: '2025-03', value: 180 },
-      { date: '2025-04', value: 220 },
-      { date: '2025-05', value: 195 },
-      { date: '2025-06', value: 240 },
-      { date: '2025-07', value: 280 },
-      { date: '2025-08', value: 320 },
-      { date: '2025-09', value: 350 },
-    ],
-    proposalsSent: [
-      { date: '2025-01', value: 15 },
-      { date: '2025-02', value: 18 },
-      { date: '2025-03', value: 20 },
-      { date: '2025-04', value: 25 },
-      { date: '2025-05', value: 22 },
-      { date: '2025-06', value: 28 },
-      { date: '2025-07', value: 30 },
-      { date: '2025-08', value: 32 },
-      { date: '2025-09', value: 28 },
-    ],
-    conversionRate: [
-      { date: '2025-01', value: 0.6 },
-      { date: '2025-02', value: 0.65 },
-      { date: '2025-03', value: 0.7 },
-      { date: '2025-04', value: 0.75 },
-      { date: '2025-05', value: 0.72 },
-      { date: '2025-06', value: 0.78 },
-      { date: '2025-07', value: 0.8 },
-      { date: '2025-08', value: 0.82 },
-      { date: '2025-09', value: 0.85 },
-    ],
-    marketShare: 0.08,
-    rankInCategory: 12,
-    growthRate: 0.15,
-    opportunities: [
-      {
-        id: 'opp-1',
-        type: 'skill',
-        title: 'AI/ML Becerisi Ekle',
-        description: 'Yapay zeka projelerinde %30 daha fazla kazanç fırsatı',
-        potentialImpact: 'high',
-        effort: 'medium',
-        priority: 1,
-        actionItems: [
-          'Online kurs al',
-          'Portfolio projesi yap',
-          'Sertifika al',
-        ],
-        estimatedValue: 25000,
-        timeframe: '3 ay',
-      },
-    ],
-  },
+const mockFreelancerAnalytics = {
+  profileViews: 1250,
+  jobApplications: 45,
+  jobsCompleted: 89,
+  totalEarnings: 125000,
+  averageRating: 4.9,
+  responseTime: 2,
+  clientSatisfaction: 4.9,
+  skillDemand: [
+    { skill: 'React', demand: 95 },
+    { skill: 'Node.js', demand: 90 },
+    { skill: 'TypeScript', demand: 88 },
+  ],
+  monthlyStats: [
+    { month: '2025-01', applications: 15, earnings: 8000, completedJobs: 8 },
+    { month: '2025-02', applications: 18, earnings: 9500, completedJobs: 9 },
+    { month: '2025-03', applications: 20, earnings: 11000, completedJobs: 11 },
+    { month: '2025-04', applications: 25, earnings: 13500, completedJobs: 12 },
+    { month: '2025-05', applications: 22, earnings: 12000, completedJobs: 10 },
+    { month: '2025-06', applications: 28, earnings: 14000, completedJobs: 13 },
+    { month: '2025-07', applications: 30, earnings: 16000, completedJobs: 15 },
+    { month: '2025-08', applications: 32, earnings: 18000, completedJobs: 16 },
+    { month: '2025-09', applications: 28, earnings: 15000, completedJobs: 14 },
+  ],
 };
 
-// Mock Reputation Data
-const mockReputationScore: ReputationScore = {
-  userId: 'user-2',
-  score: 92,
-  overallScore: 92,
-  level: 'gold',
-  reviews: {
-    total: 89,
-    average: 4.9,
-    breakdown: { 5: 67, 4: 18, 3: 3, 2: 1, 1: 0 },
-  },
-  badges: [
-    {
-      id: 'badge-1',
-      name: 'Doğrulanmış Profil',
-      description: 'Kimlik doğrulaması tamamlandı',
-      icon: 'verified',
-      color: 'blue',
-      category: 'verification',
-      earnedAt: '2025-08-15T10:00:00Z',
-      isVisible: true,
-    },
-    {
-      id: 'badge-2',
-      name: 'Top Rated',
-      description: '4.8+ ortalama puan',
-      icon: 'star',
-      color: 'gold',
-      category: 'quality',
-      earnedAt: '2025-09-01T10:00:00Z',
-      isVisible: true,
-    },
+const mockEmployerAnalytics = {
+  jobsPosted: 25,
+  totalSpent: 75000,
+  activeJobs: 3,
+  completedJobs: 22,
+  averageJobValue: 3400,
+  timeToHire: 5,
+  freelancerRetention: 0.8,
+  projectSuccessRate: 0.95,
+  monthlyStats: [
+    { month: '2025-01', jobsPosted: 2, spent: 6000, hired: 2 },
+    { month: '2025-02', jobsPosted: 3, spent: 8500, hired: 3 },
+    { month: '2025-03', jobsPosted: 4, spent: 12000, hired: 4 },
+    { month: '2025-04', jobsPosted: 3, spent: 9500, hired: 3 },
+    { month: '2025-05', jobsPosted: 2, spent: 7000, hired: 2 },
+    { month: '2025-06', jobsPosted: 4, spent: 13000, hired: 4 },
+    { month: '2025-07', jobsPosted: 3, spent: 10000, hired: 3 },
+    { month: '2025-08', jobsPosted: 2, spent: 6000, hired: 2 },
+    { month: '2025-09', jobsPosted: 2, spent: 5000, hired: 1 },
   ],
-  factors: [
-    {
-      name: 'Profil Tamamlama',
-      score: 95,
-      description: 'Profil bilgilerinin eksiksizliği',
-      weight: 0.2,
-      currentValue: 95,
-      maxValue: 100,
-      trend: 'stable',
-    },
-    {
-      name: 'Müşteri Memnuniyeti',
-      score: 98,
-      description: 'Ortalama müşteri puanı',
-      weight: 0.3,
-      currentValue: 4.9,
-      maxValue: 5,
-      trend: 'improving',
-    },
-    {
-      name: 'Zamanında Teslimat',
-      score: 94,
-      description: 'Projeler zamanında teslim edilme oranı',
-      weight: 0.25,
-      currentValue: 94,
-      maxValue: 100,
-      trend: 'stable',
-    },
-    {
-      name: 'İletişim Kalitesi',
-      score: 88,
-      description: 'Müşteri iletişim değerlendirmesi',
-      weight: 0.15,
-      currentValue: 88,
-      maxValue: 100,
-      trend: 'improving',
-    },
-    {
-      name: 'Platform Aktivitesi',
-      score: 82,
-      description: 'Platform kullanım sıklığı',
-      weight: 0.1,
-      currentValue: 82,
-      maxValue: 100,
-      trend: 'stable',
-    },
-  ],
-  history: [
-    {
-      date: '2025-08',
-      score: 88,
-      change: +3,
-      reason: 'Yeni pozitif incelemeler',
-      factors: [],
-    },
-    {
-      date: '2025-09',
-      score: 92,
-      change: +4,
-      reason: 'Kimlik doğrulama tamamlandı',
-      factors: [],
-    },
-  ],
-  nextLevelRequirements: [
-    {
-      name: '10+ Proje Tamamla',
-      type: 'completion',
-      description: 'Platinum seviye için',
-      current: 8,
-      required: 10,
-      currentProgress: 8,
-      targetValue: 10,
-    },
-  ],
-  calculatedAt: '2025-09-12T10:00:00Z',
-  expiresAt: '2025-09-19T10:00:00Z',
 };
 
-// Mock Security Alerts
-const mockSecurityAlerts: SecurityAlert[] = [
-  {
-    id: 'alert-1',
-    userId: 'user-2',
-    type: 'verification',
-    severity: 'medium',
-    title: '2FA Güvenlik Önerisi',
-    description:
-      'Hesabınızın güvenliği için iki faktörlü kimlik doğrulamayı etkinleştirin.',
-    recommendations: ['SMS doğrulama ekle', 'Authenticator uygulaması kullan'],
-    actionRequired: false,
-    isResolved: false,
-    actionUrl: '/profile/security',
-    actionText: 'Güvenlik Ayarları',
-    dismissible: true,
-    isDismissed: false,
-    createdAt: '2025-09-10T10:00:00Z',
-  },
-  {
-    id: 'alert-2',
-    userId: 'user-2',
-    type: 'account',
-    severity: 'low',
-    title: 'Profil Eksik Bilgi',
-    description:
-      'Profilinizde eksik bilgiler var. Tamamlayarak daha fazla iş fırsatı yakalayın.',
-    recommendations: [
-      'Portfolio örnekleri ekle',
-      'Deneyim bilgilerini güncelle',
-    ],
-    actionRequired: false,
-    isResolved: false,
-    actionUrl: '/profile/edit',
-    actionText: 'Profili Düzenle',
-    dismissible: true,
-    isDismissed: false,
-    createdAt: '2025-09-08T10:00:00Z',
-  },
-];
-
-// MSW Handlers
 export const reviewsAnalyticsHandlers = [
-  // Reviews endpoints
-  http.post('/api/v1/reviews', async ({ request }) => {
-    const body = (await request.json()) as CreateReviewRequest;
-
-    const newReview: ReviewData = {
-      id: `rev-${Date.now()}`,
-      orderId: body.orderId || 'default-order',
-      reviewerId: body.reviewerId || 'default-reviewer',
-      revieweeId: body.revieweeId || 'default-reviewee',
-      reviewer: mockReviews[0].reviewer,
-      reviewee: mockReviews[0].reviewee,
-      rating: body.rating,
-      categories: body.categories,
-      comment: body.comment,
-      isPublic: body.isPublic ?? true,
-      status: 'active',
-      helpfulCount: 0,
-      reportCount: 0,
-      verifiedPurchase: true,
-      projectTitle: 'Yeni Proje',
-      projectCategory: 'Web Development',
-      createdAt: new Date().toISOString(),
-    };
-
-    const response: CreateReviewResponse = {
-      success: true,
-      review: newReview,
-      data: newReview,
-    };
-
-    return HttpResponse.json(response);
-  }),
-
-  http.get('/api/v1/reviews', ({ request }) => {
-    const url = new URL(request.url);
-    const userId = url.searchParams.get('userId');
-
-    if (!userId) {
-      return HttpResponse.json(
-        { success: false, error: 'User ID gereklidir' },
-        { status: 400 }
-      );
-    }
-
-    const response: ReviewsResponse = {
-      success: true,
-      reviews: mockReviews, // Required at top level
-      summary: {
-        averageRating: 4.6,
-        totalReviews: mockReviews.length,
-        qualityScores: {
-          communication: 4.5,
-          quality: 5.0,
-          timeliness: 4.0,
-          professionalism: 4.5,
-        },
-        categoryAverages: {
-          communication: 4.5,
-          quality: 5.0,
-          timeliness: 4.0,
-          professionalism: 4.5,
-        },
-        ratingDistribution: {
-          5: 1,
-          4: 1,
-          3: 0,
-          2: 0,
-          1: 0,
-        },
-        recentReviews: mockReviews.slice(0, 3),
-        verifiedPurchasePercentage: 100,
-      },
-      pagination: {
-        page: 1,
-        pageSize: 10,
-        limit: 10, // Required field for store compatibility
-        total: mockReviews.length,
-        totalPages: 1,
-        hasNext: false,
-        hasPrev: false,
-      },
-    };
-
-    return HttpResponse.json(response);
-  }),
-
-  http.post('/api/v1/reviews/:id/reply', async ({ params, request }) => {
-    const { id } = params;
-    const body = (await request.json()) as { content: string };
-
-    const reply = {
-      id: `reply-${Date.now()}`,
-      reviewId: id as string,
-      userId: 'current-user',
-      user: {
-        id: 'current-user',
-        name: 'Current User',
-        firstName: 'Current',
-        lastName: 'User',
-        avatar: '/images/avatars/current-user.jpg',
-      },
-      content: body.content,
-      createdAt: new Date().toISOString(),
-    };
-
-    return HttpResponse.json({ success: true, data: reply });
-  }),
-
-  http.post('/api/v1/reviews/:id/helpful', () => {
-    return HttpResponse.json({ success: true });
-  }),
-
-  http.post('/api/v1/reviews/:id/report', async ({ request }) => {
-    (await request.json()) as { reason: string; description?: string };
-    return HttpResponse.json({ success: true });
-  }),
-
   // Analytics endpoints
   http.get('/api/v1/analytics', ({ request }) => {
     const url = new URL(request.url);
@@ -594,152 +60,115 @@ export const reviewsAnalyticsHandlers = [
       success: true,
       data:
         userType === 'freelancer'
-          ? mockFreelancerAnalytics
-          : ({} as EmployerAnalytics),
+          ? {
+              freelancer:
+                mockFreelancerAnalytics as import('@/types/features/analytics').FreelancerAnalytics,
+              employer: undefined,
+            }
+          : {
+              freelancer: undefined,
+              employer:
+                mockEmployerAnalytics as import('@/types/features/analytics').EmployerAnalytics,
+            },
       timeframe: 'month',
       lastUpdated: new Date().toISOString(),
+      timestamp: new Date().toISOString(),
+      requestId: 'req-analytics-123',
+      version: '1.0',
     };
 
     return HttpResponse.json(response);
   }),
 
-  http.post('/api/v1/analytics/export', async ({ request }) => {
-    await request.json();
-
+  // Reviews endpoints - basic mock
+  http.get('/api/v1/reviews', () => {
     return HttpResponse.json({
       success: true,
       data: {
-        downloadUrl: '/downloads/analytics-export.pdf',
-        filename: 'analytics-2025-09.pdf',
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        reviews: [],
+        summary: {
+          totalReviews: 0,
+          averageRating: 0,
+          ratingDistribution: {},
+        },
       },
+      timestamp: new Date().toISOString(),
+      requestId: 'req-reviews-123',
+      version: '1.0',
     });
   }),
 
-  // Reputation endpoints
-  http.get('/api/v1/reputation', ({ request }) => {
-    const url = new URL(request.url);
-    const userId = url.searchParams.get('userId');
-
-    if (!userId) {
-      return HttpResponse.json(
-        { success: false, error: 'User ID gereklidir' },
-        { status: 400 }
-      );
-    }
-
-    const mockSecurityStatus: SecurityStatus = {
-      userId,
-      overallScore: 85,
-      level: 'good',
-      riskLevel: 'low',
-      lastUpdated: new Date().toISOString(),
-      verifications: [
-        {
-          id: 'verification-1',
-          type: 'email',
-          status: 'verified',
-          verifiedAt: '2025-08-01T10:00:00Z',
-          retryCount: 0,
-          maxRetries: 3,
-        },
-        {
-          id: 'verification-2',
-          type: 'phone',
-          status: 'verified',
-          verifiedAt: '2025-08-02T10:00:00Z',
-          retryCount: 0,
-          maxRetries: 3,
-        },
-        {
-          id: 'verification-3',
-          type: 'identity',
-          status: 'pending',
-          retryCount: 1,
-          maxRetries: 3,
-        },
-        {
-          id: 'verification-4',
-          type: '2fa',
-          status: 'not_started',
-          retryCount: 0,
-          maxRetries: 3,
-        },
-      ],
-      alerts: mockSecurityAlerts,
-      recommendations: [
-        {
-          id: 'rec-1',
-          type: '2fa',
-          priority: 'high',
-          title: 'İki Faktörlü Kimlik Doğrulama',
-          description: 'Hesabınızın güvenliği için 2FA etkinleştirin',
-          impact: 'Hesap güvenliğini %80 artırır',
-          actionText: 'Etkinleştir',
-          actionUrl: '/profile/security/2fa',
-          isCompleted: false,
-          estimatedTime: '5 dakika',
-        },
-      ],
-      nextAssessment: '2025-09-19T10:00:00Z',
-    };
-
-    const mockTrustIndicators: TrustIndicators = {
-      userId,
-      isVerified: true,
-      hasCompletedJobs: true,
-      hasPositiveReviews: true,
-      isFreelancerPlus: false,
-      securityScore: 85,
-      profileCompletion: 95,
-      verificationLevel: 75,
-      activityScore: 88,
-      reviewScore: 92,
-      paymentHistory: 100,
-      communityStanding: 85,
-      overallTrustScore: 89,
-      publicBadges: mockReputationScore.badges,
-      calculatedAt: new Date().toISOString(),
-    };
-
-    const response: GetReputationResponse = {
+  http.post('/api/v1/reviews', async ({ request }) => {
+    await request.json();
+    return HttpResponse.json({
       success: true,
       data: {
-        score: mockReputationScore,
-        status: mockSecurityStatus,
-        trustIndicators: mockTrustIndicators,
+        id: 'review-123',
+        message: 'Review created successfully',
       },
-    };
-
-    return HttpResponse.json(response);
+      timestamp: new Date().toISOString(),
+      requestId: 'req-create-review-123',
+      version: '1.0',
+    });
   }),
 
-  // Security endpoints
-  http.get('/api/v1/security/alerts', ({ request }) => {
-    const url = new URL(request.url);
-    const userId = url.searchParams.get('userId');
-
-    if (!userId) {
-      return HttpResponse.json(
-        { success: false, error: 'User ID gereklidir' },
-        { status: 400 }
-      );
-    }
-
-    const response: GetSecurityAlertsResponse = {
+  // Reputation endpoints - basic mock
+  http.get('/api/v1/reputation/:userId', ({ params }) => {
+    const { userId } = params;
+    return HttpResponse.json({
       success: true,
-      data: mockSecurityAlerts,
-    };
-
-    return HttpResponse.json(response);
+      data: {
+        score: {
+          userId: userId as string,
+          score: 4.9,
+          level: 'platinum',
+          badges: ['verified-freelancer', 'top-rated'],
+          reviews: {
+            total: 89,
+            average: 4.9,
+            breakdown: { 5: 67, 4: 18, 3: 3, 2: 1, 1: 0 },
+          },
+          createdAt: '2025-01-01T00:00:00Z',
+          updatedAt: new Date().toISOString(),
+        },
+        status: 'secure',
+        trustIndicators: {
+          isVerified: true,
+          hasCompletedJobs: true,
+          hasPositiveReviews: true,
+          isFreelancerPlus: false,
+          securityScore: 95,
+        },
+      },
+      timestamp: new Date().toISOString(),
+      requestId: 'req-reputation-123',
+      version: '1.0',
+    });
   }),
 
-  http.post('/api/v1/security/alerts/:id/dismiss', () => {
-    return HttpResponse.json({ success: true });
-  }),
-
-  http.post('/api/v1/security/verification/start', async ({ request }) => {
-    (await request.json()) as { type: string };
-    return HttpResponse.json({ success: true });
+  // Security alerts endpoints - basic mock
+  http.get('/api/v1/security/alerts', () => {
+    return HttpResponse.json({
+      success: true,
+      data: [
+        {
+          id: 'alert-1',
+          type: 'login',
+          severity: 'medium',
+          title: 'Şüpheli Giriş Denemesi',
+          description: 'Farklı bir lokasyondan giriş denemesi tespit edildi.',
+          timestamp: new Date(Date.now() - 86400000).toISOString(),
+          status: 'active',
+          metadata: {
+            location: 'İstanbul, Türkiye',
+            ip: '192.168.1.1',
+            userAgent: 'Mozilla/5.0...',
+          },
+        },
+      ],
+      timestamp: new Date().toISOString(),
+      requestId: 'req-security-123',
+      version: '1.0',
+    });
   }),
 ];

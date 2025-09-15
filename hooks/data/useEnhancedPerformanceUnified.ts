@@ -6,7 +6,7 @@
 'use client';
 
 import { useEffect, useCallback, useMemo } from 'react';
-import { useUnifiedPerformanceStore } from '../lib/store/unified-performance';
+import { useUnifiedPerformanceStore } from '../../lib/store/unified-performance';
 
 export interface UsePerformanceOptions {
   autoStart?: boolean;

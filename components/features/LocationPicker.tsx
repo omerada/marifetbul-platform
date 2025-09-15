@@ -10,7 +10,7 @@ import { Search, MapPin, X, Target, MapIcon } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
-import { useUnifiedLocation } from '@/hooks/useUnifiedLocation';
+import { useUnifiedLocation } from '@/hooks';
 import type { Coordinates } from '@/types';
 
 interface LocationPickerProps {

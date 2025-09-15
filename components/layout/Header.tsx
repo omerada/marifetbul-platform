@@ -18,7 +18,7 @@ import {
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { UniversalSearch } from '@/components/features';
 import useAuthStore from '@/lib/store/auth';
-import { useUnreadCount } from '@/hooks/useMessages';
+import { useUnreadCount } from '@/hooks';
 
 export function Header() {
   const router = useRouter();

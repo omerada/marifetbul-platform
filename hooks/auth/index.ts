@@ -5,7 +5,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useAuth as useBaseAuth } from '../useAuth';
+import { useAuth as useBaseAuth } from '../core/useAuth';
 
 export function useAuthState() {
   const auth = useBaseAuth();

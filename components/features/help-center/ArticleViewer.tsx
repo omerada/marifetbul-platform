@@ -20,7 +20,7 @@ import {
   Facebook,
   Twitter,
 } from 'lucide-react';
-import { useHelpCenter } from '@/hooks/useHelpCenter';
+import { useHelpCenter } from '@/hooks';
 import { cn } from '@/lib/utils';
 import type { HelpArticle } from '@/types';
 

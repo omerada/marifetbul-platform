@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { User, Conversation } from '@/types';
 import { Card, Button } from '@/components/ui';
-import { useConversations } from '@/hooks/useMessages';
+import { useConversations } from '@/hooks';
 import {
   MessageCircle,
   Search,

@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import { Heart, Bookmark, Share2, Copy, Check } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { useSocialShare } from '@/hooks/useSocialShare';
+import { useSocialShare } from '@/hooks';
 import { useClipboard } from '@/hooks/ui';
 import { cn } from '@/lib/utils';
 

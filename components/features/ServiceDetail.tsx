@@ -16,7 +16,7 @@ import {
   MessageCircle,
   MapPin,
 } from 'lucide-react';
-import { usePackageDetail } from '@/hooks/usePackageDetail';
+import { usePackageDetail } from '@/hooks';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -277,36 +277,40 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
                         }
                       >
                         <div className="mb-2 flex items-center justify-between">
-                          <h3 className="font-semibold">{details.title}</h3>
+                          <h3 className="font-semibold">
+                            {(details as any).title}
+                          </h3>
                           <Badge
                             variant={tier === 'premium' ? 'default' : 'outline'}
                           >
-                            {formatPrice(details.price)}
+                            {formatPrice((details as any).price)}
                           </Badge>
                         </div>
                         <p className="mb-3 text-sm text-gray-600">
-                          {details.description}
+                          {(details as any).description}
                         </p>
                         <div className="space-y-1 text-sm">
                           <div className="flex items-center">
                             <Clock className="mr-1 h-3 w-3" />
-                            {formatDeliveryTime(details.deliveryTime)}
+                            {formatDeliveryTime((details as any).deliveryTime)}
                           </div>
                           <div className="flex items-center">
                             <RefreshCw className="mr-1 h-3 w-3" />
-                            {details.revisions} revizyon
+                            {(details as any).revisions} revizyon
                           </div>
                         </div>
                         <ul className="mt-3 space-y-1">
-                          {details.features?.map((feature, index) => (
-                            <li
-                              key={index}
-                              className="flex items-start text-sm"
-                            >
-                              <Check className="mt-0.5 mr-1 h-3 w-3 text-green-500" />
-                              {feature}
-                            </li>
-                          ))}
+                          {(details as any).features?.map(
+                            (feature: any, index: number) => (
+                              <li
+                                key={index}
+                                className="flex items-start text-sm"
+                              >
+                                <Check className="mt-0.5 mr-1 h-3 w-3 text-green-500" />
+                                {feature}
+                              </li>
+                            )
+                          )}
                         </ul>
                       </div>
                     )

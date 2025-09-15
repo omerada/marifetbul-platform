@@ -6,7 +6,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { Loading } from '@/components/ui';
-import { usePayment } from '@/hooks/usePayment';
+import { usePayment } from '@/hooks';
 import { Payment, PaymentMethodType } from '@/types';
 import {
   Search,

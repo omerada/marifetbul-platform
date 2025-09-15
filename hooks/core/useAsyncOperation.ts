@@ -4,7 +4,7 @@ export {
   useAsyncAction,
   useMultipleAsyncOperations,
   useMutation,
-} from './core/useUnifiedAsync';
+} from './useUnifiedAsync';
 
 // Legacy type exports for backward compatibility
 export type {
@@ -12,4 +12,4 @@ export type {
   AsyncActionHook,
   AsyncState,
   MutationOptions,
-} from './core/useUnifiedAsync';
+} from './useUnifiedAsync';

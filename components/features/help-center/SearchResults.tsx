@@ -11,7 +11,7 @@ import {
   ChevronDown,
   Loader2,
 } from 'lucide-react';
-import { useHelpCenter } from '@/hooks/useHelpCenter';
+import { useHelpCenter } from '@/hooks';
 import { ArticleCard } from './ArticleCard';
 import { cn } from '@/lib/utils';
 import type { HelpArticle, HelpCategory } from '@/types';

@@ -3,7 +3,7 @@
 import useSWR from 'swr';
 import { Message, Conversation, ApiResponse } from '@/types';
 import { apiClient } from '@/lib/api/client';
-import { useAsyncOperation, useAsyncAction } from './useAsyncOperation';
+import { useAsyncOperation, useAsyncAction } from '../core/useAsyncOperation';
 
 // Hook to fetch conversations
 export function useConversations() {

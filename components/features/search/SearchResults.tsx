@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useMarketplace } from '@/hooks/useMarketplace';
+import { useMarketplace } from '@/hooks';
 import { MarketplaceList } from '@/components/features/marketplace/MarketplaceList';
 import { EmptyState } from '@/components/features/marketplace/EmptyState';
 import { Card } from '@/components/ui/Card';

@@ -17,8 +17,8 @@ import {
   CheckCircle,
   AlertCircle,
 } from 'lucide-react';
-import { useWebSocket } from '@/hooks/useWebSocket';
-import { useAuth } from '@/hooks/useAuth';
+import { useWebSocket } from '@/hooks';
+import { useAuth } from '@/hooks';
 import { cn } from '@/lib/utils';
 
 interface ChatWidgetProps {
