@@ -77,7 +77,10 @@ export {
   SkeletonText,
   SkeletonAvatar,
   SkeletonCard,
-} from './Skeleton';
+  SkeletonComponent,
+  SkeletonPage,
+  UnifiedSkeletonSystem,
+} from './UnifiedSkeleton';
 
 // Interactive Components
 export {

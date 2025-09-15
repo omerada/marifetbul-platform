@@ -44,17 +44,19 @@ export interface Message {
   id: string;
   conversationId: string;
   senderId: string;
-  receiverId: string;
+  receiverId?: string; // Made optional for MSW compatibility
   content: string;
   type: MessageType;
   attachments?: FileAttachment[];
   isRead: boolean;
-  isEdited: boolean;
+  isEdited?: boolean; // Made optional for MSW compatibility
   sentAt: string;
+  createdAt: string; // For MSW compatibility
   readAt?: string;
   editedAt?: string;
   replyTo?: string;
   reactions?: MessageReaction[];
+  sender?: User; // For MSW compatibility (backward compatibility with API handlers)
 }
 
 export type MessageType =
@@ -75,24 +77,48 @@ export interface MessageReaction {
 export interface Conversation {
   id: string;
   participants: ConversationParticipant[];
-  type: 'direct' | 'group' | 'support';
+  type?: 'direct' | 'group' | 'support' | 'order'; // Made optional for MSW compatibility
   title?: string;
   lastMessage?: Message;
   unreadCount: number;
   createdAt: string;
   updatedAt: string;
-  isArchived: boolean;
-  isMuted: boolean;
-  settings: ConversationSettings;
+  isArchived?: boolean; // Made optional for MSW compatibility
+  isMuted?: boolean; // Made optional for MSW compatibility
+  settings?: ConversationSettings; // Made optional for MSW compatibility
+  // MSW and store compatibility fields
+  lastActivity?: string;
+  isPinned?: boolean;
+  jobId?: string;
+  packageId?: string;
+  orderId?: string; // For component compatibility
+  metadata?: Record<string, unknown>; // For MSW compatibility
 }
 
 export interface ConversationParticipant {
   userId: string;
-  user: User;
-  role: 'member' | 'admin' | 'owner';
-  joinedAt: string;
+  user?: User; // Optional for backward compatibility
+  role?: 'member' | 'admin' | 'owner'; // Optional for MSW compatibility
+  joinedAt?: string; // Optional for MSW compatibility
   lastSeenAt?: string;
-  permissions: ConversationPermissions;
+  lastReadAt?: string; // For MSW compatibility
+  permissions?: ConversationPermissions; // Optional for MSW compatibility
+  // MSW compatibility fields - directly from User for backward compatibility
+  id?: string; // From User
+  email?: string; // From User
+  name?: string; // From User
+  firstName?: string; // From User
+  lastName?: string; // From User
+  avatar?: string; // From User
+  userType?: 'freelancer' | 'employer' | 'admin'; // From User
+  accountStatus?: string; // From User
+  verificationStatus?: string; // From User
+  verificationBadges?: string[]; // From User
+  createdAt?: string; // From User
+  updatedAt?: string; // From User
+  isTyping?: boolean; // For messaging
+  isOnline?: boolean; // For messaging
+  location?: string; // For component compatibility
 }
 
 export interface ConversationPermissions {

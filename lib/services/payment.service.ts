@@ -1,4 +1,4 @@
-import { Payment } from '@/lib/types';
+import { Payment } from '@/types';
 
 export interface CreatePaymentRequest {
   userId: string;

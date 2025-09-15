@@ -4,7 +4,7 @@
  */
 
 import { BaseService } from '../base';
-import type { InAppNotification } from '../../types';
+import type { InAppNotification } from '@/types';
 
 export class NotificationService extends BaseService {
   private static instance: NotificationService;

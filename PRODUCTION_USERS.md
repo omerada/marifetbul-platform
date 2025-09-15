@@ -53,3 +53,15 @@ Enterprise-grade employer features:
 - **Advanced filtering**: Kategori, konum, bütçe, yetenek filtreleri
 - **Real-time data**: Mock API ile gerçek zamanlı data simülasyonu
 - **Performance monitoring**: Web vitals tracking
+
+Merhaba,
+
+Ana Kurallar;
+-Projeyi detaylı bir inceleme ve analiz yap.
+-İşlemlerden sonra Typescript hatalarını kontrol et varsa production-ready olacak şekilde hataları düzelt.
+
+1-Mevcut projemdeki duplicate,conflict yapılar varsa bunları tespit et ve gereksiz olanları sil.
+
+2-Proje hiyerarşimi daha iyi, klasörlenmiş kategorize edilmiş anlaşılır, temiz bir yapı olacak şekilde iyileştirmeler yaparak karmaşık alanları organize et.
+
+Adım adım ilerleyelim ilk önceliğimiz 1. adım olsun bu adımı tamamen tamamladıktan sonra 2. adıma geçmek için komutumu bekle. #codebase

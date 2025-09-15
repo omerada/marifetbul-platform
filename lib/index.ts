@@ -16,7 +16,7 @@ export * from './infrastructure/geocoding';
 
 // === CORE SYSTEM ===
 export * from './store';
-export * from './types';
+// export * from './types'; // Removed - use types/index.ts instead
 export * from './validations';
 
 // === UTILITIES ===

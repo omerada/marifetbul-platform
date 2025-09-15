@@ -18,7 +18,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { useJobDetail } from '@/hooks';
-import { formatJobBudget, getBudgetType } from '@/lib/utils/typeGuards';
+import { formatJobBudget, getBudgetType } from '@/lib/utils';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -294,7 +294,7 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
                     >
                       <FileText className="mr-3 h-5 w-5 text-gray-400" />
                       <div className="flex-1">
-                        <div className="font-medium">{attachment.name}</div>
+                        <div className="font-medium">{attachment.filename}</div>
                         <div className="text-sm text-gray-500">
                           {attachment.type}
                         </div>
@@ -355,7 +355,9 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
                   className="mr-4 h-12 w-12"
                 >
                   <AvatarFallback>
-                    {currentJob.employer.firstName.charAt(0)}
+                    {currentJob.employer.firstName?.charAt(0) ||
+                      currentJob.employer.lastName?.charAt(0) ||
+                      'E'}
                   </AvatarFallback>
                 </Avatar>
                 <div>

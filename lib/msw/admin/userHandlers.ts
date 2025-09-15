@@ -150,8 +150,13 @@ const generateMockUsers = (): AdminUserData[] => {
       warningCount: Math.floor(Math.random() * 3),
       reputationScore: Math.floor(Math.random() * 40) + 60, // 60-100
       riskScore: Math.floor(Math.random() * 50), // 0-50
-      notes: [],
+      notes: Math.random() > 0.7 ? 'Admin notes for this user' : undefined,
       suspensionHistory: [],
+      statistics: {
+        actionsPerformed: Math.floor(Math.random() * 200) + 50,
+        usersModerated: Math.floor(Math.random() * 20),
+        ticketsResolved: Math.floor(Math.random() * 15),
+      },
     };
   });
 };

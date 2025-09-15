@@ -59,7 +59,18 @@ const mockOrders: Order[] = [
         createdAt: '2025-09-11T14:30:00Z',
         sentAt: '2025-09-11T14:30:00Z',
         isRead: true,
-        attachments: ['logo-v1.png'],
+        attachments: [
+          {
+            id: 'att-1',
+            name: 'logo-v1.png',
+            type: 'image/png',
+            filename: 'logo-v1.png',
+            size: 2048,
+            mimetype: 'image/png',
+            url: '/attachments/logo-v1.png',
+            uploadedAt: new Date().toISOString(),
+          },
+        ],
       },
       {
         id: 'comm-2',

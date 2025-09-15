@@ -72,9 +72,6 @@ export const reviewsAnalyticsHandlers = [
             },
       timeframe: 'month',
       lastUpdated: new Date().toISOString(),
-      timestamp: new Date().toISOString(),
-      requestId: 'req-analytics-123',
-      version: '1.0',
     };
 
     return HttpResponse.json(response);

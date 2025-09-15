@@ -206,7 +206,8 @@ export function UserTable({ className }: UserTableProps) {
     onSelectAll();
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status?: string) => {
+    if (!status) return 'bg-gray-100 text-gray-800';
     switch (status) {
       case 'active':
         return 'bg-green-100 text-green-800';
@@ -490,7 +491,9 @@ export function UserTable({ className }: UserTableProps) {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {new Date(user.createdAt).toLocaleDateString('tr-TR')}
+                        {user.createdAt
+                          ? new Date(user.createdAt).toLocaleDateString('tr-TR')
+                          : 'N/A'}
                       </TableCell>
                       <TableCell>
                         {user.lastActiveAt
@@ -510,7 +513,7 @@ export function UserTable({ className }: UserTableProps) {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
                               onClick={() => {
-                                setActionUser(user);
+                                setActionUser(user as AdminUserData);
                               }}
                             >
                               <Eye className="mr-2 h-4 w-4" />
@@ -518,7 +521,7 @@ export function UserTable({ className }: UserTableProps) {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => {
-                                setActionUser(user);
+                                setActionUser(user as AdminUserData);
                               }}
                             >
                               <Mail className="mr-2 h-4 w-4" />
@@ -527,7 +530,7 @@ export function UserTable({ className }: UserTableProps) {
                             {user.accountStatus === 'active' ? (
                               <DropdownMenuItem
                                 onClick={() => {
-                                  setActionUser(user);
+                                  setActionUser(user as AdminUserData);
                                   handleUserAction('suspend');
                                 }}
                               >
@@ -537,7 +540,7 @@ export function UserTable({ className }: UserTableProps) {
                             ) : (
                               <DropdownMenuItem
                                 onClick={() => {
-                                  setActionUser(user);
+                                  setActionUser(user as AdminUserData);
                                   handleUserAction('activate');
                                 }}
                               >
@@ -548,7 +551,7 @@ export function UserTable({ className }: UserTableProps) {
                             {user.verificationStatus !== 'verified' && (
                               <DropdownMenuItem
                                 onClick={() => {
-                                  setActionUser(user);
+                                  setActionUser(user as AdminUserData);
                                   handleUserAction('verify');
                                 }}
                               >
@@ -558,7 +561,7 @@ export function UserTable({ className }: UserTableProps) {
                             )}
                             <DropdownMenuItem
                               onClick={() => {
-                                setActionUser(user);
+                                setActionUser(user as AdminUserData);
                                 handleUserAction('ban');
                               }}
                             >
@@ -567,7 +570,7 @@ export function UserTable({ className }: UserTableProps) {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => {
-                                setActionUser(user);
+                                setActionUser(user as AdminUserData);
                                 setShowDeleteDialog(true);
                               }}
                               className="text-red-600"

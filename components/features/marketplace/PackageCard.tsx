@@ -106,7 +106,13 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
                       <span className="font-medium">
                         {pkg.rating?.toFixed(1) || 'N/A'}
                       </span>
-                      <span className="text-gray-500">({pkg.reviews})</span>
+                      <span className="text-gray-500">
+                        (
+                        {Array.isArray(pkg.reviews)
+                          ? pkg.reviews.length
+                          : pkg.reviews || 0}
+                        )
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -313,7 +319,13 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
                 {pkg.rating?.toFixed(1) || 'N/A'}
               </span>
             </div>
-            <span className="text-xs text-gray-500">({pkg.reviews})</span>
+            <span className="text-xs text-gray-500">
+              (
+              {Array.isArray(pkg.reviews)
+                ? pkg.reviews.length
+                : pkg.reviews || 0}
+              )
+            </span>
           </div>
 
           <div className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2">

@@ -107,7 +107,7 @@ export function usePackageOrder(packageId: string) {
     const tierPrice = currentPackage.pricing?.[tier];
     const addOnCosts = addOns
       .map((addOnId) => {
-        const addOn = currentPackage.addOns.find((a) => a.id === addOnId);
+        const addOn = currentPackage.addOns?.find((a) => a.id === addOnId);
         return addOn
           ? { id: addOn.id, title: addOn.title, price: addOn.price }
           : null;

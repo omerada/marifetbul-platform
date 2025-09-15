@@ -1,10 +1,10 @@
 // Core base types for the entire application
 export interface User {
   id: string;
-  userId?: string; // Alias for id for compatibility
+  userId?: string; // Optional for ConversationParticipant compatibility
   email: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string; // Made optional for admin compatibility
+  lastName?: string; // Made optional for admin compatibility
   name?: string; // Computed field from firstName + lastName or custom name
   avatar?: string;
   userType: 'freelancer' | 'employer' | 'admin';
@@ -27,11 +27,12 @@ export interface User {
   permissions?: string[];
   lastLoginAt?: string;
   lastActiveAt?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string; // Made optional for MSW compatibility
+  updatedAt?: string; // Made optional for MSW compatibility
   // Additional compatibility fields
   accountStatus?: 'active' | 'suspended' | 'banned';
   verificationStatus?: 'verified' | 'pending' | 'unverified';
+  verificationBadges?: string[]; // For admin compatibility
   // Messaging handler compatibility
   isTyping?: boolean;
   isOnline?: boolean;
@@ -62,6 +63,9 @@ export interface Freelancer extends User {
   // Additional compatibility fields
   reviewCount?: number; // Alias for totalReviews
   completedProjects?: number; // Alias for completedJobs
+  // MSW compatibility fields
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Employer extends User {
@@ -159,6 +163,9 @@ export interface FileAttachment {
   type: string; // MIME type
   size: number; // File size in bytes
   uploadedAt: string;
+  filename?: string; // MSW compatibility - alternative field name
+  mimetype?: string; // MSW compatibility - alternative field name
+  thumbnailUrl?: string; // For image/video attachments
 }
 
 // Notification base types

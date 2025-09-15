@@ -6,7 +6,7 @@
 // ================================================
 // CORE UTILITIES (MOST COMMONLY USED)
 // ================================================
-export { cn } from '../utils'; // ClassNames utility - keep main export
+// cn utility is exported from parent ../utils.ts to avoid circular import
 
 // Date utilities
 export * from './date';
@@ -26,27 +26,12 @@ export * from './typeGuards';
 // ================================================
 // LAZY LOADING UTILITIES
 // ================================================
-export {
-  createLazyComponent,
-  withSuspense,
-  ComponentLoadingSkeleton,
-  CardLoadingSkeleton,
-  PageLoadingSkeleton,
-  useComponentPerformance,
-  useRenderPerformance,
-  dynamicImportWithRetry,
-  preloadComponent,
-} from './lazy-loading';
+// These utilities moved to components/shared/LazyComponents.tsx
 
 // ================================================
 // PERFORMANCE OPTIMIZATION UTILITIES
 // ================================================
-export {
-  useStableCallback,
-  useMemoizedSelector,
-  OptimizedList,
-  deepMemoCompare,
-} from './performance-optimization';
+// These utilities moved to components/shared/LazyComponents.tsx
 
 // ================================================
 // PRODUCTION OPTIMIZATION UTILITIES

@@ -1,4 +1,4 @@
-import { Notification } from '@/lib/types';
+import { Notification } from '@/types';
 
 export interface CreateNotificationRequest {
   userId: string;

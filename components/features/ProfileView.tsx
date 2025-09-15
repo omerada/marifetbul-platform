@@ -58,8 +58,8 @@ export function ProfileView({
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-blue-100">
                       <span className="text-2xl font-bold text-blue-600">
-                        {freelancer.firstName[0]}
-                        {freelancer.lastName[0]}
+                        {freelancer.firstName?.[0] || 'F'}
+                        {freelancer.lastName?.[0] || ''}
                       </span>
                     </div>
                   )}
@@ -110,9 +110,11 @@ export function ProfileView({
 
                     <div className="flex items-center">
                       <Calendar className="mr-1 h-4 w-4" />
-                      {new Date(freelancer.createdAt).toLocaleDateString(
-                        'tr-TR'
-                      )}{' '}
+                      {freelancer.createdAt
+                        ? new Date(freelancer.createdAt).toLocaleDateString(
+                            'tr-TR'
+                          )
+                        : 'Belirtilmemiş'}{' '}
                       tarihinde katıldı
                     </div>
                   </div>

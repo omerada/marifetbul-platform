@@ -293,7 +293,7 @@ export const FavoritesManager: React.FC<FavoritesManagerProps> = ({
           'firstName' in item
             ? `${item.firstName} ${item.lastName}`
             : item.title;
-        if (title.toLowerCase().includes(query)) return true;
+        if (title?.toLowerCase().includes(query)) return true;
 
         // Search in description/bio
         let description = '';

@@ -227,7 +227,7 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
         // Add selected add-ons (only for PackageDetail)
         if (isPackageDetail(currentPackage)) {
           selectedAddOns.forEach((addOnId) => {
-            const addOn = currentPackage.addOns.find((a) => a.id === addOnId);
+            const addOn = currentPackage.addOns?.find((a) => a.id === addOnId);
             if (addOn) {
               total += addOn.price;
             }
@@ -258,7 +258,7 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
         // Add selected add-ons delivery time (only for PackageDetail)
         if (isPackageDetail(currentPackage)) {
           selectedAddOns.forEach((addOnId) => {
-            const addOn = currentPackage.addOns.find((a) => a.id === addOnId);
+            const addOn = currentPackage.addOns?.find((a) => a.id === addOnId);
             if (addOn && addOn.deliveryTime > 0) {
               deliveryTime += addOn.deliveryTime;
             } else if (addOn && addOn.deliveryTime < 0) {

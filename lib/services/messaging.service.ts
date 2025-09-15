@@ -1,4 +1,4 @@
-import { Message, Conversation } from '@/lib/types';
+import { Message, Conversation } from '@/types';
 
 export interface SendMessageRequest {
   conversationId: string;

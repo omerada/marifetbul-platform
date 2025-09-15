@@ -211,6 +211,10 @@ Uzun yıllardır grafik tasarım alanında faaliyet göstermekteyiz ve birçok b
   orders: 134,
   rating: 4.8,
   reviews: [],
+  // Required PackageDetail properties
+  similarPackages: [],
+  frequentlyBoughtWith: [],
+  sellerOtherPackages: [],
 };
 
 export const mockProposals: Proposal[] = [

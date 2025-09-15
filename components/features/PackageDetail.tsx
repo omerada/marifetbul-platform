@@ -137,9 +137,10 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
     }
   };
 
-  const selectedAddOnDetails = currentPackage.addOns.filter((addon) =>
-    selectedAddOns.includes(addon.id)
-  );
+  const selectedAddOnDetails =
+    currentPackage.addOns?.filter((addon) =>
+      selectedAddOns.includes(addon.id)
+    ) || [];
 
   return (
     <div className={`mx-auto max-w-6xl space-y-8 p-6 ${className}`}>
@@ -372,14 +373,16 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                           Neler Dahil
                         </h3>
                         <ul className="space-y-2">
-                          {currentPackage.whatIncluded.map((item, index) => (
+                          {currentPackage.whatIncluded?.map((item, index) => (
                             <li key={index} className="flex items-start">
                               <CheckCircle className="mt-0.5 mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
                               <span>
-                                {typeof item === 'string' ? item : item.name}
+                                {typeof item === 'string'
+                                  ? item
+                                  : (item as { name?: string })?.name || 'Item'}
                               </span>
                             </li>
-                          ))}
+                          )) || null}
                         </ul>
                       </div>
                     )}
@@ -388,14 +391,14 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
 
               <TabsContent value="faq" className="p-6">
                 <div className="space-y-4">
-                  {currentPackage.faq.map((item, index) => (
+                  {currentPackage.faq?.map((item, index) => (
                     <div key={index}>
                       <h4 className="mb-2 font-medium text-gray-900">
                         {item.question}
                       </h4>
                       <p className="text-gray-700">{item.answer}</p>
                     </div>
-                  ))}
+                  )) || <p className="text-gray-500">Henüz SSS eklenmemiş.</p>}
                 </div>
               </TabsContent>
 
@@ -468,32 +471,38 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
               <CardTitle>Hizmet Sağlayıcı</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="mb-4 flex items-center">
-                <Avatar
-                  src={currentPackage.freelancer.avatar}
-                  alt={`${currentPackage.freelancer.firstName} ${currentPackage.freelancer.lastName}`}
-                  className="mr-4 h-12 w-12"
-                >
-                  <AvatarFallback>
-                    {currentPackage.freelancer.firstName.charAt(0)}
-                    {currentPackage.freelancer.lastName.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="font-semibold">
-                    {currentPackage.freelancer.firstName}{' '}
-                    {currentPackage.freelancer.lastName}
-                  </h3>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Star className="mr-1 h-4 w-4 text-yellow-400" />
-                    <span>{currentPackage.freelancer.rating}</span>
-                    <span className="mx-1">•</span>
-                    <span>
-                      {currentPackage.freelancer.reviewCount} değerlendirme
-                    </span>
+              {currentPackage.freelancer ? (
+                <>
+                  <div className="mb-4 flex items-center">
+                    <Avatar
+                      src={currentPackage.freelancer.avatar}
+                      alt={`${currentPackage.freelancer.firstName} ${currentPackage.freelancer.lastName}`}
+                      className="mr-4 h-12 w-12"
+                    >
+                      <AvatarFallback>
+                        {currentPackage.freelancer.firstName?.charAt(0) || 'F'}
+                        {currentPackage.freelancer.lastName?.charAt(0) || ''}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h3 className="font-semibold">
+                        {currentPackage.freelancer.firstName}{' '}
+                        {currentPackage.freelancer.lastName}
+                      </h3>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Star className="mr-1 h-4 w-4 text-yellow-400" />
+                        <span>{currentPackage.freelancer.rating}</span>
+                        <span className="mx-1">•</span>
+                        <span>
+                          {currentPackage.freelancer.reviewCount} değerlendirme
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </>
+              ) : (
+                <p className="text-gray-500">Sağlayıcı bilgisi mevcut değil</p>
+              )}
 
               <div className="mb-4 space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -520,12 +529,14 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                 </div>
               </div>
 
-              <Link href={`/profile/${currentPackage.freelancer.id}`}>
-                <Button className="w-full" variant="outline">
-                  <User className="mr-2 h-4 w-4" />
-                  Profili Görüntüle
-                </Button>
-              </Link>
+              {currentPackage.freelancer && (
+                <Link href={`/profile/${currentPackage.freelancer.id}`}>
+                  <Button className="w-full" variant="outline">
+                    <User className="mr-2 h-4 w-4" />
+                    Profili Görüntüle
+                  </Button>
+                </Link>
+              )}
             </CardContent>
           </Card>
 

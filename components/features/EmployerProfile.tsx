@@ -30,7 +30,8 @@ export function EmployerProfile({ user }: EmployerProfileProps) {
   );
   const [isFavorited, setIsFavorited] = useState(false);
 
-  const formatJoinDate = (dateString: string) => {
+  const formatJoinDate = (dateString?: string) => {
+    if (!dateString) return 'Belirtilmemiş';
     const date = new Date(dateString);
     return date.toLocaleDateString('tr-TR', {
       year: 'numeric',

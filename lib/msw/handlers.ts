@@ -11,6 +11,7 @@ import {
   Freelancer,
   Message,
   Conversation,
+  ConversationParticipant,
 } from '@/types';
 import { detailHandlers } from './handlers/details';
 import { messagingHandlers } from './handlers/messaging';
@@ -18,6 +19,30 @@ import { orderHandlers } from './handlers/orders';
 import { paymentHandlers } from './handlers/payment';
 import { notificationHandlers } from './handlers/notification';
 import { adminHandlers } from './handlers/admin';
+
+// Helper function to convert User to ConversationParticipant
+function userToParticipant(user: User): ConversationParticipant {
+  return {
+    userId: user.id || user.userId || '',
+    user,
+    // Copy relevant User fields for compatibility
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    avatar: user.avatar,
+    userType: user.userType,
+    accountStatus: user.accountStatus,
+    verificationStatus: user.verificationStatus,
+    verificationBadges: user.verificationBadges,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+    isTyping: user.isTyping,
+    isOnline: user.isOnline,
+    location: user.location,
+  };
+}
 import { dashboardHandlers } from './admin/dashboardHandlers';
 import { moderationHandlers } from './admin/moderationHandlers';
 import { filteringHandlers } from './admin/filteringHandlers';
@@ -566,17 +591,22 @@ const mockUsers: User[] = [
 const mockConversations: Conversation[] = [
   {
     id: 'conv-1',
-    participants: [mockUsers[0], mockUsers[1]], // freelancer-1, employer-1
+    participants: [
+      { ...mockUsers[0], userId: mockUsers[0].id } as ConversationParticipant,
+      { ...mockUsers[1], userId: mockUsers[1].id } as ConversationParticipant,
+    ], // freelancer-1, employer-1
     lastMessage: {
       id: 'msg-5',
       conversationId: 'conv-1',
       senderId: 'employer-1',
+      receiverId: 'freelancer-1', // Added missing field
       sender: mockUsers[1],
       content:
         'Mükemmel! Hemen başlayabilirsiniz. Hangi bilgilere ihtiyacınız var?',
       type: 'text' as const,
       sentAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
       isRead: false,
+      isEdited: false, // Added missing field
       createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5 minutes ago
     },
     lastActivity: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
@@ -587,7 +617,10 @@ const mockConversations: Conversation[] = [
   },
   {
     id: 'conv-2',
-    participants: [mockUsers[0], mockUsers[2]], // freelancer-1, employer-2
+    participants: [
+      userToParticipant(mockUsers[0]),
+      userToParticipant(mockUsers[2]),
+    ], // freelancer-1, employer-2
     lastMessage: {
       id: 'msg-8',
       conversationId: 'conv-2',
@@ -607,7 +640,10 @@ const mockConversations: Conversation[] = [
   },
   {
     id: 'conv-3',
-    participants: [mockUsers[0], mockUsers[3]], // freelancer-1, employer-3
+    participants: [
+      userToParticipant(mockUsers[0]),
+      userToParticipant(mockUsers[3]),
+    ], // freelancer-1, employer-3
     lastMessage: {
       id: 'msg-12',
       conversationId: 'conv-3',
@@ -1076,7 +1112,7 @@ function createPackageDetail(servicePackage: ServicePackage): PackageDetail {
         description: 'Başlangıç seviyesi çözüm',
         features: servicePackage.features?.slice(0, 3) || [],
         deliveryTime: servicePackage.deliveryTime,
-        revisions: servicePackage.revisions,
+        revisions: servicePackage.revisions ?? 1, // Default to 1 if undefined
       },
       standard: {
         price: Math.round(servicePackage.price * 1.5),
@@ -1118,6 +1154,10 @@ function createPackageDetail(servicePackage: ServicePackage): PackageDetail {
         deliveryTime: 1,
       },
     ],
+    // Required PackageDetail properties
+    similarPackages: [],
+    frequentlyBoughtWith: [],
+    sellerOtherPackages: [],
   };
 }
 
@@ -1728,7 +1768,9 @@ export const handlers = [
 
     // Filter conversations where user is a participant
     const userConversations = mockConversations
-      .filter((conv) => conv.participants.some((p: User) => p.id === userId))
+      .filter((conv) =>
+        conv.participants.some((p) => p.userId === userId || p.id === userId)
+      )
       .sort(
         (a, b) =>
           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
@@ -1758,7 +1800,7 @@ export const handlers = [
     const conversation = mockConversations.find(
       (conv) =>
         conv.id === conversationId &&
-        conv.participants.some((p: User) => p.id === userId)
+        conv.participants.some((p) => p.userId === userId || p.id === userId)
     );
 
     if (!conversation) {
@@ -1793,7 +1835,7 @@ export const handlers = [
     const conversation = mockConversations.find(
       (conv) =>
         conv.id === conversationId &&
-        conv.participants.some((p: User) => p.id === userId)
+        conv.participants.some((p) => p.userId === userId || p.id === userId)
     );
 
     if (!conversation) {
@@ -1840,7 +1882,7 @@ export const handlers = [
     const conversation = mockConversations.find(
       (conv) =>
         conv.id === conversationId &&
-        conv.participants.some((p: User) => p.id === userId)
+        conv.participants.some((p) => p.userId === userId || p.id === userId)
     );
 
     if (!conversation) {
@@ -1887,7 +1929,7 @@ export const handlers = [
 
       // Update unread count for other participants
       const otherParticipant = conversation.participants.find(
-        (p: User) => p.id !== userId
+        (p) => (p.userId || p.id) !== userId
       );
       if (otherParticipant) {
         mockConversations[convIndex].unreadCount += 1;
@@ -1936,8 +1978,10 @@ export const handlers = [
     const existingConversation = mockConversations.find(
       (conv) =>
         conv.participants.length === 2 &&
-        conv.participants.some((p: User) => p.id === userId) &&
-        conv.participants.some((p: User) => p.id === participantId) &&
+        conv.participants.some((p) => p.userId === userId || p.id === userId) &&
+        conv.participants.some(
+          (p) => p.userId === participantId || p.id === participantId
+        ) &&
         (!jobId || conv.jobId === jobId) &&
         (!packageId || conv.packageId === packageId)
     );
@@ -1949,7 +1993,10 @@ export const handlers = [
     // Create new conversation
     const newConversation: Conversation = {
       id: `conv-${Date.now()}`,
-      participants: [currentUser, participant],
+      participants: [
+        userToParticipant(currentUser),
+        userToParticipant(participant),
+      ],
       lastActivity: new Date().toISOString(),
       unreadCount: 0,
       jobId,
@@ -2006,7 +2053,7 @@ export const handlers = [
       const convIndex = mockConversations.findIndex(
         (conv) =>
           conv.id === conversationId &&
-          conv.participants.some((p: User) => p.id === userId)
+          conv.participants.some((p) => p.userId === userId || p.id === userId)
       );
 
       if (convIndex === -1) {

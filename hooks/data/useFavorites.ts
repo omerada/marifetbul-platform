@@ -173,8 +173,8 @@ export function useFavorites() {
       const lowerQuery = query.toLowerCase();
       return store.favorites.freelancers.filter(
         (freelancer) =>
-          freelancer.firstName.toLowerCase().includes(lowerQuery) ||
-          freelancer.lastName.toLowerCase().includes(lowerQuery) ||
+          freelancer.firstName?.toLowerCase().includes(lowerQuery) ||
+          freelancer.lastName?.toLowerCase().includes(lowerQuery) ||
           (freelancer.title &&
             freelancer.title.toLowerCase().includes(lowerQuery))
       );

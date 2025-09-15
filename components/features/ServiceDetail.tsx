@@ -370,10 +370,10 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
-                  {servicePackage.whatIncluded.map((item, index) => (
+                  {servicePackage.whatIncluded?.map((item, index) => (
                     <li key={index} className="flex items-start">
                       <Check className="mt-0.5 mr-2 h-4 w-4 text-green-500" />
-                      {typeof item === 'string' ? item : item.name}
+                      {item}
                     </li>
                   ))}
                 </ul>

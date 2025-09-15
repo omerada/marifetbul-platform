@@ -1,6 +1,13 @@
-import type { BaseApiResponse } from '../../lib/types/enhanced/api-responses';
-
 // Analytics Types
+// BaseApiResponse type removed - use direct interfaces instead
+
+// Basic API response type for analytics
+interface BaseApiResponse<T = unknown> {
+  success: boolean;
+  data?: T;
+  message?: string;
+  error?: string;
+}
 export interface FreelancerAnalytics {
   profileViews: number;
   jobApplications: number;

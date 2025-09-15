@@ -39,9 +39,11 @@ export function useUserManagement() {
   const handleFilterChange = useCallback(
     (newFilters: Partial<UserFilters>) => {
       setFilters(newFilters);
-      fetchUsers(newFilters);
+      // Merge with current filters to ensure required fields are present
+      const mergedFilters = { ...selectors.filters, ...newFilters };
+      fetchUsers(mergedFilters);
     },
-    [setFilters, fetchUsers]
+    [setFilters, fetchUsers, selectors.filters]
   );
 
   const handlePageChange = useCallback(
@@ -56,9 +58,12 @@ export function useUserManagement() {
     async (userId: string, action: UserActionRequest) => {
       setIsActionLoading(true);
       try {
-        await performUserAction(userId, action);
+        await performUserAction(action);
         // Refresh current page after action
-        await fetchUsers(selectors.filters);
+        await fetchUsers({
+          ...selectors.filters,
+          search: selectors.filters.search || '',
+        });
       } catch (error) {
         console.error('User action failed:', error);
       } finally {

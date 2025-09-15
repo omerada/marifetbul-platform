@@ -403,7 +403,15 @@ export async function GET(request: NextRequest) {
           comparison = a.deliveryTime - b.deliveryTime;
           break;
         case 'popular':
-          comparison = (b.reviews ?? 0) - (a.reviews ?? 0);
+          const aReviews =
+            typeof a.reviews === 'number'
+              ? a.reviews
+              : (a.reviews?.length ?? 0);
+          const bReviews =
+            typeof b.reviews === 'number'
+              ? b.reviews
+              : (b.reviews?.length ?? 0);
+          comparison = bReviews - aReviews;
           break;
         default:
           comparison = 0;

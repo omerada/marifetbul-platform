@@ -260,10 +260,11 @@ export const messagingHandlers = [
     });
 
     // Sort by last activity
-    filteredConversations = filteredConversations.sort(
-      (a, b) =>
-        new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime()
-    );
+    filteredConversations = filteredConversations.sort((a, b) => {
+      const aTime = a.lastActivity ? new Date(a.lastActivity).getTime() : 0;
+      const bTime = b.lastActivity ? new Date(b.lastActivity).getTime() : 0;
+      return bTime - aTime;
+    });
 
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
@@ -365,7 +366,11 @@ export const messagingHandlers = [
 
     const newConversation: ChatConversation = {
       id: `conv-${Date.now()}`,
-      type: conversationData.type,
+      type:
+        conversationData.type &&
+        ['direct', 'group', 'support', 'order'].includes(conversationData.type)
+          ? (conversationData.type as 'direct' | 'group' | 'support' | 'order')
+          : 'direct',
       participants: conversationData.participantIds.map((userId) => {
         const user = mockUsers.find((u) => u.id === userId) || mockUsers[0];
         return {

@@ -78,6 +78,11 @@ const mockAdminUsers: AdminUserData[] = [
     rating: 4.8,
     reviewCount: 43,
     updatedAt: '2025-09-11T09:30:00Z',
+    statistics: {
+      actionsPerformed: 120,
+      usersModerated: 15,
+      ticketsResolved: 8,
+    },
   },
   {
     id: 'user-2',
@@ -108,6 +113,11 @@ const mockAdminUsers: AdminUserData[] = [
       },
     ],
     updatedAt: '2025-09-10T16:00:00Z',
+    statistics: {
+      actionsPerformed: 85,
+      usersModerated: 5,
+      ticketsResolved: 3,
+    },
   },
 ];
 
