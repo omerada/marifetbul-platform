@@ -180,6 +180,16 @@ import {
 } from './typeGuards';
 
 import {
+  ALLOWED_FILE_TYPES,
+  formatFileSize,
+  getFileIcon,
+  isFileTypeAllowed,
+  isFileSizeValid,
+  createFileAttachment,
+  validateFiles,
+} from './fileUpload';
+
+import {
   debounce,
   debounceAsync,
   throttle,
@@ -399,6 +409,17 @@ export {
   asyncTryCatch,
   memoizeAsync,
   AsyncUtils,
+};
+
+// File upload utilities
+export {
+  ALLOWED_FILE_TYPES,
+  formatFileSize,
+  getFileIcon,
+  isFileTypeAllowed,
+  isFileSizeValid,
+  createFileAttachment,
+  validateFiles,
 };
 
 // ================================================

@@ -25,7 +25,8 @@ import {
   ALLOWED_FILE_TYPES,
   formatFileSize,
   getFileIcon,
-} from '@/lib/shared/utils/fileUpload';
+  validateFiles,
+} from '@/lib/shared/utils';
 import { useToast } from '@/hooks';
 
 interface ChatInterfaceProps {
@@ -103,18 +104,24 @@ export function ChatInterface({
     }
   };
 
-  const handleFilesUploaded = (files: FileAttachment[]) => {
-    setPendingFiles((prev) => [...prev, ...files]);
+  const handleFilesUploaded = (files: File[]) => {
+    const { valid, errors } = validateFiles(files, {
+      maxFiles: 3,
+      maxSizeInMB: 10,
+      allowedTypes: ALLOWED_FILE_TYPES,
+    });
+
+    if (errors.length > 0) {
+      errors.forEach((error: string) => toast.error(error));
+      return;
+    }
+
+    setPendingFiles((prev) => [...prev, ...valid]);
     setShowFileUpload(false);
   };
 
   const handleRemoveFile = (fileId: string) => {
     setPendingFiles((prev) => prev.filter((f) => f.id !== fileId));
-  };
-
-  const handleFileUploadError = (error: string) => {
-    console.error('File upload error:', error);
-    toast.error('Dosya yükleme hatası');
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -300,13 +307,11 @@ export function ChatInterface({
           {showFileUpload && (
             <div className="mb-3">
               <FileUpload
-                onFilesUploaded={handleFilesUploaded}
-                onError={handleFileUploadError}
-                options={{
-                  allowedTypes: ALLOWED_FILE_TYPES,
-                  maxFiles: 3,
-                  multiple: true,
-                }}
+                onFileSelect={handleFilesUploaded}
+                accept={ALLOWED_FILE_TYPES.join(',')}
+                multiple={true}
+                maxFiles={3}
+                maxSize={10}
               />
             </div>
           )}

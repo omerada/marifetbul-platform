@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useJobDetailStore } from '@/lib/core/store';
-import { useAuthState as useAuth } from '../../shared/useAuth';
+import { useAuthState as useAuth } from '../shared/useAuth';
 
 export function useJobDetail(jobId: string) {
   const store = useJobDetailStore();
