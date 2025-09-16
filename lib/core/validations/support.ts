@@ -196,13 +196,8 @@ export const dateRangeSchema = z.object({
   dateTo: z.string().optional(),
 });
 
-// File upload schema
-export const fileUploadSchema = z.object({
-  name: z.string().min(1, 'Dosya adı gereklidir'),
-  type: z.string().min(1, 'Dosya tipi gereklidir'),
-  size: z.number().max(10 * 1024 * 1024, 'Dosya boyutu en fazla 10MB olabilir'),
-  url: z.string().url('Geçerli bir URL olmalıdır'),
-});
+// Import shared file validation
+import { uploadedFileSchema } from './file';
 
 // Type exports for forms
 export type CreateTicketFormData = z.infer<typeof createTicketSchema>;
@@ -213,7 +208,6 @@ export type ArticleSearchFormData = z.infer<typeof articleSearchSchema>;
 export type StartChatFormData = z.infer<typeof startChatSchema>;
 export type SendChatMessageFormData = z.infer<typeof sendChatMessageSchema>;
 export type ChatFeedbackFormData = z.infer<typeof chatFeedbackSchema>;
-export type FileUploadFormData = z.infer<typeof fileUploadSchema>;
 
 // Validation helper functions
 export const validateTicketData = (data: unknown) => {
@@ -229,7 +223,7 @@ export const validateChatMessage = (data: unknown) => {
 };
 
 export const validateFileUpload = (data: unknown) => {
-  return fileUploadSchema.safeParse(data);
+  return uploadedFileSchema.safeParse(data);
 };
 
 // Custom validation messages in Turkish

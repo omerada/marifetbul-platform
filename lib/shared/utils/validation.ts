@@ -222,6 +222,8 @@ export function validateRange(
 // ================================================
 // FILE VALIDATION
 // ================================================
+// Note: Primary file validation moved to @/lib/core/validations/file
+// These are legacy helpers for backward compatibility
 
 export function validateFileSize(file: File, maxSizeInMB: number): boolean {
   const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
@@ -232,6 +234,7 @@ export function validateFileType(file: File, allowedTypes: string[]): boolean {
   return allowedTypes.includes(file.type);
 }
 
+// Deprecated: Use core/validations/file instead
 export function validateImageFile(file: File): boolean {
   const allowedTypes = [
     'image/jpeg',
@@ -243,6 +246,7 @@ export function validateImageFile(file: File): boolean {
   return validateFileType(file, allowedTypes);
 }
 
+// Deprecated: Use core/validations/file instead
 export function validateDocumentFile(file: File): boolean {
   const allowedTypes = [
     'application/pdf',

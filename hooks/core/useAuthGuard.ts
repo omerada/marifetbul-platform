@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthState as useAuth } from '../shared/useAuth';
+import { useAuthState as useAuth } from '../../shared/useAuth';
 
 /**
  * Custom hook for route protection and role-based access control

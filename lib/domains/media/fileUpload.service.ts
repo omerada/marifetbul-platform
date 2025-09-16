@@ -348,7 +348,8 @@ export const uploadFiles = (files: File[]) =>
   getFileUploadService().uploadFiles(files);
 
 /**
- * File type validation
+ * @deprecated Use @/lib/core/validations/file instead
+ * File type validation - kept for backward compatibility
  */
 export const validateFileType = (
   file: File,
@@ -370,7 +371,8 @@ export const validateFileType = (
 };
 
 /**
- * File size validation
+ * @deprecated Use @/lib/core/validations/file instead
+ * File size validation - kept for backward compatibility
  */
 export const validateFileSize = (
   file: File,

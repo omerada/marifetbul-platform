@@ -12,6 +12,9 @@ import { z } from 'zod';
 // Re-export base validation schemas and utilities
 export * from './base';
 
+// Re-export file validation schemas
+export * from './file';
+
 // Re-export specific domain validations
 export * from './auth';
 export {

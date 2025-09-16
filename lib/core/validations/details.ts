@@ -3,7 +3,7 @@ import { baseSchemas, validateFormData } from './base';
 import validationMessages from './messages';
 
 // ================================================
-// DETAIL FORM VALIDATION SCHEMAS
+// DETAILS FORM VALIDATION SCHEMAS
 // ================================================
 // Optimized with base schema composition
 
@@ -82,32 +82,12 @@ export const orderSchema = z.object({
   urgentDelivery: baseSchemas.optional,
 });
 
-// File upload schema with enhanced validation
-export const fileUploadSchema = z.object({
-  file: z
-    .instanceof(File)
-    .refine((file) => file.size <= 10 * 1024 * 1024, {
-      message: "Dosya boyutu 10MB'dan büyük olamaz",
-    })
-    .refine(
-      (file) => {
-        const allowedTypes = [
-          'application/pdf',
-          'application/msword',
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          'image/jpeg',
-          'image/jpg',
-          'image/png',
-          'image/gif',
-          'text/plain',
-        ];
-        return allowedTypes.includes(file.type);
-      },
-      {
-        message:
-          'Desteklenmeyen dosya formatı. PDF, DOC, DOCX, JPG, PNG, GIF veya TXT dosyalarını yükleyebilirsiniz.',
-      }
-    ),
+// Import shared file validation
+import { fileSchema } from './file';
+
+// Package file upload schema using shared validation
+export const packageFileUploadSchema = z.object({
+  file: fileSchema,
 });
 
 // Review schema with base composition
@@ -192,7 +172,7 @@ export const contactFormSchema = z.object({
 // Type exports
 export type ProposalFormData = z.infer<typeof proposalSchema>;
 export type OrderFormData = z.infer<typeof orderSchema>;
-export type FileUploadData = z.infer<typeof fileUploadSchema>;
+export type FileUploadData = z.infer<typeof packageFileUploadSchema>;
 export type ReviewFormData = z.infer<typeof reviewSchema>;
 export type MessageFormData = z.infer<typeof messageSchema>;
 export type JobFiltersData = z.infer<typeof jobFiltersSchema>;
@@ -210,7 +190,7 @@ export const validateOrder = async (data: unknown) => {
 };
 
 export const validateFile = (file: File) => {
-  return fileUploadSchema.safeParse({ file });
+  return packageFileUploadSchema.safeParse({ file });
 };
 
 export const validateReview = async (data: unknown) => {

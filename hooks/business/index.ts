@@ -564,7 +564,7 @@ export function usePerformanceMonitor() {
 // ================================================
 
 // Re-export auth state from shared hooks
-export { useAuthState } from '../shared/useAuth';
+export { useAuthState } from '../../shared/useAuth';
 
 const BusinessHooks = {
   useBusinessAuthState,
