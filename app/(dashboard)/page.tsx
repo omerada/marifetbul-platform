@@ -3,8 +3,8 @@ import { AppLayout } from '@/components/layout';
 import { Loading } from '@/components/ui';
 import { DashboardClient } from '@/components/dashboard/DashboardClient';
 
-// Export static params for static generation
-export const dynamic = 'force-static';
+// Dashboard is dynamic due to client components
+export const dynamic = 'force-dynamic';
 
 export default function DashboardPage() {
   return (
