@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useCallback, useState } from 'react';
 import { Upload, X, File, Image } from 'lucide-react';
 
@@ -65,7 +67,7 @@ export default function FileUpload({
       setSelectedFiles(validFiles);
       onFileSelect(validFiles);
     },
-    [multiple, maxFiles, maxSize, onFileSelect]
+    [multiple, maxFiles, maxSize, onFileSelect, validateFile]
   );
 
   const handleDragOver = useCallback(

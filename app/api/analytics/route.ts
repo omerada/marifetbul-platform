@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
       },
     };
 
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
     const queryParams = Object.fromEntries(searchParams.entries());
 
     // Process query parameters
@@ -69,6 +69,7 @@ export async function GET(request: NextRequest) {
 }
 
 function generateFreelancerAnalytics(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _query: z.infer<typeof AnalyticsQuerySchema>
 ) {
   return {
@@ -151,6 +152,7 @@ function generateFreelancerAnalytics(
 }
 
 function generateEmployerAnalytics(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _query: z.infer<typeof AnalyticsQuerySchema>
 ) {
   return {

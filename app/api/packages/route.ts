@@ -306,7 +306,9 @@ const mockPackages: ServicePackage[] = [
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    // Static generation için URL'yi dinamik olarak kullanmayın
+    // Bunun yerine request params'ı kullanın
+    const searchParams = request.nextUrl.searchParams;
 
     // Parse query parameters
     const page = parseInt(searchParams.get('page') || '1');

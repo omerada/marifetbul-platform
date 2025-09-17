@@ -95,15 +95,6 @@ export class ProductionOptimizationManager {
    * Initialize usage tracking for tree shaking analysis
    */
   private initializeUsageTracking() {
-    // Track module usage patterns
-    const originalRequire = typeof require !== 'undefined' ? require : null;
-
-    if (originalRequire) {
-      // Store original for restoration
-      const global = globalThis as unknown as GlobalWithDevTools;
-      global.__originalRequire = originalRequire;
-    }
-
     // Track ES6 import usage in development
     if (process.env.NODE_ENV === 'development') {
       this.trackES6Imports();

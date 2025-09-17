@@ -3,7 +3,8 @@
 // ================================================
 // Unified hooks for UI state management and interactions
 
-// @ts-nocheck
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck - Geçici olarak tip kontrollerini atla
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import {

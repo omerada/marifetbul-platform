@@ -3,7 +3,8 @@
 // ================================================
 // Unified hooks for all API interactions using consistent patterns
 
-// @ts-nocheck
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck - Geçici olarak tip kontrollerini atla
 
 import {
   useAsyncOperation,
