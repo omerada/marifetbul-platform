@@ -1,4 +1,22 @@
 // Image fallback utilities
+
+// Safe base64 encoding for Unicode characters
+const safeBase64Encode = (str: string): string => {
+  try {
+    // Use TextEncoder for proper Unicode handling
+    const encoder = new TextEncoder();
+    const bytes = encoder.encode(str);
+    const binaryString = Array.from(bytes, (byte) =>
+      String.fromCharCode(byte)
+    ).join('');
+    return btoa(binaryString);
+  } catch (error) {
+    // Fallback: remove non-Latin1 characters
+    const latin1Safe = str.replace(/[^\x00-\xFF]/g, '?');
+    return btoa(latin1Safe);
+  }
+};
+
 export const generateCategoryPlaceholder = (
   category: string,
   size: number = 200
@@ -17,25 +35,43 @@ export const generateCategoryPlaceholder = (
     '#85C1E9',
   ];
 
+  // Convert Turkish characters to safe equivalents for processing
+  const safeCategory = category
+    .replace(/ğ/g, 'g')
+    .replace(/Ğ/g, 'G')
+    .replace(/ü/g, 'u')
+    .replace(/Ü/g, 'U')
+    .replace(/ş/g, 's')
+    .replace(/Ş/g, 'S')
+    .replace(/ı/g, 'i')
+    .replace(/İ/g, 'I')
+    .replace(/ö/g, 'o')
+    .replace(/Ö/g, 'O')
+    .replace(/ç/g, 'c')
+    .replace(/Ç/g, 'C');
+
   // Simple hash function to get consistent color for same category
   let hash = 0;
-  for (let i = 0; i < category.length; i++) {
-    hash = category.charCodeAt(i) + ((hash << 5) - hash);
+  for (let i = 0; i < safeCategory.length; i++) {
+    hash = safeCategory.charCodeAt(i) + ((hash << 5) - hash);
   }
   const colorIndex = Math.abs(hash) % colors.length;
   const color = colors[colorIndex];
 
-  // Create SVG placeholder
+  // Create safe display text (first 2 characters, uppercase)
+  const displayText = safeCategory.substring(0, 2).toUpperCase();
+
+  // Create SVG placeholder with safe encoding
   const svg = `
     <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
       <rect width="100%" height="100%" fill="${color}"/>
       <text x="50%" y="50%" text-anchor="middle" dy="0.35em" fill="white" font-family="Arial, sans-serif" font-size="${size * 0.2}" font-weight="bold">
-        ${category.substring(0, 2).toUpperCase()}
+        ${displayText}
       </text>
     </svg>
   `;
 
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
+  return `data:image/svg+xml;base64,${safeBase64Encode(svg)}`;
 };
 
 export const generateUserAvatar = (
@@ -55,18 +91,33 @@ export const generateUserAvatar = (
     '#85C1E9',
   ];
 
-  // Get initials
-  const initials = name
+  // Convert Turkish characters to safe equivalents
+  const safeName = name
+    .replace(/ğ/g, 'g')
+    .replace(/Ğ/g, 'G')
+    .replace(/ü/g, 'u')
+    .replace(/Ü/g, 'U')
+    .replace(/ş/g, 's')
+    .replace(/Ş/g, 'S')
+    .replace(/ı/g, 'i')
+    .replace(/İ/g, 'I')
+    .replace(/ö/g, 'o')
+    .replace(/Ö/g, 'O')
+    .replace(/ç/g, 'c')
+    .replace(/Ç/g, 'C');
+
+  // Get initials from safe name
+  const initials = safeName
     .split(' ')
     .map((n) => n[0])
     .join('')
     .substring(0, 2)
     .toUpperCase();
 
-  // Simple hash for color
+  // Simple hash for color using safe name
   let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  for (let i = 0; i < safeName.length; i++) {
+    hash = safeName.charCodeAt(i) + ((hash << 5) - hash);
   }
   const colorIndex = Math.abs(hash) % colors.length;
   const color = colors[colorIndex];
@@ -80,7 +131,7 @@ export const generateUserAvatar = (
     </svg>
   `;
 
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
+  return `data:image/svg+xml;base64,${safeBase64Encode(svg)}`;
 };
 
 export const getImageFallback = (

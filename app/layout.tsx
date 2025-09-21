@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import { MSWProvider } from '@/components/providers/MSWProvider';
 import { AuthProvider } from '@/components/providers/AuthProvider';
 import { ToastProvider } from '@/components/providers/ToastProvider';
+import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
 import { SEOHead } from '@/components/shared/seo/SEOHead';
 import './globals.css';
 
@@ -68,11 +69,13 @@ export default function RootLayout({
       <body
         className={`${inter.variable} h-full bg-gray-50 font-sans antialiased`}
       >
-        <MSWProvider>
-          <AuthProvider>
-            <ToastProvider>{children}</ToastProvider>
-          </AuthProvider>
-        </MSWProvider>
+        <ErrorBoundary>
+          <MSWProvider>
+            <AuthProvider>
+              <ToastProvider>{children}</ToastProvider>
+            </AuthProvider>
+          </MSWProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

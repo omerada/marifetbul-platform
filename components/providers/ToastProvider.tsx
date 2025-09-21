@@ -1,6 +1,13 @@
 'use client';
 
-import React, { useState, useCallback, useMemo, ReactNode } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  ReactNode,
+  useEffect,
+} from 'react';
+import { createPortal } from 'react-dom';
 import { Toast, ToastPosition } from '@/components/ui/Toast';
 import {
   ToastContext,
@@ -21,6 +28,12 @@ export function ToastProvider({
   maxToasts = 5,
 }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastData[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const addToast = useCallback(
     (options: ToastOptions): string => {
@@ -74,32 +87,39 @@ export function ToastProvider({
     'bottom-center': 'bottom-4 left-1/2 -translate-x-1/2',
   };
 
+  const renderToastContainer = () => {
+    if (!isMounted || toasts.length === 0) return null;
+
+    const container = (
+      <div
+        className={`pointer-events-auto fixed z-50 flex w-full max-w-sm flex-col gap-2 ${positionStyles[position]}`}
+        aria-live="polite"
+        aria-label="Notifications"
+      >
+        {toasts.map((toast) => (
+          <Toast
+            key={toast.id}
+            id={toast.id}
+            title={toast.title}
+            description={toast.description}
+            variant={toast.variant}
+            duration={toast.duration}
+            closable={toast.closable}
+            action={toast.action}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
+      </div>
+    );
+
+    // Use portal to render toasts in document.body
+    return createPortal(container, document.body);
+  };
+
   return (
     <ToastContext.Provider value={contextValue}>
       {children}
-
-      {/* Toast Container Portal */}
-      {typeof window !== 'undefined' && (
-        <div
-          className={`pointer-events-auto fixed z-50 flex w-full max-w-sm flex-col gap-2 ${positionStyles[position]}`}
-          aria-live="polite"
-          aria-label="Notifications"
-        >
-          {toasts.map((toast) => (
-            <Toast
-              key={toast.id}
-              id={toast.id}
-              title={toast.title}
-              description={toast.description}
-              variant={toast.variant}
-              duration={toast.duration}
-              closable={toast.closable}
-              action={toast.action}
-              onClose={() => removeToast(toast.id)}
-            />
-          ))}
-        </div>
-      )}
+      {renderToastContainer()}
     </ToastContext.Provider>
   );
 }

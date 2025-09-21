@@ -1,9 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export function MSWProvider({ children }: { children: React.ReactNode }) {
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
+    setIsMounted(true);
+
     // Only start MSW in development environment and in browser
     if (
       process.env.NODE_ENV === 'development' &&
@@ -50,6 +54,7 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
             serviceWorker: {
               url: '/mockServiceWorker.js',
             },
+            quiet: true, // Reduce console noise
           });
 
           console.log('🚀 MSW worker started successfully');
@@ -61,6 +66,11 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
       startMSW();
     }
   }, []);
+
+  // Prevent hydration issues by not rendering children until mounted
+  if (!isMounted) {
+    return <>{children}</>;
+  }
 
   return <>{children}</>;
 }
