@@ -1,5 +1,6 @@
 // Shared features index - components that are used across domains
-export { EnhancedSearchSystem as UniversalSearch } from '../../domains/search/EnhancedSearchSystem';
+export { UniversalSearch } from '../../domains/search/UniversalSearch';
+export { EnhancedSearchSystem } from '../../domains/search/EnhancedSearchSystem';
 export { ServiceDetail } from '../../domains/packages/ServiceDetail';
 export { ProfileView } from '../../domains/profile/ProfileView';
 export { EmployerProfile } from '../../domains/profile/EmployerProfile';

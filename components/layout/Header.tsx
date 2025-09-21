@@ -16,7 +16,7 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { UniversalSearch } from '@/components/shared/features';
+import { UniversalSearch } from '@/components/domains/search';
 import useAuthStore from '@/lib/core/store/auth';
 import { useUnreadCount } from '@/hooks';
 
