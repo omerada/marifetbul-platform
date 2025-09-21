@@ -108,7 +108,7 @@ export function Header() {
               İş & Hizmet
             </Link>
             <Link
-              href="/how-it-works"
+              href="/info/how-it-works"
               className="font-medium text-gray-700 transition-colors hover:text-blue-600"
             >
               Nasıl Çalışır?
