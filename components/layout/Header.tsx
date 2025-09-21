@@ -76,7 +76,7 @@ export function Header() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center">
+          <div className="flex flex-shrink-0 items-center">
             <Link href="/" className="flex items-center space-x-2">
               <Image
                 src="/icons/icon-48x48.png"
@@ -100,7 +100,7 @@ export function Header() {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden items-center space-x-8 md:flex">
+          <nav className="hidden flex-shrink-0 items-center space-x-8 md:flex">
             <Link
               href="/marketplace"
               className="font-medium text-gray-700 transition-colors hover:text-blue-600"
@@ -116,7 +116,7 @@ export function Header() {
           </nav>
 
           {/* Universal Search Bar (Desktop) */}
-          <div className="mx-8 hidden max-w-lg flex-1 lg:flex">
+          <div className="mx-4 hidden max-w-md flex-1 lg:flex xl:mx-8 xl:max-w-lg">
             <UniversalSearch
               onSearch={handleSearch}
               placeholder="Ne arıyorsun? (logo tasarım, web geliştirme, veri analizi...)"
@@ -125,7 +125,7 @@ export function Header() {
           </div>
 
           {/* Desktop Auth */}
-          <div className="hidden items-center space-x-4 md:flex">
+          <div className="hidden flex-shrink-0 items-center space-x-4 md:flex">
             {isAuthenticated ? (
               <>
                 <Link href="/messages">
