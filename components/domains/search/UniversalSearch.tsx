@@ -261,7 +261,7 @@ export function UniversalSearch({
 
       {/* Search Dropdown */}
       {isOpen && (
-        <Card className="absolute top-full right-0 left-0 z-50 mt-2 max-h-96 overflow-hidden border shadow-lg">
+        <Card className="absolute top-full right-0 left-0 z-[9999] mt-2 max-h-96 overflow-hidden border bg-white shadow-lg">
           <div className="max-h-96 overflow-y-auto">
             {/* Loading State */}
             {isLoading && (

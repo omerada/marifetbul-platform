@@ -210,11 +210,11 @@ export const UnifiedButton = forwardRef<HTMLButtonElement, UnifiedButtonProps>(
 
     // Size classes
     const sizeClasses = {
-      xs: ['h-6', 'px-2', 'text-xs', 'gap-1'],
-      sm: ['h-8', 'px-3', 'text-sm', 'gap-1.5'],
-      md: ['h-10', 'px-4', 'text-sm', 'gap-2'],
-      lg: ['h-11', 'px-6', 'text-base', 'gap-2'],
-      xl: ['h-12', 'px-8', 'text-lg', 'gap-2.5'],
+      xs: ['h-6', 'px-2', 'text-xs', 'gap-1', 'items-center'],
+      sm: ['h-8', 'px-3', 'text-sm', 'gap-1.5', 'items-center'],
+      md: ['h-10', 'px-4', 'text-sm', 'gap-2', 'items-center'],
+      lg: ['h-11', 'px-6', 'text-base', 'gap-2', 'items-center'],
+      xl: ['h-12', 'px-8', 'text-lg', 'gap-2.5', 'items-center'],
     };
 
     // Rounded classes
@@ -263,6 +263,7 @@ export const UnifiedButton = forwardRef<HTMLButtonElement, UnifiedButtonProps>(
           {stateIcon && !rightIcon && (
             <span
               className={cn(
+                'inline-flex shrink-0 items-center justify-center',
                 size === 'xs'
                   ? 'h-3 w-3'
                   : size === 'sm'
@@ -273,10 +274,13 @@ export const UnifiedButton = forwardRef<HTMLButtonElement, UnifiedButtonProps>(
               {stateIcon}
             </span>
           )}
-          {stateText && <span>{stateText}</span>}
+          {stateText && (
+            <span className="inline-flex items-center">{stateText}</span>
+          )}
           {rightIcon && !loading && (
             <span
               className={cn(
+                'inline-flex shrink-0 items-center justify-center',
                 size === 'xs'
                   ? 'h-3 w-3'
                   : size === 'sm'
