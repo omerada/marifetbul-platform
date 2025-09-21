@@ -226,7 +226,6 @@ export function UniversalSearch({
     <div ref={searchRef} className={`relative ${className}`}>
       {/* Search Input */}
       <div className="relative">
-        <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
         <Input
           ref={inputRef}
           type="text"
@@ -242,21 +241,24 @@ export function UniversalSearch({
               setIsOpen(false);
             }
           }}
-          className="pr-4 pl-10"
+          leftIcon={<Search className="h-5 w-5" />}
+          rightIcon={
+            query && (
+              <button
+                onClick={() => {
+                  setQuery('');
+                  setSuggestions([]);
+                  setSearchResults(null);
+                  inputRef.current?.focus();
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )
+          }
+          className="w-full"
         />
-        {query && (
-          <button
-            onClick={() => {
-              setQuery('');
-              setSuggestions([]);
-              setSearchResults(null);
-              inputRef.current?.focus();
-            }}
-            className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        )}
       </div>
 
       {/* Search Dropdown */}
