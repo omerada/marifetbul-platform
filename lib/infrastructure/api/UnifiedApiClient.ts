@@ -199,7 +199,7 @@ export class UnifiedApiClient {
     if (typeof window !== 'undefined') {
       const authData =
         typeof window !== 'undefined'
-          ? localStorage.getItem('marifeto-auth')
+          ? localStorage.getItem('marifetbul-auth')
           : null;
       if (authData) {
         try {

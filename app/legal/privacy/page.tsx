@@ -3,9 +3,9 @@ import { AppLayout } from '@/components/layout';
 import { Card } from '@/components/ui/Card';
 
 export const metadata: Metadata = {
-  title: 'Gizlilik Politikası - Marifeto',
+  title: 'Gizlilik Politikası - MarifetBul',
   description:
-    'Marifeto gizlilik politikası ve kişisel veri koruma uygulamaları.',
+    'MarifetBul gizlilik politikası ve kişisel veri koruma uygulamaları.',
 };
 
 export default function PrivacyPage() {
@@ -32,7 +32,7 @@ export default function PrivacyPage() {
                 1. Veri Toplama ve İşleme
               </h2>
               <p className="mb-4 text-gray-600">
-                Marifeto olarak, platformumuzu kullanırken sizden topladığımız
+                MarifetBul olarak, platformumuzu kullanırken sizden topladığımız
                 kişisel veriler:
               </p>
               <ul className="mb-4 list-disc space-y-2 pl-6 text-gray-600">
@@ -156,7 +156,7 @@ export default function PrivacyPage() {
               </p>
               <div className="space-y-2 text-gray-600">
                 <p>
-                  <strong>E-posta:</strong> kvkk@marifeto.com
+                  <strong>E-posta:</strong> kvkk@marifetbul.com
                 </p>
                 <p>
                   <strong>Adres:</strong> Maslak Mah. Büyükdere Cad. No: 123

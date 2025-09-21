@@ -6,9 +6,9 @@ import { Input } from '@/components/ui/Input';
 import { MessageCircle, Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'İletişim - Marifeto',
+  title: 'İletişim - MarifetBul',
   description:
-    'Marifeto ekibi ile iletişime geçin. Sorularınız için 7/24 müşteri desteği.',
+    'MarifetBul ekibi ile iletişime geçin. Sorularınız için 7/24 müşteri desteği.',
 };
 
 export default function ContactPage() {
@@ -112,11 +112,11 @@ export default function ContactPage() {
                     </h3>
                     <p className="mb-1 text-gray-600">Genel sorular için:</p>
                     <p className="mb-1 font-medium text-gray-900">
-                      destek@marifeto.com
+                      destek@marifetbul.com
                     </p>
                     <p className="mb-1 text-gray-600">İş ortaklığı için:</p>
                     <p className="font-medium text-gray-900">
-                      ortaklik@marifeto.com
+                      ortaklik@marifetbul.com
                     </p>
                   </div>
                 </div>
@@ -179,7 +179,7 @@ export default function ContactPage() {
             <div className="mx-auto max-w-3xl space-y-4">
               <Card className="p-6">
                 <h3 className="mb-2 text-lg font-semibold text-gray-900">
-                  Marifeto&apos;ya nasıl üye olabilirim?
+                  MarifetBul&apos;ya nasıl üye olabilirim?
                 </h3>
                 <p className="text-gray-600">
                   Ana sayfadaki &quot;Üye Ol&quot; butonuna tıklayarak ücretsiz

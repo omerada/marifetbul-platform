@@ -109,7 +109,7 @@ export const HelpCenterLayout: React.FC<HelpCenterLayoutProps> = ({
                 Yardım Merkezi
               </h1>
               <p className="mx-auto max-w-2xl text-lg text-gray-600">
-                Marifeto platformunu en iyi şekilde kullanmanız için her türlü
+                MarifetBul platformunu en iyi şekilde kullanmanız için her türlü
                 rehber ve destek
               </p>
             </div>

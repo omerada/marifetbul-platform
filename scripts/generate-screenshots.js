@@ -16,7 +16,7 @@ const SCREENSHOTS = [
     name: 'desktop-1.png',
     width: 1280,
     height: 720,
-    title: 'Marifeto Ana Sayfa',
+    title: 'MarifetBul Ana Sayfa',
     subtitle: 'Freelancer ve İşverenler İçin Platform',
     bgColor: '#f8fafc',
     accentColor: '#2563eb',
@@ -75,7 +75,7 @@ function createScreenshotSVG({
     <!-- Logo area -->
     <circle cx="${padding + 20}" cy="${width > 500 ? 40 : 30}" r="15" fill="white" opacity="0.9"/>
     <text x="${padding + 50}" y="${width > 500 ? 50 : 38}" font-family="system-ui, -apple-system, sans-serif" 
-          font-size="18" font-weight="bold" fill="white">Marifeto</text>
+          font-size="18" font-weight="bold" fill="white">MarifetBul</text>
     
     <!-- Content area -->
     <rect x="${padding}" y="${width > 500 ? 120 : 90}" width="${width - padding * 2}" height="${width > 500 ? 120 : 80}" 

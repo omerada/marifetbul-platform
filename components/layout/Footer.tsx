@@ -23,7 +23,7 @@ export function Footer() {
             <div className="flex items-center space-x-2">
               <Image
                 src="/icons/icon-48x48.png"
-                alt="Marifeto"
+                alt="MarifetBul"
                 width={32}
                 height={32}
                 className="rounded-lg"
@@ -38,7 +38,7 @@ export function Footer() {
                   `;
                 }}
               />
-              <span className="text-xl font-bold">Marifeto</span>
+              <span className="text-xl font-bold">MarifetBul</span>
             </div>
             <p className="leading-relaxed text-gray-300">
               Türkiye&apos;nin en büyük freelancer ve işveren buluşma platformu.
@@ -157,7 +157,7 @@ export function Footer() {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-gray-400" />
-                <span className="text-gray-300">info@marifeto.com</span>
+                <span className="text-gray-300">info@marifetbul.com</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-gray-400" />
@@ -179,7 +179,7 @@ export function Footer() {
         <div className="border-t border-gray-800 py-6">
           <div className="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
             <div className="text-sm text-gray-400">
-              © 2024 Marifeto. Tüm hakları saklıdır.
+              © 2024 MarifetBul. Tüm hakları saklıdır.
             </div>
             <div className="flex space-x-6 text-sm">
               <Link

@@ -23,7 +23,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-16 text-center">
             <h2 className="mb-4 text-3xl font-bold text-gray-900 lg:text-4xl">
-              Neden Marifeto?
+              Neden MarifetBul?
             </h2>
             <p className="mx-auto max-w-2xl text-xl text-gray-600">
               Freelancer ve işverenler için optimize edilmiş platform

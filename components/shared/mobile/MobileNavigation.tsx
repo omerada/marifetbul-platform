@@ -111,7 +111,7 @@ export function MobileNavigation({
       <div className="fixed top-0 right-0 left-0 z-40 border-b border-gray-200 bg-white lg:hidden">
         <div className="flex items-center justify-between p-4">
           <Link href="/" className="text-xl font-bold text-blue-600">
-            Marifeto
+            MarifetBul
           </Link>
 
           <div className="flex items-center space-x-2">

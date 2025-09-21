@@ -212,9 +212,9 @@ const generateAnalyticsData = (dateRange: string) => {
 
 // Mock moderators data
 const moderators = [
-  { id: '1', name: 'Ahmet Yılmaz', email: 'ahmet@marifeto.com' },
-  { id: '2', name: 'Fatma Demir', email: 'fatma@marifeto.com' },
-  { id: '3', name: 'Mehmet Kaya', email: 'mehmet@marifeto.com' },
+  { id: '1', name: 'Ahmet Yılmaz', email: 'ahmet@marifetbul.com' },
+  { id: '2', name: 'Fatma Demir', email: 'fatma@marifetbul.com' },
+  { id: '3', name: 'Mehmet Kaya', email: 'mehmet@marifetbul.com' },
 ];
 
 // Mock categories

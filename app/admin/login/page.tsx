@@ -78,7 +78,7 @@ export default function AdminLoginPage() {
             </div>
             <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
             <p className="mt-2 text-sm text-gray-600">
-              Marifeto yönetim paneline erişim
+              MarifetBul yönetim paneline erişim
             </p>
           </div>
 
@@ -110,7 +110,7 @@ export default function AdminLoginPage() {
                     type="email"
                     value={credentials.email}
                     onChange={handleInputChange}
-                    placeholder="admin@marifeto.com"
+                    placeholder="admin@marifetbul.com"
                     required
                     className="h-11"
                     disabled={isLoading}
@@ -170,7 +170,7 @@ export default function AdminLoginPage() {
                 <div className="space-y-1 text-xs text-blue-700">
                   <div className="flex justify-between">
                     <span className="font-medium">Admin:</span>
-                    <span>admin@marifeto.com / admin123</span>
+                    <span>admin@marifetbul.com / admin123</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Freelancer:</span>
@@ -186,7 +186,7 @@ export default function AdminLoginPage() {
                     type="button"
                     onClick={() =>
                       setCredentials({
-                        email: 'admin@marifeto.com',
+                        email: 'admin@marifetbul.com',
                         password: 'admin123',
                       })
                     }

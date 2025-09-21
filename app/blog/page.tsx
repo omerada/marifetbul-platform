@@ -3,7 +3,7 @@ import { AppLayout } from '@/components/layout';
 import { Card } from '@/components/ui/Card';
 
 export const metadata: Metadata = {
-  title: 'Blog - Marifeto',
+  title: 'Blog - MarifetBul',
   description:
     'Freelance dünyası, teknoloji ve iş hayatı hakkında güncel yazılar.',
 };

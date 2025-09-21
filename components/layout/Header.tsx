@@ -80,7 +80,7 @@ export function Header() {
             <Link href="/" className="flex items-center space-x-2">
               <Image
                 src="/icons/icon-48x48.png"
-                alt="Marifeto"
+                alt="MarifetBul"
                 width={32}
                 height={32}
                 className="rounded-lg"
@@ -95,7 +95,9 @@ export function Header() {
                   `;
                 }}
               />
-              <span className="text-xl font-bold text-gray-900">Marifeto</span>
+              <span className="text-xl font-bold text-gray-900">
+                MarifetBul
+              </span>
             </Link>
           </div>
 

@@ -76,7 +76,7 @@ export function HelpCenterMain() {
               Yardım Merkezi
             </h1>
             <p className="mb-8 text-xl opacity-90">
-              Marifeto platformunu kullanırken ihtiyacınız olan tüm yardım
+              MarifetBul platformunu kullanırken ihtiyacınız olan tüm yardım
               burada. Hızlıca cevap bulun veya destek ekibimizle iletişime
               geçin.
             </p>

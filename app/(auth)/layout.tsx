@@ -26,7 +26,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-600">
               <span className="text-lg font-bold text-white">M</span>
             </div>
-            <span className="text-2xl font-bold text-gray-900">Marifeto</span>
+            <span className="text-2xl font-bold text-gray-900">MarifetBul</span>
           </Link>
         </div>
       </div>
@@ -41,7 +41,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       {/* Footer */}
       <div className="mt-8 text-center text-sm text-gray-600">
         <p>
-          © 2025 Marifeto. Tüm hakları saklıdır.{' '}
+          © 2025 MarifetBul. Tüm hakları saklıdır.{' '}
           <Link href="/terms" className="text-blue-600 hover:text-blue-500">
             Kullanım Şartları
           </Link>{' '}

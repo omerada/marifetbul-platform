@@ -14,9 +14,9 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Nasıl Çalışır? - Marifeto',
+  title: 'Nasıl Çalışır? - MarifetBul',
   description:
-    'Marifeto platformunu nasıl kullanacağınızı öğrenin. İşveren veya freelancer olarak adım adım rehber.',
+    'MarifetBul platformunu nasıl kullanacağınızı öğrenin. İşveren veya freelancer olarak adım adım rehber.',
 };
 
 export default function HowItWorksPage() {
@@ -95,7 +95,7 @@ export default function HowItWorksPage() {
               Nasıl Çalışır?
             </h1>
             <p className="mb-12 text-xl text-gray-600">
-              Marifeto ile projelerinizi hayata geçirin veya yeteneklerinizle
+              MarifetBul ile projelerinizi hayata geçirin veya yeteneklerinizle
               para kazanın. İşte başlamanız için adım adım rehber.
             </p>
           </div>
@@ -176,7 +176,7 @@ export default function HowItWorksPage() {
           <div className="mb-16">
             <div className="mb-12 text-center">
               <h2 className="mb-4 text-3xl font-bold text-gray-900">
-                Neden Marifeto?
+                Neden MarifetBul?
               </h2>
             </div>
 

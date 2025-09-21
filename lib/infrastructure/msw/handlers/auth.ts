@@ -5,7 +5,7 @@ import type { User } from '@/types';
 const mockUsers: User[] = [
   {
     id: 'admin-001',
-    email: 'admin@marifeto.com',
+    email: 'admin@marifetbul.com',
     firstName: 'Admin',
     lastName: 'User',
     userType: 'admin',
@@ -58,7 +58,7 @@ const mockUsers: User[] = [
 
 // Mock credentials for demo accounts
 const mockCredentials = [
-  { email: 'admin@marifeto.com', password: 'admin123' },
+  { email: 'admin@marifetbul.com', password: 'admin123' },
   { email: 'demo@example.com', password: 'demo123' },
   { email: 'employer@example.com', password: 'employer123' },
 ];

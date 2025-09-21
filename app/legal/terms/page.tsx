@@ -3,8 +3,8 @@ import { AppLayout } from '@/components/layout';
 import { Card } from '@/components/ui/Card';
 
 export const metadata: Metadata = {
-  title: 'Kullanım Şartları - Marifeto',
-  description: 'Marifeto platform kullanım şartları ve koşulları.',
+  title: 'Kullanım Şartları - MarifetBul',
+  description: 'MarifetBul platform kullanım şartları ve koşulları.',
 };
 
 export default function TermsPage() {
@@ -17,7 +17,7 @@ export default function TermsPage() {
               Kullanım Şartları
             </h1>
             <p className="mb-12 text-xl text-gray-600">
-              Marifeto platformunu kullanırken uymanız gereken kurallar ve
+              MarifetBul platformunu kullanırken uymanız gereken kurallar ve
               koşullar.
             </p>
           </div>
@@ -32,7 +32,7 @@ export default function TermsPage() {
                 1. Genel Şartlar
               </h2>
               <p className="mb-4 text-gray-600">
-                Bu kullanım şartları, Marifeto platformunu kullanan tüm
+                Bu kullanım şartları, MarifetBul platformunu kullanan tüm
                 kullanıcılar için geçerlidir. Platforma üye olarak bu şartları
                 kabul etmiş sayılırsınız.
               </p>
@@ -151,7 +151,7 @@ export default function TermsPage() {
               <h2 className="mb-4 text-2xl font-bold text-gray-900">
                 8. Sorumluluk Reddi
               </h2>
-              <p className="mb-4 text-gray-600">Marifeto platformu:</p>
+              <p className="mb-4 text-gray-600">MarifetBul platformu:</p>
               <ul className="mb-4 list-disc space-y-2 pl-6 text-gray-600">
                 <li>Kullanıcılar arasındaki işlemlerde aracılık yapar</li>
                 <li>Freelancerların iş kalitesini garanti etmez</li>
@@ -184,7 +184,7 @@ export default function TermsPage() {
               </p>
               <div className="space-y-2 text-gray-600">
                 <p>
-                  <strong>E-posta:</strong> legal@marifeto.com
+                  <strong>E-posta:</strong> legal@marifetbul.com
                 </p>
                 <p>
                   <strong>Telefon:</strong> 0850 123 45 67

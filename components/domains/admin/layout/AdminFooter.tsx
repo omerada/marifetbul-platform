@@ -10,7 +10,7 @@ export function AdminFooter() {
         <div className="flex flex-col items-center justify-between text-sm text-gray-500 sm:flex-row">
           {/* Left section */}
           <div className="flex items-center space-x-4">
-            <span>© 2024 Marifeto Admin Panel</span>
+            <span>© 2024 MarifetBul Admin Panel</span>
             <span className="rounded bg-gray-100 px-2 py-1 text-xs">
               v2.1.0
             </span>
@@ -42,7 +42,7 @@ export function AdminFooter() {
           <div className="mt-2 flex items-center space-x-1 sm:mt-0">
             <span>Made with</span>
             <Heart className="h-3 w-3 text-red-500" />
-            <span>by Marifeto Team</span>
+            <span>by MarifetBul Team</span>
           </div>
         </div>
 

@@ -84,7 +84,7 @@ export function HeroSection() {
                   {currentContent.title}
                 </span>
                 <span className="block whitespace-nowrap text-blue-200">
-                  Marifeto ile
+                  MarifetBul ile
                 </span>
               </h1>
               <p className="mt-4 text-xl leading-relaxed text-blue-100">

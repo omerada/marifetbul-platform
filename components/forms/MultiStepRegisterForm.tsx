@@ -8,7 +8,10 @@ import { ChevronLeft, ChevronRight, Check, User, Building } from 'lucide-react';
 
 import { Button, Input, Card, Checkbox } from '@/components/ui';
 import useAuthStore from '@/lib/core/store/auth';
-import { registerSchema, type RegisterFormData } from '@/lib/core/validations/auth';
+import {
+  registerSchema,
+  type RegisterFormData,
+} from '@/lib/core/validations/auth';
 import Link from 'next/link';
 
 // Steps configuration
@@ -232,7 +235,7 @@ export function MultiStepRegisterForm() {
           Ücretsiz Hesap Oluştur
         </h1>
         <p className="text-gray-600">
-          Marifeto&apos;ya katılarak hemen başlayın
+          MarifetBul&apos;ya katılarak hemen başlayın
         </p>
       </div>
 

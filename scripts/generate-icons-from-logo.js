@@ -206,7 +206,7 @@ async function generateFavicon() {
 
 // Ana çalıştırma fonksiyonu
 async function main() {
-  console.log('🎨 Marifeto Icon Generator (Logo-based)');
+  console.log('🎨 MarifetBul Icon Generator (Logo-based)');
   console.log('=====================================');
   console.log(`📁 Using logo: ${LOGO_PATH}`);
 

@@ -197,7 +197,7 @@ async function generateOtherIcons() {
 
 // Ana çalıştırma fonksiyonu
 async function main() {
-  console.log('🎨 Marifeto Icon Generator');
+  console.log('🎨 MarifetBul Icon Generator');
   console.log('==========================');
 
   // Icons klasörünü oluştur

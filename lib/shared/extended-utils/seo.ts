@@ -17,7 +17,7 @@ export const generateMarketplaceMetadata = (
 
   if (searchQuery) {
     title = `${searchQuery} - ${baseTitle}`;
-    description = `${searchQuery} ile ilgili ${mode === 'jobs' ? 'iş ilanları' : 'hizmet paketleri'} Marifeto'da. ${baseDescription}`;
+    description = `${searchQuery} ile ilgili ${mode === 'jobs' ? 'iş ilanları' : 'hizmet paketleri'} MarifetBul'da. ${baseDescription}`;
   }
 
   if (category) {
@@ -26,7 +26,7 @@ export const generateMarketplaceMetadata = (
   }
 
   return {
-    title: `${title} | Marifeto`,
+    title: `${title} | MarifetBul`,
     description,
     keywords: [
       mode === 'jobs' ? 'iş ilanları' : 'hizmet paketleri',
@@ -34,28 +34,28 @@ export const generateMarketplaceMetadata = (
       'uzaktan çalışma',
       'part-time',
       'türkiye',
-      'marifeto',
+      'marifetbul',
       ...(searchQuery ? [searchQuery] : []),
       ...(category ? [category] : []),
     ].join(', '),
     openGraph: {
-      title: `${title} | Marifeto`,
+      title: `${title} | MarifetBul`,
       description,
       type: 'website',
       locale: 'tr_TR',
-      siteName: 'Marifeto',
+      siteName: 'MarifetBul',
       images: [
         {
           url: '/images/og-marketplace.jpg',
           width: 1200,
           height: 630,
-          alt: `Marifeto ${baseTitle}`,
+          alt: `MarifetBul ${baseTitle}`,
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${title} | Marifeto`,
+      title: `${title} | MarifetBul`,
       description,
       images: ['/images/og-marketplace.jpg'],
     },

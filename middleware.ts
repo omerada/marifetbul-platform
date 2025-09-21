@@ -37,8 +37,8 @@ export function middleware(request: NextRequest) {
 
   // Get the token from the cookies (localStorage is not accessible in middleware)
   // Note: We'll need to sync localStorage auth with cookies in the auth store
-  const token = request.cookies.get('marifeto-auth-token')?.value;
-  const userRole = request.cookies.get('marifeto-user-role')?.value;
+  const token = request.cookies.get('marifetbul-auth-token')?.value;
+  const userRole = request.cookies.get('marifetbul-user-role')?.value;
 
   // Check if the current route is protected
   const isProtectedRoute = protectedRoutes.some((route) =>

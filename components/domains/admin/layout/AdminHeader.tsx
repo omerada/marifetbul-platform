@@ -86,7 +86,7 @@ export function AdminHeader({
             <Link href="/" className="flex items-center space-x-2">
               <Image
                 src="/logo.png"
-                alt="Marifeto"
+                alt="MarifetBul"
                 width={32}
                 height={32}
                 className="h-8 w-8"

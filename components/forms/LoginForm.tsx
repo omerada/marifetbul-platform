@@ -50,7 +50,7 @@ export function LoginForm() {
           Hesabına Giriş Yap
         </h1>
         <p className="text-gray-600">
-          Marifeto hesabına giriş yaparak devam et
+          MarifetBul hesabına giriş yaparak devam et
         </p>
       </div>
 

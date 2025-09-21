@@ -275,7 +275,7 @@ export const SupportLayout: React.FC<SupportLayoutProps> = ({
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm">
                   <Mail className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-600">destek@marifeto.com</span>
+                  <span className="text-gray-600">destek@marifetbul.com</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Phone className="h-4 w-4 text-gray-400" />

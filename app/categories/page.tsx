@@ -3,8 +3,8 @@ import { AppLayout } from '@/components/layout';
 import { Card } from '@/components/ui/Card';
 
 export const metadata: Metadata = {
-  title: 'Kategoriler - Marifeto',
-  description: 'Marifeto platformundaki tüm hizmet kategorileri.',
+  title: 'Kategoriler - MarifetBul',
+  description: 'MarifetBul platformundaki tüm hizmet kategorileri.',
 };
 
 export default function CategoriesPage() {

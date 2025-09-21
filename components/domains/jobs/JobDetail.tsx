@@ -212,7 +212,8 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
             data={{
               url: typeof window !== 'undefined' ? window.location.href : '',
               title: currentJob?.title || 'İş İlanı',
-              description: currentJob?.description || "Marifeto'da iş fırsatı",
+              description:
+                currentJob?.description || "MarifetBul'da iş fırsatı",
               image: currentJob?.employer?.avatar || '/images/og-default.jpg',
             }}
           />

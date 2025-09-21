@@ -3,8 +3,8 @@ import { AppLayout } from '@/components/layout';
 import { Card } from '@/components/ui/Card';
 
 export const metadata: Metadata = {
-  title: 'Çerez Politikası - Marifeto',
-  description: 'Marifeto çerez kullanım politikası ve ayarları.',
+  title: 'Çerez Politikası - MarifetBul',
+  description: 'MarifetBul çerez kullanım politikası ve ayarları.',
 };
 
 export default function CookiesPage() {

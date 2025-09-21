@@ -18,9 +18,9 @@ const faqData = [
     icon: HelpCircle,
     questions: [
       {
-        question: 'Marifeto nedir?',
+        question: 'MarifetBul nedir?',
         answer:
-          "Marifeto, freelancerlar ve işverenleri buluşturan Türkiye'nin en büyük online platformudur. İşverenler projelerini yayınlayabilir, freelancerlar ise hizmetlerini sunabilir.",
+          "MarifetBul, freelancerlar ve işverenleri buluşturan Türkiye'nin en büyük online platformudur. İşverenler projelerini yayınlayabilir, freelancerlar ise hizmetlerini sunabilir.",
       },
       {
         question: 'Platform ücretsiz mi?',
@@ -144,7 +144,7 @@ export default function FAQPage() {
               Sık Sorulan Sorular
             </h1>
             <p className="mb-12 text-xl text-gray-600">
-              Marifeto platformu hakkında merak ettiklerinizin cevaplarını
+              MarifetBul platformu hakkında merak ettiklerinizin cevaplarını
               bulun. Aradığınız soruyu bulamadınız mı? İletişim sayfamızdan bize
               ulaşın.
             </p>

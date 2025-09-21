@@ -327,7 +327,7 @@ export function getFileUploadService(): FileUploadService {
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'text/plain',
       ],
-      folder: 'marifeto-uploads',
+      folder: 'marifetbul-uploads',
       generateThumbnails: true,
     });
   }

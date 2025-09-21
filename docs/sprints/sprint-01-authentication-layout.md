@@ -360,7 +360,7 @@ const useAuthStore = create<AuthStore>()(
       },
     }),
     {
-      name: 'marifeto-auth',
+      name: 'marifetbul-auth',
       partialize: (state) => ({
         user: state.user,
         token: state.token,

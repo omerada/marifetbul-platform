@@ -13,16 +13,16 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Marifeto - Freelancer & İşveren Platformu',
+  title: 'MarifetBul - Freelancer & İşveren Platformu',
   description:
     "Türkiye'nin en büyük freelancer ve işveren buluşma platformu. Projeleriniz için en uygun uzmanları bulun veya yeteneklerinizi sergileyerek gelir elde edin.",
   keywords: 'freelancer, işveren, proje, hizmet, uzman, bionluk, armut',
-  authors: [{ name: 'Marifeto Team' }],
+  authors: [{ name: 'MarifetBul Team' }],
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Marifeto',
+    title: 'MarifetBul',
     startupImage: [
       '/icons/apple-splash-1125x2436.png',
       '/icons/apple-splash-750x1334.png',

@@ -11,8 +11,8 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Güvenlik - Marifeto',
-  description: 'Marifeto güvenlik önlemleri ve kullanıcı koruması.',
+  title: 'Güvenlik - MarifetBul',
+  description: 'MarifetBul güvenlik önlemleri ve kullanıcı koruması.',
 };
 
 export default function SafetyPage() {
@@ -25,7 +25,7 @@ export default function SafetyPage() {
               Güvenlik
             </h1>
             <p className="mb-12 text-xl text-gray-600">
-              Marifeto&apos;da güvenliğiniz bizim önceliğimizdir.
+              MarifetBul&apos;da güvenliğiniz bizim önceliğimizdir.
             </p>
           </div>
         </div>

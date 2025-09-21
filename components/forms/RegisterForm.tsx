@@ -9,7 +9,10 @@ import { Eye, EyeOff, User, Building } from 'lucide-react';
 
 import { Button, Input, Card } from '@/components/ui';
 import useAuthStore from '@/lib/core/store/auth';
-import { registerSchema, type RegisterFormData } from '@/lib/core/validations/auth';
+import {
+  registerSchema,
+  type RegisterFormData,
+} from '@/lib/core/validations/auth';
 
 export function RegisterForm() {
   const router = useRouter();
@@ -68,7 +71,7 @@ export function RegisterForm() {
           Ücretsiz Hesap Oluştur
         </h1>
         <p className="text-gray-600">
-          Marifeto&apos;ya katılarak hemen başlayın
+          MarifetBul&apos;ya katılarak hemen başlayın
         </p>
       </div>
 

@@ -189,7 +189,7 @@ export function getUserFromRequest(request: NextRequest): AdminUser | null {
     // In production, decode and validate JWT token here
     return {
       id: '1',
-      email: 'admin@marifeto.com',
+      email: 'admin@marifetbul.com',
       role: 'super_admin',
       permissions: getUserPermissions('super_admin'),
       isActive: true,

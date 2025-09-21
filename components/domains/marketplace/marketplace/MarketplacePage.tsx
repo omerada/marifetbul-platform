@@ -169,7 +169,7 @@ export function MarketplacePage() {
                     {mode === 'jobs' ? 'İş Fırsatları' : 'Hizmet Mağazası'}
                   </span>
                   <span className="block whitespace-nowrap text-blue-200">
-                    Marifeto&apos;da
+                    MarifetBul&apos;da
                   </span>
                 </h1>
                 <p className="mt-4 text-xl leading-relaxed text-blue-100">
