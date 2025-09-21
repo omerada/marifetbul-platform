@@ -123,8 +123,13 @@ export function BottomSheet({
       <div
         ref={(el) => {
           if (el) {
-            sheetRef.current = el;
-            focusTrapRef.current = el;
+            // Use a type assertion to handle the ref assignment
+            (
+              sheetRef as React.MutableRefObject<HTMLDivElement | null>
+            ).current = el;
+            (
+              focusTrapRef as React.MutableRefObject<HTMLDivElement | null>
+            ).current = el;
           }
         }}
         className={`fixed right-0 bottom-0 left-0 rounded-t-xl bg-white shadow-2xl ${className} ${

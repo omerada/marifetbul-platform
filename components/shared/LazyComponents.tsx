@@ -46,7 +46,7 @@ export const LazyWrapper: React.FC<LazyWrapperProps> = ({
 // LAZY COMPONENT FACTORY
 // ================================
 
-export function createLazyComponent<T extends Record<string, unknown>>(
+export function createLazyComponent<T = Record<string, unknown>>(
   importFn: () => Promise<{ default: ComponentType<T> }>,
   fallback?: React.ReactNode
 ) {
@@ -54,7 +54,7 @@ export function createLazyComponent<T extends Record<string, unknown>>(
 
   const LazyComponentWrapper: React.FC<T> = (props) => (
     <LazyWrapper fallback={fallback}>
-      <LazyComponent {...(props as T)} />
+      <LazyComponent {...(props as any)} />
     </LazyWrapper>
   );
 
@@ -63,13 +63,13 @@ export function createLazyComponent<T extends Record<string, unknown>>(
 }
 
 // HOC for wrapping lazy components with Suspense
-export function withSuspense<T extends Record<string, unknown>>(
+export function withSuspense<T = Record<string, unknown>>(
   Component: React.LazyExoticComponent<React.ComponentType<T>>,
   fallback?: React.ReactNode
 ) {
   const ComponentWithSuspense = (props: T) => (
     <Suspense fallback={fallback || <UnifiedLoading variant="skeleton" />}>
-      <Component {...props} />
+      <Component {...(props as any)} />
     </Suspense>
   );
 
@@ -235,30 +235,24 @@ export const ComponentPerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
 };
 
 // Memory efficient component cache
-const componentCache = new Map<
-  string,
-  ComponentType<Record<string, unknown>>
->();
+const componentCache = new Map<string, ComponentType<any>>();
 
-export const getCachedComponent = <T extends Record<string, unknown>>(
+export const getCachedComponent = <T = Record<string, unknown>,>(
   key: string,
   factory: () => ComponentType<T>
 ): ComponentType<T> => {
   if (!componentCache.has(key)) {
-    componentCache.set(
-      key,
-      factory() as ComponentType<Record<string, unknown>>
-    );
+    componentCache.set(key, factory() as ComponentType<any>);
   }
   return componentCache.get(key)! as ComponentType<T>;
 };
 
 // HOC for performance optimization with React.memo
-export function withMemo<T extends Record<string, unknown>>(
+export function withMemo<T = Record<string, unknown>>(
   Component: ComponentType<T>,
   arePropsEqual?: (prevProps: T, nextProps: T) => boolean
-): ComponentType<T> {
-  return React.memo(Component, arePropsEqual);
+) {
+  return React.memo(Component, arePropsEqual) as ComponentType<T>;
 }
 
 // ================================
