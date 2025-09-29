@@ -112,13 +112,15 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Card
-      className="border border-gray-200 transition-all duration-200 hover:border-gray-300 hover:shadow-md"
-      padding="none"
-      size="sm"
+    <div
+      className={`overflow-hidden rounded-lg border border-gray-200 transition-all duration-200 hover:border-gray-300 hover:shadow-md ${
+        isOpen ? 'bg-white' : 'bg-white'
+      }`}
     >
       <button
-        className="flex w-full items-center justify-between rounded-lg p-4 text-left focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+        className={`flex w-full items-center justify-between p-4 text-left transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none ${
+          isOpen ? 'rounded-t-lg' : 'rounded-lg'
+        }`}
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-controls={`faq-answer-${question}`}
@@ -135,21 +137,17 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
         </div>
       </button>
 
-      {/* Accordion Content - Proper max-height based on content */}
-      <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? 'max-h-32' : 'max-h-0'
-        }`}
-      >
-        {isOpen && (
+      {/* Accordion Content - Only render when open */}
+      {isOpen && (
+        <div className="animate-in slide-in-from-top-1 duration-300">
           <div className="px-4 pb-4">
             <div className="border-t border-gray-100 pt-3 text-sm leading-relaxed text-gray-600">
               <p>{answer}</p>
             </div>
           </div>
-        )}
-      </div>
-    </Card>
+        </div>
+      )}
+    </div>
   );
 }
 
