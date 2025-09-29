@@ -1,10 +1,18 @@
 import { Suspense } from 'react';
 import { AppLayout } from '@/components/layout';
 import { Loading } from '@/components/ui';
-import { DashboardClient } from '@/components/dashboard/DashboardClient';
+import { lazy } from 'react';
 
-// Dashboard is dynamic due to client components
+// Force dynamic due to client components
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+// Lazy load the component to avoid client-server mismatch
+const DashboardClient = lazy(() =>
+  import('@/components/dashboard/DashboardClient').then((mod) => ({
+    default: mod.DashboardClient,
+  }))
+);
 
 export default function DashboardPage() {
   return (

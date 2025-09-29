@@ -79,11 +79,11 @@ const nextConfig = {
   // COMPILER OPTIONS
   // ================================================
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
 };
 
