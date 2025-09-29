@@ -114,13 +114,32 @@ export function SEOHead({
 
       {/* Favicon and Icons - Updated with new generated icons */}
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-      <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
-      <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
-      <link rel="icon" type="image/png" sizes="64x64" href="/icons/favicon.png" />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="/icons/favicon-16x16.png"
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/icons/favicon-32x32.png"
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="64x64"
+        href="/icons/favicon.png"
+      />
       <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-      <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+      <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="/icons/apple-touch-icon.png"
+      />
       <link rel="manifest" href="/manifest.json" />
-      
+
       {/* Additional PWA icons */}
       <meta name="theme-color" content="#2563eb" />
       <meta name="msapplication-TileColor" content="#2563eb" />

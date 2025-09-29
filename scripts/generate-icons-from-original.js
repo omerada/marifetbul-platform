@@ -17,7 +17,7 @@ const ICON_CONFIGS = [
   // Favicon boyutları
   { size: 16, name: 'favicon-16x16.png', type: 'favicon' },
   { size: 32, name: 'favicon-32x32.png', type: 'favicon' },
-  
+
   // PWA ve manifest icon'ları
   { size: 48, name: 'icon-48x48.png' },
   { size: 72, name: 'icon-72x72.png' },
@@ -29,48 +29,48 @@ const ICON_CONFIGS = [
   { size: 192, name: 'icon-192x192.png' },
   { size: 384, name: 'icon-384x384.png' },
   { size: 512, name: 'icon-512x512.png' },
-  
+
   // Diğer boyutlar
   { size: 64, name: 'favicon.png', type: 'favicon' },
 ];
 
 // Shortcut icon'ları için özel renkler
 const SHORTCUT_CONFIGS = [
-  { 
-    name: 'jobs-shortcut.png', 
-    size: 96, 
-    overlay: { 
-      text: 'İş', 
-      bg: 'rgba(59, 130, 246, 0.8)',  // blue
-      position: 'bottom'
-    }
+  {
+    name: 'jobs-shortcut.png',
+    size: 96,
+    overlay: {
+      text: 'İş',
+      bg: 'rgba(59, 130, 246, 0.8)', // blue
+      position: 'bottom',
+    },
   },
-  { 
-    name: 'marketplace-shortcut.png', 
-    size: 96, 
-    overlay: { 
-      text: 'MP', 
-      bg: 'rgba(16, 185, 129, 0.8)',  // green
-      position: 'bottom'
-    }
+  {
+    name: 'marketplace-shortcut.png',
+    size: 96,
+    overlay: {
+      text: 'MP',
+      bg: 'rgba(16, 185, 129, 0.8)', // green
+      position: 'bottom',
+    },
   },
-  { 
-    name: 'messages-shortcut.png', 
-    size: 96, 
-    overlay: { 
-      text: '💬', 
-      bg: 'rgba(245, 158, 11, 0.8)',  // yellow
-      position: 'bottom'
-    }
+  {
+    name: 'messages-shortcut.png',
+    size: 96,
+    overlay: {
+      text: '💬',
+      bg: 'rgba(245, 158, 11, 0.8)', // yellow
+      position: 'bottom',
+    },
   },
-  { 
-    name: 'dashboard-shortcut.png', 
-    size: 96, 
-    overlay: { 
-      text: 'Panel', 
-      bg: 'rgba(139, 92, 246, 0.8)',  // purple
-      position: 'bottom'
-    }
+  {
+    name: 'dashboard-shortcut.png',
+    size: 96,
+    overlay: {
+      text: 'Panel',
+      bg: 'rgba(139, 92, 246, 0.8)', // purple
+      position: 'bottom',
+    },
   },
 ];
 
@@ -90,7 +90,7 @@ async function resizeOriginalIcon(size, outputPath, options = {}) {
 
   let pipeline = sharp(ORIGINAL_ICON_PATH).resize(size, size, {
     fit: 'contain',
-    background: { r: 255, g: 255, b: 255, alpha: 0 } // Şeffaf arkaplan
+    background: { r: 255, g: 255, b: 255, alpha: 0 }, // Şeffaf arkaplan
   });
 
   // Apple icon'ları için özel işlemler
@@ -99,17 +99,17 @@ async function resizeOriginalIcon(size, outputPath, options = {}) {
     pipeline = pipeline.composite([
       {
         input: await createRoundedCornersMask(size, size * 0.2),
-        blend: 'dest-in'
-      }
+        blend: 'dest-in',
+      },
     ]);
   }
 
   // Favicon için özel işlemler
   if (options.type === 'favicon') {
-    pipeline = pipeline.png({ 
-      quality: 100, 
+    pipeline = pipeline.png({
+      quality: 100,
       compressionLevel: 9,
-      palette: true
+      palette: true,
     });
   } else {
     pipeline = pipeline.png({ quality: 95 });
@@ -121,12 +121,12 @@ async function resizeOriginalIcon(size, outputPath, options = {}) {
 // Shortcut icon'ları için overlay ekleme
 async function createShortcutIcon(config) {
   const outputPath = path.join(__dirname, '..', 'public', 'icons', config.name);
-  
+
   // Ana icon'u resize et
   const baseIcon = await sharp(ORIGINAL_ICON_PATH)
     .resize(config.size, config.size, {
       fit: 'contain',
-      background: { r: 255, g: 255, b: 255, alpha: 0 }
+      background: { r: 255, g: 255, b: 255, alpha: 0 },
     })
     .png()
     .toBuffer();
@@ -134,7 +134,7 @@ async function createShortcutIcon(config) {
   // Overlay için SVG oluştur
   const overlayHeight = Math.floor(config.size * 0.3);
   const fontSize = Math.floor(overlayHeight * 0.5);
-  
+
   const svgOverlay = `
     <svg width="${config.size}" height="${config.size}">
       <rect 
@@ -163,8 +163,8 @@ async function createShortcutIcon(config) {
     .composite([
       {
         input: Buffer.from(svgOverlay),
-        blend: 'over'
-      }
+        blend: 'over',
+      },
     ])
     .png()
     .toFile(outputPath);
@@ -184,14 +184,14 @@ async function createRoundedCornersMask(width, radius) {
 async function generateFavicon() {
   const faviconIcoPath = path.join(__dirname, '..', 'public', 'favicon.ico');
   const faviconSvgPath = path.join(__dirname, '..', 'public', 'favicon.svg');
-  
+
   try {
     // ICO formatında favicon oluştur (16x16 ve 32x32 boyutları içeren)
     const icon16 = await sharp(ORIGINAL_ICON_PATH)
       .resize(16, 16)
       .png()
       .toBuffer();
-      
+
     const icon32 = await sharp(ORIGINAL_ICON_PATH)
       .resize(32, 32)
       .png()
@@ -199,11 +199,11 @@ async function generateFavicon() {
 
     // Sharp ile ICO oluşturamadığımız için PNG formatında 32x32 olarak kaydet
     await sharp(icon32).toFile(faviconIcoPath.replace('.ico', '.png'));
-    
+
     // SVG formatında da kaydet
     const svgContent = await convertToSVG(32);
     fs.writeFileSync(faviconSvgPath, svgContent, 'utf8');
-    
+
     console.log('Generated: favicon.ico (as PNG) and favicon.svg');
   } catch (error) {
     console.error('Favicon oluşturulurken hata:', error.message);
@@ -216,9 +216,9 @@ async function convertToSVG(size) {
     .resize(size, size)
     .png()
     .toBuffer();
-    
+
   const base64 = pngBuffer.toString('base64');
-  
+
   return `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
     <image href="data:image/png;base64,${base64}" width="${size}" height="${size}"/>
   </svg>`;
@@ -226,8 +226,8 @@ async function convertToSVG(size) {
 
 // Ana icon'ları oluşturma
 async function generateMainIcons() {
-  console.log('Orjinal icon dosyasından ana icon\'lar oluşturuluyor...');
-  
+  console.log("Orjinal icon dosyasından ana icon'lar oluşturuluyor...");
+
   const iconsDir = path.join(__dirname, '..', 'public', 'icons');
   if (!fs.existsSync(iconsDir)) {
     fs.mkdirSync(iconsDir, { recursive: true });
@@ -235,10 +235,12 @@ async function generateMainIcons() {
 
   for (const config of ICON_CONFIGS) {
     const outputPath = path.join(iconsDir, config.name);
-    
+
     try {
       await resizeOriginalIcon(config.size, outputPath, config);
-      console.log(`✅ Generated: ${config.name} (${config.size}x${config.size})`);
+      console.log(
+        `✅ Generated: ${config.name} (${config.size}x${config.size})`
+      );
     } catch (error) {
       console.error(`❌ ${config.name} oluşturulamadı:`, error.message);
     }
@@ -247,12 +249,14 @@ async function generateMainIcons() {
 
 // Shortcut icon'larını oluşturma
 async function generateShortcutIcons() {
-  console.log('Shortcut icon\'ları oluşturuluyor...');
+  console.log("Shortcut icon'ları oluşturuluyor...");
 
   for (const config of SHORTCUT_CONFIGS) {
     try {
       await createShortcutIcon(config);
-      console.log(`✅ Generated: ${config.name} (${config.size}x${config.size} with overlay)`);
+      console.log(
+        `✅ Generated: ${config.name} (${config.size}x${config.size} with overlay)`
+      );
     } catch (error) {
       console.error(`❌ ${config.name} oluşturulamadı:`, error.message);
     }
@@ -261,16 +265,18 @@ async function generateShortcutIcons() {
 
 // Özel icon'ları oluşturma
 async function generateSpecialIcons() {
-  console.log('Özel icon\'lar oluşturuluyor...');
-  
+  console.log("Özel icon'lar oluşturuluyor...");
+
   const iconsDir = path.join(__dirname, '..', 'public', 'icons');
 
   for (const config of SPECIAL_ICONS) {
     const outputPath = path.join(iconsDir, config.name);
-    
+
     try {
       await resizeOriginalIcon(config.size, outputPath);
-      console.log(`✅ Generated: ${config.name} (${config.size}x${config.size})`);
+      console.log(
+        `✅ Generated: ${config.name} (${config.size}x${config.size})`
+      );
     } catch (error) {
       console.error(`❌ ${config.name} oluşturulamadı:`, error.message);
     }
@@ -279,14 +285,16 @@ async function generateSpecialIcons() {
 
 // Ana çalıştırma fonksiyonu
 async function main() {
-  console.log('🎨 MarifetBul - Orjinal Icon\'dan Icon Generator');
+  console.log("🎨 MarifetBul - Orjinal Icon'dan Icon Generator");
   console.log('===============================================');
   console.log(`📁 Kaynak dosya: ${ORIGINAL_ICON_PATH}`);
-  
+
   // Orjinal dosyanın var olup olmadığını kontrol et
   if (!fs.existsSync(ORIGINAL_ICON_PATH)) {
     console.error(`❌ Orjinal icon dosyası bulunamadı: ${ORIGINAL_ICON_PATH}`);
-    console.log('Lütfen public/mf-icon.png dosyasının var olduğundan emin olun.');
+    console.log(
+      'Lütfen public/mf-icon.png dosyasının var olduğundan emin olun.'
+    );
     process.exit(1);
   }
 
@@ -300,11 +308,10 @@ async function main() {
     await generateShortcutIcons();
     await generateSpecialIcons();
 
-    console.log('\n🎉 Tüm icon\'lar orjinal dosyadan başarıyla oluşturuldu!');
-    console.log('📱 PWA manifest icon\'ları hazır');
+    console.log("\n🎉 Tüm icon'lar orjinal dosyadan başarıyla oluşturuldu!");
+    console.log("📱 PWA manifest icon'ları hazır");
     console.log('🌐 Favicon dosyaları güncellendi');
-    console.log('⚡ Shortcut icon\'ları overlay ile oluşturuldu');
-    
+    console.log("⚡ Shortcut icon'ları overlay ile oluşturuldu");
   } catch (error) {
     console.error('❌ Ana hata:', error.message);
     process.exit(1);
@@ -320,5 +327,5 @@ module.exports = {
   createShortcutIcon,
   generateMainIcons,
   generateShortcutIcons,
-  generateSpecialIcons
+  generateSpecialIcons,
 };
