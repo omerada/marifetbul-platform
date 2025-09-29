@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 // Review creation validation schema
 const CreateReviewSchema = z.object({
   targetUserId: z.string().min(1, 'Target user ID is required'),

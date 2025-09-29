@@ -5,6 +5,9 @@ import {
 } from '@/lib/core/validations/support';
 import type { SupportTicket, PaginationMeta } from '@/types';
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 // Mock data for development
 const mockTickets: SupportTicket[] = [
   {

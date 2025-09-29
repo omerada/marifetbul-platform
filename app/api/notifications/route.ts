@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 // Notification creation validation schema
 const CreateNotificationSchema = z.object({
   type: z.enum(['review', 'analytics', 'reputation', 'security', 'system']),

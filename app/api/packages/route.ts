@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { ServicePackage, PaginatedResponse } from '@/types';
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 // Mock data - Production'da bu veriler database'den gelecek
 const mockPackages: ServicePackage[] = [
   {

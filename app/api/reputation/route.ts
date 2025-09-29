@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 // Reputation query validation schema
 const ReputationQuerySchema = z.object({
   userId: z.string().min(1, 'User ID is required'),

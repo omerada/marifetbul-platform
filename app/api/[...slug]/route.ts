@@ -2,6 +2,9 @@
 // In development, requests should be intercepted by MSW
 // In production, this would be your real API implementation
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   // Extract the URL for debugging
   const url = new URL(request.url);
