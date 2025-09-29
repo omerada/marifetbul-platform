@@ -13,6 +13,7 @@
     "format:check": "prettier --check .",
     "icons:generate": "node scripts/generate-icons.js",
     "icons:from-logo": "node scripts/generate-icons-from-logo.js",
+    "icons:from-original": "node scripts/generate-icons-from-original.js",
     "icons:clean": "rimraf public/icons/* && rimraf public/favicon.*",
     "analyze": "cross-env ANALYZE=true next build",
     "analyze:server": "cross-env ANALYZE=true next build && npx serve@latest .next/static",

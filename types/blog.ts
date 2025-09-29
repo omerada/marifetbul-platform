@@ -43,6 +43,7 @@ export interface BlogPost {
   publishedAt: string;
   updatedAt?: string;
   views?: number;
+  readTime?: number; // Dakika cinsinden okuma süresi
   featured?: boolean;
   comments?: BlogComment[];
   seoTitle?: string;
