@@ -4,7 +4,6 @@ import { Suspense } from 'react';
 import { AppLayout } from '@/components/layout';
 import { Card } from '@/components/ui/Card';
 import type { BlogPost } from '@/types/blog';
-import { createApiUrl } from '@/lib/api-utils';
 import { BlogErrorBoundary } from '@/components/blog';
 
 // Dynamic rendering işaretleme
@@ -17,21 +16,63 @@ export const metadata: Metadata = {
     'Freelance dünyası, teknoloji ve iş hayatı hakkında güncel yazılar.',
 };
 
+// Mock blog verileri - gerçek projede API'dan gelecek
+const mockBlogPosts = [
+  {
+    id: '1',
+    slug: 'freelancer-olarak-ilk-adimlariniz',
+    title: 'Freelancer Olarak İlk Adımlarınız',
+    excerpt:
+      'Freelance kariyerinize başlarken dikkat etmeniz gereken önemli noktalar.',
+    content: 'Blog içeriği...',
+    category: { id: '1', name: 'Kariyer', slug: 'kariyer' },
+    author: { id: '1', name: 'MarifetBul Editörü' },
+    publishedAt: '2025-09-12T10:00:00Z',
+    tags: ['freelance', 'kariyer', 'başlangıç'],
+    views: 120,
+    featured: true,
+  },
+  {
+    id: '2',
+    slug: '2025-web-tasarim-trendleri',
+    title: '2025 Web Tasarım Trendleri',
+    excerpt: 'Bu yıl öne çıkan web tasarım trendleri ve uygulama örnekleri.',
+    content: 'Blog içeriği...',
+    category: { id: '2', name: 'Tasarım', slug: 'tasarim' },
+    author: { id: '2', name: 'Tasarım Uzmanı' },
+    publishedAt: '2025-09-10T09:00:00Z',
+    tags: ['tasarım', 'trend', 'web'],
+    views: 80,
+    featured: false,
+  },
+  {
+    id: '3',
+    slug: 'uzaktan-calisma-ipuclari',
+    title: 'Uzaktan Çalışma İpuçları',
+    excerpt: 'Evden çalışırken verimliliğinizi artıracak pratik öneriler.',
+    content: 'Blog içeriği...',
+    category: { id: '3', name: 'Productivity', slug: 'productivity' },
+    author: { id: '3', name: 'Productivity Uzmanı' },
+    publishedAt: '2025-09-08T08:00:00Z',
+    tags: ['uzaktan çalışma', 'verimlilik', 'home office'],
+    views: 65,
+    featured: false,
+  },
+];
+
 async function getPosts() {
   try {
-    const res = await fetch(createApiUrl('/blog'), {
-      cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    // Geliştirme aşamasında mock data kullan
+    // Production'da bu kısım gerçek API çağrısı ile değiştirilecek
+    await new Promise((resolve) => setTimeout(resolve, 100)); // Simulated loading
 
-    if (!res.ok) {
-      console.error('Blog API error:', res.status, res.statusText);
-      return { posts: [], total: 0, page: 1, pageSize: 10 };
-    }
-
-    return await res.json();
+    console.log('Blog posts loaded:', mockBlogPosts.length);
+    return {
+      posts: mockBlogPosts,
+      total: mockBlogPosts.length,
+      page: 1,
+      pageSize: 10,
+    };
   } catch (error) {
     console.error('Blog fetch error:', error);
     return { posts: [], total: 0, page: 1, pageSize: 10 };
