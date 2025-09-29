@@ -65,14 +65,14 @@ export function useRecommendations() {
   // Mark recommendation as viewed
   const markAsViewed = useCallback(async (recommendationId: string) => {
     // This will be implemented in the store
-    console.log('Mark as viewed:', recommendationId);
+    // Mark recommendation as viewed
   }, []);
 
   // Dismiss recommendation
   const dismissRecommendation = useCallback(
     async (recommendationId: string, reason?: string) => {
       // This will be implemented in the store
-      console.log('Dismiss recommendation:', recommendationId, reason);
+      // Dismiss recommendation
     },
     []
   );

@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/Badge';
 import { ActivityTimeline } from './ActivityTimeline';
 import { QuickActions } from './QuickActions';
 import { StatsCard } from './StatsCard';
-import { DashboardSkeleton } from './DashboardSkeleton';
+import { SkeletonDashboard as DashboardSkeleton } from '@/components/ui/UnifiedSkeleton';
 import { ErrorState } from '@/components/shared/utilities';
 import { OrderTimeline } from '@/components/domains/packages';
 import {

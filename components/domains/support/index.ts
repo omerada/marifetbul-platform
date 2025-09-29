@@ -7,7 +7,6 @@
 // Help Center Components
 export { HelpCenterMain } from './HelpCenterMain';
 export { HelpCenterLayout } from './HelpCenterLayout';
-export { ArticleCard } from './ArticleCard';
 export { CategoryGrid } from './CategoryGrid';
 export { SearchResults as HelpSearchResults } from './SearchResults';
 export { ArticleRating } from './ArticleRating';

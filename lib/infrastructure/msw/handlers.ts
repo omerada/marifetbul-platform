@@ -2240,7 +2240,7 @@ export const handlers = [
       );
     }
 
-    console.log('Push subscription:', subscription);
+    // Track push subscription
 
     return HttpResponse.json({
       success: true,
@@ -2277,7 +2277,7 @@ export const handlers = [
       );
     }
 
-    console.log('Sending notification:', notificationData);
+    // Send notification
 
     return HttpResponse.json({
       success: true,

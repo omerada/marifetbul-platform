@@ -95,7 +95,7 @@ export function useAsyncOperation<TData, TParams = void>(
         });
 
         onSuccess?.(result, params as TParams);
-        onSettled?.(result, null, params as TParams);
+        options.onSettled?.(result, null, params as TParams);
 
         return result;
       } catch (error) {
@@ -156,75 +156,6 @@ export function useAsyncOperation<TData, TParams = void>(
 // ================================================
 // MUTATION HOOK (LEGACY COMPATIBILITY)
 // ================================================
-
-/**
- * @deprecated Use useAsyncOperation instead
- * Legacy mutation hook for backward compatibility
- */
-export function useMutation<TData, TParams = void>(
-  mutationFn: (params: TParams) => Promise<TData>,
-  options: MutationOptions<TData, TParams> = {}
-) {
-  const [state, setState] = useState<AsyncState<TData>>({
-    data: null,
-    isLoading: false,
-    error: null,
-    isSuccess: false,
-  });
-
-  const mutate = useCallback(
-    async (params: TParams): Promise<TData> => {
-      setState((prev) => ({
-        ...prev,
-        isLoading: true,
-        error: null,
-        isSuccess: false,
-      }));
-
-      try {
-        const result = await mutationFn(params);
-        setState((prev) => ({
-          ...prev,
-          data: result,
-          isLoading: false,
-          isSuccess: true,
-        }));
-        options.onSuccess?.(result, params);
-        options.onSettled?.(result, null, params);
-        return result;
-      } catch (error) {
-        const errorObj =
-          error instanceof Error ? error : new Error(String(error));
-        setState((prev) => ({
-          ...prev,
-          error: errorObj,
-          isLoading: false,
-          isSuccess: false,
-        }));
-        options.onError?.(errorObj, params);
-        options.onSettled?.(null, errorObj, params);
-        throw errorObj;
-      }
-    },
-    [mutationFn, options]
-  );
-
-  const reset = useCallback(() => {
-    setState({
-      data: null,
-      isLoading: false,
-      error: null,
-      isSuccess: false,
-    });
-  }, []);
-
-  return {
-    ...state,
-    mutate,
-    mutateAsync: mutate,
-    reset,
-  };
-}
 
 // ================================================
 // ACTION HOOK FOR OPERATIONS WITHOUT RETURN DATA
@@ -340,7 +271,6 @@ export function useMultipleAsyncOperations() {
 
 const UnifiedAsyncHooks = {
   useAsyncOperation,
-  useMutation,
   useAsyncAction,
   useMultipleAsyncOperations,
 };

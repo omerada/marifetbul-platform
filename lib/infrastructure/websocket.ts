@@ -103,7 +103,6 @@ export class WebSocketManager {
         this.ws = new WebSocket(wsUrl.toString());
 
         this.ws.onopen = () => {
-          console.log('WebSocket connected');
           this.isConnecting = false;
           this.reconnectAttempts = 0;
 
@@ -119,7 +118,6 @@ export class WebSocketManager {
         };
 
         this.ws.onclose = (event) => {
-          console.log('WebSocket disconnected:', event.code, event.reason);
           this.isConnecting = false;
           this.stopHeartbeat();
 
@@ -277,10 +275,6 @@ export class WebSocketManager {
       30000 // Max 30 seconds
     );
 
-    console.log(
-      `Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts}/${this.options.maxReconnectAttempts})`
-    );
-
     this.reconnectTimer = setTimeout(() => {
       this.connect().catch((error) => {
         console.error('Reconnection failed:', error);
@@ -361,7 +355,7 @@ export async function initializeWebSocket(): Promise<WebSocketManager> {
 
   try {
     await wsManager.connect();
-    console.log('WebSocket initialized successfully');
+
     return wsManager;
   } catch (error) {
     console.error('Failed to initialize WebSocket:', error);

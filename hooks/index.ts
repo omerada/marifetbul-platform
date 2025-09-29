@@ -11,7 +11,7 @@ export type {
   ToastOptions,
   ToastContextType,
 } from './core/useToast';
-export { useAsyncOperation } from './core/useAsyncOperation';
+export { useAsyncOperation } from './core/useUnifiedAsync';
 export { useNotification } from './core/useNotification';
 
 // BUSINESS HOOKS - Domain logic and business features

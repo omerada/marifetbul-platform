@@ -22,7 +22,7 @@ export { AccessibilityProvider } from './AccessibilityProvider';
 export { AnimatedInteractions } from './AnimatedInteractions';
 
 // Touch Components
-export { TouchJobCard, TouchServiceCard } from './TouchCards';
+// export { TouchJobCard, TouchServiceCard } from './TouchCards'; // Deprecated - refactored to use Card directly
 
 // Location & Maps
 export { LocationPicker } from './LocationPicker';

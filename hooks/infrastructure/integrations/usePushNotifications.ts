@@ -164,7 +164,7 @@ export function usePushNotifications(
 
         // Note: Delete endpoint not implemented in MSW handlers yet
         // This would be a DELETE request to /api/notifications/:id
-        console.log('Bildirim silindi:', notificationId);
+        // Notification deleted successfully
       } catch (err) {
         console.error('Bildirim silinemedi:', err);
         setError(err instanceof Error ? err.message : 'Bilinmeyen hata');

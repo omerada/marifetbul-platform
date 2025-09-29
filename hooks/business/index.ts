@@ -4,87 +4,16 @@
 // Unified hooks for business logic and domain operations
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import { useLocalStorage, useDebounce } from '../../lib/shared/base';
+import { useDebounce } from '../../lib/shared/base';
 import {
   useUserSearch,
   useJobsSearch,
   usePackagesSearch,
   useFavorites,
   useToggleFavorite,
-  useApiCurrentUser as useCurrentUser,
-  type User,
   type SearchFilters,
 } from '../infrastructure/api';
-
-// ================================================
-// AUTHENTICATION BUSINESS LOGIC
-// ================================================
-// NOTE: Main auth hooks moved to /hooks/shared/useAuth.tsx
-// This function kept for legacy compatibility
-
-/**
- * @deprecated Use useAuthState from '/hooks/shared/useAuth' instead
- * Legacy auth state hook - kept for compatibility
- */
-export function useBusinessAuthState() {
-  const currentUser = useCurrentUser();
-  const [isAuthenticated, setIsAuthenticated] = useLocalStorage(
-    'isAuthenticated',
-    false
-  );
-
-  useEffect(() => {
-    if (currentUser.data) {
-      setIsAuthenticated(true);
-    } else if (currentUser.error) {
-      setIsAuthenticated(false);
-    }
-  }, [currentUser.data, currentUser.error, setIsAuthenticated]);
-
-  const isLoading = currentUser.loading;
-  const user = currentUser.data;
-  const error = currentUser.error;
-
-  const hasRole = useCallback(
-    (role: User['role']) => {
-      return user?.role === role;
-    },
-    [user?.role]
-  );
-
-  const hasPermission = useCallback(
-    (permission: string) => {
-      // Implement permission logic based on user role
-      if (!user) return false;
-
-      switch (permission) {
-        case 'admin':
-          return user.role === 'admin';
-        case 'create_job':
-          return user.role === 'client' || user.role === 'admin';
-        case 'create_package':
-          return user.role === 'freelancer' || user.role === 'admin';
-        case 'manage_users':
-          return user.role === 'admin';
-        default:
-          return true;
-      }
-    },
-    [user]
-  );
-
-  return {
-    isAuthenticated,
-    isLoading,
-    user,
-    error,
-    hasRole,
-    hasPermission,
-    isFreelancer: user?.role === 'freelancer',
-    isClient: user?.role === 'client',
-    isAdmin: user?.role === 'admin',
-  };
-}
+import { useAuthState } from '../shared/useAuth';
 
 // ================================================
 // SEARCH BUSINESS LOGIC
@@ -162,7 +91,7 @@ export function useUnifiedSearch() {
 // ================================================
 
 export function useFavoritesManager() {
-  const { user } = useBusinessAuthState();
+  const { user } = useAuthState();
   const favorites = useFavorites(user?.id || '');
   const toggleFavorite = useToggleFavorite();
 
@@ -370,19 +299,19 @@ export function useBreadcrumbs() {
 // ================================================
 
 export function useAnalyticsTracker() {
-  const { user } = useBusinessAuthState();
+  const { user } = useAuthState();
 
   const track = useCallback(
     (event: string, properties?: Record<string, unknown>) => {
       // Implement analytics tracking
-      console.log('Analytics:', event, {
-        userId: user?.id,
-        timestamp: new Date().toISOString(),
-        ...properties,
-      });
-
-      // Here you would integrate with your analytics service
-      // e.g., Google Analytics, Mixpanel, etc.
+      // TODO: Integrate with analytics service (Google Analytics, Mixpanel, etc.)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Analytics:', event, {
+          userId: user?.id,
+          timestamp: new Date().toISOString(),
+          ...properties,
+        });
+      }
     },
     [user?.id]
   );
@@ -567,7 +496,6 @@ export function usePerformanceMonitor() {
 export { useAuthState } from '../shared/useAuth';
 
 const BusinessHooks = {
-  useBusinessAuthState,
   useUnifiedSearch,
   useFavoritesManager,
   useFilterManager,

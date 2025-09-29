@@ -604,7 +604,6 @@ unifiedApiClient.addRequestInterceptor(async (config) => {
 unifiedApiClient.addResponseInterceptor(async (response) => {
   // Log response for debugging in development
   if (process.env.NODE_ENV === 'development') {
-    console.log(`API Response: ${response.status} ${response.url}`);
   }
 
   return response;

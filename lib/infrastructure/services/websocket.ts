@@ -52,7 +52,6 @@ export class WebSocketManager {
         this.ws = new WebSocket(this.config.url);
 
         this.ws.onopen = () => {
-          console.log('WebSocket connected');
           this.isConnected = true;
           this.reconnectAttempts = 0;
           this.startPing();
@@ -69,7 +68,6 @@ export class WebSocketManager {
         };
 
         this.ws.onclose = (event) => {
-          console.log('WebSocket disconnected:', event.code, event.reason);
           this.isConnected = false;
           this.stopPing();
 
@@ -183,9 +181,6 @@ export class WebSocketManager {
 
     this.reconnectTimer = setTimeout(() => {
       this.reconnectAttempts++;
-      console.log(
-        `Attempting to reconnect (${this.reconnectAttempts}/${this.config.maxReconnectAttempts})`
-      );
 
       this.connect().catch((error) => {
         console.error('Reconnection failed:', error);

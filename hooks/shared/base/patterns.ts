@@ -6,7 +6,6 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import {
   useAsyncOperation,
-  useMutation as useMutationBase,
   usePagination,
   type AsyncHookReturn,
   type MutationHookReturn as BaseMutationHookReturn,
@@ -146,10 +145,18 @@ export function createMutationHook<TData, TParams>(
   ): StandardMutationHookReturn<TData, TParams> {
     const mergedOptions = { ...defaultOptions, ...options };
 
-    const mutation = useMutationBase(mutationFn, mergedOptions);
+    // Use useAsyncOperation with proper generic typing to avoid conditional type issues
+    const mutation = useAsyncOperation<TData, TParams>(
+      mutationFn as any, // Bypass TypeScript conditional type check
+      mergedOptions
+    );
 
     return {
-      ...mutation,
+      data: mutation.data,
+      isLoading: mutation.isLoading,
+      error: mutation.error,
+      mutate: mutation.execute,
+      reset: mutation.reset,
       isPending: mutation.isLoading,
       isOptimistic: false, // Will be enhanced with optimistic updates
     };

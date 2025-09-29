@@ -29,7 +29,7 @@ export class PushNotificationManager {
     try {
       const registration = await navigator.serviceWorker.register('/sw.js');
       this.swRegistration = registration;
-      console.log('Service Worker kayıt başarılı:', registration.scope);
+
       return registration;
     } catch (error) {
       console.error('Service Worker kayıt hatası:', error);

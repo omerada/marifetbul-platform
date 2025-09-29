@@ -215,7 +215,7 @@ export const useJobDetailStore = create<JobDetailStore>()(
             // Invalidate cache for this job since new proposal affects it
             get().invalidateCache(proposalData.jobId);
 
-            console.log('Teklifiniz başarıyla gönderildi!');
+            // Proposal sent successfully
           } else {
             throw new Error(data.error || 'Teklif gönderilemedi');
           }
@@ -270,10 +270,6 @@ export const useJobDetailStore = create<JobDetailStore>()(
                 };
               }
             });
-
-            console.log(
-              `Teklif ${status === 'accepted' ? 'kabul edildi' : 'reddedildi'}`
-            );
           } else {
             throw new Error(data.error || 'Teklif durumu güncellenemedi');
           }

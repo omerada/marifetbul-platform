@@ -234,29 +234,6 @@ export function validateFileType(file: File, allowedTypes: string[]): boolean {
   return allowedTypes.includes(file.type);
 }
 
-// Deprecated: Use core/validations/file instead
-export function validateImageFile(file: File): boolean {
-  const allowedTypes = [
-    'image/jpeg',
-    'image/jpg',
-    'image/png',
-    'image/gif',
-    'image/webp',
-  ];
-  return validateFileType(file, allowedTypes);
-}
-
-// Deprecated: Use core/validations/file instead
-export function validateDocumentFile(file: File): boolean {
-  const allowedTypes = [
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'text/plain',
-  ];
-  return validateFileType(file, allowedTypes);
-}
-
 // ================================================
 // TYPE GUARDS
 // ================================================
@@ -471,8 +448,6 @@ export const ValidationUtils = {
   // File validation
   validateFileSize,
   validateFileType,
-  validateImageFile,
-  validateDocumentFile,
 
   // Type guards
   isNumber,

@@ -241,14 +241,13 @@ export function SkeletonCard({
 // ================================================
 
 export function SkeletonDashboard({
-  type = 'freelancer',
+  type = 'freelancer', // eslint-disable-line @typescript-eslint/no-unused-vars
   className,
 }: {
   type?: 'freelancer' | 'client' | 'admin' | 'employer';
   className?: string;
 }) {
   // Different dashboard layouts could be implemented based on type
-  console.log('Dashboard type:', type); // Temporary to avoid unused warning
   return (
     <div className={cn('space-y-6', className)}>
       {/* Header Stats */}

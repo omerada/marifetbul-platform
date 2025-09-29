@@ -30,7 +30,10 @@ export function HelpCenterLayout({
       if (onSearch) {
         onSearch(searchQuery);
       } else {
-        router.push(`/help/search?q=${encodeURIComponent(searchQuery)}`);
+        // Arama geçici olarak devre dışı
+        alert(
+          'Arama özelliği geçici olarak bakımda. Lütfen daha sonra tekrar deneyin.'
+        );
       }
     }
   };
@@ -78,22 +81,22 @@ export function HelpCenterLayout({
               {/* Quick Actions */}
               <div className="flex items-center gap-3">
                 <Button
-                  onClick={() => router.push('/help/chat')}
+                  onClick={() => router.push('/contact')}
                   variant="outline"
                   size="sm"
                   className="flex items-center gap-2"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  Canlı Destek
+                  E-posta Desteği
                 </Button>
 
                 <Button
-                  onClick={() => router.push('/support/create')}
+                  onClick={() => router.push('/faq')}
                   size="sm"
                   className="flex items-center gap-2"
                 >
                   <FileText className="h-4 w-4" />
-                  Destek Talebi
+                  SSS
                 </Button>
               </div>
             </div>

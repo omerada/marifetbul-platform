@@ -12,7 +12,6 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 // Re-export from unified async system to maintain backward compatibility
 export {
   useAsyncOperation,
-  useMutation,
   useAsyncAction,
   useMultipleAsyncOperations,
   type AsyncOperationHook,

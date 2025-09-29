@@ -12,7 +12,6 @@ export { MobileDashboard } from './MobileDashboard';
 // Dashboard Features
 export { DashboardStats } from './DashboardStats';
 export { DashboardCharts } from './DashboardCharts';
-export { DashboardSkeleton } from './DashboardSkeleton';
 export { StatsCard } from './StatsCard';
 export { QuickActions } from './QuickActions';
 export { ActivityTimeline } from './ActivityTimeline';

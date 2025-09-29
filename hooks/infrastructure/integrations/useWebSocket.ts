@@ -135,7 +135,7 @@ export const useWebSocket = ({
 
           case 'pong':
             // Pong response to ping
-            console.log('WebSocket pong received');
+
             break;
 
           default:
@@ -173,7 +173,6 @@ export const useWebSocket = ({
       ws.current = new WebSocket(wsUrl);
 
       ws.current.onopen = () => {
-        console.log('WebSocket connected');
         setState((prev) => ({
           ...prev,
           isConnected: true,
@@ -187,7 +186,6 @@ export const useWebSocket = ({
       ws.current.onmessage = handleMessage;
 
       ws.current.onclose = (event) => {
-        console.log('WebSocket disconnected:', event.code, event.reason);
         setState((prev) => ({
           ...prev,
           isConnected: false,

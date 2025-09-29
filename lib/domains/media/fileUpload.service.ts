@@ -348,40 +348,6 @@ export const uploadFiles = (files: File[]) =>
   getFileUploadService().uploadFiles(files);
 
 /**
- * @deprecated Use @/lib/core/validations/file instead
- * File type validation - kept for backward compatibility
- */
-export const validateFileType = (
-  file: File,
-  allowedTypes?: string[]
-): boolean => {
-  const types = allowedTypes || [
-    'image/jpeg',
-    'image/jpg',
-    'image/png',
-    'image/gif',
-    'image/webp',
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'text/plain',
-  ];
-
-  return types.includes(file.type);
-};
-
-/**
- * @deprecated Use @/lib/core/validations/file instead
- * File size validation - kept for backward compatibility
- */
-export const validateFileSize = (
-  file: File,
-  maxSize = 5 * 1024 * 1024
-): boolean => {
-  return file.size <= maxSize;
-};
-
-/**
  * Format file size for display
  */
 export const formatFileSize = (bytes: number): string => {

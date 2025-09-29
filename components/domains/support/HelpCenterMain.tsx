@@ -1,70 +1,36 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Search,
   MessageCircle,
   FileText,
-  TrendingUp,
   Book,
   Users,
   Settings,
   Shield,
-  DollarSign,
   ArrowRight,
   Star,
-  Eye,
-  Clock,
 } from 'lucide-react';
-import { useHelpCenter } from '@/hooks';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 
 export function HelpCenterMain() {
   const router = useRouter();
-  const {
-    categories,
-    featuredArticles,
-    popularArticles,
-    fetchCategories,
-    fetchFeaturedArticles,
-    searchArticles,
-  } = useHelpCenter();
 
   const [searchQuery, setSearchQuery] = React.useState('');
-
-  useEffect(() => {
-    fetchCategories();
-    fetchFeaturedArticles();
-  }, [fetchCategories, fetchFeaturedArticles]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      await searchArticles(searchQuery);
-      router.push(`/help/search?q=${encodeURIComponent(searchQuery)}`);
+      // Arama geçici olarak devre dışı
+      alert(
+        'Arama özelliği geçici olarak bakımda. Lütfen daha sonra tekrar deneyin.'
+      );
     }
   };
-
-  const getCategoryIcon = (iconName?: string) => {
-    if (!iconName) return Book; // Default icon
-
-    const icons: Record<string, React.ElementType> = {
-      rocket: TrendingUp,
-      user: Users,
-      briefcase: FileText,
-      building: Settings,
-      'credit-card': DollarSign,
-      wrench: Settings,
-      shield: Shield,
-      book: Book,
-    };
-    return icons[iconName] || Book;
-  };
-
-  const mainCategories = categories.filter((cat) => !cat.parentId);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -117,7 +83,7 @@ export function HelpCenterMain() {
               </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2">
               <Card className="p-6 text-center transition-all hover:shadow-lg">
                 <div className="mb-4 flex justify-center">
                   <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
@@ -125,16 +91,17 @@ export function HelpCenterMain() {
                   </div>
                 </div>
                 <h3 className="mb-2 text-xl font-semibold text-gray-900">
-                  Canlı Destek
+                  E-posta Desteği
                 </h3>
                 <p className="mb-4 text-gray-600">
-                  Anında yardım alın. Destek ekibimizle canlı chat başlatın.
+                  Sorularınızı e-posta ile gönderin, en kısa sürede
+                  yanıtlayalım.
                 </p>
                 <Button
-                  onClick={() => router.push('/help/chat')}
+                  onClick={() => router.push('/contact')}
                   className="w-full"
                 >
-                  Chat Başlat
+                  E-posta Gönder
                 </Button>
               </Card>
 
@@ -166,182 +133,168 @@ export function HelpCenterMain() {
                   </div>
                 </div>
                 <h3 className="mb-2 text-xl font-semibold text-gray-900">
-                  Rehber Kitaplığı
+                  SSS
                 </h3>
                 <p className="mb-4 text-gray-600">
-                  Kapsamlı rehberler ve adım adım kılavuzlar.
+                  Sık sorulan sorular ve detaylı yanıtlar.
                 </p>
                 <Button
-                  onClick={() => router.push('/help/categories')}
+                  onClick={() => router.push('/faq')}
                   variant="outline"
                   className="w-full"
                 >
-                  Rehberleri Gör
+                  SSS&apos;yi Gör
                 </Button>
               </Card>
             </div>
           </div>
 
-          {/* Categories Grid */}
+          {/* Statik Yardım Kategorileri */}
           <div className="mb-16">
             <div className="mb-8 text-center">
               <h2 className="mb-4 text-3xl font-bold text-gray-900">
                 Yardım Kategorileri
               </h2>
               <p className="text-gray-600">
-                İhtiyaç duyduğunuz konuya göre rehberleri keşfedin
+                İhtiyaç duyduğunuz konuya göre yardım alın
               </p>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {mainCategories.map((category) => {
-                const Icon = getCategoryIcon(category.icon);
-                return (
-                  <Card
-                    key={category.id}
-                    className="group cursor-pointer p-6 transition-all hover:shadow-lg"
-                    onClick={() =>
-                      router.push(`/help/categories/${category.slug}`)
-                    }
-                  >
-                    <div className="mb-4 flex items-center gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 group-hover:bg-blue-100">
-                        <Icon className="h-6 w-6 text-gray-600 group-hover:text-blue-600" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {category.name}
-                        </h3>
-                        <div className="text-sm text-gray-500">
-                          {category.articleCount} makale
-                        </div>
-                      </div>
-                      <ArrowRight className="h-5 w-5 text-gray-400 transition-transform group-hover:translate-x-1" />
+              <Card
+                className="group cursor-pointer p-6 transition-all hover:shadow-lg"
+                onClick={() => router.push('/faq')}
+              >
+                <div className="mb-4 flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 group-hover:bg-blue-100">
+                    <Users className="h-6 w-6 text-gray-600 group-hover:text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Hesap Yönetimi
+                    </h3>
+                    <div className="text-sm text-gray-500">Genel sorular</div>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-gray-400 transition-transform group-hover:translate-x-1" />
+                </div>
+                <p className="text-gray-600">
+                  Hesap oluşturma, profil düzenleme ve güvenlik ayarları
+                </p>
+              </Card>
+
+              <Card
+                className="group cursor-pointer p-6 transition-all hover:shadow-lg"
+                onClick={() => router.push('/how-it-works')}
+              >
+                <div className="mb-4 flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 group-hover:bg-blue-100">
+                    <Settings className="h-6 w-6 text-gray-600 group-hover:text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Platform Kullanımı
+                    </h3>
+                    <div className="text-sm text-gray-500">Nasıl çalışır</div>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-gray-400 transition-transform group-hover:translate-x-1" />
+                </div>
+                <p className="text-gray-600">
+                  Platform özelliklerini öğrenin ve en iyi şekilde kullanın
+                </p>
+              </Card>
+
+              <Card
+                className="group cursor-pointer p-6 transition-all hover:shadow-lg"
+                onClick={() => router.push('/contact')}
+              >
+                <div className="mb-4 flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 group-hover:bg-blue-100">
+                    <Shield className="h-6 w-6 text-gray-600 group-hover:text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Güvenlik ve Gizlilik
+                    </h3>
+                    <div className="text-sm text-gray-500">
+                      Güvenlik konuları
                     </div>
-                    <p className="text-gray-600">{category.description}</p>
-                  </Card>
-                );
-              })}
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-gray-400 transition-transform group-hover:translate-x-1" />
+                </div>
+                <p className="text-gray-600">
+                  Hesap güvenliği, gizlilik ayarları ve veri koruma
+                </p>
+              </Card>
             </div>
           </div>
 
-          {/* Featured Articles */}
-          {featuredArticles.length > 0 && (
-            <div className="mb-16">
-              <div className="mb-8 flex items-center justify-between">
-                <div>
-                  <h2 className="mb-2 text-3xl font-bold text-gray-900">
-                    Öne Çıkan Makaleler
-                  </h2>
-                  <p className="text-gray-600">
-                    En çok ihtiyaç duyulan rehberler
-                  </p>
+          {/* Statik Önerilen Konular */}
+          <div className="mb-16">
+            <div className="mb-8">
+              <h2 className="mb-2 text-3xl font-bold text-gray-900">
+                Popüler Konular
+              </h2>
+              <p className="text-gray-600">
+                En çok merak edilen konular ve çözümler
+              </p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <Card
+                className="group cursor-pointer p-6 transition-all hover:shadow-lg"
+                onClick={() => router.push('/faq')}
+              >
+                <div className="mb-3 flex items-center gap-2">
+                  <Star className="h-4 w-4 text-yellow-400" />
+                  <span className="text-sm font-medium text-blue-600">
+                    Popüler
+                  </span>
                 </div>
-                <Button
-                  onClick={() => router.push('/help/articles')}
-                  variant="outline"
-                >
-                  Tümünü Gör
-                </Button>
-              </div>
-
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {featuredArticles.slice(0, 6).map((article) => (
-                  <Card
-                    key={article.id}
-                    className="group cursor-pointer p-6 transition-all hover:shadow-lg"
-                    onClick={() =>
-                      router.push(`/help/articles/${article.slug}`)
-                    }
-                  >
-                    <div className="mb-3 flex items-center gap-2">
-                      <Star className="h-4 w-4 text-yellow-400" />
-                      <span className="text-sm font-medium text-blue-600">
-                        Öne Çıkan
-                      </span>
-                    </div>
-
-                    <h3 className="mb-2 text-lg font-semibold text-gray-900 group-hover:text-blue-600">
-                      {article.title}
-                    </h3>
-
-                    <p className="mb-4 line-clamp-2 text-sm text-gray-600">
-                      {article.excerpt}
-                    </p>
-
-                    <div className="flex items-center justify-between text-xs text-gray-500">
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1">
-                          <Eye className="h-3 w-3" />
-                          <span>{article.views}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          <span>{article.estimatedReadTime} dk</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Star className="h-3 w-3 text-yellow-400" />
-                        <span>{article.rating}</span>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Popular Articles */}
-          {popularArticles.length > 0 && (
-            <div className="mb-16">
-              <div className="mb-8">
-                <h2 className="mb-2 text-3xl font-bold text-gray-900">
-                  Popüler Makaleler
-                </h2>
-                <p className="text-gray-600">
-                  En çok okunan ve beğenilen içerikler
+                <h3 className="mb-2 text-lg font-semibold text-gray-900 group-hover:text-blue-600">
+                  Hesap Oluşturma ve Giriş Sorunları
+                </h3>
+                <p className="mb-4 text-sm text-gray-600">
+                  Hesap oluştururken yaşanan sorunlar ve çözüm yolları
                 </p>
-              </div>
+              </Card>
 
-              <div className="space-y-4">
-                {popularArticles.slice(0, 5).map((article, index) => (
-                  <Card
-                    key={article.id}
-                    className="group cursor-pointer p-4 transition-all hover:shadow-md"
-                    onClick={() =>
-                      router.push(`/help/articles/${article.slug}`)
-                    }
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-600">
-                        {index + 1}
-                      </div>
+              <Card
+                className="group cursor-pointer p-6 transition-all hover:shadow-lg"
+                onClick={() => router.push('/how-it-works')}
+              >
+                <div className="mb-3 flex items-center gap-2">
+                  <Star className="h-4 w-4 text-yellow-400" />
+                  <span className="text-sm font-medium text-blue-600">
+                    Popüler
+                  </span>
+                </div>
+                <h3 className="mb-2 text-lg font-semibold text-gray-900 group-hover:text-blue-600">
+                  Platform Nasıl Kullanılır?
+                </h3>
+                <p className="mb-4 text-sm text-gray-600">
+                  MarifetBul platformunu etkili şekilde kullanma rehberi
+                </p>
+              </Card>
 
-                      <div className="min-w-0 flex-1">
-                        <h4 className="truncate font-semibold text-gray-900 group-hover:text-blue-600">
-                          {article.title}
-                        </h4>
-                        <p className="truncate text-sm text-gray-600">
-                          {article.excerpt}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
-                        <div className="flex items-center gap-1">
-                          <Eye className="h-3 w-3" />
-                          <span>{article.views}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Star className="h-3 w-3 text-yellow-400" />
-                          <span>{article.rating}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
+              <Card
+                className="group cursor-pointer p-6 transition-all hover:shadow-lg"
+                onClick={() => router.push('/contact')}
+              >
+                <div className="mb-3 flex items-center gap-2">
+                  <Star className="h-4 w-4 text-yellow-400" />
+                  <span className="text-sm font-medium text-blue-600">
+                    Popüler
+                  </span>
+                </div>
+                <h3 className="mb-2 text-lg font-semibold text-gray-900 group-hover:text-blue-600">
+                  Güvenlik ve Gizlilik Ayarları
+                </h3>
+                <p className="mb-4 text-sm text-gray-600">
+                  Hesabınızı güvende tutmak için önemli güvenlik ayarları
+                </p>
+              </Card>
             </div>
-          )}
+          </div>
 
           {/* Contact CTA */}
           <div className="rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 p-12 text-center text-white">
@@ -353,19 +306,19 @@ export function HelpCenterMain() {
             </p>
             <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
               <Button
-                onClick={() => router.push('/help/chat')}
+                onClick={() => router.push('/contact')}
                 className="bg-white text-gray-900 hover:bg-gray-100"
               >
                 <MessageCircle className="mr-2 h-4 w-4" />
-                Canlı Destek
+                E-posta Desteği
               </Button>
               <Button
-                onClick={() => router.push('/support/create')}
+                onClick={() => router.push('/faq')}
                 variant="outline"
                 className="border-white text-white hover:bg-white hover:text-gray-900"
               >
                 <FileText className="mr-2 h-4 w-4" />
-                Destek Talebi
+                Sık Sorulan Sorular
               </Button>
             </div>
           </div>

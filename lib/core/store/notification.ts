@@ -597,7 +597,6 @@ export const useNotificationStore = create<NotificationStore>()(
             .connect()
             .then(() => {
               set({ isConnected: true });
-              console.log('Notification real-time connection established');
             })
             .catch((error: unknown) => {
               console.error('Failed to establish real-time connection:', error);
@@ -614,7 +613,6 @@ export const useNotificationStore = create<NotificationStore>()(
           const wsManager = getWebSocketManager();
           wsManager.disconnect();
           set({ isConnected: false });
-          console.log('Notification real-time connection stopped');
         } catch (error) {
           console.error('Error stopping real-time connection:', error);
         }

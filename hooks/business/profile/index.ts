@@ -216,8 +216,8 @@ export function useUpdateProfile() {
       return await apiClient.put<User>('/profile', params);
     },
     {
-      onSuccess: (data: User) => {
-        console.log('Profile updated successfully:', data.id);
+      onSuccess: () => {
+        // Profile updated successfully
       },
       onError: (error: Error) => {
         console.error('Failed to update profile:', error.message);
@@ -248,8 +248,8 @@ export function useAvatarUpload() {
       );
     },
     {
-      onSuccess: (data: { avatarUrl: string; thumbnailUrl: string }) => {
-        console.log('Avatar uploaded successfully:', data.avatarUrl);
+      onSuccess: () => {
+        // Avatar uploaded successfully
       },
       onError: (error: Error) => {
         console.error('Failed to upload avatar:', error.message);
@@ -269,7 +269,7 @@ export function useDeleteAvatar() {
     },
     {
       onSuccess: () => {
-        console.log('Avatar deleted successfully');
+        // Avatar deleted successfully
       },
       onError: (error: Error) => {
         console.error('Failed to delete avatar:', error.message);
@@ -298,8 +298,8 @@ export function useUpdateFreelancerProfile() {
       return await apiClient.put<Freelancer>('/freelancer/profile', params);
     },
     {
-      onSuccess: (data: Freelancer) => {
-        console.log('Freelancer profile updated:', data.id);
+      onSuccess: () => {
+        // Freelancer profile updated
       },
       onError: (error: Error) => {
         console.error('Failed to update freelancer profile:', error.message);
@@ -324,8 +324,8 @@ export function useUpdateEmployerProfile() {
       return await apiClient.put<Employer>('/employer/profile', params);
     },
     {
-      onSuccess: (data: Employer) => {
-        console.log('Employer profile updated:', data.id);
+      onSuccess: () => {
+        // Employer profile updated
       },
       onError: (error: Error) => {
         console.error('Failed to update employer profile:', error.message);

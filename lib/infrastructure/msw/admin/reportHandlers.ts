@@ -463,7 +463,7 @@ export const reportHandlers = [
     await new Promise((resolve) => setTimeout(resolve, 800));
 
     // Simulate user blocking
-    console.log(`Blocking user: ${userId}`);
+    // Block user functionality
 
     return HttpResponse.json({
       success: true,
@@ -482,7 +482,7 @@ export const reportHandlers = [
     await new Promise((resolve) => setTimeout(resolve, 600));
 
     // Simulate user unblocking
-    console.log(`Unblocking user: ${userId}`);
+    // Unblock user functionality
 
     return HttpResponse.json({
       success: true,

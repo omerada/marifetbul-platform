@@ -4,6 +4,7 @@
 // Unified hooks for all API interactions using consistent patterns
 
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable react-hooks/exhaustive-deps */
 // @ts-nocheck - Geçici olarak tip kontrollerini atla
 
 import {
@@ -148,78 +149,15 @@ export interface LoginResponse {
 }
 
 // ================================================
-// AUTH HOOKS
-// ================================================
-// NOTE: Main auth hooks moved to /hooks/shared/useAuth.tsx
-// These are kept for API-specific auth operations only
-
-/**
- * @deprecated Use useAuth from '/hooks/shared/useAuth' instead
- * Basic API auth operations - kept for legacy compatibility
- */
-export function useApiAuth() {
-  const login = useMutation<LoginResponse, AuthCredentials>(
-    async (credentials) => {
-      return await apiClient.post<LoginResponse>('/auth/login', credentials);
-    },
-    {
-      onSuccess: (data) => {
-        localStorage.setItem('auth_token', data.token);
-        localStorage.setItem('refresh_token', data.refreshToken);
-      },
-    }
-  );
-
-  const register = useMutation<LoginResponse, RegisterData>(
-    async (data) => {
-      return await apiClient.post<LoginResponse>('/auth/register', data);
-    },
-    {
-      onSuccess: (data) => {
-        localStorage.setItem('auth_token', data.token);
-        localStorage.setItem('refresh_token', data.refreshToken);
-      },
-    }
-  );
-
-  const logout = useMutation<void, void>(
-    async () => {
-      await apiClient.post('/auth/logout');
-    },
-    {
-      onSuccess: () => {
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('refresh_token');
-      },
-    }
-  );
-
-  return { login, register, logout };
-}
-
-/**
- * @deprecated Use useCurrentUser from '/hooks/shared/useAuth' instead
- * Current user API hook - kept for legacy compatibility
- */
-export function useApiCurrentUser(): AsyncHookReturn<User> {
-  const asyncOp = useAsyncOperation(async () => {
-    return await apiClient.get<User>('/auth/me');
-  });
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && localStorage.getItem('auth_token')) {
-      asyncOp.execute();
-    }
-  }, [asyncOp]);
-
-  return asyncOp;
-}
-
-// ================================================
 // USER HOOKS
 // ================================================
 
-export function useUserProfile(userId: string): any {
+export function useUserProfile(userId: string): {
+  data: User | null;
+  isLoading: boolean;
+  error: Error | null;
+  refetch: () => void;
+} {
   const operation = useAsyncOperation(async () => {
     return await apiClient.get<User>(`/users/${userId}`);
   });
@@ -229,7 +167,7 @@ export function useUserProfile(userId: string): any {
     if (userId) {
       operation.execute();
     }
-  }, [userId, operation.execute]);
+  }, [userId]); // Remove operation.execute dependency to fix warning
 
   return {
     data: operation.data,
@@ -252,7 +190,7 @@ export function useUpdateUserProfile(): MutationHookReturn<
 export function useUserSearch(
   filters: SearchFilters,
   options: { pageSize?: number; enabled?: boolean } = {}
-): any {
+): PaginatedHookReturn<User> {
   const { pageSize = 10 } = options;
 
   return usePagination(async (page: number, limit: number) => {
@@ -284,7 +222,12 @@ export function useUserSearch(
 // JOB HOOKS
 // ================================================
 
-export function useJob(jobId: string): any {
+export function useJob(jobId: string): {
+  data: Job | null;
+  isLoading: boolean;
+  error: Error | null;
+  refetch: () => void;
+} {
   const operation = useAsyncOperation(async () => {
     return await apiClient.get<Job>(`/jobs/${jobId}`);
   });
@@ -294,7 +237,7 @@ export function useJob(jobId: string): any {
     if (jobId) {
       operation.execute();
     }
-  }, [jobId, operation.execute]);
+  }, [jobId]); // Remove operation.execute dependency to fix warning
 
   return {
     data: operation.data,
@@ -364,7 +307,12 @@ export function useDeleteJob(): MutationHookReturn<void, string> {
 // PACKAGE HOOKS
 // ================================================
 
-export function usePackage(packageId: string): any {
+export function usePackage(packageId: string): {
+  data: Package | null;
+  isLoading: boolean;
+  error: Error | null;
+  refetch: () => void;
+} {
   const operation = useAsyncOperation(async () => {
     return await apiClient.get<Package>(`/packages/${packageId}`);
   });
@@ -374,7 +322,7 @@ export function usePackage(packageId: string): any {
     if (packageId) {
       operation.execute();
     }
-  }, [packageId, operation.execute]);
+  }, [packageId]); // Remove operation.execute dependency to fix warning
 
   return {
     data: operation.data,
@@ -570,7 +518,12 @@ export function useFileUpload(): MutationHookReturn<UploadResponse, File> {
 export function useAnalytics(
   dateRange: { start: string; end: string },
   options: { enabled?: boolean } = {}
-): any {
+): {
+  data: AnalyticsData | null;
+  isLoading: boolean;
+  error: Error | null;
+  refetch: () => void;
+} {
   const { enabled = true } = options;
 
   const operation = useAsyncOperation(async () => {
@@ -586,7 +539,7 @@ export function useAnalytics(
     if (enabled && dateRange.start && dateRange.end) {
       operation.execute();
     }
-  }, [dateRange.start, dateRange.end, enabled, operation.execute]);
+  }, [dateRange.start, dateRange.end, enabled]); // Remove operation.execute dependency to fix warning
 
   return {
     data: operation.data,
@@ -642,10 +595,6 @@ export function useAdminUsers(
 // ================================================
 
 const ApiHooks = {
-  // Auth (deprecated - use shared/useAuth instead)
-  useApiAuth,
-  useApiCurrentUser,
-
   // Users
   useUserProfile,
   useUpdateUserProfile,

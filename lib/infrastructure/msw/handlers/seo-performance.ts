@@ -373,10 +373,10 @@ export const seoPerformanceHandlers = [
 
   // Referral Tracking
   http.post('/api/v1/social/referral', async ({ request }) => {
-    const body = await request.json();
+    await request.json(); // Parse request body
 
     // Simulate tracking
-    console.log('Referral tracked:', body);
+    // Track referral data
 
     return HttpResponse.json({
       success: true,

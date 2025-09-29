@@ -208,7 +208,7 @@ const generateMockResult = (
 export const enhancedSearchHandlers = [
   // Enhanced search endpoint
   http.post('/api/search/enhanced', async ({ request }) => {
-    const body = (await request.json()) as SearchRequest;
+    const body = (await request.json()) as SearchRequest; // Parse request body
     const { query, filters = {}, page = 1, limit = 20, mode = 'all' } = body;
 
     // Simulate search delay
@@ -300,7 +300,7 @@ export const enhancedSearchHandlers = [
     };
 
     // Use searchBody for potential future enhancements
-    console.log('Advanced search request:', searchBody);
+    // Process advanced search request
 
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 800));
@@ -373,10 +373,8 @@ export const enhancedSearchHandlers = [
 
   // Search analytics endpoint
   http.post('/api/search/analytics', async ({ request }) => {
-    const body = (await request.json()) as SearchAnalytics;
-
-    // Store analytics (in real app, this would go to database)
-    console.log('Search Analytics:', body);
+    await request.json(); // Parse request body
+    // Track search analytics
 
     return HttpResponse.json({
       success: true,
