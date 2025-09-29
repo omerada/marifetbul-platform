@@ -4,7 +4,6 @@ import { AppLayout } from '@/components/layout';
 import { Card } from '@/components/ui/Card';
 import {
   ChevronDown,
-  ChevronUp,
   HelpCircle,
   MessageCircle,
   Book,
@@ -113,23 +112,43 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Card className="p-6">
+    <Card
+      className="border border-gray-200 transition-all duration-200 hover:border-gray-300 hover:shadow-md"
+      padding="none"
+      size="sm"
+    >
       <button
-        className="flex w-full items-center justify-between text-left"
+        className="flex w-full items-center justify-between rounded-lg p-4 text-left focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
         onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-controls={`faq-answer-${question}`}
       >
-        <h3 className="text-lg font-semibold text-gray-900">{question}</h3>
-        {isOpen ? (
-          <ChevronUp className="h-5 w-5 text-gray-500" />
-        ) : (
-          <ChevronDown className="h-5 w-5 text-gray-500" />
-        )}
-      </button>
-      {isOpen && (
-        <div className="mt-4 text-gray-600">
-          <p>{answer}</p>
+        <h3 className="pr-4 text-base font-semibold text-gray-900">
+          {question}
+        </h3>
+        <div className="flex-shrink-0">
+          <ChevronDown
+            className={`h-5 w-5 text-gray-500 transition-transform duration-300 ${
+              isOpen ? 'rotate-180' : 'rotate-0'
+            }`}
+          />
         </div>
-      )}
+      </button>
+
+      {/* Accordion Content - Proper max-height based on content */}
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+          isOpen ? 'max-h-32' : 'max-h-0'
+        }`}
+      >
+        {isOpen && (
+          <div className="px-4 pb-4">
+            <div className="border-t border-gray-100 pt-3 text-sm leading-relaxed text-gray-600">
+              <p>{answer}</p>
+            </div>
+          </div>
+        )}
+      </div>
     </Card>
   );
 }
