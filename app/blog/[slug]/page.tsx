@@ -2,16 +2,33 @@ import { notFound } from 'next/navigation';
 import { BlogPost } from '@/types/blog';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
+import { createApiUrl } from '@/lib/api-utils';
+
+// Dynamic rendering işaretleme
+export const dynamicParams = true;
+export const revalidate = 0;
 
 const BlogComments = dynamic(() => import('./comments'), { ssr: false });
 
 async function getPost(slug: string): Promise<BlogPost | null> {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/blog/${slug}`,
-    { cache: 'no-store' }
-  );
-  if (!res.ok) return null;
-  return res.json();
+  try {
+    const res = await fetch(createApiUrl(`/blog/${slug}`), {
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!res.ok) {
+      console.error('Blog post API error:', res.status, res.statusText);
+      return null;
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Blog post fetch error:', error);
+    return null;
+  }
 }
 
 export default async function BlogDetailPage({

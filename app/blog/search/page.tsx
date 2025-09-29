@@ -1,12 +1,35 @@
 import Link from 'next/link';
+import type { BlogPost } from '@/types/blog';
+import { createApiUrl } from '@/lib/api-utils';
 
-async function searchPosts(query: string) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/blog?search=${encodeURIComponent(query)}`,
-    { cache: 'no-store' }
-  );
-  if (!res.ok) return { posts: [] };
-  return res.json();
+// Dynamic rendering işaretleme
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+async function searchPosts(
+  query: string
+): Promise<{ posts: BlogPost[]; total: number }> {
+  try {
+    const res = await fetch(
+      createApiUrl(`/blog?search=${encodeURIComponent(query)}`),
+      {
+        cache: 'no-store',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!res.ok) {
+      console.error('Search API error:', res.status, res.statusText);
+      return { posts: [], total: 0 };
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Search fetch error:', error);
+    return { posts: [], total: 0 };
+  }
 }
 
 export default async function BlogSearchPage({
@@ -37,7 +60,7 @@ export default async function BlogSearchPage({
         <div className="text-gray-500">Sonuç bulunamadı.</div>
       )}
       <ul className="space-y-6">
-        {posts.map((post: any) => (
+        {posts.map((post: BlogPost) => (
           <li key={post.id}>
             <Link
               href={`/blog/${post.slug}`}

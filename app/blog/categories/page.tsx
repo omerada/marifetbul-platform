@@ -1,12 +1,30 @@
 import Link from 'next/link';
+import type { BlogCategory } from '@/types/blog';
+import { createApiUrl } from '@/lib/api-utils';
 
-async function getCategories() {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/blog/categories`,
-    { cache: 'no-store' }
-  );
-  if (!res.ok) return [];
-  return res.json();
+// Dynamic rendering işaretleme
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+async function getCategories(): Promise<BlogCategory[]> {
+  try {
+    const res = await fetch(createApiUrl('/blog/categories'), {
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!res.ok) {
+      console.error('Categories API error:', res.status, res.statusText);
+      return [];
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Categories fetch error:', error);
+    return [];
+  }
 }
 
 export default async function BlogCategoriesPage() {
@@ -15,7 +33,7 @@ export default async function BlogCategoriesPage() {
     <main className="container mx-auto max-w-3xl px-4 py-12">
       <h1 className="mb-8 text-3xl font-bold">Blog Kategorileri</h1>
       <ul className="space-y-4">
-        {categories.map((cat: any) => (
+        {categories.map((cat: BlogCategory) => (
           <li key={cat.id}>
             <Link
               href={`/blog?category=${cat.slug}`}

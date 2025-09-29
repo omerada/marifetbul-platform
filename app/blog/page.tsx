@@ -1,8 +1,15 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { AppLayout } from '@/components/layout';
 import { Card } from '@/components/ui/Card';
 import type { BlogPost } from '@/types/blog';
+import { createApiUrl } from '@/lib/api-utils';
+import { BlogErrorBoundary } from '@/components/blog';
+
+// Dynamic rendering işaretleme
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: 'Blog - MarifetBul',
@@ -11,17 +18,96 @@ export const metadata: Metadata = {
 };
 
 async function getPosts() {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/blog`,
-    { cache: 'no-store' }
-  );
-  if (!res.ok) return { posts: [], total: 0 };
-  return res.json();
+  try {
+    const res = await fetch(createApiUrl('/blog'), {
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!res.ok) {
+      console.error('Blog API error:', res.status, res.statusText);
+      return { posts: [], total: 0, page: 1, pageSize: 10 };
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Blog fetch error:', error);
+    return { posts: [], total: 0, page: 1, pageSize: 10 };
+  }
 }
 
-export default async function BlogPage() {
+function BlogLoading() {
+  return (
+    <div className="py-16">
+      <div className="container mx-auto px-4">
+        <div className="mx-auto max-w-4xl space-y-8">
+          {[...Array(3)].map((_, i) => (
+            <Card key={i} className="animate-pulse p-8">
+              <div className="mb-2 h-4 w-20 rounded bg-gray-200"></div>
+              <div className="mb-3 h-6 rounded bg-gray-200"></div>
+              <div className="mb-4 h-4 rounded bg-gray-200"></div>
+              <div className="flex items-center justify-between">
+                <div className="h-4 w-24 rounded bg-gray-200"></div>
+                <div className="h-4 w-32 rounded bg-gray-200"></div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+async function BlogContent() {
   const { posts, total } = await getPosts();
 
+  return (
+    <div className="py-16">
+      <div className="container mx-auto px-4">
+        <div className="mx-auto max-w-4xl space-y-8">
+          {posts && posts.length > 0 ? (
+            posts.map((post: BlogPost) => (
+              <Card key={post.id} className="p-8">
+                <div className="mb-2 text-sm text-blue-600">
+                  {typeof post.category === 'object'
+                    ? post.category.name
+                    : post.category}
+                </div>
+                <h2 className="mb-3 text-2xl font-bold text-gray-900">
+                  <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+                </h2>
+                <p className="mb-4 text-gray-600">{post.excerpt}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-500">
+                    {new Date(post.publishedAt).toLocaleDateString('tr-TR')}
+                  </span>
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="text-blue-600 hover:text-blue-700"
+                  >
+                    Devamını Oku →
+                  </Link>
+                </div>
+              </Card>
+            ))
+          ) : (
+            <div className="text-center text-gray-500">
+              Henüz blog yazısı yok.
+            </div>
+          )}
+        </div>
+
+        <div className="mt-12 text-center">
+          <p className="text-gray-600">Toplam içerik: {total}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function BlogPage() {
   return (
     <AppLayout>
       <div className="bg-gradient-to-b from-blue-50 to-white py-16">
@@ -37,46 +123,11 @@ export default async function BlogPage() {
         </div>
       </div>
 
-      <div className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-4xl space-y-8">
-            {posts && posts.length > 0 ? (
-              posts.map((post: BlogPost) => (
-                <Card key={post.id} className="p-8">
-                  <div className="mb-2 text-sm text-blue-600">
-                    {typeof post.category === 'object'
-                      ? post.category.name
-                      : post.category}
-                  </div>
-                  <h2 className="mb-3 text-2xl font-bold text-gray-900">
-                    <Link href={`/blog/${post.slug}`}>{post.title}</Link>
-                  </h2>
-                  <p className="mb-4 text-gray-600">{post.excerpt}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">
-                      {new Date(post.publishedAt).toLocaleDateString('tr-TR')}
-                    </span>
-                    <Link
-                      href={`/blog/${post.slug}`}
-                      className="text-blue-600 hover:text-blue-700"
-                    >
-                      Devamını Oku →
-                    </Link>
-                  </div>
-                </Card>
-              ))
-            ) : (
-              <div className="text-center text-gray-500">
-                Henüz blog yazısı yok.
-              </div>
-            )}
-          </div>
-
-          <div className="mt-12 text-center">
-            <p className="text-gray-600">Toplam içerik: {total}</p>
-          </div>
-        </div>
-      </div>
+      <BlogErrorBoundary>
+        <Suspense fallback={<BlogLoading />}>
+          <BlogContent />
+        </Suspense>
+      </BlogErrorBoundary>
     </AppLayout>
   );
 }
