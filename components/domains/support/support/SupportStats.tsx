@@ -30,8 +30,7 @@ export function SupportStats({
     return <SupportStatsSkeleton className={className} />;
   }
 
-  const { overview, ticketsByCategory, responseTimeMetrics } =
-    analytics;
+  const { overview, ticketsByCategory, responseTimeMetrics } = analytics;
 
   return (
     <div className={`space-y-6 ${className}`}>

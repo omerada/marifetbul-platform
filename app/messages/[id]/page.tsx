@@ -46,8 +46,8 @@ export default function ConversationPage() {
               Mesajlaşma Özelliği
             </h2>
             <p className="text-gray-600">
-              Mesajlaşma sistemi şu anda geliştirme aşamasında. 
-              İletişim için destek sistemini kullanabilirsiniz.
+              Mesajlaşma sistemi şu anda geliştirme aşamasında. İletişim için
+              destek sistemini kullanabilirsiniz.
             </p>
           </Card>
         </div>

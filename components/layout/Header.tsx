@@ -135,7 +135,9 @@ export function Header() {
                     <MessageCircle className="h-4 w-4" />
                     {unreadCount.data.total > 0 && (
                       <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                        {unreadCount.data.total > 9 ? '9+' : unreadCount.data.total}
+                        {unreadCount.data.total > 9
+                          ? '9+'
+                          : unreadCount.data.total}
                       </span>
                     )}
                   </Button>

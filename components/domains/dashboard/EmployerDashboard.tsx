@@ -267,9 +267,24 @@ export function EmployerDashboard({}: EmployerDashboardProps) {
                         <div>
                           <h3 className="font-medium text-gray-900 dark:text-gray-100">
                             {conversation.participants
-                              .filter((p: { userId: string; user?: { firstName?: string; lastName?: string } }) => p.userId !== 'current-user')
-                              .map((p: { userId: string; user?: { firstName?: string; lastName?: string } }) =>
-                                `${p.user?.firstName || ''} ${p.user?.lastName || ''}`.trim()
+                              .filter(
+                                (p: {
+                                  userId: string;
+                                  user?: {
+                                    firstName?: string;
+                                    lastName?: string;
+                                  };
+                                }) => p.userId !== 'current-user'
+                              )
+                              .map(
+                                (p: {
+                                  userId: string;
+                                  user?: {
+                                    firstName?: string;
+                                    lastName?: string;
+                                  };
+                                }) =>
+                                  `${p.user?.firstName || ''} ${p.user?.lastName || ''}`.trim()
                               )
                               .join(', ')}
                           </h3>

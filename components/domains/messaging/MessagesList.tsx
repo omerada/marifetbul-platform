@@ -20,8 +20,8 @@ export function MessagesList() {
           Mesajlaşma Sistemi
         </h2>
         <p className="mb-6 text-gray-600">
-          Mesajlaşma sistemi şu anda geliştirme aşamasında. 
-          İletişim için destek sistemini kullanabilirsiniz.
+          Mesajlaşma sistemi şu anda geliştirme aşamasında. İletişim için destek
+          sistemini kullanabilirsiniz.
         </p>
         <div className="flex justify-center gap-4">
           <Button
