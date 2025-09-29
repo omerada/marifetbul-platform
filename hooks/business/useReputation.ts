@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { useReputationStore } from '@/lib/core/store/reputationStore';
+import { useReputationStore } from '@/lib/core/store/domains/reputation/reputationStore';
 import type { SecurityVerification } from '@/types';
 
 export function useReputation(userId?: string, autoLoad = true) {

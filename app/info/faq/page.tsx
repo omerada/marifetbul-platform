@@ -1,7 +1,7 @@
 'use client';
 
 import { AppLayout } from '@/components/layout';
-import { Card } from '@/components/ui/Card';
+
 import {
   ChevronDown,
   HelpCircle,

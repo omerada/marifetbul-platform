@@ -49,8 +49,31 @@ export * from './domains/support';
 // SHARED COMPONENTS
 // ================================================
 // Cross-domain shared components and utilities
+// Export specific components to avoid ArticleCard conflict
 
-export * from './shared';
+export {
+  InteractionButtons,
+  SocialShareButton,
+  ImageCarousel,
+  LazyWrapper,
+  createLazyComponent,
+  withSuspense,
+  useComponentPreloader,
+  useCriticalComponentsPreloader,
+  ComponentPerformanceMonitor,
+  withMemo,
+  getCachedComponent,
+  preloadCriticalComponents,
+  Progress,
+  PullToRefresh,
+  PWAManager,
+  SecurityAlert,
+  AccessibilityProvider,
+  AnimatedInteractions,
+  LocationPicker,
+  MapView,
+  ErrorState,
+} from './shared';
 
 // ================================================
 // UI COMPONENTS

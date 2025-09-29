@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 // @ts-nocheck
 import { http, HttpResponse } from 'msw';
 import {
@@ -50,7 +50,7 @@ import { dashboardHandlers } from './admin/dashboardHandlers';
 import { moderationHandlers } from './admin/moderationHandlers';
 import { filteringHandlers } from './admin/filteringHandlers';
 import { reportHandlers } from './admin/reportHandlers';
-import { generateCategoryPlaceholder } from '@/lib/shared/utils/image-fallback';
+import { generateCategoryPlaceholder } from '@/lib/domains/media/image-fallback';
 
 // Mock employer data
 const mockEmployer: Employer = {
@@ -315,9 +315,7 @@ export const mockPackages: ServicePackage[] = [
     createdAt: new Date('2024-01-10').toISOString(),
     updatedAt: new Date('2024-01-15').toISOString(),
     images: [
-      // @ts-expect-error Type mismatch for generateCategoryPlaceholder
       generateCategoryPlaceholder('Web Geliştirme', 'Web Development 1'),
-      // @ts-expect-error Type mismatch for generateCategoryPlaceholder
       generateCategoryPlaceholder('Web Geliştirme', 'Web Development 2'),
     ],
   },
@@ -2227,7 +2225,7 @@ export const handlers = [
 
   // Push notification handlers
   http.post('/api/push/subscribe', async ({ request }) => {
-    const subscription = (await request.json()) as unknown;
+    const subscription = await request.json();
 
     // Simulate processing delay
     await new Promise((resolve) => setTimeout(resolve, 300));
@@ -2264,7 +2262,7 @@ export const handlers = [
   }),
 
   http.post('/api/push/send', async ({ request }) => {
-    const notificationData = (await request.json()) as unknown;
+    const notificationData = await request.json();
 
     // Simulate processing delay
     await new Promise((resolve) => setTimeout(resolve, 500));

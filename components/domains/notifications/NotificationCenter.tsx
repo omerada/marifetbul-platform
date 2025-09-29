@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
+
 import { useNotification } from '@/hooks';
 import { EnhancedNotification } from '@/types';
 import {
@@ -14,7 +14,6 @@ import {
   CheckCheck,
   Trash2,
   Settings,
-  Filter,
   Eye,
   Archive,
   Clock,
@@ -28,9 +27,6 @@ import {
   Star,
   Zap,
   X,
-  Calendar,
-  User,
-  ChevronRight,
 } from 'lucide-react';
 
 interface NotificationCenterProps {

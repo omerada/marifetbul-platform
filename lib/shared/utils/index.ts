@@ -470,6 +470,3 @@ export const SharedUtils = {
   // Convenience access
   utils,
 };
-
-// Legacy compatibility
-export * from '../utils';

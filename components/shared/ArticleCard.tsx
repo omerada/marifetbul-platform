@@ -323,9 +323,4 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   );
 };
 
-// Legacy export for backward compatibility
-export function ArticleCard_Legacy(props: ArticleCardProps) {
-  return <ArticleCard {...props} />;
-}
-
 export default ArticleCard;

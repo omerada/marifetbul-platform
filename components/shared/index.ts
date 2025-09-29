@@ -4,7 +4,7 @@
 // Central export hub for all shared/common components
 // These components are used across multiple domains
 
-// Legacy shared components
+// Article components
 export { ArticleCard } from './ArticleCard';
 
 // Interaction components
