@@ -277,31 +277,29 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
                         }
                       >
                         <div className="mb-2 flex items-center justify-between">
-                          <h3 className="font-semibold">
-                            {(details as any).title}
-                          </h3>
+                          <h3 className="font-semibold">{details.title}</h3>
                           <Badge
                             variant={tier === 'premium' ? 'default' : 'outline'}
                           >
-                            {formatPrice((details as any).price)}
+                            {formatPrice(details.price)}
                           </Badge>
                         </div>
                         <p className="mb-3 text-sm text-gray-600">
-                          {(details as any).description}
+                          {details.description}
                         </p>
                         <div className="space-y-1 text-sm">
                           <div className="flex items-center">
                             <Clock className="mr-1 h-3 w-3" />
-                            {formatDeliveryTime((details as any).deliveryTime)}
+                            {formatDeliveryTime(details.deliveryTime)}
                           </div>
                           <div className="flex items-center">
                             <RefreshCw className="mr-1 h-3 w-3" />
-                            {(details as any).revisions} revizyon
+                            {details.revisions} revizyon
                           </div>
                         </div>
                         <ul className="mt-3 space-y-1">
-                          {(details as any).features?.map(
-                            (feature: any, index: number) => (
+                          {details.features?.map(
+                            (feature: string, index: number) => (
                               <li
                                 key={index}
                                 className="flex items-start text-sm"

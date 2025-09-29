@@ -16,13 +16,6 @@ const CreateNotificationSchema = z.object({
   expiresAt: z.string().datetime().optional(),
 });
 
-// Notification update validation schema
-// Unused schema but kept for future use
-const _UpdateNotificationSchema = z.object({
-  isRead: z.boolean().optional(),
-  isPinned: z.boolean().optional(),
-});
-
 // Notification query validation schema
 const NotificationQuerySchema = z.object({
   type: z
@@ -38,15 +31,6 @@ const NotificationQuerySchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    // Mock authentication - In production, implement proper auth validation
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const mockSession = {
-      user: {
-        id: 'current-user-id',
-        name: 'Current User',
-      },
-    };
-
     const { searchParams } = new URL(request.url);
     const queryParams = Object.fromEntries(searchParams.entries());
 
@@ -64,10 +48,7 @@ export async function GET(request: NextRequest) {
     const validatedQuery = NotificationQuerySchema.parse(processedParams);
 
     // Generate mock notifications
-    const mockNotifications = generateMockNotifications(
-      mockSession.user.id,
-      validatedQuery
-    );
+    const mockNotifications = generateMockNotifications();
 
     // Apply filters
     let filteredNotifications = mockNotifications;
@@ -214,10 +195,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function generateMockNotifications(
-  _userId: string,
-  _query: z.infer<typeof NotificationQuerySchema>
-) {
+function generateMockNotifications() {
   const now = new Date();
   const notifications = [
     {

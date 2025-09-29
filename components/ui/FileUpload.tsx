@@ -26,12 +26,15 @@ export default function FileUpload({
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [error, setError] = useState<string>('');
 
-  const validateFile = (file: File): string | null => {
-    if (maxSize && file.size > maxSize * 1024 * 1024) {
-      return `Dosya boyutu ${maxSize}MB'dan büyük olamaz`;
-    }
-    return null;
-  };
+  const validateFile = useCallback(
+    (file: File): string | null => {
+      if (maxSize && file.size > maxSize * 1024 * 1024) {
+        return `Dosya boyutu ${maxSize}MB'dan büyük olamaz`;
+      }
+      return null;
+    },
+    [maxSize]
+  );
 
   const handleFiles = useCallback(
     (files: FileList | null) => {
@@ -67,7 +70,7 @@ export default function FileUpload({
       setSelectedFiles(validFiles);
       onFileSelect(validFiles);
     },
-    [multiple, maxFiles, maxSize, onFileSelect, validateFile]
+    [multiple, maxFiles, onFileSelect, validateFile]
   );
 
   const handleDragOver = useCallback(
@@ -116,6 +119,7 @@ export default function FileUpload({
 
   const getFileIcon = (fileType: string) => {
     if (fileType.startsWith('image/')) {
+      // eslint-disable-next-line jsx-a11y/alt-text
       return <Image className="h-4 w-4" />;
     }
     return <File className="h-4 w-4" />;

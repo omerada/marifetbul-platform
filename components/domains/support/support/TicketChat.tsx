@@ -1,25 +1,8 @@
 'use client';
 
 import React from 'react';
-import {
-  Send,
-  Paperclip,
-  Smile,
-  User,
-  Bot,
-  Check,
-  CheckCheck,
-  Clock,
-  AlertCircle,
-  X,
-  Image,
-  FileText,
-  File,
-} from 'lucide-react';
+import { User, Bot } from 'lucide-react';
 import { useSupportTicket } from '@/hooks';
-import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Input } from '@/components/ui/Input';
-import { useWebSocket } from '@/hooks';
 import type { TicketResponse } from '@/types';
 import { cn } from '@/lib/utils';
 
@@ -53,17 +36,10 @@ export const TicketChat: React.FC<TicketChatProps> = ({
   className,
 }) => {
   const { ticket, loading: isLoading } = useSupportTicket(ticketId);
-  const { isConnected } = useWebSocket();
 
-  const [message, setMessage] = React.useState('');
   const [messages, setMessages] = React.useState<ChatMessage[]>([]);
-  const [typingUsers] = React.useState<string[]>([]);
-  const [showEmojiPicker, setShowEmojiPicker] = React.useState(false);
-  const [replyingTo, setReplyingTo] = React.useState<ChatMessage | null>(null);
 
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
-  const inputRef = React.useRef<HTMLTextAreaElement>(null);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Auto-scroll to bottom
   const scrollToBottom = () => {

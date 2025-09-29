@@ -97,7 +97,7 @@ export function SupportStats({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {ticketsByCategory?.map((category, index) => (
+            {ticketsByCategory?.map((category) => (
               <div key={category.category} className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-medium capitalize">

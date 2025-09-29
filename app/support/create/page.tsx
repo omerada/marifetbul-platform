@@ -2,26 +2,9 @@
 
 import { SupportLayout } from '@/components/domains/support';
 import { TicketForm } from '@/components/domains/support';
-import { useSupport } from '@/hooks';
-import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
-import type { CreateTicketFormData } from '@/lib/core/validations/support';
 
 export default function CreateTicketPage() {
-  const router = useRouter();
-  const { createTicket, createTicketLoading } = useSupport();
-
-  const handleSubmit = async (data: CreateTicketFormData) => {
-    try {
-      const result = await createTicket(data);
-      if (result.success && result.ticketId) {
-        router.push(`/support/ticket/${result.ticketId}`);
-      }
-    } catch (error) {
-      console.error('Error creating ticket:', error);
-    }
-  };
-
   return (
     <SupportLayout showCreateButton={false}>
       <div className="mx-auto max-w-4xl">
@@ -36,7 +19,7 @@ export default function CreateTicketPage() {
             </p>
           </div>
 
-          <TicketForm onSubmit={handleSubmit} isLoading={createTicketLoading} />
+          <TicketForm />
         </Card>
       </div>
     </SupportLayout>

@@ -1,15 +1,9 @@
 'use client';
 
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { UnifiedErrorBoundary } from '@/components/ui/UnifiedErrorBoundary';
 import { LoadingPageSkeleton } from '@/components/ui/UnifiedLoadingSystem';
-
-// Lazy load the heavy UserManagement component
-const UserManagement = lazy(() =>
-  import('@/components/domains/admin').then((module) => ({
-    default: module.UserManagement,
-  }))
-);
+import { UserTable } from '@/components/domains/admin';
 
 export default function AdminUsersPage() {
   return (
@@ -30,7 +24,7 @@ export default function AdminUsersPage() {
               />
             }
           >
-            <UserManagement />
+            <UserTable />
           </Suspense>
         </div>
       </div>

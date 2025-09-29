@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { Loading } from '@/components/ui';
 import { usePayment } from '@/hooks';
-import { Payment, PaymentMethodType } from '@/types';
+import { Payment } from '@/types';
 import {
   Search,
   Download,
@@ -15,7 +15,6 @@ import {
   CreditCard,
   Building2,
   Wallet,
-  DollarSign,
   Clock,
   CheckCircle,
   XCircle,
@@ -31,21 +30,13 @@ interface PaymentHistoryProps {
 }
 
 export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
-  userId,
-  showSummary = true,
   onPaymentSelect,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
 
-  const {
-    payments,
-    paymentHistory,
-    loading,
-    error,
-    fetchPaymentHistory,
-    formatPaymentAmount,
-  } = usePayment();
+  const { payments, loading, error, fetchPaymentHistory, formatPaymentAmount } =
+    usePayment();
 
   useEffect(() => {
     fetchPaymentHistory();

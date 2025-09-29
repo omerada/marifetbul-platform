@@ -169,6 +169,7 @@ export function ImageOptimizer({
     <div className={cn('relative', fill ? 'absolute inset-0' : '', className)}>
       {/* Blur placeholder */}
       {placeholder === 'blur' && !isLoaded && (
+        /* eslint-disable-next-line @next/next/no-img-element */
         <img
           src={blurDataURL || defaultBlurDataURL}
           alt=""
@@ -184,6 +185,7 @@ export function ImageOptimizer({
       )}
 
       {/* Main image */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         ref={imgRef}
         src={optimizedSrc}

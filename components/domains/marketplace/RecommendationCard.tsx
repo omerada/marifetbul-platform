@@ -481,7 +481,7 @@ export const RecommendationList: React.FC<RecommendationListProps> = ({
       // Find recommendation by item and dismiss it
       const rec = recommendations.find((r) => r.item === item);
       if (rec) {
-        dismissRecommendation('rec_' + Date.now()); // Temp ID - should be proper rec ID
+        dismissRecommendation(); // Temp ID - should be proper rec ID
       }
     },
     [recommendations, dismissRecommendation]

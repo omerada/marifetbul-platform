@@ -11,18 +11,30 @@ export function useMarketplace() {
   const jobs = useJobsStore((state) => state.items);
   const packages = usePackagesStore((state) => state.items);
 
-  const jobsPagination = useJobsStore((state) => state.pagination) || {
-    total: 0,
-    page: 1,
-    totalPages: 1,
-    limit: 12,
-  };
-  const packagesPagination = usePackagesStore((state) => state.pagination) || {
-    total: 0,
-    page: 1,
-    totalPages: 1,
-    limit: 12,
-  };
+  const rawJobsPagination = useJobsStore((state) => state.pagination);
+  const rawPackagesPagination = usePackagesStore((state) => state.pagination);
+
+  const jobsPagination = useMemo(() => {
+    return (
+      rawJobsPagination || {
+        total: 0,
+        page: 1,
+        totalPages: 1,
+        limit: 12,
+      }
+    );
+  }, [rawJobsPagination]);
+
+  const packagesPagination = useMemo(() => {
+    return (
+      rawPackagesPagination || {
+        total: 0,
+        page: 1,
+        totalPages: 1,
+        limit: 12,
+      }
+    );
+  }, [rawPackagesPagination]);
 
   // Loading states
   const jobsLoading = useJobsStore((state) => state.isLoading);
@@ -101,60 +113,33 @@ export function useMarketplace() {
     await Promise.all([fetchJobs(), fetchPackages()]);
   }, [fetchJobs, fetchPackages]);
 
-  const applyJobFilters = useCallback(
-    async (filters?: Partial<JobFilters>) => {
-      await fetchJobs();
-    },
-    [fetchJobs]
-  );
+  const applyJobFilters = useCallback(async () => {
+    await fetchJobs();
+  }, [fetchJobs]);
 
-  const applyPackageFilters = useCallback(
-    async (filters?: Partial<PackageFilters>) => {
-      await fetchPackages();
-    },
-    [fetchPackages]
-  );
+  const applyPackageFilters = useCallback(async () => {
+    await fetchPackages();
+  }, [fetchPackages]);
 
-  const loadMoreJobs_wrapper = useCallback(
-    async (options?: { append?: boolean }) => {
-      await loadMoreJobs();
-    },
-    [loadMoreJobs]
-  );
+  const loadMoreJobs_wrapper = useCallback(async () => {
+    await loadMoreJobs();
+  }, [loadMoreJobs]);
 
-  const loadMorePackages_wrapper = useCallback(
-    async (options?: { append?: boolean }) => {
-      await loadMorePackages();
-    },
-    [loadMorePackages]
-  );
+  const loadMorePackages_wrapper = useCallback(async () => {
+    await loadMorePackages();
+  }, [loadMorePackages]);
 
-  const sortJobs = useCallback(
-    async (
-      sortBy: 'newest' | 'oldest' | 'budget' | 'relevance',
-      sortOrder: 'asc' | 'desc' = 'desc'
-    ) => {
-      await fetchJobs();
-    },
-    [fetchJobs]
-  );
+  const sortJobs = useCallback(async () => {
+    await fetchJobs();
+  }, [fetchJobs]);
 
-  const sortPackages = useCallback(
-    async (
-      sortBy: 'newest' | 'oldest' | 'price' | 'rating' | 'relevance',
-      sortOrder: 'asc' | 'desc' = 'desc'
-    ) => {
-      await fetchPackages();
-    },
-    [fetchPackages]
-  );
+  const sortPackages = useCallback(async () => {
+    await fetchPackages();
+  }, [fetchPackages]);
 
-  const updateViewPreferences = useCallback(
-    (preferences: Partial<ViewPreferences>) => {
-      // For now, just ignore - not implemented in BaseStore
-    },
-    []
-  );
+  const updateViewPreferences = useCallback(() => {
+    // For now, just ignore - not implemented in BaseStore
+  }, []);
 
   // Mock functions for features not implemented yet
   const setSearchQuery = useCallback(() => {}, []);
@@ -169,10 +154,10 @@ export function useMarketplace() {
   const togglePackageFavorite = useCallback(() => {}, []);
 
   // Utility functions
-  const isJobSelected = useCallback((jobId: string) => false, []);
-  const isPackageSelected = useCallback((packageId: string) => false, []);
-  const isFavoriteJob = useCallback((jobId: string) => false, []);
-  const isFavoritePackage = useCallback((packageId: string) => false, []);
+  const isJobSelected = useCallback(() => false, []);
+  const isPackageSelected = useCallback(() => false, []);
+  const isFavoriteJob = useCallback(() => false, []);
+  const isFavoritePackage = useCallback(() => false, []);
 
   const refreshData = useCallback(async () => {
     await Promise.all([refreshJobs(), refreshPackages()]);

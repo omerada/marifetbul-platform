@@ -12,6 +12,7 @@ import { UnifiedLoading } from '@/components/ui/UnifiedLoadingSystem';
 // ================================================
 // UNIFIED LAZY LOADING SYSTEM
 // ================================================
+
 // Consolidated lazy loading utilities for optimal performance
 
 // ================================
@@ -54,6 +55,7 @@ export function createLazyComponent<T = Record<string, unknown>>(
 
   const LazyComponentWrapper: React.FC<T> = (props) => (
     <LazyWrapper fallback={fallback}>
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <LazyComponent {...(props as any)} />
     </LazyWrapper>
   );
@@ -69,6 +71,7 @@ export function withSuspense<T = Record<string, unknown>>(
 ) {
   const ComponentWithSuspense = (props: T) => (
     <Suspense fallback={fallback || <UnifiedLoading variant="skeleton" />}>
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <Component {...(props as any)} />
     </Suspense>
   );
@@ -235,14 +238,20 @@ export const ComponentPerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
 };
 
 // Memory efficient component cache
-const componentCache = new Map<string, ComponentType<any>>();
+const componentCache = new Map<
+  string,
+  ComponentType<Record<string, unknown>>
+>();
 
 export const getCachedComponent = <T = Record<string, unknown>,>(
   key: string,
   factory: () => ComponentType<T>
 ): ComponentType<T> => {
   if (!componentCache.has(key)) {
-    componentCache.set(key, factory() as ComponentType<any>);
+    componentCache.set(
+      key,
+      factory() as ComponentType<Record<string, unknown>>
+    );
   }
   return componentCache.get(key)! as ComponentType<T>;
 };

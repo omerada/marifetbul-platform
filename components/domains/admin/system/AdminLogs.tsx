@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
   Search,
-  Filter,
   Download,
   RefreshCw,
   AlertTriangle,

@@ -10,7 +10,7 @@ const safeBase64Encode = (str: string): string => {
       String.fromCharCode(byte)
     ).join('');
     return btoa(binaryString);
-  } catch (error) {
+  } catch {
     // Fallback: remove non-Latin1 characters
     const latin1Safe = str.replace(/[^\x00-\xFF]/g, '?');
     return btoa(latin1Safe);

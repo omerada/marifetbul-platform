@@ -14,13 +14,9 @@ import {
 import { useSupport } from '@/hooks';
 import { cn } from '@/lib/utils';
 
-import type { CreateTicketFormData } from '@/lib/core/validations/support';
-
 interface TicketFormProps {
   onBack?: () => void;
   onSuccess?: (ticketId: string) => void;
-  onSubmit?: (data: CreateTicketFormData) => Promise<void>;
-  isLoading?: boolean;
   className?: string;
 }
 
@@ -36,8 +32,6 @@ interface TicketFormData {
 export const TicketForm: React.FC<TicketFormProps> = ({
   onBack,
   onSuccess,
-  onSubmit,
-  isLoading = false,
   className,
 }) => {
   const router = useRouter();
@@ -187,6 +181,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
 
   const getFileIcon = (file: File) => {
     if (file.type.startsWith('image/')) {
+      // eslint-disable-next-line jsx-a11y/alt-text
       return <Image className="h-4 w-4" />;
     } else if (file.type.includes('pdf') || file.type.includes('document')) {
       return <FileText className="h-4 w-4" />;

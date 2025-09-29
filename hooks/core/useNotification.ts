@@ -72,7 +72,6 @@ export function useNotification(
   const {
     autoFetch = true,
     realtime = false,
-    pageSize = 20,
     filters: initialFilters = {},
   } = options;
 

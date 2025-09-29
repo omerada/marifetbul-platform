@@ -41,7 +41,7 @@ export interface MutationOptions<TData, TParams> {
     params: TParams
   ) => void;
   enabled?: boolean;
-  dependencies?: any[];
+  dependencies?: unknown[];
 }
 
 // ================================================
@@ -114,6 +114,7 @@ export function useAsyncOperation<TData, TParams = void>(
         throw errorObj;
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [asyncFn, onSuccess, onError, onSettled, updateState, enabled]
   );
 

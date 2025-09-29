@@ -59,16 +59,11 @@ export function Select({
 }
 
 interface SelectTriggerProps {
-  children: React.ReactNode;
   className?: string;
   placeholder?: string;
 }
 
-export function SelectTrigger({
-  children,
-  className,
-  placeholder,
-}: SelectTriggerProps) {
+export function SelectTrigger({ className, placeholder }: SelectTriggerProps) {
   const context = useContext(SelectContext);
   if (!context) throw new Error('SelectTrigger must be used within Select');
 

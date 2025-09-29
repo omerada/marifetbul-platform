@@ -34,7 +34,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
   };
 
   const { isFavoritePackage, togglePackageFavorite } = useMarketplace();
-  const isFavorite = isFavoritePackage(pkg.id);
+  const isFavorite = isFavoritePackage();
 
   const formatDeliveryTime = () => {
     if (pkg.deliveryTime === 1) return '1 gün';

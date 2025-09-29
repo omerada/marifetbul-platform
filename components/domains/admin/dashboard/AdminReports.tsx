@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
-  BarChart3,
+  BarChart,
   TrendingUp,
   Download,
   Calendar,
@@ -112,7 +112,7 @@ export function AdminReports() {
     },
   ];
 
-  const generateReport = async (reportId: string) => {
+  const generateReport = async () => {
     setIsGenerating(true);
     // Simulate report generation
     await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -277,7 +277,7 @@ export function AdminReports() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => generateReport(report.id)}
+                        onClick={() => generateReport()}
                         disabled={isGenerating}
                       >
                         <Eye className="mr-1 h-4 w-4" />
@@ -286,7 +286,7 @@ export function AdminReports() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => generateReport(report.id)}
+                        onClick={() => generateReport()}
                         disabled={isGenerating}
                       >
                         <Download className="mr-1 h-4 w-4" />
@@ -306,7 +306,7 @@ export function AdminReports() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <BarChart3 className="h-5 w-5" />
+              <BarChart className="h-5 w-5" />
               <span>Rapor Kullanım İstatistikleri</span>
             </CardTitle>
           </CardHeader>

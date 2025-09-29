@@ -63,19 +63,16 @@ export function useRecommendations() {
   );
 
   // Mark recommendation as viewed
-  const markAsViewed = useCallback(async (recommendationId: string) => {
+  const markAsViewed = useCallback(async () => {
     // This will be implemented in the store
     // Mark recommendation as viewed
   }, []);
 
   // Dismiss recommendation
-  const dismissRecommendation = useCallback(
-    async (recommendationId: string, reason?: string) => {
-      // This will be implemented in the store
-      // Dismiss recommendation
-    },
-    []
-  );
+  const dismissRecommendation = useCallback(async () => {
+    // This will be implemented in the store
+    // Dismiss recommendation
+  }, []);
 
   // Refresh recommendations
   const refreshRecommendations = useCallback(

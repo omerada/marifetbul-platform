@@ -2225,7 +2225,7 @@ export const handlers = [
 
   // Push notification handlers
   http.post('/api/push/subscribe', async ({ request }) => {
-    const subscription = await request.json();
+    await request.json();
 
     // Simulate processing delay
     await new Promise((resolve) => setTimeout(resolve, 300));
@@ -2262,7 +2262,7 @@ export const handlers = [
   }),
 
   http.post('/api/push/send', async ({ request }) => {
-    const notificationData = await request.json();
+    await request.json();
 
     // Simulate processing delay
     await new Promise((resolve) => setTimeout(resolve, 500));

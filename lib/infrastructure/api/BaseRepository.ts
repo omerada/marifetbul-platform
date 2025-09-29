@@ -4,11 +4,9 @@
 // Standardized repository pattern for all domain entities
 // Provides consistent CRUD operations and error handling
 
-import {
-  UnifiedApiClient,
-  type ApiResponse,
-  type PaginationMeta,
-} from './UnifiedApiClient';
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
+
+import { UnifiedApiClient, type PaginationMeta } from './UnifiedApiClient';
 
 // Generic repository interface
 export interface Repository<T, CreateDTO = Partial<T>, UpdateDTO = Partial<T>> {
@@ -324,12 +322,12 @@ export abstract class BaseRepository<
   // ================================================
   // Override these in concrete repositories for validation
 
-  protected validateCreateData(data: CreateDTO): void {
+  protected validateCreateData(_data: CreateDTO): void {
     // Override in concrete repositories
     // Default: no validation
   }
 
-  protected validateUpdateData(data: UpdateDTO): void {
+  protected validateUpdateData(_data: UpdateDTO): void {
     // Override in concrete repositories
     // Default: no validation
   }

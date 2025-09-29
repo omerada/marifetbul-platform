@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
@@ -40,34 +41,34 @@ export function createBaseStore<
         ...initialState,
 
         async fetch(): Promise<void> {},
-        async fetchById(id: string): Promise<T | null> {
+        async fetchById(_id: string): Promise<T | null> {
           return null;
         },
         async refresh(): Promise<void> {},
         async loadMore(): Promise<void> {},
-        async create(data: CreateDTO): Promise<T | null> {
+        async create(_data: CreateDTO): Promise<T | null> {
           return null;
         },
-        async update(id: string, data: UpdateDTO): Promise<T | null> {
+        async update(_id: string, _data: UpdateDTO): Promise<T | null> {
           return null;
         },
-        async delete(id: string): Promise<boolean> {
+        async delete(_id: string): Promise<boolean> {
           return false;
         },
-        async bulkDelete(ids: string[]): Promise<boolean> {
+        async bulkDelete(_ids: string[]): Promise<boolean> {
           return false;
         },
-        select(id: string): void {},
-        deselect(id: string): void {},
+        select(_id: string): void {},
+        deselect(_id: string): void {},
         selectAll(): void {},
         deselectAll(): void {},
-        toggleSelection(id: string): void {},
+        toggleSelection(_id: string): void {},
         invalidateCache(): void {},
         clearCache(): void {},
         clearError(): void {},
         reset(): void {},
-        optimisticAdd(id: string, item: T): void {},
-        optimisticUpdate(id: string, item: T): void {},
+        optimisticAdd(_id: string, _item: T): void {},
+        optimisticUpdate(_id: string, _item: T): void {},
         optimisticRemove(id: string): void {},
         commitOptimistic(id: string): void {},
         revertOptimistic(id: string): void {},

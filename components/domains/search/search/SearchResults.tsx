@@ -36,17 +36,12 @@ export function SearchResults({
   useEffect(() => {
     if (!query && !searchApplied) return;
 
-    const searchFilters = {
-      search: query || undefined,
-      page: 1,
-    };
-
     if (activeTab === 'jobs' || activeTab === 'all') {
-      applyJobFilters(searchFilters);
+      applyJobFilters();
     }
 
     if (activeTab === 'services' || activeTab === 'all') {
-      applyPackageFilters(searchFilters);
+      applyPackageFilters();
     }
 
     setSearchApplied(true);
@@ -56,18 +51,12 @@ export function SearchResults({
   useEffect(() => {
     if (!searchApplied) return;
 
-    const sortFilters = {
-      search: query || undefined,
-      sortBy: sortBy as 'newest' | 'oldest' | 'relevance',
-      page: 1,
-    };
-
     if (activeTab === 'jobs' || activeTab === 'all') {
-      applyJobFilters(sortFilters);
+      applyJobFilters();
     }
 
     if (activeTab === 'services' || activeTab === 'all') {
-      applyPackageFilters(sortFilters);
+      applyPackageFilters();
     }
   }, [
     sortBy,

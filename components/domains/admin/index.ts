@@ -18,8 +18,6 @@ export { default as SystemHealthWidget } from './dashboard/SystemHealthWidget';
 
 // User Management Components
 export { UserTable } from './users/UserTable';
-export { default as UserManagement } from './users/UserManagement';
-export { default as UserReportManagement } from './users/UserReportManagement';
 export { default as BulkActions } from './users/BulkActions';
 
 // Moderation Components
@@ -28,8 +26,6 @@ export { ContentModerationQueue } from './moderation/ContentModerationQueue';
 export { default as ContentAppealSystem } from './moderation/ContentAppealSystem';
 export { default as ModerationAnalytics } from './moderation/ModerationAnalytics';
 export { default as ModerationDashboard } from './moderation/ModerationDashboard';
-export { default as ModerationRulesEngine } from './moderation/ModerationRulesEngine';
-export { default as AutomatedFiltering } from './moderation/AutomatedFiltering';
 
 // System & Settings Components
 export { AdminSettings } from './system/AdminSettings';

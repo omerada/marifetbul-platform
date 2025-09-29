@@ -56,15 +56,10 @@ export function MobileMarketplace({
   };
 
   const applyFilters = () => {
-    const filters = {
-      category: activeFilters.category || undefined,
-      location: activeFilters.location ? [activeFilters.location] : undefined,
-    };
-
     if (mode === 'jobs') {
-      applyJobFilters(filters);
+      applyJobFilters();
     } else {
-      applyPackageFilters(filters);
+      applyPackageFilters();
     }
     setShowFilters(false);
   };
@@ -72,9 +67,9 @@ export function MobileMarketplace({
   const clearFilters = () => {
     setActiveFilters({ category: '', location: '', priceRange: '' });
     if (mode === 'jobs') {
-      applyJobFilters({});
+      applyJobFilters();
     } else {
-      applyPackageFilters({});
+      applyPackageFilters();
     }
   };
 

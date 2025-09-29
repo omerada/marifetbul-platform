@@ -34,8 +34,6 @@ export function MarketplacePage() {
     packages,
     jobsPagination,
     packagesPagination,
-    jobFilters,
-    packageFilters,
     isLoading,
     error,
     stats,
@@ -51,9 +49,9 @@ export function MarketplacePage() {
   // Initial data fetch
   useEffect(() => {
     if (mode === 'jobs' && jobs.length === 0) {
-      applyJobFilters({});
+      applyJobFilters();
     } else if (mode === 'packages' && packages.length === 0) {
-      applyPackageFilters({});
+      applyPackageFilters();
     }
   }, [
     mode,
@@ -76,16 +74,16 @@ export function MarketplacePage() {
     await refreshData();
   };
 
-  const handleViewModeChange = (layout: 'grid' | 'list') => {
-    updateViewPreferences({ ...viewPreferences, layout });
+  const handleViewModeChange = () => {
+    updateViewPreferences();
   };
 
   const handleClearFilters = useCallback(async () => {
     try {
       if (mode === 'jobs') {
-        await applyJobFilters({});
+        await applyJobFilters();
       } else {
-        await applyPackageFilters({});
+        await applyPackageFilters();
       }
     } catch (error) {
       console.error('Error clearing filters:', error);
@@ -95,9 +93,9 @@ export function MarketplacePage() {
   const handleShowAll = useCallback(async () => {
     try {
       if (mode === 'jobs') {
-        await applyJobFilters({});
+        await applyJobFilters();
       } else {
-        await applyPackageFilters({});
+        await applyPackageFilters();
       }
     } catch (error) {
       console.error('Error showing all items:', error);
@@ -276,7 +274,7 @@ export function MarketplacePage() {
             {/* View Mode Toggle */}
             <div className="flex items-center rounded-lg bg-gray-100 p-1">
               <button
-                onClick={() => handleViewModeChange('grid')}
+                onClick={() => handleViewModeChange()}
                 className={cn(
                   'rounded-md p-2 transition-colors',
                   viewPreferences.layout === 'grid'
@@ -287,7 +285,7 @@ export function MarketplacePage() {
                 <Grid3X3 className="h-4 w-4" />
               </button>
               <button
-                onClick={() => handleViewModeChange('list')}
+                onClick={() => handleViewModeChange()}
                 className={cn(
                   'rounded-md p-2 transition-colors',
                   viewPreferences.layout === 'list'
@@ -365,11 +363,11 @@ export function MarketplacePage() {
                 <MarketplacePagination
                   mode={mode}
                   pagination={currentPagination}
-                  onPageChange={(page: number) => {
+                  onPageChange={() => {
                     if (mode === 'jobs') {
-                      applyJobFilters({ ...jobFilters, page });
+                      applyJobFilters();
                     } else {
-                      applyPackageFilters({ ...packageFilters, page });
+                      applyPackageFilters();
                     }
                   }}
                 />

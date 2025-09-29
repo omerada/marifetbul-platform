@@ -5,7 +5,6 @@ import {
   SocialConfig,
   SocialShareData,
   SocialLoginResponse,
-  SocialShareStats,
   SocialLoginProvider,
   ReferralData,
 } from '@/types/shared/social';
@@ -64,7 +63,7 @@ const defaultConfig: SocialConfig = {
 
 export const useSocialStore = create<SocialStore>()(
   devtools(
-    (set, get) => ({
+    (set) => ({
       config: defaultConfig,
       shareStats: null,
       isLoading: false,
@@ -184,10 +183,8 @@ export const useSocialStore = create<SocialStore>()(
 
 // Helper functions
 function generateShareUrl(platform: string, data: SocialShareData): string {
-  const { url, title, description, hashtags } = data;
+  const { url, title, hashtags } = data;
   const encodedUrl = encodeURIComponent(url);
-  const encodedTitle = encodeURIComponent(title);
-  const encodedDescription = encodeURIComponent(description || '');
 
   switch (platform) {
     case 'facebook':

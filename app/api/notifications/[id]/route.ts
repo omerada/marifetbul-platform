@@ -12,14 +12,6 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Mock authentication - In production, implement proper auth validation
-    const mockSession = {
-      user: {
-        id: 'current-user-id',
-        name: 'Current User',
-      },
-    };
-
     const { id: notificationId } = await params;
     if (!notificationId) {
       return NextResponse.json(
@@ -75,14 +67,6 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Mock authentication - In production, implement proper auth validation
-    const mockSession = {
-      user: {
-        id: 'current-user-id',
-        name: 'Current User',
-      },
-    };
-
     const { id: notificationId } = await params;
     if (!notificationId) {
       return NextResponse.json(

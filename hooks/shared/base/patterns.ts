@@ -147,7 +147,9 @@ export function createMutationHook<TData, TParams>(
 
     // Use useAsyncOperation with proper generic typing to avoid conditional type issues
     const mutation = useAsyncOperation<TData, TParams>(
-      mutationFn as any, // Bypass TypeScript conditional type check
+      mutationFn as TParams extends void
+        ? (() => Promise<TData>) | null
+        : ((params: TParams) => Promise<TData>) | null,
       mergedOptions
     );
 

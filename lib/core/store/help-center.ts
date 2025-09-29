@@ -7,14 +7,12 @@ import type {
   PaginationMeta,
 } from '@/types';
 import type { ArticleSearchFormData } from '@/lib/core/validations/support';
-import {
-  createInitialAsyncState,
-  createBaseAsyncActions,
-  withAsyncHandler,
-  createApiCall,
-  type BaseAsyncState,
-  type BaseAsyncActions,
-} from './utils/store-patterns';
+
+// Base types for async state
+interface BaseAsyncState {
+  isLoading: boolean;
+  error: string | null;
+}
 
 interface HelpCenterState extends BaseAsyncState {
   // Categories

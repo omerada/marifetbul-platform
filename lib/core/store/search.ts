@@ -4,8 +4,6 @@ import {
   SearchState,
   SearchFilters,
   AdvancedSearchRequest,
-  SearchResult,
-  SearchSuggestion,
   SearchHistory,
   SavedSearch,
   SearchConfig,

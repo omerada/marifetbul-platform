@@ -27,7 +27,7 @@ interface JobCardProps {
 
 export function JobCard({ job, layout }: JobCardProps) {
   const { isFavoriteJob, toggleJobFavorite } = useMarketplace();
-  const isFavorite = isFavoriteJob(job.id);
+  const isFavorite = isFavoriteJob();
 
   const formatBudget = () => {
     // Type guard for budget object vs number
