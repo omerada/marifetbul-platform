@@ -207,10 +207,7 @@ export default function FAQPage() {
             <p className="mb-8 text-xl opacity-90">
               7/24 destek ekibimiz size yardımcı olmaya hazır
             </p>
-            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-              <button className="rounded-lg bg-white px-6 py-3 font-semibold text-gray-900 transition-colors hover:bg-gray-100">
-                Canlı Destek
-              </button>
+            <div className="flex justify-center">
               <button className="rounded-lg border-2 border-white px-6 py-3 font-semibold text-white transition-colors hover:bg-white hover:text-gray-900">
                 İletişim Formu
               </button>

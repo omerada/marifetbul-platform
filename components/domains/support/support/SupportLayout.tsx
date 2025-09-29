@@ -13,7 +13,6 @@ import {
   FileText,
   Phone,
   Mail,
-  MessageCircle,
 } from 'lucide-react';
 import { useSupport } from '@/hooks';
 import { cn } from '@/lib/utils';
@@ -246,21 +245,6 @@ export const SupportLayout: React.FC<SupportLayoutProps> = ({
                     <div className="font-medium text-gray-900">Taleplerim</div>
                     <div className="text-sm text-gray-600">
                       Geçmiş taleplerinizi görün
-                    </div>
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => router.push('/help/chat')}
-                  className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left transition-all hover:border-gray-300 hover:bg-gray-50"
-                >
-                  <MessageCircle className="h-5 w-5 text-gray-600" />
-                  <div>
-                    <div className="font-medium text-gray-900">
-                      Canlı Destek
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      Anında yardım alın
                     </div>
                   </div>
                 </button>

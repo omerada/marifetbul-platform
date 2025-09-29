@@ -64,8 +64,7 @@ export { useSEO } from './infrastructure/integrations/useSEO';
 export { useUnifiedLocation } from './infrastructure/integrations/useUnifiedLocation';
 export { usePlatformSettings } from './infrastructure/integrations/usePlatformSettings';
 
-// MESSAGING HOOKS - Chat and communication
-export { useChat } from './business/messaging/useChat';
+// MESSAGING HOOKS - Basic messaging (chat support removed)
 export {
   useMessages,
   useConversations,

@@ -46,7 +46,7 @@ export default function MessagesPage() {
             </p>
           </div>
 
-          <MessagesList user={user} />
+          <MessagesList />
         </div>
       </div>
     </AppLayout>

@@ -132,59 +132,6 @@ export const articleSearchSchema = z.object({
   sortBy: z.enum(['relevance', 'views', 'rating', 'date']).default('relevance'),
 });
 
-// Chat System Validation Schemas
-export const startChatSchema = z.object({
-  topic: z.string().max(200).optional(),
-  department: z
-    .enum(['technical', 'billing', 'sales', 'general'])
-    .default('general')
-    .refine((val) => val, { message: 'Geçerli bir departman seçiniz' }),
-  priority: z.enum(['normal', 'high', 'urgent']).default('normal'),
-  metadata: z.record(z.string(), z.unknown()).optional(),
-});
-
-export const sendChatMessageSchema = z.object({
-  chatId: z.string().min(1, 'Chat ID gereklidir'),
-  message: z
-    .string()
-    .min(1, 'Mesaj boş olamaz')
-    .max(1000, 'Mesaj en fazla 1000 karakter olabilir'),
-  messageType: z.enum(['text', 'file', 'image']).default('text'),
-  attachments: z
-    .array(
-      z.object({
-        name: z.string().min(1),
-        url: z.string().url(),
-        type: z.string(),
-        size: z.number().max(5 * 1024 * 1024), // 5MB for chat
-      })
-    )
-    .max(3)
-    .optional(),
-  replyTo: z.string().optional(),
-});
-
-export const chatFeedbackSchema = z.object({
-  chatId: z.string().min(1, 'Chat ID gereklidir'),
-  rating: z
-    .number()
-    .min(1, 'Puan en az 1 olmalıdır')
-    .max(5, 'Puan en fazla 5 olabilir')
-    .int('Puan tam sayı olmalıdır'),
-  feedback: z
-    .string()
-    .max(500, 'Geri bildirim en fazla 500 karakter olabilir')
-    .optional(),
-  categories: z
-    .object({
-      responsiveness: z.number().min(1).max(5).int(),
-      helpfulness: z.number().min(1).max(5).int(),
-      professionalism: z.number().min(1).max(5).int(),
-    })
-    .optional(),
-  wouldRecommend: z.boolean(),
-});
-
 // Common utility schemas
 export const paginationSchema = z.object({
   page: z.number().min(1).default(1),
@@ -205,9 +152,6 @@ export type TicketResponseFormData = z.infer<typeof ticketResponseSchema>;
 export type TicketSearchFormData = z.infer<typeof ticketSearchSchema>;
 export type ArticleRatingFormData = z.infer<typeof articleRatingSchema>;
 export type ArticleSearchFormData = z.infer<typeof articleSearchSchema>;
-export type StartChatFormData = z.infer<typeof startChatSchema>;
-export type SendChatMessageFormData = z.infer<typeof sendChatMessageSchema>;
-export type ChatFeedbackFormData = z.infer<typeof chatFeedbackSchema>;
 
 // Validation helper functions
 export const validateTicketData = (data: unknown) => {
@@ -216,10 +160,6 @@ export const validateTicketData = (data: unknown) => {
 
 export const validateArticleRating = (data: unknown) => {
   return articleRatingSchema.safeParse(data);
-};
-
-export const validateChatMessage = (data: unknown) => {
-  return sendChatMessageSchema.safeParse(data);
 };
 
 export const validateFileUpload = (data: unknown) => {

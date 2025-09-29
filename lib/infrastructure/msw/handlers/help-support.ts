@@ -5,9 +5,6 @@ import type {
   SupportTicket,
   CreateTicketRequest,
   CreateTicketResponse,
-  SupportDepartment,
-  ChatSession,
-  StartChatResponse,
   SupportAnalytics,
   ArticleRatingResponse,
 } from '../../../../types';
@@ -130,39 +127,6 @@ const mockTickets: SupportTicket[] = [
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=john',
       userType: 'freelancer',
     },
-  },
-];
-
-// Mock Support Departments
-const mockDepartments: SupportDepartment[] = [
-  {
-    id: 'technical',
-    name: 'technical',
-    isAvailable: true,
-    queueLength: 2,
-    estimatedWaitTime: 3,
-  },
-  {
-    id: 'billing',
-    name: 'billing',
-    isAvailable: true,
-    queueLength: 1,
-    estimatedWaitTime: 2,
-  },
-  {
-    id: 'sales',
-    name: 'sales',
-    isAvailable: false,
-    queueLength: 0,
-    estimatedWaitTime: 0,
-    message: 'Satış departmanımız mesai saatleri dışında.',
-  },
-  {
-    id: 'general',
-    name: 'general',
-    isAvailable: true,
-    queueLength: 0,
-    estimatedWaitTime: 1,
   },
 ];
 
@@ -337,60 +301,6 @@ export const helpSupportHandlers = [
         },
       },
     });
-  }),
-
-  // Live Chat
-  http.get('/api/v1/support/departments', () => {
-    return HttpResponse.json({
-      success: true,
-      data: mockDepartments,
-    });
-  }),
-
-  http.post('/api/v1/support/chat/start', async ({ request }) => {
-    const body = (await request.json()) as { department: string };
-
-    const session: ChatSession = {
-      id: `session-${Date.now()}`,
-      userId: 'current-user',
-      agentId: 'agent-1',
-      department: body.department,
-      status: 'active',
-      startedAt: new Date().toISOString(),
-      messages: [],
-      participants: [
-        {
-          id: 'current-user',
-          email: 'user@example.com',
-          firstName: 'Kullanıcı',
-          lastName: 'Test',
-          userType: 'freelancer',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          accountStatus: 'active',
-          verificationStatus: 'verified',
-        },
-        {
-          id: 'agent-1',
-          email: 'agent@example.com',
-          firstName: 'Destek',
-          lastName: 'Temsilcisi',
-          userType: 'admin',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          accountStatus: 'active',
-          verificationStatus: 'verified',
-        },
-      ],
-      isActive: true,
-    };
-
-    const response: StartChatResponse = {
-      success: true,
-      data: session,
-    };
-
-    return HttpResponse.json(response);
   }),
 
   // Support Analytics

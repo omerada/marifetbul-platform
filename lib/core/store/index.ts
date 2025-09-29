@@ -57,7 +57,6 @@ export { default as uiSelectors } from './domains/ui/uiStore';
 // === MESSAGING & SOCIAL ===
 // Communication features
 
-export { useChatStore } from './chat';
 export { useMessagingStore } from './messaging';
 export { useSocialStore } from './social';
 

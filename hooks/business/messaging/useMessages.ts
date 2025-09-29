@@ -1,136 +1,60 @@
 'use client';
 
-import useSWR from 'swr';
-import { Message, Conversation, ApiResponse } from '@/types';
-import { apiClient } from '@/lib/infrastructure/api/client';
-import { useAsyncOperation, useAsyncAction } from '../../core/useUnifiedAsync';
+// Simplified messaging hooks with chat support removed
 
-// Hook to fetch conversations
 export function useConversations() {
-  const { data, error, isLoading, mutate } = useSWR<
-    ApiResponse<Conversation[]>
-  >('/api/conversations', apiClient.get);
-
   return {
-    conversations: data?.data || [],
-    isLoading,
-    error,
-    refresh: mutate,
+    conversations: [],
+    isLoading: false,
+    error: null,
+    refresh: () => Promise.resolve(),
   };
 }
 
-// Hook to fetch specific conversation
-export function useConversation(conversationId: string) {
-  const { data, error, isLoading, mutate } = useSWR<ApiResponse<Conversation>>(
-    conversationId ? `/api/conversations/${conversationId}` : null,
-    apiClient.get
-  );
-
+export function useConversation(_conversationId: string) {
   return {
-    conversation: data?.data,
-    isLoading,
-    error,
-    refresh: mutate,
+    data: null,
+    isLoading: false,
+    error: null,
+    refetch: () => Promise.resolve(),
   };
 }
 
-// Hook to fetch messages for a conversation
-export function useMessages(conversationId: string) {
-  const { data, error, isLoading, mutate } = useSWR<ApiResponse<Message[]>>(
-    conversationId ? `/api/conversations/${conversationId}/messages` : null,
-    apiClient.get,
-    {
-      refreshInterval: 3000, // Refresh every 3 seconds for real-time effect
-    }
-  );
-
+export function useMessages(_conversationId: string) {
   return {
-    messages: data?.data || [],
-    isLoading,
-    error,
-    refresh: mutate,
+    messages: [],
+    isLoading: false,
+    error: null,
+    sendMessage: () => Promise.resolve(),
+    refresh: () => Promise.resolve(),
   };
 }
 
-// Hook to send messages - REFACTORED to use useAsyncOperation
-export function useMessaging() {
-  const sendMessageOperation = useAsyncOperation<
-    ApiResponse<Message>,
-    { conversationId: string; content: string }
-  >(async ({ conversationId, content }) => {
-    const response = await apiClient.post<ApiResponse<Message>>(
-      `/api/conversations/${conversationId}/messages`,
-      { content }
-    );
-    return response;
-  });
-
-  const createConversationOperation = useAsyncOperation<
-    ApiResponse<Conversation>,
-    {
-      participantIds: string[];
-      jobId?: string;
-      packageId?: string;
-      initialMessage?: string;
-    }
-  >(async ({ participantIds, jobId, packageId, initialMessage }) => {
-    const response = await apiClient.post<ApiResponse<Conversation>>(
-      '/api/conversations',
-      { participantIds, jobId, packageId, initialMessage }
-    );
-    return response;
-  });
-
-  const markAsReadAction = useAsyncAction(async () => {
-    // This will be handled by the markAsRead function
-  });
-
-  const sendMessage = async (conversationId: string, content: string) => {
-    return await sendMessageOperation.execute({ conversationId, content });
-  };
-
-  const createConversation = async (
-    participantId: string,
-    initialMessage?: string,
-    jobId?: string,
-    packageId?: string
-  ) => {
-    return await createConversationOperation.execute({
-      participantIds: [participantId],
-      jobId,
-      packageId,
-      initialMessage,
-    });
-  };
-
-  const markAsRead = async (conversationId: string) => {
-    // Mark as read API call - simplified implementation
-    await apiClient.patch(`/api/conversations/${conversationId}/mark-read`);
-  };
-
-  return {
-    sendMessage,
-    createConversation,
-    markAsRead,
-    isLoading:
-      sendMessageOperation.isLoading ||
-      createConversationOperation.isLoading ||
-      markAsReadAction.isLoading,
-    error:
-      sendMessageOperation.error ||
-      createConversationOperation.error ||
-      markAsReadAction.error,
-  };
-}
-
-// Hook to get unread message count
 export function useUnreadCount() {
-  const { conversations } = useConversations();
+  return {
+    data: {
+      total: 0,
+      byConversation: {},
+    },
+    refetch: () => Promise.resolve(),
+  };
+}
 
-  const unreadCount = conversations.reduce(
-    (total, conv) => total + conv.unreadCount,
-    0
-  );
+export function useMessaging() {
+  return {
+    sendMessage: () => Promise.resolve(),
+    markAsRead: () => Promise.resolve(),
+    createConversation: () => Promise.resolve(),
+    deleteMessage: () => Promise.resolve(),
+    isLoading: false,
+    isSending: false,
+    isMarkingRead: false,
+    isCreating: false,
+    isDeleting: false,
+    error: null,
+  };
+}
 
-  return unreadCount;
+export function useUnreadMessagesCount() {
+  return 0;
 }

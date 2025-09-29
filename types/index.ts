@@ -16,19 +16,12 @@ import type {
   ServicePackage,
   Proposal,
 } from './business/features/marketplace';
-import type {
-  ChatMessage,
-  ChatConversation,
-} from './business/features/messaging';
 
 // Analytics types - consolidated
 export * from './business/features/analytics';
 
 // Marketplace types (Job, ServicePackage, etc.)
 export * from './business/features/marketplace';
-
-// Messaging and chat types
-export * from './business/features/messaging';
 
 // Common utility types
 
@@ -376,7 +369,6 @@ export interface Order {
   paymentStatus?: string;
   clientId?: string; // Alternative to buyerId
   freelancerId?: string; // Alternative to sellerId
-  communications?: ChatMessage[]; // MSW handler communications
   progress?: {
     percentage: number;
     stagesCompleted: number;
@@ -458,17 +450,32 @@ export interface TicketResponse {
   }>;
 }
 
+// Basic message and conversation types for compatibility
+export interface BasicMessage {
+  id: string;
+  content: string;
+  senderId: string;
+  timestamp: string;
+}
+
+export interface BasicConversation {
+  id: string;
+  participantIds: string[];
+  lastMessage?: BasicMessage;
+  updatedAt: string;
+}
+
 // Missing types to satisfy imports
-export type Message = ChatMessage; // Alias for compatibility
-export type Conversation = ChatConversation; // Alias for compatibility
+export type Message = BasicMessage; // Alias for compatibility
+export type Conversation = BasicConversation; // Alias for compatibility
 
 export interface MessagesResponse {
-  messages: ChatMessage[];
+  messages: BasicMessage[];
   pagination: PaginationMeta;
 }
 
 export interface ConversationsResponse {
-  conversations: ChatConversation[];
+  conversations: BasicConversation[];
   pagination: PaginationMeta;
 }
 
@@ -497,8 +504,8 @@ export interface MessageSearchResponse {
 }
 
 export interface MessageSearchResult {
-  message: ChatMessage;
-  conversation: ChatConversation;
+  message: BasicMessage;
+  conversation: BasicConversation;
   highlights: string[];
 }
 
@@ -1536,15 +1543,6 @@ export interface SupportAnalytics {
   };
 }
 
-export interface SupportDepartment {
-  id: string;
-  name: string;
-  isAvailable: boolean;
-  estimatedWaitTime?: number | string;
-  message?: string;
-  queueLength?: number;
-}
-
 export interface CreateTicketRequest {
   subject: string;
   message: string;
@@ -1558,16 +1556,6 @@ export interface CreateTicketRequest {
 export interface CreateTicketResponse {
   success: boolean;
   data: SupportTicket;
-}
-
-export interface StartChatRequest {
-  message: string;
-  category?: string;
-}
-
-export interface StartChatResponse {
-  success: boolean;
-  data: ChatSession;
 }
 
 export interface ArticleRatingRequest {
@@ -1689,39 +1677,6 @@ export interface EmployerDashboard {
   analytics: EmployerAnalytics;
   recommendations: Recommendation[];
   notifications: EnhancedNotification[];
-}
-
-// Chat and session types
-export interface ChatSession {
-  id: string;
-  participants: User[];
-  isActive: boolean;
-  startedAt: string;
-  endedAt?: string;
-  metadata?: Record<string, unknown>;
-  userId?: string; // MSW handler compatibility
-  user?: User; // MSW handler compatibility
-  chatId?: string; // MSW handler compatibility
-  agentId?: string; // MSW handler compatibility
-  queuePosition?: number; // MSW handler compatibility
-  department?: string; // MSW handler compatibility
-  status?: 'active' | 'waiting' | 'ended'; // MSW handler compatibility
-  messages?: unknown[]; // MSW handler compatibility
-}
-
-export interface ChatAvailability {
-  isOnline: boolean;
-  status: 'available' | 'busy' | 'away' | 'offline';
-  lastSeen?: string;
-  customMessage?: string;
-  departments?: Array<{
-    id: string;
-    name: string;
-    isAvailable: boolean;
-    estimatedWaitTime?: string | number; // MSW handler compatibility - can be string or number
-    message?: string; // MSW handler compatibility
-    queueLength?: number; // MSW handler compatibility
-  }>; // Support department availability
 }
 
 // Location search response types

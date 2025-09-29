@@ -4,7 +4,7 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import { useMessagingStore } from '@/lib/core/store/messaging';
 import { useOrderStore } from '@/lib/core/store/orders';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
-import type { ChatMessage, OrderTimeline, Order } from '@/types';
+import type { OrderTimeline, Order, BasicMessage } from '@/types';
 
 interface WebSocketMessage {
   type: 'message' | 'order_update' | 'typing' | 'user_status' | 'ping' | 'pong';
@@ -92,7 +92,7 @@ export const useWebSocket = ({
           case 'message':
             // New chat message received
             if (message.data && message.conversationId) {
-              addMessage(message.data as unknown as ChatMessage);
+              addMessage(message.data as unknown as BasicMessage);
             }
             break;
 
@@ -270,7 +270,7 @@ export const useWebSocket = ({
   const sendChatMessage = useCallback(
     (
       conversationId: string,
-      message: Omit<ChatMessage, 'id' | 'timestamp'>
+      message: Omit<BasicMessage, 'id' | 'timestamp'>
     ) => {
       return sendMessage({
         type: 'message',

@@ -3,7 +3,7 @@ import { AppLayout } from '@/components/layout';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
-import { MessageCircle, Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'İletişim - MarifetBul',
@@ -82,25 +82,6 @@ export default function ContactPage() {
 
             {/* İletişim Bilgileri */}
             <div className="space-y-8">
-              <Card className="p-6">
-                <div className="flex items-start space-x-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                    <MessageCircle className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="mb-2 text-lg font-semibold text-gray-900">
-                      Canlı Destek
-                    </h3>
-                    <p className="mb-3 text-gray-600">
-                      Anlık yardım için canlı destek hattımızı kullanın
-                    </p>
-                    <Button variant="outline" size="sm">
-                      Canlı Destek Başlat
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-
               <Card className="p-6">
                 <div className="flex items-start space-x-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">

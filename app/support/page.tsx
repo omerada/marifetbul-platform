@@ -11,7 +11,6 @@ import {
   CheckCircle,
   AlertCircle,
   FileText,
-  MessageCircle,
 } from 'lucide-react';
 
 export default function SupportPage() {
@@ -25,10 +24,6 @@ export default function SupportPage() {
     router.push('/support/tickets');
   };
 
-  const handleStartChat = () => {
-    router.push('/help/chat');
-  };
-
   return (
     <SupportLayout onCreateTicket={handleCreateTicket} showCreateButton={true}>
       <div className="space-y-8">
@@ -38,26 +33,17 @@ export default function SupportPage() {
             Destek Sistemine Hoş Geldiniz
           </h2>
           <p className="mb-6 text-lg text-gray-600">
-            Teknik sorunlarınız için destek talebi oluşturun, geçmiş
-            taleplerinizi takip edin veya canlı destek ile anında yardım alın.
+            Teknik sorunlarınız için destek talebi oluşturun ve geçmiş
+            taleplerinizi takip edin.
           </p>
 
-          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+          <div className="flex justify-center">
             <Button
               onClick={handleCreateTicket}
               className="flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
               Yeni Destek Talebi
-            </Button>
-
-            <Button
-              onClick={handleStartChat}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Canlı Destek
             </Button>
           </div>
         </Card>
@@ -101,28 +87,6 @@ export default function SupportPage() {
               className="w-full"
             >
               Taleplerime Git
-            </Button>
-          </Card>
-
-          <Card className="p-6 transition-all hover:shadow-lg">
-            <div className="mb-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
-                <MessageCircle className="h-6 w-6 text-purple-600" />
-              </div>
-            </div>
-            <h3 className="mb-2 text-lg font-semibold text-gray-900">
-              Canlı Destek
-            </h3>
-            <p className="mb-4 text-gray-600">
-              Acil durumlar ve hızlı çözüm gerektiren sorunlar için canlı destek
-              hattımızla görüşün.
-            </p>
-            <Button
-              onClick={handleStartChat}
-              variant="outline"
-              className="w-full"
-            >
-              Chat Başlat
             </Button>
           </Card>
         </div>
@@ -214,7 +178,7 @@ export default function SupportPage() {
             <div className="mt-4 rounded-lg bg-blue-50 p-3">
               <p className="text-sm text-blue-800">
                 <Clock className="mr-2 inline h-4 w-4" />
-                Acil durumlar için 7/24 canlı destek mevcuttur
+                E-posta desteği ile 7/24 size yardımcı oluyoruz
               </p>
             </div>
           </Card>
@@ -224,10 +188,6 @@ export default function SupportPage() {
               Yanıt Süreleri
             </h3>
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Canlı Destek</span>
-                <span className="font-medium text-green-600">Anında</span>
-              </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Yüksek Öncelik</span>
                 <span className="font-medium text-yellow-600">2-4 saat</span>

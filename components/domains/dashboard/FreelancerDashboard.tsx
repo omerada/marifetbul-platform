@@ -398,8 +398,8 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
                       <div>
                         <h3 className="font-medium text-gray-900">
                           {conversation.participants
-                            .filter((p) => p.userId !== 'current-user') // Filter out current user
-                            .map((p) =>
+                            .filter((p: { userId: string; user?: { firstName?: string; lastName?: string } }) => p.userId !== 'current-user') // Filter out current user
+                            .map((p: { userId: string; user?: { firstName?: string; lastName?: string } }) =>
                               `${p.user?.firstName || ''} ${p.user?.lastName || ''}`.trim()
                             )
                             .join(', ')}

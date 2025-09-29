@@ -11,7 +11,6 @@ import {
   AlertCircle,
   MessageSquare,
   Star,
-  Users,
   BarChart3,
 } from 'lucide-react';
 import type { SupportAnalytics } from '@/types';
@@ -31,7 +30,7 @@ export function SupportStats({
     return <SupportStatsSkeleton className={className} />;
   }
 
-  const { overview, ticketsByCategory, responseTimeMetrics, chatMetrics } =
+  const { overview, ticketsByCategory, responseTimeMetrics } =
     analytics;
 
   return (
@@ -151,67 +150,6 @@ export function SupportStats({
           </CardContent>
         </Card>
       </div>
-
-      {/* Chat Metrics */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Canlı Chat Metrikleri
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-6">
-            <div className="text-center">
-              <div className="text-primary text-2xl font-bold">
-                {chatMetrics?.averageResponseTime?.toLocaleString() || 0}
-              </div>
-              <div className="text-muted-foreground text-xs">
-                Ortalama Yanıt
-              </div>
-            </div>
-
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
-                {(chatMetrics?.averageSessionDuration || 0).toFixed(1)}dk
-              </div>
-              <div className="text-muted-foreground text-xs">
-                Ortalama Bekleme
-              </div>
-            </div>
-
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
-                {(chatMetrics?.averageSessionDuration || 0).toFixed(1)}dk
-              </div>
-              <div className="text-muted-foreground text-xs">Ortalama Süre</div>
-            </div>
-
-            <div className="text-center">
-              <div className="text-2xl font-bold text-yellow-600">
-                %{(100 - (chatMetrics?.averageResponseTime || 0)).toFixed(1)}
-              </div>
-              <div className="text-muted-foreground text-xs">Başarı Oranı</div>
-            </div>
-
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">
-                {(chatMetrics?.customerSatisfactionScore || 0).toFixed(1)}/5
-              </div>
-              <div className="text-muted-foreground text-xs">Memnuniyet</div>
-            </div>
-
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">
-                %{(chatMetrics?.averageResponseTime || 0).toFixed(1)}
-              </div>
-              <div className="text-muted-foreground text-xs">
-                Transfer Oranı
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
