@@ -3,7 +3,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useMessagingStore } from '@/lib/core/store/messaging';
 import { useOrderStore } from '@/lib/core/store/orders';
-import useAuthStore from '@/lib/core/store/auth';
+import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import type { ChatMessage, OrderTimeline, Order } from '@/types';
 
 interface WebSocketMessage {

@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { UniversalSearch } from '@/components/domains/search';
-import useAuthStore from '@/lib/core/store/auth';
+import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { useUnreadCount } from '@/hooks';
 
 export function Header() {

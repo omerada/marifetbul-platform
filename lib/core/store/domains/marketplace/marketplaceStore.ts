@@ -133,7 +133,7 @@ export function useJobSearch() {
   const loadMore = useJobsStore.getState().loadMore;
 
   const searchJobs = async (filters: JobFilters) => {
-    await fetch(filters as any);
+    await fetch(filters as Record<string, string | number | boolean>);
   };
 
   return {
@@ -151,7 +151,7 @@ export function usePackageSearch() {
   const loadMore = usePackagesStore.getState().loadMore;
 
   const searchPackages = async (filters: PackageFilters) => {
-    await fetch(filters as any);
+    await fetch(filters as Record<string, string | number | boolean>);
   };
 
   return {
@@ -162,29 +162,5 @@ export function usePackageSearch() {
   };
 }
 
-// ================================
-// LEGACY COMPATIBILITY
-// ================================
-
-// Marketplace store hook for backwards compatibility
-export function useMarketplaceStore() {
-  const marketplace = useMarketplace();
-  const actions = useMarketplaceActions();
-
-  return {
-    ...marketplace,
-    ...actions,
-    // Legacy method names
-    fetchJobs: actions.jobs.fetch,
-    fetchPackages: actions.packages.fetch,
-    createJob: actions.jobs.create,
-    updateJob: actions.jobs.update,
-    deleteJob: actions.jobs.delete,
-    createPackage: actions.packages.create,
-    updatePackage: actions.packages.update,
-    deletePackage: actions.packages.delete,
-  };
-}
-
-// Export default for main usage
-export default useMarketplaceStore;
+// Export main hooks as default
+export { useMarketplace as default };

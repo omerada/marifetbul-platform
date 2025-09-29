@@ -597,11 +597,5 @@ export function useErrorBoundaryConfig() {
   return React.useContext(ErrorBoundaryConfigContext);
 }
 
-// ================================================
-// LEGACY EXPORTS FOR COMPATIBILITY
-// ================================================
-export { UnifiedErrorBoundary as ErrorBoundaryFallback };
-export { UnifiedErrorBoundary as AdminErrorBoundary };
-
 // Default export
 export default UnifiedErrorBoundary;

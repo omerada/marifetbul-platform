@@ -322,9 +322,6 @@ export const UnifiedButton = forwardRef<HTMLButtonElement, UnifiedButtonProps>(
 
 UnifiedButton.displayName = 'UnifiedButton';
 
-// Export legacy Button for compatibility
-export const Button = UnifiedButton;
-
 // Convenience components for common use cases
 export const PrimaryButton = forwardRef<
   HTMLButtonElement,

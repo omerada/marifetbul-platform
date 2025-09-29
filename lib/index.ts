@@ -39,14 +39,3 @@ export { cn } from './utils';
 
 // Animation utilities
 export * from './shared/animations';
-
-// === LEGACY COMPATIBILITY ===
-// These are available but may have naming conflicts
-// Use explicit imports if conflicts occur
-
-// Legacy utils (may conflict with shared utils)
-// export * from './utils';
-
-// Legacy services (may conflict with domain services)
-// export * from './services';
-// export * from './repositories';

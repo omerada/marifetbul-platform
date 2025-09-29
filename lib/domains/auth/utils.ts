@@ -3,7 +3,7 @@
  * Provides helper functions for auth operations across the application
  */
 
-import useAuthStore from '@/lib/core/store/auth';
+import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 
 /**
  * Get current user ID from auth store

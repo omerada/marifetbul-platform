@@ -3,7 +3,6 @@ import { useSocialStore } from '@/lib/core/store/social';
 import type {
   SocialShareData,
   SocialLoginProvider,
-  SocialMetrics,
 } from '@/types/shared/social';
 
 type SocialSharePlatform =
@@ -69,7 +68,6 @@ export function useSocialShare() {
     (platform: SocialSharePlatform, data: SocialShareData) => {
       const encodedUrl = encodeURIComponent(data.url);
       const encodedTitle = encodeURIComponent(data.title);
-      const encodedDescription = encodeURIComponent(data.description || '');
 
       switch (platform) {
         case 'facebook':

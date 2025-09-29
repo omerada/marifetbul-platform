@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { useAnalyticsStore } from '@/lib/core/store/analyticsStore';
+import { useAnalyticsStore } from '@/lib/core/store/domains/analytics/analyticsStore';
 import type {
   AnalyticsTimeframe,
   AnalyticsFilters,

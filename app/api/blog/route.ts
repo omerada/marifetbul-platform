@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { BlogPost } from '@/types/blog';
 
 // Mock veri - gerçek projede veritabanı ile değiştirilmeli
-let posts: BlogPost[] = [
+const posts: BlogPost[] = [
   {
     id: '1',
     slug: 'freelancer-olarak-ilk-adimlariniz',

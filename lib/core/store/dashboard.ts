@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { FreelancerDashboard, EmployerDashboard } from '@/types';
-import useAuthStore from './auth';
+import { useAuthStore } from './domains/auth/authStore';
 
 interface DashboardStore {
   // State

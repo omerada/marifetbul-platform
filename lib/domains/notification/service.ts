@@ -4,7 +4,6 @@
  */
 
 import { BaseService } from '../../../lib/shared/base';
-import type { InAppNotification } from '@/types';
 
 export class NotificationService extends BaseService {
   private static instance: NotificationService;

@@ -21,15 +21,6 @@ interface SearchRequest {
   mode?: 'jobs' | 'services' | 'freelancers' | 'all';
 }
 
-interface SearchAnalytics {
-  query: string;
-  timestamp: string;
-  resultCount: number;
-  filters: Record<string, string | string[] | number | boolean>;
-  userAgent: string;
-  sessionId: string;
-}
-
 // Utility functions for generating mock data
 const generateId = () => Math.random().toString(36).substring(2, 9);
 

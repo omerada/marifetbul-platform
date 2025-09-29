@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/layout';
 import { Loading } from '@/components/ui';
-import useAuthStore from '@/lib/core/store/auth';
+import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { MessagesList } from '@/components/domains/messaging';
 
 export default function MessagesPage() {

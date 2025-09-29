@@ -1,5 +1,5 @@
 // Map utilities
-import { MapBounds, Coordinates } from '@/types';
+import { MapBounds } from '@/types';
 
 export interface MapLocation {
   lat: number;

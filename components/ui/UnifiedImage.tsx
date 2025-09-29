@@ -477,10 +477,4 @@ export function useLazyImage(src: string, options?: IntersectionObserverInit) {
   return { imageSrc, isIntersecting, imgRef };
 }
 
-// ================================================
-// LEGACY EXPORTS FOR COMPATIBILITY
-// ================================================
-export { UnifiedImage as OptimizedImage };
-export { UnifiedImage as Image };
-
 export default UnifiedImage;

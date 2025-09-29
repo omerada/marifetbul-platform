@@ -643,27 +643,8 @@ export function useLoadingState(initialState: LoadingState = 'idle') {
   };
 }
 
-// ================================================
-// LEGACY EXPORTS FOR COMPATIBILITY
-// ================================================
+// Export default
 export { UnifiedLoading as default };
-
-// Legacy component names for backward compatibility
-export const AdminLoadingSkeleton = () => (
-  <LoadingPageSkeleton hasHeader hasSidebar contentLines={8} />
-);
-
-export const AdminSpinnerLoading = () => (
-  <UnifiedLoading variant="spinner" size="lg" text="Yükleniyor..." />
-);
-
-export const MarketplaceLoadingState = () => (
-  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-    {Array.from({ length: 6 }).map((_, i) => (
-      <LoadingCard key={i} showImage lines={3} imageHeight="md" />
-    ))}
-  </div>
-);
 
 export const LoadingButton = ({
   loading = true,

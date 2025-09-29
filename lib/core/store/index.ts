@@ -7,7 +7,7 @@
 // Essential application state
 
 // Auth store - core authentication state
-export { default as useAuthStore } from './auth';
+export { useAuthStore as default } from './domains/auth/authStore';
 
 // Notification store - optimized notifications
 export { useNotificationStore } from './notification';
@@ -16,7 +16,7 @@ export { useNotificationStore } from './notification';
 // Feature-specific state management
 
 // Marketplace & Jobs
-export { useMarketplaceStore } from './marketplace';
+
 export { useJobDetailStore } from './jobDetail';
 export { usePackageDetailStore } from './packageDetail';
 
@@ -84,14 +84,3 @@ export {
   shallowEqual,
   createMemoizedSelector,
 } from './optimized';
-
-// === LEGACY EXPORTS ===
-// Backward compatibility
-
-// Selectors
-export { usePaymentSelectors } from './payment';
-export { useNotificationSelectors } from './notification';
-export { useAdminDashboardSelectors } from './admin-dashboard';
-export { useAdminUserSelectors } from './admin-users';
-export { useAdminModerationSelectors } from './admin-moderation';
-export { useAdminSettingsSelectors } from './admin-settings';

@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import type { Order, OrderTimeline, ChatMessage } from '@/types';
+import type { Order, ChatMessage, FileAttachment } from '@/types';
 
 // Mock order data
 const mockOrders: Order[] = [
@@ -211,7 +211,11 @@ export const orderHandlers = [
     '/api/orders/:orderId/communication',
     async ({ params, request }) => {
       const { orderId } = params;
-      const body = (await request.json()) as Record<string, any>;
+      const body = (await request.json()) as {
+        senderId?: string;
+        message?: string;
+        attachments?: FileAttachment[];
+      };
 
       const orderIndex = mockOrders.findIndex((o) => o.id === orderId);
       if (orderIndex === -1) {

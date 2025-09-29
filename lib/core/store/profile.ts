@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { User, FreelancerProfile, PortfolioItem } from '@/types';
-import useAuthStore from './auth';
+import { useAuthStore } from './domains/auth/authStore';
 
 interface CropData {
   x: number;

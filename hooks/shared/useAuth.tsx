@@ -1,5 +1,5 @@
 import { useMemo, useCallback } from 'react';
-import useAuthStore from '@/lib/core/store/auth';
+import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import type { User } from '@/types';
 
 // ================================================
@@ -212,12 +212,6 @@ export function useAdmin() {
   return auth;
 }
 
-// ================================================
-// LEGACY COMPATIBILITY
-// ================================================
-
-// Re-export main hook with different names for backward compatibility
-export { useAuth as useAuthHook };
 export { useAuthState as useAuthStateOnly };
 export { useAuthActions as useAuthActionsOnly };
 
