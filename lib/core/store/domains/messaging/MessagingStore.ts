@@ -2,8 +2,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type {
-  ChatMessage,
-  ChatConversation,
+  Message,
+  Conversation,
   MessagesResponse,
   ConversationsResponse,
   SendMessageRequest,
@@ -28,8 +28,8 @@ interface TypingStatus {
 
 interface MessagingState {
   // Core Data - using arrays for compatibility
-  conversations: ChatConversation[];
-  messages: Record<string, ChatMessage[]>; // key: conversationId
+  conversations: Conversation[];
+  messages: Record<string, Message[]>; // key: conversationId
   currentConversationId: string | null;
 
   // Derived data
@@ -54,14 +54,14 @@ interface MessagingState {
 
   // Actions
   setConversations: (response: ConversationsResponse) => void;
-  addConversation: (conversation: ChatConversation) => void;
-  updateConversation: (id: string, updates: Partial<ChatConversation>) => void;
+  addConversation: (conversation: Conversation) => void;
+  updateConversation: (id: string, updates: Partial<Conversation>) => void;
   removeConversation: (id: string) => void;
   loadConversations: () => Promise<void>;
 
   setMessages: (conversationId: string, response: MessagesResponse) => void;
-  addMessage: (message: ChatMessage) => void;
-  updateMessage: (id: string, updates: Partial<ChatMessage>) => void;
+  addMessage: (message: Message) => void;
+  updateMessage: (id: string, updates: Partial<Message>) => void;
   removeMessage: (id: string) => void;
   loadMessages: (conversationId: string) => Promise<void>;
   editMessage: (messageId: string, content: string) => Promise<void>;
@@ -83,7 +83,7 @@ interface MessagingState {
   sendMessage: (request: SendMessageRequest) => Promise<void>;
   createConversation: (
     request: CreateConversationRequest
-  ) => Promise<ChatConversation>;
+  ) => Promise<Conversation>;
 
   markAsRead: (conversationId: string, messageId?: string) => Promise<void>;
 
@@ -129,13 +129,18 @@ export const useMessagingStore = create<MessagingState>()(
       // ================================================
       setConversations: (response) =>
         set((state) => {
-          state.conversations = response.conversations;
+          // Convert BasicConversation to Conversation format
+          state.conversations = response.conversations.map((conv) => ({
+            ...conv,
+            participants: [],
+            unreadCount: conv.unreadCount || 0,
+          })) as any;
           state.conversationsPagination = response.pagination;
           state.isLoadingConversations = false;
 
           // Update unread count
           state.totalUnreadCount = state.conversations.reduce(
-            (sum, conv) => sum + conv.unreadCount,
+            (sum, conv) => sum + (conv.unreadCount || 0),
             0
           );
         }),
@@ -329,7 +334,7 @@ export const useMessagingStore = create<MessagingState>()(
         try {
           // TODO: Replace with actual API call
           const response: MessageSearchResponse = {
-            results: [],
+            messages: [],
             pagination: {
               page: 1,
               limit: 20,
@@ -338,10 +343,26 @@ export const useMessagingStore = create<MessagingState>()(
               hasNext: false,
               hasPrev: false,
             },
+            totalResults: 0,
+            query: '',
           };
 
           set((state) => {
-            state.searchResults = response.results;
+            // Convert messages to MessageSearchResult format
+            state.searchResults = response.messages.map((message) => ({
+              message,
+              conversation: state.conversations.find(
+                (c) => c.id === message.conversationId
+              ) || {
+                id: message.conversationId,
+                participants: [],
+                participantIds: [],
+                unreadCount: 0,
+                createdAt: '',
+                updatedAt: '',
+              },
+              highlights: [],
+            }));
             state.isSearching = false;
           });
         } catch (error) {
@@ -371,16 +392,28 @@ export const useMessagingStore = create<MessagingState>()(
 
         try {
           // TODO: Replace with actual API call
-          const tempMessage: ChatMessage = {
+          const tempMessage: Message = {
             id: `temp-${Date.now()}`,
             conversationId: request.conversationId,
             senderId: 'current-user', // TODO: Get from auth
             content: request.content,
             type: request.type || 'text',
+            timestamp: new Date().toISOString(),
             createdAt: new Date().toISOString(),
             sentAt: new Date().toISOString(),
             isRead: false,
-            attachments: request.attachments || [],
+            // Convert File objects to FileAttachment format
+            attachments:
+              request.attachments?.map((file) => ({
+                id: `att-${Date.now()}-${Math.random()}`,
+                name: file.name,
+                type: file.type,
+                filename: file.name,
+                size: file.size,
+                mimetype: file.type,
+                url: URL.createObjectURL(file),
+                uploadedAt: new Date().toISOString(),
+              })) || [],
           };
 
           set((state) => {
@@ -410,9 +443,10 @@ export const useMessagingStore = create<MessagingState>()(
 
         try {
           // TODO: Replace with actual API call
-          const conversation: ChatConversation = {
+          const conversation: Conversation = {
             id: `conv-${Date.now()}`,
             participants: [], // TODO: Map participant IDs to User objects
+            participantIds: request.participantIds,
             lastActivity: new Date().toISOString(),
             unreadCount: 0,
             createdAt: new Date().toISOString(),
@@ -512,7 +546,7 @@ export const useMessagingStore = create<MessagingState>()(
 
           if (!response.ok) throw new Error('Failed to edit message');
 
-          const updatedMessage = (await response.json()) as ChatMessage;
+          const updatedMessage = (await response.json()) as Message;
 
           set((state) => {
             // Find and update the message

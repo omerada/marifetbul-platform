@@ -4,7 +4,7 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import { useMessagingStore } from '@/lib/core/store/messaging';
 import { useOrderStore } from '@/lib/core/store/orders';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
-import type { OrderTimeline, Order, BasicMessage } from '@/types';
+import type { OrderTimeline, Order, Message } from '@/types';
 
 interface WebSocketMessage {
   type: 'message' | 'order_update' | 'typing' | 'user_status' | 'ping' | 'pong';
@@ -92,7 +92,21 @@ export const useWebSocket = ({
           case 'message':
             // New chat message received
             if (message.data && message.conversationId) {
-              addMessage(message.data as unknown as BasicMessage);
+              // Convert BasicMessage to Message format
+              const messageData = message.data as any;
+              const convertedMessage: Message = {
+                ...messageData,
+                timestamp:
+                  messageData.timestamp ||
+                  messageData.createdAt ||
+                  messageData.sentAt,
+                conversationId:
+                  messageData.conversationId || message.conversationId,
+                type: messageData.type || 'text',
+                isRead: messageData.isRead || false,
+                attachments: messageData.attachments || [],
+              };
+              addMessage(convertedMessage);
             }
             break;
 
@@ -268,10 +282,7 @@ export const useWebSocket = ({
 
   // Send chat message
   const sendChatMessage = useCallback(
-    (
-      conversationId: string,
-      message: Omit<BasicMessage, 'id' | 'timestamp'>
-    ) => {
+    (conversationId: string, message: Omit<Message, 'id' | 'timestamp'>) => {
       return sendMessage({
         type: 'message',
         data: {

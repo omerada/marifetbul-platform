@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import type { Order, ChatMessage, FileAttachment } from '@/types';
+import type { Order, Message, FileAttachment } from '@/types';
 
 // Mock order data
 const mockOrders: Order[] = [
@@ -56,6 +56,7 @@ const mockOrders: Order[] = [
         senderId: 'user-2',
         content: 'İlk tasarım hazır, inceleyebilirsiniz.',
         type: 'text',
+        timestamp: '2025-09-11T14:30:00Z',
         createdAt: '2025-09-11T14:30:00Z',
         sentAt: '2025-09-11T14:30:00Z',
         isRead: true,
@@ -79,6 +80,7 @@ const mockOrders: Order[] = [
         content:
           'Harika çalışma! Sadece renk tonlarında küçük değişiklik istiyorum.',
         type: 'text',
+        timestamp: '2025-09-11T15:00:00Z',
         createdAt: '2025-09-11T15:00:00Z',
         sentAt: '2025-09-11T15:00:00Z',
         isRead: true,
@@ -230,12 +232,13 @@ export const orderHandlers = [
         order.communications = [];
       }
 
-      const newCommunication: ChatMessage = {
+      const newCommunication: Message = {
         id: `comm-${Date.now()}`,
         conversationId: `conv-${orderId}`,
         senderId: body?.senderId || 'unknown',
         content: body?.message || '',
         type: 'text',
+        timestamp: new Date().toISOString(),
         createdAt: new Date().toISOString(),
         sentAt: new Date().toISOString(),
         isRead: false,

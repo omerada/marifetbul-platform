@@ -52,6 +52,7 @@ export interface Message {
   isEdited?: boolean; // Made optional for MSW compatibility
   sentAt: string;
   createdAt: string; // For MSW compatibility
+  timestamp: string; // Required for component compatibility
   readAt?: string;
   editedAt?: string;
   replyTo?: string;
@@ -77,6 +78,7 @@ export interface MessageReaction {
 export interface Conversation {
   id: string;
   participants: ConversationParticipant[];
+  participantIds: string[]; // Required for component compatibility
   type?: 'direct' | 'group' | 'support' | 'order'; // Made optional for MSW compatibility
   title?: string;
   lastMessage?: Message;

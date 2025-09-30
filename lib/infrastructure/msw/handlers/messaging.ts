@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw';
 import type {
-  ChatMessage,
-  ChatConversation,
+  Message,
+  Conversation,
   MessagesResponse,
   ConversationsResponse,
   SendMessageRequest,
@@ -35,7 +35,7 @@ const mockUsers = [
   },
 ];
 
-const mockMessages: ChatMessage[] = [
+const mockMessages: Message[] = [
   {
     id: 'msg-1',
     conversationId: 'conv-1',
@@ -46,6 +46,7 @@ const mockMessages: ChatMessage[] = [
     type: 'text',
     createdAt: '2025-09-10T10:00:00Z',
     sentAt: '2025-09-10T10:00:00Z',
+    timestamp: '2025-09-10T10:00:00Z',
     isRead: true,
     readAt: '2025-09-10T10:01:00Z',
     attachments: [],
@@ -57,10 +58,11 @@ const mockMessages: ChatMessage[] = [
     receiverId: 'user-1',
     content: 'Tabii ki! Projenin kapsamını daha detaylı anlatabilir misiniz?',
     type: 'text',
-    createdAt: '2025-09-10T10:02:00Z',
-    sentAt: '2025-09-10T10:02:00Z',
+    createdAt: '2025-09-10T10:05:00Z',
+    sentAt: '2025-09-10T10:05:00Z',
+    timestamp: '2025-09-10T10:05:00Z',
     isRead: true,
-    readAt: '2025-09-10T10:02:30Z',
+    readAt: '2025-09-10T10:06:00Z',
     attachments: [],
   },
   {
@@ -69,23 +71,34 @@ const mockMessages: ChatMessage[] = [
     senderId: 'user-1',
     receiverId: 'user-2',
     content:
-      'E-ticaret sitesi için modern bir tasarım istiyorum. Referans dosyalarını paylaşıyorum.',
+      'E-ticaret sitesi için modern bir tasarım istiyorum. Referans dosyalarını ekledim.',
     type: 'text',
-    createdAt: '2025-09-10T10:05:00Z',
-    sentAt: '2025-09-10T10:05:00Z',
+    createdAt: '2025-09-10T10:10:00Z',
+    sentAt: '2025-09-10T10:10:00Z',
+    timestamp: '2025-09-10T10:10:00Z',
     isRead: true,
-    readAt: '2025-09-10T10:06:00Z',
+    readAt: '2025-09-10T10:11:00Z',
     attachments: [
       {
         id: 'att-1',
-        name: 'references.pdf',
-        url: '/uploads/messages/references.pdf',
+        filename: 'referans-1.jpg',
+        name: 'referans-1.jpg',
+        type: 'image/jpeg',
+        size: 245760,
+        mimetype: 'image/jpeg',
+        url: '/uploads/attachments/referans-1.jpg',
+        uploadedAt: '2025-09-10T10:09:00Z',
+        thumbnailUrl: '/uploads/attachments/thumbs/referans-1.jpg',
+      },
+      {
+        id: 'att-2',
+        filename: 'brief.pdf',
+        name: 'brief.pdf',
         type: 'application/pdf',
-        size: 2048000,
-        filename: 'references.pdf',
+        size: 512000,
         mimetype: 'application/pdf',
-        uploadedAt: '2025-09-10T10:05:00Z',
-        thumbnailUrl: '/uploads/messages/references-thumb.jpg',
+        url: '/uploads/attachments/brief.pdf',
+        uploadedAt: '2025-09-10T10:09:30Z',
       },
     ],
   },
@@ -97,21 +110,22 @@ const mockMessages: ChatMessage[] = [
     content:
       'Logo tasarımı teslim edildi. İnceleyip geri dönüş yapabilir misiniz?',
     type: 'text',
-    createdAt: '2025-09-11T14:30:00Z',
-    sentAt: '2025-09-11T14:30:00Z',
+    createdAt: '2025-09-11T09:00:00Z',
+    sentAt: '2025-09-11T09:00:00Z',
+    timestamp: '2025-09-11T09:00:00Z',
     isRead: false,
     readAt: undefined,
     attachments: [
       {
-        id: 'att-2',
-        name: 'logo-final.ai',
-        url: '/uploads/messages/logo-final.ai',
-        type: 'application/illustrator',
-        size: 5120000,
-        filename: 'logo-final.ai',
-        mimetype: 'application/illustrator',
-        uploadedAt: '2025-09-11T14:30:00Z',
-        thumbnailUrl: '/uploads/messages/logo-preview.jpg',
+        id: 'att-3',
+        filename: 'logo-final.png',
+        name: 'logo-final.png',
+        type: 'image/png',
+        size: 128000,
+        mimetype: 'image/png',
+        url: '/uploads/attachments/logo-final.png',
+        uploadedAt: '2025-09-11T08:59:00Z',
+        thumbnailUrl: '/uploads/attachments/thumbs/logo-final.png',
       },
     ],
   },
@@ -121,150 +135,149 @@ const mockMessages: ChatMessage[] = [
     senderId: 'user-2',
     receiverId: 'user-1',
     content:
-      'Harika referanslar! 2 hafta içinde teslim edebilirim. Başlangıç ücreti 5000 TL.',
+      'Harika referanslar! 2 hafta içinde teslim edebilirim. Başlangıç ücreti 5000 TL olacak.',
     type: 'text',
-    createdAt: '2025-09-10T10:10:00Z',
-    sentAt: '2025-09-10T10:10:00Z',
+    createdAt: '2025-09-10T11:00:00Z',
+    sentAt: '2025-09-10T11:00:00Z',
+    timestamp: '2025-09-10T11:00:00Z',
     isRead: false,
     readAt: undefined,
     attachments: [],
   },
 ];
 
-const mockConversations: ChatConversation[] = [
+const mockConversations: Conversation[] = [
   {
     id: 'conv-1',
-    type: 'order',
     participants: [
       {
-        ...mockUsers[0],
-        email: 'ahmet.yilmaz@example.com',
-        accountStatus: 'active' as const,
-        verificationStatus: 'verified' as const,
-        createdAt: '2025-08-01T10:00:00Z',
-        updatedAt: '2025-09-10T09:55:00Z',
         userId: 'user-1',
-        joinedAt: '2025-09-10T09:55:00Z',
-        lastReadAt: '2025-09-10T10:10:30Z',
-        isTyping: false,
-        isOnline: true,
+        id: 'user-1',
+        firstName: 'Ahmet',
+        lastName: 'Yılmaz',
+        avatar: '/avatars/user-1.jpg',
+        userType: 'employer',
+        lastSeenAt: '2025-09-10T11:05:00Z',
       },
       {
-        ...mockUsers[1],
-        email: 'zeynep.kaya@example.com',
-        accountStatus: 'active' as const,
-        verificationStatus: 'verified' as const,
-        createdAt: '2025-08-15T10:00:00Z',
-        updatedAt: '2025-09-10T09:55:00Z',
         userId: 'user-2',
-        joinedAt: '2025-09-10T09:55:00Z',
-        lastReadAt: '2025-09-10T10:09:00Z',
-        isTyping: false,
-        isOnline: true,
+        id: 'user-2',
+        firstName: 'Zeynep',
+        lastName: 'Kaya',
+        avatar: '/avatars/user-2.jpg',
+        userType: 'freelancer',
+        lastSeenAt: '2025-09-10T11:02:00Z',
       },
     ],
-    lastMessage: mockMessages[4],
-    lastActivity: '2025-09-10T10:10:00Z',
+    participantIds: ['user-1', 'user-2'],
+    type: 'direct',
+    lastMessage: mockMessages.find((m) => m.id === 'msg-5'),
     unreadCount: 1,
-    createdAt: '2025-09-10T09:55:00Z',
-    updatedAt: '2025-09-10T10:10:00Z',
-    isArchived: false,
-    isPinned: true,
-    orderId: 'order-123',
-    metadata: {
-      title: 'E-ticaret Web Tasarımı',
-      priority: 'high',
-      tags: ['web-design', 'e-commerce'],
-    },
+    createdAt: '2025-09-10T10:00:00Z',
+    updatedAt: '2025-09-10T11:00:00Z',
+    jobId: 'job-123',
   },
   {
     id: 'conv-2',
-    type: 'order',
     participants: [
       {
-        ...mockUsers[0],
-        email: 'ahmet.yilmaz@example.com',
-        accountStatus: 'active' as const,
-        verificationStatus: 'verified' as const,
-        createdAt: '2025-08-01T10:00:00Z',
-        updatedAt: '2025-09-11T14:00:00Z',
         userId: 'user-1',
-        joinedAt: '2025-09-11T14:00:00Z',
-        lastReadAt: '2025-09-11T14:20:00Z',
-        isTyping: false,
-        isOnline: true,
+        id: 'user-1',
+        firstName: 'Ahmet',
+        lastName: 'Yılmaz',
+        avatar: '/avatars/user-1.jpg',
+        userType: 'employer',
+        lastSeenAt: '2025-09-11T08:30:00Z',
       },
       {
-        ...mockUsers[2],
-        email: 'mehmet.ozkan@example.com',
-        accountStatus: 'active' as const,
-        verificationStatus: 'verified' as const,
-        createdAt: '2025-08-20T10:00:00Z',
-        updatedAt: '2025-09-11T14:00:00Z',
         userId: 'user-3',
-        joinedAt: '2025-09-11T14:00:00Z',
-        lastReadAt: '2025-09-11T14:30:00Z',
-        isTyping: false,
-        isOnline: false,
+        id: 'user-3',
+        firstName: 'Mehmet',
+        lastName: 'Özkan',
+        avatar: '/avatars/user-3.jpg',
+        userType: 'freelancer',
+        lastSeenAt: '2025-09-11T09:01:00Z',
       },
     ],
-    lastMessage: mockMessages[3],
-    lastActivity: '2025-09-11T14:30:00Z',
+    participantIds: ['user-1', 'user-3'],
+    type: 'order',
+    lastMessage: mockMessages.find((m) => m.id === 'msg-4'),
     unreadCount: 1,
-    createdAt: '2025-09-11T14:00:00Z',
-    updatedAt: '2025-09-11T14:30:00Z',
-    isArchived: false,
-    isPinned: false,
-    orderId: 'order-124',
-    metadata: {
-      title: 'Logo Tasarımı',
-      priority: 'normal',
-      tags: ['logo', 'branding'],
-    },
+    createdAt: '2025-09-11T08:00:00Z',
+    updatedAt: '2025-09-11T09:00:00Z',
+    orderId: 'order-456',
   },
 ];
 
 // Helper functions
-const getConversationMessages = (conversationId: string): ChatMessage[] => {
-  return mockMessages.filter((msg) => msg.conversationId === conversationId);
-};
-
 const generatePagination = (
   page: number,
   pageSize: number,
   total: number
-): PaginationMeta => ({
+): import('@/types/shared/api').PaginationMeta => ({
   page,
-  limit: pageSize, // Required for PaginationMeta compatibility
-  pageSize,
+  limit: pageSize,
   total,
   totalPages: Math.ceil(total / pageSize),
-  hasNext: page < Math.ceil(total / pageSize),
+  hasNext: page * pageSize < total,
   hasPrev: page > 1,
 });
 
-// MSW Handlers
+const getConversationMessages = (conversationId: string): Message[] => {
+  return mockMessages.filter((msg) => msg.conversationId === conversationId);
+};
+
+const getUserById = (userId: string) => {
+  return mockUsers.find((user) => user.id === userId);
+};
+
+const updateConversationLastMessage = (
+  conversationId: string,
+  message: Message
+) => {
+  const conversation = mockConversations.find((c) => c.id === conversationId);
+  if (conversation) {
+    conversation.lastMessage = message;
+    conversation.updatedAt = message.createdAt;
+    conversation.unreadCount += 1;
+  }
+};
+
 export const messagingHandlers = [
   // Get conversations
   http.get('/api/v1/conversations', ({ request }) => {
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get('page') || '1');
-    const pageSize = parseInt(url.searchParams.get('pageSize') || '10');
-    const type = url.searchParams.get('type') as 'direct' | 'order' | null;
-    const archived = url.searchParams.get('archived') === 'true';
+    const pageSize = parseInt(url.searchParams.get('pageSize') || '20');
+    const search = url.searchParams.get('search');
+    const type = url.searchParams.get('type');
 
-    let filteredConversations = mockConversations.filter((conv) => {
-      if (type && conv.type !== type) return false;
-      if (conv.isArchived !== archived) return false;
-      return true;
-    });
+    let filteredConversations = [...mockConversations];
 
-    // Sort by last activity
-    filteredConversations = filteredConversations.sort((a, b) => {
-      const aTime = a.lastActivity ? new Date(a.lastActivity).getTime() : 0;
-      const bTime = b.lastActivity ? new Date(b.lastActivity).getTime() : 0;
-      return bTime - aTime;
-    });
+    // Apply filters
+    if (search) {
+      filteredConversations = filteredConversations.filter(
+        (conv) =>
+          conv.participants.some((participant) =>
+            `${participant.firstName} ${participant.lastName}`
+              .toLowerCase()
+              .includes(search.toLowerCase())
+          ) ||
+          conv.lastMessage?.content.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    if (type) {
+      filteredConversations = filteredConversations.filter(
+        (conv) => conv.type === type
+      );
+    }
+
+    // Sort by last message time
+    filteredConversations.sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
 
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
@@ -279,6 +292,10 @@ export const messagingHandlers = [
         page,
         pageSize,
         filteredConversations.length
+      ),
+      totalUnread: mockConversations.reduce(
+        (sum, conv) => sum + conv.unreadCount,
+        0
       ),
     };
 
@@ -310,6 +327,7 @@ export const messagingHandlers = [
       const response: MessagesResponse = {
         messages: paginatedMessages,
         pagination: generatePagination(page, pageSize, sortedMessages.length),
+        hasMore: endIndex < sortedMessages.length,
       };
 
       return HttpResponse.json(response);
@@ -323,34 +341,31 @@ export const messagingHandlers = [
       const { conversationId } = params;
       const messageData = (await request.json()) as SendMessageRequest;
 
-      const newMessage: ChatMessage = {
+      const newMessage: Message = {
         id: `msg-${Date.now()}`,
         conversationId: conversationId as string,
-        senderId: messageData.content?.includes('sistem') ? 'system' : 'user-1', // Mock current user
-        receiverId: 'user-2', // Mock receiver
+        senderId: 'current-user-id', // This would come from auth
         content: messageData.content,
-        type: messageData.type || 'text', // Default to text if not provided
+        type: messageData.type || 'text',
         createdAt: new Date().toISOString(),
         sentAt: new Date().toISOString(),
+        timestamp: new Date().toISOString(),
         isRead: false,
         attachments:
           messageData.attachments?.map((att, index) => ({
-            ...att,
-            id: att.id || `att-${Date.now()}-${index}`, // Use existing id or generate new one
+            id: `att-${Date.now()}-${index}`,
+            filename: att.name || 'file',
+            name: att.name || 'file',
+            type: att.type || 'application/octet-stream',
+            size: att.size || 0,
+            mimetype: att.type || 'application/octet-stream',
+            url: `/uploads/attachments/${att.name}`,
+            uploadedAt: new Date().toISOString(),
           })) || [],
       };
 
-      // Add to mock data
       mockMessages.push(newMessage);
-
-      // Update conversation last message and activity
-      const conversation = mockConversations.find(
-        (conv) => conv.id === conversationId
-      );
-      if (conversation) {
-        conversation.lastMessage = newMessage;
-        conversation.lastActivity = newMessage.sentAt;
-      }
+      updateConversationLastMessage(conversationId as string, newMessage);
 
       return HttpResponse.json({
         success: true,
@@ -359,63 +374,51 @@ export const messagingHandlers = [
     }
   ),
 
-  // Create a new conversation
+  // Create conversation
   http.post('/api/v1/conversations', async ({ request }) => {
     const conversationData =
       (await request.json()) as CreateConversationRequest;
 
-    const newConversation: ChatConversation = {
+    const newConversation: Conversation = {
       id: `conv-${Date.now()}`,
-      type:
-        conversationData.type &&
-        ['direct', 'group', 'support', 'order'].includes(conversationData.type)
-          ? (conversationData.type as 'direct' | 'group' | 'support' | 'order')
-          : 'direct',
       participants: conversationData.participantIds.map((userId) => {
-        const user = mockUsers.find((u) => u.id === userId) || mockUsers[0];
+        const user = getUserById(userId);
         return {
-          ...user,
-          email: `${user.firstName.toLowerCase()}.${user.lastName.toLowerCase()}@example.com`,
-          accountStatus: 'active' as const,
-          verificationStatus: 'verified' as const,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
           userId,
-          joinedAt: new Date().toISOString(),
-          isTyping: false,
-          isOnline: Math.random() > 0.5,
+          id: userId,
+          firstName: user?.firstName || 'Unknown',
+          lastName: user?.lastName || 'User',
+          avatar: user?.avatar,
+          userType: user?.userType || 'freelancer',
         };
       }),
-      lastActivity: new Date().toISOString(),
+      participantIds: conversationData.participantIds,
+      type: conversationData.type || 'direct',
+      title: conversationData.title,
       unreadCount: 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      isArchived: false,
-      isPinned: false,
-      orderId: conversationData.orderId,
-      title: conversationData.title,
     };
 
-    // Create initial message if provided
     if (conversationData.initialMessage) {
-      const initialMessage: ChatMessage = {
+      const initialMessage: Message = {
         id: `msg-${Date.now()}`,
         conversationId: newConversation.id,
-        senderId: conversationData.participantIds[0],
-        receiverId: conversationData.participantIds[1],
+        senderId: 'current-user-id',
         content: conversationData.initialMessage,
         type: 'text',
         createdAt: new Date().toISOString(),
         sentAt: new Date().toISOString(),
+        timestamp: new Date().toISOString(),
         isRead: false,
         attachments: [],
       };
 
       mockMessages.push(initialMessage);
       newConversation.lastMessage = initialMessage;
+      newConversation.updatedAt = initialMessage.createdAt;
     }
 
-    // Add to mock data
     mockConversations.push(newConversation);
 
     return HttpResponse.json({
@@ -425,47 +428,27 @@ export const messagingHandlers = [
   }),
 
   // Mark messages as read
-  http.post(
-    '/api/v1/conversations/:conversationId/read',
-    async ({ params, request }) => {
-      const { conversationId } = params;
-      const { messageId } = (await request.json()) as { messageId?: string };
+  http.post('/api/v1/conversations/:conversationId/read', ({ params }) => {
+    const { conversationId } = params;
 
-      // Mark messages as read
-      const conversationMessages = mockMessages.filter(
-        (msg) => msg.conversationId === conversationId
-      );
-
-      if (messageId) {
-        // Mark specific message as read
-        const message = conversationMessages.find(
-          (msg) => msg.id === messageId
-        );
-        if (message) {
-          message.readAt = new Date().toISOString();
-        }
-      } else {
-        // Mark all unread messages as read
-        conversationMessages.forEach((msg) => {
-          if (!msg.readAt) {
-            msg.readAt = new Date().toISOString();
-          }
-        });
-      }
-
-      // Update conversation unread count
-      const conversation = mockConversations.find(
-        (conv) => conv.id === conversationId
-      );
-      if (conversation) {
-        conversation.unreadCount = 0;
-      }
-
-      return HttpResponse.json({
-        success: true,
+    // Mark all messages in this conversation as read
+    mockMessages
+      .filter((msg) => msg.conversationId === conversationId && !msg.isRead)
+      .forEach((msg) => {
+        msg.isRead = true;
+        msg.readAt = new Date().toISOString();
       });
+
+    // Reset unread count
+    const conversation = mockConversations.find((c) => c.id === conversationId);
+    if (conversation) {
+      conversation.unreadCount = 0;
     }
-  ),
+
+    return HttpResponse.json({
+      success: true,
+    });
+  }),
 
   // Search messages
   http.get('/api/v1/messages/search', ({ request }) => {
@@ -475,17 +458,20 @@ export const messagingHandlers = [
     const page = parseInt(url.searchParams.get('page') || '1');
     const pageSize = parseInt(url.searchParams.get('pageSize') || '20');
 
-    let searchResults = mockMessages.filter((message) => {
-      if (conversationId && message.conversationId !== conversationId)
-        return false;
-      if (query && !message.content.toLowerCase().includes(query.toLowerCase()))
-        return false;
-      return true;
-    });
+    let searchResults = mockMessages.filter((message) =>
+      message.content.toLowerCase().includes(query.toLowerCase())
+    );
 
-    // Sort by relevance (newest first for demo)
-    searchResults = searchResults.sort(
-      (a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime()
+    if (conversationId) {
+      searchResults = searchResults.filter(
+        (message) => message.conversationId === conversationId
+      );
+    }
+
+    // Sort by relevance (for now, just by date)
+    searchResults.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
     const startIndex = (page - 1) * pageSize;
@@ -493,111 +479,60 @@ export const messagingHandlers = [
     const paginatedResults = searchResults.slice(startIndex, endIndex);
 
     const response: MessageSearchResponse = {
-      results: paginatedResults.map((message) => ({
-        message,
-        conversation: mockConversations.find(
-          (conv) => conv.id === message.conversationId
-        )!,
-        highlights: [query], // Simplified highlighting
-      })),
+      messages: paginatedResults,
       pagination: generatePagination(page, pageSize, searchResults.length),
+      totalResults: searchResults.length,
+      query,
     };
 
     return HttpResponse.json(response);
   }),
 
-  // Archive/unarchive conversation
-  http.post(
-    '/api/v1/conversations/:conversationId/archive',
-    async ({ params, request }) => {
-      const { conversationId } = params;
-      const { archived } = (await request.json()) as { archived: boolean };
+  // Get unread count
+  http.get('/api/v1/conversations/unread-count', () => {
+    const totalUnread = mockConversations.reduce(
+      (sum, conv) => sum + conv.unreadCount,
+      0
+    );
 
-      const conversation = mockConversations.find(
-        (conv) => conv.id === conversationId
-      );
-      if (conversation) {
-        conversation.isArchived = archived;
-      }
-
-      return HttpResponse.json({
-        success: true,
-        data: conversation,
-      });
-    }
-  ),
-
-  // Pin/unpin conversation
-  http.post(
-    '/api/v1/conversations/:conversationId/pin',
-    async ({ params, request }) => {
-      const { conversationId } = params;
-      const { pinned } = (await request.json()) as { pinned: boolean };
-
-      const conversation = mockConversations.find(
-        (conv) => conv.id === conversationId
-      );
-      if (conversation) {
-        conversation.isPinned = pinned;
-      }
-
-      return HttpResponse.json({
-        success: true,
-        data: conversation,
-      });
-    }
-  ),
-
-  // Delete message
-  http.delete('/api/v1/messages/:messageId', ({ params }) => {
-    const { messageId } = params;
-    const messageIndex = mockMessages.findIndex((msg) => msg.id === messageId);
-
-    if (messageIndex !== -1) {
-      mockMessages.splice(messageIndex, 1);
-    }
+    const byConversation = mockConversations.reduce(
+      (acc, conv) => {
+        acc[conv.id] = conv.unreadCount;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     return HttpResponse.json({
-      success: true,
+      total: totalUnread,
+      byConversation,
     });
   }),
 
-  // Get typing indicator
-  http.get('/api/v1/conversations/:conversationId/typing', ({ params }) => {
+  // Real-time message updates (WebSocket simulation)
+  http.get('/api/v1/conversations/:conversationId/events', ({ params }) => {
     const { conversationId } = params;
 
-    // Mock typing status
-    const isTyping = Math.random() > 0.8; // 20% chance someone is typing
+    // Simulate real-time events
+    const conversation = mockConversations.find((c) => c.id === conversationId);
 
-    return HttpResponse.json({
-      conversationId,
-      isTyping,
-      typingUsers: isTyping ? [mockUsers[1]] : [],
-    });
-  }),
-
-  // Set typing indicator
-  http.post(
-    '/api/v1/conversations/:conversationId/typing',
-    async ({ params, request }) => {
-      const { conversationId } = params;
-      const { isTyping } = (await request.json()) as { isTyping: boolean };
-
-      // Update typing status in conversation
-      const conversation = mockConversations.find(
-        (conv) => conv.id === conversationId
-      );
-      if (conversation) {
-        conversation.participants.forEach((participant) => {
-          if (participant.userId === 'user-1') {
-            participant.isTyping = isTyping;
-          }
-        });
-      }
-
-      return HttpResponse.json({
-        success: true,
+    if (conversation) {
+      // Simulate typing indicators and online status
+      conversation.participants.forEach((participant) => {
+        // Add dynamic properties for real-time simulation
+        (participant as any).isOnline = Math.random() > 0.5;
+        (participant as any).isTyping = Math.random() > 0.8;
       });
     }
-  ),
+
+    return HttpResponse.json({
+      events: [
+        {
+          type: 'participant_status',
+          conversationId,
+          data: conversation?.participants,
+        },
+      ],
+    });
+  }),
 ];

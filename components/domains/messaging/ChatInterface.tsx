@@ -54,10 +54,18 @@ export function ChatInterface({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Get other participant ID
-  const otherParticipantId = conversation?.participantIds.find(
+  // Get other participant ID and participant object
+  const otherParticipantId = conversation?.participantIds?.find(
     (id) => id !== currentUser.id
   );
+
+  const otherParticipant =
+    conversation?.participants?.find(
+      (participant) => participant.userId === otherParticipantId
+    ) ||
+    conversation?.participants?.find(
+      (participant) => participant.id === otherParticipantId // Fallback for MSW compatibility
+    );
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {

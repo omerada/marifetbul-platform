@@ -23,6 +23,9 @@ export * from './business/features/analytics';
 // Marketplace types (Job, ServicePackage, etc.)
 export * from './business/features/marketplace';
 
+// Messaging types
+export * from './business/features/messaging';
+
 // Common utility types
 
 export interface AdvancedSearchRequest {
@@ -354,6 +357,7 @@ export interface Order {
   updatedAt: string;
   timeline?: OrderTimeline[];
   milestones?: OrderTimeline[];
+  communications?: Message[]; // Added for MSW compatibility
   // MSW handler compatibility
   title?: string;
   description?: string; // Added for dashboard compatibility
@@ -450,62 +454,34 @@ export interface TicketResponse {
   }>;
 }
 
-// Basic message and conversation types for compatibility
-export interface BasicMessage {
-  id: string;
-  content: string;
-  senderId: string;
-  timestamp: string;
-}
+// Import and re-export messaging types from business domain
+export type {
+  Message,
+  Conversation,
+  MessagesResponse,
+  ConversationsResponse,
+  SendMessageRequest,
+  CreateConversationRequest,
+  MessageSearchResponse,
+  MessageType,
+  ConversationParticipant,
+  MessageReaction,
+  TypingIndicator,
+  MessageDraft,
+  MessageThread,
+} from './business/features/messaging';
 
-export interface BasicConversation {
-  id: string;
-  participantIds: string[];
-  lastMessage?: BasicMessage;
-  updatedAt: string;
-}
+// Import types for local use
+import type { Message, Conversation } from './business/features/messaging';
 
-// Missing types to satisfy imports
-export type Message = BasicMessage; // Alias for compatibility
-export type Conversation = BasicConversation; // Alias for compatibility
+// Legacy compatibility aliases
+export type { Message as BasicMessage } from './business/features/messaging';
+export type { Conversation as BasicConversation } from './business/features/messaging';
 
-export interface MessagesResponse {
-  messages: BasicMessage[];
-  pagination: PaginationMeta;
-}
-
-export interface ConversationsResponse {
-  conversations: BasicConversation[];
-  pagination: PaginationMeta;
-}
-
-export interface SendMessageRequest {
-  conversationId: string;
-  content: string;
-  type?: 'text' | 'file' | 'image';
-  attachments?: FileAttachment[]; // MSW handler compatibility
-}
-
-export interface CreateConversationRequest {
-  participantIds: string[];
-  initialMessage?: string;
-  type?: string; // MSW handler compatibility
-  orderId?: string; // MSW handler compatibility
-  title?: string; // MSW handler compatibility
-}
-
-export interface MessageSearchResponse {
-  results: MessageSearchResult[];
-  pagination: PaginationMeta;
-  // MSW handler compatibility
-  success?: boolean;
-  data?: MessageSearchResult[];
-  error?: string;
-}
-
+// Message search result interface
 export interface MessageSearchResult {
-  message: BasicMessage;
-  conversation: BasicConversation;
+  message: Message;
+  conversation: Conversation;
   highlights: string[];
 }
 

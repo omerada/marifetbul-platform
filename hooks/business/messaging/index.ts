@@ -14,7 +14,7 @@ export function useConversations() {
 
 export function useConversation(_conversationId: string) {
   return {
-    data: null,
+    conversation: null,
     isLoading: false,
     error: null,
     refetch: () => Promise.resolve(),
@@ -29,6 +29,10 @@ export function useMessages(_conversationId: string) {
       isLoading: false,
       error: null,
     },
+    messages: [],
+    isLoading: false,
+    error: null,
+    refresh: () => Promise.resolve(),
     refetch: () => Promise.resolve(),
   };
 }
@@ -45,7 +49,7 @@ export function useUnreadCount() {
 
 export function useMessaging() {
   return {
-    sendMessage: () => Promise.resolve(),
+    sendMessage: (_content: string) => Promise.resolve(),
     markAsRead: () => Promise.resolve(),
     createConversation: () => Promise.resolve(),
     deleteMessage: () => Promise.resolve(),
