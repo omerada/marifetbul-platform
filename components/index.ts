@@ -47,7 +47,6 @@ export * from './providers';
 
 export {
   InteractionButtons,
-  SocialShareButton,
   ImageCarousel,
   LazyWrapper,
   createLazyComponent,

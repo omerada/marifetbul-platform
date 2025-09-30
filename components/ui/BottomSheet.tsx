@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, ReactNode } from 'react';
 import { useFocusTrap } from '@/hooks';
-import { useReducedMotion } from '@/lib/shared/animations';
+import { useReducedMotion } from '@/lib/shared/ui/animations';
 import { X } from 'lucide-react';
 
 interface BottomSheetProps {

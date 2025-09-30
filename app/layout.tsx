@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google';
 import { MSWProvider } from '@/components/providers/MSWProvider';
 import { AuthProvider } from '@/components/providers/AuthProvider';
 import { ToastProvider } from '@/components/providers/ToastProvider';
-import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
+import { UnifiedErrorBoundary as ErrorBoundary } from '@/components/ui';
 import { SEOHead } from '@/components/shared/seo/SEOHead';
 import './globals.css';
 

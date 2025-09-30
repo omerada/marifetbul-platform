@@ -38,4 +38,4 @@ export {
 export { cn } from './utils';
 
 // Animation utilities
-export * from './shared/animations';
+export * from './shared/ui/animations';

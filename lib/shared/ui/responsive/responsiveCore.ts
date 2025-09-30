@@ -4,6 +4,7 @@
 // Advanced responsive utilities with modern CSS approaches
 
 import { useEffect, useState, useCallback } from 'react';
+import { cn } from '../../../utils';
 
 // ================================
 // TYPES
@@ -350,10 +351,6 @@ export function generateResponsiveStyles(
   return styles.join(' ');
 }
 
-export function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(' ');
-}
-
 export function responsiveClasses(
   base: string,
   responsive: Partial<Record<Breakpoint, string>>
@@ -368,7 +365,7 @@ export function responsiveClasses(
     }
   });
 
-  return classes.join(' ');
+  return cn(...classes);
 }
 
 // ================================
@@ -431,7 +428,7 @@ export function useResponsiveImage(
 // EXPORTS
 // ================================
 
-export default {
+const ResponsiveCore = {
   useViewport,
   useBreakpoint,
   useDeviceDetection,
@@ -443,3 +440,5 @@ export default {
   BREAKPOINTS,
   CONTAINER_SIZES,
 };
+
+export default ResponsiveCore;

@@ -223,17 +223,8 @@ export const createMemoizedSelector = <TState, TResult>(
   };
 };
 
-export const createDebouncedAction = <TArgs extends unknown[]>(
-  action: (...args: TArgs) => void | Promise<void>,
-  delay: number = 300
-) => {
-  let timeoutId: NodeJS.Timeout;
-
-  return (...args: TArgs) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => action(...args), delay);
-  };
-};
+// createDebouncedAction moved to optimized.ts to avoid duplication
+// Use: import { createDebouncedAction } from '../optimized'
 
 // === Cache Management ===
 export const isCacheValid = (
@@ -262,7 +253,6 @@ const storePatterns = {
   withAsyncHandler,
   createApiCall,
   createMemoizedSelector,
-  createDebouncedAction,
   isCacheValid,
   validateStoreState,
 };
