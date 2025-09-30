@@ -14,6 +14,9 @@ export * from './domains/media';
 export * from './infrastructure/websocket';
 export * from './infrastructure/geocoding';
 
+// === SEO SYSTEM ===
+export * from './seo';
+
 // === CORE SYSTEM ===
 // Store exports (avoiding conflicts with domain stores)
 export {} from // Add specific non-conflicting store exports here if needed
