@@ -64,4 +64,4 @@ Ana Kurallar;
 
 2-Proje hiyerarşimi daha iyi, klasörlenmiş kategorize edilmiş anlaşılır, temiz bir yapı olacak şekilde iyileştirmeler yaparak karmaşık alanları organize et.
 
-Adım adım ilerleyelim ilk önceliğimiz 1. adım olsun bu adımı tamamen tamamladıktan sonra 2. adıma geçmek için komutumu bekle. #codebase
+Adım adım ilerleyelim ilk önceliğimiz 1. adım olsun bu adımı tamamen tamamladıktan sonra 2. adıma geçmek için komutumu bekle. s#codebase
