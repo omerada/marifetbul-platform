@@ -12,16 +12,17 @@ export function useConversations() {
   };
 }
 
-export function useConversation(_conversationId: string) {
+export function useConversation(conversationId: string) {
   return {
     conversation: null,
+    conversationId, // Use the parameter
     isLoading: false,
     error: null,
     refetch: () => Promise.resolve(),
   };
 }
 
-export function useMessages(_conversationId: string) {
+export function useMessages(conversationId: string) {
   return {
     data: {
       items: [],
@@ -30,6 +31,7 @@ export function useMessages(_conversationId: string) {
       error: null,
     },
     messages: [],
+    conversationId, // Use the parameter
     isLoading: false,
     error: null,
     refresh: () => Promise.resolve(),
@@ -49,7 +51,14 @@ export function useUnreadCount() {
 
 export function useMessaging() {
   return {
-    sendMessage: (_content: string) => Promise.resolve(),
+    sendMessage: (content: string) => {
+      return Promise.resolve({
+        id: 'msg-' + Date.now(),
+        content: content || 'Mock message',
+        sender_id: 'user-1',
+        created_at: new Date().toISOString(),
+      });
+    },
     markAsRead: () => Promise.resolve(),
     createConversation: () => Promise.resolve(),
     deleteMessage: () => Promise.resolve(),

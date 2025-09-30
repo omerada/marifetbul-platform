@@ -83,9 +83,17 @@ export function useUnreadCount() {
 
 export function useMessaging() {
   return {
-    sendMessage: (_conversationId: string, _content: string) =>
-      Promise.resolve(),
-    markAsRead: (_conversationId?: string) => Promise.resolve(),
+    sendMessage: (conversationId: string, content: string) => {
+      // Use both parameters in mock implementation
+      console.log(`Sending message to ${conversationId}: ${content}`);
+      return Promise.resolve();
+    },
+    markAsRead: (conversationId?: string) => {
+      if (conversationId) {
+        console.log(`Marking conversation ${conversationId} as read`);
+      }
+      return Promise.resolve();
+    },
     createConversation: () => Promise.resolve(),
     deleteMessage: () => Promise.resolve(),
     isLoading: false,

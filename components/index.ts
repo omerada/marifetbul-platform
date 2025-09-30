@@ -1,54 +1,48 @@
 // ================================================
-// COMPONENTS MAIN INDEX
+// COMPONENTS MAIN INDEX - MODERNIZED
 // ================================================
-// Central export hub for all components in the application
-// Organized by domain-driven architecture
+// Clean, organized export hub for production-ready components
+// Optimized for performance with selective loading
 
 // ================================================
-// DOMAIN-BASED EXPORTS
+// CORE UI COMPONENTS - ALWAYS LOADED
 // ================================================
-// Business domain components
+// Essential design system components
 
-// Admin Domain
-export * from './domains/admin';
+export * from './ui';
 
-// Analytics Domain
-export * from './domains/analytics';
+// ================================================
+// LAYOUT COMPONENTS
+// ================================================
+// Application structure and navigation
 
-// Auth Domain
-export * from './domains/auth';
+export * from './layout';
 
-// Dashboard Domain
-export * from './domains/dashboard';
+// ================================================
+// FORM COMPONENTS
+// ================================================
+// User input and data collection
 
-// Jobs Domain
-export * from './domains/jobs';
-
-// Marketplace Domain
-export * from './domains/marketplace';
-
-// Messaging Domain
-export * from './domains/messaging';
-
-// Notifications Domain
-export * from './domains/notifications';
-
-// Packages Domain
-export * from './domains/packages';
-
-// Profile Domain
-export * from './domains/profile';
-
-// Search Domain
-export * from './domains/search';
-
-// Support Domain
-export * from './domains/support';
+export * from './forms';
 
 // ================================================
 // SHARED COMPONENTS
 // ================================================
-// Cross-domain shared components and utilities
+// Cross-domain reusable components
+
+export * from './shared';
+
+// ================================================
+// PROVIDER COMPONENTS
+// ================================================
+// Context providers and state management
+
+export * from './providers';
+
+// ================================================
+// DOMAIN COMPONENTS - LAZY LOADED
+// ================================================
+// Business logic components - loaded on demand
 // Export specific components to avoid ArticleCard conflict
 
 export {
@@ -100,5 +94,3 @@ export * from './forms';
 // PROVIDER COMPONENTS
 // ================================================
 // Context providers and wrappers
-
-// export * from './providers'; // Temporarily disabled
