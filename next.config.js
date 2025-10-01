@@ -51,6 +51,44 @@ const nextConfig = {
   },
 
   // ================================================
+  // REDIRECTS FOR VERCEL DEPLOYMENT
+  // ================================================
+  async redirects() {
+    return [
+      {
+        source: '/how-it-works',
+        destination: '/info/how-it-works',
+        permanent: true,
+      },
+      {
+        source: '/faq',
+        destination: '/info/faq',
+        permanent: true,
+      },
+      {
+        source: '/safety',
+        destination: '/legal/safety',
+        permanent: true,
+      },
+      {
+        source: '/terms',
+        destination: '/legal/terms',
+        permanent: true,
+      },
+      {
+        source: '/privacy',
+        destination: '/legal/privacy',
+        permanent: true,
+      },
+      {
+        source: '/cookies',
+        destination: '/legal/cookies',
+        permanent: true,
+      },
+    ];
+  },
+
+  // ================================================
   // SECURITY HEADERS
   // ================================================
   async headers() {

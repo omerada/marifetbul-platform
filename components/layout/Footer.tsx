@@ -95,7 +95,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/how-it-works"
+                  href="/info/how-it-works"
                   className="text-gray-300 transition-colors hover:text-white"
                 >
                   Nasıl Çalışır?
@@ -126,7 +126,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/faq"
+                  href="/info/faq"
                   className="text-gray-300 transition-colors hover:text-white"
                 >
                   Sık Sorulan Sorular
@@ -134,7 +134,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/safety"
+                  href="/legal/safety"
                   className="text-gray-300 transition-colors hover:text-white"
                 >
                   Güvenlik
@@ -183,19 +183,19 @@ export function Footer() {
             </div>
             <div className="flex space-x-6 text-sm">
               <Link
-                href="/privacy"
+                href="/legal/privacy"
                 className="text-gray-400 transition-colors hover:text-white"
               >
                 Gizlilik Politikası
               </Link>
               <Link
-                href="/terms"
+                href="/legal/terms"
                 className="text-gray-400 transition-colors hover:text-white"
               >
                 Kullanım Şartları
               </Link>
               <Link
-                href="/cookies"
+                href="/legal/cookies"
                 className="text-gray-400 transition-colors hover:text-white"
               >
                 Çerez Politikası
