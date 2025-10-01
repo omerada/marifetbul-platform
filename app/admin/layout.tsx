@@ -1,20 +1,28 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { Card, CardContent } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
-  Loader2,
   BarChart3,
   Users,
   Shield,
   Settings,
   Home,
   LogOut,
+  Menu,
+  X,
+  Bell,
+  ChevronRight,
+  Activity,
+  HelpCircle,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -24,6 +32,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const { user, isAuthenticated, isLoading, logout } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     console.log('🏗️ Admin Layout: Auth state changed:', {
@@ -62,48 +72,68 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     router.push('/admin/login');
   };
 
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    // In a real app, this would toggle the global theme
+  };
+
   const navigationItems = [
     {
-      name: 'Ana Sayfa',
+      name: 'Dashboard',
       href: '/admin',
       icon: Home,
       current: pathname === '/admin',
+      description: 'Platform overview',
     },
     {
-      name: 'Kullanıcılar',
+      name: 'Users',
       href: '/admin/users',
       icon: Users,
       current: pathname === '/admin/users',
+      description: 'Manage users',
     },
     {
-      name: 'Analitik',
+      name: 'Analytics',
       href: '/admin/analytics',
       icon: BarChart3,
       current: pathname === '/admin/analytics',
+      description: 'Platform metrics',
     },
     {
-      name: 'İçerik Denetimi',
+      name: 'Content',
       href: '/admin/moderation',
       icon: Shield,
       current: pathname === '/admin/moderation',
+      description: 'Content moderation',
     },
     {
-      name: 'Ayarlar',
+      name: 'Settings',
       href: '/admin/settings',
       icon: Settings,
       current: pathname === '/admin/settings',
+      description: 'Platform settings',
     },
   ];
 
   // Show loading while checking authentication
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <Card className="w-96">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-center space-x-2">
-              <Loader2 className="h-6 w-6 animate-spin" />
-              <span>Yetki kontrol ediliyor...</span>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-gray-100">
+        <Card className="w-96 border-0 shadow-xl">
+          <CardContent className="pt-8 pb-8">
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <div className="relative">
+                <div className="h-16 w-16 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Shield className="h-6 w-6 text-blue-600" />
+                </div>
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Admin Panel
+                </h3>
+                <p className="mt-1 text-sm text-gray-600">Authenticating...</p>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -114,12 +144,22 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   // Show loading if not authenticated or not admin (will redirect)
   if (!isAuthenticated || user?.role !== 'admin') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <Card className="w-96">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-center space-x-2">
-              <Loader2 className="h-6 w-6 animate-spin" />
-              <span>Yönlendiriliyor...</span>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-gray-100">
+        <Card className="w-96 border-0 shadow-xl">
+          <CardContent className="pt-8 pb-8">
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <div className="relative">
+                <div className="h-16 w-16 animate-spin rounded-full border-4 border-orange-200 border-t-orange-600"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Activity className="h-6 w-6 text-orange-600" />
+                </div>
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Redirecting
+                </h3>
+                <p className="mt-1 text-sm text-gray-600">Please wait...</p>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -128,74 +168,202 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div
+      className={cn(
+        'min-h-screen',
+        isDarkMode
+          ? 'dark bg-gray-900'
+          : 'bg-gradient-to-br from-slate-50 to-gray-100'
+      )}
+    >
       <div className="flex h-screen overflow-hidden">
-        {/* Admin Sidebar */}
-        <div className="hidden lg:flex lg:flex-shrink-0">
-          <div className="flex w-64 flex-col">
-            <div className="flex h-0 flex-1 flex-col border-r border-gray-200 bg-white">
-              <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
-                <div className="flex flex-shrink-0 items-center px-4">
-                  <h1 className="text-xl font-bold text-gray-900">
-                    Admin Panel
-                  </h1>
-                </div>
+        {/* Mobile sidebar overlay */}
+        {sidebarOpen && (
+          <div className="fixed inset-0 z-40 lg:hidden">
+            <div
+              className="bg-opacity-75 fixed inset-0 bg-gray-600"
+              onClick={() => setSidebarOpen(false)}
+            />
+          </div>
+        )}
 
-                {/* User info */}
-                <div className="mx-2 mt-4 rounded-lg bg-gray-50 px-4 py-3">
-                  <p className="text-sm font-medium text-gray-900">
-                    {user?.name}
+        {/* Desktop Sidebar */}
+        <div
+          className={cn(
+            'fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-300 ease-in-out lg:static lg:inset-0 lg:translate-x-0',
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          )}
+        >
+          <div className="flex h-full flex-col border-r border-gray-200/50 bg-white/80 backdrop-blur-xl dark:border-gray-700/50 dark:bg-gray-800/80">
+            {/* Header */}
+            <div className="flex h-16 shrink-0 items-center justify-between border-b border-gray-200/50 px-6 dark:border-gray-700/50">
+              <div className="flex items-center space-x-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+                  <Shield className="h-5 w-5" />
+                </div>
+                <h1 className="text-lg font-bold text-gray-900 dark:text-white">
+                  Admin Panel
+                </h1>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSidebarOpen(false)}
+                className="lg:hidden"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* User Profile Card */}
+            <div className="m-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 p-4 dark:from-blue-900/20 dark:to-indigo-900/20">
+              <div className="flex items-center space-x-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400">
+                  {(user?.name || 'A').charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                    {user?.name || 'Admin'}
                   </p>
-                  <p className="text-xs text-gray-500">{user?.email}</p>
+                  <p className="truncate text-xs text-gray-600 dark:text-gray-400">
+                    {user?.email}
+                  </p>
                 </div>
+                <div className="flex items-center space-x-1">
+                  <div className="h-2 w-2 animate-pulse rounded-full bg-green-400"></div>
+                  <span className="text-xs text-green-600 dark:text-green-400">
+                    Online
+                  </span>
+                </div>
+              </div>
+            </div>
 
-                {/* Navigation */}
-                <nav className="mt-5 flex-1 space-y-1 bg-white px-2">
-                  {navigationItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        className={`group flex items-center rounded-md px-2 py-2 text-sm font-medium ${
-                          item.current
-                            ? 'bg-gray-100 text-gray-900'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                        }`}
-                      >
-                        <Icon
-                          className={`mr-3 h-5 w-5 ${
-                            item.current
-                              ? 'text-gray-500'
-                              : 'text-gray-400 group-hover:text-gray-500'
-                          }`}
-                        />
-                        {item.name}
-                      </Link>
-                    );
-                  })}
-                </nav>
-
-                {/* Logout button */}
-                <div className="px-2 pb-4">
-                  <Button
-                    onClick={handleLogout}
-                    variant="outline"
-                    className="flex w-full items-center justify-center"
+            {/* Navigation */}
+            <nav className="flex-1 space-y-1 px-4 pb-4">
+              <div className="mb-3 px-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                Main Menu
+              </div>
+              {navigationItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = item.current;
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setSidebarOpen(false)}
+                    className={cn(
+                      'group flex items-center rounded-xl px-3 py-3 text-sm font-medium transition-all duration-200',
+                      isActive
+                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25'
+                        : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50'
+                    )}
                   >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Çıkış Yap
+                    <Icon
+                      className={cn(
+                        'mr-3 h-5 w-5 transition-colors',
+                        isActive
+                          ? 'text-white'
+                          : 'text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300'
+                      )}
+                    />
+                    <div className="flex-1">
+                      <div
+                        className={cn(
+                          'font-medium',
+                          isActive
+                            ? 'text-white'
+                            : 'text-gray-900 dark:text-gray-100'
+                        )}
+                      >
+                        {item.name}
+                      </div>
+                      <div
+                        className={cn(
+                          'mt-0.5 text-xs',
+                          isActive
+                            ? 'text-blue-100'
+                            : 'text-gray-500 dark:text-gray-400'
+                        )}
+                      >
+                        {item.description}
+                      </div>
+                    </div>
+                    {isActive && (
+                      <ChevronRight className="h-4 w-4 text-blue-100" />
+                    )}
+                  </Link>
+                );
+              })}
+
+              {/* Quick Actions */}
+              <div className="pt-6">
+                <div className="mb-3 px-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                  Quick Actions
+                </div>
+                <div className="space-y-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleDarkMode}
+                    className="w-full justify-start text-gray-700 dark:text-gray-300"
+                  >
+                    {isDarkMode ? (
+                      <Sun className="mr-3 h-4 w-4" />
+                    ) : (
+                      <Moon className="mr-3 h-4 w-4" />
+                    )}
+                    {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start text-gray-700 dark:text-gray-300"
+                  >
+                    <HelpCircle className="mr-3 h-4 w-4" />
+                    Help & Support
                   </Button>
                 </div>
               </div>
+            </nav>
+
+            {/* Footer */}
+            <div className="border-t border-gray-200/50 p-4 dark:border-gray-700/50">
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                className="w-full justify-center border-red-200 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
             </div>
           </div>
         </div>
 
         {/* Main content */}
         <div className="flex flex-1 flex-col overflow-hidden">
+          {/* Mobile header */}
+          <div className="lg:hidden">
+            <div className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-700 dark:bg-gray-800">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSidebarOpen(true)}
+              >
+                <Menu className="h-6 w-6" />
+              </Button>
+              <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Admin Panel
+              </h1>
+              <Button variant="ghost" size="sm">
+                <Bell className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Main content area */}
           <main className="relative flex-1 overflow-y-auto focus:outline-none">
-            {children}
+            <div className="h-full">{children}</div>
           </main>
         </div>
       </div>
