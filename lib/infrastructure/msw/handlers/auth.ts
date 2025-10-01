@@ -1534,4 +1534,342 @@ export const authHandlers = [
       );
     }
   }),
+
+  // Admin Platform Settings Endpoints
+  http.get('/api/v1/admin/settings', async ({ request }) => {
+    console.log('⚙️ MSW: Admin platform settings request intercepted');
+
+    try {
+      const authHeader = request.headers.get('Authorization');
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: 'Unauthorized',
+          },
+          { status: 401 }
+        );
+      }
+
+      // Simulate processing delay
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Mock platform settings data matching PlatformSettings interface
+      const platformSettings = {
+        general: {
+          siteName: 'Marifet Platform',
+          siteDescription:
+            "Türkiye'nin en büyük freelancer ve hizmet platformu",
+          contactEmail: 'contact@marifetbul.com',
+          supportEmail: 'support@marifetbul.com',
+          logoUrl: '/images/logo.png',
+          faviconUrl: '/images/favicon.ico',
+          defaultLanguage: 'tr',
+          defaultTimezone: 'Europe/Istanbul',
+          allowUserRegistration: true,
+          requireEmailVerification: true,
+          maintenanceMode: false,
+          maintenanceMessage:
+            'Platform geçici olarak bakımda. Lütfen daha sonra tekrar deneyin.',
+          maxFileUploadSize: 10, // MB
+          allowedFileTypes: ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx'],
+          socialMediaLinks: {
+            facebook: 'https://facebook.com/marifetbul',
+            twitter: 'https://twitter.com/marifetbul',
+            instagram: 'https://instagram.com/marifetbul',
+            linkedin: 'https://linkedin.com/company/marifetbul',
+            youtube: 'https://youtube.com/c/marifetbul',
+          },
+          analytics: {
+            googleAnalyticsId: 'GA-XXXXXXX-X',
+            googleTagManagerId: 'GTM-XXXXXXX',
+            facebookPixelId: '1234567890',
+            enableAnalytics: true,
+          },
+        },
+        payment: {
+          platformFee: 5.0, // percentage
+          minimumWithdrawal: 100, // TRY
+          processingFee: 2.5, // percentage
+          currencies: ['TRY', 'USD', 'EUR'],
+          defaultCurrency: 'TRY',
+          enabledPaymentMethods: ['credit_card', 'bank_transfer', 'paypal'],
+          escrowEnabled: true,
+          autoReleaseEscrow: true,
+          escrowReleaseDelay: 72, // hours
+          refundPolicy: 'partial', // full, partial, none
+          taxRate: 18, // percentage for Turkey
+          invoicePrefix: 'MRF',
+        },
+        security: {
+          twoFactorAuth: false,
+          enforceStrongPasswords: true,
+          passwordRequirements: {
+            minLength: 8,
+            requireNumbers: true,
+            requireSymbols: true,
+            requireUppercase: true,
+            requireLowercase: true,
+          },
+          sessionTimeout: 24, // hours
+          maxLoginAttempts: 5,
+          lockoutDuration: 30, // minutes
+          enableCaptcha: true,
+          enableEmailVerification: true,
+          enablePhoneVerification: false,
+          allowedCountries: [], // empty means all countries allowed
+          blockedCountries: [],
+          ipWhitelist: [],
+          ipBlacklist: [],
+        },
+        email: {
+          provider: 'smtp',
+          fromName: 'Marifet Platform',
+          fromEmail: 'noreply@marifetbul.com',
+          replyToEmail: 'support@marifetbul.com',
+          enableEmailNotifications: true,
+          enableWelcomeEmail: true,
+          enableOrderConfirmations: true,
+          enablePaymentNotifications: true,
+          smtpSettings: {
+            host: 'smtp.gmail.com',
+            port: 587,
+            username: 'noreply@marifetbul.com',
+            encryption: 'tls',
+          },
+          templates: {
+            welcome: 'welcome-template',
+            orderConfirmation: 'order-confirmation-template',
+            paymentReceived: 'payment-received-template',
+            passwordReset: 'password-reset-template',
+          },
+        },
+        features: {
+          enableJobPosting: true,
+          enableServicePackages: true,
+          enableEscrow: true,
+          enableDirectPayments: true,
+          enableReviews: true,
+          enableMessaging: true,
+          enableVideoCall: false,
+          enableFileSharing: true,
+          enablePortfolio: true,
+          enableSkillTests: false,
+          enableCertifications: false,
+          enableSubscriptions: false,
+          enableMemberships: false,
+          enableReferrals: true,
+          enableAffiliateProgram: false,
+          enableAPI: true,
+          enableWebhooks: false,
+          enableMobileApp: true,
+          enablePWA: true,
+          enableNotifications: true,
+          enableSocialLogin: true,
+          enableGuestCheckout: false,
+          enableMultiLanguage: false,
+          enableGeoLocation: true,
+          enableAdvancedSearch: true,
+          enableCategories: true,
+          enableTags: true,
+          emailVerificationRequired: true,
+          phoneVerificationRequired: false,
+          userRegistration: true,
+          profileVerification: true,
+          mobileApp: true,
+          apiAccess: true,
+          affiliateProgram: false,
+          loyaltyProgram: false,
+          multiLanguage: false,
+          darkMode: true,
+          notificationSystem: true,
+          searchEngine: true,
+          analyticsTracking: true,
+        },
+        content: {
+          moderationEnabled: true,
+          autoModeration: true,
+          requireContentApproval: false,
+          allowUserGeneratedContent: true,
+          allowComments: true,
+          allowRatings: true,
+          allowPortfolioUploads: true,
+          maxImageSize: 5, // MB
+          maxVideoSize: 50, // MB
+          maxPortfolioItems: 10,
+          contentFilters: ['spam', 'profanity', 'inappropriate'],
+          bannedWords: ['spam', 'scam', 'fraud'],
+          autoDeleteSpam: false,
+          flagThreshold: 3, // number of reports before auto-flagging
+          userGeneratedContent: true,
+          allowUserProfiles: true,
+          allowPortfolio: true,
+          allowCustomCategories: false,
+          contentFiltering: true,
+          spamDetection: true,
+          duplicateDetection: true,
+          imageModeration: true,
+          textAnalysis: true,
+        },
+        api: {
+          enablePublicApi: true,
+          enableWebhooks: false,
+          apiVersioning: true,
+          apiDocumentation: true,
+          rateLimiting: {
+            requestsPerMinute: 60,
+            requestsPerHour: 1000,
+            requestsPerDay: 10000,
+            burst: 10,
+          },
+          allowedOrigins: [
+            'https://marifetbul.com',
+            'https://app.marifetbul.com',
+          ],
+          apiKeys: [],
+          webhookUrls: [],
+          enableCors: true,
+          enableCompression: true,
+          enableCaching: true,
+          cacheTimeout: 300, // seconds
+        },
+        maintenance: {
+          isMaintenanceMode: false,
+          maintenanceMessage:
+            'Platform geçici olarak bakımda. Lütfen daha sonra tekrar deneyin.',
+          scheduledMaintenance: [],
+          allowedIps: ['127.0.0.1'],
+          allowedRoles: ['admin'],
+          estimatedDowntime: 0, // minutes
+          showCountdown: false,
+          countdownEndTime: null,
+          notifyUsers: true,
+          redirectUrl: '/maintenance',
+        },
+        integrations: {
+          payment: {
+            stripe: {
+              enabled: false,
+              publishableKey: '',
+              webhookSecret: '',
+            },
+            paypal: {
+              enabled: false,
+              clientId: '',
+              clientSecret: '',
+            },
+            iyzico: {
+              enabled: true,
+              apiKey: '',
+              secretKey: '',
+              baseUrl: 'https://sandbox-api.iyzipay.com',
+            },
+          },
+          communication: {
+            twilio: {
+              enabled: false,
+              accountSid: '',
+              authToken: '',
+              fromPhoneNumber: '',
+            },
+            sendgrid: {
+              enabled: false,
+              apiKey: '',
+              fromEmail: '',
+            },
+          },
+          analytics: {
+            googleAnalytics: {
+              enabled: true,
+              trackingId: 'GA-XXXXXXX-X',
+            },
+            mixpanel: {
+              enabled: false,
+              projectToken: '',
+            },
+            hotjar: {
+              enabled: false,
+              siteId: '',
+            },
+          },
+          storage: {
+            aws: {
+              enabled: false,
+              accessKeyId: '',
+              secretAccessKey: '',
+              region: 'eu-west-1',
+              bucket: '',
+            },
+            cloudinary: {
+              enabled: true,
+              cloudName: '',
+              apiKey: '',
+              apiSecret: '',
+            },
+          },
+        },
+      };
+
+      console.log('⚙️ MSW: Platform settings response prepared');
+
+      return HttpResponse.json({
+        success: true,
+        data: platformSettings,
+        generatedAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('💥 MSW: Platform settings error:', error);
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Server error',
+        },
+        { status: 500 }
+      );
+    }
+  }),
+
+  http.put('/api/v1/admin/settings', async ({ request }) => {
+    console.log('⚙️ MSW: Update platform settings request intercepted');
+
+    try {
+      const authHeader = request.headers.get('Authorization');
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: 'Unauthorized',
+          },
+          { status: 401 }
+        );
+      }
+
+      const settingsUpdate = (await request.json()) as Record<string, unknown>;
+
+      // Simulate processing delay
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      console.log('⚙️ MSW: Settings update data:', settingsUpdate);
+
+      // For demo purposes, just return the updated settings
+      // In a real implementation, you would merge the updates with existing settings
+      return HttpResponse.json({
+        success: true,
+        data: {
+          ...settingsUpdate,
+          updatedAt: new Date().toISOString(),
+        },
+        message: 'Platform ayarları başarıyla güncellendi',
+      });
+    } catch (error) {
+      console.error('💥 MSW: Update platform settings error:', error);
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Server error',
+        },
+        { status: 500 }
+      );
+    }
+  }),
 ];
