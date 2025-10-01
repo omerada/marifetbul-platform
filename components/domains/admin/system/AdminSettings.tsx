@@ -17,6 +17,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
+import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 
 interface PlatformSettings {
   general: {
@@ -147,6 +148,7 @@ interface PlatformSettings {
 }
 
 export function AdminSettings() {
+  const { token } = useAuthStore();
   const [settings, setSettings] = useState<PlatformSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -159,7 +161,17 @@ export function AdminSettings() {
     setError(null);
 
     try {
-      const response = await fetch('/api/v1/admin/settings');
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch('/api/v1/admin/settings', {
+        headers,
+      });
 
       if (!response.ok) {
         throw new Error('Ayarlar alınamadı');
@@ -172,7 +184,7 @@ export function AdminSettings() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     fetchSettings();
@@ -185,11 +197,17 @@ export function AdminSettings() {
     setError(null);
 
     try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch('/api/v1/admin/settings', {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify(settings),
       });
 
