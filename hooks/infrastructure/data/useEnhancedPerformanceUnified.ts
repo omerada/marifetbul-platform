@@ -56,17 +56,21 @@ export const useEnhancedPerformance = (options: UsePerformanceOptions = {}) => {
     }
   }, [autoStart, isTracking, startTracking, fetchMetrics]);
 
-  // Update config based on options
+  // Update config based on options (only on mount or when reportingInterval changes)
   useEffect(() => {
     updateConfig({
       enableTracking: true,
       autoCollect: true,
       reportingInterval,
       alertThresholds: {
-        ...config.alertThresholds,
+        lcp: 2500,
+        fid: 100,
+        cls: 0.1,
+        fcp: 1800,
+        ttfb: 600,
       },
     });
-  }, [reportingInterval, updateConfig, config.alertThresholds]);
+  }, [reportingInterval, updateConfig]); // Removed config.alertThresholds dependency to prevent infinite loop
 
   // Performance Observer for real-time metrics
   useEffect(() => {
@@ -238,14 +242,17 @@ export const useEnhancedPerformance = (options: UsePerformanceOptions = {}) => {
     }
 
     // Memory recommendations
-    if (metrics.memoryUsage.percentage > 80) {
+    if (
+      metrics?.memoryUsage?.percentage &&
+      metrics.memoryUsage.percentage > 80
+    ) {
       recommendations.push(
         'Optimize memory usage by implementing component memoization and cleaning up event listeners'
       );
     }
 
     // Bundle size recommendations
-    if (metrics.bundleSize.total > 1024 * 1024) {
+    if (metrics?.bundleSize?.total && metrics.bundleSize.total > 1024 * 1024) {
       // 1MB
       recommendations.push(
         'Reduce bundle size through code splitting and tree shaking'

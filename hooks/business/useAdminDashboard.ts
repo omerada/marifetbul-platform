@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import {
   useAdminDashboardStore,
   useAdminDashboardSelectors,
@@ -17,27 +17,46 @@ export function useAdminDashboard() {
   } = useAdminDashboardStore();
 
   const selectors = useAdminDashboardSelectors();
+  const hasInitialized = useRef(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Auto-fetch dashboard data on mount
+  // Auto-fetch dashboard data on mount (only once)
   useEffect(() => {
-    if (!selectors.hasData && !selectors.isLoading) {
+    if (!hasInitialized.current && !selectors.hasData && !selectors.isLoading) {
+      console.log('🔄 Admin Dashboard: Initial fetch');
+      hasInitialized.current = true;
       fetchDashboard();
     }
   }, [fetchDashboard, selectors.hasData, selectors.isLoading]);
 
-  // Auto-refresh every 5 minutes
+  // Auto-refresh every 5 minutes (setup once)
   useEffect(() => {
-    const interval = setInterval(
-      () => {
-        if (selectors.hasData) {
-          refreshDashboard();
-        }
-      },
-      5 * 60 * 1000
-    ); // 5 minutes
+    // Clear existing interval
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
 
-    return () => clearInterval(interval);
-  }, [refreshDashboard, selectors.hasData]);
+    // Only setup interval if we have data
+    if (selectors.hasData) {
+      console.log('⏰ Admin Dashboard: Setting up auto-refresh interval');
+      intervalRef.current = setInterval(
+        () => {
+          console.log('🔄 Admin Dashboard: Auto-refresh triggered');
+          refreshDashboard();
+        },
+        5 * 60 * 1000
+      ); // 5 minutes
+    }
+
+    // Cleanup
+    return () => {
+      if (intervalRef.current) {
+        console.log('🧹 Admin Dashboard: Cleaning up auto-refresh interval');
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [selectors.hasData, refreshDashboard]); // Include refreshDashboard dependency
 
   const handleAlertAction = useCallback(
     async (alertId: string, action: 'read' | 'dismiss') => {

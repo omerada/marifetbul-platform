@@ -20,9 +20,18 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
         });
 
         try {
+          // Import auth store here to avoid circular dependency
+          const { useAuthStore } = await import('./domains/auth/authStore');
+          const token = useAuthStore.getState().token;
+
+          if (!token) {
+            throw new Error('Authentication required');
+          }
+
           const response = await fetch('/api/v1/admin/dashboard', {
             headers: {
               'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
             },
           });
 
@@ -155,7 +164,8 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
         const state = get();
         return (
           state.data?.alerts?.filter(
-            (alert) => alert.priority === 'critical'
+            (alert) =>
+              alert.severity === 'critical' || alert.priority === 'critical'
           ) || []
         );
       },
@@ -181,8 +191,10 @@ export const useAdminDashboardSelectors = () => {
     // Computed selectors
     unreadAlerts: store.data?.alerts?.filter((alert) => !alert.isRead) || [],
     criticalAlerts:
-      store.data?.alerts?.filter((alert) => alert.priority === 'critical') ||
-      [],
+      store.data?.alerts?.filter(
+        (alert) =>
+          alert.severity === 'critical' || alert.priority === 'critical'
+      ) || [],
     systemStatus: store.data?.systemHealth?.status || 'unknown',
     totalUsers: store.data?.stats?.totalUsers || 0,
     totalRevenue: store.data?.stats?.totalRevenue || 0,
