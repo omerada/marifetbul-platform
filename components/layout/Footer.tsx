@@ -110,7 +110,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/help"
+                  href="/support/help"
                   className="text-gray-300 transition-colors hover:text-white"
                 >
                   Yardım Merkezi
@@ -118,7 +118,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/contact"
+                  href="/info/contact"
                   className="text-gray-300 transition-colors hover:text-white"
                 >
                   İletişim

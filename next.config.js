@@ -56,6 +56,16 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: '/help',
+        destination: '/support/help',
+        permanent: true,
+      },
+      {
+        source: '/contact',
+        destination: '/info/contact',
+        permanent: true,
+      },
+      {
         source: '/how-it-works',
         destination: '/info/how-it-works',
         permanent: true,
