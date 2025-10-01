@@ -22,6 +22,11 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
             '../../lib/infrastructure/msw/browser'
           );
 
+          console.log(
+            '🔧 MSW Provider: Worker imported, total handlers:',
+            worker.listHandlers().length
+          );
+
           await worker.start({
             onUnhandledRequest: (req) => {
               // Bypass Next.js image optimization and static assets
@@ -54,10 +59,14 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
             serviceWorker: {
               url: '/mockServiceWorker.js',
             },
-            quiet: true, // Reduce console noise
+            quiet: false, // Enable MSW logs for debugging
           });
 
           console.log('🚀 MSW worker started successfully');
+          console.log(
+            '📋 MSW handlers registered:',
+            worker.listHandlers().length
+          );
         } catch (error) {
           console.error('❌ Failed to start MSW worker:', error);
         }

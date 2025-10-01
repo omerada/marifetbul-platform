@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuth } from '@/hooks';
+import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { Card, CardContent } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
@@ -21,21 +21,34 @@ interface AdminLayoutProps {
 }
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
-  const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { user, isAuthenticated, isLoading, logout } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
+    console.log('🏗️ Admin Layout: Auth state changed:', {
+      isAuthenticated,
+      isLoading,
+      userRole: user?.role,
+    });
+
     if (!isLoading) {
       if (!isAuthenticated) {
+        console.log('❌ Admin Layout: Not authenticated, redirecting to login');
         router.push('/admin/login');
         return;
       }
 
       if (user?.role !== 'admin') {
+        console.log(
+          '❌ Admin Layout: User is not admin, redirecting to dashboard'
+        );
+        console.log('👤 Admin Layout: Current user:', user);
         router.push('/dashboard');
         return;
       }
+
+      console.log('✅ Admin Layout: Admin access granted');
     }
   }, [isAuthenticated, isLoading, user, router]);
 

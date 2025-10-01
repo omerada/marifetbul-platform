@@ -94,16 +94,29 @@ export const useAuthStore = create<AuthStore>()(
 
         // Login with credentials
         login: async (credentials: LoginCredentials) => {
+          console.log('🔐 Auth Store: Login attempt with credentials:', {
+            email: credentials.email,
+          });
+
           set((draft) => {
             draft.isLoading = true;
             draft.error = null;
           });
 
           try {
+            console.log(
+              '📡 Auth Store: Sending login request to /api/auth/login'
+            );
+
             const response = await fetch('/api/auth/login', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(credentials),
+            });
+
+            console.log('📨 Auth Store: Response received:', {
+              status: response.status,
+              ok: response.ok,
             });
 
             if (!response.ok) {
@@ -113,18 +126,37 @@ export const useAuthStore = create<AuthStore>()(
             }
 
             const result = await response.json();
+            console.log('📋 Auth Store: Response data:', result);
+            console.log('📋 Auth Store: Response success:', result.success);
+            console.log('📋 Auth Store: Response error:', result.error);
 
             if (!result.success) {
+              console.log('❌ Auth Store: API returned error:', result.error);
               throw new Error(result.error || 'Giriş başarısız');
             }
 
             const { user, token } = result.data;
+            console.log('👤 Auth Store: User data received:', {
+              userId: user.id,
+              email: user.email,
+              role: user.role,
+            });
+
             const now = Date.now();
             const expiry =
               now +
               (credentials.rememberMe
                 ? 30 * 24 * 60 * 60 * 1000
                 : 24 * 60 * 60 * 1000); // 30 days or 1 day
+
+            // Set cookies for middleware
+            if (typeof window !== 'undefined') {
+              const expiryDate = new Date(expiry);
+              const cookieOptions = `expires=${expiryDate.toUTCString()}; path=/; SameSite=lax`;
+
+              document.cookie = `marifetbul-auth-token=${token}; ${cookieOptions}`;
+              document.cookie = `marifetbul-user-role=${user.role}; ${cookieOptions}`;
+            }
 
             set((draft) => {
               draft.user = user;
@@ -232,6 +264,14 @@ export const useAuthStore = create<AuthStore>()(
 
         // Logout
         logout: () => {
+          // Clear cookies
+          if (typeof window !== 'undefined') {
+            document.cookie =
+              'marifetbul-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            document.cookie =
+              'marifetbul-user-role=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          }
+
           set(() => ({
             ...initialState,
           }));

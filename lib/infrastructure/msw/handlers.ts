@@ -22,6 +22,7 @@ import { orderHandlers } from './handlers/orders';
 import { paymentHandlers } from './handlers/payment';
 import { notificationHandlers } from './handlers/notification';
 import { adminHandlers } from './handlers/admin';
+import { authHandlers } from './handlers/auth';
 
 // Helper function to convert User to ConversationParticipant
 function userToParticipant(user: User): ConversationParticipant {
@@ -1176,143 +1177,8 @@ function createApiResponse<T>(data: T): ApiResponse<T> {
 
 // API Handlers
 export const handlers = [
-  // Auth handlers
-  http.post('/api/auth/login', async ({ request }) => {
-    const { email, password, rememberMe } = (await request.json()) as {
-      email: string;
-      password: string;
-      rememberMe?: boolean;
-    };
-
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    const user = mockUsers.find((u) => u.email === email);
-
-    if (!user || password !== 'password123') {
-      return HttpResponse.json(
-        { success: false, error: 'E-posta veya şifre hatalı' },
-        { status: 401 }
-      );
-    }
-
-    const token = `mock-token-${user.id}`;
-    const expiresAt = new Date(
-      Date.now() + (rememberMe ? 30 : 1) * 24 * 60 * 60 * 1000
-    ).toISOString();
-
-    return HttpResponse.json(
-      createApiResponse({
-        user,
-        token,
-        expiresAt,
-      })
-    );
-  }),
-
-  http.post('/api/auth/register', async ({ request }) => {
-    const { email, firstName, lastName, userType } = (await request.json()) as {
-      email: string;
-      password: string;
-      firstName: string;
-      lastName: string;
-      userType: 'freelancer' | 'employer';
-    };
-
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    // Check if user already exists
-    const existingUser = mockUsers.find((u) => u.email === email);
-    if (existingUser) {
-      return HttpResponse.json(
-        { success: false, error: 'Bu e-posta adresi zaten kullanılıyor' },
-        { status: 400 }
-      );
-    }
-
-    // Create new user
-    const newUser: User = {
-      id: `user-${Date.now()}`,
-      email,
-      firstName,
-      lastName,
-      name: `${firstName} ${lastName}`,
-      userType,
-      avatar: `/avatars/default-${userType}.jpg`,
-      location: 'Türkiye',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      accountStatus: 'active' as const,
-      verificationStatus: 'unverified' as const,
-    };
-
-    // Add to mock users array
-    mockUsers.push(newUser);
-
-    const token = `mock-token-${newUser.id}`;
-
-    return HttpResponse.json(
-      createApiResponse({
-        user: newUser,
-        token,
-      })
-    );
-  }),
-
-  http.get('/api/users/me', ({ request }) => {
-    const authHeader = request.headers.get('Authorization');
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return HttpResponse.json(
-        { success: false, error: 'Yetkisiz erişim' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    const userId = token.replace('mock-token-', '');
-
-    const user = mockUsers.find((u) => u.id === userId);
-
-    if (!user) {
-      return HttpResponse.json(
-        { success: false, error: 'Geçersiz token' },
-        { status: 401 }
-      );
-    }
-
-    return HttpResponse.json(createApiResponse(user));
-  }),
-
-  http.get('/api/auth/me', ({ request }) => {
-    const authHeader = request.headers.get('Authorization');
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return HttpResponse.json(
-        { success: false, error: 'Yetkisiz erişim' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    const userId = token.replace('mock-token-', '');
-
-    const user = mockUsers.find((u) => u.id === userId);
-
-    if (!user) {
-      return HttpResponse.json(
-        { success: false, error: 'Geçersiz token' },
-        { status: 401 }
-      );
-    }
-
-    return HttpResponse.json(createApiResponse({ user }));
-  }),
-
-  http.post('/api/auth/logout', () => {
-    return HttpResponse.json(createApiResponse(null));
-  }),
+  // Authentication handlers - FIRST to ensure priority
+  ...authHandlers,
 
   // Jobs handlers
   http.get('/api/jobs', ({ request }) => {

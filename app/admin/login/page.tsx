@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
-import { useAuth } from '@/hooks';
+import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { useToast } from '@/hooks';
 import { Shield, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
@@ -20,16 +20,24 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('');
 
   const router = useRouter();
-  const { user, isAuthenticated, login } = useAuth();
+  const { user, isAuthenticated, login } = useAuthStore();
   const toast = useToast();
 
   // Redirect if already authenticated as admin
   useEffect(() => {
+    console.log('🔍 Admin Login Debug:', {
+      isAuthenticated,
+      user,
+      userRole: user?.role,
+    });
+
     if (isAuthenticated && user) {
       if (user.role === 'admin') {
+        console.log('✅ Redirecting to admin dashboard');
         router.push('/admin');
       } else {
         // Non-admin user tried to access admin area
+        console.log('❌ Non-admin user, showing error');
         setError(
           'Admin yetkisine sahip değilsiniz. Lütfen admin hesabı ile giriş yapın.'
         );
@@ -48,6 +56,8 @@ export default function AdminLoginPage() {
     setIsLoading(true);
     setError('');
 
+    console.log('🚀 Admin login attempt:', credentials.email);
+
     try {
       // Use regular login flow which will check via API
       await login({
@@ -55,9 +65,11 @@ export default function AdminLoginPage() {
         password: credentials.password,
       });
 
+      console.log('✅ Login successful, user should be set now');
       toast.success('Admin paneline başarıyla giriş yapıldı');
       // Don't redirect here, let useEffect handle it after user is set
     } catch (err) {
+      console.error('❌ Login failed:', err);
       const errorMessage =
         err instanceof Error ? err.message : 'Giriş yapılırken bir hata oluştu';
       setError(errorMessage);

@@ -66,6 +66,8 @@ const mockCredentials = [
 export const authHandlers = [
   // Login endpoint
   http.post('/api/auth/login', async ({ request }) => {
+    console.log('🎯 MSW AUTH: Login request intercepted');
+
     try {
       const body = (await request.json()) as {
         email: string;
@@ -74,12 +76,18 @@ export const authHandlers = [
       };
       const { email, password } = body;
 
+      console.log('🔍 MSW AUTH: Login attempt for email:', email);
+      console.log('🔍 MSW AUTH: Password provided:', password);
+      console.log('🔍 MSW AUTH: Available credentials:', mockCredentials);
+
       // Find matching credentials
       const credential = mockCredentials.find(
         (cred) => cred.email === email && cred.password === password
       );
 
       if (!credential) {
+        console.log('❌ MSW AUTH: Invalid credentials');
+        console.log('❌ MSW AUTH: Expected credentials:', mockCredentials);
         return HttpResponse.json(
           {
             success: false,
@@ -89,9 +97,16 @@ export const authHandlers = [
         );
       }
 
+      console.log('✅ MSW AUTH: Credentials match!');
+
       // Find user
       const user = mockUsers.find((u) => u.email === email);
       if (!user) {
+        console.log('❌ MSW AUTH: User not found in database');
+        console.log(
+          '❌ MSW AUTH: Available users:',
+          mockUsers.map((u) => ({ id: u.id, email: u.email, role: u.role }))
+        );
         return HttpResponse.json(
           {
             success: false,
@@ -101,20 +116,32 @@ export const authHandlers = [
         );
       }
 
+      console.log('✅ MSW AUTH: Login successful for user:', {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        userType: user.userType,
+      });
+
       // Update last login
       user.lastLoginAt = new Date().toISOString();
 
       // Generate mock token
       const token = `mock-token-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-      return HttpResponse.json({
+      const response = {
         success: true,
         data: {
           user,
           token,
         },
-      });
-    } catch {
+      };
+
+      console.log('📤 MSW AUTH: Sending response:', response);
+
+      return HttpResponse.json(response);
+    } catch (error) {
+      console.error('💥 MSW AUTH: Login error:', error);
       return HttpResponse.json(
         {
           success: false,
