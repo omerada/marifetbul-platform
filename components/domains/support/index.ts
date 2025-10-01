@@ -4,12 +4,12 @@
 // All support and help center related components
 // Includes help center, support system, and support components
 
-// Help Center Components
-export { HelpCenterMain } from './HelpCenterMain';
-export { HelpCenterLayout } from './HelpCenterLayout';
-export { CategoryGrid } from './CategoryGrid';
-export { SearchResults as HelpSearchResults } from './SearchResults';
-export { ArticleRating } from './ArticleRating';
+// Unified Support Components
+export { HelpCenterMain } from './unified/HelpCenterMain';
+export { HelpCenterLayout } from './unified/HelpCenterLayout';
+export { CategoryGrid } from './unified/CategoryGrid';
+export { SearchResults as HelpSearchResults } from './unified/SearchResults';
+export { ArticleRating } from './unified/ArticleRating';
 
 // Additional Features from sub-folders
 export * from './help-center';

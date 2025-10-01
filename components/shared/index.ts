@@ -8,7 +8,7 @@
 export { ArticleCard } from './ArticleCard';
 
 // Interaction components
-export { InteractionButtons, SocialShareButton } from './InteractionButtons';
+export { InteractionButtons } from './InteractionButtons';
 export { default as InteractionComponents } from './InteractionButtons';
 
 // Media components

@@ -1,5 +1,9 @@
+import { Metadata } from 'next';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { seoMetadata } from '@/lib/seo/metadata';
+
+export const metadata: Metadata = seoMetadata.marketplace();
 
 export default function MarketplaceLayout({
   children,

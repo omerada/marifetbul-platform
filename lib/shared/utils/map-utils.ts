@@ -66,10 +66,6 @@ export class MapUtils {
     return 15;
   }
 
-  static calculateBounds(locations: MapLocation[]): MapBounds | null {
-    return this.getBounds(locations);
-  }
-
   static getBounds(locations: MapLocation[]): MapBounds | null {
     if (locations.length === 0) return null;
 

@@ -3,8 +3,9 @@ import { Inter } from 'next/font/google';
 import { MSWProvider } from '@/components/providers/MSWProvider';
 import { AuthProvider } from '@/components/providers/AuthProvider';
 import { ToastProvider } from '@/components/providers/ToastProvider';
-import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
+import { UnifiedErrorBoundary as ErrorBoundary } from '@/components/ui';
 import { SEOHead } from '@/components/shared/seo/SEOHead';
+import { seoMetadata } from '@/lib/seo/metadata';
 import './globals.css';
 
 const inter = Inter({
@@ -13,11 +14,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'MarifetBul - Freelancer & İşveren Platformu',
-  description:
-    "Türkiye'nin en büyük freelancer ve işveren buluşma platformu. Projeleriniz için en uygun uzmanları bulun veya yeteneklerinizi sergileyerek gelir elde edin.",
-  keywords: 'freelancer, işveren, proje, hizmet, uzman, bionluk, armut',
-  authors: [{ name: 'MarifetBul Team' }],
+  ...seoMetadata.home(),
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,

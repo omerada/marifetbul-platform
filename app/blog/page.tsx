@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { AppLayout } from '@/components/layout';
 import { Card } from '@/components/ui/Card';
 import type { BlogPost } from '@/types/blog';
-import { BlogErrorBoundary } from '@/components/blog';
+import { UnifiedErrorBoundary as BlogErrorBoundary } from '@/components/ui';
 
 // Dynamic rendering işaretleme
 export const dynamic = 'force-dynamic';

@@ -34,6 +34,10 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
   return [storedValue, setValue] as const;
 };
 
+// useDebounce and useThrottle moved to shared/utils/async.ts
+// Use: import { debounce, throttle } from '@/lib/shared/utils/async'
+// For React hooks, these are specific hook implementations
+
 export const useDebounce = <T>(value: T, delay: number): T => {
   const [debouncedValue, setDebouncedValue] = useState(value);
 

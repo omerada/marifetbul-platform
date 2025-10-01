@@ -175,7 +175,7 @@ export const MapView: React.FC<MapViewProps> = ({
   useEffect(() => {
     if (markers.length > 0) {
       const coordinates = markers.map((m) => m.coordinates);
-      const bounds = MapUtils.calculateBounds(coordinates);
+      const bounds = MapUtils.getBounds(coordinates);
       if (setBounds) {
         setBounds(bounds);
       }
