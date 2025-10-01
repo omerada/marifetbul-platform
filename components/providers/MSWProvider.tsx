@@ -15,6 +15,8 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
     ) {
       const startMSW = async () => {
         try {
+          console.log('🔧 MSW Provider: Starting MSW...');
+
           // Add a small delay to ensure proper initialization
           await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -27,8 +29,17 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
             worker.listHandlers().length
           );
 
+          // Log first few handlers for debugging
+          const handlersList = worker.listHandlers();
+          console.log('🔧 MSW Provider: First 5 handlers:');
+          handlersList.slice(0, 5).forEach((handler, index) => {
+            console.log(`  ${index + 1}:`, handler.toString());
+          });
+
           await worker.start({
             onUnhandledRequest: (req) => {
+              console.log('🔍 MSW: Unhandled request:', req.url);
+
               // Bypass Next.js image optimization and static assets
               if (
                 req.url.includes('/_next/') ||

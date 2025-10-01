@@ -1177,6 +1177,16 @@ function createApiResponse<T>(data: T): ApiResponse<T> {
 
 // API Handlers
 export const handlers = [
+  // Test endpoint for MSW functionality
+  http.get('/api/test-msw', () => {
+    console.log('🧪 MSW: Test endpoint hit - MSW is working!');
+    return HttpResponse.json({
+      success: true,
+      message: 'MSW is working correctly',
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
   // Authentication handlers - FIRST to ensure priority
   ...authHandlers,
 

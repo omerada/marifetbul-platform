@@ -54,6 +54,7 @@ export const useAdminUserStore = create<AdminUserStore>()(
             {
               headers: {
                 'Content-Type': 'application/json',
+                Authorization: 'Bearer mock-admin-token',
               },
             }
           );
@@ -89,6 +90,7 @@ export const useAdminUserStore = create<AdminUserStore>()(
           const response = await fetch(`/api/v1/admin/users/${userId}`, {
             headers: {
               'Content-Type': 'application/json',
+              Authorization: 'Bearer mock-admin-token',
             },
           });
 
@@ -124,6 +126,7 @@ export const useAdminUserStore = create<AdminUserStore>()(
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
+                Authorization: 'Bearer mock-admin-token',
               },
               body: JSON.stringify(request),
             }
@@ -174,6 +177,7 @@ export const useAdminUserStore = create<AdminUserStore>()(
             method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',
+              Authorization: 'Bearer mock-admin-token',
             },
             body: JSON.stringify(data),
           });
@@ -223,6 +227,7 @@ export const useAdminUserStore = create<AdminUserStore>()(
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              Authorization: 'Bearer mock-admin-token',
             },
             body: JSON.stringify(action),
           });

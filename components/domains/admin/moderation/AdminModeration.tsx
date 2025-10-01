@@ -33,6 +33,7 @@ import {
   Search,
   Filter,
   AlertTriangle,
+  AlertCircle,
   CheckCircle,
   XCircle,
   Clock,
@@ -159,7 +160,11 @@ export function AdminModeration() {
         params.append('search', filters.search);
       }
 
-      const response = await fetch(`/api/v1/admin/moderation/queue?${params}`);
+      const response = await fetch(`/api/v1/admin/moderation/queue?${params}`, {
+        headers: {
+          Authorization: 'Bearer mock-admin-token',
+        },
+      });
 
       if (!response.ok) {
         throw new Error('Moderasyon kuyruğu alınamadı');
@@ -181,7 +186,11 @@ export function AdminModeration() {
 
   const fetchModerationStats = useCallback(async () => {
     try {
-      const response = await fetch('/api/v1/admin/moderation/stats');
+      const response = await fetch('/api/v1/admin/moderation/stats', {
+        headers: {
+          Authorization: 'Bearer mock-admin-token',
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         setStats(data.data);
@@ -193,8 +202,13 @@ export function AdminModeration() {
 
   useEffect(() => {
     fetchModerationQueue();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination.page, pagination.limit, filters]);
+
+  useEffect(() => {
     fetchModerationStats();
-  }, [fetchModerationQueue, fetchModerationStats]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleFilterChange = (
     key: keyof ModerationFilters,
@@ -524,132 +538,165 @@ export function AdminModeration() {
                       Moderasyon öğesi bulunamadı
                     </TableCell>
                   </TableRow>
-                ) : (
-                  items.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell>
-                        <div className="flex items-start space-x-3">
-                          <div className="flex-shrink-0">
-                            {getTypeIcon(item.type)}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="truncate text-sm font-medium text-gray-900">
-                              {item.content.title}
+                ) : Array.isArray(items) && items.length > 0 ? (
+                  items
+                    .map((item) => {
+                      if (!item || !item.id) {
+                        return null;
+                      }
+                      return (
+                        <TableRow key={item.id}>
+                          <TableCell>
+                            <div className="flex items-start space-x-3">
+                              <div className="flex-shrink-0">
+                                {getTypeIcon(item.type || 'review')}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="truncate text-sm font-medium text-gray-900">
+                                  {item.content?.title || 'Başlık bulunamadı'}
+                                </div>
+                                <div className="truncate text-sm text-gray-500">
+                                  {item.content?.description
+                                    ? `${item.content.description.substring(0, 100)}...`
+                                    : 'Açıklama bulunamadı'}
+                                </div>
+                                <div className="mt-1 flex items-center space-x-2">
+                                  <Badge variant="secondary" size="sm">
+                                    {item.type || 'unknown'}
+                                  </Badge>
+                                  {Array.isArray(item.automatedFlags) &&
+                                    item.automatedFlags.length > 0 && (
+                                      <Badge variant="warning" size="sm">
+                                        {item.automatedFlags.length} flag
+                                      </Badge>
+                                    )}
+                                </div>
+                              </div>
                             </div>
-                            <div className="truncate text-sm text-gray-500">
-                              {item.content.description.substring(0, 100)}...
+                          </TableCell>
+                          <TableCell>
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {item?.reporterInfo?.firstName || 'Bilinmeyen'}{' '}
+                                {item?.reporterInfo?.lastName || ''}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {item?.reporterInfo?.userType || 'Bilinmeyen'}
+                              </div>
                             </div>
-                            <div className="mt-1 flex items-center space-x-2">
-                              <Badge variant="secondary" size="sm">
-                                {item.type}
-                              </Badge>
-                              {item.automatedFlags.length > 0 && (
-                                <Badge variant="warning" size="sm">
-                                  {item.automatedFlags.length} flag
-                                </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-sm text-gray-900">
+                              {item?.reason
+                                ? item.reason.replace('_', ' ')
+                                : 'Bilinmeyen sebep'}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              className={getPriorityColor(
+                                item?.priority || 'low'
                               )}
-                            </div>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">
-                            {item.reporterInfo.firstName}{' '}
-                            {item.reporterInfo.lastName}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {item.reporterInfo.userType}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-gray-900">
-                          {item.reason.replace('_', ' ')}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getPriorityColor(item.priority)}>
-                          {item.priority === 'critical'
-                            ? 'Kritik'
-                            : item.priority === 'high'
-                              ? 'Yüksek'
-                              : item.priority === 'medium'
-                                ? 'Orta'
-                                : 'Düşük'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(item.status)}>
-                          {item.status === 'pending'
-                            ? 'Bekleyen'
-                            : item.status === 'approved'
-                              ? 'Onaylandı'
-                              : item.status === 'rejected'
-                                ? 'Reddedildi'
-                                : 'Escalated'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-gray-500">
-                          {new Date(item.createdAt).toLocaleDateString('tr-TR')}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setSelectedItem(item);
-                              }}
                             >
-                              <Eye className="mr-2 h-4 w-4" />
-                              Detayları Gör
-                            </DropdownMenuItem>
-                            {item.status === 'pending' && (
-                              <>
+                              {item?.priority === 'critical'
+                                ? 'Kritik'
+                                : item?.priority === 'high'
+                                  ? 'Yüksek'
+                                  : item?.priority === 'medium'
+                                    ? 'Orta'
+                                    : 'Düşük'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              className={getStatusColor(
+                                item?.status || 'pending'
+                              )}
+                            >
+                              {item?.status === 'pending'
+                                ? 'Bekleyen'
+                                : item?.status === 'approved'
+                                  ? 'Onaylandı'
+                                  : item?.status === 'rejected'
+                                    ? 'Reddedildi'
+                                    : 'Escalated'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-sm text-gray-500">
+                              {item?.createdAt
+                                ? new Date(item.createdAt).toLocaleDateString(
+                                    'tr-TR'
+                                  )
+                                : 'Bilinmeyen tarih'}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
                                 <DropdownMenuItem
                                   onClick={() => {
                                     setSelectedItem(item);
-                                    setActionType('approve');
-                                    setShowActionDialog(true);
                                   }}
                                 >
-                                  <CheckCircle className="mr-2 h-4 w-4" />
-                                  Onayla
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  Detayları Gör
                                 </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    setSelectedItem(item);
-                                    setActionType('reject');
-                                    setShowActionDialog(true);
-                                  }}
-                                >
-                                  <XCircle className="mr-2 h-4 w-4" />
-                                  Reddet
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    setSelectedItem(item);
-                                    setActionType('escalate');
-                                    setShowActionDialog(true);
-                                  }}
-                                >
-                                  <AlertTriangle className="mr-2 h-4 w-4" />
-                                  Escalate Et
-                                </DropdownMenuItem>
-                              </>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                                {item?.status === 'pending' && (
+                                  <>
+                                    <DropdownMenuItem
+                                      onClick={() => {
+                                        setSelectedItem(item);
+                                        setActionType('approve');
+                                        setShowActionDialog(true);
+                                      }}
+                                    >
+                                      <CheckCircle className="mr-2 h-4 w-4" />
+                                      Onayla
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      onClick={() => {
+                                        setSelectedItem(item);
+                                        setActionType('reject');
+                                        setShowActionDialog(true);
+                                      }}
+                                    >
+                                      <XCircle className="mr-2 h-4 w-4" />
+                                      Reddet
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      onClick={() => {
+                                        setSelectedItem(item);
+                                        setActionType('escalate');
+                                        setShowActionDialog(true);
+                                      }}
+                                    >
+                                      <AlertTriangle className="mr-2 h-4 w-4" />
+                                      Escalate Et
+                                    </DropdownMenuItem>
+                                  </>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                    .filter(Boolean)
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={6} className="py-8 text-center">
+                      <div className="text-gray-500">
+                        <AlertCircle className="mx-auto mb-2 h-8 w-8" />
+                        <p>Henüz hiç moderasyon öğesi yok</p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
                 )}
               </TableBody>
             </Table>

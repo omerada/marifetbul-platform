@@ -468,4 +468,1070 @@ export const authHandlers = [
       data: mockMetrics,
     });
   }),
+
+  // Test endpoint - authorization header yok
+  http.get('/api/v1/admin/test', async () => {
+    console.log('🧪 MSW: Test endpoint intercepted');
+    return HttpResponse.json({
+      success: true,
+      message: 'MSW test endpoint working!',
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  // Admin Users Management Endpoints
+  // Get users list with filters and pagination
+  http.get('/api/v1/admin/users', async ({ request }) => {
+    console.log('👥 MSW: Admin users list request intercepted');
+
+    try {
+      const authHeader = request.headers.get('Authorization');
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        console.log('❌ MSW: No valid authorization header');
+        return HttpResponse.json(
+          {
+            success: false,
+            error: 'Unauthorized',
+          },
+          { status: 401 }
+        );
+      }
+
+      const url = new URL(request.url);
+      const page = parseInt(url.searchParams.get('page') || '1');
+      const limit = parseInt(url.searchParams.get('limit') || '20');
+      const search = url.searchParams.get('search') || '';
+      const userType = url.searchParams.get('userType') || 'all';
+      const accountStatus = url.searchParams.get('accountStatus') || 'all';
+      const verificationStatus =
+        url.searchParams.get('verificationStatus') || 'all';
+      const sortBy = url.searchParams.get('sortBy') || 'createdAt';
+      const sortOrder =
+        (url.searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc';
+
+      console.log('📊 MSW: Users list params:', {
+        page,
+        limit,
+        search,
+        userType,
+        accountStatus,
+      });
+
+      // Generate mock users data
+      const generateMockUsers = (count: number) => {
+        const userTypes = ['freelancer', 'employer'] as const;
+        const accountStatuses = ['active', 'suspended', 'banned'] as const;
+        const verificationStatuses = [
+          'verified',
+          'pending',
+          'unverified',
+        ] as const;
+        const locations = [
+          'İstanbul, Türkiye',
+          'Ankara, Türkiye',
+          'İzmir, Türkiye',
+          'Bursa, Türkiye',
+          'Antalya, Türkiye',
+        ];
+
+        const firstNames = [
+          'Ahmet',
+          'Mehmet',
+          'Ali',
+          'Ayşe',
+          'Fatma',
+          'Zeynep',
+          'Burak',
+          'Elif',
+          'Emre',
+          'Seda',
+        ];
+        const lastNames = [
+          'Yılmaz',
+          'Kaya',
+          'Demir',
+          'Şahin',
+          'Çelik',
+          'Özkan',
+          'Aydın',
+          'Özdemir',
+          'Arslan',
+          'Doğan',
+        ];
+
+        return Array.from({ length: count }, (_, index) => {
+          const firstName =
+            firstNames[Math.floor(Math.random() * firstNames.length)];
+          const lastName =
+            lastNames[Math.floor(Math.random() * lastNames.length)];
+          const userTypeSelected =
+            userTypes[Math.floor(Math.random() * userTypes.length)];
+          const joinDate = new Date(
+            Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000
+          ).toISOString();
+          const lastActiveAt = new Date(
+            Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000
+          ).toISOString();
+
+          return {
+            id: `user_${index + 1}`,
+            email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${index}@gmail.com`,
+            name: `${firstName} ${lastName}`,
+            firstName,
+            lastName,
+            userType: userTypeSelected,
+            profileCompletion: Math.floor(Math.random() * 40) + 60, // 60-99%
+            avatar: `https://images.unsplash.com/photo-${1500000000000 + index}?w=150&h=150&fit=crop&crop=face`,
+            location: locations[Math.floor(Math.random() * locations.length)],
+            createdAt: joinDate,
+            updatedAt: lastActiveAt,
+            accountStatus:
+              accountStatuses[
+                Math.floor(Math.random() * accountStatuses.length)
+              ],
+            verificationStatus:
+              verificationStatuses[
+                Math.floor(Math.random() * verificationStatuses.length)
+              ],
+            verificationBadges: [
+              'email',
+              ...(Math.random() > 0.3 ? ['phone'] : []),
+            ],
+            joinDate,
+            lastActiveAt,
+            lastLoginAt: new Date(
+              Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000
+            ).toISOString(),
+            loginCount: Math.floor(Math.random() * 500) + 10,
+            totalOrders: Math.floor(Math.random() * 50),
+            totalEarnings:
+              userTypeSelected === 'freelancer'
+                ? Math.floor(Math.random() * 100000)
+                : 0,
+            totalSpent:
+              userTypeSelected === 'employer'
+                ? Math.floor(Math.random() * 50000)
+                : 0,
+            successRate: Math.floor(Math.random() * 40) + 60, // 60-100%
+            disputeCount: Math.floor(Math.random() * 5),
+            warningCount: Math.floor(Math.random() * 3),
+            reputationScore: Math.floor(Math.random() * 40) + 60, // 60-100
+            riskScore: Math.floor(Math.random() * 50), // 0-50
+            suspensionHistory: [],
+            statistics: {
+              actionsPerformed: Math.floor(Math.random() * 200) + 50,
+              usersModerated: Math.floor(Math.random() * 20),
+              ticketsResolved: Math.floor(Math.random() * 15),
+            },
+          };
+        });
+      };
+
+      // Simulate network delay
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      let allUsers = generateMockUsers(150);
+
+      // Apply filters
+      if (search) {
+        const searchTerm = search.toLowerCase();
+        allUsers = allUsers.filter(
+          (user) =>
+            user.firstName.toLowerCase().includes(searchTerm) ||
+            user.lastName.toLowerCase().includes(searchTerm) ||
+            user.email.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      if (userType && userType !== 'all') {
+        allUsers = allUsers.filter((user) => user.userType === userType);
+      }
+
+      if (accountStatus && accountStatus !== 'all') {
+        allUsers = allUsers.filter(
+          (user) => user.accountStatus === accountStatus
+        );
+      }
+
+      if (verificationStatus && verificationStatus !== 'all') {
+        allUsers = allUsers.filter(
+          (user) => user.verificationStatus === verificationStatus
+        );
+      }
+
+      // Apply sorting
+      allUsers.sort((a, b) => {
+        let aValue: string | number, bValue: string | number;
+
+        switch (sortBy) {
+          case 'name':
+            aValue = `${a.firstName} ${a.lastName}`.toLowerCase();
+            bValue = `${b.firstName} ${b.lastName}`.toLowerCase();
+            break;
+          case 'email':
+            aValue = a.email.toLowerCase();
+            bValue = b.email.toLowerCase();
+            break;
+          case 'joinDate':
+            aValue = new Date(a.joinDate).getTime();
+            bValue = new Date(b.joinDate).getTime();
+            break;
+          case 'lastActiveAt':
+            aValue = new Date(a.lastActiveAt).getTime();
+            bValue = new Date(b.lastActiveAt).getTime();
+            break;
+          default:
+            aValue = new Date(a.createdAt).getTime();
+            bValue = new Date(b.createdAt).getTime();
+        }
+
+        if (sortOrder === 'asc') {
+          return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+        } else {
+          return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+        }
+      });
+
+      // Apply pagination
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const paginatedUsers = allUsers.slice(startIndex, endIndex);
+
+      const response = {
+        success: true,
+        data: paginatedUsers,
+        pagination: {
+          page,
+          limit,
+          total: allUsers.length,
+          totalPages: Math.ceil(allUsers.length / limit),
+        },
+        message: 'Users retrieved successfully',
+      };
+
+      console.log('✅ MSW: Users list response ready', {
+        total: allUsers.length,
+        pageSize: paginatedUsers.length,
+      });
+
+      return HttpResponse.json(response);
+    } catch (error) {
+      console.error('💥 MSW: Users list error:', error);
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Server error',
+        },
+        { status: 500 }
+      );
+    }
+  }),
+
+  // Get single user details
+  http.get('/api/v1/admin/users/:id', async ({ params, request }) => {
+    console.log(
+      '👤 MSW: Single user details request intercepted for ID:',
+      params.id
+    );
+
+    try {
+      const authHeader = request.headers.get('Authorization');
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: 'Unauthorized',
+          },
+          { status: 401 }
+        );
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      // Generate mock user data for the specific ID
+      const mockUser = {
+        id: params.id,
+        email: `user.${params.id}@example.com`,
+        name: 'Demo User',
+        firstName: 'Demo',
+        lastName: 'User',
+        userType: 'freelancer' as const,
+        profileCompletion: 85,
+        avatar:
+          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+        location: 'İstanbul, Türkiye',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        accountStatus: 'active' as const,
+        verificationStatus: 'verified' as const,
+        verificationBadges: ['email', 'phone'],
+        joinDate: new Date().toISOString(),
+        lastActiveAt: new Date().toISOString(),
+        lastLoginAt: new Date().toISOString(),
+        loginCount: 145,
+        totalOrders: 23,
+        totalEarnings: 45000,
+        totalSpent: 0,
+        successRate: 92,
+        disputeCount: 1,
+        warningCount: 0,
+        reputationScore: 88,
+        riskScore: 15,
+        suspensionHistory: [],
+        statistics: {
+          actionsPerformed: 156,
+          usersModerated: 0,
+          ticketsResolved: 0,
+        },
+      };
+
+      return HttpResponse.json({
+        success: true,
+        data: mockUser,
+        message: 'User details retrieved successfully',
+      });
+    } catch (error) {
+      console.error('💥 MSW: Single user error:', error);
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Server error',
+        },
+        { status: 500 }
+      );
+    }
+  }),
+
+  // Update user
+  http.put('/api/v1/admin/users/:id', async ({ params, request }) => {
+    console.log('✏️ MSW: Update user request for ID:', params.id);
+
+    try {
+      const authHeader = request.headers.get('Authorization');
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: 'Unauthorized',
+          },
+          { status: 401 }
+        );
+      }
+
+      const updates = (await request.json()) as Record<string, unknown>;
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      console.log('📝 MSW: User update data:', updates);
+
+      return HttpResponse.json({
+        success: true,
+        data: {
+          id: params.id,
+          ...updates,
+          updatedAt: new Date().toISOString(),
+        },
+        message: 'User updated successfully',
+      });
+    } catch (error) {
+      console.error('💥 MSW: Update user error:', error);
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Server error',
+        },
+        { status: 500 }
+      );
+    }
+  }),
+
+  // User statistics
+  http.get('/api/v1/admin/users/stats', async ({ request }) => {
+    console.log('📊 MSW: User statistics request intercepted');
+
+    try {
+      const authHeader = request.headers.get('Authorization');
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: 'Unauthorized',
+          },
+          { status: 401 }
+        );
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 400));
+
+      const stats = {
+        totalUsers: 1247,
+        activeUsers: 892,
+        suspendedUsers: 23,
+        bannedUsers: 12,
+        pendingVerification: 45,
+        verifiedUsers: 1156,
+        freelancers: 742,
+        employers: 505,
+        highRiskUsers: 18,
+        newUsersThisMonth: 67,
+        activeUsersThisWeek: 234,
+        userGrowthRate: '5.4',
+        verificationRate: '92.7',
+      };
+
+      return HttpResponse.json({
+        success: true,
+        data: stats,
+        message: 'User statistics retrieved successfully',
+      });
+    } catch (error) {
+      console.error('💥 MSW: User stats error:', error);
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Server error',
+        },
+        { status: 500 }
+      );
+    }
+  }),
+
+  // User action endpoint
+  http.post('/api/v1/admin/users/:id/action', async ({ params, request }) => {
+    console.log('🔧 MSW: User action request for ID:', params.id);
+
+    try {
+      const authHeader = request.headers.get('Authorization');
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: 'Unauthorized',
+          },
+          { status: 401 }
+        );
+      }
+
+      const actionData = (await request.json()) as Record<string, unknown>;
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      console.log('🔧 MSW: User action data:', actionData);
+
+      return HttpResponse.json({
+        success: true,
+        data: {
+          user: {
+            id: params.id,
+            ...actionData,
+            updatedAt: new Date().toISOString(),
+          },
+        },
+        message: 'User action completed successfully',
+      });
+    } catch (error) {
+      console.error('💥 MSW: User action error:', error);
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Server error',
+        },
+        { status: 500 }
+      );
+    }
+  }),
+
+  // Bulk action endpoint
+  http.post('/api/v1/admin/users/bulk-action', async ({ request }) => {
+    console.log('🔨 MSW: Bulk action request intercepted');
+
+    try {
+      const authHeader = request.headers.get('Authorization');
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: 'Unauthorized',
+          },
+          { status: 401 }
+        );
+      }
+
+      const bulkActionData = (await request.json()) as Record<string, unknown>;
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+
+      console.log('🔨 MSW: Bulk action data:', bulkActionData);
+
+      return HttpResponse.json({
+        success: true,
+        data: {
+          affectedCount: Array.isArray(bulkActionData.userIds)
+            ? bulkActionData.userIds.length
+            : 0,
+          action: bulkActionData.action,
+        },
+        message: 'Bulk action completed successfully',
+      });
+    } catch (error) {
+      console.error('💥 MSW: Bulk action error:', error);
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Server error',
+        },
+        { status: 500 }
+      );
+    }
+  }),
+
+  // Admin Analytics Endpoints
+  http.get('/api/v1/admin/analytics/users', async ({ request }) => {
+    console.log('📊 MSW: Admin user analytics request intercepted');
+
+    try {
+      const authHeader = request.headers.get('Authorization');
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: 'Unauthorized',
+          },
+          { status: 401 }
+        );
+      }
+
+      const url = new URL(request.url);
+      const period = url.searchParams.get('period') || '30d';
+
+      // Simulate processing delay
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      // Generate mock user analytics data
+      const generateUserStats = (days: number) => {
+        const now = new Date();
+        const stats = [];
+
+        for (let i = days - 1; i >= 0; i--) {
+          const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+          stats.push({
+            date: date.toISOString().split('T')[0],
+            newUsers: Math.floor(Math.random() * 50) + 10,
+            activeUsers: Math.floor(Math.random() * 200) + 50,
+            verifiedUsers: Math.floor(Math.random() * 30) + 5,
+            deletedUsers: Math.floor(Math.random() * 5),
+          });
+        }
+        return stats;
+      };
+
+      const periodDays =
+        period === '7d'
+          ? 7
+          : period === '30d'
+            ? 30
+            : period === '90d'
+              ? 90
+              : 30;
+      const dailyStats = generateUserStats(periodDays);
+
+      const totalUsers =
+        mockUsers.length + Math.floor(Math.random() * 1000) + 500;
+      const activeUsers = Math.floor(totalUsers * 0.7);
+      const verifiedUsers = Math.floor(totalUsers * 0.8);
+      const newUsersThisPeriod = dailyStats.reduce(
+        (sum, day) => sum + day.newUsers,
+        0
+      );
+
+      const analytics = {
+        totalUsers,
+        newUsers: newUsersThisPeriod,
+        activeUsers,
+        churnRate: (Math.random() * 10 + 2).toFixed(1),
+        growthRate: ((newUsersThisPeriod / totalUsers) * 100).toFixed(1),
+        usersByType: {
+          freelancer: Math.floor(totalUsers * 0.6),
+          employer: Math.floor(totalUsers * 0.35),
+        },
+        usersByStatus: {
+          active: activeUsers,
+          suspended: Math.floor(totalUsers * 0.02),
+          banned: Math.floor(totalUsers * 0.01),
+          pending: Math.floor(totalUsers * 0.05),
+        },
+        demographics: {
+          freelancers: Math.floor(totalUsers * 0.6),
+          employers: Math.floor(totalUsers * 0.35),
+          admins: Math.floor(totalUsers * 0.05),
+        },
+        activity: {
+          dailyActiveUsers: Math.floor(activeUsers * 0.3),
+          weeklyActiveUsers: Math.floor(activeUsers * 0.6),
+          monthlyActiveUsers: activeUsers,
+        },
+        registration: {
+          dailyStats,
+          conversionRate: (Math.random() * 30 + 60).toFixed(1) + '%',
+        },
+        verification: {
+          pendingVerifications: Math.floor(Math.random() * 50) + 10,
+          verificationRate:
+            ((verifiedUsers / totalUsers) * 100).toFixed(1) + '%',
+        },
+      };
+
+      console.log('📊 MSW User Analytics Response:', {
+        success: true,
+        hasUsersByType: !!analytics.usersByType,
+        hasUsersByStatus: !!analytics.usersByStatus,
+        usersByType: analytics.usersByType,
+        usersByStatus: analytics.usersByStatus,
+      });
+
+      return HttpResponse.json({
+        success: true,
+        data: analytics,
+        period,
+        generatedAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('💥 MSW: User analytics error:', error);
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Server error',
+        },
+        { status: 500 }
+      );
+    }
+  }),
+
+  http.get('/api/v1/admin/analytics/revenue', async ({ request }) => {
+    console.log('💰 MSW: Admin revenue analytics request intercepted');
+
+    try {
+      const authHeader = request.headers.get('Authorization');
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: 'Unauthorized',
+          },
+          { status: 401 }
+        );
+      }
+
+      const url = new URL(request.url);
+      const period = url.searchParams.get('period') || '30d';
+
+      // Simulate processing delay
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      // Generate mock revenue analytics data
+      const generateRevenueStats = (days: number) => {
+        const now = new Date();
+        const stats = [];
+
+        for (let i = days - 1; i >= 0; i--) {
+          const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+          stats.push({
+            date: date.toISOString().split('T')[0],
+            revenue: Math.floor(Math.random() * 5000) + 1000,
+            transactions: Math.floor(Math.random() * 50) + 10,
+            commissions: Math.floor(Math.random() * 800) + 200,
+            refunds: Math.floor(Math.random() * 300),
+          });
+        }
+        return stats;
+      };
+
+      const periodDays =
+        period === '7d'
+          ? 7
+          : period === '30d'
+            ? 30
+            : period === '90d'
+              ? 90
+              : 30;
+      const dailyStats = generateRevenueStats(periodDays);
+
+      const totalRevenue = dailyStats.reduce(
+        (sum, day) => sum + day.revenue,
+        0
+      );
+      const totalTransactions = dailyStats.reduce(
+        (sum, day) => sum + day.transactions,
+        0
+      );
+      const totalCommissions = dailyStats.reduce(
+        (sum, day) => sum + day.commissions,
+        0
+      );
+      const totalRefunds = dailyStats.reduce(
+        (sum, day) => sum + day.refunds,
+        0
+      );
+
+      const analytics = {
+        totalRevenue,
+        monthlyRevenue: Math.floor(totalRevenue * (30 / periodDays)),
+        growth: ((Math.random() - 0.5) * 20).toFixed(1),
+        averageOrderValue: Math.floor(totalRevenue / totalTransactions),
+        topCategories: [
+          {
+            category: 'Web Development',
+            revenue: Math.floor(totalRevenue * 0.3),
+            percentage: 30,
+          },
+          {
+            category: 'Graphic Design',
+            revenue: Math.floor(totalRevenue * 0.25),
+            percentage: 25,
+          },
+          {
+            category: 'Content Writing',
+            revenue: Math.floor(totalRevenue * 0.2),
+            percentage: 20,
+          },
+          {
+            category: 'Digital Marketing',
+            revenue: Math.floor(totalRevenue * 0.15),
+            percentage: 15,
+          },
+          {
+            category: 'Other',
+            revenue: Math.floor(totalRevenue * 0.1),
+            percentage: 10,
+          },
+        ],
+        overview: {
+          totalRevenue,
+          totalTransactions,
+          totalCommissions,
+          totalRefunds,
+          averageTransactionValue: Math.floor(totalRevenue / totalTransactions),
+          commissionRate:
+            ((totalCommissions / totalRevenue) * 100).toFixed(1) + '%',
+        },
+        breakdown: {
+          serviceCommissions: Math.floor(totalCommissions * 0.7),
+          subscriptionFees: Math.floor(totalCommissions * 0.2),
+          processingFees: Math.floor(totalCommissions * 0.1),
+        },
+        trends: {
+          dailyStats,
+          growthRate: ((Math.random() - 0.5) * 20).toFixed(1) + '%',
+          projectedMonthly: Math.floor(totalRevenue * (30 / periodDays)),
+        },
+        payouts: {
+          pendingPayouts: Math.floor(Math.random() * 50000) + 10000,
+          completedPayouts: Math.floor(Math.random() * 200000) + 50000,
+          processingTime: Math.floor(Math.random() * 3) + 1 + ' days',
+        },
+      };
+
+      console.log('💰 MSW Revenue Analytics Response:', {
+        success: true,
+        hasTopCategories: !!analytics.topCategories,
+        topCategoriesLength: analytics.topCategories?.length,
+        hasOverview: !!analytics.overview,
+      });
+
+      return HttpResponse.json({
+        success: true,
+        data: analytics,
+        period,
+        generatedAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('💥 MSW: Revenue analytics error:', error);
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Server error',
+        },
+        { status: 500 }
+      );
+    }
+  }),
+
+  // Admin Moderation Endpoints
+  http.get('/api/v1/admin/moderation/queue', async ({ request }) => {
+    console.log('🛡️ MSW: Admin moderation queue request intercepted');
+
+    try {
+      const authHeader = request.headers.get('Authorization');
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: 'Unauthorized',
+          },
+          { status: 401 }
+        );
+      }
+
+      const url = new URL(request.url);
+      const page = parseInt(url.searchParams.get('page') || '1');
+      const limit = parseInt(url.searchParams.get('limit') || '20');
+      const status = url.searchParams.getAll('status[]');
+      const priority = url.searchParams.getAll('priority[]');
+      const type = url.searchParams.getAll('type[]');
+      const search = url.searchParams.get('search') || '';
+
+      // Simulate processing delay
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      // Generate mock moderation queue data
+      const generateModerationItem = (id: number) => ({
+        id: `mod-${id}`,
+        contentId: `content-${id}`,
+        type: ['job_post', 'service_package', 'profile', 'review', 'message'][
+          Math.floor(Math.random() * 5)
+        ],
+        content: {
+          title: [
+            'Şüpheli İş İlanı Raporu',
+            'Uygunsuz Profil İçeriği',
+            'Spam Mesaj Şikayeti',
+            'Yanlış Bilgi Raporu',
+            'Hakaret İçeren Yorum',
+          ][Math.floor(Math.random() * 5)],
+          description:
+            'Bu içerik topluluk kurallarına aykırı olarak raporlandı ve daha detaylı inceleme gerektiriyor. İçerik topluluk standartlarına uygun olmayabilir.',
+        },
+        reportedBy: `user-${Math.floor(Math.random() * 1000)}`,
+        reporterInfo: {
+          id: `user-${Math.floor(Math.random() * 1000)}`,
+          firstName: ['Ahmet', 'Fatma', 'Mehmet', 'Ayşe'][
+            Math.floor(Math.random() * 4)
+          ],
+          lastName: ['Yılmaz', 'Demir', 'Öz', 'Kara'][
+            Math.floor(Math.random() * 4)
+          ],
+          userType: ['freelancer', 'employer'][
+            Math.floor(Math.random() * 2)
+          ] as 'freelancer' | 'employer',
+        },
+        reason: [
+          'spam_content',
+          'inappropriate_language',
+          'fake_profile',
+          'fraudulent_activity',
+          'copyright_violation',
+        ][Math.floor(Math.random() * 5)],
+        status: ['pending', 'approved', 'rejected', 'escalated'][
+          Math.floor(Math.random() * 4)
+        ],
+        priority: ['low', 'medium', 'high', 'critical'][
+          Math.floor(Math.random() * 4)
+        ],
+        category: ['spam', 'inappropriate', 'harassment', 'fraud', 'other'][
+          Math.floor(Math.random() * 5)
+        ],
+        reportReason: [
+          'Spam içerik',
+          'Uygunsuz dil',
+          'Sahte profil',
+          'Dolandırıcılık',
+          'Telif hakkı ihlali',
+        ][Math.floor(Math.random() * 5)],
+        severity: ['low', 'medium', 'high'][Math.floor(Math.random() * 3)],
+        assignedModerator:
+          Math.random() > 0.5
+            ? {
+                id: `mod-${Math.floor(Math.random() * 10)}`,
+                name: ['Moderatör Ali', 'Moderatör Veli', 'Moderatör Ayşe'][
+                  Math.floor(Math.random() * 3)
+                ],
+              }
+            : null,
+        automaticFlags: null,
+        automatedFlags: [
+          {
+            id: `flag-${id}`,
+            type: 'keyword_filter',
+            severity: ['low', 'medium', 'high'][
+              Math.floor(Math.random() * 3)
+            ] as 'low' | 'medium' | 'high',
+            confidence: Math.random() * 100,
+            details: 'Şüpheli kelimeler tespit edildi',
+            flaggedAt: new Date(
+              Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000
+            ).toISOString(),
+          },
+        ],
+        reviewHistory: [],
+        moderatorNotes:
+          Math.random() > 0.7
+            ? 'Bu içerik daha detaylı inceleme gerektiriyor'
+            : undefined,
+        createdAt: new Date(
+          Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000
+        ).toISOString(),
+        updatedAt: new Date(
+          Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000
+        ).toISOString(),
+        resolvedAt:
+          Math.random() > 0.6
+            ? new Date(
+                Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000
+              ).toISOString()
+            : undefined,
+      });
+
+      // Generate items
+      const allItems = Array.from({ length: 150 }, (_, i) =>
+        generateModerationItem(i + 1)
+      );
+
+      // Apply filters
+      let filteredItems = allItems;
+
+      if (status.length > 0) {
+        filteredItems = filteredItems.filter((item) =>
+          status.includes(item.status)
+        );
+      }
+
+      if (priority.length > 0) {
+        filteredItems = filteredItems.filter((item) =>
+          priority.includes(item.priority)
+        );
+      }
+
+      if (type.length > 0) {
+        filteredItems = filteredItems.filter((item) =>
+          type.includes(item.type)
+        );
+      }
+
+      if (search) {
+        filteredItems = filteredItems.filter(
+          (item) =>
+            item.content.title.toLowerCase().includes(search.toLowerCase()) ||
+            item.content.description
+              .toLowerCase()
+              .includes(search.toLowerCase()) ||
+            `${item.reporterInfo.firstName} ${item.reporterInfo.lastName}`
+              .toLowerCase()
+              .includes(search.toLowerCase())
+        );
+      }
+
+      // Pagination
+      const total = filteredItems.length;
+      const totalPages = Math.ceil(total / limit);
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const paginatedItems = filteredItems.slice(startIndex, endIndex);
+
+      console.log('🛡️ MSW: Moderation queue response prepared:', {
+        total,
+        page,
+        totalPages,
+        itemsCount: paginatedItems.length,
+      });
+
+      return HttpResponse.json({
+        success: true,
+        data: {
+          items: paginatedItems,
+          pagination: {
+            page,
+            limit,
+            total,
+            totalPages,
+            hasNext: page < totalPages,
+            hasPrev: page > 1,
+          },
+        },
+        generatedAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('💥 MSW: Moderation queue error:', error);
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Server error',
+        },
+        { status: 500 }
+      );
+    }
+  }),
+
+  http.get('/api/v1/admin/moderation/stats', async ({ request }) => {
+    console.log('📊 MSW: Admin moderation stats request intercepted');
+
+    try {
+      const authHeader = request.headers.get('Authorization');
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: 'Unauthorized',
+          },
+          { status: 401 }
+        );
+      }
+
+      // Simulate processing delay
+      await new Promise((resolve) => setTimeout(resolve, 600));
+
+      const stats = {
+        totalItems: 1247,
+        pendingItems: 89,
+        approvedItems: 856,
+        rejectedItems: 234,
+        escalatedItems: 68,
+        averageReviewTime: 4.2, // hours
+        automatedFlagAccuracy: 87.5, // percentage
+        topModerationReasons: [
+          { reason: 'Spam içerik', count: 156 },
+          { reason: 'Uygunsuz dil', count: 134 },
+          { reason: 'Sahte profil', count: 98 },
+          { reason: 'Dolandırıcılık', count: 76 },
+          { reason: 'Telif hakkı ihlali', count: 45 },
+        ],
+        moderatorWorkload: {
+          totalModerators: 8,
+          activeModerators: 6,
+          averageItemsPerModerator: 15,
+        },
+        responseTime: {
+          average: 2.3, // hours
+          p95: 8.1, // hours
+          p99: 24.5, // hours
+        },
+        contentBreakdown: {
+          jobPosts: 425,
+          servicePackages: 289,
+          profiles: 234,
+          reviews: 178,
+          messages: 121,
+        },
+        priorityDistribution: {
+          critical: 12,
+          high: 45,
+          medium: 234,
+          low: 956,
+        },
+      };
+
+      console.log('📊 MSW: Moderation stats response prepared:', stats);
+
+      return HttpResponse.json({
+        success: true,
+        data: stats,
+        generatedAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('💥 MSW: Moderation stats error:', error);
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Server error',
+        },
+        { status: 500 }
+      );
+    }
+  }),
 ];

@@ -59,8 +59,18 @@ export function AdminAnalytics() {
 
     try {
       const [userResponse, revenueResponse] = await Promise.all([
-        fetch(`/api/v1/admin/analytics/users?period=${period}`),
-        fetch(`/api/v1/admin/analytics/revenue?period=${period}`),
+        fetch(`/api/v1/admin/analytics/users?period=${period}`, {
+          headers: {
+            Authorization: 'Bearer mock-admin-token',
+            'Content-Type': 'application/json',
+          },
+        }),
+        fetch(`/api/v1/admin/analytics/revenue?period=${period}`, {
+          headers: {
+            Authorization: 'Bearer mock-admin-token',
+            'Content-Type': 'application/json',
+          },
+        }),
       ]);
 
       if (!userResponse.ok || !revenueResponse.ok) {
@@ -81,11 +91,101 @@ export function AdminAnalytics() {
     } finally {
       setIsLoading(false);
     }
-  }, [period]);
+  }, [period]); // Only depend on period, not isLoading to avoid circular dependency
 
+  // Separate useEffect to avoid circular dependency
   useEffect(() => {
-    fetchAnalytics();
-  }, [fetchAnalytics]);
+    let mounted = true;
+
+    const loadAnalytics = async () => {
+      if (!mounted) return;
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const [userResponse, revenueResponse] = await Promise.all([
+          fetch(`/api/v1/admin/analytics/users?period=${period}`, {
+            headers: {
+              Authorization: 'Bearer mock-admin-token',
+              'Content-Type': 'application/json',
+            },
+          }),
+          fetch(`/api/v1/admin/analytics/revenue?period=${period}`, {
+            headers: {
+              Authorization: 'Bearer mock-admin-token',
+              'Content-Type': 'application/json',
+            },
+          }),
+        ]);
+
+        if (!userResponse.ok || !revenueResponse.ok) {
+          throw new Error('Analytics data alınamadı');
+        }
+
+        const [userData, revenueData] = await Promise.all([
+          userResponse.json(),
+          revenueResponse.json(),
+        ]);
+
+        console.log('📊 User Analytics Data:', userData);
+        console.log('💰 Revenue Analytics Data:', revenueData);
+
+        // Also log to Next.js server console
+        if (typeof window === 'undefined') {
+          console.log('🖥️ Server-side User Analytics Data:', userData);
+          console.log('🖥️ Server-side Revenue Analytics Data:', revenueData);
+        }
+
+        if (
+          mounted &&
+          userData?.success &&
+          userData?.data &&
+          revenueData?.success &&
+          revenueData?.data
+        ) {
+          console.log('✅ Setting analytics data:', {
+            userAnalytics: userData.data,
+            revenueAnalytics: revenueData.data,
+          });
+          setAnalytics({
+            userAnalytics: userData.data,
+            revenueAnalytics: revenueData.data,
+          });
+        } else {
+          console.log('❌ Data validation failed:', {
+            mounted,
+            userDataSuccess: userData?.success,
+            userDataExists: !!userData?.data,
+            userDataStructure: userData?.data
+              ? Object.keys(userData.data)
+              : 'null',
+            revenueDataSuccess: revenueData?.success,
+            revenueDataExists: !!revenueData?.data,
+            revenueDataStructure: revenueData?.data
+              ? Object.keys(revenueData.data)
+              : 'null',
+          });
+          throw new Error('Data validation failed - check console for details');
+        }
+      } catch (err) {
+        if (mounted) {
+          console.error('Analytics fetch error:', err);
+          setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
+        }
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadAnalytics();
+
+    return () => {
+      mounted = false;
+    };
+  }, [period]);
 
   if (isLoading && !analytics) {
     return (
@@ -128,9 +228,42 @@ export function AdminAnalytics() {
     );
   }
 
-  if (!analytics) return null;
+  if (!analytics || !analytics.userAnalytics || !analytics.revenueAnalytics) {
+    return null;
+  }
 
   const { userAnalytics, revenueAnalytics } = analytics;
+
+  console.log('🔍 Analytics validation check:', {
+    userAnalytics: !!userAnalytics,
+    usersByType: !!userAnalytics?.usersByType,
+    usersByStatus: !!userAnalytics?.usersByStatus,
+    revenueAnalytics: !!revenueAnalytics,
+    topCategories: !!revenueAnalytics?.topCategories,
+  });
+
+  // Additional safety checks - more lenient
+  if (
+    !userAnalytics ||
+    typeof userAnalytics !== 'object' ||
+    !revenueAnalytics ||
+    typeof revenueAnalytics !== 'object'
+  ) {
+    console.log('❌ Basic analytics validation failed');
+    return (
+      <div className="space-y-6">
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="p-6">
+            <div className="text-center text-red-800">
+              Analytics verileri henüz yüklenemedi. Lütfen sayfayı yenileyin.
+              <br />
+              <small>Debug: Basic data structure validation failed</small>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -183,13 +316,13 @@ export function AdminAnalytics() {
                 </p>
                 <p className="text-2xl font-bold text-blue-900">
                   {new Intl.NumberFormat('tr-TR').format(
-                    userAnalytics.totalUsers
+                    userAnalytics?.totalUsers || 0
                   )}
                 </p>
                 <div className="mt-2 flex items-center">
                   <TrendingUp className="h-4 w-4 text-green-500" />
                   <span className="ml-1 text-sm font-medium text-green-600">
-                    +{userAnalytics.growthRate}%
+                    +{userAnalytics?.growthRate || '0'}%
                   </span>
                   <span className="ml-1 text-sm text-gray-500">
                     son{' '}
@@ -220,14 +353,17 @@ export function AdminAnalytics() {
                 </p>
                 <p className="text-2xl font-bold text-green-900">
                   {new Intl.NumberFormat('tr-TR').format(
-                    userAnalytics.activeUsers
+                    userAnalytics?.activeUsers || 0
                   )}
                 </p>
                 <div className="mt-2 flex items-center">
                   <span className="text-sm text-gray-500">
                     {Math.round(
-                      (userAnalytics.activeUsers / userAnalytics.totalUsers) *
-                        100
+                      userAnalytics?.activeUsers && userAnalytics?.totalUsers
+                        ? (userAnalytics.activeUsers /
+                            userAnalytics.totalUsers) *
+                            100
+                        : 0
                     )}
                     % aktif
                   </span>
@@ -251,13 +387,13 @@ export function AdminAnalytics() {
                 <p className="text-2xl font-bold text-purple-900">
                   ₺
                   {new Intl.NumberFormat('tr-TR').format(
-                    revenueAnalytics.totalRevenue
+                    revenueAnalytics?.totalRevenue || 0
                   )}
                 </p>
                 <div className="mt-2 flex items-center">
                   <TrendingUp className="h-4 w-4 text-green-500" />
                   <span className="ml-1 text-sm font-medium text-green-600">
-                    +{revenueAnalytics.growth}%
+                    +{revenueAnalytics?.growth || '0'}%
                   </span>
                 </div>
               </div>
@@ -279,7 +415,7 @@ export function AdminAnalytics() {
                 <p className="text-2xl font-bold text-orange-900">
                   ₺
                   {new Intl.NumberFormat('tr-TR').format(
-                    revenueAnalytics.averageOrderValue
+                    revenueAnalytics?.averageOrderValue || 0
                   )}
                 </p>
                 <div className="mt-2">
@@ -319,13 +455,20 @@ export function AdminAnalytics() {
                         <div
                           className="h-2 rounded-full bg-blue-500"
                           style={{
-                            width: `${(userAnalytics.usersByType.freelancer / userAnalytics.totalUsers) * 100}%`,
+                            width: `${
+                              userAnalytics.usersByType?.freelancer &&
+                              userAnalytics.totalUsers
+                                ? (userAnalytics.usersByType.freelancer /
+                                    userAnalytics.totalUsers) *
+                                  100
+                                : 0
+                            }%`,
                           }}
                         />
                       </div>
                       <span className="text-sm font-medium text-gray-900">
                         {new Intl.NumberFormat('tr-TR').format(
-                          userAnalytics.usersByType.freelancer
+                          userAnalytics.usersByType?.freelancer || 0
                         )}
                       </span>
                     </div>
@@ -337,13 +480,20 @@ export function AdminAnalytics() {
                         <div
                           className="h-2 rounded-full bg-green-500"
                           style={{
-                            width: `${(userAnalytics.usersByType.employer / userAnalytics.totalUsers) * 100}%`,
+                            width: `${
+                              userAnalytics.usersByType?.employer &&
+                              userAnalytics.totalUsers
+                                ? (userAnalytics.usersByType.employer /
+                                    userAnalytics.totalUsers) *
+                                  100
+                                : 0
+                            }%`,
                           }}
                         />
                       </div>
                       <span className="text-sm font-medium text-gray-900">
                         {new Intl.NumberFormat('tr-TR').format(
-                          userAnalytics.usersByType.employer
+                          userAnalytics.usersByType?.employer || 0
                         )}
                       </span>
                     </div>
@@ -360,7 +510,7 @@ export function AdminAnalytics() {
                   <div className="text-center">
                     <div className="text-lg font-bold text-green-600">
                       {new Intl.NumberFormat('tr-TR').format(
-                        userAnalytics.usersByStatus.active
+                        userAnalytics.usersByStatus?.active || 0
                       )}
                     </div>
                     <div className="text-xs text-gray-500">Aktif</div>
@@ -368,7 +518,7 @@ export function AdminAnalytics() {
                   <div className="text-center">
                     <div className="text-lg font-bold text-yellow-600">
                       {new Intl.NumberFormat('tr-TR').format(
-                        userAnalytics.usersByStatus.pending
+                        userAnalytics.usersByStatus?.pending || 0
                       )}
                     </div>
                     <div className="text-xs text-gray-500">Beklemede</div>
@@ -376,7 +526,7 @@ export function AdminAnalytics() {
                   <div className="text-center">
                     <div className="text-lg font-bold text-orange-600">
                       {new Intl.NumberFormat('tr-TR').format(
-                        userAnalytics.usersByStatus.suspended
+                        userAnalytics.usersByStatus?.suspended || 0
                       )}
                     </div>
                     <div className="text-xs text-gray-500">Askıya Alınmış</div>
@@ -384,7 +534,7 @@ export function AdminAnalytics() {
                   <div className="text-center">
                     <div className="text-lg font-bold text-red-600">
                       {new Intl.NumberFormat('tr-TR').format(
-                        userAnalytics.usersByStatus.banned
+                        userAnalytics.usersByStatus?.banned || 0
                       )}
                     </div>
                     <div className="text-xs text-gray-500">Yasaklı</div>
@@ -402,35 +552,37 @@ export function AdminAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {revenueAnalytics.topCategories.map((category, index) => (
-                <div
-                  key={category.category}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-medium">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        {category.category}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        ₺
-                        {new Intl.NumberFormat('tr-TR').format(
-                          category.revenue
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <Badge
-                    variant="secondary"
-                    className="bg-blue-100 text-blue-800"
+              {(revenueAnalytics?.topCategories || []).map(
+                (category, index) => (
+                  <div
+                    key={category.category}
+                    className="flex items-center justify-between"
                   >
-                    {category.percentage}%
-                  </Badge>
-                </div>
-              ))}
+                    <div className="flex items-center space-x-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-medium">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">
+                          {category?.category || 'Unknown'}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          ₺
+                          {new Intl.NumberFormat('tr-TR').format(
+                            category?.revenue || 0
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <Badge
+                      variant="secondary"
+                      className="bg-blue-100 text-blue-800"
+                    >
+                      {category?.percentage || 0}%
+                    </Badge>
+                  </div>
+                )
+              )}
             </div>
           </CardContent>
         </Card>
@@ -469,7 +621,7 @@ export function AdminAnalytics() {
               <div className="text-2xl font-bold text-gray-900">
                 ₺
                 {new Intl.NumberFormat('tr-TR').format(
-                  revenueAnalytics.monthlyRevenue
+                  revenueAnalytics?.monthlyRevenue || 0
                 )}
               </div>
               <div className="text-sm text-gray-500">Aylık Gelir</div>
@@ -478,14 +630,17 @@ export function AdminAnalytics() {
                   variant="success"
                   className="bg-green-100 text-green-800"
                 >
-                  +{revenueAnalytics.growth}%
+                  +{revenueAnalytics?.growth || '0'}%
                 </Badge>
               </div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-gray-900">
                 {Math.round(
-                  (userAnalytics.activeUsers / userAnalytics.totalUsers) * 100
+                  userAnalytics?.activeUsers && userAnalytics?.totalUsers
+                    ? (userAnalytics.activeUsers / userAnalytics.totalUsers) *
+                        100
+                    : 0
                 )}
                 %
               </div>
