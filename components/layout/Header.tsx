@@ -38,7 +38,7 @@ export function Header() {
     setIsMobileMenuOpen(false);
   };
 
-  const handleSearch = (query: string, type?: string) => {
+  const handleSearch = (query: string) => {
     if (!query.trim()) return;
     const params = new URLSearchParams();
     params.set('q', query);
@@ -46,33 +46,38 @@ export function Header() {
   };
 
   return (
-    <header className="border-border bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b shadow-sm backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
+          {/* Logo Section */}
           <div className="flex flex-shrink-0 items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <Image
-                src="/icons/icon-48x48.png"
-                alt="MarifetBul"
-                width={32}
-                height={32}
-                className="rounded-lg"
-              />
-              <span className="text-foreground text-xl font-bold">
+            <Link href="/" className="flex items-center space-x-3">
+              <div className="relative">
+                <Image
+                  src="/icons/icon-48x48.png"
+                  alt="MarifetBul"
+                  width={32}
+                  height={32}
+                  className="rounded-lg"
+                />
+              </div>
+              <span className="text-xl font-bold text-gray-900">
                 MarifetBul
               </span>
             </Link>
           </div>
 
-          <nav className="hidden space-x-8 md:flex">
+          {/* Navigation - Desktop */}
+          <nav className="hidden md:flex">
             <Link
               href="/marketplace"
-              className="text-foreground hover:text-primary transition-colors"
+              className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600"
             >
               Pazar Yeri
             </Link>
           </nav>
 
+          {/* Search Bar - Desktop */}
           <div className="mx-8 hidden max-w-lg flex-1 md:block">
             <UniversalSearch
               onSearch={handleSearch}
@@ -81,37 +86,40 @@ export function Header() {
             />
           </div>
 
-          <div className="hidden items-center space-x-4 md:flex">
+          {/* Right Section - Desktop */}
+          <div className="hidden items-center space-x-3 md:flex">
             {isAuthenticated ? (
               <>
+                {/* Messages */}
                 <Link
                   href="/messages"
-                  className="text-muted-foreground hover:text-foreground relative p-2 transition-colors"
+                  className="relative inline-flex items-center justify-center rounded-lg p-2 text-gray-600 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600"
                 >
                   <MessageCircle className="h-5 w-5" />
                   {unreadCount > 0 && (
-                    <span className="bg-destructive text-destructive-foreground absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-xs">
+                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}
                 </Link>
 
+                {/* User Menu */}
                 <div className="relative">
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="text-muted-foreground hover:text-foreground flex items-center space-x-2 rounded-lg p-2 transition-colors"
+                    className="flex items-center space-x-2 rounded-lg p-2 text-gray-700 transition-all duration-200 hover:bg-gray-50"
                   >
-                    <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-sm font-medium text-white">
                       {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                     </div>
                     <ChevronDown className="h-4 w-4" />
                   </button>
 
                   {isUserMenuOpen && (
-                    <div className="border-border bg-popover absolute right-0 z-50 mt-2 w-48 rounded-md border py-1 shadow-lg">
+                    <div className="absolute right-0 z-50 mt-2 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
                       <Link
                         href={`/profile/${user?.id}`}
-                        className="text-popover-foreground hover:bg-accent flex items-center px-4 py-2 text-sm"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
                         <UserCircle className="mr-3 h-4 w-4" />
@@ -119,16 +127,16 @@ export function Header() {
                       </Link>
                       <Link
                         href="/dashboard"
-                        className="text-popover-foreground hover:bg-accent flex items-center px-4 py-2 text-sm"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
                         <User className="mr-3 h-4 w-4" />
                         Panel
                       </Link>
-                      <hr className="border-border my-1" />
+                      <hr className="my-1 border-gray-200" />
                       <button
                         onClick={handleLogout}
-                        className="text-popover-foreground hover:bg-accent flex w-full items-center px-4 py-2 text-sm"
+                        className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                       >
                         <LogOut className="mr-3 h-4 w-4" />
                         Çıkış Yap
@@ -138,11 +146,12 @@ export function Header() {
                 </div>
               </>
             ) : (
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => router.push('/login')}
+                  className="text-gray-700 hover:bg-blue-50 hover:text-blue-600"
                 >
                   Giriş Yap
                 </Button>
@@ -150,6 +159,7 @@ export function Header() {
                   variant="primary"
                   size="sm"
                   onClick={() => router.push('/register')}
+                  className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
                 >
                   Üye Ol
                 </Button>
@@ -157,10 +167,11 @@ export function Header() {
             )}
           </div>
 
-          <div className="flex items-center space-x-2 md:hidden">
+          {/* Mobile Menu Button */}
+          <div className="flex items-center md:hidden">
             <button
               onClick={toggleMobileMenu}
-              className="text-muted-foreground hover:text-foreground inline-flex items-center justify-center rounded-md p-2 transition-colors"
+              className="inline-flex items-center justify-center rounded-lg p-2 text-gray-600 transition-all duration-200 hover:bg-gray-50 hover:text-gray-900"
             >
               {isMobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -171,8 +182,10 @@ export function Header() {
           </div>
         </div>
 
+        {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="border-border border-t py-4 md:hidden">
+          <div className="border-t border-gray-200 py-4 md:hidden">
+            {/* Mobile Search */}
             <div className="mb-4 px-2">
               <UniversalSearch
                 onSearch={handleSearch}
@@ -180,14 +193,35 @@ export function Header() {
                 className="w-full"
               />
             </div>
-            <div className="space-y-2 px-2">
+
+            {/* Mobile Navigation */}
+            <div className="space-y-1 px-2">
               <Link
                 href="/marketplace"
-                className="text-foreground hover:bg-accent block rounded-md px-3 py-2 text-base font-medium"
+                className="block rounded-lg px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Pazar Yeri
               </Link>
+
+              {!isAuthenticated && (
+                <>
+                  <Link
+                    href="/login"
+                    className="block rounded-lg px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Giriş Yap
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="block rounded-lg bg-blue-600 px-3 py-2 text-base font-medium text-white hover:bg-blue-700"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Üye Ol
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}
