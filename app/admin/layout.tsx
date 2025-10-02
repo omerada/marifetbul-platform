@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
-import { useTheme } from '@/hooks';
 import { Card, CardContent } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
@@ -18,8 +17,6 @@ import {
   Bell,
   ChevronRight,
   Activity,
-  Moon,
-  Sun,
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -30,7 +27,6 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const { user, isAuthenticated, isLoading, logout } = useAuthStore();
-  const { isDarkMode, toggleTheme, themeIcon, themeLabel } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -166,12 +162,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div
-      className={cn(
-        'min-h-screen',
-        isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'
-      )}
-    >
+    <div className="min-h-screen bg-gray-50">
       <div className="flex h-screen overflow-hidden">
         {/* Mobile sidebar overlay */}
         {sidebarOpen && (
@@ -190,16 +181,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           )}
         >
-          <div className="flex h-full flex-col border-r border-gray-200/50 bg-white/80 backdrop-blur-xl dark:border-gray-700/50 dark:bg-gray-800/80">
+          <div className="flex h-full flex-col border-r border-gray-200/50 bg-white/80 backdrop-blur-xl">
             {/* Header */}
-            <div className="flex h-16 shrink-0 items-center justify-between border-b border-gray-200/50 px-6 dark:border-gray-700/50">
+            <div className="flex h-16 shrink-0 items-center justify-between border-b border-gray-200/50 px-6">
               <div className="flex items-center space-x-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
                   <Shield className="h-5 w-5" />
                 </div>
-                <h1 className="text-lg font-bold text-gray-900 dark:text-white">
-                  Admin Panel
-                </h1>
+                <h1 className="text-lg font-bold text-gray-900">Admin Panel</h1>
               </div>
               <Button
                 variant="ghost"
@@ -212,31 +201,29 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </div>
 
             {/* User Profile Card */}
-            <div className="m-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 p-4 dark:from-blue-900/20 dark:to-indigo-900/20">
+            <div className="m-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 p-4">
               <div className="flex items-center space-x-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
                   {(user?.name || 'A').charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                  <p className="truncate text-sm font-semibold text-gray-900">
                     {user?.name || 'Admin'}
                   </p>
-                  <p className="truncate text-xs text-gray-600 dark:text-gray-400">
+                  <p className="truncate text-xs text-gray-600">
                     {user?.email}
                   </p>
                 </div>
                 <div className="flex items-center space-x-1">
                   <div className="h-2 w-2 rounded-full bg-green-400"></div>
-                  <span className="text-xs text-green-600 dark:text-green-400">
-                    Çevrimiçi
-                  </span>
+                  <span className="text-xs text-green-600">Çevrimiçi</span>
                 </div>
               </div>
             </div>
 
             {/* Navigation */}
             <nav className="flex-1 space-y-1 px-4 pb-4">
-              <div className="mb-3 px-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+              <div className="mb-3 px-2 text-xs font-semibold tracking-wider text-gray-500 uppercase">
                 Ana Menü
               </div>
               {navigationItems.map((item) => {
@@ -251,24 +238,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       'group flex items-center rounded-xl px-3 py-3 text-sm font-medium transition-colors',
                       isActive
                         ? 'bg-blue-600 text-white'
-                        : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                        : 'text-gray-700 hover:bg-gray-100'
                     )}
                   >
                     <Icon
                       className={cn(
                         'mr-3 h-5 w-5 transition-colors',
-                        isActive
-                          ? 'text-white'
-                          : 'text-gray-500 dark:text-gray-400'
+                        isActive ? 'text-white' : 'text-gray-500'
                       )}
                     />
                     <div className="flex-1">
                       <div
                         className={cn(
                           'font-medium',
-                          isActive
-                            ? 'text-white'
-                            : 'text-gray-900 dark:text-gray-100'
+                          isActive ? 'text-white' : 'text-gray-900'
                         )}
                       >
                         {item.name}
@@ -276,9 +259,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       <div
                         className={cn(
                           'mt-0.5 text-xs',
-                          isActive
-                            ? 'text-blue-100'
-                            : 'text-gray-500 dark:text-gray-400'
+                          isActive ? 'text-blue-100' : 'text-gray-500'
                         )}
                       >
                         {item.description}
@@ -290,32 +271,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   </Link>
                 );
               })}
-
-              {/* Quick Actions */}
-              <div className="pt-6">
-                <div className="mb-3 px-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                  Hızlı İşlemler
-                </div>
-                <div className="space-y-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={toggleTheme}
-                    className="w-full justify-start text-gray-700 dark:text-gray-300"
-                  >
-                    {themeIcon === 'sun' ? (
-                      <Sun className="mr-3 h-4 w-4" />
-                    ) : (
-                      <Moon className="mr-3 h-4 w-4" />
-                    )}
-                    {themeLabel}
-                  </Button>
-                </div>
-              </div>
             </nav>
 
             {/* Footer */}
-            <div className="border-t border-gray-200/50 p-4 dark:border-gray-700/50">
+            <div className="border-t border-gray-200/50 p-4">
               <Button
                 onClick={handleLogout}
                 variant="outline"
@@ -332,7 +291,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Mobile header */}
           <div className="lg:hidden">
-            <div className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-700 dark:bg-gray-800">
+            <div className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4">
               <Button
                 variant="ghost"
                 size="sm"
@@ -340,7 +299,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               >
                 <Menu className="h-6 w-6" />
               </Button>
-              <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h1 className="text-lg font-semibold text-gray-900">
                 Admin Panel
               </h1>
               <Button variant="ghost" size="sm">

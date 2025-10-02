@@ -627,7 +627,7 @@ export function AdminDashboard() {
         )}
 
         {/* Modern System Health & Management Grid */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Enhanced System Health Widget */}
           <div className="lg:col-span-1">
             <SystemHealthWidget className="border bg-white shadow-md" />
@@ -722,75 +722,6 @@ export function AdminDashboard() {
                   <Eye className="mr-2 h-4 w-4" />
                   Tüm Görevleri Gör
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Enhanced Quick Actions */}
-          <Card className="bg-white shadow-sm">
-            <CardHeader className="pb-4">
-              <div className="flex items-center space-x-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white">
-                  <Activity className="h-5 w-5" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg font-semibold text-gray-900">
-                    Hızlı İşlemler
-                  </CardTitle>
-                  <p className="mt-1 text-sm text-gray-600">
-                    Sık kullanılan operasyonlar
-                  </p>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {[
-                  {
-                    icon: Users,
-                    label: 'Kullanıcı Ekle',
-                    href: '/admin/users',
-                  },
-                  {
-                    icon: Briefcase,
-                    label: 'İş Onayla',
-                    href: '/admin/jobs',
-                  },
-                  {
-                    icon: Eye,
-                    label: 'İçerik İncele',
-                    href: '/admin/moderation',
-                  },
-                  {
-                    icon: BarChart3,
-                    label: 'Rapor Oluştur',
-                    href: '/admin/reports',
-                  },
-                  {
-                    icon: Activity,
-                    label: 'Sistem Günlükleri',
-                    href: '/admin/logs',
-                  },
-                ].map((action, index) => {
-                  const Icon = action.icon;
-
-                  return (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      size="sm"
-                      className="h-12 w-full justify-start border-gray-200"
-                    >
-                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
-                        <Icon className="h-4 w-4 text-gray-600" />
-                      </div>
-                      <span className="font-medium text-gray-700">
-                        {action.label}
-                      </span>
-                      <ChevronRight className="ml-auto h-4 w-4 text-gray-400" />
-                    </Button>
-                  );
-                })}
               </div>
             </CardContent>
           </Card>
