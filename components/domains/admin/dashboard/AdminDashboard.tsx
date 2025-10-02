@@ -85,10 +85,10 @@ export function AdminDashboard() {
               </div>
               <div className="space-y-2 text-center">
                 <h3 className="text-xl font-semibold text-red-900">
-                  Dashboard Error
+                  Panel Hatası
                 </h3>
                 <p className="text-red-700">
-                  We encountered an error while loading your dashboard data.
+                  Panel verilerinizi yüklerken bir hatayla karşılaştık.
                 </p>
                 <div className="mt-4 rounded-lg bg-red-100 p-3">
                   <p className="font-mono text-sm text-red-800">{error}</p>
@@ -100,7 +100,7 @@ export function AdminDashboard() {
                 className="border-red-300 text-red-700 hover:border-red-400 hover:bg-red-50"
               >
                 <RefreshCw className="mr-2 h-4 w-4" />
-                Try Again
+                Tekrar Dene
               </Button>
             </div>
           </CardContent>
@@ -111,30 +111,30 @@ export function AdminDashboard() {
 
   const statCards = [
     {
-      title: 'Total Users',
-      value: new Intl.NumberFormat('en-US').format(stats?.totalUsers || 0),
-      change: `+${stats?.newUsersToday ?? 0} today`,
+      title: 'Toplam Kullanıcı',
+      value: new Intl.NumberFormat('tr-TR').format(stats?.totalUsers || 0),
+      change: `+${stats?.newUsersToday ?? 0} bugün`,
       icon: Users,
       color: 'blue',
     },
     {
-      title: 'Monthly Revenue',
+      title: 'Aylık Gelir',
       value: `₺${new Intl.NumberFormat('tr-TR').format(stats?.monthlyRevenue || 0)}`,
-      change: `%${stats?.revenueGrowth ?? 0} growth`,
+      change: `%${stats?.revenueGrowth ?? 0} büyüme`,
       icon: DollarSign,
       color: 'green',
     },
     {
-      title: 'Active Orders',
-      value: new Intl.NumberFormat('en-US').format(stats?.pendingOrders || 0),
-      change: `${stats?.completedOrders ?? 0} completed`,
+      title: 'Aktif Siparişler',
+      value: new Intl.NumberFormat('tr-TR').format(stats?.pendingOrders || 0),
+      change: `${stats?.completedOrders ?? 0} tamamlandı`,
       icon: ShoppingCart,
       color: 'orange',
     },
     {
-      title: 'Conversion Rate',
+      title: 'Dönüşüm Oranı',
       value: `%${stats?.conversionRate ?? 0}`,
-      change: `%${stats?.userRetentionRate ?? 0} retention`,
+      change: `%${stats?.userRetentionRate ?? 0} tutma oranı`,
       icon: TrendingUp,
       color: 'purple',
     },
@@ -151,22 +151,21 @@ export function AdminDashboard() {
                 <BarChart3 className="h-5 w-5" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+                <h1 className="text-3xl font-bold text-gray-900">Panel</h1>
                 <p className="text-gray-600">
-                  Welcome back! Here&apos;s what&apos;s happening on your
-                  platform.
+                  Hoş geldiniz! Platformunuzda neler olduğunu görün.
                 </p>
               </div>
             </div>
             <div className="flex items-center space-x-4 text-sm text-gray-500">
               <div className="flex items-center space-x-1">
                 <div className="h-2 w-2 animate-pulse rounded-full bg-green-400"></div>
-                <span>System Healthy</span>
+                <span>Sistem Sağlıklı</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Clock className="h-4 w-4" />
                 <span>
-                  Last updated: {new Date().toLocaleTimeString('tr-TR')}
+                  Son güncelleme: {new Date().toLocaleTimeString('tr-TR')}
                 </span>
               </div>
             </div>
@@ -175,7 +174,7 @@ export function AdminDashboard() {
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm" className="border-gray-300">
                 <Calendar className="mr-2 h-4 w-4" />
-                Last 30 Days
+                Son 30 Gün
               </Button>
               <Button
                 onClick={refresh}
@@ -187,7 +186,7 @@ export function AdminDashboard() {
                 <RefreshCw
                   className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}
                 />
-                Refresh
+                Yenile
               </Button>
             </div>
           </div>
@@ -202,11 +201,11 @@ export function AdminDashboard() {
               </div>
               <div>
                 <CardTitle className="text-lg font-semibold text-blue-900">
-                  📊 Admin Panel Demo
+                  📊 Yönetici Paneli Demo
                 </CardTitle>
                 <p className="text-sm text-blue-700">
-                  This is a demonstration of the admin panel with real-time
-                  features
+                  Bu, gerçek zamanlı özelliklerle yönetici panelinin bir
+                  demonstrasyonudur
                 </p>
               </div>
             </div>
@@ -218,22 +217,22 @@ export function AdminDashboard() {
                   <div className="flex items-center space-x-2">
                     <CheckCircle className="h-4 w-4 text-green-600" />
                     <span className="text-sm font-medium text-blue-900">
-                      User Management
+                      Kullanıcı Yönetimi
                     </span>
                   </div>
                   <Badge className="border-green-200 bg-green-100 text-green-700">
-                    Active
+                    Aktif
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between rounded-lg bg-white/50 px-3 py-2">
                   <div className="flex items-center space-x-2">
                     <CheckCircle className="h-4 w-4 text-green-600" />
                     <span className="text-sm font-medium text-blue-900">
-                      Real-time Analytics
+                      Gerçek Zamanlı Analitik
                     </span>
                   </div>
                   <Badge className="border-green-200 bg-green-100 text-green-700">
-                    Live
+                    Canlı
                   </Badge>
                 </div>
               </div>
@@ -242,22 +241,22 @@ export function AdminDashboard() {
                   <div className="flex items-center space-x-2">
                     <CheckCircle className="h-4 w-4 text-green-600" />
                     <span className="text-sm font-medium text-blue-900">
-                      Content Moderation
+                      İçerik Denetimi
                     </span>
                   </div>
                   <Badge className="border-green-200 bg-green-100 text-green-700">
-                    Ready
+                    Hazır
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between rounded-lg bg-white/50 px-3 py-2">
                   <div className="flex items-center space-x-2">
                     <CheckCircle className="h-4 w-4 text-green-600" />
                     <span className="text-sm font-medium text-blue-900">
-                      Platform Settings
+                      Platform Ayarları
                     </span>
                   </div>
                   <Badge className="border-green-200 bg-green-100 text-green-700">
-                    Configured
+                    Yapılandırıldı
                   </Badge>
                 </div>
               </div>
@@ -275,19 +274,19 @@ export function AdminDashboard() {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-orange-900">
-                    System Health Alert
+                    Sistem Sağlık Uyarısı
                   </h3>
                   <p className="mt-1 text-orange-800">
-                    Status:{' '}
+                    Durum:{' '}
                     <span className="font-medium">
-                      {systemHealth?.status || 'Unknown'}
+                      {systemHealth?.status || 'Bilinmiyor'}
                     </span>
                   </p>
                   {systemHealth?.issues && systemHealth.issues.length > 0 && (
                     <div className="mt-3">
                       <div className="mb-2 flex items-center space-x-2">
                         <Badge className="border-orange-200 bg-orange-100 text-orange-800">
-                          {systemHealth.issues.length} issues detected
+                          {systemHealth.issues.length} sorun tespit edildi
                         </Badge>
                       </div>
                       <ul className="list-inside list-disc space-y-1 text-sm text-orange-700">
@@ -303,7 +302,7 @@ export function AdminDashboard() {
                   size="sm"
                   className="border-orange-300 text-orange-700 hover:bg-orange-100"
                 >
-                  View Details
+                  Detayları Gör
                 </Button>
               </div>
             </CardContent>
@@ -373,7 +372,7 @@ export function AdminDashboard() {
                           </span>
                         </div>
                         <span className="text-sm text-gray-500">
-                          vs last month
+                          geçen aya göre
                         </span>
                       </div>
                       <div className="mt-3 text-xs text-gray-600">
@@ -390,9 +389,7 @@ export function AdminDashboard() {
                   {/* Progress bar */}
                   <div className="mt-4">
                     <div className="mb-1 flex items-center justify-between">
-                      <span className="text-xs text-gray-500">
-                        Monthly Target
-                      </span>
+                      <span className="text-xs text-gray-500">Aylık Hedef</span>
                       <span className="text-xs font-medium text-gray-700">
                         73%
                       </span>
@@ -424,16 +421,16 @@ export function AdminDashboard() {
                 </div>
                 <div>
                   <CardTitle className="text-xl font-semibold text-gray-900">
-                    Performance Monitor
+                    Performans İzleyici
                   </CardTitle>
                   <p className="mt-1 text-sm text-gray-600">
-                    Real-time system metrics
+                    Gerçek zamanlı sistem metrikleri
                   </p>
                 </div>
               </div>
               <Button variant="outline" size="sm" className="border-gray-300">
                 <Eye className="mr-2 h-4 w-4" />
-                View Details
+                Detayları Gör
               </Button>
             </CardHeader>
             <CardContent>
@@ -450,10 +447,10 @@ export function AdminDashboard() {
                 </div>
                 <div>
                   <CardTitle className="text-xl font-semibold text-gray-900">
-                    Live Activity
+                    Canlı Aktivite
                   </CardTitle>
                   <p className="mt-1 text-sm text-gray-600">
-                    Recent platform events
+                    Son platform olayları
                   </p>
                 </div>
               </div>
@@ -464,30 +461,30 @@ export function AdminDashboard() {
                   {
                     icon: Users,
                     color: 'blue',
-                    title: 'New user registration',
-                    time: '2 minutes ago',
-                    detail: 'John Smith joined as freelancer',
+                    title: 'Yeni kullanıcı kaydı',
+                    time: '2 dakika önce',
+                    detail: 'Ahmet Yılmaz serbest çalışan olarak katıldı',
                   },
                   {
                     icon: Briefcase,
                     color: 'green',
-                    title: 'Job posted',
-                    time: '8 minutes ago',
-                    detail: 'Web development project',
+                    title: 'İş ilanı yayınlandı',
+                    time: '8 dakika önce',
+                    detail: 'Web geliştirme projesi',
                   },
                   {
                     icon: DollarSign,
                     color: 'emerald',
-                    title: 'Payment completed',
-                    time: '15 minutes ago',
-                    detail: '₺2,500 transaction',
+                    title: 'Ödeme tamamlandı',
+                    time: '15 dakika önce',
+                    detail: '₺2,500 işlem',
                   },
                   {
                     icon: AlertTriangle,
                     color: 'red',
-                    title: 'Content reported',
-                    time: '32 minutes ago',
-                    detail: 'Review required',
+                    title: 'İçerik rapor edildi',
+                    time: '32 dakika önce',
+                    detail: 'İnceleme gerekli',
                   },
                 ].map((activity, index) => {
                   const Icon = activity.icon;
@@ -532,7 +529,7 @@ export function AdminDashboard() {
                   className="w-full justify-center"
                 >
                   <Eye className="mr-2 h-4 w-4" />
-                  View All Activity
+                  Tüm Aktiviteleri Gör
                 </Button>
               </div>
             </CardContent>
@@ -550,23 +547,23 @@ export function AdminDashboard() {
                   </div>
                   <div>
                     <CardTitle className="text-xl font-semibold text-gray-900">
-                      System Alerts
+                      Sistem Uyarıları
                     </CardTitle>
                     <p className="mt-1 text-sm text-gray-600">
-                      Recent notifications and warnings
+                      Son bildirimler ve uyarılar
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Badge className="border-orange-200 bg-orange-100 px-3 py-1 text-orange-800">
-                    {alerts.length} active
+                    {alerts.length} aktif
                   </Badge>
                   <Button
                     variant="outline"
                     size="sm"
                     className="border-gray-300"
                   >
-                    View All
+                    Tümünü Gör
                   </Button>
                 </div>
               </div>
@@ -624,12 +621,12 @@ export function AdminDashboard() {
                               className={`${config.badge} px-2 py-0.5 text-xs`}
                             >
                               {alert.priority === 'critical'
-                                ? 'Critical'
+                                ? 'Kritik'
                                 : alert.priority === 'high'
-                                  ? 'High'
+                                  ? 'Yüksek'
                                   : alert.priority === 'medium'
-                                    ? 'Medium'
-                                    : 'Low'}
+                                    ? 'Orta'
+                                    : 'Düşük'}
                             </Badge>
                           </div>
                           <p className="mb-2 text-sm text-gray-700">
@@ -660,7 +657,7 @@ export function AdminDashboard() {
                             onClick={() => alertAction(alert.id, 'read')}
                             className="px-3 py-1 text-xs hover:bg-white"
                           >
-                            Mark Read
+                            Okundu İşaretle
                           </Button>
                         )}
                         <ChevronRight className="h-4 w-4 text-gray-400 transition-colors group-hover:text-gray-600" />
@@ -689,10 +686,10 @@ export function AdminDashboard() {
                 </div>
                 <div>
                   <CardTitle className="text-lg font-semibold text-gray-900">
-                    Pending Tasks
+                    Bekleyen Görevler
                   </CardTitle>
                   <p className="mt-1 text-sm text-gray-600">
-                    Items requiring attention
+                    Dikkat gerektiren öğeler
                   </p>
                 </div>
               </div>
@@ -702,25 +699,25 @@ export function AdminDashboard() {
                 {[
                   {
                     icon: Clock,
-                    label: 'User Approvals',
+                    label: 'Kullanıcı Onayları',
                     count: 23,
                     color: 'orange',
                   },
                   {
                     icon: AlertTriangle,
-                    label: 'Moderation Queue',
+                    label: 'Denetim Kuyruğu',
                     count: 12,
                     color: 'red',
                   },
                   {
                     icon: MessageSquare,
-                    label: 'Support Tickets',
+                    label: 'Destek Talepleri',
                     count: 8,
                     color: 'blue',
                   },
                   {
                     icon: ShoppingCart,
-                    label: 'Pending Payments',
+                    label: 'Bekleyen Ödemeler',
                     count: 5,
                     color: 'purple',
                   },
@@ -767,7 +764,7 @@ export function AdminDashboard() {
                   className="w-full justify-center"
                 >
                   <Eye className="mr-2 h-4 w-4" />
-                  View All Tasks
+                  Tüm Görevleri Gör
                 </Button>
               </div>
             </CardContent>
@@ -782,10 +779,10 @@ export function AdminDashboard() {
                 </div>
                 <div>
                   <CardTitle className="text-lg font-semibold text-gray-900">
-                    Quick Actions
+                    Hızlı İşlemler
                   </CardTitle>
                   <p className="mt-1 text-sm text-gray-600">
-                    Frequently used operations
+                    Sık kullanılan operasyonlar
                   </p>
                 </div>
               </div>
@@ -793,23 +790,31 @@ export function AdminDashboard() {
             <CardContent>
               <div className="space-y-3">
                 {[
-                  { icon: Users, label: 'Add User', href: '/admin/users' },
+                  {
+                    icon: Users,
+                    label: 'Kullanıcı Ekle',
+                    href: '/admin/users',
+                  },
                   {
                     icon: Briefcase,
-                    label: 'Approve Job',
+                    label: 'İş Onayla',
                     href: '/admin/jobs',
                   },
                   {
                     icon: Eye,
-                    label: 'Review Content',
+                    label: 'İçerik İncele',
                     href: '/admin/moderation',
                   },
                   {
                     icon: BarChart3,
-                    label: 'Generate Report',
+                    label: 'Rapor Oluştur',
                     href: '/admin/reports',
                   },
-                  { icon: Activity, label: 'System Logs', href: '/admin/logs' },
+                  {
+                    icon: Activity,
+                    label: 'Sistem Günlükleri',
+                    href: '/admin/logs',
+                  },
                 ].map((action, index) => {
                   const Icon = action.icon;
 

@@ -24,10 +24,11 @@ export default function AdminModerationPage() {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  Content Moderation
+                  İçerik Denetimi
                 </h1>
                 <p className="mt-1 text-gray-600">
-                  Review and moderate platform content and user reports
+                  Platform içeriğini ve kullanıcı raporlarını inceleyin ve
+                  denetleyin
                 </p>
               </div>
             </div>

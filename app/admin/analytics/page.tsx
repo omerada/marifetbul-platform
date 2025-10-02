@@ -24,10 +24,10 @@ export default function AdminAnalyticsPage() {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  Platform Analytics
+                  Platform Analitikleri
                 </h1>
                 <p className="mt-1 text-gray-600">
-                  Comprehensive insights and performance metrics
+                  Kapsamlı görüşler ve performans metrikleri
                 </p>
               </div>
             </div>

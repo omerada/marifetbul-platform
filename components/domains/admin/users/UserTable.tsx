@@ -73,14 +73,14 @@ function BulkActions({
             <div>
               <div className="flex items-center space-x-2">
                 <Badge className="border-blue-200 bg-blue-100 px-3 py-1 font-semibold text-blue-800">
-                  {selectedCount} selected
+                  {selectedCount} seçili
                 </Badge>
                 <span className="text-sm font-medium text-blue-900">
-                  Bulk actions available
+                  Toplu işlemler mevcut
                 </span>
               </div>
               <p className="mt-1 text-xs text-blue-700">
-                Choose an action to apply to all selected users
+                Seçili tüm kullanıcılara uygulanacak bir işlem seçin
               </p>
             </div>
           </div>
@@ -92,7 +92,7 @@ function BulkActions({
               className="border-green-300 text-green-700 hover:border-green-400 hover:bg-green-50"
             >
               <UserCheck className="mr-2 h-4 w-4" />
-              Activate
+              Aktifleştir
             </Button>
             <Button
               variant="outline"
@@ -101,7 +101,7 @@ function BulkActions({
               className="border-orange-300 text-orange-700 hover:border-orange-400 hover:bg-orange-50"
             >
               <UserX className="mr-2 h-4 w-4" />
-              Suspend
+              Askıya Al
             </Button>
             <Button
               variant="ghost"
@@ -110,7 +110,7 @@ function BulkActions({
               className="text-gray-500 hover:bg-gray-100 hover:text-gray-700"
             >
               <X className="mr-2 h-4 w-4" />
-              Clear
+              Temizle
             </Button>
           </div>
         </div>
@@ -256,8 +256,8 @@ export function UserTable({ className }: UserTableProps) {
       <Card className={className}>
         <CardContent className="p-6">
           <div className="text-center text-red-600">
-            Error loading users:{' '}
-            {typeof error === 'string' ? error : 'Unknown error'}
+            Kullanıcılar yüklenirken hata:{' '}
+            {typeof error === 'string' ? error : 'Bilinmeyen hata'}
           </div>
         </CardContent>
       </Card>
@@ -265,7 +265,7 @@ export function UserTable({ className }: UserTableProps) {
   }
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`space-y-4 p-6 ${className}`}>
       {/* Modern Header with Search and Filters */}
       <Card className="border-0 bg-gradient-to-r from-white to-gray-50 shadow-xl">
         <CardHeader className="pb-4">
@@ -276,17 +276,17 @@ export function UserTable({ className }: UserTableProps) {
               </div>
               <div>
                 <CardTitle className="text-2xl font-bold text-gray-900">
-                  User Management
+                  Kullanıcı Yönetimi
                 </CardTitle>
                 <p className="mt-1 text-gray-600">
-                  Manage platform users and their permissions
+                  Platform kullanıcılarını ve izinlerini yönetin
                 </p>
               </div>
             </div>
             <div className="flex flex-col items-start space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3">
               <div className="flex items-center space-x-2 text-sm text-gray-500">
                 <div className="h-2 w-2 animate-pulse rounded-full bg-green-400"></div>
-                <span>{users.length} users loaded</span>
+                <span>{users.length} kullanıcı yüklendi</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Button
@@ -323,7 +323,7 @@ export function UserTable({ className }: UserTableProps) {
                   className="border-gray-300 hover:border-blue-300 hover:bg-blue-50"
                 >
                   <Download className="mr-2 h-4 w-4" />
-                  Export
+                  Dışa Aktar
                 </Button>
                 <Button
                   variant="outline"
@@ -335,7 +335,7 @@ export function UserTable({ className }: UserTableProps) {
                   <RefreshCw
                     className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}
                   />
-                  Refresh
+                  Yenile
                 </Button>
               </div>
             </div>
@@ -347,7 +347,7 @@ export function UserTable({ className }: UserTableProps) {
             <div className="relative lg:col-span-2">
               <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
               <Input
-                placeholder="Search users by name, email, or ID..."
+                placeholder="İsim, e-posta veya ID ile kullanıcı arayın..."
                 value={filters.search || ''}
                 onChange={(e) => onSearch(e.target.value)}
                 className="h-12 border-gray-300 pl-10 focus:border-blue-500 focus:ring-blue-500"
@@ -363,7 +363,7 @@ export function UserTable({ className }: UserTableProps) {
                 >
                   <div className="flex items-center space-x-2">
                     <Filter className="h-4 w-4" />
-                    <span>Status: {filters.status || 'All'}</span>
+                    <span>Durum: {filters.status || 'Tümü'}</span>
                   </div>
                   <ChevronRight className="h-4 w-4 rotate-90" />
                 </Button>
@@ -374,7 +374,7 @@ export function UserTable({ className }: UserTableProps) {
                 >
                   <div className="flex items-center space-x-2">
                     <div className="h-2 w-2 rounded-full bg-gray-400"></div>
-                    <span>All Statuses</span>
+                    <span>Tüm Durumlar</span>
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -382,7 +382,7 @@ export function UserTable({ className }: UserTableProps) {
                 >
                   <div className="flex items-center space-x-2">
                     <div className="h-2 w-2 rounded-full bg-green-400"></div>
-                    <span>Active</span>
+                    <span>Aktif</span>
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -392,7 +392,7 @@ export function UserTable({ className }: UserTableProps) {
                 >
                   <div className="flex items-center space-x-2">
                     <div className="h-2 w-2 rounded-full bg-yellow-400"></div>
-                    <span>Pending Verification</span>
+                    <span>Doğrulama Bekliyor</span>
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -400,7 +400,7 @@ export function UserTable({ className }: UserTableProps) {
                 >
                   <div className="flex items-center space-x-2">
                     <div className="h-2 w-2 rounded-full bg-orange-400"></div>
-                    <span>Suspended</span>
+                    <span>Askıya Alınmış</span>
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -408,7 +408,7 @@ export function UserTable({ className }: UserTableProps) {
                 >
                   <div className="flex items-center space-x-2">
                     <div className="h-2 w-2 rounded-full bg-red-400"></div>
-                    <span>Banned</span>
+                    <span>Yasaklanmış</span>
                   </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -423,7 +423,7 @@ export function UserTable({ className }: UserTableProps) {
                 >
                   <div className="flex items-center space-x-2">
                     <Shield className="h-4 w-4" />
-                    <span>Role: {filters.userType || 'All'}</span>
+                    <span>Rol: {filters.userType || 'Tümü'}</span>
                   </div>
                   <ChevronRight className="h-4 w-4 rotate-90" />
                 </Button>
@@ -434,7 +434,7 @@ export function UserTable({ className }: UserTableProps) {
                 >
                   <div className="flex items-center space-x-2">
                     <Users className="h-4 w-4 text-gray-400" />
-                    <span>All Roles</span>
+                    <span>Tüm Roller</span>
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -442,7 +442,7 @@ export function UserTable({ className }: UserTableProps) {
                 >
                   <div className="flex items-center space-x-2">
                     <Briefcase className="h-4 w-4 text-indigo-600" />
-                    <span>Employer</span>
+                    <span>İşveren</span>
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -450,7 +450,7 @@ export function UserTable({ className }: UserTableProps) {
                 >
                   <div className="flex items-center space-x-2">
                     <UserCheck className="h-4 w-4 text-emerald-600" />
-                    <span>Freelancer</span>
+                    <span>Serbest Çalışan</span>
                   </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -498,22 +498,22 @@ export function UserTable({ className }: UserTableProps) {
                     />
                   </TableHead>
                   <TableHead className="py-4 font-semibold text-gray-700">
-                    User
+                    Kullanıcı
                   </TableHead>
                   <TableHead className="py-4 font-semibold text-gray-700">
-                    Role
+                    Rol
                   </TableHead>
                   <TableHead className="py-4 font-semibold text-gray-700">
-                    Status
+                    Durum
                   </TableHead>
                   <TableHead className="py-4 font-semibold text-gray-700">
-                    Joined
+                    Katılım
                   </TableHead>
                   <TableHead className="py-4 font-semibold text-gray-700">
-                    Last Active
+                    Son Aktivite
                   </TableHead>
                   <TableHead className="py-4 text-right font-semibold text-gray-700">
-                    Actions
+                    İşlemler
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -530,10 +530,10 @@ export function UserTable({ className }: UserTableProps) {
                         </div>
                         <div className="text-center">
                           <p className="text-lg font-medium text-gray-900">
-                            Loading users...
+                            Kullanıcılar yükleniyor...
                           </p>
                           <p className="text-sm text-gray-500">
-                            Please wait while we fetch the data
+                            Lütfen veriler alınırken bekleyin
                           </p>
                         </div>
                       </div>
@@ -548,10 +548,10 @@ export function UserTable({ className }: UserTableProps) {
                         </div>
                         <div className="text-center">
                           <p className="text-lg font-medium text-gray-900">
-                            No users found
+                            Kullanıcı bulunamadı
                           </p>
                           <p className="text-sm text-gray-500">
-                            Try adjusting your search or filter criteria
+                            Arama veya filtre kriterlerinizi ayarlamayı deneyin
                           </p>
                         </div>
                       </div>
@@ -643,7 +643,7 @@ export function UserTable({ className }: UserTableProps) {
                             ? new Date(user.lastActiveAt).toLocaleDateString(
                                 'tr-TR'
                               )
-                            : 'Never'}
+                            : 'Hiçbir zaman'}
                         </div>
                       </TableCell>
                       <TableCell className="py-4 text-right">
@@ -665,7 +665,7 @@ export function UserTable({ className }: UserTableProps) {
                               className="cursor-pointer"
                             >
                               <Eye className="mr-2 h-4 w-4" />
-                              View Details
+                              Detayları Gör
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => {
@@ -674,7 +674,7 @@ export function UserTable({ className }: UserTableProps) {
                               className="cursor-pointer"
                             >
                               <Mail className="mr-2 h-4 w-4" />
-                              Send Email
+                              E-posta Gönder
                             </DropdownMenuItem>
                             {user.accountStatus === 'active' ? (
                               <DropdownMenuItem
@@ -685,7 +685,7 @@ export function UserTable({ className }: UserTableProps) {
                                 className="cursor-pointer text-orange-600 focus:text-orange-700"
                               >
                                 <UserX className="mr-2 h-4 w-4" />
-                                Suspend
+                                Askıya Al
                               </DropdownMenuItem>
                             ) : (
                               <DropdownMenuItem
@@ -696,7 +696,7 @@ export function UserTable({ className }: UserTableProps) {
                                 className="cursor-pointer text-green-600 focus:text-green-700"
                               >
                                 <UserCheck className="mr-2 h-4 w-4" />
-                                Activate
+                                Aktifleştir
                               </DropdownMenuItem>
                             )}
                             {user.verificationStatus !== 'verified' && (
@@ -708,7 +708,7 @@ export function UserTable({ className }: UserTableProps) {
                                 className="cursor-pointer text-blue-600 focus:text-blue-700"
                               >
                                 <Shield className="mr-2 h-4 w-4" />
-                                Verify
+                                Doğrula
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuItem
@@ -719,7 +719,7 @@ export function UserTable({ className }: UserTableProps) {
                               className="cursor-pointer text-red-600 focus:text-red-700"
                             >
                               <Ban className="mr-2 h-4 w-4" />
-                              Ban User
+                              Kullanıcıyı Yasakla
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => {
@@ -729,7 +729,7 @@ export function UserTable({ className }: UserTableProps) {
                               className="cursor-pointer text-red-600 focus:text-red-700"
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
-                              Delete
+                              Sil
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -749,15 +749,14 @@ export function UserTable({ className }: UserTableProps) {
           <CardContent className="p-6">
             <div className="flex flex-col items-center justify-between space-y-4 sm:flex-row sm:space-y-0">
               <div className="text-sm text-gray-600">
-                Showing{' '}
                 <span className="font-medium text-gray-900">
                   {users.length}
                 </span>{' '}
-                of{' '}
+                adet kullanıcıdan{' '}
                 <span className="font-medium text-gray-900">
                   {pagination.total}
                 </span>{' '}
-                users
+                tanesi gösteriliyor
               </div>
               <div className="flex items-center space-x-3">
                 <Button
@@ -768,7 +767,7 @@ export function UserTable({ className }: UserTableProps) {
                   className="border-gray-300 hover:border-blue-300 hover:bg-blue-50"
                 >
                   <ChevronRight className="mr-2 h-4 w-4 rotate-180" />
-                  Previous
+                  Önceki
                 </Button>
 
                 <div className="flex items-center space-x-2">
@@ -813,7 +812,7 @@ export function UserTable({ className }: UserTableProps) {
                   }
                   className="border-gray-300 hover:border-blue-300 hover:bg-blue-50"
                 >
-                  Next
+                  Sonraki
                   <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -826,22 +825,21 @@ export function UserTable({ className }: UserTableProps) {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>Emin misiniz?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              user
+              Bu işlem geri alınamaz. Bu kullanıcıyı kalıcı olarak silecek
               {actionUser?.firstName &&
                 ` "${actionUser.firstName} ${actionUser.lastName}"`}{' '}
-              and remove all their data from the system.
+              ve tüm verilerini sistemden kaldıracaktır.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>İptal</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => handleUserAction('delete')}
               className="bg-red-600 hover:bg-red-700"
             >
-              Delete
+              Sil
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -18,10 +18,10 @@ export default function AdminUsersPage() {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  User Management
+                  Kullanıcı Yönetimi
                 </h1>
                 <p className="mt-1 text-gray-600">
-                  Manage platform users, roles, and permissions
+                  Platform kullanıcılarını, rollerini ve izinlerini yönetin
                 </p>
               </div>
             </div>

@@ -24,10 +24,11 @@ export default function AdminSettingsPage() {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  Platform Settings
+                  Platform Ayarları
                 </h1>
                 <p className="mt-1 text-gray-600">
-                  Configure platform features, policies, and system settings
+                  Platform özelliklerini, politikalarını ve sistem ayarlarını
+                  yapılandırın
                 </p>
               </div>
             </div>

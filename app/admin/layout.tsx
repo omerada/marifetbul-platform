@@ -79,39 +79,39 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const navigationItems = [
     {
-      name: 'Dashboard',
+      name: 'Panel',
       href: '/admin',
       icon: Home,
       current: pathname === '/admin',
-      description: 'Platform overview',
+      description: 'Platform özeti',
     },
     {
-      name: 'Users',
+      name: 'Kullanıcılar',
       href: '/admin/users',
       icon: Users,
       current: pathname === '/admin/users',
-      description: 'Manage users',
+      description: 'Kullanıcı yönetimi',
     },
     {
-      name: 'Analytics',
+      name: 'Analitik',
       href: '/admin/analytics',
       icon: BarChart3,
       current: pathname === '/admin/analytics',
-      description: 'Platform metrics',
+      description: 'Platform metrikleri',
     },
     {
-      name: 'Content',
+      name: 'İçerik',
       href: '/admin/moderation',
       icon: Shield,
       current: pathname === '/admin/moderation',
-      description: 'Content moderation',
+      description: 'İçerik denetimi',
     },
     {
-      name: 'Settings',
+      name: 'Ayarlar',
       href: '/admin/settings',
       icon: Settings,
       current: pathname === '/admin/settings',
-      description: 'Platform settings',
+      description: 'Platform ayarları',
     },
   ];
 
@@ -132,7 +132,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <h3 className="text-lg font-semibold text-gray-900">
                   Admin Panel
                 </h3>
-                <p className="mt-1 text-sm text-gray-600">Authenticating...</p>
+                <p className="mt-1 text-sm text-gray-600">
+                  Kimlik doğrulanıyor...
+                </p>
               </div>
             </div>
           </CardContent>
@@ -156,9 +158,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               </div>
               <div className="text-center">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Redirecting
+                  Yönlendiriliyor
                 </h3>
-                <p className="mt-1 text-sm text-gray-600">Please wait...</p>
+                <p className="mt-1 text-sm text-gray-600">Lütfen bekleyin...</p>
               </div>
             </div>
           </CardContent>
@@ -232,7 +234,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <div className="flex items-center space-x-1">
                   <div className="h-2 w-2 animate-pulse rounded-full bg-green-400"></div>
                   <span className="text-xs text-green-600 dark:text-green-400">
-                    Online
+                    Çevrimiçi
                   </span>
                 </div>
               </div>
@@ -241,7 +243,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             {/* Navigation */}
             <nav className="flex-1 space-y-1 px-4 pb-4">
               <div className="mb-3 px-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                Main Menu
+                Ana Menü
               </div>
               {navigationItems.map((item) => {
                 const Icon = item.icon;
@@ -255,7 +257,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       'group flex items-center rounded-xl px-3 py-3 text-sm font-medium transition-all duration-200',
                       isActive
                         ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25'
-                        : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50'
+                        : 'text-gray-700 dark:text-gray-300'
                     )}
                   >
                     <Icon
@@ -263,7 +265,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                         'mr-3 h-5 w-5 transition-colors',
                         isActive
                           ? 'text-white'
-                          : 'text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300'
+                          : 'text-gray-500 dark:text-gray-400'
                       )}
                     />
                     <div className="flex-1">
@@ -298,7 +300,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               {/* Quick Actions */}
               <div className="pt-6">
                 <div className="mb-3 px-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                  Quick Actions
+                  Hızlı İşlemler
                 </div>
                 <div className="space-y-1">
                   <Button
@@ -312,7 +314,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     ) : (
                       <Moon className="mr-3 h-4 w-4" />
                     )}
-                    {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                    {isDarkMode ? 'Açık Tema' : 'Koyu Tema'}
                   </Button>
                   <Button
                     variant="ghost"
@@ -320,7 +322,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     className="w-full justify-start text-gray-700 dark:text-gray-300"
                   >
                     <HelpCircle className="mr-3 h-4 w-4" />
-                    Help & Support
+                    Yardım ve Destek
                   </Button>
                 </div>
               </div>
@@ -331,10 +333,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <Button
                 onClick={handleLogout}
                 variant="outline"
-                className="w-full justify-center border-red-200 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400"
+                className="w-full justify-center border-red-200 bg-red-50 text-red-700"
               >
                 <LogOut className="mr-2 h-4 w-4" />
-                Logout
+                Çıkış Yap
               </Button>
             </div>
           </div>
