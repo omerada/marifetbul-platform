@@ -40,8 +40,8 @@ export function AdminDashboard() {
 
   if (isLoading && !stats) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 p-6">
-        <div className="animate-pulse space-y-8">
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="space-y-6">
           {/* Header Skeleton */}
           <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
             <div className="space-y-3">
@@ -57,17 +57,14 @@ export function AdminDashboard() {
           {/* Stats Grid Skeleton */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[...Array(4)].map((_, i) => (
-              <div
-                key={i}
-                className="h-36 rounded-xl bg-gradient-to-br from-gray-200 to-gray-300 shadow-lg"
-              />
+              <div key={i} className="h-36 rounded-lg bg-white shadow" />
             ))}
           </div>
 
           {/* Content Grid Skeleton */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <div className="h-80 rounded-xl bg-gradient-to-br from-gray-200 to-gray-300 shadow-lg lg:col-span-2" />
-            <div className="h-80 rounded-xl bg-gradient-to-br from-gray-200 to-gray-300 shadow-lg" />
+            <div className="h-80 rounded-lg bg-white shadow lg:col-span-2" />
+            <div className="h-80 rounded-lg bg-white shadow" />
           </div>
         </div>
       </div>
@@ -97,7 +94,7 @@ export function AdminDashboard() {
               <Button
                 variant="outline"
                 onClick={refresh}
-                className="border-red-300 text-red-700 hover:border-red-400 hover:bg-red-50"
+                className="border-red-300 text-red-700"
               >
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Tekrar Dene
@@ -141,17 +138,19 @@ export function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 p-6">
-      <div className="mx-auto max-w-7xl space-y-8">
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="mx-auto max-w-7xl space-y-6">
         {/* Enhanced Header */}
-        <div className="flex flex-col space-y-6 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+        <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
           <div className="space-y-2">
             <div className="flex items-center space-x-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white">
                 <BarChart3 className="h-5 w-5" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Panel</h1>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  Yönetici Paneli
+                </h1>
                 <p className="text-gray-600">
                   Hoş geldiniz! Platformunuzda neler olduğunu görün.
                 </p>
@@ -159,7 +158,7 @@ export function AdminDashboard() {
             </div>
             <div className="flex items-center space-x-4 text-sm text-gray-500">
               <div className="flex items-center space-x-1">
-                <div className="h-2 w-2 animate-pulse rounded-full bg-green-400"></div>
+                <div className="h-2 w-2 rounded-full bg-green-400"></div>
                 <span>Sistem Sağlıklı</span>
               </div>
               <div className="flex items-center space-x-1">
@@ -181,7 +180,7 @@ export function AdminDashboard() {
                 disabled={isLoading}
                 variant="primary"
                 size="sm"
-                className="bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg hover:from-blue-600 hover:to-blue-700"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg"
               >
                 <RefreshCw
                   className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}
@@ -193,7 +192,7 @@ export function AdminDashboard() {
         </div>
 
         {/* Enhanced Demo Info Card */}
-        <Card className="border-0 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-lg">
+        <Card className="border bg-blue-50 shadow-md">
           <CardHeader className="pb-4">
             <div className="flex items-center space-x-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 shadow-md">
@@ -266,7 +265,7 @@ export function AdminDashboard() {
 
         {/* Enhanced System Health Alert */}
         {systemHealth?.status !== 'healthy' && (
-          <Card className="border-0 bg-gradient-to-r from-orange-50 to-red-50 shadow-lg">
+          <Card className="border bg-orange-50 shadow-md">
             <CardContent className="p-6">
               <div className="flex items-start space-x-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 shadow-md">
@@ -300,7 +299,7 @@ export function AdminDashboard() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-orange-300 text-orange-700 hover:bg-orange-100"
+                  className="border-orange-300 text-orange-700"
                 >
                   Detayları Gör
                 </Button>
@@ -311,45 +310,26 @@ export function AdminDashboard() {
 
         {/* Modern Stats Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {statCards.map((stat, index) => {
+          {statCards.map((stat) => {
             const Icon = stat.icon;
             const colorConfig = {
               blue: {
-                text: 'text-blue-600',
-                bg: 'bg-gradient-to-br from-blue-50 to-blue-100',
-                border: 'border-blue-200',
                 iconBg: 'bg-blue-500',
-                shadow: 'shadow-blue-500/20',
               },
               green: {
-                text: 'text-emerald-600',
-                bg: 'bg-gradient-to-br from-emerald-50 to-emerald-100',
-                border: 'border-emerald-200',
                 iconBg: 'bg-emerald-500',
-                shadow: 'shadow-emerald-500/20',
               },
               orange: {
-                text: 'text-orange-600',
-                bg: 'bg-gradient-to-br from-orange-50 to-orange-100',
-                border: 'border-orange-200',
                 iconBg: 'bg-orange-500',
-                shadow: 'shadow-orange-500/20',
               },
               purple: {
-                text: 'text-purple-600',
-                bg: 'bg-gradient-to-br from-purple-50 to-purple-100',
-                border: 'border-purple-200',
                 iconBg: 'bg-purple-500',
-                shadow: 'shadow-purple-500/20',
               },
             };
             const colors = colorConfig[stat.color as keyof typeof colorConfig];
 
             return (
-              <Card
-                key={stat.title}
-                className={`border-0 ${colors.bg} ${colors.shadow} group cursor-pointer shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl`}
-              >
+              <Card key={stat.title} className="bg-white shadow-sm">
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -357,9 +337,6 @@ export function AdminDashboard() {
                         <p className="text-sm font-medium text-gray-600">
                           {stat.title}
                         </p>
-                        <div
-                          className={`h-2 w-2 rounded-full ${colors.iconBg} animate-pulse`}
-                        ></div>
                       </div>
                       <p className="mb-2 text-3xl font-bold text-gray-900">
                         {stat.value}
@@ -379,29 +356,8 @@ export function AdminDashboard() {
                         {stat.change}
                       </div>
                     </div>
-                    <div
-                      className={`rounded-2xl p-4 ${colors.iconBg} shadow-lg transition-transform duration-300 group-hover:scale-110`}
-                    >
-                      <Icon className="h-7 w-7 text-white" />
-                    </div>
-                  </div>
-
-                  {/* Progress bar */}
-                  <div className="mt-4">
-                    <div className="mb-1 flex items-center justify-between">
-                      <span className="text-xs text-gray-500">Aylık Hedef</span>
-                      <span className="text-xs font-medium text-gray-700">
-                        73%
-                      </span>
-                    </div>
-                    <div className="h-2 w-full rounded-full bg-gray-200">
-                      <div
-                        className={`${colors.iconBg} h-2 rounded-full transition-all duration-1000 ease-out`}
-                        style={{
-                          width: `${73 + index * 5}%`,
-                          animationDelay: `${index * 200}ms`,
-                        }}
-                      ></div>
+                    <div className={`rounded-lg p-3 ${colors.iconBg}`}>
+                      <Icon className="h-6 w-6 text-white" />
                     </div>
                   </div>
                 </CardContent>
@@ -413,10 +369,10 @@ export function AdminDashboard() {
         {/* Enhanced Analytics & Activity Grid */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Performance Monitor */}
-          <Card className="border-0 bg-gradient-to-br from-white to-gray-50 shadow-xl lg:col-span-2">
+          <Card className="bg-white shadow-sm lg:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <div className="flex items-center space-x-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white">
                   <Gauge className="h-5 w-5" />
                 </div>
                 <div>
@@ -428,7 +384,7 @@ export function AdminDashboard() {
                   </p>
                 </div>
               </div>
-              <Button variant="outline" size="sm" className="border-gray-300">
+              <Button variant="outline" size="sm">
                 <Eye className="mr-2 h-4 w-4" />
                 Detayları Gör
               </Button>
@@ -439,10 +395,10 @@ export function AdminDashboard() {
           </Card>
 
           {/* Enhanced Recent Activity */}
-          <Card className="border-0 bg-gradient-to-br from-white to-gray-50 shadow-xl">
+          <Card className="bg-white shadow-sm">
             <CardHeader className="pb-4">
               <div className="flex items-center space-x-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-lg">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-600 text-white">
                   <Activity className="h-5 w-5" />
                 </div>
                 <div>
@@ -498,12 +454,12 @@ export function AdminDashboard() {
                   return (
                     <div
                       key={index}
-                      className="group flex cursor-pointer items-start space-x-4 rounded-xl p-3 transition-colors duration-200 hover:bg-gray-50"
+                      className="flex items-start space-x-4 rounded-lg p-3 hover:bg-gray-50"
                     >
                       <div
-                        className={`flex h-10 w-10 items-center justify-center rounded-xl ${colorMap[activity.color as keyof typeof colorMap]} shadow-md transition-transform duration-200 group-hover:scale-110`}
+                        className={`flex h-8 w-8 items-center justify-center rounded-lg ${colorMap[activity.color as keyof typeof colorMap]}`}
                       >
-                        <Icon className="h-5 w-5" />
+                        <Icon className="h-4 w-4" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-semibold text-gray-900 group-hover:text-gray-700">
@@ -517,7 +473,7 @@ export function AdminDashboard() {
                           {activity.time}
                         </p>
                       </div>
-                      <ChevronRight className="h-4 w-4 text-gray-400 transition-colors group-hover:text-gray-600" />
+                      <ChevronRight className="h-4 w-4 text-gray-400" />
                     </div>
                   );
                 })}
@@ -606,11 +562,11 @@ export function AdminDashboard() {
                   return (
                     <div
                       key={alert.id}
-                      className={`flex items-start justify-between rounded-xl border p-4 ${config.bg} ${config.border} group cursor-pointer transition-all duration-200 hover:shadow-md`}
+                      className={`flex items-start justify-between rounded-xl border p-4 ${config.bg} ${config.border}`}
                     >
                       <div className="flex flex-1 items-start space-x-4">
                         <div
-                          className={`h-3 w-3 rounded-full ${config.dot} mt-2 transition-transform duration-200 group-hover:scale-125`}
+                          className={`h-3 w-3 rounded-full ${config.dot} mt-2`}
                         />
                         <div className="min-w-0 flex-1">
                           <div className="mb-1 flex items-center space-x-2">
@@ -655,7 +611,7 @@ export function AdminDashboard() {
                             variant="outline"
                             size="sm"
                             onClick={() => alertAction(alert.id, 'read')}
-                            className="px-3 py-1 text-xs hover:bg-white"
+                            className="px-3 py-1 text-xs"
                           >
                             Okundu İşaretle
                           </Button>
@@ -674,7 +630,7 @@ export function AdminDashboard() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Enhanced System Health Widget */}
           <div className="lg:col-span-1">
-            <SystemHealthWidget className="border-0 bg-gradient-to-br from-white to-gray-50 shadow-xl" />
+            <SystemHealthWidget className="border bg-white shadow-md" />
           </div>
 
           {/* Enhanced Pending Tasks */}
@@ -733,11 +689,11 @@ export function AdminDashboard() {
                   return (
                     <div
                       key={index}
-                      className="group flex cursor-pointer items-center justify-between rounded-xl p-3 transition-colors duration-200 hover:bg-gray-50"
+                      className="flex items-center justify-between rounded-xl p-3"
                     >
                       <div className="flex items-center space-x-3">
                         <div
-                          className={`flex h-8 w-8 items-center justify-center rounded-lg ${colorMap[task.color as keyof typeof colorMap]} transition-transform duration-200 group-hover:scale-110`}
+                          className={`flex h-8 w-8 items-center justify-center rounded-lg ${colorMap[task.color as keyof typeof colorMap]}`}
                         >
                           <Icon className="h-4 w-4" />
                         </div>
@@ -771,10 +727,10 @@ export function AdminDashboard() {
           </Card>
 
           {/* Enhanced Quick Actions */}
-          <Card className="border-0 bg-gradient-to-br from-white to-gray-50 shadow-xl">
+          <Card className="bg-white shadow-sm">
             <CardHeader className="pb-4">
               <div className="flex items-center space-x-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white">
                   <Activity className="h-5 w-5" />
                 </div>
                 <div>
@@ -823,15 +779,15 @@ export function AdminDashboard() {
                       key={index}
                       variant="outline"
                       size="sm"
-                      className="group h-12 w-full justify-start border-gray-200 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50"
+                      className="h-12 w-full justify-start border-gray-200"
                     >
-                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 transition-colors duration-200 group-hover:bg-blue-100">
-                        <Icon className="h-4 w-4 text-gray-600 transition-colors duration-200 group-hover:text-blue-600" />
+                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
+                        <Icon className="h-4 w-4 text-gray-600" />
                       </div>
-                      <span className="font-medium text-gray-700 group-hover:text-blue-700">
+                      <span className="font-medium text-gray-700">
                         {action.label}
                       </span>
-                      <ChevronRight className="ml-auto h-4 w-4 text-gray-400 transition-colors duration-200 group-hover:text-blue-600" />
+                      <ChevronRight className="ml-auto h-4 w-4 text-gray-400" />
                     </Button>
                   );
                 })}

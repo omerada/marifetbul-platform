@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useTheme } from '@/hooks';
 import { Card, CardContent } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
@@ -17,7 +18,6 @@ import {
   Bell,
   ChevronRight,
   Activity,
-  HelpCircle,
   Moon,
   Sun,
 } from 'lucide-react';
@@ -30,10 +30,10 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const { user, isAuthenticated, isLoading, logout } = useAuthStore();
+  const { isDarkMode, toggleTheme, themeIcon, themeLabel } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     console.log('🏗️ Admin Layout: Auth state changed:', {
@@ -70,11 +70,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const handleLogout = () => {
     logout();
     router.push('/admin/login');
-  };
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    // In a real app, this would toggle the global theme
   };
 
   const navigationItems = [
@@ -122,11 +117,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <Card className="w-96 border-0 shadow-xl">
           <CardContent className="pt-8 pb-8">
             <div className="flex flex-col items-center justify-center space-y-4">
-              <div className="relative">
-                <div className="h-16 w-16 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Shield className="h-6 w-6 text-blue-600" />
-                </div>
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+                <Shield className="h-8 w-8 text-blue-600" />
               </div>
               <div className="text-center">
                 <h3 className="text-lg font-semibold text-gray-900">
@@ -150,11 +142,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <Card className="w-96 border-0 shadow-xl">
           <CardContent className="pt-8 pb-8">
             <div className="flex flex-col items-center justify-center space-y-4">
-              <div className="relative">
-                <div className="h-16 w-16 animate-spin rounded-full border-4 border-orange-200 border-t-orange-600"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Activity className="h-6 w-6 text-orange-600" />
-                </div>
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-orange-100">
+                <Activity className="h-8 w-8 text-orange-600" />
               </div>
               <div className="text-center">
                 <h3 className="text-lg font-semibold text-gray-900">
@@ -173,9 +162,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     <div
       className={cn(
         'min-h-screen',
-        isDarkMode
-          ? 'dark bg-gray-900'
-          : 'bg-gradient-to-br from-slate-50 to-gray-100'
+        isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'
       )}
     >
       <div className="flex h-screen overflow-hidden">
@@ -192,7 +179,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         {/* Desktop Sidebar */}
         <div
           className={cn(
-            'fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-300 ease-in-out lg:static lg:inset-0 lg:translate-x-0',
+            'fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-200 ease-out lg:static lg:inset-0 lg:translate-x-0',
             sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           )}
         >
@@ -232,7 +219,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   </p>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <div className="h-2 w-2 animate-pulse rounded-full bg-green-400"></div>
+                  <div className="h-2 w-2 rounded-full bg-green-400"></div>
                   <span className="text-xs text-green-600 dark:text-green-400">
                     Çevrimiçi
                   </span>
@@ -254,10 +241,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     href={item.href}
                     onClick={() => setSidebarOpen(false)}
                     className={cn(
-                      'group flex items-center rounded-xl px-3 py-3 text-sm font-medium transition-all duration-200',
+                      'group flex items-center rounded-xl px-3 py-3 text-sm font-medium transition-colors',
                       isActive
-                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25'
-                        : 'text-gray-700 dark:text-gray-300'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
                     )}
                   >
                     <Icon
@@ -306,23 +293,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={toggleDarkMode}
+                    onClick={toggleTheme}
                     className="w-full justify-start text-gray-700 dark:text-gray-300"
                   >
-                    {isDarkMode ? (
+                    {themeIcon === 'sun' ? (
                       <Sun className="mr-3 h-4 w-4" />
                     ) : (
                       <Moon className="mr-3 h-4 w-4" />
                     )}
-                    {isDarkMode ? 'Açık Tema' : 'Koyu Tema'}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-start text-gray-700 dark:text-gray-300"
-                  >
-                    <HelpCircle className="mr-3 h-4 w-4" />
-                    Yardım ve Destek
+                    {themeLabel}
                   </Button>
                 </div>
               </div>
@@ -365,7 +344,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
           {/* Main content area */}
           <main className="relative flex-1 overflow-y-auto focus:outline-none">
-            <div className="h-full">{children}</div>
+            <div className="h-full p-6 lg:pl-8">{children}</div>
           </main>
         </div>
       </div>

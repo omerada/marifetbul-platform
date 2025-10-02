@@ -63,16 +63,16 @@ function BulkActions({
   onClear: () => void;
 }) {
   return (
-    <Card className="border-0 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-lg">
+    <Card className="bg-blue-50 shadow-sm">
       <CardContent className="p-4">
         <div className="flex flex-col items-start justify-between space-y-3 sm:flex-row sm:items-center sm:space-y-0">
           <div className="flex items-center space-x-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 shadow-md">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
               <Users className="h-5 w-5 text-blue-600" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <Badge className="border-blue-200 bg-blue-100 px-3 py-1 font-semibold text-blue-800">
+                <Badge className="bg-blue-100 px-3 py-1 font-semibold text-blue-800">
                   {selectedCount} seçili
                 </Badge>
                 <span className="text-sm font-medium text-blue-900">
@@ -89,7 +89,7 @@ function BulkActions({
               variant="outline"
               size="sm"
               onClick={() => onAction('activate')}
-              className="border-green-300 text-green-700 hover:border-green-400 hover:bg-green-50"
+              className="border-green-300 text-green-700"
             >
               <UserCheck className="mr-2 h-4 w-4" />
               Aktifleştir
@@ -98,7 +98,7 @@ function BulkActions({
               variant="outline"
               size="sm"
               onClick={() => onAction('suspend')}
-              className="border-orange-300 text-orange-700 hover:border-orange-400 hover:bg-orange-50"
+              className="border-orange-300 text-orange-700"
             >
               <UserX className="mr-2 h-4 w-4" />
               Askıya Al
@@ -107,7 +107,7 @@ function BulkActions({
               variant="ghost"
               size="sm"
               onClick={onClear}
-              className="text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+              className="text-gray-500"
             >
               <X className="mr-2 h-4 w-4" />
               Temizle
@@ -320,7 +320,7 @@ export function UserTable({ className }: UserTableProps) {
                     }
                   }}
                   disabled={isLoading}
-                  className="border-gray-300 hover:border-blue-300 hover:bg-blue-50"
+                  className="border-gray-300"
                 >
                   <Download className="mr-2 h-4 w-4" />
                   Dışa Aktar
@@ -330,7 +330,7 @@ export function UserTable({ className }: UserTableProps) {
                   size="sm"
                   onClick={() => onFilterChange({})}
                   disabled={isLoading}
-                  className="border-gray-300 hover:border-green-300 hover:bg-green-50"
+                  className="border-gray-300"
                 >
                   <RefreshCw
                     className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}
@@ -359,7 +359,7 @@ export function UserTable({ className }: UserTableProps) {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="h-12 w-full justify-between border-gray-300 hover:border-blue-300"
+                  className="h-12 w-full justify-between border-gray-300"
                 >
                   <div className="flex items-center space-x-2">
                     <Filter className="h-4 w-4" />
@@ -419,7 +419,7 @@ export function UserTable({ className }: UserTableProps) {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="h-12 w-full justify-between border-gray-300 hover:border-purple-300"
+                  className="h-12 w-full justify-between border-gray-300"
                 >
                   <div className="flex items-center space-x-2">
                     <Shield className="h-4 w-4" />
@@ -562,7 +562,7 @@ export function UserTable({ className }: UserTableProps) {
                     <TableRow
                       key={user.id}
                       className={cn(
-                        'border-b border-gray-100 transition-colors duration-200 hover:bg-gray-50/50',
+                        'border-b border-gray-100',
                         bulkSelection.selectedIds.includes(user.id) &&
                           'bg-blue-50/50'
                       )}
@@ -651,7 +651,7 @@ export function UserTable({ className }: UserTableProps) {
                           <DropdownMenuTrigger asChild>
                             <Button
                               variant="ghost"
-                              className="h-8 w-8 rounded-full p-0 hover:bg-gray-100"
+                              className="h-8 w-8 rounded-full p-0"
                             >
                               <span className="sr-only">Open menu</span>
                               <MoreHorizontal className="h-4 w-4" />
@@ -791,8 +791,8 @@ export function UserTable({ className }: UserTableProps) {
                           disabled={isLoading}
                           className={
                             page === pagination.currentPage
-                              ? 'border-blue-600 bg-blue-600 hover:bg-blue-700'
-                              : 'border-gray-300 hover:border-blue-300 hover:bg-blue-50'
+                              ? 'border-blue-600 bg-blue-600'
+                              : 'border-gray-300'
                           }
                         >
                           {page}
@@ -837,7 +837,7 @@ export function UserTable({ className }: UserTableProps) {
             <AlertDialogCancel>İptal</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => handleUserAction('delete')}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600"
             >
               Sil
             </AlertDialogAction>

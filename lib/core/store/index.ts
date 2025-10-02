@@ -9,6 +9,9 @@
 // Auth store - core authentication state
 export { useAuthStore as default } from './domains/auth/authStore';
 
+// Theme store - global theme management
+export { useThemeStore } from './theme';
+
 // Notification store - optimized notifications
 export { useNotificationStore } from './notification';
 

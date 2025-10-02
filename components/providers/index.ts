@@ -5,4 +5,5 @@
 
 export { AuthProvider } from './AuthProvider';
 export { MSWProvider } from './MSWProvider';
+export { ThemeProvider } from './ThemeProvider';
 export { ToastProvider } from './ToastProvider';

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { MSWProvider } from '@/components/providers/MSWProvider';
 import { AuthProvider } from '@/components/providers/AuthProvider';
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { ToastProvider } from '@/components/providers/ToastProvider';
 import { UnifiedErrorBoundary as ErrorBoundary } from '@/components/ui';
 import { SEOHead } from '@/components/shared/seo/SEOHead';
@@ -54,8 +55,11 @@ export const metadata: Metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#2563eb',
-  colorScheme: 'light',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#2563eb' },
+    { media: '(prefers-color-scheme: dark)', color: '#1e40af' },
+  ],
+  colorScheme: 'light dark',
 };
 
 export default function RootLayout({
@@ -70,11 +74,13 @@ export default function RootLayout({
         className={`${inter.variable} h-full bg-gray-50 font-sans antialiased`}
       >
         <ErrorBoundary>
-          <MSWProvider>
-            <AuthProvider>
-              <ToastProvider>{children}</ToastProvider>
-            </AuthProvider>
-          </MSWProvider>
+          <ThemeProvider>
+            <MSWProvider>
+              <AuthProvider>
+                <ToastProvider>{children}</ToastProvider>
+              </AuthProvider>
+            </MSWProvider>
+          </ThemeProvider>
         </ErrorBoundary>
       </body>
     </html>
