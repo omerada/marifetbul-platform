@@ -148,43 +148,79 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Hero Image/Stats */}
+          {/* Hero Image/Stats - Enhanced */}
           <div className="relative">
-            <div className="rounded-2xl border border-white/20 bg-white/10 p-8 shadow-lg backdrop-blur-sm">
-              <div className="grid grid-cols-2 gap-6">
+            <div className="rounded-3xl border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-sm">
+              {/* Main Stats Grid */}
+              <div className="mb-6 grid grid-cols-2 gap-6">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-white drop-shadow-sm">
-                    50K+
+                  <div className="mb-2 text-4xl font-bold text-white drop-shadow-lg">
+                    125K+
                   </div>
                   <div className="font-medium text-blue-100">Aktif Uzman</div>
+                  <div className="mt-1 text-xs text-blue-200">
+                    +2,500 her ay
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-white drop-shadow-sm">
-                    25K+
+                  <div className="mb-2 text-4xl font-bold text-white drop-shadow-lg">
+                    89K+
                   </div>
                   <div className="font-medium text-blue-100">
                     Tamamlanan Proje
                   </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-white drop-shadow-sm">
-                    4.9
-                  </div>
-                  <div className="flex items-center justify-center font-medium text-blue-100">
-                    <Star className="mr-1 h-4 w-4 fill-yellow-400 text-yellow-400 drop-shadow-sm" />
-                    Ortalama Puan
+                  <div className="mt-1 text-xs text-blue-200">
+                    %99 başarı oranı
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-white drop-shadow-sm">
-                    99%
+                  <div className="mb-2 flex items-center justify-center">
+                    <div className="text-4xl font-bold text-white drop-shadow-lg">
+                      4.9
+                    </div>
+                    <Star className="ml-2 h-6 w-6 fill-yellow-400 text-yellow-400 drop-shadow-sm" />
                   </div>
-                  <div className="font-medium text-blue-100">
-                    Müşteri Memnuniyeti
+                  <div className="font-medium text-blue-100">Ortalama Puan</div>
+                  <div className="mt-1 text-xs text-blue-200">
+                    50K+ değerlendirme
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="mb-2 text-4xl font-bold text-white drop-shadow-lg">
+                    ₺47M+
+                  </div>
+                  <div className="font-medium text-blue-100">Toplam Kazanç</div>
+                  <div className="mt-1 text-xs text-blue-200">
+                    Freelancerlara ödenen
+                  </div>
+                </div>
+              </div>
+
+              {/* Trust Badges */}
+              <div className="border-t border-white/20 pt-6">
+                <div className="flex items-center justify-center space-x-4 text-sm text-blue-100">
+                  <div className="flex items-center space-x-1">
+                    <div className="h-2 w-2 animate-pulse rounded-full bg-green-400"></div>
+                    <span>Güvenli Ödeme</span>
+                  </div>
+                  <div className="h-4 w-px bg-white/30"></div>
+                  <div className="flex items-center space-x-1">
+                    <div className="h-2 w-2 animate-pulse rounded-full bg-blue-400 delay-500"></div>
+                    <span>24/7 Destek</span>
+                  </div>
+                  <div className="h-4 w-px bg-white/30"></div>
+                  <div className="flex items-center space-x-1">
+                    <div className="h-2 w-2 animate-pulse rounded-full bg-purple-400 delay-1000"></div>
+                    <span>SSL Şifreli</span>
                   </div>
                 </div>
               </div>
             </div>
+
+            {/* Floating Elements */}
+            <div className="animate-bounce-soft absolute -top-4 -right-4 h-8 w-8 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500"></div>
+            <div className="absolute -bottom-4 -left-4 h-6 w-6 animate-pulse rounded-full bg-gradient-to-br from-green-400 to-blue-500"></div>
+            <div className="absolute top-1/2 -left-6 h-4 w-4 animate-ping rounded-full bg-gradient-to-br from-purple-400 to-pink-500"></div>
           </div>
         </div>
       </div>
