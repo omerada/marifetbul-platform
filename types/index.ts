@@ -1730,6 +1730,20 @@ export interface AdminDashboardStore {
   charts?: Record<string, unknown>; // Store compatibility
 }
 
+export interface SystemHealth {
+  status: 'healthy' | 'warning' | 'critical';
+  uptime: number;
+  responseTime: number;
+  lastCheck: string;
+  issues?: string[];
+  metrics?: {
+    cpu: number;
+    memory: number;
+    disk: number;
+    network: number;
+  };
+}
+
 export interface AdminDashboardData {
   stats: {
     totalUsers: number;
@@ -1749,13 +1763,9 @@ export interface AdminDashboardData {
   };
   alerts?: SecurityAlert[];
   recentActivity: SecurityAlert[];
-  systemHealth: {
-    status: 'healthy' | 'warning' | 'critical';
-    uptime: number;
-    lastChecked: string;
-    issues?: string[]; // For AdminDashboard component
-  };
+  systemHealth: SystemHealth;
   charts?: Record<string, unknown>; // AdminDashboard component compatibility
+  lastUpdated?: string;
 }
 
 export interface AdminModerationStore {

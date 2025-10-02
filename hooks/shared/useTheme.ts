@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useThemeStore } from '@/lib/core/store/theme';
 
 /**
@@ -6,15 +6,26 @@ import { useThemeStore } from '@/lib/core/store/theme';
  * Handles theme setup on client side
  */
 export function useThemeInitializer() {
-  const { theme, applyTheme } = useThemeStore();
+  const { isDarkMode } = useThemeStore();
+  const initialized = useRef(false);
 
   useEffect(() => {
-    // Only run on client side
-    if (typeof window === 'undefined') return;
+    // Only run once on client side
+    if (typeof window === 'undefined' || initialized.current) return;
 
-    // Apply the stored theme on mount
-    applyTheme(theme);
-  }, [theme, applyTheme]);
+    initialized.current = true;
+
+    // Apply theme class to document
+    const root = document.documentElement;
+    if (isDarkMode) {
+      root.classList.add('dark');
+      root.setAttribute('data-theme', 'dark');
+    } else {
+      root.classList.remove('dark');
+      root.setAttribute('data-theme', 'light');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run once
 }
 
 /**
@@ -23,13 +34,25 @@ export function useThemeInitializer() {
  */
 export function useTheme() {
   const store = useThemeStore();
+  const initialized = useRef(false);
 
   useEffect(() => {
-    // Initialize theme on first load
-    if (typeof window !== 'undefined') {
-      store.applyTheme(store.theme);
+    // Initialize theme on first load only
+    if (typeof window !== 'undefined' && !initialized.current) {
+      initialized.current = true;
+
+      // Apply theme class to document without triggering store update
+      const root = document.documentElement;
+      if (store.isDarkMode) {
+        root.classList.add('dark');
+        root.setAttribute('data-theme', 'dark');
+      } else {
+        root.classList.remove('dark');
+        root.setAttribute('data-theme', 'light');
+      }
     }
-  }, [store]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run once
 
   return {
     theme: store.theme,

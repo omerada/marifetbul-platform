@@ -36,7 +36,6 @@ export const useThemeStore = create<ThemeState>()(
       isDarkMode: false,
 
       setTheme: (theme: Theme) => {
-        const state = get();
         let isDarkMode = false;
 
         switch (theme) {
@@ -51,9 +50,7 @@ export const useThemeStore = create<ThemeState>()(
             break;
         }
 
-        state.applyTheme(theme);
         applyDarkMode(isDarkMode);
-
         set({ theme, isDarkMode });
       },
 
@@ -79,7 +76,11 @@ export const useThemeStore = create<ThemeState>()(
         }
 
         applyDarkMode(isDarkMode);
-        set({ isDarkMode });
+        // Only update store if value actually changed to prevent unnecessary re-renders
+        const currentState = get();
+        if (currentState.isDarkMode !== isDarkMode) {
+          set({ isDarkMode });
+        }
       },
     }),
     {
@@ -94,12 +95,7 @@ export const useThemeStore = create<ThemeState>()(
         }
         return localStorage;
       }),
-      onRehydrateStorage: () => (state) => {
-        if (state) {
-          // Apply theme on hydration
-          state.applyTheme(state.theme);
-        }
-      },
+      // Remove problematic onRehydrateStorage that was causing issues
     }
   )
 );

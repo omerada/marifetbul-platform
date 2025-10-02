@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { useTheme } from '@/hooks';
@@ -34,33 +34,40 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const hasRedirected = useRef(false);
 
   useEffect(() => {
+    // Prevent multiple redirects
+    if (hasRedirected.current || isLoading || pathname === '/admin/login') {
+      return;
+    }
+
     console.log('🏗️ Admin Layout: Auth state changed:', {
       isAuthenticated,
       isLoading,
       userRole: user?.role,
+      pathname,
     });
 
-    if (!isLoading) {
-      if (!isAuthenticated) {
-        console.log('❌ Admin Layout: Not authenticated, redirecting to login');
-        router.push('/admin/login');
-        return;
-      }
-
-      if (user?.role !== 'admin') {
-        console.log(
-          '❌ Admin Layout: User is not admin, redirecting to dashboard'
-        );
-        console.log('👤 Admin Layout: Current user:', user);
-        router.push('/dashboard');
-        return;
-      }
-
-      console.log('✅ Admin Layout: Admin access granted');
+    if (!isAuthenticated) {
+      console.log('❌ Admin Layout: Not authenticated, redirecting to login');
+      hasRedirected.current = true;
+      router.push('/admin/login');
+      return;
     }
-  }, [isAuthenticated, isLoading, user, router]);
+
+    if (user?.role !== 'admin') {
+      console.log(
+        '❌ Admin Layout: User is not admin, redirecting to dashboard'
+      );
+      console.log('👤 Admin Layout: Current user:', user);
+      hasRedirected.current = true;
+      router.push('/dashboard');
+      return;
+    }
+
+    console.log('✅ Admin Layout: Admin access granted');
+  }, [isAuthenticated, isLoading, user, router, pathname]);
 
   // Skip layout for login page
   if (pathname === '/admin/login') {
