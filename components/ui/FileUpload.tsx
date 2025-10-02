@@ -129,7 +129,7 @@ export default function FileUpload({
     <div className={`w-full ${className}`}>
       {/* Upload Area */}
       <div
-        className={`relative rounded-lg border-2 border-dashed p-6 text-center transition-colors ${dragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-300'} ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:border-gray-400'} `}
+        className={`relative rounded-lg border-2 border-dashed p-6 text-center transition-colors ${dragOver ? 'border-primary bg-primary/5' : 'border-border'} ${disabled ? 'cursor-not-allowed opacity-50' : 'hover:border-ring cursor-pointer'} `}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}

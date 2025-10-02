@@ -156,7 +156,7 @@ export function BottomSheet({
 
         {/* Header */}
         {title && (
-          <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
+          <div className="border-border flex items-center justify-between border-b px-4 py-3">
             <h2
               id="bottom-sheet-title"
               className="text-lg font-semibold text-gray-900"
@@ -292,17 +292,17 @@ export function FilterSheet({
       <div className="flex h-full flex-col">
         <div className="flex-1 overflow-y-auto px-4 py-2">{children}</div>
 
-        <div className="border-t border-gray-200 p-4">
+        <div className="border-border border-t p-4">
           <div className="flex space-x-3">
             <button
               onClick={handleClear}
-              className="flex-1 rounded-lg border border-gray-300 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="border-input text-muted-foreground hover:bg-accent flex-1 rounded-lg border py-3 text-sm font-medium"
             >
               Temizle
             </button>
             <button
               onClick={handleApply}
-              className="flex-1 rounded-lg bg-blue-600 py-3 text-sm font-medium text-white hover:bg-blue-700"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 flex-1 rounded-lg py-3 text-sm font-medium"
             >
               Uygula
             </button>

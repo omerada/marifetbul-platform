@@ -141,7 +141,7 @@ export function Pagination({
               value={pageSize}
               onChange={(e) => handlePageSizeChange(Number(e.target.value))}
               disabled={disabled}
-              className="rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              className="border-input focus:border-ring rounded-md border px-2 py-1 text-sm focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             >
               {pageSizeOptions.map((option) => (
                 <option key={option} value={option}>
@@ -216,7 +216,7 @@ export function Pagination({
               min={1}
               max={totalPages}
               disabled={disabled}
-              className="w-16 rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              className="border-input focus:border-ring w-16 rounded-md border px-2 py-1 text-sm focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   const page = parseInt(e.currentTarget.value);

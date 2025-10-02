@@ -102,7 +102,7 @@ export function MobileFilters({
   return (
     <div className="fixed inset-0 z-50 bg-white">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-200 p-4">
+      <div className="border-border flex items-center justify-between border-b p-4">
         <div className="flex items-center">
           <SlidersHorizontal className="mr-2 h-5 w-5 text-gray-600" />
           <h2 className="text-lg font-semibold text-gray-900">Filtreler</h2>
@@ -141,7 +141,7 @@ export function MobileFilters({
               onChange={(e) => handleFilterChange('remote', e.target.checked)}
               className="peer sr-only"
             />
-            <div className="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
+            <div className="peer bg-input peer-checked:bg-primary peer-focus:ring-primary/30 after:border-border after:bg-background peer-checked:after:border-background h-6 w-11 rounded-full peer-focus:ring-4 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:transition-all after:content-[''] peer-checked:after:translate-x-full"></div>
           </label>
         </div>
 

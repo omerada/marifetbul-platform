@@ -17,12 +17,16 @@ export function useThemeInitializer() {
 
     // Apply theme class to document
     const root = document.documentElement;
+    const body = document.body;
+
     if (isDarkMode) {
       root.classList.add('dark');
       root.setAttribute('data-theme', 'dark');
+      body.classList.add('dark');
     } else {
       root.classList.remove('dark');
       root.setAttribute('data-theme', 'light');
+      body.classList.remove('dark');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency array - only run once
@@ -43,16 +47,20 @@ export function useTheme() {
 
       // Apply theme class to document without triggering store update
       const root = document.documentElement;
+      const body = document.body;
+
       if (store.isDarkMode) {
         root.classList.add('dark');
         root.setAttribute('data-theme', 'dark');
+        body.classList.add('dark');
       } else {
         root.classList.remove('dark');
         root.setAttribute('data-theme', 'light');
+        body.classList.remove('dark');
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array - only run once
+  }, [store.isDarkMode]); // Watch for theme changes
 
   return {
     theme: store.theme,

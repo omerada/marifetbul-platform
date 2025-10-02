@@ -20,12 +20,16 @@ const applyDarkMode = (isDark: boolean) => {
   if (typeof window === 'undefined') return;
 
   const root = document.documentElement;
+  const body = document.body;
+
   if (isDark) {
     root.classList.add('dark');
     root.setAttribute('data-theme', 'dark');
+    body.classList.add('dark');
   } else {
     root.classList.remove('dark');
     root.setAttribute('data-theme', 'light');
+    body.classList.remove('dark');
   }
 };
 

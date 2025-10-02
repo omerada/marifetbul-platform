@@ -361,7 +361,7 @@ function InteractionCard({ icon, title, count, color }: InteractionCardProps) {
 
   return (
     <div
-      className={`transform cursor-pointer rounded-lg border-2 border-gray-200 p-4 transition-all duration-300 hover:scale-105 hover:shadow-md ${colorClasses[color]} ${isClicked ? 'scale-95' : ''} `}
+      className={`border-border transform cursor-pointer rounded-lg border-2 p-4 transition-all duration-300 hover:scale-105 hover:shadow-md ${colorClasses[color]} ${isClicked ? 'scale-95' : ''} `}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}

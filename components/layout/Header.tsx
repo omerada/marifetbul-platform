@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -19,15 +19,15 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { UniversalSearch } from '@/components/domains/search';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { useUnreadCount } from '@/hooks';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export function Header() {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { user, isAuthenticated, logout, refreshAuth } = useAuthStore();
-  const unreadCount = useUnreadCount();
+  const unreadCount = useUnreadCount()?.data?.total || 0;
 
-  // Refresh auth on component mount
   useEffect(() => {
     refreshAuth();
   }, [refreshAuth]);
@@ -43,39 +43,20 @@ export function Header() {
 
   const handleSearch = (query: string, type?: string) => {
     if (!query.trim()) return;
-
     const params = new URLSearchParams();
     params.set('q', query);
-
     if (type === 'packages') {
       params.set('view', 'packages');
     } else if (type === 'jobs') {
       params.set('view', 'jobs');
-    } else {
-      // Akıllı default: sorgu tipine göre karar ver
-      const lowerQuery = query.toLowerCase();
-      if (
-        lowerQuery.includes('hizmet') ||
-        lowerQuery.includes('paket') ||
-        lowerQuery.includes('logo') ||
-        lowerQuery.includes('tasarım') ||
-        lowerQuery.includes('çeviri') ||
-        lowerQuery.includes('yazı')
-      ) {
-        params.set('view', 'packages');
-      } else {
-        params.set('view', 'jobs');
-      }
     }
-
     router.push(`/marketplace?${params.toString()}`);
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">
+    <header className="border-border bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b shadow-sm backdrop-blur">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
           <div className="flex flex-shrink-0 items-center">
             <Link href="/" className="flex items-center space-x-2">
               <Image
@@ -84,115 +65,94 @@ export function Header() {
                 width={32}
                 height={32}
                 className="rounded-lg"
-                onError={(e) => {
-                  // Fallback to M letter if icon fails to load
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  target.parentElement!.innerHTML = `
-                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
-                      <span class="text-sm font-bold text-white">M</span>
-                    </div>
-                  `;
-                }}
               />
-              <span className="text-xl font-bold text-gray-900">
+              <span className="text-foreground text-xl font-bold">
                 MarifetBul
               </span>
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden flex-shrink-0 items-center space-x-8 md:flex">
+          <nav className="hidden space-x-8 md:flex">
             <Link
               href="/marketplace"
-              className="font-medium text-gray-700 transition-colors hover:text-blue-600"
+              className="text-foreground hover:text-primary transition-colors"
             >
-              İş & Hizmet
+              Pazar Yeri
             </Link>
             <Link
-              href="/info/how-it-works"
-              className="font-medium text-gray-700 transition-colors hover:text-blue-600"
+              href="/marketplace?view=jobs"
+              className="text-foreground hover:text-primary transition-colors"
             >
-              Nasıl Çalışır?
+              ş lanları
+            </Link>
+            <Link
+              href="/marketplace?view=packages"
+              className="text-foreground hover:text-primary transition-colors"
+            >
+              Hizmet Paketleri
             </Link>
           </nav>
 
-          {/* Universal Search Bar (Desktop) */}
-          <div className="mx-4 hidden max-w-md flex-1 lg:flex xl:mx-8 xl:max-w-lg">
+          <div className="mx-8 hidden max-w-lg flex-1 md:block">
             <UniversalSearch
               onSearch={handleSearch}
-              placeholder="Ne arıyorsun? (logo tasarım, web geliştirme, veri analizi...)"
+              placeholder="Hizmet, iş veya beceri ara..."
               className="w-full"
             />
           </div>
 
-          {/* Desktop Auth */}
-          <div className="hidden flex-shrink-0 items-center space-x-4 md:flex">
+          <div className="hidden items-center space-x-4 md:flex">
+            <ThemeToggle variant="icon" size="sm" />
+
             {isAuthenticated ? (
               <>
-                <Link href="/messages">
-                  <Button variant="ghost" size="sm" className="relative">
-                    <MessageCircle className="h-4 w-4" />
-                    {unreadCount.data.total > 0 && (
-                      <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                        {unreadCount.data.total > 9
-                          ? '9+'
-                          : unreadCount.data.total}
-                      </span>
-                    )}
-                  </Button>
+                <Link
+                  href="/messages"
+                  className="text-muted-foreground hover:text-foreground relative p-2 transition-colors"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  {unreadCount > 0 && (
+                    <span className="bg-destructive text-destructive-foreground absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-xs">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
                 </Link>
-                <Button variant="ghost" size="sm">
-                  <Bell className="h-4 w-4" />
-                </Button>
-                <div className="relative">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center"
-                  >
-                    <User className="h-4 w-4" />
-                    <span className="ml-2">{user?.firstName}</span>
-                    <ChevronDown className="ml-1 h-3 w-3" />
-                  </Button>
 
-                  {/* User Dropdown Menu */}
+                <div className="relative">
+                  <button
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                    className="text-muted-foreground hover:text-foreground flex items-center space-x-2 rounded-lg p-2 transition-colors"
+                  >
+                    <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full">
+                      {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 z-50 mt-2 w-48 rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+                    <div className="border-border bg-popover absolute right-0 z-50 mt-2 w-48 rounded-md border py-1 shadow-lg">
                       <Link
                         href={`/profile/${user?.id}`}
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="text-popover-foreground hover:bg-accent flex items-center px-4 py-2 text-sm"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
-                        <UserCircle className="mr-2 h-4 w-4" />
-                        Profilimi Görüntüle
-                      </Link>
-                      <Link
-                        href="/profile/edit"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <Settings className="mr-2 h-4 w-4" />
-                        Profili Düzenle
+                        <UserCircle className="mr-3 h-4 w-4" />
+                        Profilim
                       </Link>
                       <Link
                         href="/dashboard"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="text-popover-foreground hover:bg-accent flex items-center px-4 py-2 text-sm"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
-                        <User className="mr-2 h-4 w-4" />
-                        Dashboard
+                        <User className="mr-3 h-4 w-4" />
+                        Panel
                       </Link>
-                      <hr className="my-1" />
+                      <hr className="border-border my-1" />
                       <button
-                        onClick={() => {
-                          setIsUserMenuOpen(false);
-                          handleLogout();
-                        }}
-                        className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={handleLogout}
+                        className="text-popover-foreground hover:bg-accent flex w-full items-center px-4 py-2 text-sm"
                       >
-                        <LogOut className="mr-2 h-4 w-4" />
+                        <LogOut className="mr-3 h-4 w-4" />
                         Çıkış Yap
                       </button>
                     </div>
@@ -200,111 +160,71 @@ export function Header() {
                 </div>
               </>
             ) : (
-              <>
-                <Link href="/login">
-                  <Button variant="ghost" size="sm">
-                    Giriş Yap
-                  </Button>
-                </Link>
-                <Link href="/register">
-                  <Button variant="primary" size="sm">
-                    Üye Ol
-                  </Button>
-                </Link>
-              </>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => router.push('/login')}
+                >
+                  Giriş Yap
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => router.push('/register')}
+                >
+                  Üye Ol
+                </Button>
+              </div>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="rounded-md p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 md:hidden"
-            onClick={toggleMobileMenu}
-          >
-            {isMobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
+          <div className="flex items-center space-x-2 md:hidden">
+            <ThemeToggle variant="icon" size="sm" />
+            <button
+              onClick={toggleMobileMenu}
+              className="text-muted-foreground hover:text-foreground inline-flex items-center justify-center rounded-md p-2 transition-colors"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          </div>
         </div>
 
-        {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="border-t border-gray-200 py-4 md:hidden">
-            {/* Mobile Universal Search */}
-            <div className="mb-4">
+          <div className="border-border border-t py-4 md:hidden">
+            <div className="mb-4 px-2">
               <UniversalSearch
                 onSearch={handleSearch}
-                placeholder="Ne arıyorsun? (logo, web tasarım, yazılım...)"
+                placeholder="Hizmet, iş veya beceri ara..."
                 className="w-full"
               />
             </div>
-
-            {/* Mobile Navigation */}
-            <nav className="mb-4 space-y-2">
+            <div className="space-y-2 px-2">
               <Link
                 href="/marketplace"
-                className="block rounded-md px-3 py-2 text-gray-700 transition-colors hover:text-blue-600"
+                className="text-foreground hover:bg-accent block rounded-md px-3 py-2 text-base font-medium"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Keşfet
+                Pazar Yeri
               </Link>
               <Link
-                href="/info/how-it-works"
-                className="block rounded-md px-3 py-2 text-gray-700 transition-colors hover:bg-blue-50 hover:text-blue-600"
+                href="/marketplace?view=jobs"
+                className="text-foreground hover:bg-accent block rounded-md px-3 py-2 text-base font-medium"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Nasıl Çalışır?
+                ş lanları
               </Link>
-            </nav>
-
-            {/* Mobile Auth */}
-            <div className="space-y-2 border-t border-gray-200 pt-4">
-              {isAuthenticated ? (
-                <>
-                  <div className="mb-3 text-center text-sm text-gray-600">
-                    Hoş geldin, {user?.firstName}
-                  </div>
-                  <Link
-                    href="/dashboard"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Button variant="primary" fullWidth>
-                      Dashboard
-                    </Button>
-                  </Link>
-                  <div className="mt-2 flex items-center justify-center space-x-4">
-                    <Button variant="ghost" size="sm">
-                      <Bell className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <User className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={handleLogout}>
-                      <LogOut className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Button variant="outline" fullWidth>
-                      Giriş Yap
-                    </Button>
-                  </Link>
-                  <Link
-                    href="/register"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Button variant="primary" fullWidth>
-                      Üye Ol
-                    </Button>
-                  </Link>
-                </>
-              )}
+              <Link
+                href="/marketplace?view=packages"
+                className="text-foreground hover:bg-accent block rounded-md px-3 py-2 text-base font-medium"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Hizmet Paketleri
+              </Link>
             </div>
           </div>
         )}

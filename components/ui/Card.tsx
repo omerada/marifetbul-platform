@@ -122,7 +122,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     );
 
     const baseClasses = cn(
-      'rounded-lg bg-white transition-all duration-200',
+      'rounded-lg bg-card text-card-foreground transition-all duration-200',
       interactive && 'cursor-pointer hover:shadow-md',
       shouldOptimizeForTouch && interactive && 'active:scale-[0.98]',
       loading && 'opacity-50 pointer-events-none',
@@ -130,11 +130,11 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
       // Variant styles
       {
-        'border border-gray-200 shadow-sm': variant === 'default',
-        'border border-gray-200 shadow-lg': variant === 'elevated',
-        'border-2 border-gray-300': variant === 'outlined',
-        'border-none shadow-none': variant === 'ghost',
-        'bg-gradient-to-br from-primary-50 to-primary-100 border border-primary-200':
+        'border border-border shadow-sm': variant === 'default',
+        'border border-border shadow-lg': variant === 'elevated',
+        'border-2 border-border': variant === 'outlined',
+        'border-none shadow-none bg-transparent': variant === 'ghost',
+        'bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20':
           variant === 'gradient',
       },
 

@@ -334,8 +334,8 @@ export function AccessibleButton({
       config.highContrast && 'bg-gray-200 text-black hover:bg-gray-300'
     ),
     outline: cn(
-      'border border-gray-300 bg-transparent text-gray-700 hover:bg-gray-50 focus-visible:ring-blue-500',
-      config.highContrast && 'border-gray-900 text-black hover:bg-gray-100'
+      'border border-input bg-transparent text-foreground hover:bg-accent focus-visible:ring-ring',
+      config.highContrast && 'border-foreground text-foreground hover:bg-muted'
     ),
     ghost: cn(
       'text-gray-700 hover:bg-gray-100 focus-visible:ring-blue-500',

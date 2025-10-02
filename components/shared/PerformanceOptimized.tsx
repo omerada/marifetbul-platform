@@ -37,7 +37,7 @@ export const OptimizedCard = memo<OptimizedCardProps>(
     // const tagString = useMemo(() => tags.join(', '), [tags]);
     const cardClassName = useMemo(() => {
       return `
-      block p-6 bg-white rounded-lg border border-gray-200 shadow-md 
+      block p-6 bg-card text-card-foreground rounded-lg border border-border shadow-md 
       hover:shadow-lg transition-shadow duration-200
       ${isLoading ? 'opacity-50 pointer-events-none' : ''}
       ${isFavorited ? 'border-primary-200 bg-primary-50' : ''}

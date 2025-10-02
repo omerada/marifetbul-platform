@@ -21,7 +21,7 @@ export function PerformanceMonitor({
 
   return (
     <div
-      className={`rounded-lg border border-gray-200 bg-white p-4 ${className}`}
+      className={`border-border bg-card text-card-foreground rounded-lg border p-4 ${className}`}
     >
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-lg font-medium text-gray-900">
