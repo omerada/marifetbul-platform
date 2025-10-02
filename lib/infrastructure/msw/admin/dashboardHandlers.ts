@@ -29,7 +29,7 @@ const generateDashboardData = (): AdminDashboardData => {
   const systemHealth = {
     status: 'healthy' as const,
     uptime: 2547892, // seconds
-    lastChecked: new Date().toISOString(), // Required field
+    lastCheck: new Date().toISOString(), // Required field
     responseTime: 145, // ms
     apiStatus: 'operational' as const,
     databaseStatus: 'healthy' as const,

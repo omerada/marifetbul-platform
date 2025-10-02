@@ -247,49 +247,6 @@ export function usePaginationUI(options: {
 }
 
 // ================================================
-// THEME HOOKS
-// ================================================
-
-export type Theme = 'light' | 'dark' | 'system';
-
-export function useTheme() {
-  const [theme, setTheme] = useLocalStorage<Theme>('theme', 'system');
-  const systemTheme = useMediaQuery('(prefers-color-scheme: dark)')
-    ? 'dark'
-    : 'light';
-
-  const resolvedTheme = theme === 'system' ? systemTheme : theme;
-
-  const toggleTheme = useCallback(() => {
-    setTheme((prev) => {
-      switch (prev) {
-        case 'light':
-          return 'dark';
-        case 'dark':
-          return 'system';
-        case 'system':
-          return 'light';
-        default:
-          return 'light';
-      }
-    });
-  }, [setTheme]);
-
-  // Apply theme to document
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', resolvedTheme);
-    document.documentElement.classList.remove('light', 'dark');
-    document.documentElement.classList.add(resolvedTheme);
-  }, [resolvedTheme]);
-
-  return {
-    theme,
-    resolvedTheme,
-    setTheme,
-    toggleTheme,
-  };
-}
-
 // ================================================
 // SEARCH HOOKS
 // ================================================
@@ -575,7 +532,6 @@ const UIHooks = {
   // useToast moved to hooks/core/useToast.ts
   useForm,
   usePaginationUI,
-  useTheme,
   useSearch,
   useDragDrop,
   useSidebar,

@@ -100,7 +100,6 @@ interface PlatformSettings {
     affiliateProgram: boolean;
     loyaltyProgram: boolean;
     multiLanguage: boolean;
-    darkMode: boolean;
     notificationSystem: boolean;
     searchEngine: boolean;
     analyticsTracking: boolean;

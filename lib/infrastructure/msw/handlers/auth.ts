@@ -1681,7 +1681,6 @@ export const authHandlers = [
           affiliateProgram: false,
           loyaltyProgram: false,
           multiLanguage: false,
-          darkMode: true,
           notificationSystem: true,
           searchEngine: true,
           analyticsTracking: true,

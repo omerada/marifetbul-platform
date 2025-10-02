@@ -49,9 +49,6 @@ interface UIState {
   // Sidebar state
   isSidebarOpen: boolean;
 
-  // Theme
-  theme: 'light' | 'dark' | 'system';
-
   // Layout preferences
   layout: {
     sidebar: 'expanded' | 'collapsed' | 'hidden';
@@ -80,9 +77,6 @@ interface UIActions {
   toggleSidebar: () => void;
   setSidebarOpen: (open: boolean) => void;
 
-  // Theme actions
-  setTheme: (theme: UIState['theme']) => void;
-
   // Layout actions
   setLayout: (layout: Partial<UIState['layout']>) => void;
 }
@@ -98,7 +92,6 @@ const initialState: UIState = {
   modals: [],
   loadingStates: [],
   isSidebarOpen: true,
-  theme: 'system',
   layout: {
     sidebar: 'expanded',
     density: 'comfortable',
@@ -229,13 +222,6 @@ export const useUIStore = create<UIStore>()(
         });
       },
 
-      // Theme actions
-      setTheme: (theme) => {
-        set((draft) => {
-          draft.theme = theme;
-        });
-      },
-
       // Layout actions
       setLayout: (layout) => {
         set((draft) => {
@@ -261,7 +247,6 @@ export const uiSelectors = {
       isOpen: state.isSidebarOpen,
       layout: state.layout.sidebar,
     })),
-  useTheme: () => useUIStore((state) => state.theme),
   useLayout: () => useUIStore((state) => state.layout),
 
   useActions: () =>
@@ -278,7 +263,6 @@ export const uiSelectors = {
       clearAllLoading: state.clearAllLoading,
       toggleSidebar: state.toggleSidebar,
       setSidebarOpen: state.setSidebarOpen,
-      setTheme: state.setTheme,
       setLayout: state.setLayout,
     })),
 };
@@ -293,7 +277,6 @@ export function useUI() {
   const modals = uiSelectors.useModals();
   const isLoading = uiSelectors.useIsLoading();
   const sidebar = uiSelectors.useSidebar();
-  const theme = uiSelectors.useTheme();
   const layout = uiSelectors.useLayout();
   const actions = uiSelectors.useActions();
 
@@ -302,7 +285,6 @@ export function useUI() {
     modals,
     isLoading,
     sidebar,
-    theme,
     layout,
     ...actions,
   };

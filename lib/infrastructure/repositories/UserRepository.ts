@@ -58,7 +58,6 @@ export interface PrivacySettings {
 }
 
 export interface UserPreferences {
-  theme: 'light' | 'dark' | 'system';
   language: string;
   timezone: string;
 }

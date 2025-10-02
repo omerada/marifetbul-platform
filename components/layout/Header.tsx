@@ -7,11 +7,9 @@ import Image from 'next/image';
 import {
   Menu,
   X,
-  Bell,
   User,
   LogOut,
   UserCircle,
-  Settings,
   ChevronDown,
   MessageCircle,
 } from 'lucide-react';
@@ -19,7 +17,6 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { UniversalSearch } from '@/components/domains/search';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { useUnreadCount } from '@/hooks';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export function Header() {
   const router = useRouter();
@@ -45,11 +42,6 @@ export function Header() {
     if (!query.trim()) return;
     const params = new URLSearchParams();
     params.set('q', query);
-    if (type === 'packages') {
-      params.set('view', 'packages');
-    } else if (type === 'jobs') {
-      params.set('view', 'jobs');
-    }
     router.push(`/marketplace?${params.toString()}`);
   };
 
@@ -79,18 +71,6 @@ export function Header() {
             >
               Pazar Yeri
             </Link>
-            <Link
-              href="/marketplace?view=jobs"
-              className="text-foreground hover:text-primary transition-colors"
-            >
-              ş lanları
-            </Link>
-            <Link
-              href="/marketplace?view=packages"
-              className="text-foreground hover:text-primary transition-colors"
-            >
-              Hizmet Paketleri
-            </Link>
           </nav>
 
           <div className="mx-8 hidden max-w-lg flex-1 md:block">
@@ -102,8 +82,6 @@ export function Header() {
           </div>
 
           <div className="hidden items-center space-x-4 md:flex">
-            <ThemeToggle variant="icon" size="sm" />
-
             {isAuthenticated ? (
               <>
                 <Link
@@ -180,7 +158,6 @@ export function Header() {
           </div>
 
           <div className="flex items-center space-x-2 md:hidden">
-            <ThemeToggle variant="icon" size="sm" />
             <button
               onClick={toggleMobileMenu}
               className="text-muted-foreground hover:text-foreground inline-flex items-center justify-center rounded-md p-2 transition-colors"
@@ -210,20 +187,6 @@ export function Header() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Pazar Yeri
-              </Link>
-              <Link
-                href="/marketplace?view=jobs"
-                className="text-foreground hover:bg-accent block rounded-md px-3 py-2 text-base font-medium"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                ş lanları
-              </Link>
-              <Link
-                href="/marketplace?view=packages"
-                className="text-foreground hover:bg-accent block rounded-md px-3 py-2 text-base font-medium"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Hizmet Paketleri
               </Link>
             </div>
           </div>

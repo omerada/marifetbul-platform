@@ -54,7 +54,8 @@ const mockAdminDashboard: AdminDashboardData = {
   systemHealth: {
     status: 'healthy',
     uptime: 2634000,
-    lastChecked: '2025-09-11T12:00:00Z',
+    responseTime: 120,
+    lastCheck: '2025-09-11T12:00:00Z',
     issues: ['Payment Gateway response time artışı'],
   },
 };

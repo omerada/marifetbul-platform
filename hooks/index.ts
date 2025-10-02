@@ -4,7 +4,7 @@
 // CORE HOOKS - Essential app functionality
 // Updated to use unified auth from shared
 export { useAuth } from './shared/useAuth';
-export { useTheme, useThemeInitializer } from './shared/useTheme';
+
 export { useAuthGuard } from './core/useAuthGuard';
 export { useToast, ToastContext } from './core/useToast';
 export type {

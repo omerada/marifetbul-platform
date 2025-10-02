@@ -14,8 +14,6 @@ import {
   Settings,
   User,
   RefreshCw,
-  Sun,
-  Moon,
   ChevronLeft,
   ChevronRight,
   Home,
@@ -34,7 +32,6 @@ export function AdminHeader({
   isCollapsed,
   onToggleCollapse,
 }: AdminHeaderProps) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -43,11 +40,6 @@ export function AdminHeader({
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Searching for:', searchQuery);
-  };
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle('dark');
   };
 
   return (
@@ -131,20 +123,6 @@ export function AdminHeader({
             className="hidden sm:flex"
           >
             <RefreshCw className={cn('h-4 w-4', isLoading && 'animate-spin')} />
-          </Button>
-
-          {/* Dark mode toggle */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleDarkMode}
-            className="hidden sm:flex"
-          >
-            {isDarkMode ? (
-              <Sun className="h-4 w-4" />
-            ) : (
-              <Moon className="h-4 w-4" />
-            )}
           </Button>
 
           {/* Notifications */}
