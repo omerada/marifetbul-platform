@@ -59,30 +59,82 @@ export function HeroSection() {
       <div className="absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full bg-gradient-to-tr from-purple-100/20 to-pink-100/20 blur-3xl"></div>
 
       <div className="relative z-10 container mx-auto px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-        {/* User Type Toggle - Soft Design */}
-        <div className="mb-12 flex justify-center">
-          <div className="shadow-soft flex items-center rounded-2xl border border-white/40 bg-white/60 p-1.5 backdrop-blur-sm">
+        {/* Enhanced User Type Toggle */}
+        <div className="mb-16 flex justify-center">
+          <div className="relative flex items-center rounded-3xl border border-gray-200/60 bg-white/80 p-2 shadow-xl backdrop-blur-md">
+            {/* Background Slider */}
+            <div
+              className={`absolute top-2 bottom-2 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg transition-all duration-500 ease-out ${
+                activeUserType === 'freelancer'
+                  ? 'right-1/2 left-2 mr-1'
+                  : 'right-2 left-1/2 ml-1'
+              }`}
+            ></div>
+
+            {/* Freelancer Tab */}
             <button
               onClick={() => setActiveUserType('freelancer')}
-              className={`flex items-center rounded-xl px-8 py-4 text-sm font-medium transition-all duration-300 ${
+              className={`relative z-10 flex w-1/2 items-center justify-center rounded-2xl px-8 py-5 text-base font-semibold transition-all duration-300 ${
                 activeUserType === 'freelancer'
-                  ? 'shadow-medium scale-105 border border-blue-100/50 bg-white text-gray-700'
-                  : 'text-gray-600 hover:bg-white/50 hover:text-gray-700'
+                  ? 'text-white'
+                  : 'text-gray-600 hover:text-gray-800'
               }`}
             >
-              <Briefcase className="mr-3 h-4 w-4" />
-              Freelancer
+              <div className="relative mr-4">
+                <Briefcase
+                  className={`h-5 w-5 transition-all duration-300 ${
+                    activeUserType === 'freelancer' ? 'scale-110' : 'scale-100'
+                  }`}
+                />
+                {activeUserType === 'freelancer' && (
+                  <div className="absolute -inset-1 animate-pulse rounded-full bg-white/20"></div>
+                )}
+              </div>
+              <div className="text-left">
+                <div className="font-bold">Freelancer</div>
+                <div
+                  className={`text-xs transition-all duration-300 ${
+                    activeUserType === 'freelancer'
+                      ? 'text-blue-100'
+                      : 'text-gray-500'
+                  }`}
+                >
+                  İş arıyorum
+                </div>
+              </div>
             </button>
+
+            {/* İşveren Tab */}
             <button
               onClick={() => setActiveUserType('employer')}
-              className={`flex items-center rounded-xl px-8 py-4 text-sm font-medium transition-all duration-300 ${
+              className={`relative z-10 flex w-1/2 items-center justify-center rounded-2xl px-8 py-5 text-base font-semibold transition-all duration-300 ${
                 activeUserType === 'employer'
-                  ? 'shadow-medium scale-105 border border-blue-100/50 bg-white text-gray-700'
-                  : 'text-gray-600 hover:bg-white/50 hover:text-gray-700'
+                  ? 'text-white'
+                  : 'text-gray-600 hover:text-gray-800'
               }`}
             >
-              <Package className="mr-3 h-4 w-4" />
-              İşveren
+              <div className="relative mr-4">
+                <Package
+                  className={`h-5 w-5 transition-all duration-300 ${
+                    activeUserType === 'employer' ? 'scale-110' : 'scale-100'
+                  }`}
+                />
+                {activeUserType === 'employer' && (
+                  <div className="absolute -inset-1 animate-pulse rounded-full bg-white/20"></div>
+                )}
+              </div>
+              <div className="text-left">
+                <div className="font-bold">İşveren</div>
+                <div
+                  className={`text-xs transition-all duration-300 ${
+                    activeUserType === 'employer'
+                      ? 'text-blue-100'
+                      : 'text-gray-500'
+                  }`}
+                >
+                  İş veriyorum
+                </div>
+              </div>
             </button>
           </div>
         </div>
@@ -118,7 +170,7 @@ export function HeroSection() {
                   </div>
                   <Button
                     size="lg"
-                    className="interactive-scale shadow-medium bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-4 hover:from-blue-700 hover:to-blue-800"
+                    className="shadow-medium bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-4"
                   >
                     Keşfet
                   </Button>
