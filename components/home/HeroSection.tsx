@@ -2,39 +2,46 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Search, Star, ArrowRight, Briefcase, Package } from 'lucide-react';
+import {
+  Search,
+  ArrowRight,
+  Briefcase,
+  Package,
+  CheckCircle,
+} from 'lucide-react';
 import { Button } from '@/components/ui';
 
 type UserType = 'freelancer' | 'employer';
 
 const contentByUserType = {
   freelancer: {
-    title: 'Yetenek Kazan',
-    subtitle: 'Freelancer olarak projeler bul, para kazan, özgür çalış',
-    searchPlaceholder: 'Hangi alanda çalışmak istiyorsun?',
-    ctaPrimary: 'Freelancer Ol',
-    ctaSecondary: 'İş İlanlarını Gör',
+    title: 'Yeteneğini Keşfet',
+    subtitle:
+      'Freelancer olarak özgür çalış, kendi fiyatını belirle ve işleri bul',
+    searchPlaceholder: 'Hangi alanda uzmanlaşmak istiyorsun?',
+    ctaPrimary: 'Hemen Başla',
+    ctaSecondary: 'Projeleri Keşfet',
     ctaPrimaryHref: '/register?type=freelancer',
     ctaSecondaryHref: '/marketplace?view=jobs',
     benefits: [
       'Kendi fiyatını belirle',
       'Esnek çalışma saatleri',
+      'Güvenli ödeme garantisi',
       'Global müşteri ağı',
-      'Güvenli ödeme sistemi',
     ],
   },
   employer: {
-    title: 'Proje Başlat',
-    subtitle: 'İşveren olarak uzman freelancerları bul, projeleri tamamla',
+    title: 'Hayalini Gerçekleştir',
+    subtitle: 'Doğru yetenekleri bul ve büyük projeleri tamamla',
     searchPlaceholder: 'Hangi hizmeti arıyorsun?',
-    ctaPrimary: 'İş Ver',
-    ctaSecondary: 'Hizmetleri Gör',
+    ctaPrimary: 'Proje Başlat',
+    ctaSecondary: 'Uzmanları Gör',
     ctaPrimaryHref: '/register?type=employer',
     ctaSecondaryHref: '/marketplace?view=services',
     benefits: [
       'Geniş yetenek havuzu',
-      'Hızlı teklif alma',
-      'Kaliteli sonuçlar',
+      'Hızlı eşleştirme',
+      'Kalite garantisi',
       'Bütçe kontrolü',
     ],
   },
@@ -45,182 +52,114 @@ export function HeroSection() {
   const currentContent = contentByUserType[activeUserType];
 
   return (
-    <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white">
-      <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-        {/* User Type Toggle */}
-        <div className="mb-8 flex justify-center">
-          <div className="flex items-center rounded-lg bg-white/10 p-1 backdrop-blur-sm">
+    <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/50 to-indigo-50/80">
+      {/* Background Decoration */}
+      <div className="bg-grid-pattern absolute inset-0 opacity-5"></div>
+      <div className="absolute top-0 right-0 h-[600px] w-[600px] rounded-full bg-gradient-to-br from-blue-100/20 to-indigo-100/20 blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full bg-gradient-to-tr from-purple-100/20 to-pink-100/20 blur-3xl"></div>
+
+      <div className="relative z-10 container mx-auto px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        {/* User Type Toggle - Soft Design */}
+        <div className="mb-12 flex justify-center">
+          <div className="shadow-soft flex items-center rounded-2xl border border-white/40 bg-white/60 p-1.5 backdrop-blur-sm">
             <button
               onClick={() => setActiveUserType('freelancer')}
-              className={`flex items-center rounded-md px-6 py-3 text-sm font-medium transition-all duration-300 ${
+              className={`flex items-center rounded-xl px-8 py-4 text-sm font-medium transition-all duration-300 ${
                 activeUserType === 'freelancer'
-                  ? 'scale-105 transform bg-white text-blue-600 shadow-lg'
-                  : 'text-white hover:bg-white/20'
+                  ? 'shadow-medium scale-105 border border-blue-100/50 bg-white text-gray-700'
+                  : 'text-gray-600 hover:bg-white/50 hover:text-gray-700'
               }`}
             >
-              <Briefcase className="mr-2 h-4 w-4" />
-              İş Arıyorum
+              <Briefcase className="mr-3 h-4 w-4" />
+              Freelancer
             </button>
             <button
               onClick={() => setActiveUserType('employer')}
-              className={`flex items-center rounded-md px-6 py-3 text-sm font-medium transition-all duration-300 ${
+              className={`flex items-center rounded-xl px-8 py-4 text-sm font-medium transition-all duration-300 ${
                 activeUserType === 'employer'
-                  ? 'scale-105 transform bg-white text-blue-600 shadow-lg'
-                  : 'text-white hover:bg-white/20'
+                  ? 'shadow-medium scale-105 border border-blue-100/50 bg-white text-gray-700'
+                  : 'text-gray-600 hover:bg-white/50 hover:text-gray-700'
               }`}
             >
-              <Package className="mr-2 h-4 w-4" />
-              İş Veriyorum
+              <Package className="mr-3 h-4 w-4" />
+              İşveren
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-          <div className="space-y-8">
-            {/* Dynamic Content */}
-            <div className="hero-content">
-              <h1 className="text-4xl leading-tight font-bold lg:text-6xl">
-                <span className="block whitespace-nowrap">
+        <div className="mx-auto max-w-4xl">
+          <div className="space-y-10">
+            {/* Dynamic Content - Enhanced Typography */}
+            <div className="hero-content space-y-6 text-center">
+              <h1 className="text-5xl leading-tight font-bold text-gray-900 lg:text-7xl">
+                <span className="block bg-gradient-to-r from-gray-900 via-blue-800 to-blue-600 bg-clip-text text-transparent">
                   {currentContent.title}
                 </span>
-                <span className="block whitespace-nowrap text-blue-200">
+                <span className="mt-2 block text-3xl font-medium text-gray-600 lg:text-4xl">
                   MarifetBul ile
                 </span>
               </h1>
-              <p className="mt-4 text-xl leading-relaxed text-blue-100">
+              <p className="mx-auto max-w-2xl text-xl leading-relaxed text-gray-600">
                 {currentContent.subtitle}
               </p>
             </div>
 
-            {/* Search Bar */}
-            <div className="hero-search">
-              <div className="rounded-lg bg-white p-2 shadow-xl">
-                <div className="flex flex-col gap-2 sm:flex-row">
+            {/* Search Bar - Modern Design */}
+            <div className="hero-search mx-auto max-w-2xl">
+              <div className="shadow-medium rounded-2xl border border-white/60 bg-white/80 p-3 backdrop-blur-sm">
+                <div className="flex flex-col gap-3 sm:flex-row">
                   <div className="relative flex-1">
-                    <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+                    <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
                     <input
                       type="text"
                       placeholder={currentContent.searchPlaceholder}
-                      className="glow-focus w-full rounded-md py-3 pr-4 pl-10 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full rounded-xl border border-gray-200/50 bg-gray-50/50 py-4 pr-4 pl-12 text-gray-700 transition-all duration-200 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/30 focus:outline-none"
                     />
                   </div>
-                  <Button size="lg" className="interactive-scale px-8">
-                    Ara
+                  <Button
+                    size="lg"
+                    className="interactive-scale shadow-medium bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-4 hover:from-blue-700 hover:to-blue-800"
+                  >
+                    Keşfet
                   </Button>
                 </div>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="hero-buttons flex flex-col gap-4 sm:flex-row">
+            {/* Action Buttons - Soft Style */}
+            <div className="hero-buttons flex flex-col justify-center gap-4 sm:flex-row">
               <Link href={currentContent.ctaPrimaryHref}>
                 <Button
-                  variant="secondary"
                   size="lg"
-                  className="interactive-scale w-full sm:w-auto"
+                  className="interactive-scale shadow-medium h-14 w-full bg-gradient-to-r from-blue-600 to-blue-700 px-8 text-lg hover:from-blue-700 hover:to-blue-800 sm:w-auto"
                 >
                   {currentContent.ctaPrimary}
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-3 h-5 w-5" />
                 </Button>
               </Link>
               <Link href={currentContent.ctaSecondaryHref}>
                 <Button
                   variant="outline"
                   size="lg"
-                  className="interactive-scale w-full border-white bg-transparent text-white hover:bg-white hover:text-blue-600 sm:w-auto"
+                  className="interactive-scale shadow-soft h-14 w-full border-2 border-gray-200 px-8 text-lg text-gray-700 hover:border-gray-300 hover:bg-gray-50 sm:w-auto"
                 >
                   {currentContent.ctaSecondary}
                 </Button>
               </Link>
             </div>
 
-            {/* Benefits List */}
-            <div className="grid grid-cols-2 gap-3 text-sm">
+            {/* Benefits List - Refined Design */}
+            <div className="mx-auto grid max-w-2xl grid-cols-1 gap-4 sm:grid-cols-2">
               {currentContent.benefits.map((benefit, index) => (
                 <div
                   key={index}
-                  className="staggered-fade-in flex items-center text-blue-100"
+                  className="staggered-fade-in shadow-soft flex items-center rounded-xl border border-white/50 bg-white/50 p-4 text-gray-600"
                 >
-                  <div className="mr-2 h-2 w-2 rounded-full bg-blue-300"></div>
-                  {benefit}
+                  <CheckCircle className="mr-3 h-5 w-5 text-green-500" />
+                  <span className="font-medium">{benefit}</span>
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Hero Image/Stats - Enhanced */}
-          <div className="relative">
-            <div className="rounded-3xl border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-sm">
-              {/* Main Stats Grid */}
-              <div className="mb-6 grid grid-cols-2 gap-6">
-                <div className="text-center">
-                  <div className="mb-2 text-4xl font-bold text-white drop-shadow-lg">
-                    125K+
-                  </div>
-                  <div className="font-medium text-blue-100">Aktif Uzman</div>
-                  <div className="mt-1 text-xs text-blue-200">
-                    +2,500 her ay
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="mb-2 text-4xl font-bold text-white drop-shadow-lg">
-                    89K+
-                  </div>
-                  <div className="font-medium text-blue-100">
-                    Tamamlanan Proje
-                  </div>
-                  <div className="mt-1 text-xs text-blue-200">
-                    %99 başarı oranı
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="mb-2 flex items-center justify-center">
-                    <div className="text-4xl font-bold text-white drop-shadow-lg">
-                      4.9
-                    </div>
-                    <Star className="ml-2 h-6 w-6 fill-yellow-400 text-yellow-400 drop-shadow-sm" />
-                  </div>
-                  <div className="font-medium text-blue-100">Ortalama Puan</div>
-                  <div className="mt-1 text-xs text-blue-200">
-                    50K+ değerlendirme
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="mb-2 text-4xl font-bold text-white drop-shadow-lg">
-                    ₺47M+
-                  </div>
-                  <div className="font-medium text-blue-100">Toplam Kazanç</div>
-                  <div className="mt-1 text-xs text-blue-200">
-                    Freelancerlara ödenen
-                  </div>
-                </div>
-              </div>
-
-              {/* Trust Badges */}
-              <div className="border-t border-white/20 pt-6">
-                <div className="flex items-center justify-center space-x-4 text-sm text-blue-100">
-                  <div className="flex items-center space-x-1">
-                    <div className="h-2 w-2 animate-pulse rounded-full bg-green-400"></div>
-                    <span>Güvenli Ödeme</span>
-                  </div>
-                  <div className="h-4 w-px bg-white/30"></div>
-                  <div className="flex items-center space-x-1">
-                    <div className="h-2 w-2 animate-pulse rounded-full bg-blue-400 delay-500"></div>
-                    <span>24/7 Destek</span>
-                  </div>
-                  <div className="h-4 w-px bg-white/30"></div>
-                  <div className="flex items-center space-x-1">
-                    <div className="h-2 w-2 animate-pulse rounded-full bg-purple-400 delay-1000"></div>
-                    <span>SSL Şifreli</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Floating Elements */}
-            <div className="animate-bounce-soft absolute -top-4 -right-4 h-8 w-8 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500"></div>
-            <div className="absolute -bottom-4 -left-4 h-6 w-6 animate-pulse rounded-full bg-gradient-to-br from-green-400 to-blue-500"></div>
-            <div className="absolute top-1/2 -left-6 h-4 w-4 animate-ping rounded-full bg-gradient-to-br from-purple-400 to-pink-500"></div>
           </div>
         </div>
       </div>
