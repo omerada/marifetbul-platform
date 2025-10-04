@@ -24,9 +24,16 @@ import {
   GraduationCap,
   Heart,
   Calculator,
+  Baby,
+  Activity,
+  Leaf,
+  UtensilsCrossed,
+  PartyPopper,
+  Plane,
+  Scale,
 } from 'lucide-react';
 
-// Comprehensive categories with subcategories based on Armut/Bionluk analysis
+// Complete category data structure based on comprehensive Armut/Bionluk analysis
 const categoryData = [
   {
     id: 'teknoloji-yazilim',
@@ -36,6 +43,7 @@ const categoryData = [
     description: 'Web, mobil ve yazılım geliştirme hizmetleri',
     count: '12,450',
     trending: true,
+    popularity: 20,
     subcategories: [
       {
         id: 'web-gelistirme',
@@ -46,8 +54,8 @@ const categoryData = [
           'Kurumsal Web Sitesi',
           'Landing Page',
           'Web Uygulaması',
-          'Frontend Geliştirme',
-          'Backend Geliştirme',
+          'Frontend Geliştirme (React, Vue, Angular)',
+          'Backend Geliştirme (Node.js, PHP, Python)',
           'Full Stack Geliştirme',
         ],
         priceRange: '₺500 - ₺15,000',
@@ -58,13 +66,13 @@ const categoryData = [
         id: 'mobil-uygulama',
         title: 'Mobil Uygulama',
         services: [
-          'iOS App Geliştirme',
-          'Android App Geliştirme',
-          'React Native App',
-          'Flutter App',
-          'Hybrid App',
-          'App Store Optimizasyonu',
-          'App Test & Debug',
+          'iOS App Geliştirme (Swift)',
+          'Android App Geliştirme (Kotlin)',
+          'React Native',
+          'Flutter',
+          'Xamarin & Ionic',
+          'Progressive Web App (PWA)',
+          'App Store Optimizasyonu (ASO)',
         ],
         priceRange: '₺1,000 - ₺25,000',
         averageRating: 4.7,
@@ -74,12 +82,12 @@ const categoryData = [
         id: 'yazilim-gelistirme',
         title: 'Yazılım Geliştirme',
         services: [
-          'Desktop Uygulama',
-          'API Geliştirme',
-          'Database Tasarımı',
-          'Mikroservis Mimarisi',
+          'Desktop Uygulama (.NET, Electron)',
+          'API Geliştirme (REST, GraphQL)',
+          'Database Tasarımı (MySQL, MongoDB)',
+          'Cloud Solutions (AWS, Azure)',
           'DevOps & CI/CD',
-          'Cloud Solutions',
+          'Mikroservis Mimarisi',
           'Blockchain Geliştirme',
         ],
         priceRange: '₺1,500 - ₺50,000',
@@ -90,15 +98,44 @@ const categoryData = [
         id: 'siber-guvenlik',
         title: 'Siber Güvenlik',
         services: [
-          'Güvenlik Testi',
           'Penetrasyon Testi',
-          'Güvenlik Danışmanlığı',
-          'SSL Sertifikası',
-          'Veri Koruma',
+          'Güvenlik Denetimi',
+          'Web Güvenliği',
+          'SSL Sertifikası Kurulumu',
+          'GDPR Uyumluluk',
+          'Veri Koruma Çözümleri',
         ],
         priceRange: '₺800 - ₺12,000',
         averageRating: 4.8,
         count: '420',
+      },
+      {
+        id: 'oyun-gelistirme',
+        title: 'Oyun Geliştirme',
+        services: [
+          'Unity 2D/3D Oyun',
+          'Mobile Game Development',
+          'HTML5 Web Oyunları',
+          'Game Mechanics Design',
+          'PC/Console Game',
+        ],
+        priceRange: '₺1,200 - ₺30,000',
+        averageRating: 4.6,
+        count: '380',
+      },
+      {
+        id: 'blockchain-kripto',
+        title: 'Blockchain & Kripto',
+        services: [
+          'Smart Contract (Solidity)',
+          'DeFi Uygulamaları',
+          'NFT Marketplace',
+          'Kripto Wallet',
+          'Blockchain Consulting',
+        ],
+        priceRange: '₺2,000 - ₺40,000',
+        averageRating: 4.7,
+        count: '280',
       },
     ],
   },
@@ -110,6 +147,7 @@ const categoryData = [
     description: 'Grafik tasarım, logo ve kreatif çözümler',
     count: '8,750',
     trending: true,
+    popularity: 15,
     subcategories: [
       {
         id: 'grafik-tasarim',
@@ -117,26 +155,26 @@ const categoryData = [
         services: [
           'Logo Tasarımı',
           'Kurumsal Kimlik',
-          'Broşür Tasarımı',
-          'Poster Tasarımı',
-          'Kartvizit Tasarımı',
+          'Baskı Tasarımı (Broşür, Flyer)',
           'Ambalaj Tasarımı',
-          'İllüstrasyon',
+          'Kartvizit Tasarımı',
+          'İllüstrasyon & İkon',
+          'Infografik Tasarımı',
         ],
         priceRange: '₺150 - ₺3,000',
         averageRating: 4.6,
         count: '4,200',
       },
       {
-        id: 'web-tasarim',
-        title: 'Web Tasarımı',
+        id: 'web-ui-ux-tasarim',
+        title: 'Web & UI/UX Tasarımı',
         services: [
-          'UI/UX Tasarım',
-          'Web Site Tasarımı',
-          'Mobil App Tasarımı',
-          'Wireframe & Mockup',
-          'Prototype Tasarımı',
-          'Kullanıcı Deneyimi',
+          'UI Design',
+          'UX Design & User Research',
+          'Web Tasarımı',
+          'Mobil App UI Tasarımı',
+          'Wireframe & Prototyping',
+          'Design System',
         ],
         priceRange: '₺300 - ₺8,000',
         averageRating: 4.7,
@@ -146,30 +184,46 @@ const categoryData = [
         id: 'video-animasyon',
         title: 'Video & Animasyon',
         services: [
-          'Animasyon Video',
-          'Explainer Video',
-          'Logo Animasyonu',
+          'Motion Graphics',
           '2D/3D Animasyon',
           'Video Editing',
-          'Motion Graphics',
+          'Logo Animasyonu',
+          'Explainer Video',
+          'Whiteboard Animation',
+          'Stop Motion',
         ],
         priceRange: '₺500 - ₺12,000',
         averageRating: 4.5,
         count: '1,650',
       },
       {
-        id: 'fotograf-video',
-        title: 'Fotoğraf & Video',
+        id: 'fotograf-video-produksiyon',
+        title: 'Fotoğraf & Video Prodüksiyon',
         services: [
           'Ürün Fotoğrafçılığı',
-          'Etkinlik Fotoğrafçılığı',
-          'Video Çekimi',
-          'Fotoğraf Retüşü',
+          'Portre & Etkinlik Fotoğrafçılığı',
+          'Video Çekimi & Prodüksiyon',
           'Drone Çekimi',
+          'Post-Production & Retouching',
+          'Düğün Fotoğraf/Video',
         ],
         priceRange: '₺200 - ₺5,000',
         averageRating: 4.4,
         count: '800',
+      },
+      {
+        id: 'ic-mimarlik-3d',
+        title: 'İç Mimarlık & 3D Tasarım',
+        services: [
+          'İç Mimari Tasarım',
+          '3D Modelleme & Rendering',
+          'Teknik Çizim (AutoCAD)',
+          'Mimari Görselleştirme',
+          'Peyzaj Tasarımı',
+        ],
+        priceRange: '₺800 - ₺15,000',
+        averageRating: 4.6,
+        count: '950',
       },
     ],
   },
@@ -181,18 +235,18 @@ const categoryData = [
     description: 'Dijital pazarlama ve reklam çözümleri',
     count: '6,320',
     trending: true,
+    popularity: 12,
     subcategories: [
       {
         id: 'dijital-pazarlama',
         title: 'Dijital Pazarlama',
         services: [
-          'SEO Optimizasyonu',
-          'Google Ads Yönetimi',
-          'Facebook Ads',
-          'Instagram Pazarlama',
+          'SEO (Arama Motoru Optimizasyonu)',
+          'SEM (Google Ads, Bing Ads)',
+          'Social Media Advertising',
           'Content Marketing',
-          'E-mail Marketing',
-          'Affiliate Marketing',
+          'Email Marketing',
+          'Analytics & Reporting',
         ],
         priceRange: '₺300 - ₺10,000',
         averageRating: 4.6,
@@ -204,9 +258,9 @@ const categoryData = [
         services: [
           'Sosyal Medya Yönetimi',
           'İçerik Üretimi',
-          'Influencer Marketing',
           'Community Management',
-          'Social Media Ads',
+          'Influencer Marketing',
+          'Sosyal Medya Reklamları',
         ],
         priceRange: '₺500 - ₺8,000',
         averageRating: 4.5,
@@ -216,27 +270,42 @@ const categoryData = [
         id: 'metin-icerik',
         title: 'Metin & İçerik',
         services: [
+          'Copywriting',
           'Blog Yazarlığı',
-          'SEO Makale',
-          'Ürün Açıklaması',
-          'Proje Teklifi',
+          'SEO Makale Yazımı',
           'Çeviri Hizmetleri',
-          'Editörlük',
+          'Editörlük & Proofreading',
+          'Ürün Açıklaması',
         ],
         priceRange: '₺50 - ₺2,000',
         averageRating: 4.4,
         count: '1,020',
       },
+      {
+        id: 'pr-iletisim',
+        title: 'PR & İletişim',
+        services: [
+          'Basın Bülteni',
+          'Medya İlişkileri',
+          'Crisis Communication',
+          'Event Marketing',
+          'Brand Communication',
+        ],
+        priceRange: '₺800 - ₺5,000',
+        averageRating: 4.3,
+        count: '450',
+      },
     ],
   },
   {
     id: 'ev-yasam',
-    title: 'Ev & Yaşam',
+    title: 'Ev & Yaşam Hizmetleri',
     icon: Home,
     color: 'bg-orange-500',
     description: 'Ev tadilatı, temizlik ve yaşam hizmetleri',
     count: '15,680',
     trending: false,
+    popularity: 35,
     subcategories: [
       {
         id: 'tadilat-dekorasyon',
@@ -244,27 +313,26 @@ const categoryData = [
         services: [
           'Boyacı',
           'Elektrikçi',
-          'Tesisatçı',
-          'Parke Döşeme',
+          'Tesisatçi',
+          'Döşeme & Zemin (Parke, Laminat)',
+          'Duvar & Tavan (Alçıpan)',
           'Mutfak Tadilat',
           'Banyo Tadilat',
-          'İç Mimar',
-          'Dekoratör',
         ],
         priceRange: '₺200 - ₺25,000',
         averageRating: 4.3,
         count: '8,500',
       },
       {
-        id: 'temizlik',
-        title: 'Temizlik',
+        id: 'temizlik-hizmetleri',
+        title: 'Temizlik Hizmetleri',
         services: [
           'Ev Temizliği',
           'Ofis Temizliği',
-          'Post Construction',
-          'Halı Yıkama',
-          'Cam Silme',
+          'Özel Temizlik (Halı, Koltuk)',
+          'Post-Construction Cleaning',
           'Dezenfeksiyon',
+          'Cam Silme',
         ],
         priceRange: '₺80 - ₺1,500',
         averageRating: 4.2,
@@ -276,13 +344,41 @@ const categoryData = [
         services: [
           'Evden Eve Nakliye',
           'Ofis Taşıma',
-          'Eşya Taşıma',
-          'Piano Taşıma',
+          'Özel Eşya Taşıma',
           'Kurye Hizmetleri',
+          'Uluslararası Taşıma',
         ],
         priceRange: '₺150 - ₺5,000',
         averageRating: 4.1,
         count: '2,980',
+      },
+      {
+        id: 'bahce-peyzaj',
+        title: 'Bahçe & Peyzaj',
+        services: [
+          'Bahçe Düzenleme',
+          'Peyzaj Tasarımı',
+          'Bahçe Bakımı',
+          'Havuz Bakımı',
+          'Sulama Sistemi',
+        ],
+        priceRange: '₺300 - ₺8,000',
+        averageRating: 4.4,
+        count: '1,200',
+      },
+      {
+        id: 'guvenlik-sistemleri',
+        title: 'Güvenlik Sistemleri',
+        services: [
+          'Alarm Sistemi',
+          'Kamera Sistemi',
+          'Intercom Sistemi',
+          'Smart Lock',
+          'Smart Home Installation',
+        ],
+        priceRange: '₺500 - ₺6,000',
+        averageRating: 4.5,
+        count: '800',
       },
     ],
   },
@@ -294,26 +390,26 @@ const categoryData = [
     description: 'Özel ders, kurs ve danışmanlık hizmetleri',
     count: '4,560',
     trending: false,
+    popularity: 8,
     subcategories: [
       {
-        id: 'ozel-ders',
-        title: 'Özel Ders',
+        id: 'ozel-ders-akademik',
+        title: 'Özel Ders & Akademik Destek',
         services: [
-          'Matematik Dersi',
-          'İngilizce Dersi',
-          'Fen Bilgisi',
-          'Türkçe Dersi',
-          'Müzik Dersi',
-          'Resim Dersi',
-          'Programlama Dersi',
+          'İlkokul Dersleri (Türkçe, Matematik)',
+          'Ortaokul & Lise Dersleri',
+          'Üniversite Hazırlık (YKS)',
+          'Yabancı Dil (İngilizce, Almanca)',
+          'Sanat & Müzik Dersleri',
+          'Teknik Beceriler (Programlama)',
         ],
         priceRange: '₺50 - ₺300',
         averageRating: 4.7,
         count: '2,100',
       },
       {
-        id: 'is-danismanligi',
-        title: 'İş Danışmanlığı',
+        id: 'is-kariyer-danismanligi',
+        title: 'İş & Kariyer Danışmanlığı',
         services: [
           'CV Hazırlama',
           'İş Görüşmesi Koçluğu',
@@ -329,15 +425,42 @@ const categoryData = [
         id: 'hukuki-danismanlik',
         title: 'Hukuki Danışmanlık',
         services: [
-          'Hukuki Müşavirlik',
-          'Sözleşme Hazırlama',
-          'Dava Takibi',
-          'Miras Hukuku',
+          'Genel Hukuk & Müşavirlik',
           'İş Hukuku',
+          'Aile Hukuku',
+          'Gayrimenkul Hukuku',
+          'Ticaret Hukuku',
+          'Miras Hukuku',
         ],
         priceRange: '₺300 - ₺10,000',
         averageRating: 4.8,
         count: '1,260',
+      },
+      {
+        id: 'mali-musavirlik',
+        title: 'Mali Müşavirlik',
+        services: [
+          'Muhasebe Hizmetleri',
+          'Vergi Danışmanlığı',
+          'Bordro & SGK İşlemleri',
+          'Mali Müşavirlik',
+        ],
+        priceRange: '₺400 - ₺5,000',
+        averageRating: 4.6,
+        count: '800',
+      },
+      {
+        id: 'psikolojik-danismanlik',
+        title: 'Psikolojik Danışmanlık',
+        services: [
+          'Bireysel Terapi',
+          'Çift Terapisi',
+          'Aile Terapisi',
+          'Çocuk Psikolojisi',
+        ],
+        priceRange: '₺150 - ₺800',
+        averageRating: 4.9,
+        count: '600',
       },
     ],
   },
@@ -349,17 +472,18 @@ const categoryData = [
     description: 'Güzellik, sağlık ve kişisel bakım hizmetleri',
     count: '3,240',
     trending: false,
+    popularity: 5,
     subcategories: [
       {
-        id: 'guzellik-bakim',
-        title: 'Güzellik & Bakım',
+        id: 'guzellik-estetik',
+        title: 'Güzellik & Estetik',
         services: [
-          'Kuaförlük',
-          'Makyaj',
-          'Nail Art',
-          'Cilt Bakımı',
-          'Masaj',
-          'Epilasyon',
+          'Kuaförlük (Kadın/Erkek)',
+          'Makyaj & Güzellik',
+          'Nail Art & Manicure',
+          'Cilt Bakımı & Facial',
+          'Epilasyon (Lazer/Ağda)',
+          'Masaj Terapisi',
         ],
         priceRange: '₺50 - ₺1,000',
         averageRating: 4.4,
@@ -369,15 +493,28 @@ const categoryData = [
         id: 'fitness-saglik',
         title: 'Fitness & Sağlık',
         services: [
-          'Personal Trainer',
-          'Yoga Eğitmeni',
+          'Personal Training',
+          'Yoga & Pilates',
           'Beslenme Koçluğu',
           'Fizyoterapi',
-          'Masaj Terapisi',
+          'Alternatif Tıp',
         ],
         priceRange: '₺100 - ₺2,000',
         averageRating: 4.6,
         count: '1,140',
+      },
+      {
+        id: 'wellness-spa',
+        title: 'Wellness & SPA',
+        services: [
+          'SPA Hizmetleri',
+          'Meditasyon & Mindfulness',
+          'Stress Management',
+          'Holistic Therapy',
+        ],
+        priceRange: '₺200 - ₺1,500',
+        averageRating: 4.5,
+        count: '400',
       },
     ],
   },
@@ -389,30 +526,30 @@ const categoryData = [
     description: 'Araç bakım, onarım ve hizmetleri',
     count: '2,180',
     trending: false,
+    popularity: 3,
     subcategories: [
       {
-        id: 'arac-bakim',
-        title: 'Araç Bakım',
+        id: 'arac-bakim-onarim',
+        title: 'Araç Bakım & Onarım',
         services: [
-          'Araç Yıkama',
-          'Detailing',
-          'Lastik Değişimi',
-          'Fren Bakımı',
+          'Genel Bakım (Yağ, Filtre)',
           'Motor Bakımı',
+          'Elektrik & Elektronik',
           'Klima Bakımı',
+          'Detailing & Car Wash',
         ],
         priceRange: '₺50 - ₺3,000',
         averageRating: 4.2,
         count: '1,500',
       },
       {
-        id: 'arac-kiralama',
-        title: 'Araç Kiralama',
+        id: 'arac-kiralama-satis',
+        title: 'Araç Kiralama & Satış',
         services: [
-          'Günlük Araç Kiralama',
-          'Aylık Araç Kiralama',
-          'Lüks Araç Kiralama',
-          'Minibüs Kiralama',
+          'Günlük/Aylık Kiralama',
+          'Özel Araçlar',
+          'İkinci El Araç Değerlendirme',
+          'Araç Finansmanı',
         ],
         priceRange: '₺100 - ₺5,000',
         averageRating: 4.0,
@@ -425,23 +562,23 @@ const categoryData = [
     title: 'Finans & Muhasebe',
     icon: Calculator,
     color: 'bg-emerald-600',
-    description: 'Mali müşavirlik ve muhasebe hizmetleri',
-    count: '1,890',
+    description: 'Finansal danışmanlık ve muhasebe hizmetleri',
+    count: '1,850',
     trending: false,
+    popularity: 2,
     subcategories: [
       {
-        id: 'muhasebe',
-        title: 'Muhasebe',
+        id: 'muhasebe-hizmetleri',
+        title: 'Muhasebe Hizmetleri',
         services: [
           'Defter Tutma',
-          'Vergi Beyannamesi',
-          'SGK İşlemleri',
-          'Bordro Hazırlama',
+          'Vergi İşlemleri',
+          'Bordro & SGK',
           'Mali Müşavirlik',
         ],
-        priceRange: '₺200 - ₺5,000',
+        priceRange: '₺300 - ₺5,000',
         averageRating: 4.7,
-        count: '1,200',
+        count: '900',
       },
       {
         id: 'yatirim-danismanligi',
@@ -449,13 +586,298 @@ const categoryData = [
         services: [
           'Portföy Yönetimi',
           'Borsa Analizi',
-          'Kripto Para',
-          'Emlak Yatırımı',
-          'Emeklilik Planı',
+          'Gayrimenkul Yatırımı',
+          'Kripto Para Danışmanlığı',
         ],
-        priceRange: '₺500 - ₺15,000',
+        priceRange: '₺500 - ₺10,000',
         averageRating: 4.5,
-        count: '690',
+        count: '650',
+      },
+      {
+        id: 'sigorta',
+        title: 'Sigorta',
+        services: [
+          'Hayat Sigortası',
+          'Sağlık Sigortası',
+          'Kasko Sigortası',
+          'Konut Sigortası',
+        ],
+        priceRange: '₺200 - ₺3,000',
+        averageRating: 4.3,
+        count: '300',
+      },
+    ],
+  },
+  {
+    id: 'cevre-enerji',
+    title: 'Çevre & Enerji',
+    icon: Leaf,
+    color: 'bg-green-600',
+    description: 'Sürdürülebilirlik ve enerji çözümleri',
+    count: '680',
+    trending: true,
+    popularity: 1,
+    subcategories: [
+      {
+        id: 'gunes-enerjisi',
+        title: 'Güneş Enerjisi',
+        services: [
+          'Solar Panel Installation',
+          'Energy Audit',
+          'Grid-tie Systems',
+        ],
+        priceRange: '₺2,000 - ₺50,000',
+        averageRating: 4.6,
+        count: '420',
+      },
+      {
+        id: 'cevre-danismanligi',
+        title: 'Çevre Danışmanlığı',
+        services: [
+          'Environmental Impact Assessment',
+          'Waste Management',
+          'Sustainability Consulting',
+        ],
+        priceRange: '₺1,000 - ₺15,000',
+        averageRating: 4.7,
+        count: '260',
+      },
+    ],
+  },
+  {
+    id: 'gida-icecek',
+    title: 'Gıda & İçecek',
+    icon: UtensilsCrossed,
+    color: 'bg-yellow-600',
+    description: 'Catering ve yemek hizmetleri',
+    count: '920',
+    trending: false,
+    popularity: 1,
+    subcategories: [
+      {
+        id: 'catering-yemek',
+        title: 'Catering & Yemek',
+        services: [
+          'Event Catering',
+          'Corporate Catering',
+          'Wedding Catering',
+          'Home Chef Services',
+        ],
+        priceRange: '₺300 - ₺8,000',
+        averageRating: 4.4,
+        count: '650',
+      },
+      {
+        id: 'kahve-pastane',
+        title: 'Kahve & Pastane',
+        services: ['Coffee Shop Setup', 'Barista Training', 'Pastry Making'],
+        priceRange: '₺200 - ₺3,000',
+        averageRating: 4.3,
+        count: '270',
+      },
+    ],
+  },
+  {
+    id: 'etkinlik-eglence',
+    title: 'Etkinlik & Eğlence',
+    icon: PartyPopper,
+    color: 'bg-purple-600',
+    description: 'Event organizasyon ve eğlence hizmetleri',
+    count: '1,450',
+    trending: false,
+    popularity: 2,
+    subcategories: [
+      {
+        id: 'etkinlik-organizasyonu',
+        title: 'Etkinlik Organizasyonu',
+        services: [
+          'Düğün Organizasyonu',
+          'Doğum Günü Partisi',
+          'Kurumsal Etkinlik',
+          'Konser Organizasyonu',
+        ],
+        priceRange: '₺1,000 - ₺25,000',
+        averageRating: 4.5,
+        count: '800',
+      },
+      {
+        id: 'muzik-sahne',
+        title: 'Müzik & Sahne',
+        services: [
+          'DJ Services',
+          'Live Music',
+          'Sound Equipment Rental',
+          'Lighting Services',
+        ],
+        priceRange: '₺500 - ₺5,000',
+        averageRating: 4.3,
+        count: '450',
+      },
+      {
+        id: 'fotograf-video-etkinlik',
+        title: 'Fotoğraf & Video',
+        services: [
+          'Wedding Photography',
+          'Event Photography',
+          'Corporate Videos',
+          'Social Media Content',
+        ],
+        priceRange: '₺300 - ₺3,000',
+        averageRating: 4.4,
+        count: '200',
+      },
+    ],
+  },
+  {
+    id: 'spor-rekreasyon',
+    title: 'Spor & Rekreasyon',
+    icon: Activity,
+    color: 'bg-orange-600',
+    description: 'Spor antrenörlüğü ve aktivite hizmetleri',
+    count: '840',
+    trending: false,
+    popularity: 1,
+    subcategories: [
+      {
+        id: 'spor-antrenorlugu',
+        title: 'Spor Antrenörlüğü',
+        services: [
+          'Football Coaching',
+          'Basketball Coaching',
+          'Tennis Lessons',
+          'Swimming Lessons',
+        ],
+        priceRange: '₺100 - ₺1,000',
+        averageRating: 4.6,
+        count: '520',
+      },
+      {
+        id: 'outdoor-aktiviteler',
+        title: 'Outdoor Aktiviteler',
+        services: ['Hiking Tours', 'Camping Services', 'Adventure Sports'],
+        priceRange: '₺200 - ₺2,000',
+        averageRating: 4.4,
+        count: '320',
+      },
+    ],
+  },
+  {
+    id: 'cocuk-bebek',
+    title: 'Çocuk & Bebek',
+    icon: Baby,
+    color: 'bg-pink-400',
+    description: 'Çocuk bakımı ve eğitim hizmetleri',
+    count: '650',
+    trending: false,
+    popularity: 1,
+    subcategories: [
+      {
+        id: 'cocuk-bakimi',
+        title: 'Çocuk Bakımı',
+        services: [
+          'Bebek Bakıcısı',
+          'Çocuk Bakıcısı',
+          'After School Care',
+          'Nanny Services',
+        ],
+        priceRange: '₺50 - ₺500',
+        averageRating: 4.7,
+        count: '400',
+      },
+      {
+        id: 'cocuk-egitimi',
+        title: 'Çocuk Eğitimi',
+        services: [
+          'Early Childhood Education',
+          'Montessori Teaching',
+          'Language Classes for Kids',
+        ],
+        priceRange: '₺100 - ₺800',
+        averageRating: 4.8,
+        count: '250',
+      },
+    ],
+  },
+  {
+    id: 'yasli-bakim',
+    title: 'Yaşlı Bakım',
+    icon: Heart,
+    color: 'bg-blue-400',
+    description: 'Yaşlı ve hasta bakım hizmetleri',
+    count: '380',
+    trending: false,
+    popularity: 1,
+    subcategories: [
+      {
+        id: 'hasta-yasli-bakimi',
+        title: 'Hasta & Yaşlı Bakımı',
+        services: [
+          'Elder Care',
+          'Home Nursing',
+          'Companion Care',
+          'Medical Assistance',
+        ],
+        priceRange: '₺100 - ₺1,000',
+        averageRating: 4.9,
+        count: '380',
+      },
+    ],
+  },
+  {
+    id: 'hukuk-kamu',
+    title: 'Hukuk & Kamu',
+    icon: Scale,
+    color: 'bg-gray-700',
+    description: 'Resmi işlemler ve hukuki hizmetler',
+    count: '520',
+    trending: false,
+    popularity: 1,
+    subcategories: [
+      {
+        id: 'resmi-islemler',
+        title: 'Resmi İşlemler',
+        services: [
+          'Document Translation',
+          'Notary Services',
+          'Government Applications',
+          'Visa Applications',
+        ],
+        priceRange: '₺50 - ₺2,000',
+        averageRating: 4.5,
+        count: '520',
+      },
+    ],
+  },
+  {
+    id: 'turizm-seyahat',
+    title: 'Turizm & Seyahat',
+    icon: Plane,
+    color: 'bg-sky-600',
+    description: 'Seyahat planlama ve rehberlik hizmetleri',
+    count: '730',
+    trending: false,
+    popularity: 1,
+    subcategories: [
+      {
+        id: 'seyahat-planlama',
+        title: 'Seyahat Planlama',
+        services: [
+          'Travel Planning',
+          'Tour Guide Services',
+          'Hotel Booking',
+          'Transportation Services',
+        ],
+        priceRange: '₺200 - ₺5,000',
+        averageRating: 4.4,
+        count: '450',
+      },
+      {
+        id: 'rehberlik',
+        title: 'Rehberlik',
+        services: ['Local Tour Guide', 'Cultural Tours', 'Historical Tours'],
+        priceRange: '₺150 - ₺1,500',
+        averageRating: 4.6,
+        count: '280',
       },
     ],
   },
@@ -547,6 +969,60 @@ export default function CategoriesPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="h-14 pr-4 pl-12 text-lg"
               />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Statistics Section */}
+      <div className="border-b bg-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+            <div className="text-center">
+              <div className="mb-2 text-3xl font-bold text-blue-600">16</div>
+              <div className="text-sm text-gray-600">Ana Kategori</div>
+            </div>
+            <div className="text-center">
+              <div className="mb-2 text-3xl font-bold text-purple-600">89</div>
+              <div className="text-sm text-gray-600">Alt Kategori</div>
+            </div>
+            <div className="text-center">
+              <div className="mb-2 text-3xl font-bold text-green-600">800+</div>
+              <div className="text-sm text-gray-600">Hizmet Türü</div>
+            </div>
+            <div className="text-center">
+              <div className="mb-2 text-3xl font-bold text-orange-600">
+                45,000+
+              </div>
+              <div className="text-sm text-gray-600">Aktif Freelancer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Trend Categories Banner */}
+      <div className="bg-gradient-to-r from-orange-50 to-yellow-50 py-8">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
+            <div className="text-center lg:text-left">
+              <h3 className="text-xl font-bold text-gray-900">
+                🔥 2025 Trend Kategorileri
+              </h3>
+              <p className="text-gray-600">
+                AI & Machine Learning, Blockchain Development, Sustainability
+                Consulting
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <span className="rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-700">
+                Yapay Zeka
+              </span>
+              <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
+                Blockchain
+              </span>
+              <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
+                Sürdürülebilirlik
+              </span>
             </div>
           </div>
         </div>
