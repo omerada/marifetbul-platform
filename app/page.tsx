@@ -1,10 +1,7 @@
 import Link from 'next/link';
 import {
   Shield,
-  Users,
-  Zap,
   ArrowRight,
-  Star,
   Package,
   Briefcase,
   CheckCircle,
@@ -16,7 +13,6 @@ import { AppLayout } from '@/components/layout';
 import { Button } from '@/components/ui';
 import { HeroSection } from '@/components/home/HeroSection';
 import { TestimonialsSection } from '@/components/home/TestimonialsSection';
-import { FeaturesShowcase } from '@/components/home/FeaturesShowcase';
 import { StatsSection } from '@/components/home/StatsSection';
 import { CategoryShowcase } from '@/components/home/CategoryShowcase';
 import { TrustIndicators } from '@/components/home/TrustIndicators';
@@ -26,9 +22,6 @@ export default function HomePage() {
     <AppLayout>
       {/* Hero Section with Smart Toggle */}
       <HeroSection />
-
-      {/* Trust Indicators */}
-      <TrustIndicators />
 
       {/* Stats Section */}
       <StatsSection />
@@ -49,6 +42,51 @@ export default function HomePage() {
               kalite. İster freelancer olun, ister işveren - size özel
               çözümlerimizle büyüyün.
             </p>
+
+            {/* Quick Comparison */}
+            <div className="mx-auto mt-8 max-w-2xl">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div className="rounded-xl border border-red-200 bg-gradient-to-r from-red-50 to-red-100 p-4 text-center">
+                  <div className="mb-1 text-sm font-medium text-red-700">
+                    Diğer Platformlar
+                  </div>
+                  <div className="text-lg font-bold text-red-800">₺15-25</div>
+                  <div className="text-xs text-red-600">Teklif Ücreti</div>
+                </div>
+                <div className="rounded-xl border border-green-200 bg-gradient-to-r from-green-50 to-green-100 p-4 text-center">
+                  <div className="mb-1 text-sm font-medium text-green-700">
+                    MarifetBul
+                  </div>
+                  <div className="text-lg font-bold text-green-800">
+                    ÜCRETSİZ
+                  </div>
+                  <div className="text-xs text-green-600">Teklif Ücreti</div>
+                </div>
+                <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-blue-100 p-4 text-center">
+                  <div className="mb-1 text-sm font-medium text-blue-700">
+                    Komisyon Farkı
+                  </div>
+                  <div className="text-lg font-bold text-blue-800">
+                    %50 DAHA AZ
+                  </div>
+                  <div className="text-xs text-blue-600">
+                    Platform Komisyonu
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 text-center">
+                <p className="text-sm text-gray-500">
+                  <span className="font-semibold text-red-600">
+                    Diğer platformlar:
+                  </span>{' '}
+                  Yüksek ücretler,
+                  <span className="ml-1 font-semibold text-green-600">
+                    MarifetBul:
+                  </span>{' '}
+                  Şeffaf ve adil fiyatlandırma
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Enhanced Value Proposition with More Details */}
@@ -190,75 +228,11 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-
-          {/* Core Features Grid - Enhanced */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <div className="group rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-blue-100 p-8 text-center transition-all duration-300 hover:shadow-lg">
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 shadow-lg transition-transform duration-300 group-hover:scale-110">
-                <Shield className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="mb-3 text-xl font-bold text-gray-900">
-                Güvenli Ödeme
-              </h3>
-              <p className="mb-4 text-gray-600">
-                Escrow sistemi ile güvenli ödeme garantisi
-              </p>
-              <div className="text-sm font-semibold text-blue-600">
-                256-bit SSL Şifreleme
-              </div>
-            </div>
-
-            <div className="group rounded-2xl border border-green-100 bg-gradient-to-br from-green-50 to-green-100 p-8 text-center transition-all duration-300 hover:shadow-lg">
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-600 shadow-lg transition-transform duration-300 group-hover:scale-110">
-                <Users className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="mb-3 text-xl font-bold text-gray-900">
-                Kaliteli Uzmanlar
-              </h3>
-              <p className="mb-4 text-gray-600">
-                Doğrulanmış ve deneyimli freelancer&apos;lar
-              </p>
-              <div className="text-sm font-semibold text-green-600">
-                %100 Kimlik Doğrulama
-              </div>
-            </div>
-
-            <div className="group rounded-2xl border border-purple-100 bg-gradient-to-br from-purple-50 to-purple-100 p-8 text-center transition-all duration-300 hover:shadow-lg">
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-600 shadow-lg transition-transform duration-300 group-hover:scale-110">
-                <Zap className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="mb-3 text-xl font-bold text-gray-900">
-                AI Eşleştirme
-              </h3>
-              <p className="mb-4 text-gray-600">
-                Yapay zeka destekli akıllı eşleştirme sistemi
-              </p>
-              <div className="text-sm font-semibold text-purple-600">
-                %95 Doğruluk Oranı
-              </div>
-            </div>
-
-            <div className="group rounded-2xl border border-orange-100 bg-gradient-to-br from-orange-50 to-orange-100 p-8 text-center transition-all duration-300 hover:shadow-lg">
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-600 shadow-lg transition-transform duration-300 group-hover:scale-110">
-                <Star className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="mb-3 text-xl font-bold text-gray-900">
-                Kalite Garantisi
-              </h3>
-              <p className="mb-4 text-gray-600">%100 memnuniyet garantisi</p>
-              <div className="text-sm font-semibold text-orange-600">
-                24/7 Destek
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
       {/* Categories Showcase */}
       <CategoryShowcase />
-
-      {/* Features Showcase */}
-      <FeaturesShowcase />
 
       {/* Testimonials Section */}
       <TestimonialsSection />
@@ -367,6 +341,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Trust Indicators */}
+      <TrustIndicators />
 
       {/* Enhanced CTA Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 py-16 text-white lg:py-24">
