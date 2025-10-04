@@ -1,30 +1,23 @@
 import Link from 'next/link';
 import {
-  Shield,
   ArrowRight,
   Package,
   Briefcase,
   CheckCircle,
   Target,
   Sparkles,
-  Award,
 } from 'lucide-react';
 import { AppLayout } from '@/components/layout';
 import { Button } from '@/components/ui';
 import { HeroSection } from '@/components/home/HeroSection';
 import { TestimonialsSection } from '@/components/home/TestimonialsSection';
-import { StatsSection } from '@/components/home/StatsSection';
 import { CategoryShowcase } from '@/components/home/CategoryShowcase';
-import { TrustIndicators } from '@/components/home/TrustIndicators';
 
 export default function HomePage() {
   return (
     <AppLayout>
       {/* Hero Section with Smart Toggle */}
       <HeroSection />
-
-      {/* Stats Section */}
-      <StatsSection />
 
       {/* Features Section - Value Propositions Comparison */}
       <section className="bg-white py-16 lg:py-24">
@@ -151,6 +144,9 @@ export default function HomePage() {
                       <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </Link>
+
+                  <div className="mt-6"></div>
+
                   <p className="text-center text-sm text-gray-500">
                     ⭐ Ortalama freelancer ayda <strong>₺8,500</strong>{' '}
                     kazanıyor
@@ -221,6 +217,9 @@ export default function HomePage() {
                       <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </Link>
+
+                  <div className="mt-6"></div>
+
                   <p className="text-center text-sm text-gray-500">
                     💼 Ortalama proje <strong>7 gün</strong> içinde tamamlanıyor
                   </p>
@@ -274,10 +273,10 @@ export default function HomePage() {
                 step: 2,
                 title: 'Eşleşin & Başlayın',
                 description:
-                  'AI algoritması ile ideal eşleşmeleri bulun, projelerinizi paylaşın veya teklifler verin.',
+                  'Platform üzerinde ideal eşleşmeleri bulun, projelerinizi paylaşın veya teklifler verin.',
                 icon: '🎯',
                 details: [
-                  'AI destekli eşleştirme',
+                  'Akıllı eşleştirme',
                   'Anında bildirimler',
                   'Güvenli sohbet',
                 ],
@@ -291,9 +290,9 @@ export default function HomePage() {
                 details: ['Escrow ödeme', 'Otomatik fatura', 'Başarı takibi'],
               },
             ].map((item, index) => (
-              <div key={index} className="group relative text-center">
-                <div className="relative z-10 rounded-2xl border border-gray-100 bg-white p-8 shadow-sm transition-all duration-300 hover:shadow-lg">
-                  <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-2xl font-bold text-white shadow-lg transition-transform duration-300 group-hover:scale-110">
+              <div key={index} className="relative text-center">
+                <div className="relative z-10 rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+                  <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-blue-500 text-2xl font-medium text-white shadow-md">
                     {item.step}
                   </div>
                   <div className="mb-4 text-4xl">{item.icon}</div>
@@ -342,9 +341,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Trust Indicators */}
-      <TrustIndicators />
-
       {/* Enhanced CTA Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 py-16 text-white lg:py-24">
         {/* Background Elements */}
@@ -358,40 +354,40 @@ export default function HomePage() {
         <div className="relative z-10 container mx-auto px-4 text-center sm:px-6 lg:px-8">
           <div className="mb-8 inline-flex items-center rounded-full bg-white/10 px-6 py-3 text-sm font-medium text-blue-100 backdrop-blur-sm">
             <Sparkles className="mr-2 h-4 w-4" />
-            Ücretsiz Başlayın
+            Hemen Başlayın
           </div>
 
           <h2 className="mb-6 text-4xl font-bold lg:text-5xl">
-            Hayalinizdeki İş Hayatı
+            Freelance Kariyeriniz
             <br />
             <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
-              Bir Tık Uzağınızda
+              Burada Başlıyor
             </span>
           </h2>
 
           <p className="mx-auto mb-8 max-w-3xl text-xl leading-relaxed text-blue-100">
-            125.000+ aktif kullanıcımızın güvendiği platform ile freelance
-            kariyerinizi başlatın veya projeleriniz için en iyi yetenekleri
-            bulun. İlk iş garantili!
+            Türkiye&apos;nin yeni nesil freelance platformu ile yeteneklerinizi
+            keşfedin, projelerinizi hayata geçirin. Güvenli, hızlı ve kullanıcı
+            dostu deneyim sizi bekliyor.
           </p>
 
-          {/* Stats Row */}
+          {/* Feature Highlights */}
           <div className="mx-auto mb-10 grid max-w-2xl grid-cols-2 gap-6 md:grid-cols-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">₺47M+</div>
-              <div className="text-sm text-blue-200">Toplam Kazanç</div>
+              <div className="text-2xl font-bold text-white">🚀</div>
+              <div className="text-sm text-blue-200">Hızlı Başlangıç</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">89K+</div>
-              <div className="text-sm text-blue-200">Proje</div>
+              <div className="text-2xl font-bold text-white">🔒</div>
+              <div className="text-sm text-blue-200">Güvenli Ödeme</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">4.9★</div>
-              <div className="text-sm text-blue-200">Ortalama Puan</div>
+              <div className="text-2xl font-bold text-white">🎯</div>
+              <div className="text-sm text-blue-200">Doğru Eşleşme</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">24/7</div>
-              <div className="text-sm text-blue-200">Destek</div>
+              <div className="text-2xl font-bold text-white">💬</div>
+              <div className="text-sm text-blue-200">7/24 Destek</div>
             </div>
           </div>
 
@@ -418,29 +414,6 @@ export default function HomePage() {
                 <ArrowRight className="ml-3 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
-          </div>
-
-          {/* Trust Indicators */}
-          <div className="mt-12 border-t border-white/20 pt-8">
-            <p className="mb-4 text-sm text-blue-200">
-              Güvenilir ve sertifikalı platform
-            </p>
-            <div className="flex items-center justify-center space-x-6 opacity-70">
-              <div className="flex items-center space-x-2">
-                <Shield className="h-5 w-5" />
-                <span className="text-sm">SSL Güvenlik</span>
-              </div>
-              <div className="h-4 w-px bg-white/30"></div>
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-5 w-5" />
-                <span className="text-sm">Doğrulanmış Kimlikler</span>
-              </div>
-              <div className="h-4 w-px bg-white/30"></div>
-              <div className="flex items-center space-x-2">
-                <Award className="h-5 w-5" />
-                <span className="text-sm">ISO Sertifikalı</span>
-              </div>
-            </div>
           </div>
         </div>
       </section>

@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { AppLayout } from '@/components/layout';
 import { Card } from '@/components/ui/Card';
 
 export const metadata: Metadata = {
@@ -42,7 +41,7 @@ export default function CategoriesPage() {
   ];
 
   return (
-    <AppLayout>
+    <div className="min-h-screen bg-gray-50">
       <div className="bg-gradient-to-b from-blue-50 to-white py-16">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-4xl text-center">
@@ -57,7 +56,7 @@ export default function CategoriesPage() {
         </div>
       </div>
 
-      <div className="py-16">
+      <div className="bg-white py-16">
         <div className="container mx-auto px-4">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {categories.map((category, index) => (
@@ -82,6 +81,6 @@ export default function CategoriesPage() {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </div>
   );
 }
