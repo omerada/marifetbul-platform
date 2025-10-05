@@ -13,3 +13,8 @@ export { MobileMarketplace } from './marketplace/MobileMarketplace';
 // Recommendations
 export { RecommendationCard } from './RecommendationCard';
 export { FavoritesManager } from './FavoritesManager';
+
+// Category Components
+export { default as CategoryCard } from './CategoryCard';
+export { default as CategorySearch } from './CategorySearch';
+export { default as CategoryFilter } from './CategoryFilter';

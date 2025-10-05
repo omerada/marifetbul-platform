@@ -75,6 +75,12 @@ export function Header() {
             >
               Pazar Yeri
             </Link>
+            <Link
+              href="/marketplace/categories"
+              className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600"
+            >
+              Kategoriler
+            </Link>
           </nav>
 
           {/* Search Bar - Desktop */}
@@ -202,6 +208,13 @@ export function Header() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Pazar Yeri
+              </Link>
+              <Link
+                href="/marketplace/categories"
+                className="block rounded-lg px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Kategoriler
               </Link>
 
               {!isAuthenticated && (
