@@ -199,8 +199,13 @@ const CategoriesPageClient: React.FC = () => {
             <p className="mx-auto max-w-3xl text-lg text-slate-600">
               16 ana kategoride 800+ farklı hizmet türünde uzman freelancerlar
               ile tanışın. İhtiyacınıza uygun kategoriyi seçin ve projenizi
-              başlatın.
+              başlatın. Her kategoriye tıklayarak alt kategorileri ve tüm hizmet
+              türlerini görebilirsiniz.
             </p>
+            <div className="mt-6 text-sm text-slate-500">
+              💡 <strong>İpucu:</strong> Kategori kartlarındaki sayılara
+              tıklayarak o kategorideki tüm hizmetleri görüntüleyebilirsiniz.
+            </div>
           </div>
 
           {/* All Categories Grid */}
@@ -209,7 +214,7 @@ const CategoriesPageClient: React.FC = () => {
               <Loading size="lg" />
             </div>
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {/* Use all categories from the store instead of filtered ones */}
               {categories.map((category) => (
                 <div key={category.id}>
@@ -217,7 +222,8 @@ const CategoriesPageClient: React.FC = () => {
                     category={category}
                     variant="default"
                     showStats={true}
-                    showSubcategories={false}
+                    showSubcategories={true}
+                    searchTerm={searchTerm || ''}
                   />
                 </div>
               ))}

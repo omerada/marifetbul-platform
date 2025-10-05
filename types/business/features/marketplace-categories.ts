@@ -99,6 +99,10 @@ export interface CategoryCardProps {
   showSubcategories: boolean;
   onClick?: (categoryId: string) => void;
   className?: string;
+  isExpandable?: boolean;
+  isExpanded?: boolean;
+  onToggleExpand?: (categoryId: string) => void;
+  searchTerm?: string;
 }
 
 export interface CategoryGridProps {
