@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import {
   Users,
@@ -20,36 +19,6 @@ import {
   useCategorySearch,
   useFeaturedCategories,
 } from '@/lib/domains/marketplace/categories-store';
-
-// Animation variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: 'easeOut' as const },
-  },
-};
-
-const heroVariants = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { duration: 0.6, ease: 'easeOut' as const },
-  },
-};
 
 const CategoriesPageClient: React.FC = () => {
   const {
@@ -122,19 +91,14 @@ const CategoriesPageClient: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero Section */}
-      <motion.section
-        variants={heroVariants}
-        initial="hidden"
-        animate="visible"
-        className="relative bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900"
-      >
+      <section className="relative bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-[url('/patterns/grid.svg')] opacity-10"></div>
         <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-br from-slate-800/20 to-slate-900/20"></div>
 
         <div className="relative container mx-auto px-4 py-16 lg:py-24">
           <div className="mx-auto max-w-4xl text-center text-white">
-            <motion.div variants={itemVariants} className="mb-6">
+            <div className="mb-6">
               <Badge
                 variant="secondary"
                 className="mb-4 border-white/30 bg-white/20 text-white"
@@ -154,11 +118,10 @@ const CategoriesPageClient: React.FC = () => {
                 tanışın. Projelerinizi kaliteli, hızlı ve uygun fiyatlarla
                 hayata geçirin.
               </p>
-            </motion.div>
+            </div>
 
             {/* Search Bar */}
-            <motion.div
-              variants={itemVariants}
+            <div
               className="relative z-[9998] mb-8"
               style={{ position: 'relative', zIndex: 9998 }}
             >
@@ -171,7 +134,7 @@ const CategoriesPageClient: React.FC = () => {
                   placeholder="Hangi hizmeti arıyorsunuz? (örn: logo tasarımı, web sitesi)"
                 />
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
 
@@ -190,19 +153,13 @@ const CategoriesPageClient: React.FC = () => {
             ></path>
           </svg>
         </div>
-      </motion.section>
+      </section>
 
       {/* Featured Categories */}
       {!searchTerm && (
         <section className="bg-white py-16">
           <div className="container mx-auto px-4">
-            <motion.div
-              variants={itemVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="mb-12 text-center"
-            >
+            <div className="mb-12 text-center">
               <h2 className="mb-4 text-3xl font-bold text-gray-900">
                 En Çok Tercih Edilen Hizmet Kategorileri
               </h2>
@@ -210,26 +167,20 @@ const CategoriesPageClient: React.FC = () => {
                 İhtiyacınıza uygun kategorilerde uzman freelancerlar ile
                 çalışın.
               </p>
-            </motion.div>
+            </div>
 
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="grid auto-rows-fr gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-            >
-              {featuredCategories.map((category) => (
-                <motion.div key={category.id} variants={itemVariants}>
+            <div className="grid auto-rows-fr gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {featuredCategories.slice(0, 4).map((category) => (
+                <div key={category.id}>
                   <CategoryCard
                     category={category}
                     variant="featured"
                     showStats={true}
                     showSubcategories={false}
                   />
-                </motion.div>
+                </div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </section>
       )}
@@ -237,13 +188,7 @@ const CategoriesPageClient: React.FC = () => {
       {/* All Categories Grid */}
       <section className="bg-slate-50 py-20">
         <div className="container mx-auto px-4">
-          <motion.div
-            variants={itemVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="mb-12 text-center"
-          >
+          <div className="mb-12 text-center">
             <Badge
               variant="outline"
               className="mb-4 border-slate-300 text-slate-700"
@@ -259,7 +204,7 @@ const CategoriesPageClient: React.FC = () => {
               ile tanışın. İhtiyacınıza uygun kategoriyi seçin ve projenizi
               başlatın.
             </p>
-          </motion.div>
+          </div>
 
           {/* All Categories Grid */}
           {categoriesLoading ? (
@@ -267,25 +212,19 @@ const CategoriesPageClient: React.FC = () => {
               <Loading size="lg" />
             </div>
           ) : (
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-            >
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {/* Use all categories from the store instead of filtered ones */}
               {categories.map((category) => (
-                <motion.div key={category.id} variants={itemVariants}>
+                <div key={category.id}>
                   <CategoryCard
                     category={category}
                     variant="default"
                     showStats={true}
                     showSubcategories={false}
                   />
-                </motion.div>
+                </div>
               ))}
-            </motion.div>
+            </div>
           )}
         </div>
       </section>
@@ -293,13 +232,7 @@ const CategoriesPageClient: React.FC = () => {
       {/* Benefits Section */}
       <section className="bg-white py-16">
         <div className="container mx-auto px-4">
-          <motion.div
-            variants={itemVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="mb-12 text-center"
-          >
+          <div className="mb-12 text-center">
             <Badge variant="outline" className="mb-4">
               <Award className="mr-1 h-3 w-3" />
               Neden MarifetBul?
@@ -311,16 +244,10 @@ const CategoriesPageClient: React.FC = () => {
               Güvenli ödeme sistemi, kaliteli freelancerlar ve 7/24 müşteri
               desteği ile projelerinizi güvenle yönetin.
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
-          >
-            <motion.div variants={itemVariants}>
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <div>
               <Card className="p-6 text-center">
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
                   <CheckCircle className="h-6 w-6 text-blue-600" />
@@ -331,9 +258,9 @@ const CategoriesPageClient: React.FC = () => {
                   kalmadığınız durumda iade garantisi.
                 </p>
               </Card>
-            </motion.div>
+            </div>
 
-            <motion.div variants={itemVariants}>
+            <div>
               <Card className="p-6 text-center">
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
                   <Users className="h-6 w-6 text-green-600" />
@@ -346,9 +273,9 @@ const CategoriesPageClient: React.FC = () => {
                   onaylanmış uzmanlar.
                 </p>
               </Card>
-            </motion.div>
+            </div>
 
-            <motion.div variants={itemVariants}>
+            <div>
               <Card className="p-6 text-center">
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
                   <Clock className="h-6 w-6 text-purple-600" />
@@ -359,8 +286,8 @@ const CategoriesPageClient: React.FC = () => {
                   desteğimiz yanınızda.
                 </p>
               </Card>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -371,13 +298,7 @@ const CategoriesPageClient: React.FC = () => {
         <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-br from-slate-800/20 to-slate-900/20"></div>
 
         <div className="relative container mx-auto px-4">
-          <motion.div
-            variants={itemVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="text-center text-white"
-          >
+          <div className="text-center text-white">
             <Badge
               variant="secondary"
               className="mb-6 border-white/30 bg-white/20 text-white"
@@ -416,7 +337,7 @@ const CategoriesPageClient: React.FC = () => {
                 </Button>
               </Link>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>

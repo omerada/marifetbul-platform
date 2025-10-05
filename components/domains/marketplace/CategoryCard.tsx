@@ -17,6 +17,9 @@ import {
   PartyPopper,
   Dumbbell,
   Baby,
+  Users,
+  Scale,
+  MapPin,
   ChevronRight,
   Clock,
   ArrowUpRight,
@@ -39,6 +42,9 @@ const iconMap = {
   PartyPopper,
   Dumbbell,
   Baby,
+  Users,
+  Scale,
+  MapPin,
 };
 
 // Animation variants

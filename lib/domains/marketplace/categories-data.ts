@@ -768,19 +768,312 @@ export const MARKETPLACE_CATEGORIES: Category[] = [
     subcategories: [],
   },
 
-  // 11-16. Kalan kategoriler...
+  // 11. ETKİNLİK & EĞLENCE
+  {
+    id: 'etkinlik-eglence',
+    title: 'Etkinlik & Eğlence',
+    description:
+      'Düğün organizasyonu, etkinlik planlaması, müzik ve eğlence hizmetleri',
+    shortDescription: 'Etkinlik organizasyonu ve eğlence',
+    icon: 'PartyPopper',
+    iconColor: '#F59E0B', // Amber-500
+    serviceCount: 65,
+    averagePrice: 2200,
+    priceRange: { min: 500, max: 8000 },
+    topSkills: [
+      'Event Planning',
+      'DJ',
+      'Photography',
+      'Catering',
+      'Decoration',
+    ],
+    popularServices: [
+      'Düğün Organizasyonu',
+      'DJ Hizmeti',
+      'Etkinlik Fotoğrafçılığı',
+      'Catering',
+    ],
+    trending: false,
+    featured: true,
+    order: 11,
+    slug: 'etkinlik-eglence',
+    metadata: {
+      seoTitle: 'Etkinlik & Eğlence Hizmetleri | MarifetBul',
+      seoDescription:
+        'Düğün organizasyonu, doğum günü partisi ve etkinlik planlaması hizmetleri.',
+      keywords: ['etkinlik organizasyonu', 'düğün', 'parti', 'DJ', 'müzik'],
+      lastUpdated: '2025-10-04',
+      isActive: true,
+    },
+    stats: {
+      totalFreelancers: 320,
+      completedProjects: 2100,
+      averageRating: 4.7,
+      responseTime: 1,
+      successRate: 94,
+      monthlyGrowth: 6,
+    },
+    subcategories: [],
+  },
+
+  // 12. SPOR & REKREASİYON
+  {
+    id: 'spor-rekreasyon',
+    title: 'Spor & Rekreasyon',
+    description:
+      'Kişisel antrenörlük, spor koçluğu ve outdoor aktivite hizmetleri',
+    shortDescription: 'Spor antrenörlüğü ve rekreasyon',
+    icon: 'Dumbbell',
+    iconColor: '#10B981', // Emerald-500
+    serviceCount: 45,
+    averagePrice: 800,
+    priceRange: { min: 200, max: 3000 },
+    topSkills: ['Personal Training', 'Yoga', 'Football', 'Tennis', 'Swimming'],
+    popularServices: [
+      'Personal Trainer',
+      'Yoga Dersi',
+      'Futbol Antrenörlüğü',
+      'Yüzme Dersi',
+    ],
+    trending: true,
+    featured: false,
+    order: 12,
+    slug: 'spor-rekreasyon',
+    metadata: {
+      seoTitle: 'Spor & Rekreasyon Hizmetleri | MarifetBul',
+      seoDescription:
+        'Kişisel antrenör, yoga eğitmeni ve spor koçluğu hizmetleri.',
+      keywords: ['personal trainer', 'yoga', 'spor', 'antrenör', 'fitness'],
+      lastUpdated: '2025-10-04',
+      isActive: true,
+    },
+    stats: {
+      totalFreelancers: 180,
+      completedProjects: 1350,
+      averageRating: 4.8,
+      responseTime: 1,
+      successRate: 96,
+      monthlyGrowth: 8,
+    },
+    subcategories: [],
+  },
+
+  // 13. ÇOCUK & BEBEK
+  {
+    id: 'cocuk-bebek',
+    title: 'Çocuk & Bebek',
+    description: 'Bebek bakımı, çocuk bakımı, eğitim ve gelişim hizmetleri',
+    shortDescription: 'Çocuk bakımı ve eğitimi',
+    icon: 'Baby',
+    iconColor: '#EC4899', // Pink-500
+    serviceCount: 40,
+    averagePrice: 600,
+    priceRange: { min: 150, max: 2000 },
+    topSkills: [
+      'Childcare',
+      'Education',
+      'Psychology',
+      'First Aid',
+      'Nutrition',
+    ],
+    popularServices: [
+      'Bebek Bakıcısı',
+      'Çocuk Bakıcısı',
+      'Özel Ders',
+      'Çocuk Psikolojisi',
+    ],
+    trending: false,
+    featured: true,
+    order: 13,
+    slug: 'cocuk-bebek',
+    metadata: {
+      seoTitle: 'Çocuk & Bebek Bakım Hizmetleri | MarifetBul',
+      seoDescription:
+        'Güvenilir bebek bakıcısı, çocuk bakıcısı ve çocuk eğitimi hizmetleri.',
+      keywords: [
+        'bebek bakıcısı',
+        'çocuk bakıcısı',
+        'childcare',
+        'çocuk eğitimi',
+        'nanny',
+      ],
+      lastUpdated: '2025-10-04',
+      isActive: true,
+    },
+    stats: {
+      totalFreelancers: 250,
+      completedProjects: 1800,
+      averageRating: 4.9,
+      responseTime: 1,
+      successRate: 98,
+      monthlyGrowth: 5,
+    },
+    subcategories: [],
+  },
+
+  // 14. YAŞLI BAKIM
+  {
+    id: 'yasli-bakim',
+    title: 'Yaşlı Bakımı',
+    description: 'Yaşlı bakımı, hasta bakımı ve evde sağlık hizmetleri',
+    shortDescription: 'Yaşlı ve hasta bakımı',
+    icon: 'Heart',
+    iconColor: '#DC2626', // Red-600
+    serviceCount: 25,
+    averagePrice: 900,
+    priceRange: { min: 300, max: 2500 },
+    topSkills: [
+      'Elder Care',
+      'Medical Care',
+      'Companion',
+      'First Aid',
+      'Nursing',
+    ],
+    popularServices: [
+      'Yaşlı Bakımı',
+      'Hasta Bakımı',
+      'Evde Hemşirelik',
+      'Refakatçi',
+    ],
+    trending: false,
+    featured: false,
+    order: 14,
+    slug: 'yasli-bakim',
+    metadata: {
+      seoTitle: 'Yaşlı Bakımı Hizmetleri | MarifetBul',
+      seoDescription:
+        'Profesyonel yaşlı bakımı, hasta bakımı ve evde sağlık hizmetleri.',
+      keywords: [
+        'yaşlı bakımı',
+        'hasta bakımı',
+        'evde bakım',
+        'hemşire',
+        'refakatçi',
+      ],
+      lastUpdated: '2025-10-04',
+      isActive: true,
+    },
+    stats: {
+      totalFreelancers: 120,
+      completedProjects: 890,
+      averageRating: 4.8,
+      responseTime: 1,
+      successRate: 97,
+      monthlyGrowth: 3,
+    },
+    subcategories: [],
+  },
+
+  // 15. HUKUK & KAMU
+  {
+    id: 'hukuk-kamu',
+    title: 'Hukuk & Kamu',
+    description: 'Hukuki danışmanlık, resmi işlemler ve kamu hizmetleri',
+    shortDescription: 'Hukuki danışmanlık ve resmi işlemler',
+    icon: 'Scale',
+    iconColor: '#374151', // Gray-700
+    serviceCount: 35,
+    averagePrice: 1500,
+    priceRange: { min: 500, max: 5000 },
+    topSkills: [
+      'Legal Consulting',
+      'Document Prep',
+      'Translation',
+      'Notary',
+      'Immigration',
+    ],
+    popularServices: [
+      'Hukuki Danışmanlık',
+      'Sözleşme Hazırlama',
+      'Resmi Çeviri',
+      'Vize İşlemleri',
+    ],
+    trending: false,
+    featured: false,
+    order: 15,
+    slug: 'hukuk-kamu',
+    metadata: {
+      seoTitle: 'Hukuk & Kamu Hizmetleri | MarifetBul',
+      seoDescription: 'Hukuki danışmanlık, resmi işlemler ve kamu hizmetleri.',
+      keywords: [
+        'hukuki danışmanlık',
+        'avukat',
+        'resmi işlemler',
+        'çeviri',
+        'vize',
+      ],
+      lastUpdated: '2025-10-04',
+      isActive: true,
+    },
+    stats: {
+      totalFreelancers: 95,
+      completedProjects: 720,
+      averageRating: 4.6,
+      responseTime: 2,
+      successRate: 93,
+      monthlyGrowth: 2,
+    },
+    subcategories: [],
+  },
+
+  // 16. TURİZM & SEYAHAT
+  {
+    id: 'turizm-seyahat',
+    title: 'Turizm & Seyahat',
+    description: 'Seyahat planlaması, rehberlik ve turizm hizmetleri',
+    shortDescription: 'Seyahat planlaması ve rehberlik',
+    icon: 'MapPin',
+    iconColor: '#0EA5E9', // Sky-500
+    serviceCount: 30,
+    averagePrice: 1200,
+    priceRange: { min: 300, max: 4000 },
+    topSkills: [
+      'Travel Planning',
+      'Tour Guide',
+      'Hotel Booking',
+      'Translation',
+      'Photography',
+    ],
+    popularServices: [
+      'Seyahat Planlaması',
+      'Rehberlik',
+      'Otel Rezervasyonu',
+      'Tur Organizasyonu',
+    ],
+    trending: true,
+    featured: false,
+    order: 16,
+    slug: 'turizm-seyahat',
+    metadata: {
+      seoTitle: 'Turizm & Seyahat Hizmetleri | MarifetBul',
+      seoDescription:
+        'Seyahat planlaması, rehberlik ve tur organizasyonu hizmetleri.',
+      keywords: ['seyahat planlaması', 'rehber', 'tur', 'turizm', 'seyahat'],
+      lastUpdated: '2025-10-04',
+      isActive: true,
+    },
+    stats: {
+      totalFreelancers: 85,
+      completedProjects: 540,
+      averageRating: 4.7,
+      responseTime: 1,
+      successRate: 95,
+      monthlyGrowth: 7,
+    },
+    subcategories: [],
+  },
 ];
 
 // Platform İstatistikleri
 export const PLATFORM_STATS = {
   totalCategories: 16,
   totalSubcategories: 89,
-  totalFreelancers: 8540,
-  totalProjects: 62890,
+  totalFreelancers: 12540,
+  totalProjects: 89650,
   averageProjectValue: 1850,
-  successRate: 92,
+  successRate: 94,
   monthlyGrowth: 8.5,
-  activeUsers: 125000,
+  activeUsers: 145000,
 };
 
 // Trend Kategoriler

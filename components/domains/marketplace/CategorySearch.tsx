@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
@@ -111,8 +112,8 @@ const CategorySearch: React.FC<CategorySearchProps> = ({
       if (showSuggestions && inputRef.current) {
         const rect = inputRef.current.getBoundingClientRect();
         setDropdownPosition({
-          top: rect.bottom + 8, // Removed window.scrollY to make it fixed relative to viewport
-          left: rect.left,      // Removed window.scrollX to make it fixed relative to viewport
+          top: rect.bottom + window.scrollY + 8, // Add scroll position back for portal
+          left: rect.left + window.scrollX, // Add scroll position back for portal
           width: rect.width,
         });
       }
@@ -121,11 +122,13 @@ const CategorySearch: React.FC<CategorySearchProps> = ({
     updatePosition();
 
     if (showSuggestions) {
-      // Only listen to resize, not scroll - this keeps dropdown fixed relative to input
+      // Listen to both resize and scroll for portal positioning
       window.addEventListener('resize', updatePosition);
+      window.addEventListener('scroll', updatePosition, true);
 
       return () => {
         window.removeEventListener('resize', updatePosition);
+        window.removeEventListener('scroll', updatePosition, true);
       };
     }
   }, [showSuggestions, isFocused]);
@@ -269,138 +272,145 @@ const CategorySearch: React.FC<CategorySearchProps> = ({
       </motion.div>
 
       {/* Suggestions Dropdown */}
-      <AnimatePresence>
-        {showSuggestions && (isFocused || searchTerm) && (
-          <motion.div
-            ref={suggestionRef}
-            variants={suggestionVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="fixed z-[99999] max-h-96 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-xl"
-            style={{
-              top: dropdownPosition.top,
-              left: dropdownPosition.left,
-              width: dropdownPosition.width,
-              minWidth: '300px',
-            }}
-          >
-            <div className="p-4">
-              {/* Search Results */}
-              {displayedSuggestions.length > 0 && (
-                <motion.div
-                  variants={listVariants}
-                  initial="hidden"
-                  animate="visible"
-                  className="space-y-1"
-                >
-                  <div className="mb-3 flex items-center justify-between">
-                    <h4 className="text-sm font-medium text-gray-700">
-                      Öneriler
-                    </h4>
-                    <Badge variant="outline" className="text-xs">
-                      {displayedSuggestions.length} sonuç
-                    </Badge>
-                  </div>
-                  {displayedSuggestions.map((suggestion, index) => (
-                    <motion.button
-                      key={index}
-                      variants={itemVariants}
-                      onClick={() => handleSearch(suggestion)}
-                      className="group flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-gray-50"
+      {typeof window !== 'undefined' &&
+        createPortal(
+          <AnimatePresence>
+            {showSuggestions && (isFocused || searchTerm) && (
+              <motion.div
+                ref={suggestionRef}
+                variants={suggestionVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="absolute z-[99999] max-h-96 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-xl"
+                style={{
+                  top: dropdownPosition.top,
+                  left: dropdownPosition.left,
+                  width: dropdownPosition.width,
+                  minWidth: '300px',
+                }}
+              >
+                <div className="p-4">
+                  {/* Search Results */}
+                  {displayedSuggestions.length > 0 && (
+                    <motion.div
+                      variants={listVariants}
+                      initial="hidden"
+                      animate="visible"
+                      className="space-y-1"
                     >
-                      <Search className="h-4 w-4 text-gray-400" />
-                      <span className="text-gray-900">{suggestion}</span>
-                      <ArrowRight className="ml-auto h-4 w-4 text-gray-400 opacity-0 transition-opacity group-hover:opacity-100" />
-                    </motion.button>
-                  ))}
-                </motion.div>
-              )}
+                      <div className="mb-3 flex items-center justify-between">
+                        <h4 className="text-sm font-medium text-gray-700">
+                          Öneriler
+                        </h4>
+                        <Badge variant="outline" className="text-xs">
+                          {displayedSuggestions.length} sonuç
+                        </Badge>
+                      </div>
+                      {displayedSuggestions.map((suggestion, index) => (
+                        <motion.button
+                          key={index}
+                          variants={itemVariants}
+                          onClick={() => handleSearch(suggestion)}
+                          className="group flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-gray-50"
+                        >
+                          <Search className="h-4 w-4 text-gray-400" />
+                          <span className="text-gray-900">{suggestion}</span>
+                          <ArrowRight className="ml-auto h-4 w-4 text-gray-400 opacity-0 transition-opacity group-hover:opacity-100" />
+                        </motion.button>
+                      ))}
+                    </motion.div>
+                  )}
 
-              {/* Recent Searches */}
-              {showRecentSearches && (
-                <motion.div
-                  variants={listVariants}
-                  initial="hidden"
-                  animate="visible"
-                  className="space-y-1"
-                >
-                  <div className="mb-3 flex items-center justify-between">
-                    <h4 className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                      <Clock className="h-4 w-4" />
-                      Son Aramalar
-                    </h4>
-                    <button
-                      onClick={clearHistory}
-                      className="text-xs text-gray-500 transition-colors hover:text-gray-700"
+                  {/* Recent Searches */}
+                  {showRecentSearches && (
+                    <motion.div
+                      variants={listVariants}
+                      initial="hidden"
+                      animate="visible"
+                      className="space-y-1"
                     >
-                      Temizle
-                    </button>
-                  </div>
-                  {recentSearches.map((search, index) => (
-                    <motion.button
-                      key={index}
-                      variants={itemVariants}
-                      onClick={() => handleSearch(search)}
-                      className="group flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-gray-50"
+                      <div className="mb-3 flex items-center justify-between">
+                        <h4 className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                          <Clock className="h-4 w-4" />
+                          Son Aramalar
+                        </h4>
+                        <button
+                          onClick={clearHistory}
+                          className="text-xs text-gray-500 transition-colors hover:text-gray-700"
+                        >
+                          Temizle
+                        </button>
+                      </div>
+                      {recentSearches.map((search, index) => (
+                        <motion.button
+                          key={index}
+                          variants={itemVariants}
+                          onClick={() => handleSearch(search)}
+                          className="group flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-gray-50"
+                        >
+                          <Clock className="h-4 w-4 text-gray-400" />
+                          <span className="text-gray-900">{search}</span>
+                          <ArrowRight className="ml-auto h-4 w-4 text-gray-400 opacity-0 transition-opacity group-hover:opacity-100" />
+                        </motion.button>
+                      ))}
+                    </motion.div>
+                  )}
+
+                  {/* Popular Searches */}
+                  {showPopularSearches && (
+                    <motion.div
+                      variants={listVariants}
+                      initial="hidden"
+                      animate="visible"
+                      className="space-y-3"
                     >
-                      <Clock className="h-4 w-4 text-gray-400" />
-                      <span className="text-gray-900">{search}</span>
-                      <ArrowRight className="ml-auto h-4 w-4 text-gray-400 opacity-0 transition-opacity group-hover:opacity-100" />
-                    </motion.button>
-                  ))}
-                </motion.div>
-              )}
+                      <h4 className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                        <TrendingUp className="h-4 w-4" />
+                        Popüler Aramalar
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {POPULAR_SEARCHES.map((search, index) => (
+                          <motion.button
+                            key={index}
+                            variants={itemVariants}
+                            onClick={() => handleSearch(search)}
+                            className="rounded-full bg-gray-100 px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-200"
+                          >
+                            {search}
+                          </motion.button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
 
-              {/* Popular Searches */}
-              {showPopularSearches && (
-                <motion.div
-                  variants={listVariants}
-                  initial="hidden"
-                  animate="visible"
-                  className="space-y-3"
-                >
-                  <h4 className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                    <TrendingUp className="h-4 w-4" />
-                    Popüler Aramalar
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {POPULAR_SEARCHES.map((search, index) => (
-                      <motion.button
-                        key={index}
-                        variants={itemVariants}
-                        onClick={() => handleSearch(search)}
-                        className="rounded-full bg-gray-100 px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-200"
-                      >
-                        {search}
-                      </motion.button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-
-              {/* No Results */}
-              {searchTerm && displayedSuggestions.length === 0 && !loading && (
-                <div className="py-8 text-center">
-                  <Search className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-                  <h4 className="mb-2 text-sm font-medium text-gray-900">
-                    Sonuç bulunamadı
-                  </h4>
-                  <p className="mb-4 text-sm text-gray-500">
-                    &ldquo;{searchTerm}&rdquo; için eşleşen kategori bulunamadı
-                  </p>
-                  <button
-                    onClick={() => handleSearch(searchTerm)}
-                    className="text-sm font-medium text-blue-600 hover:text-blue-700"
-                  >
-                    Genel aramada dene →
-                  </button>
+                  {/* No Results */}
+                  {searchTerm &&
+                    displayedSuggestions.length === 0 &&
+                    !loading && (
+                      <div className="py-8 text-center">
+                        <Search className="mx-auto mb-4 h-12 w-12 text-gray-300" />
+                        <h4 className="mb-2 text-sm font-medium text-gray-900">
+                          Sonuç bulunamadı
+                        </h4>
+                        <p className="mb-4 text-sm text-gray-500">
+                          &ldquo;{searchTerm}&rdquo; için eşleşen kategori
+                          bulunamadı
+                        </p>
+                        <button
+                          onClick={() => handleSearch(searchTerm)}
+                          className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                        >
+                          Genel aramada dene →
+                        </button>
+                      </div>
+                    )}
                 </div>
-              )}
-            </div>
-          </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
     </div>
   );
 };
