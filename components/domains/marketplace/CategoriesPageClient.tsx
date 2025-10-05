@@ -156,34 +156,31 @@ const CategoriesPageClient: React.FC = () => {
       </section>
 
       {/* Featured Categories */}
-      {!searchTerm && (
-        <section className="bg-white py-16">
-          <div className="container mx-auto px-4">
-            <div className="mb-12 text-center">
-              <h2 className="mb-4 text-3xl font-bold text-gray-900">
-                En Çok Tercih Edilen Hizmet Kategorileri
-              </h2>
-              <p className="mx-auto max-w-2xl text-lg text-gray-600">
-                İhtiyacınıza uygun kategorilerde uzman freelancerlar ile
-                çalışın.
-              </p>
-            </div>
-
-            <div className="grid auto-rows-fr gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {featuredCategories.slice(0, 4).map((category) => (
-                <div key={category.id}>
-                  <CategoryCard
-                    category={category}
-                    variant="featured"
-                    showStats={true}
-                    showSubcategories={false}
-                  />
-                </div>
-              ))}
-            </div>
+      <section className="bg-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-gray-900">
+              En Çok Tercih Edilen Hizmet Kategorileri
+            </h2>
+            <p className="mx-auto max-w-2xl text-lg text-gray-600">
+              İhtiyacınıza uygun kategorilerde uzman freelancerlar ile çalışın.
+            </p>
           </div>
-        </section>
-      )}
+
+          <div className="grid auto-rows-fr gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {featuredCategories.slice(0, 4).map((category) => (
+              <div key={category.id}>
+                <CategoryCard
+                  category={category}
+                  variant="featured"
+                  showStats={true}
+                  showSubcategories={false}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* All Categories Grid */}
       <section className="bg-slate-50 py-20">
