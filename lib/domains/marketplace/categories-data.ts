@@ -297,7 +297,8 @@ export const MARKETPLACE_CATEGORIES: Category[] = [
       {
         id: 'blockchain',
         name: 'Blockchain & Kripto',
-        description: 'Smart contract, DeFi (Merkeziyetsiz Finans) ve blockchain uygulama geliştirme',
+        description:
+          'Smart contract, DeFi (Merkeziyetsiz Finans) ve blockchain uygulama geliştirme',
         serviceCount: 15,
         averagePrice: 6000,
         priceRange: { min: 2000, max: 25000 },
