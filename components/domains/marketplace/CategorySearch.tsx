@@ -111,8 +111,8 @@ const CategorySearch: React.FC<CategorySearchProps> = ({
       if (showSuggestions && inputRef.current) {
         const rect = inputRef.current.getBoundingClientRect();
         setDropdownPosition({
-          top: rect.bottom + window.scrollY + 8,
-          left: rect.left + window.scrollX,
+          top: rect.bottom + 8, // Removed window.scrollY to make it fixed relative to viewport
+          left: rect.left,      // Removed window.scrollX to make it fixed relative to viewport
           width: rect.width,
         });
       }
@@ -121,11 +121,10 @@ const CategorySearch: React.FC<CategorySearchProps> = ({
     updatePosition();
 
     if (showSuggestions) {
-      window.addEventListener('scroll', updatePosition);
+      // Only listen to resize, not scroll - this keeps dropdown fixed relative to input
       window.addEventListener('resize', updatePosition);
 
       return () => {
-        window.removeEventListener('scroll', updatePosition);
         window.removeEventListener('resize', updatePosition);
       };
     }
