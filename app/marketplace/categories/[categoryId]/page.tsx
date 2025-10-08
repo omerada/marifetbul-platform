@@ -1,46 +1,42 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
 import { Input } from '@/components/ui';
 import Link from 'next/link';
-import { Search, ChevronRight, Users, ArrowLeft } from 'lucide-react';
-
-// Mock data - in real app this would come from API
-const getCategoryData = (categoryId: string) => {
-  const categories = {
-    'teknoloji-yazilim': {
-      title: 'Teknoloji & Yazılım',
-      description: 'Web, mobil ve yazılım geliştirme hizmetleri',
-      subcategories: [
-        {
-          id: 'web-gelistirme',
-          title: 'Web Geliştirme',
-          count: '3,200',
-          services: ['WordPress', 'E-ticaret', 'Landing Page', 'Web App'],
-        },
-        {
-          id: 'mobil-uygulama',
-          title: 'Mobil Uygulama',
-          count: '1,850',
-          services: ['iOS App', 'Android App', 'React Native', 'Flutter'],
-        },
-      ],
-    },
-    // Add other categories as needed
-  };
-
-  return categories[categoryId as keyof typeof categories] || null;
-};
+import { Search, ChevronRight, Users } from 'lucide-react';
+import { MARKETPLACE_CATEGORIES } from '@/lib/domains/marketplace/categories-data';
 
 export default function CategoryDetailPage() {
   const params = useParams();
-  const categoryId = params.categoryId as string;
+  const categorySlug = params.categoryId as string;
   const [searchTerm, setSearchTerm] = useState('');
 
-  const categoryData = getCategoryData(categoryId);
+  // Find category by slug
+  const categoryData = useMemo(() => {
+    return MARKETPLACE_CATEGORIES.find((cat) => cat.slug === categorySlug);
+  }, [categorySlug]);
+
+  // Filter subcategories based on search
+  const filteredSubcategories = useMemo(() => {
+    if (!categoryData?.subcategories) return [];
+
+    if (!searchTerm.trim()) {
+      return categoryData.subcategories;
+    }
+
+    const searchLower = searchTerm.toLowerCase();
+    return categoryData.subcategories.filter(
+      (sub) =>
+        sub.name.toLowerCase().includes(searchLower) ||
+        sub.description.toLowerCase().includes(searchLower) ||
+        sub.popularServices.some((service) =>
+          service.toLowerCase().includes(searchLower)
+        )
+    );
+  }, [categoryData, searchTerm]);
 
   if (!categoryData) {
     return (
@@ -49,6 +45,9 @@ export default function CategoryDetailPage() {
           <h1 className="mb-4 text-2xl font-bold text-gray-900">
             Kategori Bulunamadı
           </h1>
+          <p className="mb-6 text-gray-600">
+            Aradığınız kategori mevcut değil veya kaldırılmış olabilir.
+          </p>
           <Link href="/marketplace/categories">
             <Button>Kategorilere Dön</Button>
           </Link>
@@ -60,14 +59,14 @@ export default function CategoryDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="border-b bg-white py-6">
+      <div className="border-b bg-white py-8">
         <div className="container mx-auto px-4">
-          <div className="mb-4 flex items-center gap-4">
-            <Link href="/marketplace/categories">
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Kategoriler
-              </Button>
+          <div className="mb-6 flex items-center gap-3 text-sm">
+            <Link
+              href="/marketplace/categories"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Kategoriler
             </Link>
             <ChevronRight className="h-4 w-4 text-gray-400" />
             <span className="font-medium text-gray-900">
@@ -75,63 +74,199 @@ export default function CategoryDetailPage() {
             </span>
           </div>
 
-          <h1 className="mb-2 text-3xl font-bold text-gray-900">
-            {categoryData.title}
-          </h1>
-          <p className="mb-6 text-gray-600">{categoryData.description}</p>
+          <div className="mb-6">
+            <h1 className="mb-3 text-4xl font-bold text-gray-900">
+              {categoryData.title}
+            </h1>
+            <p className="text-lg text-gray-600">{categoryData.description}</p>
+          </div>
+
+          {/* Stats */}
+          <div className="mb-6 flex flex-wrap gap-6">
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-gray-500" />
+              <span className="text-sm text-gray-600">
+                <strong className="font-semibold text-gray-900">
+                  {categoryData.stats.totalFreelancers.toLocaleString('tr-TR')}
+                </strong>{' '}
+                Freelancer
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex h-5 w-5 items-center justify-center">
+                <span className="text-amber-500">★</span>
+              </div>
+              <span className="text-sm text-gray-600">
+                <strong className="font-semibold text-gray-900">
+                  {categoryData.stats.averageRating}
+                </strong>{' '}
+                Ortalama Puan
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-5 w-5 text-gray-500">
+                <svg
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <span className="text-sm text-gray-600">
+                <strong className="font-semibold text-gray-900">
+                  {categoryData.stats.completedProjects.toLocaleString('tr-TR')}
+                </strong>{' '}
+                Tamamlanan Proje
+              </span>
+            </div>
+          </div>
 
           {/* Search */}
-          <div className="relative max-w-md">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <div className="relative max-w-xl">
+            <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <Input
               type="text"
-              placeholder="Alt kategori ara..."
+              placeholder="Alt kategori veya hizmet ara..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="py-6 pl-12 text-base"
             />
           </div>
         </div>
       </div>
 
       {/* Subcategories */}
-      <div className="py-8">
+      <div className="py-12">
         <div className="container mx-auto px-4">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {categoryData.subcategories.map((subcategory) => (
-              <Link
-                key={subcategory.id}
-                href={`/marketplace/categories/${categoryId}/${subcategory.id}`}
-              >
-                <Card className="h-full p-6 transition-shadow hover:shadow-lg">
-                  <h3 className="mb-2 text-xl font-semibold text-gray-900">
-                    {subcategory.title}
-                  </h3>
-
-                  <div className="mb-4 flex items-center gap-2 text-sm text-gray-500">
-                    <Users className="h-4 w-4" />
-                    <span>{subcategory.count} aktif freelancer</span>
-                  </div>
-
-                  <div className="mb-4 flex flex-wrap gap-1">
-                    {subcategory.services.map((service, idx) => (
-                      <span
-                        key={idx}
-                        className="rounded-full bg-blue-50 px-2 py-1 text-xs text-blue-600"
-                      >
-                        {service}
-                      </span>
-                    ))}
-                  </div>
-
-                  <Button className="w-full" size="sm">
-                    Freelancer&apos;ları Gör
-                    <ChevronRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Card>
-              </Link>
-            ))}
+          <div className="mb-8">
+            <h2 className="mb-2 text-2xl font-bold text-gray-900">
+              Alt Kategoriler
+            </h2>
+            <p className="text-gray-600">
+              {filteredSubcategories.length} alt kategori bulundu
+            </p>
           </div>
+
+          {filteredSubcategories.length === 0 ? (
+            <div className="rounded-lg bg-white p-12 text-center">
+              <p className="text-gray-600">
+                Arama kriterlerinize uygun alt kategori bulunamadı.
+              </p>
+              <Button
+                variant="outline"
+                className="mt-4"
+                onClick={() => setSearchTerm('')}
+              >
+                Aramayı Temizle
+              </Button>
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredSubcategories.map((subcategory) => (
+                <Link
+                  key={subcategory.id}
+                  href={`/marketplace/categories/${categorySlug}/${subcategory.slug}`}
+                >
+                  <Card className="group h-full p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl">
+                    <div className="mb-4 flex items-start justify-between">
+                      <h3 className="text-lg font-semibold text-gray-900 transition-colors group-hover:text-blue-600">
+                        {subcategory.name}
+                      </h3>
+                      {subcategory.trending && (
+                        <span className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                          <svg
+                            className="h-3 w-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                            />
+                          </svg>
+                          Trend
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="mb-4 line-clamp-2 text-sm text-gray-600">
+                      {subcategory.description}
+                    </p>
+
+                    <div className="mb-4 flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-1 text-gray-600">
+                        <Users className="h-4 w-4" />
+                        <span>{subcategory.serviceCount} hizmet</span>
+                      </div>
+                      <div className="text-gray-600">
+                        <span className="font-semibold text-gray-900">
+                          {new Intl.NumberFormat('tr-TR', {
+                            style: 'currency',
+                            currency: 'TRY',
+                            minimumFractionDigits: 0,
+                          }).format(subcategory.averagePrice)}
+                        </span>{' '}
+                        ortalama
+                      </div>
+                    </div>
+
+                    <div className="mb-4 flex flex-wrap gap-1.5">
+                      {subcategory.popularServices
+                        .slice(0, 3)
+                        .map((service, idx) => (
+                          <span
+                            key={idx}
+                            className="rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-600"
+                          >
+                            {service}
+                          </span>
+                        ))}
+                      {subcategory.popularServices.length > 3 && (
+                        <span className="rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">
+                          +{subcategory.popularServices.length - 3}
+                        </span>
+                      )}
+                    </div>
+
+                    <Button
+                      className="w-full transition-colors group-hover:bg-blue-600"
+                      size="sm"
+                    >
+                      Hizmetleri Görüntüle
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="border-t bg-white py-12">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="mb-4 text-2xl font-bold text-gray-900">
+            Kendi Projenizi Yayınlayın
+          </h2>
+          <p className="mb-6 text-gray-600">
+            Binlerce uzman freelancer teklifleriyle sizi bekliyor
+          </p>
+          <Link href="/marketplace/jobs/create">
+            <Button size="lg" className="px-8">
+              Proje İlanı Ver
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
@@ -15,8 +15,10 @@ import {
   Bookmark,
   SortAsc,
 } from 'lucide-react';
+import { MARKETPLACE_CATEGORIES } from '@/lib/domains/marketplace/categories-data';
+import { notFound } from 'next/navigation';
 
-// Mock freelancer data
+// Mock freelancer data - Bu kısım gerçek veri ile değiştirilecek
 const mockFreelancers = [
   {
     id: '1',
@@ -47,17 +49,29 @@ const mockFreelancers = [
     description: 'Kullanıcı deneyimi odaklı modern frontend geliştirme uzmanı.',
     available: true,
   },
-  // Add more mock data...
 ];
 
 export default function SubcategoryDetailPage() {
   const params = useParams();
-  const categoryId = params.categoryId as string;
-  const subcategoryId = params.subcategoryId as string;
+  const categorySlug = params.categoryId as string;
+  const subcategorySlug = params.subcategoryId as string;
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [sortBy, setSortBy] = useState('rating');
+
+  // Find category and subcategory by slug
+  const { category, subcategory } = useMemo(() => {
+    const cat = MARKETPLACE_CATEGORIES.find((c) => c.slug === categorySlug);
+    if (!cat) return { category: null, subcategory: null };
+
+    const subcat = cat.subcategories.find((s) => s.slug === subcategorySlug);
+    return { category: cat, subcategory: subcat };
+  }, [categorySlug, subcategorySlug]);
+
+  if (!category || !subcategory) {
+    notFound();
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -74,22 +88,19 @@ export default function SubcategoryDetailPage() {
             </Link>
             <ChevronRight className="h-4 w-4 text-gray-400" />
             <Link
-              href={`/marketplace/categories/${categoryId}`}
+              href={`/marketplace/categories/${categorySlug}`}
               className="text-blue-600 hover:underline"
             >
-              Teknoloji & Yazılım
+              {category.title}
             </Link>
             <ChevronRight className="h-4 w-4 text-gray-400" />
-            <span className="text-gray-900">Web Geliştirme</span>
+            <span className="text-gray-900">{subcategory.name}</span>
           </div>
 
           <h1 className="mb-2 text-3xl font-bold text-gray-900">
-            Web Geliştirme Freelancer&apos;ları
+            {subcategory.name} Freelancer&apos;ları
           </h1>
-          <p className="mb-6 text-gray-600">
-            Profesyonel web geliştirme hizmetleri sunan deneyimli
-            freelancer&apos;lar
-          </p>
+          <p className="mb-6 text-gray-600">{subcategory.description}</p>
 
           {/* Search and Filters */}
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -146,7 +157,7 @@ export default function SubcategoryDetailPage() {
             </p>
 
             <Link
-              href={`/marketplace/jobs/create?category=${categoryId}&subcategory=${subcategoryId}`}
+              href={`/marketplace/jobs/create?category=${categorySlug}&subcategory=${subcategorySlug}`}
             >
               <Button>
                 İş İlanı Ver
