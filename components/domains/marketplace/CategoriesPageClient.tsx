@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Card, Badge, Button, Loading } from '@/components/ui';
 import CategoryCard from '@/components/domains/marketplace/CategoryCard';
+import AllCategoriesCard from '@/components/domains/marketplace/AllCategoriesCard';
 import CategorySearch from '@/components/domains/marketplace/CategorySearch';
 import {
   useCategories,
@@ -215,17 +216,9 @@ const CategoriesPageClient: React.FC = () => {
             </div>
           ) : (
             <div className="grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {/* Use all categories from the store instead of filtered ones */}
+              {/* Use all categories with new AllCategoriesCard component */}
               {categories.map((category) => (
-                <div key={category.id}>
-                  <CategoryCard
-                    category={category}
-                    variant="default"
-                    showStats={true}
-                    showSubcategories={true}
-                    searchTerm={searchTerm || ''}
-                  />
-                </div>
+                <AllCategoriesCard key={category.id} category={category} />
               ))}
             </div>
           )}
