@@ -217,7 +217,7 @@ export default function SubcategoryDetailPage() {
           </div>
 
           <h1 className="mb-2 text-3xl font-bold text-gray-900">
-            {subcategory.name} Freelancer&apos;ları
+            {subcategory.name} Hizmetleri
           </h1>
           <p className="mb-4 text-gray-600">{subcategory.description}</p>
 
@@ -244,7 +244,7 @@ export default function SubcategoryDetailPage() {
               <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <Input
                 type="text"
-                placeholder="Freelancer ara..."
+                placeholder="Hizmet ara..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -259,10 +259,10 @@ export default function SubcategoryDetailPage() {
                   onChange={(e) => setSelectedFilter(e.target.value)}
                   className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 >
-                  <option value="all">Tüm Freelancer&apos;lar</option>
+                  <option value="all">Tüm Hizmetler</option>
                   <option value="available">Müsait Olanlar</option>
                   <option value="top-rated">En Yüksek Puanlı</option>
-                  <option value="new">Yeni Üyeler</option>
+                  <option value="new">Yeni Hizmetler</option>
                 </select>
               </div>
 
@@ -293,16 +293,16 @@ export default function SubcategoryDetailPage() {
                 <span className="font-semibold text-gray-900">
                   {filteredFreelancers.length}
                 </span>{' '}
-                freelancer bulundu
+                hizmet bulundu
                 {selectedService && (
                   <span className="ml-1 text-blue-600">
-                    &quot;{selectedService}&quot; hizmeti için
+                    &quot;{selectedService}&quot; için
                   </span>
                 )}
               </p>
               {selectedService && filteredFreelancers.length === 0 && (
                 <p className="mt-2 text-sm text-gray-500">
-                  Bu hizmet için freelancer bulunamadı. Filtreyi kaldırmayı
+                  Bu hizmet türü için sonuç bulunamadı. Filtreyi kaldırmayı
                   deneyin.
                 </p>
               )}
@@ -320,24 +320,35 @@ export default function SubcategoryDetailPage() {
 
           {filteredFreelancers.length === 0 ? (
             <Card className="p-12 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                <Search className="h-8 w-8 text-gray-400" />
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-50">
+                <Search className="h-8 w-8 text-blue-500" />
               </div>
               <h3 className="mb-2 text-lg font-semibold text-gray-900">
-                Freelancer Bulunamadı
+                {selectedService
+                  ? 'Bu hizmet türü için uzmanlar arıyoruz'
+                  : 'Uygun hizmet bulunamadı'}
               </h3>
-              <p className="mb-4 text-gray-600">
-                Arama kriterlerinize uygun freelancer bulunamadı.
+              <p className="mb-6 text-gray-600">
+                {selectedService
+                  ? 'Şu anda bu hizmet türü için uygun uzman bulunmuyor. Sürekli yeni hizmetler ekliyoruz veya iş ilanı vererek uzmanların size ulaşmasını sağlayabilirsiniz.'
+                  : 'Arama kriterlerinize uygun hizmet bulunmuyor. Filtreleri değiştirmeyi deneyin veya iş ilanı vererek ihtiyacınız olan hizmeti talep edin.'}
               </p>
-              {selectedService && (
-                <Button
-                  variant="outline"
-                  onClick={clearServiceFilter}
-                  className="mx-auto"
+              <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+                {selectedService && (
+                  <Button variant="outline" onClick={clearServiceFilter}>
+                    <Filter className="mr-2 h-4 w-4" />
+                    Hizmet Filtresini Kaldır
+                  </Button>
+                )}
+                <Link
+                  href={`/marketplace/jobs/create?category=${categorySlug}&subcategory=${subcategorySlug}`}
                 >
-                  Hizmet Filtresini Kaldır
-                </Button>
-              )}
+                  <Button variant={selectedService ? 'primary' : 'outline'}>
+                    İş İlanı Ver
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
             </Card>
           ) : (
             <div className="grid gap-6">
