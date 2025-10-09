@@ -1727,7 +1727,8 @@ export const MARKETPLACE_CATEGORIES: Category[] = [
       {
         id: 'muhasebe-hizmetleri',
         name: 'Muhasebe Hizmetleri',
-        description: 'Ticari defter tutma, mali raporlama ve muhasebe kayıtları',
+        description:
+          'Ticari defter tutma, mali raporlama ve muhasebe kayıtları',
         serviceCount: 12,
         averagePrice: 1500,
         priceRange: { min: 300, max: 4000 },
@@ -1771,7 +1772,8 @@ export const MARKETPLACE_CATEGORIES: Category[] = [
       {
         id: 'yatirim-danismanlik',
         name: 'Yatırım Danışmanlığı',
-        description: 'Portföy yönetimi, yatırım stratejisi ve finansal planlama',
+        description:
+          'Portföy yönetimi, yatırım stratejisi ve finansal planlama',
         serviceCount: 5,
         averagePrice: 2000,
         priceRange: { min: 500, max: 5000 },
@@ -1902,7 +1904,8 @@ export const MARKETPLACE_CATEGORIES: Category[] = [
       {
         id: 'catering-hizmetleri',
         name: 'Catering Hizmetleri',
-        description: 'Etkinlik catering, toplu yemek ve özel günler için yemek hizmeti',
+        description:
+          'Etkinlik catering, toplu yemek ve özel günler için yemek hizmeti',
         serviceCount: 12,
         averagePrice: 1200,
         priceRange: { min: 300, max: 4000 },
@@ -1947,11 +1950,7 @@ export const MARKETPLACE_CATEGORIES: Category[] = [
         serviceCount: 3,
         averagePrice: 400,
         priceRange: { min: 100, max: 1500 },
-        popularServices: [
-          'Doğum Günü Pastası',
-          'Düğün Pastası',
-          'Cupcake',
-        ],
+        popularServices: ['Doğum Günü Pastası', 'Düğün Pastası', 'Cupcake'],
         slug: 'pasta-tatli',
         parentCategoryId: 'gida-icecek',
       },
@@ -2468,11 +2467,7 @@ export const MARKETPLACE_CATEGORIES: Category[] = [
         serviceCount: 3,
         averagePrice: 800,
         priceRange: { min: 300, max: 2000 },
-        popularServices: [
-          'Evde Hemşirelik',
-          'Fizyoterapi',
-          'Refakatçi',
-        ],
+        popularServices: ['Evde Hemşirelik', 'Fizyoterapi', 'Refakatçi'],
         slug: 'evde-saglik',
         parentCategoryId: 'yasli-bakim',
       },
