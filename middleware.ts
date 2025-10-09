@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 // Define protected routes
 const protectedRoutes = [
   '/dashboard',
-  '/profile',
+  '/profile/edit', // Sadece profil düzenleme korumalı
   '/messages',
   '/my-jobs',
   '/my-packages',
@@ -30,6 +30,13 @@ const publicRoutes = [
   '/contact',
   '/terms',
   '/privacy',
+  '/categories',
+  '/blog',
+  '/help',
+  '/support',
+  '/legal',
+  '/info',
+  '/search',
 ];
 
 export function middleware(request: NextRequest) {
@@ -40,6 +47,9 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('marifetbul-auth-token')?.value;
   const userRole = request.cookies.get('marifetbul-user-role')?.value;
 
+  // Allow public profile viewing: /profile/[id] but not /profile/edit
+  const isProfileView = pathname.startsWith('/profile/') && !pathname.includes('/edit');
+  
   // Check if the current route is protected
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)
@@ -60,6 +70,11 @@ export function middleware(request: NextRequest) {
   const isPublicRoute = publicRoutes.some(
     (route) => pathname === route || pathname.startsWith(route)
   );
+
+  // Allow public profile viewing without authentication
+  if (isProfileView) {
+    return NextResponse.next();
+  }
 
   // Admin route protection
   if (isAdminRoute) {
