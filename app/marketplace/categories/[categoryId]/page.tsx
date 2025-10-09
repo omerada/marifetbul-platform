@@ -233,7 +233,7 @@ export default function CategoryDetailPage() {
                   {/* Services Grid */}
                   <div className="p-6">
                     <h4 className="mb-4 text-sm font-semibold text-gray-700">
-                      Popüler Hizmetler ({subcategory.popularServices.length})
+                      Hizmetler
                     </h4>
                     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                       {subcategory.popularServices.map((service, idx) => (
