@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
 import { Input } from '@/components/ui';
 import Link from 'next/link';
-import { Search, ChevronRight, Users } from 'lucide-react';
+import { Search, ChevronRight, Users, ExternalLink } from 'lucide-react';
 import { MARKETPLACE_CATEGORIES } from '@/lib/domains/marketplace/categories-data';
 
 export default function CategoryDetailPage() {
@@ -168,85 +168,89 @@ export default function CategoryDetailPage() {
               </Button>
             </div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="space-y-8">
               {filteredSubcategories.map((subcategory) => (
-                <Link
-                  key={subcategory.id}
-                  href={`/marketplace/categories/${categorySlug}/${subcategory.slug}`}
-                >
-                  <Card className="group h-full p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl">
-                    <div className="mb-4 flex items-start justify-between">
-                      <h3 className="text-lg font-semibold text-gray-900 transition-colors group-hover:text-blue-600">
-                        {subcategory.name}
-                      </h3>
-                      {subcategory.trending && (
-                        <span className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                          <svg
-                            className="h-3 w-3"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                            />
-                          </svg>
-                          Trend
-                        </span>
-                      )}
-                    </div>
-
-                    <p className="mb-4 line-clamp-2 text-sm text-gray-600">
-                      {subcategory.description}
-                    </p>
-
-                    <div className="mb-4 flex items-center gap-4 text-sm">
-                      <div className="flex items-center gap-1 text-gray-600">
-                        <Users className="h-4 w-4" />
-                        <span>{subcategory.serviceCount} hizmet</span>
+                <Card key={subcategory.id} className="overflow-hidden">
+                  {/* Subcategory Header */}
+                  <div className="border-b bg-gradient-to-r from-gray-50 to-white p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="mb-2 flex items-center gap-3">
+                          <h3 className="text-xl font-bold text-gray-900">
+                            {subcategory.name}
+                          </h3>
+                          {subcategory.trending && (
+                            <span className="flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
+                              <svg
+                                className="h-3 w-3"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                                />
+                              </svg>
+                              Trend
+                            </span>
+                          )}
+                        </div>
+                        <p className="mb-3 text-sm text-gray-600">
+                          {subcategory.description}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-4 text-sm">
+                          <div className="flex items-center gap-1.5 text-gray-600">
+                            <Users className="h-4 w-4" />
+                            <span className="font-medium">
+                              {subcategory.serviceCount} hizmet
+                            </span>
+                          </div>
+                          <div className="text-gray-600">
+                            <span className="font-semibold text-gray-900">
+                              {new Intl.NumberFormat('tr-TR', {
+                                style: 'currency',
+                                currency: 'TRY',
+                                minimumFractionDigits: 0,
+                              }).format(subcategory.averagePrice)}
+                            </span>{' '}
+                            ortalama fiyat
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-gray-600">
-                        <span className="font-semibold text-gray-900">
-                          {new Intl.NumberFormat('tr-TR', {
-                            style: 'currency',
-                            currency: 'TRY',
-                            minimumFractionDigits: 0,
-                          }).format(subcategory.averagePrice)}
-                        </span>{' '}
-                        ortalama
-                      </div>
+                      <Link
+                        href={`/marketplace/categories/${categorySlug}/${subcategory.slug}`}
+                        className="group ml-4 flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600"
+                      >
+                        Tümünü Gör
+                        <ExternalLink className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                      </Link>
                     </div>
+                  </div>
 
-                    <div className="mb-4 flex flex-wrap gap-1.5">
-                      {subcategory.popularServices
-                        .slice(0, 3)
-                        .map((service, idx) => (
-                          <span
-                            key={idx}
-                            className="rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-600"
-                          >
+                  {/* Services Grid */}
+                  <div className="p-6">
+                    <h4 className="mb-4 text-sm font-semibold text-gray-700">
+                      Popüler Hizmetler ({subcategory.popularServices.length})
+                    </h4>
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                      {subcategory.popularServices.map((service, idx) => (
+                        <Link
+                          key={idx}
+                          href={`/marketplace/categories/${categorySlug}/${subcategory.slug}?service=${encodeURIComponent(service)}`}
+                          className="group flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 transition-all hover:border-blue-400 hover:bg-blue-50 hover:shadow-md"
+                        >
+                          <span className="text-sm font-medium text-gray-700 transition-colors group-hover:text-blue-700">
                             {service}
                           </span>
-                        ))}
-                      {subcategory.popularServices.length > 3 && (
-                        <span className="rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">
-                          +{subcategory.popularServices.length - 3}
-                        </span>
-                      )}
+                          <ChevronRight className="h-4 w-4 flex-shrink-0 text-gray-400 transition-colors group-hover:text-blue-600" />
+                        </Link>
+                      ))}
                     </div>
-
-                    <Button
-                      className="w-full transition-colors group-hover:bg-blue-600"
-                      size="sm"
-                    >
-                      Hizmetleri Görüntüle
-                      <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Card>
-                </Link>
+                  </div>
+                </Card>
               ))}
             </div>
           )}
