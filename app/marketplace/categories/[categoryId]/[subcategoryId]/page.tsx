@@ -351,106 +351,144 @@ export default function SubcategoryDetailPage() {
               </div>
             </Card>
           ) : (
-            <div className="grid gap-6">
+            <div className="grid gap-4">
               {filteredFreelancers.map((freelancer) => (
-                <Card key={freelancer.id} className="p-6">
-                  <div className="flex flex-col gap-6 lg:flex-row">
-                    {/* Profile Info */}
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-lg font-semibold text-white">
-                        {freelancer.name
-                          .split(' ')
-                          .map((n) => n[0])
-                          .join('')}
-                      </div>
+                <Card
+                  key={freelancer.id}
+                  className="group overflow-hidden transition-all hover:shadow-lg"
+                >
+                  <div className="flex flex-col gap-5 p-5 sm:flex-row sm:p-6">
+                    {/* Left Section - Profile Info */}
+                    <div className="flex flex-1 gap-4">
+                      {/* Avatar */}
+                      <Link
+                        href={`/profile/${freelancer.id}`}
+                        className="shrink-0"
+                      >
+                        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-base font-semibold text-white shadow-sm transition-transform group-hover:scale-105 sm:h-16 sm:w-16">
+                          {freelancer.name
+                            .split(' ')
+                            .map((n) => n[0])
+                            .join('')}
+                        </div>
+                      </Link>
 
-                      <div className="flex-1">
-                        <div className="mb-2 flex items-start justify-between">
-                          <div>
-                            <h3 className="text-xl font-semibold text-gray-900">
-                              {freelancer.name}
-                            </h3>
-                            <p className="text-gray-600">{freelancer.title}</p>
+                      {/* Info */}
+                      <div className="min-w-0 flex-1">
+                        {/* Name and Title */}
+                        <div className="mb-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <Link href={`/profile/${freelancer.id}`}>
+                              <h3 className="text-lg font-semibold text-gray-900 transition-colors hover:text-blue-600 sm:text-xl">
+                                {freelancer.name}
+                              </h3>
+                            </Link>
+                            {freelancer.available && (
+                              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">
+                                <span className="h-1.5 w-1.5 rounded-full bg-green-600"></span>
+                                Müsait
+                              </span>
+                            )}
                           </div>
-
-                          {freelancer.available && (
-                            <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
-                              Müsait
-                            </span>
-                          )}
+                          <p className="text-sm text-gray-600 sm:text-base">
+                            {freelancer.title}
+                          </p>
                         </div>
 
-                        <div className="mb-3 flex items-center gap-4 text-sm text-gray-500">
+                        {/* Stats */}
+                        <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-600">
                           <div className="flex items-center gap-1">
-                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            <span className="font-medium">
+                            <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                            <span className="font-semibold text-gray-900">
                               {freelancer.rating}
                             </span>
-                            <span>
-                              ({freelancer.reviewCount} değerlendirme)
+                            <span className="text-gray-500">
+                              ({freelancer.reviewCount})
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
+                          <div className="flex items-center gap-1.5">
+                            <MapPin className="h-3.5 w-3.5 text-gray-400" />
                             <span>{freelancer.location}</span>
                           </div>
 
-                          <div>{freelancer.completedJobs} tamamlanan iş</div>
+                          <div className="flex items-center gap-1">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-gray-400" />
+                            <span>
+                              {freelancer.completedJobs} tamamlanan iş
+                            </span>
+                          </div>
                         </div>
 
-                        <p className="mb-3 text-gray-700">
+                        {/* Description */}
+                        <p className="mb-3 line-clamp-2 text-sm leading-relaxed text-gray-700">
                           {freelancer.description}
                         </p>
 
                         {/* Skills */}
-                        <div className="mb-3 flex flex-wrap gap-1">
-                          {freelancer.skills.map((skill, idx) => (
+                        <div className="flex flex-wrap gap-1.5">
+                          {freelancer.skills.slice(0, 4).map((skill, idx) => (
                             <span
                               key={idx}
-                              className="rounded-full bg-blue-50 px-2 py-1 text-xs text-blue-600"
+                              className="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-200"
                             >
                               {skill}
                             </span>
                           ))}
+                          {freelancer.skills.length > 4 && (
+                            <span className="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
+                              +{freelancer.skills.length - 4}
+                            </span>
+                          )}
                         </div>
 
-                        {/* Services - Show matching service if filtered */}
+                        {/* Selected Service Badge */}
                         {selectedService &&
                           freelancer.services.some((s) =>
                             s
                               .toLowerCase()
                               .includes(selectedService.toLowerCase())
                           ) && (
-                            <div className="mt-2 flex items-center gap-2 text-sm">
+                            <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-green-50 px-3 py-1.5 text-sm">
                               <CheckCircle2 className="h-4 w-4 text-green-600" />
                               <span className="font-medium text-green-700">
-                                {selectedService} hizmeti sunuyor
+                                {selectedService} hizmeti
                               </span>
                             </div>
                           )}
                       </div>
                     </div>
 
-                    {/* Price and Actions */}
-                    <div className="flex flex-col justify-between lg:min-w-[200px]">
-                      <div className="mb-4 text-right">
-                        <div className="text-2xl font-bold text-gray-900">
-                          ₺{freelancer.hourlyRate}
+                    {/* Right Section - Price and Actions */}
+                    <div className="flex shrink-0 flex-row items-center justify-between gap-3 border-t pt-4 sm:flex-col sm:items-end sm:justify-between sm:border-t-0 sm:border-l sm:pt-0 sm:pl-6">
+                      {/* Price */}
+                      <div className="text-left sm:text-right">
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-2xl font-bold text-gray-900">
+                            ₺{freelancer.hourlyRate}
+                          </span>
+                          <span className="text-sm text-gray-500">/saat</span>
                         </div>
-                        <div className="text-sm text-gray-500">saat başına</div>
                       </div>
 
-                      <div className="flex flex-col gap-2">
-                        <Link href={`/profile/${freelancer.id}`}>
+                      {/* Actions */}
+                      <div className="flex gap-2 sm:w-full sm:flex-col">
+                        <Link
+                          href={`/profile/${freelancer.id}`}
+                          className="flex-1 sm:w-full"
+                        >
                           <Button className="w-full" size="sm">
-                            Profili Görüntüle
+                            Profil
                           </Button>
                         </Link>
 
-                        <Button variant="outline" size="sm" className="w-full">
-                          <Bookmark className="mr-2 h-4 w-4" />
-                          Kaydet
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="shrink-0 sm:w-full"
+                        >
+                          <Bookmark className="h-4 w-4 sm:mr-2" />
+                          <span className="hidden sm:inline">Kaydet</span>
                         </Button>
                       </div>
                     </div>
@@ -464,7 +502,8 @@ export default function SubcategoryDetailPage() {
           {filteredFreelancers.length > 0 && (
             <div className="mt-8 text-center">
               <Button variant="outline" size="lg">
-                Daha Fazla Freelancer Yükle
+                Daha Fazla Hizmet Yükle
+                <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
           )}
