@@ -48,8 +48,9 @@ export function middleware(request: NextRequest) {
   const userRole = request.cookies.get('marifetbul-user-role')?.value;
 
   // Allow public profile viewing: /profile/[id] but not /profile/edit
-  const isProfileView = pathname.startsWith('/profile/') && !pathname.includes('/edit');
-  
+  const isProfileView =
+    pathname.startsWith('/profile/') && !pathname.includes('/edit');
+
   // Check if the current route is protected
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)
