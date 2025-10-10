@@ -170,13 +170,15 @@
 ### Achievements
 
 ✅ **Task 1.2: Database Setup (100%)**
+
 - Docker Compose with PostgreSQL 15, Redis 7, pgAdmin
 - Docker init scripts with extensions
-- Flyway migration V1__init_schema.sql
+- Flyway migration V1\_\_init_schema.sql
 - Users table with 11 indexes
 - Complete Docker documentation
 
 ✅ **Task 1.3: Core Configuration (100%)**
+
 - DatabaseConfig (HikariCP + JPA)
 - RedisConfig (Cache + JSON serialization)
 - WebConfig (CORS)
@@ -186,6 +188,7 @@
 ### Files Created
 
 **Session 2 Total**:
+
 - 12 files
 - 1,261 lines of code
 - 5 Java config classes
@@ -194,6 +197,7 @@
 - Docker documentation
 
 **Cumulative**:
+
 - 26 files total
 - 2,559 lines of code
 - 11 Java classes
