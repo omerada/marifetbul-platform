@@ -182,15 +182,15 @@ export default function HomePage() {
                   </div>
                 </div>
                 <p className="mb-6 text-lg leading-relaxed text-gray-700">
-                  En yetenekli hizmet verenleri bulun, projelerinizi zamanında ve
-                  bütçenize uygun şekilde tamamlayın.
+                  En yetenekli hizmet verenleri bulun, projelerinizi zamanında
+                  ve bütçenize uygun şekilde tamamlayın.
                 </p>
                 <ul className="mb-8 space-y-4">
                   <li className="flex items-center text-gray-700">
                     <CheckCircle className="mr-3 h-5 w-5 text-green-500" />
                     <span>
-                      <strong>Geniş yetenek havuzu</strong> - 125K+ uzman
-                      hizmet veren
+                      <strong>Geniş yetenek havuzu</strong> - 125K+ uzman hizmet
+                      veren
                     </span>
                   </li>
                   <li className="flex items-center text-gray-700">
