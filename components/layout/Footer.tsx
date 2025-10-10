@@ -87,7 +87,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/categories"
+                  href="/marketplace/categories"
                   className="text-gray-300 transition-colors hover:text-white"
                 >
                   Kategoriler

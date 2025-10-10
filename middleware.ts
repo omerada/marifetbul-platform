@@ -30,7 +30,6 @@ const publicRoutes = [
   '/contact',
   '/terms',
   '/privacy',
-  '/categories',
   '/blog',
   '/help',
   '/support',
