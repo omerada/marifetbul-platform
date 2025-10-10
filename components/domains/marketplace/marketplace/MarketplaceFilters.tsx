@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
@@ -8,13 +8,16 @@ import {
   X,
   Filter,
   ChevronDown,
+  ChevronRight,
   MapPin,
   Briefcase,
   Star,
   Clock,
+  Search,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { JobFilters, PackageFilters } from '@/types';
+import { MARKETPLACE_CATEGORIES } from '@/lib/domains/marketplace/categories-data';
 
 interface MarketplaceFiltersProps {
   mode: 'jobs' | 'packages';
@@ -22,31 +25,6 @@ interface MarketplaceFiltersProps {
   onPackageFiltersChange: (filters: Partial<PackageFilters>) => void;
   onClose?: () => void;
 }
-
-// Mock categories for demo
-const categories = [
-  'Web Geliştirme',
-  'Mobil Uygulama',
-  'Tasarım',
-  'Yazılım',
-  'Pazarlama',
-  'İçerik Yazımı',
-  'SEO',
-  'Sosyal Medya',
-];
-
-const skills = [
-  'React',
-  'Node.js',
-  'TypeScript',
-  'Python',
-  'JavaScript',
-  'Figma',
-  'Photoshop',
-  'WordPress',
-  'SEO',
-  'Google Ads',
-];
 
 const locations = [
   'İstanbul',
@@ -67,6 +45,8 @@ export function MarketplaceFilters({
 }: MarketplaceFiltersProps) {
   const [filters, setFilters] = useState<{
     category: string;
+    subcategory: string;
+    service: string;
     minBudget: string;
     maxBudget: string;
     minPrice: string;
@@ -79,6 +59,8 @@ export function MarketplaceFilters({
     rating: string;
   }>({
     category: '',
+    subcategory: '',
+    service: '',
     minBudget: '',
     maxBudget: '',
     minPrice: '',
@@ -90,6 +72,35 @@ export function MarketplaceFilters({
     deliveryTime: '',
     rating: '',
   });
+
+  const [expandedCategory, setExpandedCategory] = useState<string>('');
+  const [categorySearch, setCategorySearch] = useState('');
+
+  // Get selected category data
+  const selectedCategoryData = useMemo(() => {
+    return MARKETPLACE_CATEGORIES.find((cat) => cat.id === filters.category);
+  }, [filters.category]);
+
+  // Get all unique skills from all categories
+  const allSkills = useMemo(() => {
+    const skillsSet = new Set<string>();
+    MARKETPLACE_CATEGORIES.forEach((cat) => {
+      cat.topSkills.forEach((skill) => skillsSet.add(skill));
+    });
+    return Array.from(skillsSet).sort();
+  }, []);
+
+  // Filter categories by search
+  const filteredCategories = useMemo(() => {
+    if (!categorySearch.trim()) return MARKETPLACE_CATEGORIES;
+    const searchLower = categorySearch.toLowerCase();
+    return MARKETPLACE_CATEGORIES.filter(
+      (cat) =>
+        cat.title.toLowerCase().includes(searchLower) ||
+        cat.description.toLowerCase().includes(searchLower) ||
+        cat.topSkills.some((skill) => skill.toLowerCase().includes(searchLower))
+    );
+  }, [categorySearch]);
 
   const handleFilterChange = (
     key: string,
@@ -141,6 +152,8 @@ export function MarketplaceFilters({
   const clearFilters = () => {
     setFilters({
       category: '',
+      subcategory: '',
+      service: '',
       minBudget: '',
       maxBudget: '',
       minPrice: '',
@@ -152,6 +165,7 @@ export function MarketplaceFilters({
       deliveryTime: '',
       rating: '',
     });
+    setCategorySearch('');
 
     if (mode === 'jobs') {
       onJobFiltersChange({});
@@ -162,6 +176,8 @@ export function MarketplaceFilters({
 
   const hasActiveFilters =
     filters.category ||
+    filters.subcategory ||
+    filters.service ||
     filters.minBudget ||
     filters.maxBudget ||
     filters.minPrice ||
@@ -205,27 +221,184 @@ export function MarketplaceFilters({
         </div>
       </div>
 
-      {/* Category Filter */}
+      {/* Category Filter - Hierarchical Structure */}
       <div className="space-y-3">
         <div className="flex items-center text-sm font-medium text-gray-700">
           <Briefcase className="mr-2 h-4 w-4" />
-          Kategori
+          Kategoriler
         </div>
+
+        {/* Category Search */}
         <div className="relative">
-          <select
-            value={filters.category}
-            onChange={(e) => handleFilterChange('category', e.target.value)}
-            className="w-full appearance-none rounded-lg border border-gray-200 bg-white px-4 py-3 pr-10 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
-          >
-            <option value="">Tüm Kategoriler</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          <ChevronDown className="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Input
+            type="text"
+            placeholder="Kategori ara..."
+            value={categorySearch}
+            onChange={(e) => setCategorySearch(e.target.value)}
+            className="pl-9 text-sm"
+          />
         </div>
+
+        {/* Main Category Selection */}
+        <div className="max-h-60 space-y-2 overflow-y-auto rounded-lg border border-gray-200 p-2">
+          {filteredCategories.map((category) => (
+            <div key={category.id} className="space-y-1">
+              <button
+                onClick={() => {
+                  if (filters.category === category.id) {
+                    // Deselect
+                    handleFilterChange('category', '');
+                    handleFilterChange('subcategory', '');
+                    handleFilterChange('service', '');
+                    setExpandedCategory('');
+                  } else {
+                    // Select
+                    handleFilterChange('category', category.id);
+                    handleFilterChange('subcategory', '');
+                    handleFilterChange('service', '');
+                    setExpandedCategory(category.id);
+                  }
+                }}
+                className={cn(
+                  'flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-all',
+                  filters.category === category.id
+                    ? 'bg-blue-50 font-medium text-blue-700'
+                    : 'text-gray-700 hover:bg-gray-50'
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <span>{category.title}</span>
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      'text-xs',
+                      filters.category === category.id
+                        ? 'border-blue-300 bg-blue-100 text-blue-700'
+                        : 'border-gray-300 bg-gray-50 text-gray-600'
+                    )}
+                  >
+                    {category.serviceCount}
+                  </Badge>
+                </div>
+                <ChevronRight
+                  className={cn(
+                    'h-4 w-4 transition-transform',
+                    expandedCategory === category.id ? 'rotate-90' : ''
+                  )}
+                />
+              </button>
+
+              {/* Subcategories - shown when category is selected */}
+              {expandedCategory === category.id && (
+                <div className="ml-4 space-y-1 border-l-2 border-gray-200 pl-2">
+                  {category.subcategories.map((sub) => (
+                    <div key={sub.id} className="space-y-1">
+                      <button
+                        onClick={() => {
+                          if (filters.subcategory === sub.id) {
+                            handleFilterChange('subcategory', '');
+                            handleFilterChange('service', '');
+                          } else {
+                            handleFilterChange('subcategory', sub.id);
+                            handleFilterChange('service', '');
+                          }
+                        }}
+                        className={cn(
+                          'flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-xs transition-all',
+                          filters.subcategory === sub.id
+                            ? 'bg-blue-50 font-medium text-blue-600'
+                            : 'text-gray-600 hover:bg-gray-50'
+                        )}
+                      >
+                        <span>{sub.name}</span>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            'text-xs',
+                            filters.subcategory === sub.id
+                              ? 'border-blue-300 bg-blue-100 text-blue-600'
+                              : 'border-gray-300 bg-gray-50 text-gray-600'
+                          )}
+                        >
+                          {sub.serviceCount}
+                        </Badge>
+                      </button>
+
+                      {/* Services - shown when subcategory is selected */}
+                      {filters.subcategory === sub.id &&
+                        sub.popularServices && (
+                          <div className="mt-1 ml-2 space-y-0.5">
+                            {sub.popularServices.slice(0, 10).map((service) => (
+                              <button
+                                key={service}
+                                onClick={() => {
+                                  if (filters.service === service) {
+                                    handleFilterChange('service', '');
+                                  } else {
+                                    handleFilterChange('service', service);
+                                  }
+                                }}
+                                className={cn(
+                                  'flex w-full items-start rounded-md px-2 py-1 text-left text-xs transition-all',
+                                  filters.service === service
+                                    ? 'bg-blue-100 font-medium text-blue-700'
+                                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                )}
+                              >
+                                {service}
+                              </button>
+                            ))}
+                            {sub.popularServices.length > 10 && (
+                              <p className="px-2 py-1 text-xs text-gray-400">
+                                +{sub.popularServices.length - 10} hizmet
+                                daha...
+                              </p>
+                            )}
+                          </div>
+                        )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Selected Category Path Display */}
+        {filters.category && (
+          <div className="flex flex-wrap gap-1.5 text-xs">
+            <Badge variant="default" className="bg-blue-600 text-white">
+              {selectedCategoryData?.title}
+            </Badge>
+            {filters.subcategory && (
+              <>
+                <ChevronRight className="h-3 w-3 self-center text-gray-400" />
+                <Badge
+                  variant="outline"
+                  className="border-blue-300 bg-blue-50 text-blue-700"
+                >
+                  {
+                    selectedCategoryData?.subcategories.find(
+                      (s) => s.id === filters.subcategory
+                    )?.name
+                  }
+                </Badge>
+              </>
+            )}
+            {filters.service && (
+              <>
+                <ChevronRight className="h-3 w-3 self-center text-gray-400" />
+                <Badge
+                  variant="outline"
+                  className="border-blue-300 bg-blue-50 text-xs text-blue-700"
+                >
+                  {filters.service}
+                </Badge>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Price/Budget Range */}
@@ -397,8 +570,8 @@ export function MarketplaceFilters({
           <span className="mr-2">🛠️</span>
           Beceriler
         </div>
-        <div className="flex flex-wrap gap-2">
-          {skills.map((skill) => (
+        <div className="flex max-h-60 flex-wrap gap-2 overflow-y-auto rounded-lg border border-gray-200 p-2">
+          {allSkills.map((skill) => (
             <Badge
               key={skill}
               variant={
@@ -419,6 +592,11 @@ export function MarketplaceFilters({
             </Badge>
           ))}
         </div>
+        {filters.selectedSkills.length > 0 && (
+          <p className="text-xs text-gray-500">
+            {filters.selectedSkills.length} beceri seçildi
+          </p>
+        )}
       </div>
 
       {/* Apply Filters Button */}
