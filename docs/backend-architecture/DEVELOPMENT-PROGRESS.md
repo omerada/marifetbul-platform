@@ -322,12 +322,14 @@
 #### Issues & Resolutions
 
 **JWT Secret Key Size Error** ✅ RESOLVED:
+
 - Problem: Environment variable JWT_SECRET had 264-bit key (< 512-bit required)
 - Root Cause: System environment variable overriding configuration files
 - Solution: Removed environment variable + configured Maven Surefire with proper 512-bit secret
 - Result: All unit tests passing (13/13)
 
 **JSON Serialization in Tests** ⚠️ KNOWN ISSUE:
+
 - Issue: MockMvc response includes type information in array format
 - Example: `["com.marifetbul.api.common.dto.ApiResponse",{actual json}]`
 - Impact: Integration test assertions need adjustment to handle array paths
@@ -412,6 +414,7 @@ Sprint 1: [████████████████████] 100% �
 **Task 1.8 (Bonus) Integration Tests**: 95% (Tests created, assertions need adjustment)
 Sprint 2: [░░░░░░░░░░░░░░░░░░░░] 0%
 Sprint 3: [░░░░░░░░░░░░░░░░░░░░] 0%
+
 ```
 
 **Overall Progress**: 1/12 sprints (8.3%)
@@ -462,3 +465,4 @@ Sprint 3: [░░░░░░░░░░░░░░░░░░░░] 0%
 ---
 
 **Sonraki Güncelleme**: Sprint 2 başlangıcında
+```
