@@ -24,31 +24,33 @@ export function EmptyState({
 
   return (
     <div
-      className="flex flex-col items-center justify-center px-4 py-12 text-center"
+      className="flex min-h-[400px] flex-col items-center justify-center rounded-2xl bg-gradient-to-b from-gray-50 to-white px-4 py-16 text-center shadow-sm ring-1 ring-gray-200/60"
       role="status"
       aria-live="polite"
     >
-      <div
-        className="mb-6 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 p-6"
-        aria-hidden="true"
-      >
-        <Icon className="h-12 w-12 text-blue-500" />
+      {/* Icon with gradient */}
+      <div className="relative mb-8" aria-hidden="true">
+        <div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-br from-blue-100 to-blue-200 opacity-50 blur-xl" />
+        <div className="relative rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 p-8 shadow-lg ring-1 ring-blue-200/60">
+          <Icon className="h-14 w-14 text-blue-600" />
+        </div>
       </div>
 
-      <h3
-        className="mb-2 text-xl font-semibold text-gray-900"
-        id="empty-state-title"
-      >
-        {title}
-      </h3>
+      {/* Content */}
+      <div className="mb-8 space-y-3">
+        <h3 className="text-2xl font-bold text-gray-900" id="empty-state-title">
+          {title}
+        </h3>
 
-      <p
-        className="mb-6 max-w-md text-gray-600"
-        aria-describedby="empty-state-title"
-      >
-        {description}
-      </p>
+        <p
+          className="mx-auto max-w-md text-lg leading-relaxed text-gray-600"
+          aria-describedby="empty-state-title"
+        >
+          {description}
+        </p>
+      </div>
 
+      {/* Actions */}
       {action || (
         <div
           className="flex flex-col gap-3 sm:flex-row"
@@ -58,19 +60,23 @@ export function EmptyState({
           <Button
             variant="outline"
             onClick={onClearFilters}
-            className="gap-2"
+            className="gap-2 shadow-sm"
             aria-label="Filtreleri temizle ve tüm sonuçları göster"
           >
             <RotateCcw className="h-4 w-4" aria-hidden="true" />
-            Filtreleri Temizle
+            <span>Filtreleri Temizle</span>
           </Button>
           <Button
             onClick={onShowAll}
-            className="gap-2"
+            className="gap-2 bg-blue-600 shadow-md hover:bg-blue-700"
             aria-label={`Tüm ${mode === 'jobs' ? 'iş ilanlarını' : 'hizmet paketlerini'} göster`}
           >
             <Search className="h-4 w-4" aria-hidden="true" />
-            {mode === 'jobs' ? 'Tüm İş İlanları' : 'Tüm Hizmet Paketleri'}
+            <span>
+              {mode === 'jobs'
+                ? 'Tüm İş İlanlarını Göster'
+                : 'Tüm Hizmet Paketlerini Göster'}
+            </span>
           </Button>
         </div>
       )}

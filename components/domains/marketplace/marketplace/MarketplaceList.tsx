@@ -2,7 +2,6 @@
 
 import { JobCard } from './JobCard';
 import { PackageCard } from './PackageCard';
-import { Loading } from '@/components/ui';
 import { EmptyState } from './EmptyState';
 import type { Job, ServicePackage } from '@/types';
 import type { ViewPreferences } from '@/lib/core/validations/marketplace';
@@ -26,11 +25,27 @@ export function MarketplaceList({
 }: MarketplaceListProps) {
   if (isLoading) {
     return (
-      <Loading
-        variant="skeleton"
-        size="lg"
-        text="Marketplace içeriği yükleniyor..."
-      />
+      <div className="space-y-4">
+        {/* Skeleton Loading - Modern Design */}
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="animate-pulse rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200/60"
+          >
+            <div className="flex gap-4">
+              <div className="h-16 w-16 rounded-lg bg-slate-200" />
+              <div className="flex-1 space-y-3">
+                <div className="h-5 w-3/4 rounded bg-slate-200" />
+                <div className="h-4 w-1/2 rounded bg-slate-200" />
+                <div className="flex gap-2">
+                  <div className="h-6 w-20 rounded-full bg-slate-200" />
+                  <div className="h-6 w-24 rounded-full bg-slate-200" />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     );
   }
 
@@ -54,7 +69,7 @@ export function MarketplaceList({
 
   const gridCols =
     viewPreferences.layout === 'grid'
-      ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+      ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
       : 'grid-cols-1';
 
   return (

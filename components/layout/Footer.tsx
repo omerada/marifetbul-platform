@@ -41,7 +41,7 @@ export function Footer() {
               <span className="text-xl font-bold">MarifetBul</span>
             </div>
             <p className="leading-relaxed text-gray-300">
-              Türkiye&apos;nin en büyük freelancer ve işveren buluşma platformu.
+              Türkiye&apos;nin en uygun freelancer ve işveren buluşma platformu.
               Projeleriniz için en uygun uzmanları bulun veya yeteneklerinizi
               sergileyerek gelir elde edin.
             </p>
@@ -165,11 +165,7 @@ export function Footer() {
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin className="mt-1 h-4 w-4 text-gray-400" />
-                <span className="text-gray-300">
-                  Levent Mahallesi, Büyükdere Caddesi
-                  <br />
-                  No: 123, Şişli, İstanbul
-                </span>
+                <span className="text-gray-300">Ankara, Türkiye</span>
               </div>
             </div>
           </div>
@@ -179,7 +175,7 @@ export function Footer() {
         <div className="border-t border-gray-800 py-6">
           <div className="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
             <div className="text-sm text-gray-400">
-              © 2024 MarifetBul. Tüm hakları saklıdır.
+              © 2025 MarifetBul. Tüm hakları saklıdır.
             </div>
             <div className="flex space-x-6 text-sm">
               <Link
