@@ -404,7 +404,7 @@ export default function HomePage() {
           {/* Feature Highlights - Timeline Style */}
           <div className="relative mx-auto mb-12 max-w-4xl">
             {/* Connection Line */}
-            <div className="absolute top-1/2 left-0 right-0 hidden h-0.5 -translate-y-1/2 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200 md:block"></div>
+            <div className="absolute top-1/2 right-0 left-0 hidden h-0.5 -translate-y-1/2 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200 md:block"></div>
 
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
               {[
