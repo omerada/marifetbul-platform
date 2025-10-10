@@ -2,13 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import {
-  Search,
-  ArrowRight,
-  Briefcase,
-  Package,
-  CheckCircle,
-} from 'lucide-react';
+import { ArrowRight, Briefcase, Package, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui';
 
 type UserType = 'freelancer' | 'employer';
@@ -18,7 +12,6 @@ const contentByUserType = {
     title: 'Yeteneğini Keşfet',
     subtitle:
       'Freelancer olarak özgür çalış, kendi fiyatını belirle ve işleri bul',
-    searchPlaceholder: 'Hangi alanda uzmanlaşmak istiyorsun?',
     ctaPrimary: 'Hemen Başla',
     ctaSecondary: 'Projeleri Keşfet',
     ctaPrimaryHref: '/register?type=freelancer',
@@ -33,7 +26,6 @@ const contentByUserType = {
   employer: {
     title: 'Hayalini Gerçekleştir',
     subtitle: 'Doğru yetenekleri bul ve büyük projeleri tamamla',
-    searchPlaceholder: 'Hangi hizmeti arıyorsun?',
     ctaPrimary: 'Proje Başlat',
     ctaSecondary: 'Uzmanları Gör',
     ctaPrimaryHref: '/register?type=employer',
@@ -154,28 +146,6 @@ export function HeroSection() {
               <p className="mx-auto max-w-2xl text-xl leading-relaxed text-gray-600">
                 {currentContent.subtitle}
               </p>
-            </div>
-
-            {/* Search Bar - Modern Design */}
-            <div className="hero-search mx-auto max-w-2xl">
-              <div className="shadow-medium rounded-2xl border border-white/60 bg-white/80 p-3 backdrop-blur-sm">
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <div className="relative flex-1">
-                    <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder={currentContent.searchPlaceholder}
-                      className="w-full rounded-xl border border-gray-200/50 bg-gray-50/50 py-4 pr-4 pl-12 text-gray-700 transition-all duration-200 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/30 focus:outline-none"
-                    />
-                  </div>
-                  <Button
-                    size="lg"
-                    className="shadow-medium bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-4"
-                  >
-                    Keşfet
-                  </Button>
-                </div>
-              </div>
             </div>
 
             {/* Action Buttons - Soft Style */}
