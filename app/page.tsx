@@ -103,7 +103,7 @@ export default function HomePage() {
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900">
-                      Freelancer Olarak
+                      Hizmet Veren Olarak
                     </h3>
                     <p className="font-medium text-blue-600">
                       Yeteneklerinizi paraya çevirin
@@ -147,7 +147,7 @@ export default function HomePage() {
                 <div className="space-y-3">
                   <Link href="/register?type=freelancer">
                     <Button className="group h-12 w-full text-lg">
-                      Freelancer Olarak Başla
+                      Hizmet Veren Olarak Başla
                       <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </Link>
@@ -155,7 +155,7 @@ export default function HomePage() {
                   <div className="mt-6"></div>
 
                   <p className="text-center text-sm text-gray-500">
-                    ⭐ Ortalama freelancer ayda <strong>₺8,500</strong>{' '}
+                    ⭐ Ortalama hizmet veren ayda <strong>₺8,500</strong>{' '}
                     kazanıyor
                   </p>
                 </div>
@@ -174,7 +174,7 @@ export default function HomePage() {
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900">
-                      İşveren Olarak
+                      Hizmet Alan Olarak
                     </h3>
                     <p className="font-medium text-green-600">
                       Projelerinizi hayata geçirin
@@ -182,7 +182,7 @@ export default function HomePage() {
                   </div>
                 </div>
                 <p className="mb-6 text-lg leading-relaxed text-gray-700">
-                  En yetenekli freelancerları bulun, projelerinizi zamanında ve
+                  En yetenekli hizmet verenleri bulun, projelerinizi zamanında ve
                   bütçenize uygun şekilde tamamlayın.
                 </p>
                 <ul className="mb-8 space-y-4">
@@ -190,7 +190,7 @@ export default function HomePage() {
                     <CheckCircle className="mr-3 h-5 w-5 text-green-500" />
                     <span>
                       <strong>Geniş yetenek havuzu</strong> - 125K+ uzman
-                      freelancer
+                      hizmet veren
                     </span>
                   </li>
                   <li className="flex items-center text-gray-700">
@@ -220,7 +220,7 @@ export default function HomePage() {
                       variant="secondary"
                       className="group h-12 w-full bg-green-600 text-lg text-white hover:bg-green-700"
                     >
-                      İşveren Olarak Başla
+                      Hizmet Alan Olarak Başla
                       <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </Link>
@@ -359,7 +359,7 @@ export default function HomePage() {
                   className="w-full shadow-sm transition-shadow hover:shadow-md sm:w-auto"
                 >
                   <Briefcase className="mr-2 h-5 w-5" />
-                  Freelancer Olarak Başla
+                  Hizmet Veren Olarak Başla
                 </Button>
               </Link>
               <Link href="/register?type=employer">
@@ -369,7 +369,7 @@ export default function HomePage() {
                   className="w-full shadow-sm transition-all hover:shadow-md hover:ring-2 hover:ring-blue-200 sm:w-auto"
                 >
                   <Package className="mr-2 h-5 w-5" />
-                  İşveren Olarak Başla
+                  Hizmet Alan Olarak Başla
                 </Button>
               </Link>
             </div>
@@ -461,7 +461,7 @@ export default function HomePage() {
                 className="group h-14 w-full px-8 text-lg shadow-sm transition-all duration-300 hover:shadow-md sm:w-auto"
               >
                 <Package className="mr-3 h-5 w-5" />
-                İşveren Olarak Başla
+                Hizmet Alan Olarak Başla
                 <ArrowRight className="ml-3 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
@@ -472,7 +472,7 @@ export default function HomePage() {
                 className="group h-14 w-full border-2 px-8 text-lg shadow-sm transition-all duration-300 hover:shadow-md hover:ring-2 hover:ring-blue-200 sm:w-auto"
               >
                 <Briefcase className="mr-3 h-5 w-5" />
-                Freelancer Olarak Başla
+                Hizmet Veren Olarak Başla
                 <ArrowRight className="ml-3 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>

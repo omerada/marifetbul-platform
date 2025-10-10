@@ -100,7 +100,7 @@ export function CategoryShowcase() {
             <Link
               key={index}
               href="/marketplace/categories"
-              className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200/60 transition-all duration-300 hover:shadow-lg hover:ring-blue-200"
+              className="group relative overflow-hidden rounded-2xl bg-white p-6 pb-14 shadow-sm ring-1 ring-gray-200/60 transition-all duration-300 hover:shadow-lg hover:ring-blue-200"
             >
               {/* Trending Badge */}
               {category.trending && (
@@ -140,9 +140,12 @@ export function CategoryShowcase() {
                 </div>
               </div>
 
-              {/* Hover Arrow */}
-              <div className="absolute right-5 bottom-5 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100">
-                <ArrowRight className="h-5 w-5 text-blue-600" />
+              {/* Hover Arrow - Fixed position at bottom center */}
+              <div className="absolute inset-x-0 bottom-4 flex justify-center opacity-0 transition-all duration-300 group-hover:opacity-100">
+                <div className="flex items-center gap-1 text-sm font-medium text-blue-600">
+                  <span>Keşfet</span>
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </div>
               </div>
             </Link>
           ))}
