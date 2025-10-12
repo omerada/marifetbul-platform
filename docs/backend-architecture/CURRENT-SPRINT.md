@@ -1,27 +1,28 @@
-# Current Sprint: Sprint 1
+# Current Sprint: Sprint 13
 
 ## Sprint Bilgileri
 
-- **Sprint No**: 1
-- **Başlangıç**: 2025-10-10
-- **Bitiş**: 2025-10-24 (2 hafta sonra)
+- **Sprint No**: 13
+- **Başlangıç**: 2025-10-12
+- **Bitiş**: 2025-10-26 (2 hafta sonra)
 - **Süre**: 2 hafta
-- **İlerleme**: 60%
-- **Durum**: 🟢 Mükemmel İlerleme
+- **İlerleme**: 0%
+- **Durum**: 🟢 Başladı
 
 ---
 
 ## Sprint Hedefi
 
-**Project Infrastructure & Core Setup**
+**Payment Integration - Stripe & Escrow System**
 
-Sprint 1'in amacı, projenin temel altyapısını kurmak ve core infrastructure'ı hazırlamaktır:
+Sprint 13'ün amacı, platformda güvenli ve kapsamlı bir ödeme sistemi oluşturmaktır:
 
-- Maven project setup
-- Database configuration (PostgreSQL + Redis)
-- Security foundation (JWT, Spring Security)
-- Base classes and utilities
-- Basic health checks
+- Stripe Payment Gateway integration
+- Payment entity ve Wallet entity
+- Escrow system (hold & release)
+- Payout system (freelancer ödemeleri)
+- Payment API endpoints
+- Comprehensive testing
 
 ---
 
@@ -29,125 +30,137 @@ Sprint 1'in amacı, projenin temel altyapısını kurmak ve core infrastructure'
 
 ### 🔴 HIGH PRIORITY (Önce bunlar)
 
-#### Task 1.1: Project Initialization ✅ 100%
+#### Task 13.1: Payment & Wallet Entities ⏳ 0%
 
-- [x] Create Maven project structure
-- [x] Configure pom.xml with dependencies
-- [x] Setup package structure
-- [x] Create application.yml (dev/test/prod)
-- [x] Add .gitignore
-- [x] Create BaseEntity, ApiResponse, Exception classes
-- [x] Successful build: `mvn clean compile`
-- [x] Successful test: `mvn test`
+- [ ] Create Payment entity with relationships
+- [ ] Create Wallet entity with optimistic locking
+- [ ] Create Transaction entity for audit trail
+- [ ] Create Payout entity
+- [ ] Define PaymentStatus, PaymentMethodType, TransactionType, WalletStatus enums
+- [ ] Create PaymentRepository with custom queries
+- [ ] Create WalletRepository with custom queries
+- [ ] Create TransactionRepository
+- [ ] Create PayoutRepository
+- [ ] Successful build: `mvn clean compile`
 
 **Assignee**: AI Agent  
-**Story Points**: 3  
-**Tahmini Süre**: 2 saat  
-**Gerçek Süre**: 1.5 saat  
-**Status**: ✅ COMPLETED
+**Story Points**: 5  
+**Tahmini Süre**: 4 saat  
+**Status**: ⏳ NOT STARTED
 
 ---
 
-#### Task 1.2: Database Setup ✅ 100%
+#### Task 13.2: Payment Service & Stripe Integration ⏳ 0%
 
-- [x] Create docker-compose.yml
-- [x] PostgreSQL container setup (PostgreSQL 15)
-- [x] Redis container setup (Redis 7)
-- [x] pgAdmin container setup
-- [x] Docker init scripts with extensions
-- [x] Configure Flyway migrations
-- [x] Create V1\_\_init_schema.sql with:
-  - Users table + audit fields
-  - ENUMs (user_status, user_role, verification_status)
-  - 11 indexes + full-text search
-  - Triggers + seed data
-- [x] Docker documentation (docker/README.md)
+- [ ] Add Stripe dependency to pom.xml (version 24.3.0)
+- [ ] Create StripeConfig with API key configuration
+- [ ] Create PaymentProperties with @ConfigurationProperties
+- [ ] Create PaymentService interface
+- [ ] Implement PaymentServiceImpl with:
+  - PaymentIntent creation
+  - Payment confirmation
+  - Payment processing
+  - Webhook handling (payment_intent.succeeded, payment_intent.payment_failed, charge.refunded)
+  - Platform fee calculation
+- [ ] Configure application.yml with Stripe settings
+- [ ] Successful build and test
 
 **Assignee**: AI Agent  
-**Story Points**: 2  
-**Tahmini Süre**: 1.5 saat  
-**Gerçek Süre**: 1 saat  
-**Status**: ✅ COMPLETED
+**Story Points**: 8  
+**Tahmini Süre**: 8 saat  
+**Status**: ⏳ NOT STARTED
 
 ---
 
-#### Task 1.3: Core Configuration ✅ 100%
+#### Task 13.3: Escrow System ⏳ 0%
 
-- [x] DatabaseConfig.java (HikariCP + JPA)
-- [x] RedisConfig.java (Cache + RedisTemplate)
-- [x] WebConfig.java (CORS)
-- [x] OpenAPIConfig.java (Swagger + JWT)
-- [x] GlobalExceptionHandler.java (All exception types)
-- [x] Build successful
-- [x] Tests passing
+- [ ] Create WalletService interface
+- [ ] Implement WalletServiceImpl with:
+  - Wallet creation and management
+  - Hold payment in escrow (pending balance)
+  - Release payment from escrow
+  - Refund from escrow
+  - Balance operations
+  - Transaction history
+- [ ] Integrate with OrderService (completion → release, cancellation → refund)
+- [ ] Create transaction records for audit trail
+- [ ] Send notifications on escrow events
 
 **Assignee**: AI Agent  
-**Story Points**: 3  
-**Tahmini Süre**: 2 saat  
-**Gerçek Süre**: 1.5 saat  
-**Status**: ✅ COMPLETED
+**Story Points**: 5  
+**Tahmini Süre**: 5 saat  
+**Status**: ⏳ NOT STARTED
 
 ---
 
 ### 🟡 MEDIUM PRIORITY (Sonra bunlar)
 
-#### Task 1.4: DevOps Foundation ✅ 100%
+#### Task 13.4: Payout System ⏳ 0%
 
-- [x] Multi-stage Dockerfile (Maven + JRE)
-- [x] .dockerignore
-- [x] GitHub Actions CI/CD pipeline
-- [x] HealthCheckController with K8s probes
-- [x] DEVOPS.md guide
-- [x] Build & Test successful
-
-**Assignee**: AI Agent  
-**Story Points**: 4  
-**Tahmini Süre**: 2.5 saat  
-**Gerçek Süre**: 2 saat  
-**Status**: ✅ COMPLETED
-
----
-
-#### Task 1.5: Security Foundation ⏳ 0%
-
-- [ ] JwtTokenProvider.java
-- [ ] JwtAuthenticationFilter.java
-- [ ] SecurityConfig.java
-- [ ] UserPrincipal.java
-- [ ] CustomUserDetailsService.java (skeleton)
+- [ ] Create PayoutService interface
+- [ ] Implement PayoutServiceImpl with:
+  - Payout request functionality
+  - Payout processing logic
+  - Payout completion
+  - Payout failure handling
+  - Validation (minimum amount, balance check)
+- [ ] Wallet deduction on payout request
+- [ ] Transaction records for payouts
+- [ ] Notifications for payout events
 
 **Assignee**: AI Agent  
 **Story Points**: 5  
-**Tahmini Süre**: 3 saat
+**Tahmini Süre**: 6 saat  
+**Status**: ⏳ NOT STARTED
 
 ---
 
-#### Task 1.6: Health Check & Actuator ⏳ 0%
+#### Task 13.5: Payment API Endpoints ⏳ 0%
 
-- [ ] Spring Actuator setup
-- [ ] Custom health indicators
-- [ ] /actuator/health endpoint
-- [ ] /actuator/info endpoint
-- [ ] Metrics configuration
+- [ ] Create Request DTOs (CreatePaymentRequest, RefundRequest, PayoutRequest)
+- [ ] Create Response DTOs (PaymentIntentResponse, PaymentResponse, WalletResponse, TransactionResponse)
+- [ ] Create PaymentController with endpoints:
+  - POST /api/v1/payments/intent (Create payment intent)
+  - POST /api/v1/payments/{id}/confirm (Confirm payment)
+  - GET /api/v1/payments/{id} (Get payment details)
+  - POST /api/v1/payments/{id}/refund (Refund payment)
+  - GET /api/v1/payments/history (Payment history)
+  - POST /api/v1/payments/webhook (Stripe webhook)
+- [ ] Create WalletController with endpoints:
+  - GET /api/v1/wallet/balance (Get balance)
+  - GET /api/v1/wallet/transactions (Transaction history)
+  - POST /api/v1/wallet/payout/request (Request payout)
+  - GET /api/v1/wallet/payout/history (Payout history)
+  - GET /api/v1/wallet/payout/{id} (Payout details)
+- [ ] Add authorization checks
+- [ ] OpenAPI documentation
 
 **Assignee**: AI Agent  
-**Story Points**: 2  
-**Tahmini Süre**: 1 saat
+**Story Points**: 5  
+**Tahmini Süre**: 5 saat  
+**Status**: ⏳ NOT STARTED
 
 ---
 
-### 🟢 LOW PRIORITY (İhtiyaç varsa)
+#### Task 13.6: Database Migration & Testing ⏳ 0%
 
-#### Task 1.7: Logging Setup ⏳ 0%
-
-- [ ] Logback configuration
-- [ ] Custom log patterns
-- [ ] Log file rotation
-- [ ] Log levels per environment
+- [ ] Create V13\_\_payment_system.sql migration
+- [ ] Create tables: payments, wallets, transactions, payouts
+- [ ] Create indexes for performance
+- [ ] Create triggers for updated_at
+- [ ] Create R13\_\_payment_rollback.sql
+- [ ] Write PaymentServiceTest (12 tests)
+- [ ] Write WalletServiceTest (10 tests)
+- [ ] Write PayoutServiceTest (8 tests)
+- [ ] Write PaymentControllerTest (6 integration tests)
+- [ ] Write WalletControllerTest (4 integration tests)
+- [ ] All tests passing: `mvn test`
+- [ ] Code coverage > 80%
 
 **Assignee**: AI Agent  
-**Story Points**: 1  
-**Tahmini Süre**: 1 saat
+**Story Points**: 8  
+**Tahmini Süre**: 6 saat  
+**Status**: ⏳ NOT STARTED
 
 ---
 

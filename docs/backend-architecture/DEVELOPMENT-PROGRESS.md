@@ -432,12 +432,14 @@ Sprint 11-12: [░░░░░░░░░░░░░░░░░░░░] 0% 
 ### Tamamlanan Görevler
 
 #### 9.1 Design & Documentation ✅
+
 - [x] MESSAGE_DOMAIN_DESIGN.md (600+ lines)
 - [x] Complete domain specification
 - [x] Database schema design
 - [x] API endpoint documentation
 
 #### 9.2 Entity & Repository Layer ✅
+
 - [x] MessageType enum (5 types)
 - [x] Conversation entity (15 methods)
 - [x] Message entity (20 methods)
@@ -445,6 +447,7 @@ Sprint 11-12: [░░░░░░░░░░░░░░░░░░░░] 0% 
 - [x] MessageRepository (16 queries + full-text search)
 
 #### 9.3 Service Layer ✅
+
 - [x] ConversationService (11 methods)
 - [x] MessageService (13 methods)
 - [x] Authorization checks implemented
@@ -452,24 +455,28 @@ Sprint 11-12: [░░░░░░░░░░░░░░░░░░░░] 0% 
 - [x] Soft delete per user
 
 #### 9.4 DTO & Mapper Layer ✅
+
 - [x] 6 DTOs (AttachmentDTO, RelatedEntityDTO, UserSummaryDTO, etc.)
 - [x] 3 Mappers (UserSummaryMapper, MessageMapper, ConversationMapper)
 - [x] 2 Custom exceptions (BadRequestException, UnauthorizedException)
 - [x] CurrentUser annotation for security
 
 #### 9.5 Controller Layer ✅
+
 - [x] ConversationController (9 endpoints)
 - [x] MessageController (9 endpoints)
 - [x] OpenAPI documentation
 - [x] JWT authentication
 
 #### 9.6 Testing Layer ✅
+
 - [x] MessageServiceTest (25 tests) - 100% passing ✅
 - [x] ConversationServiceTest (26 tests) - 100% passing ✅
 - [x] Total: 51/51 tests passing (100%)
 - [x] UserPrincipal UUID compatibility fixed
 
 #### 9.7 Database Migration ✅
+
 - [x] V9 migration (330+ lines SQL)
 - [x] R9 rollback (200+ lines SQL)
 - [x] 2 tables (conversations, messages)
@@ -480,6 +487,7 @@ Sprint 11-12: [░░░░░░░░░░░░░░░░░░░░] 0% 
 ### Sprint 9 Deliverables
 
 **Files Created**: 26 files (~7,000 lines)
+
 - Entity Layer: 3 files
 - Repository Layer: 2 files
 - Service Layer: 2 files
@@ -492,6 +500,7 @@ Sprint 11-12: [░░░░░░░░░░░░░░░░░░░░] 0% 
 - Documentation: 3 files
 
 **API Endpoints**: 18 REST endpoints
+
 - GET /api/v1/conversations
 - GET /api/v1/conversations/{id}
 - POST /api/v1/conversations/{otherId}
@@ -512,6 +521,7 @@ Sprint 11-12: [░░░░░░░░░░░░░░░░░░░░] 0% 
 - POST /api/v1/messages/system
 
 **Key Features**:
+
 - ✅ Soft delete per user (4 boolean flags)
 - ✅ Unread tracking per user (2 counters)
 - ✅ Rate limiting (50 msg/min)
@@ -524,6 +534,7 @@ Sprint 11-12: [░░░░░░░░░░░░░░░░░░░░] 0% 
 ### Sprint 9 Metrics
 
 **Test Coverage**:
+
 ```
 MessageServiceTest:        25/25 ✅ (100%)
 ConversationServiceTest:   26/26 ✅ (100%)
@@ -533,12 +544,14 @@ Project Total:             225/238 ✅ (94.5%)
 ```
 
 **Code Quality**:
+
 - JavaDoc Coverage: ~90%
 - Logging Coverage: 100% critical paths
 - Error Handling: Comprehensive
 - Security: Authorization on all endpoints
 
 **Database**:
+
 - Tables: 2 (conversations, messages)
 - Columns: 30 total
 - Indexes: 18 total
@@ -549,6 +562,7 @@ Project Total:             225/238 ✅ (94.5%)
 Sprint 9 başarıyla tamamlandı! Messaging sistemi production-ready durumda. Tüm testler geçiyor, database migrasyonları hazır, API dokümantasyonu tam. Soft delete, rate limiting, full-text search gibi advanced özellikler implement edildi.
 
 **Documentation**:
+
 - SPRINT_9_MESSAGE_DOMAIN_COMPLETION.md ✅
 - MESSAGE_DOMAIN_DESIGN.md ✅
 
@@ -598,15 +612,16 @@ Sprint 9 başarıyla tamamlandı! Messaging sistemi production-ready durumda. T�
 ---
 
 **Sonraki Güncelleme**: Sprint 2 başlangıcında
+
 ```
 
 ---
 
 ## Sprint 2 - Job Domain Implementation (100%)
 
-**Ba�lang��**: 2025-10-11 09:00  
-**Tamamlanma**: 2025-10-11 11:50  
-**S�re**: ~2.5 saat  
+**Ba�lang��**: 2025-10-11 09:00
+**Tamamlanma**: 2025-10-11 11:50
+**S�re**: ~2.5 saat
 **Tests**: 35/35 PASSING (19 unit + 16 integration)
 
 ### Tamamlanan Tasklar
@@ -626,8 +641,8 @@ Sprint 9 başarıyla tamamlandı! Messaging sistemi production-ready durumda. T�
 
 ### Sprint Progress
 
-`Sprint 1: [] 100% 
-Sprint 2: [] 100% 
+`Sprint 1: [] 100%
+Sprint 2: [] 100%
 Sprint 3: [] 0%`
 
 **Overall**: 2/12 sprints (16.7%)
@@ -635,3 +650,4 @@ Sprint 3: [] 0%`
 ---
 
 **Sonraki**: Sprint 3 - Package & Proposal System
+```
