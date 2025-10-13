@@ -4,7 +4,7 @@ import { MSWProvider } from '@/components/providers/MSWProvider';
 import { AuthProvider } from '@/components/providers/AuthProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { ToastProvider } from '@/components/providers/ToastProvider';
-import { UnifiedErrorBoundary as ErrorBoundary } from '@/components/ui';
+import { MonitoringProvider } from '@/components/providers/MonitoringProvider';
 import { SEOHead } from '@/components/shared/seo/SEOHead';
 import { seoMetadata } from '@/lib/seo/metadata';
 import './globals.css';
@@ -69,7 +69,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} h-full bg-gray-50 font-sans antialiased`}
       >
-        <ErrorBoundary>
+        <MonitoringProvider>
           <ThemeProvider>
             <MSWProvider>
               <AuthProvider>
@@ -77,7 +77,7 @@ export default function RootLayout({
               </AuthProvider>
             </MSWProvider>
           </ThemeProvider>
-        </ErrorBoundary>
+        </MonitoringProvider>
       </body>
     </html>
   );

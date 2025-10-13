@@ -118,21 +118,72 @@ const nextConfig = {
   // SECURITY HEADERS
   // ================================================
   async headers() {
+    const isProduction = process.env.NODE_ENV === 'production';
+
     return [
       {
         source: '/(.*)',
         headers: [
+          // Content Security Policy (CSP)
+          ...(isProduction
+            ? [
+                {
+                  key: 'Content-Security-Policy',
+                  value: [
+                    "default-src 'self'",
+                    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
+                    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+                    "img-src 'self' data: https: blob:",
+                    "font-src 'self' https://fonts.gstatic.com data:",
+                    "connect-src 'self' https://www.google-analytics.com https://analytics.google.com",
+                    "media-src 'self'",
+                    "object-src 'none'",
+                    "frame-ancestors 'none'",
+                    "base-uri 'self'",
+                    "form-action 'self'",
+                    'upgrade-insecure-requests',
+                  ].join('; '),
+                },
+              ]
+            : []),
+          // HTTP Strict Transport Security (HSTS)
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains; preload',
+          },
+          // X-Frame-Options - prevent clickjacking
           {
             key: 'X-Frame-Options',
             value: 'DENY',
           },
+          // X-Content-Type-Options - prevent MIME sniffing
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
           },
+          // X-XSS-Protection - XSS filtering (legacy browsers)
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          // Referrer-Policy - control referrer information
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
+          },
+          // Permissions-Policy - control browser features
+          {
+            key: 'Permissions-Policy',
+            value: [
+              'accelerometer=()',
+              'camera=()',
+              'geolocation=()',
+              'gyroscope=()',
+              'magnetometer=()',
+              'microphone=()',
+              'payment=()',
+              'usb=()',
+            ].join(', '),
           },
         ],
       },

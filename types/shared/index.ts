@@ -9,3 +9,4 @@ export * from './seo';
 export * from './social';
 export * from './unified';
 export * from './utils';
+export * from './enhanced-types';

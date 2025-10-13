@@ -1,15 +1,21 @@
 /**
  * WebSocket Manager for Real-time Communication
  * Handles WebSocket connections, reconnection logic, and event management
+ * - Cookie-based authentication
+ * - Automatic reconnection with exponential backoff
+ * - Heartbeat/ping-pong mechanism
+ * - Presence tracking
+ * - Type-safe event system
  */
 
-import { getCurrentUserId, getAuthToken } from '@/lib/shared/utils/auth';
+import { getCurrentUserId } from '@/lib/shared/utils/auth';
 
-export interface WebSocketMessage {
-  type: string;
-  payload: Record<string, unknown>;
+export interface WebSocketMessage<T = unknown> {
+  type: WebSocketEventType;
+  payload: T;
   timestamp: string;
   userId?: string;
+  messageId?: string;
 }
 
 export interface WebSocketOptions {
@@ -18,19 +24,39 @@ export interface WebSocketOptions {
   maxReconnectAttempts?: number;
   heartbeatInterval?: number;
   enableHeartbeat?: boolean;
+  debug?: boolean;
 }
 
 export type WebSocketEventType =
   | 'notification'
   | 'message'
   | 'user_status'
+  | 'presence'
+  | 'typing'
   | 'order_update'
+  | 'payment_update'
   | 'system_alert'
-  | 'heartbeat';
+  | 'heartbeat'
+  | 'connection'
+  | 'error';
 
-export interface WebSocketEventHandler {
-  (data: Record<string, unknown>): void;
+export interface PresenceStatus {
+  userId: string;
+  status: 'online' | 'offline' | 'away' | 'busy';
+  lastSeen?: string;
 }
+
+export interface ConnectionStats {
+  isConnected: boolean;
+  reconnectAttempts: number;
+  lastConnectedAt?: string;
+  lastDisconnectedAt?: string;
+  messagesSent: number;
+  messagesReceived: number;
+  errors: number;
+}
+
+export type WebSocketEventHandler<T = unknown> = (data: T) => void;
 
 export class WebSocketManager {
   private ws: WebSocket | null = null;
@@ -38,10 +64,19 @@ export class WebSocketManager {
   private reconnectAttempts = 0;
   private reconnectTimer: NodeJS.Timeout | null = null;
   private heartbeatTimer: NodeJS.Timeout | null = null;
-  private eventHandlers: Map<WebSocketEventType, Set<WebSocketEventHandler>> =
-    new Map();
+  private eventHandlers: Map<
+    WebSocketEventType,
+    Set<WebSocketEventHandler<unknown>>
+  > = new Map();
   private isConnecting = false;
   private lastPongTime = 0;
+  private stats: ConnectionStats = {
+    isConnected: false,
+    reconnectAttempts: 0,
+    messagesSent: 0,
+    messagesReceived: 0,
+    errors: 0,
+  };
 
   constructor(options: WebSocketOptions) {
     this.options = {
@@ -49,6 +84,7 @@ export class WebSocketManager {
       maxReconnectAttempts: 10,
       heartbeatInterval: 30000,
       enableHeartbeat: true,
+      debug: false,
       ...options,
     };
 
@@ -88,14 +124,11 @@ export class WebSocketManager {
       this.isConnecting = true;
 
       try {
-        // Add auth token to WebSocket URL if available
-        const token = getAuthToken();
+        // Cookie-based auth - credentials sent automatically
         const userId = getCurrentUserId();
         const wsUrl = new URL(this.options.url);
 
-        if (token) {
-          wsUrl.searchParams.set('token', token);
-        }
+        // Add userId to URL for routing (optional)
         if (userId) {
           wsUrl.searchParams.set('userId', userId);
         }
@@ -105,10 +138,20 @@ export class WebSocketManager {
         this.ws.onopen = () => {
           this.isConnecting = false;
           this.reconnectAttempts = 0;
+          this.stats.isConnected = true;
+          this.stats.reconnectAttempts = 0;
+          this.stats.lastConnectedAt = new Date().toISOString();
+
+          if (this.options.debug) {
+            console.log('[WebSocket] Connected to', this.options.url);
+          }
 
           if (this.options.enableHeartbeat) {
             this.startHeartbeat();
           }
+
+          // Emit connection event
+          this.emitEvent('connection', { status: 'connected' });
 
           resolve();
         };
@@ -119,7 +162,19 @@ export class WebSocketManager {
 
         this.ws.onclose = (event) => {
           this.isConnecting = false;
+          this.stats.isConnected = false;
+          this.stats.lastDisconnectedAt = new Date().toISOString();
           this.stopHeartbeat();
+
+          if (this.options.debug) {
+            console.log('[WebSocket] Disconnected:', event.code, event.reason);
+          }
+
+          // Emit connection event
+          this.emitEvent('connection', {
+            status: 'disconnected',
+            code: event.code,
+          });
 
           if (
             !event.wasClean &&
@@ -130,8 +185,16 @@ export class WebSocketManager {
         };
 
         this.ws.onerror = (error) => {
-          console.error('WebSocket error:', error);
+          this.stats.errors++;
           this.isConnecting = false;
+
+          if (this.options.debug) {
+            console.error('[WebSocket] Error:', error);
+          }
+
+          // Emit error event
+          this.emitEvent('error', { error: error.toString() });
+
           reject(error);
         };
       } catch (error) {
@@ -163,24 +226,36 @@ export class WebSocketManager {
   /**
    * Send message through WebSocket
    */
-  send(type: WebSocketEventType, payload: Record<string, unknown>): boolean {
+  send<T = unknown>(type: WebSocketEventType, payload: T): boolean {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      console.warn('WebSocket not connected, cannot send message');
+      if (this.options.debug) {
+        console.warn('[WebSocket] Cannot send, not connected');
+      }
       return false;
     }
 
-    const message: WebSocketMessage = {
+    const message: WebSocketMessage<T> = {
       type,
       payload,
       timestamp: new Date().toISOString(),
       userId: getCurrentUserId() || undefined,
+      messageId: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     };
 
     try {
       this.ws.send(JSON.stringify(message));
+      this.stats.messagesSent++;
+
+      if (this.options.debug) {
+        console.log('[WebSocket] Sent:', type, payload);
+      }
+
       return true;
     } catch (error) {
-      console.error('Failed to send WebSocket message:', error);
+      this.stats.errors++;
+      if (this.options.debug) {
+        console.error('[WebSocket] Send failed:', error);
+      }
       return false;
     }
   }
@@ -188,20 +263,20 @@ export class WebSocketManager {
   /**
    * Subscribe to WebSocket events
    */
-  on(
+  on<T = unknown>(
     eventType: WebSocketEventType,
-    handler: WebSocketEventHandler
+    handler: WebSocketEventHandler<T>
   ): () => void {
     const handlers = this.eventHandlers.get(eventType);
     if (handlers) {
-      handlers.add(handler);
+      handlers.add(handler as WebSocketEventHandler<unknown>);
     }
 
     // Return unsubscribe function
     return () => {
       const handlers = this.eventHandlers.get(eventType);
       if (handlers) {
-        handlers.delete(handler);
+        handlers.delete(handler as WebSocketEventHandler<unknown>);
       }
     };
   }
@@ -209,10 +284,13 @@ export class WebSocketManager {
   /**
    * Unsubscribe from WebSocket events
    */
-  off(eventType: WebSocketEventType, handler: WebSocketEventHandler): void {
+  off<T = unknown>(
+    eventType: WebSocketEventType,
+    handler: WebSocketEventHandler<T>
+  ): void {
     const handlers = this.eventHandlers.get(eventType);
     if (handlers) {
-      handlers.delete(handler);
+      handlers.delete(handler as WebSocketEventHandler<unknown>);
     }
   }
 
@@ -231,33 +309,58 @@ export class WebSocketManager {
   }
 
   /**
+   * Get connection statistics
+   */
+  getStats(): ConnectionStats {
+    return { ...this.stats };
+  }
+
+  /**
+   * Emit event to handlers (internal helper)
+   */
+  private emitEvent<T = unknown>(type: WebSocketEventType, payload: T): void {
+    const handlers = this.eventHandlers.get(type);
+    if (handlers) {
+      handlers.forEach((handler) => {
+        try {
+          handler(payload);
+        } catch (error) {
+          if (this.options.debug) {
+            console.error('[WebSocket] Handler error:', error);
+          }
+        }
+      });
+    }
+  }
+
+  /**
    * Handle incoming WebSocket messages
    */
   private handleMessage(event: MessageEvent): void {
     try {
       const message: WebSocketMessage = JSON.parse(event.data);
+      this.stats.messagesReceived++;
+
+      if (this.options.debug) {
+        console.log('[WebSocket] Received:', message.type, message.payload);
+      }
 
       // Handle heartbeat/pong messages
-      if (message.type === 'heartbeat' && message.payload.type === 'pong') {
-        this.lastPongTime = Date.now();
-        return;
+      if (message.type === 'heartbeat') {
+        const heartbeatPayload = message.payload as { type?: string };
+        if (heartbeatPayload?.type === 'pong') {
+          this.lastPongTime = Date.now();
+          return;
+        }
       }
 
       // Emit to registered handlers
-      const handlers = this.eventHandlers.get(
-        message.type as WebSocketEventType
-      );
-      if (handlers) {
-        handlers.forEach((handler) => {
-          try {
-            handler(message.payload);
-          } catch (error) {
-            console.error('Error in WebSocket event handler:', error);
-          }
-        });
-      }
+      this.emitEvent(message.type, message.payload);
     } catch (error) {
-      console.error('Failed to parse WebSocket message:', error);
+      this.stats.errors++;
+      if (this.options.debug) {
+        console.error('[WebSocket] Parse error:', error);
+      }
     }
   }
 
@@ -270,10 +373,18 @@ export class WebSocketManager {
     }
 
     this.reconnectAttempts++;
+    this.stats.reconnectAttempts = this.reconnectAttempts;
+
     const delay = Math.min(
       this.options.reconnectInterval * Math.pow(2, this.reconnectAttempts - 1),
       30000 // Max 30 seconds
     );
+
+    if (this.options.debug) {
+      console.log(
+        `[WebSocket] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`
+      );
+    }
 
     this.reconnectTimer = setTimeout(() => {
       this.connect().catch((error) => {
@@ -355,7 +466,6 @@ export async function initializeWebSocket(): Promise<WebSocketManager> {
 
   try {
     await wsManager.connect();
-
     return wsManager;
   } catch (error) {
     console.error('Failed to initialize WebSocket:', error);
@@ -371,4 +481,154 @@ export function cleanupWebSocket(): void {
     globalWebSocketManager.disconnect();
     globalWebSocketManager = null;
   }
+}
+
+/**
+ * Presence Tracking Helpers
+ */
+
+/**
+ * Update user presence status
+ */
+export function updatePresence(status: PresenceStatus['status']): void {
+  const wsManager = getWebSocketManager();
+  const userId = getCurrentUserId();
+
+  if (!userId) return;
+
+  wsManager.send('presence', {
+    userId,
+    status,
+    lastSeen: new Date().toISOString(),
+  });
+}
+
+/**
+ * Subscribe to presence updates
+ */
+export function subscribeToPresence(
+  callback: (presence: PresenceStatus) => void
+): () => void {
+  const wsManager = getWebSocketManager();
+  return wsManager.on<PresenceStatus>('presence', callback);
+}
+
+/**
+ * Send typing indicator
+ */
+export function sendTypingIndicator(
+  conversationId: string,
+  isTyping: boolean
+): void {
+  const wsManager = getWebSocketManager();
+  const userId = getCurrentUserId();
+
+  if (!userId) return;
+
+  wsManager.send('typing', {
+    userId,
+    conversationId,
+    isTyping,
+    timestamp: new Date().toISOString(),
+  });
+}
+
+/**
+ * Subscribe to typing indicators
+ */
+export function subscribeToTyping(
+  callback: (data: {
+    userId: string;
+    conversationId: string;
+    isTyping: boolean;
+  }) => void
+): () => void {
+  const wsManager = getWebSocketManager();
+  return wsManager.on('typing', callback);
+}
+
+/**
+ * Notification Helpers
+ */
+
+/**
+ * Subscribe to real-time notifications
+ */
+export function subscribeToNotifications<T = unknown>(
+  callback: (notification: T) => void
+): () => void {
+  const wsManager = getWebSocketManager();
+  return wsManager.on<T>('notification', callback);
+}
+
+/**
+ * Message Helpers
+ */
+
+/**
+ * Subscribe to real-time messages
+ */
+export function subscribeToMessages<T = unknown>(
+  callback: (message: T) => void
+): () => void {
+  const wsManager = getWebSocketManager();
+  return wsManager.on<T>('message', callback);
+}
+
+/**
+ * Order Update Helpers
+ */
+
+/**
+ * Subscribe to order updates
+ */
+export function subscribeToOrderUpdates<T = unknown>(
+  callback: (update: T) => void
+): () => void {
+  const wsManager = getWebSocketManager();
+  return wsManager.on<T>('order_update', callback);
+}
+
+/**
+ * Payment Update Helpers
+ */
+
+/**
+ * Subscribe to payment updates
+ */
+export function subscribeToPaymentUpdates<T = unknown>(
+  callback: (update: T) => void
+): () => void {
+  const wsManager = getWebSocketManager();
+  return wsManager.on<T>('payment_update', callback);
+}
+
+/**
+ * Connection Monitoring
+ */
+
+/**
+ * Subscribe to connection status changes
+ */
+export function subscribeToConnection(
+  callback: (data: { status: string; code?: number }) => void
+): () => void {
+  const wsManager = getWebSocketManager();
+  return wsManager.on('connection', callback);
+}
+
+/**
+ * Get connection statistics
+ */
+export function getConnectionStats(): ConnectionStats {
+  const wsManager = getWebSocketManager();
+  return wsManager.getStats();
+}
+
+/**
+ * Check if WebSocket is connected
+ */
+export function isWebSocketConnected(): boolean {
+  const wsManager = getWebSocketManager();
+  return wsManager.isConnected();
 }
