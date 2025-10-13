@@ -5,7 +5,7 @@
 
 import { useMemo, useCallback } from 'react';
 import { createDataHook, createMutationHook } from '../../shared/base/patterns';
-import { apiClient } from '@/lib/infrastructure/api/UnifiedApiClient';
+import { apiClient } from '@/lib/infrastructure/api/client';
 import { useAuthState } from '../../shared/useAuth';
 import type { User, Freelancer, Employer } from '@/types';
 

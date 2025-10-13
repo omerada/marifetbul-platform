@@ -161,29 +161,18 @@ export function middleware(request: NextRequest) {
 
   // Admin route protection
   if (isAdminRoute) {
-    // DEBUG: Temporarily allow admin access to see if the issue is with middleware
-    console.log('🔍 Admin route access attempt:', {
-      pathname,
-      token,
-      userRole,
-    });
+    if (!token) {
+      const adminLoginUrl = new URL(adminLoginRoute, request.url);
+      adminLoginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(adminLoginUrl);
+    }
 
-    // For debugging, temporarily bypass middleware protection
+    if (userRole !== 'admin') {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+
     const response = NextResponse.next();
     return addSecurityHeaders(response);
-
-    // Original code (commented for debug):
-    // if (!token) {
-    //   const adminLoginUrl = new URL(adminLoginRoute, request.url);
-    //   adminLoginUrl.searchParams.set('redirect', pathname);
-    //   return NextResponse.redirect(adminLoginUrl);
-    // }
-
-    // if (userRole !== 'admin') {
-    //   return NextResponse.redirect(new URL('/dashboard', request.url));
-    // }
-
-    // return NextResponse.next();
   }
 
   // If accessing admin login page with admin token, redirect to admin dashboard

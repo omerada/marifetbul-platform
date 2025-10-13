@@ -4,9 +4,17 @@
 // Abstract base class for all repository implementations
 // Provides standardized CRUD operations and caching
 
-import { unifiedApiClient, ApiResponse, RequestConfig } from '../api/UnifiedApiClient';
+import {
+  unifiedApiClient,
+  type ApiResponse,
+  type RequestConfig,
+} from '../api/UnifiedApiClient';
 
-export interface Repository<T, CreateData = Partial<T>, UpdateData = Partial<T>> {
+export interface Repository<
+  T,
+  CreateData = Partial<T>,
+  UpdateData = Partial<T>,
+> {
   findAll(params?: Record<string, string | number | boolean>): Promise<T[]>;
   findById(id: string | number): Promise<T>;
   create(data: CreateData): Promise<T>;
@@ -33,9 +41,12 @@ export interface SearchOptions {
   filters?: Record<string, string | number | boolean>;
 }
 
-export abstract class BaseRepository<T, CreateData = Partial<T>, UpdateData = Partial<T>> 
-  implements Repository<T, CreateData, UpdateData> {
-  
+export abstract class BaseRepository<
+  T,
+  CreateData = Partial<T>,
+  UpdateData = Partial<T>,
+> implements Repository<T, CreateData, UpdateData>
+{
   protected abstract readonly baseEndpoint: string;
   protected readonly cachePrefix: string;
 
@@ -47,7 +58,9 @@ export abstract class BaseRepository<T, CreateData = Partial<T>, UpdateData = Pa
   // CORE CRUD OPERATIONS
   // ================================================
 
-  async findAll(params?: Record<string, string | number | boolean>): Promise<T[]> {
+  async findAll(
+    params?: Record<string, string | number | boolean>
+  ): Promise<T[]> {
     const response = await unifiedApiClient.get<T[]>(this.baseEndpoint, params);
     if (!response.success) {
       throw new Error(response.message || 'Failed to fetch items');
@@ -56,7 +69,9 @@ export abstract class BaseRepository<T, CreateData = Partial<T>, UpdateData = Pa
   }
 
   async findById(id: string | number): Promise<T> {
-    const response = await unifiedApiClient.get<T>(`${this.baseEndpoint}/${id}`);
+    const response = await unifiedApiClient.get<T>(
+      `${this.baseEndpoint}/${id}`
+    );
     if (!response.success) {
       throw new Error(response.message || 'Failed to fetch item');
     }
@@ -73,7 +88,10 @@ export abstract class BaseRepository<T, CreateData = Partial<T>, UpdateData = Pa
   }
 
   async update(id: string | number, data: UpdateData): Promise<T> {
-    const response = await unifiedApiClient.put<T>(`${this.baseEndpoint}/${id}`, data);
+    const response = await unifiedApiClient.put<T>(
+      `${this.baseEndpoint}/${id}`,
+      data
+    );
     if (!response.success) {
       throw new Error(response.message || 'Failed to update item');
     }
@@ -82,7 +100,9 @@ export abstract class BaseRepository<T, CreateData = Partial<T>, UpdateData = Pa
   }
 
   async delete(id: string | number): Promise<void> {
-    const response = await unifiedApiClient.delete(`${this.baseEndpoint}/${id}`);
+    const response = await unifiedApiClient.delete(
+      `${this.baseEndpoint}/${id}`
+    );
     if (!response.success) {
       throw new Error(response.message || 'Failed to delete item');
     }
@@ -93,27 +113,34 @@ export abstract class BaseRepository<T, CreateData = Partial<T>, UpdateData = Pa
   // PAGINATION SUPPORT
   // ================================================
 
-  async findPaginated(options: SearchOptions = {}): Promise<PaginatedResult<T>> {
+  async findPaginated(
+    options: SearchOptions = {}
+  ): Promise<PaginatedResult<T>> {
     const { page = 1, limit = 10, filters, ...params } = options;
-    
-    const queryParams = { 
-      page, 
-      limit, 
-      ...params, 
-      ...(filters ? Object.fromEntries(
-        Object.entries(filters).map(([key, value]) => [`filter_${key}`, String(value)])
-      ) : {})
+
+    const queryParams = {
+      page,
+      limit,
+      ...params,
+      ...(filters
+        ? Object.fromEntries(
+            Object.entries(filters).map(([key, value]) => [
+              `filter_${key}`,
+              String(value),
+            ])
+          )
+        : {}),
     };
-    
+
     const response = await unifiedApiClient.get<PaginatedResult<T>>(
       `${this.baseEndpoint}/paginated`,
       queryParams
     );
-    
+
     if (!response.success) {
       throw new Error(response.message || 'Failed to fetch paginated items');
     }
-    
+
     return response.data;
   }
 
@@ -123,47 +150,57 @@ export abstract class BaseRepository<T, CreateData = Partial<T>, UpdateData = Pa
 
   async search(options: SearchOptions): Promise<T[]> {
     const { filters, ...params } = options;
-    
-    const queryParams = { 
-      ...params, 
-      ...(filters ? Object.fromEntries(
-        Object.entries(filters).map(([key, value]) => [`filter_${key}`, String(value)])
-      ) : {})
+
+    const queryParams = {
+      ...params,
+      ...(filters
+        ? Object.fromEntries(
+            Object.entries(filters).map(([key, value]) => [
+              `filter_${key}`,
+              String(value),
+            ])
+          )
+        : {}),
     };
-    
+
     const response = await unifiedApiClient.get<T[]>(
       `${this.baseEndpoint}/search`,
       queryParams
     );
-    
+
     if (!response.success) {
       throw new Error(response.message || 'Failed to search items');
     }
-    
+
     return response.data;
   }
 
   async searchPaginated(options: SearchOptions): Promise<PaginatedResult<T>> {
     const { page = 1, limit = 10, filters, ...params } = options;
-    
-    const queryParams = { 
-      page, 
-      limit, 
-      ...params, 
-      ...(filters ? Object.fromEntries(
-        Object.entries(filters).map(([key, value]) => [`filter_${key}`, String(value)])
-      ) : {})
+
+    const queryParams = {
+      page,
+      limit,
+      ...params,
+      ...(filters
+        ? Object.fromEntries(
+            Object.entries(filters).map(([key, value]) => [
+              `filter_${key}`,
+              String(value),
+            ])
+          )
+        : {}),
     };
-    
+
     const response = await unifiedApiClient.get<PaginatedResult<T>>(
       `${this.baseEndpoint}/search/paginated`,
       queryParams
     );
-    
+
     if (!response.success) {
       throw new Error(response.message || 'Failed to search paginated items');
     }
-    
+
     return response.data;
   }
 
@@ -172,7 +209,10 @@ export abstract class BaseRepository<T, CreateData = Partial<T>, UpdateData = Pa
   // ================================================
 
   async bulkCreate(data: CreateData[]): Promise<T[]> {
-    const response = await unifiedApiClient.post<T[]>(`${this.baseEndpoint}/bulk`, data);
+    const response = await unifiedApiClient.post<T[]>(
+      `${this.baseEndpoint}/bulk`,
+      data
+    );
     if (!response.success) {
       throw new Error(response.message || 'Failed to bulk create items');
     }
@@ -180,8 +220,13 @@ export abstract class BaseRepository<T, CreateData = Partial<T>, UpdateData = Pa
     return response.data;
   }
 
-  async bulkUpdate(updates: Array<{ id: string | number; data: UpdateData }>): Promise<T[]> {
-    const response = await unifiedApiClient.put<T[]>(`${this.baseEndpoint}/bulk`, updates);
+  async bulkUpdate(
+    updates: Array<{ id: string | number; data: UpdateData }>
+  ): Promise<T[]> {
+    const response = await unifiedApiClient.put<T[]>(
+      `${this.baseEndpoint}/bulk`,
+      updates
+    );
     if (!response.success) {
       throw new Error(response.message || 'Failed to bulk update items');
     }
@@ -190,10 +235,13 @@ export abstract class BaseRepository<T, CreateData = Partial<T>, UpdateData = Pa
   }
 
   async bulkDelete(ids: Array<string | number>): Promise<void> {
-    const response = await unifiedApiClient.delete(`${this.baseEndpoint}/bulk`, {
-      body: JSON.stringify({ ids }),
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const response = await unifiedApiClient.delete(
+      `${this.baseEndpoint}/bulk`,
+      {
+        body: JSON.stringify({ ids }),
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
     if (!response.success) {
       throw new Error(response.message || 'Failed to bulk delete items');
     }
@@ -226,16 +274,18 @@ export abstract class BaseRepository<T, CreateData = Partial<T>, UpdateData = Pa
     }
   }
 
-  async count(filters?: Record<string, string | number | boolean>): Promise<number> {
+  async count(
+    filters?: Record<string, string | number | boolean>
+  ): Promise<number> {
     const response = await unifiedApiClient.get<{ count: number }>(
       `${this.baseEndpoint}/count`,
       filters
     );
-    
+
     if (!response.success) {
       throw new Error(response.message || 'Failed to count items');
     }
-    
+
     return response.data.count;
   }
 
@@ -249,13 +299,18 @@ export abstract class BaseRepository<T, CreateData = Partial<T>, UpdateData = Pa
     data?: unknown,
     config?: RequestConfig
   ): Promise<R> {
-    const fullEndpoint = endpoint.startsWith('/') ? endpoint : `${this.baseEndpoint}/${endpoint}`;
-    
+    const fullEndpoint = endpoint.startsWith('/')
+      ? endpoint
+      : `${this.baseEndpoint}/${endpoint}`;
+
     let response: ApiResponse<R>;
-    
+
     switch (method) {
       case 'GET':
-        response = await unifiedApiClient.get<R>(fullEndpoint, data as Record<string, string | number | boolean>);
+        response = await unifiedApiClient.get<R>(
+          fullEndpoint,
+          data as Record<string, string | number | boolean>
+        );
         break;
       case 'POST':
         response = await unifiedApiClient.post<R>(fullEndpoint, data, config);
@@ -270,11 +325,11 @@ export abstract class BaseRepository<T, CreateData = Partial<T>, UpdateData = Pa
         response = await unifiedApiClient.delete<R>(fullEndpoint, config);
         break;
     }
-    
+
     if (!response.success) {
       throw new Error(response.message || 'Custom query failed');
     }
-    
+
     return response.data;
   }
 }
@@ -286,7 +341,9 @@ export abstract class BaseRepository<T, CreateData = Partial<T>, UpdateData = Pa
 export abstract class ReadOnlyRepository<T> {
   protected abstract readonly baseEndpoint: string;
 
-  async findAll(params?: Record<string, string | number | boolean>): Promise<T[]> {
+  async findAll(
+    params?: Record<string, string | number | boolean>
+  ): Promise<T[]> {
     const response = await unifiedApiClient.get<T[]>(this.baseEndpoint, params);
     if (!response.success) {
       throw new Error(response.message || 'Failed to fetch items');
@@ -295,7 +352,9 @@ export abstract class ReadOnlyRepository<T> {
   }
 
   async findById(id: string | number): Promise<T> {
-    const response = await unifiedApiClient.get<T>(`${this.baseEndpoint}/${id}`);
+    const response = await unifiedApiClient.get<T>(
+      `${this.baseEndpoint}/${id}`
+    );
     if (!response.success) {
       throw new Error(response.message || 'Failed to fetch item');
     }
@@ -304,30 +363,37 @@ export abstract class ReadOnlyRepository<T> {
 
   async search(options: SearchOptions): Promise<T[]> {
     const { filters, ...params } = options;
-    
-    const queryParams = { 
-      ...params, 
-      ...(filters ? Object.fromEntries(
-        Object.entries(filters).map(([key, value]) => [`filter_${key}`, String(value)])
-      ) : {})
+
+    const queryParams = {
+      ...params,
+      ...(filters
+        ? Object.fromEntries(
+            Object.entries(filters).map(([key, value]) => [
+              `filter_${key}`,
+              String(value),
+            ])
+          )
+        : {}),
     };
-    
+
     const response = await unifiedApiClient.get<T[]>(
       `${this.baseEndpoint}/search`,
       queryParams
     );
-    
+
     if (!response.success) {
       throw new Error(response.message || 'Failed to search items');
     }
-    
+
     return response.data;
   }
 }
 
-export abstract class CacheableRepository<T, CreateData = Partial<T>, UpdateData = Partial<T>> 
-  extends BaseRepository<T, CreateData, UpdateData> {
-  
+export abstract class CacheableRepository<
+  T,
+  CreateData = Partial<T>,
+  UpdateData = Partial<T>,
+> extends BaseRepository<T, CreateData, UpdateData> {
   private cache = new Map<string, { data: T; expiresAt: number }>();
   private cacheTime: number;
 
@@ -339,17 +405,17 @@ export abstract class CacheableRepository<T, CreateData = Partial<T>, UpdateData
   override async findById(id: string | number): Promise<T> {
     const cacheKey = this.getCacheKey(`item:${id}`);
     const cached = this.cache.get(cacheKey);
-    
+
     if (cached && cached.expiresAt > Date.now()) {
       return cached.data;
     }
-    
+
     const item = await super.findById(id);
     this.cache.set(cacheKey, {
       data: item,
       expiresAt: Date.now() + this.cacheTime,
     });
-    
+
     return item;
   }
 

@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { MSWProvider } from '@/components/providers/MSWProvider';
 import { AuthProvider } from '@/components/providers/AuthProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { ToastProvider } from '@/components/providers/ToastProvider';
@@ -63,11 +62,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Check if MSW should be enabled (development only)
-  const mswEnabled = process.env.NEXT_PUBLIC_ENABLE_MSW === 'true';
-  const isDevelopment = process.env.NODE_ENV === 'development';
-  const shouldUseMSW = mswEnabled && isDevelopment;
-
   return (
     <html lang="tr" className="h-full" data-scroll-behavior="smooth">
       <SEOHead />
@@ -76,17 +70,9 @@ export default function RootLayout({
       >
         <MonitoringProvider>
           <ThemeProvider>
-            {shouldUseMSW ? (
-              <MSWProvider>
-                <AuthProvider>
-                  <ToastProvider>{children}</ToastProvider>
-                </AuthProvider>
-              </MSWProvider>
-            ) : (
-              <AuthProvider>
-                <ToastProvider>{children}</ToastProvider>
-              </AuthProvider>
-            )}
+            <AuthProvider>
+              <ToastProvider>{children}</ToastProvider>
+            </AuthProvider>
           </ThemeProvider>
         </MonitoringProvider>
       </body>
