@@ -20,7 +20,10 @@ import {
 import { MARKETPLACE_CATEGORIES } from '@/lib/domains/marketplace/categories-data';
 import { notFound } from 'next/navigation';
 
-// Mock freelancer data - Bu kısım gerçek veri ile değiştirilecek
+// TODO: Replace with real backend API call
+// Suggested endpoint: GET /api/v1/marketplace/freelancers?categoryId={id}&subcategoryId={id}&page=1
+// Backend should return paginated FreelancerProfile list with skills, ratings, availability
+// Mock freelancer data - REMOVE THIS AFTER BACKEND INTEGRATION
 const mockFreelancers = [
   {
     id: '1',

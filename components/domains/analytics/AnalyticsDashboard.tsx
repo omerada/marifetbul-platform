@@ -54,7 +54,10 @@ interface AnalyticsData {
   }[];
 }
 
-// Mock data generator
+// TODO: Replace with real backend analytics API
+// Suggested endpoint: GET /api/v1/analytics/dashboard?period=month&userType=admin
+// Backend should aggregate data from database and return metrics, trends, charts
+// Mock data generator - REMOVE THIS AFTER BACKEND INTEGRATION
 const generateMockData = (period: AnalyticsData['period']): AnalyticsData => {
   const baseData = {
     day: {

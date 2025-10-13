@@ -16,7 +16,10 @@ export const metadata: Metadata = {
     'Freelance dünyası, teknoloji ve iş hayatı hakkında güncel yazılar.',
 };
 
-// Mock blog verileri - gerçek projede API'dan gelecek
+// TODO: Replace with real backend API call
+// Suggested endpoint: GET /api/v1/blog/posts?page=1&limit=10
+// Backend should return paginated BlogPost list with categories and authors
+// Mock blog data - REMOVE THIS AFTER BACKEND INTEGRATION
 const mockBlogPosts = [
   {
     id: '1',

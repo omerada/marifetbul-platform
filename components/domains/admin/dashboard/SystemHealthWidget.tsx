@@ -82,6 +82,11 @@ export default function SystemHealthWidget({
     try {
       setIsLoading(true);
 
+      // TODO: Replace with real backend health check API
+      // Suggested endpoint: GET /api/v1/admin/system/health
+      // Backend should implement Spring Boot Actuator endpoints or custom health check
+      // Should return real metrics from server monitoring (CPU, memory, services status)
+
       // Simulate API call with realistic data
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
 

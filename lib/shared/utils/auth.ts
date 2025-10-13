@@ -1,57 +1,126 @@
-// Auth utilities
-export const getCurrentUserId = (): string | null => {
-  if (typeof window === 'undefined') return null;
+/**
+ * Auth utilities for cookie-based JWT authentication
+ *
+ * The backend uses httpOnly cookies for secure token storage.
+ * Tokens are automatically sent with requests via credentials: 'include'.
+ *
+ * For getting user data, call the /api/v1/auth/me endpoint instead of
+ * decoding the JWT client-side (tokens are in httpOnly cookies).
+ */
 
+/**
+ * Get cookie value by name
+ * Note: httpOnly cookies are NOT accessible via JavaScript for security.
+ * This function only works for non-httpOnly cookies.
+ */
+function getCookieValue(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+
+  const matches = document.cookie.match(
+    new RegExp(
+      '(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'
+    )
+  );
+  return matches ? decodeURIComponent(matches[1]) : null;
+}
+
+/**
+ * Get current user ID
+ *
+ * Since JWT tokens are in httpOnly cookies, we cannot decode them client-side.
+ * Instead, call the /api/v1/auth/me endpoint to get user data.
+ *
+ * This is a helper function that should be used with authentication state management.
+ */
+export const getCurrentUserId = async (): Promise<string | null> => {
   try {
-    const token = localStorage.getItem('auth_token');
-    if (!token) return null;
+    // Call backend to get current user (JWT is in httpOnly cookie)
+    const response = await fetch('/api/v1/auth/me', {
+      method: 'GET',
+      credentials: 'include', // Include httpOnly cookies
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-    // Mock implementation - in real app would decode JWT
-    const userData = localStorage.getItem('auth_user');
-    if (userData) {
-      const user = JSON.parse(userData);
-      return user.id || null;
+    if (!response.ok) {
+      return null;
     }
 
-    return null;
+    const data = await response.json();
+    return data.data?.id || null;
   } catch (error) {
     console.error('Error getting current user ID:', error);
     return null;
   }
 };
 
-export const getAuthToken = (): string | null => {
-  if (typeof window === 'undefined') return null;
-
+/**
+ * Check if user is authenticated
+ *
+ * Since tokens are in httpOnly cookies, we check authentication by
+ * calling the backend /api/v1/auth/me endpoint.
+ */
+export const isAuthenticated = async (): Promise<boolean> => {
   try {
-    return localStorage.getItem('auth_token');
+    const response = await fetch('/api/v1/auth/me', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response.ok;
   } catch (error) {
-    console.error('Error getting auth token:', error);
-    return null;
+    console.error('Error checking authentication:', error);
+    return false;
   }
 };
 
-export const setAuthToken = (token: string): void => {
-  if (typeof window === 'undefined') return;
-
+/**
+ * Logout user
+ * Calls the backend logout endpoint which clears the httpOnly cookies.
+ */
+export const logout = async (): Promise<boolean> => {
   try {
-    localStorage.setItem('auth_token', token);
+    const response = await fetch('/api/v1/auth/logout', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response.ok;
   } catch (error) {
-    console.error('Error setting auth token:', error);
+    console.error('Error during logout:', error);
+    return false;
   }
 };
 
+/**
+ * Legacy functions - Deprecated
+ * These are kept for backwards compatibility but should not be used.
+ * The backend uses httpOnly cookies, not localStorage.
+ *
+ * @deprecated Use cookie-based authentication instead
+ */
+export const getAuthToken = (): null => {
+  console.warn('getAuthToken is deprecated. Tokens are in httpOnly cookies.');
+  return null;
+};
+
+/**
+ * @deprecated Authentication is handled by httpOnly cookies
+ */
+export const setAuthToken = (): void => {
+  console.warn('setAuthToken is deprecated. Use backend login endpoint.');
+};
+
+/**
+ * @deprecated Authentication is handled by httpOnly cookies
+ */
 export const removeAuthToken = (): void => {
-  if (typeof window === 'undefined') return;
-
-  try {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('auth_user');
-  } catch (error) {
-    console.error('Error removing auth token:', error);
-  }
-};
-
-export const isAuthenticated = (): boolean => {
-  return !!getAuthToken();
+  console.warn('removeAuthToken is deprecated. Use logout() function instead.');
 };

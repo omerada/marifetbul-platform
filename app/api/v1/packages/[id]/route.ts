@@ -1,30 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Simple mock package without special characters
-const mockPackages = [
-  {
-    id: '1',
-    title: 'Web Development Service',
-    description: 'Professional web development using React and Next.js',
-    price: 1500,
-    deliveryTime: 14,
-    revisions: 3,
-    features: ['Responsive Design', 'SEO Optimization', 'Admin Panel'],
-    rating: 4.9,
-    orders: 89,
-  },
-  {
-    id: '2',
-    title: 'Logo Design Service',
-    description: 'Professional logo and brand identity design',
-    price: 300,
-    deliveryTime: 5,
-    revisions: 5,
-    features: ['Logo Design', 'Brand Colors', 'Style Guide'],
-    rating: 4.8,
-    orders: 156,
-  },
-];
+const BACKEND_API_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
 
 export async function GET(
   request: NextRequest,
@@ -33,26 +10,21 @@ export async function GET(
   try {
     const { id } = await context.params;
 
-    // Find package by ID
-    const pkg = mockPackages.find((p) => p.id === id);
-
-    if (!pkg) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Package not found',
-          message: `Package with ID: ${id} does not exist`,
-        },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: pkg,
+    // Proxy to backend
+    const response = await fetch(`${BACKEND_API_URL}/packages/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: request.headers.get('Authorization') || '',
+      },
+      credentials: 'include',
     });
+
+    const data = await response.json();
+
+    return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    console.error('Packages API error:', error);
+    console.error('Package details API error:', error);
     return NextResponse.json(
       {
         success: false,

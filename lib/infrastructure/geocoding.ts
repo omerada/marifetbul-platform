@@ -142,6 +142,9 @@ export class GeocodingService {
 
   /**
    * Mock geocoding implementation for development/fallback
+   * TODO: Replace with real geocoding API integration (Google Maps Geocoding API)
+   * Suggested endpoint: Use Google Maps Geocoding API with proper API key
+   * Mock geocoding data - REMOVE THIS AFTER BACKEND INTEGRATION
    */
   private mockGeocode(address: string): Coordinates | null {
     const mockLocations: Record<string, Coordinates> = {
@@ -220,6 +223,9 @@ export class GeocodingService {
 
   /**
    * Mock reverse geocoding implementation
+   * TODO: Replace with real reverse geocoding API integration (Google Maps Reverse Geocoding)
+   * Suggested endpoint: Use Google Maps Reverse Geocoding API with proper API key
+   * Mock reverse geocoding - REMOVE THIS AFTER BACKEND INTEGRATION
    */
   private mockReverseGeocode(coordinates: Coordinates): string | null {
     const { latitude, longitude } = coordinates;

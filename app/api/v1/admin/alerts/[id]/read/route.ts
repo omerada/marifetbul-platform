@@ -1,42 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-/**
- * POST /api/v1/admin/alerts/[id]/read
- * Mark an alert as read
- */
-export async function POST(
+const BACKEND_API_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+
+export const dynamic = 'force-dynamic';
+
+export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const alertId = params.id;
+    const { id: alertId } = await params;
 
-    // Check authentication
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    // Mock implementation - in real app, update database
-    console.log(`Marking alert ${alertId} as read`);
-
-    return NextResponse.json(
+    const response = await fetch(
+      `${BACKEND_API_URL}/admin/alerts/${alertId}/read`,
       {
-        success: true,
-        message: 'Alert marked as read',
-      },
-      { status: 200 }
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: request.headers.get('Authorization') || '',
+        },
+        credentials: 'include',
+      }
     );
+
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    console.error('Mark alert as read error:', error);
+    console.error('Mark alert read error:', error);
     return NextResponse.json(
-      {
-        success: false,
-        error: 'Internal server error',
-      },
+      { success: false, error: 'Server error' },
       { status: 500 }
     );
   }

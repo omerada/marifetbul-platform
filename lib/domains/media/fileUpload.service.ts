@@ -262,6 +262,10 @@ export class FileUploadService {
 
   /**
    * Mock upload for development/testing
+   * TODO: Replace with real file upload service integration
+   * Suggested: Implement AWS S3 or Cloudinary upload
+   * Backend should handle file uploads with proper validation and storage
+   * Mock upload implementation - REMOVE THIS AFTER BACKEND INTEGRATION
    */
   private async mockUpload(file: File): Promise<UploadResult> {
     // Simulate upload delay

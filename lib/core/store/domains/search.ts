@@ -126,7 +126,11 @@ export const useSearchStore = create<SearchStore>()(
       });
 
       try {
-        // API endpoint simulation - ready for production integration
+        // TODO: Replace with real backend API call
+        // Suggested endpoint: GET /api/v1/search/messages?query={query}&page=1&filters=...
+        // Backend should implement full-text search with Elasticsearch or database search
+        // Should return: { results: SearchResult[], totalResults, hasMore }
+        // Mock search results - REMOVE THIS AFTER BACKEND INTEGRATION
         const mockResults: SearchResult[] = [
           {
             messageId: '1',
@@ -173,7 +177,9 @@ export const useSearchStore = create<SearchStore>()(
       });
 
       try {
-        // API endpoint simulation - ready for production integration for next page
+        // TODO: Replace with real backend API call for pagination
+        // Suggested endpoint: GET /api/v1/search/messages?query={query}&page={page}&filters=...
+        // Mock pagination results - REMOVE THIS AFTER BACKEND INTEGRATION
         const mockMoreResults: SearchResult[] = [];
 
         set((state) => {

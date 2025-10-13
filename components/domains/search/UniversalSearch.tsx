@@ -51,59 +51,6 @@ export function UniversalSearch({
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Mock data - replace with real API calls
-  const mockSuggestions: SearchSuggestion[] = [
-    {
-      id: '1',
-      type: 'service',
-      title: 'Logo Tasarım',
-      subtitle: '₺200 - ₺2.000',
-      category: 'Tasarım',
-    },
-    {
-      id: '2',
-      type: 'service',
-      title: 'Web Sitesi Geliştirme',
-      subtitle: '₺1.500 - ₺15.000',
-      category: 'Geliştirme',
-    },
-    {
-      id: '3',
-      type: 'job',
-      title: 'E-ticaret Sitesi Projesi',
-      subtitle: '₺5.000 - ₺10.000',
-      category: 'Geliştirme',
-    },
-    {
-      id: '4',
-      type: 'job',
-      title: 'Kurumsal Logo Tasarımı',
-      subtitle: '₺1.000 - ₺3.000',
-      category: 'Tasarım',
-    },
-    {
-      id: '5',
-      type: 'freelancer',
-      title: 'Ahmet Yılmaz',
-      subtitle: 'React Developer • 4.8★',
-      category: 'Geliştirme',
-    },
-    {
-      id: '6',
-      type: 'skill',
-      title: 'React.js',
-      subtitle: '1,247 freelancer',
-      category: 'Yazılım',
-    },
-    {
-      id: '7',
-      type: 'location',
-      title: 'İstanbul',
-      subtitle: '3,456 iş',
-      category: 'Konum',
-    },
-  ];
-
   const trendingSearches = [
     'Web tasarım',
     'Logo yapımı',
@@ -123,28 +70,50 @@ export function UniversalSearch({
 
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      const filteredSuggestions = mockSuggestions.filter(
-        (item) =>
-          item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.category?.toLowerCase().includes(searchQuery.toLowerCase())
+    try {
+      // TODO: Replace with real backend API call
+      // Suggested endpoint: GET /api/v1/search/suggestions?q={query}
+      const response = await fetch(
+        `/api/v1/search/suggestions?q=${encodeURIComponent(searchQuery)}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        }
       );
+
+      if (!response.ok) {
+        throw new Error('Search failed');
+      }
+
+      const data = await response.json();
+      const filteredSuggestions = data.suggestions || [];
 
       setSuggestions(filteredSuggestions);
 
       // Group results by type
       const results: SearchResultGroup = {
-        services: filteredSuggestions.filter((item) => item.type === 'service'),
-        jobs: filteredSuggestions.filter((item) => item.type === 'job'),
+        services: filteredSuggestions.filter(
+          (item: SearchSuggestion) => item.type === 'service'
+        ),
+        jobs: filteredSuggestions.filter(
+          (item: SearchSuggestion) => item.type === 'job'
+        ),
         freelancers: filteredSuggestions.filter(
-          (item) => item.type === 'freelancer'
+          (item: SearchSuggestion) => item.type === 'freelancer'
         ),
       };
 
       setSearchResults(results);
+    } catch (error) {
+      console.error('Search error:', error);
+      // Fallback to empty results
+      setSuggestions([]);
+      setSearchResults({ services: [], jobs: [], freelancers: [] });
+    } finally {
       setIsLoading(false);
-    }, 300);
+    }
   };
 
   // Handle input change

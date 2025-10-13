@@ -1,13 +1,19 @@
 /**
  * Authentication utility functions
  * Provides helper functions for auth operations across the application
+ *
+ * IMPORTANT: Uses Zustand store for synchronous access to cached auth state.
+ * For fresh data from backend, use lib/shared/utils/auth.ts async functions.
  */
 
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 
 /**
- * Get current user ID from auth store
+ * Get current user ID from auth store (cached state)
  * Returns null if user is not authenticated
+ *
+ * Note: This returns cached state. For fresh backend data, use:
+ * import { getCurrentUserId } from '@/lib/shared/utils/auth'
  */
 export function getCurrentUserId(): string | null {
   return useAuthStore.getState().getCurrentUserId();

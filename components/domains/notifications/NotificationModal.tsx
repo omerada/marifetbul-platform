@@ -35,10 +35,18 @@ export function NotificationModal({
           ...(filter !== 'all' && { type: filter }),
         });
 
+        // TODO: Get real auth token from useAuth or cookies
+        const authHeader = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('auth_token='))
+          ?.split('=')[1];
+
         const response = await fetch(`/api/notifications?${params}`, {
           headers: {
-            Authorization: `Bearer mock-token-${userId}`,
+            ...(authHeader && { Authorization: `Bearer ${authHeader}` }),
+            'Content-Type': 'application/json',
           },
+          credentials: 'include',
         });
 
         const data = await response.json();
@@ -72,14 +80,21 @@ export function NotificationModal({
 
   const markAsRead = async (notificationId: string) => {
     try {
+      // TODO: Get real auth token from useAuth or cookies
+      const authHeader = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('auth_token='))
+        ?.split('=')[1];
+
       const response = await fetch(
         `/api/notifications/${notificationId}/read`,
         {
           method: 'PATCH',
           headers: {
-            Authorization: `Bearer mock-token-${userId}`,
+            ...(authHeader && { Authorization: `Bearer ${authHeader}` }),
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
         }
       );
 

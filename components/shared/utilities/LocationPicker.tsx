@@ -70,7 +70,9 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
       setIsSearching(true);
 
       try {
-        // Mock search results - in real app, use geocoding API
+        // TODO: Replace with real geocoding API (Google Maps, Mapbox, or backend endpoint)
+        // Currently using mock data for development
+        // Backend endpoint suggestion: GET /api/v1/geocoding/search?q={query}
         const mockResults: SearchResult[] = [
           {
             id: '1',

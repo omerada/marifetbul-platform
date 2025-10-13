@@ -21,7 +21,10 @@ export default function ProfilePage() {
       try {
         setLoading(true);
 
-        // Mock freelancer data for testing
+        // TODO: Replace with real backend API call
+        // Suggested endpoint: GET /api/v1/users/{id}/profile
+        // Backend should return User with role-specific data (Freelancer/Employer)
+        // Mock freelancer data - REMOVE THIS AFTER BACKEND INTEGRATION
         const mockFreelancer: Freelancer = {
           id: params.id as string,
           email: 'ahmet.yilmaz@example.com',

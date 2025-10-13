@@ -8,7 +8,7 @@
  * - Type-safe event system
  */
 
-import { getCurrentUserId } from '@/lib/shared/utils/auth';
+import { getCurrentUserId } from '@/lib/domains/auth/utils';
 
 export interface WebSocketMessage<T = unknown> {
   type: WebSocketEventType;

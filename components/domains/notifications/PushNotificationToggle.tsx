@@ -61,12 +61,19 @@ export function PushNotificationToggle({
 
       if (subscription) {
         // Send subscription to server
+        // TODO: Get real auth token from useAuth or cookies
+        const authHeader = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('auth_token='))
+          ?.split('=')[1];
+
         const response = await fetch('/api/push/subscribe', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer mock-token-${userId}`,
+            ...(authHeader && { Authorization: `Bearer ${authHeader}` }),
           },
+          credentials: 'include',
           body: JSON.stringify(subscription),
         });
 
@@ -101,12 +108,19 @@ export function PushNotificationToggle({
 
       if (unsubscribed) {
         // Notify server about unsubscription
+        // TODO: Get real auth token from useAuth or cookies
+        const authHeader = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('auth_token='))
+          ?.split('=')[1];
+
         const response = await fetch('/api/push/unsubscribe', {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer mock-token-${userId}`,
+            ...(authHeader && { Authorization: `Bearer ${authHeader}` }),
           },
+          credentials: 'include',
           body: JSON.stringify({
             subscriptionId: 'current-subscription-id',
           }),
@@ -135,12 +149,19 @@ export function PushNotificationToggle({
 
   const sendTestNotification = async () => {
     try {
+      // TODO: Get real auth token from useAuth or cookies
+      const authHeader = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('auth_token='))
+        ?.split('=')[1];
+
       const response = await fetch('/api/push/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer mock-token-${userId}`,
+          ...(authHeader && { Authorization: `Bearer ${authHeader}` }),
         },
+        credentials: 'include',
         body: JSON.stringify({
           title: 'Test Bildirimi',
           message:

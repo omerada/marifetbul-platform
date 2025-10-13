@@ -236,7 +236,7 @@ export const useReputationStore = create<ReputationStore>()(
 
       refreshReputation: async () => {
         // Refresh için kullanıcı ID'sini auth store'dan al
-        const userId = getCurrentUserId();
+        const userId = await getCurrentUserId();
         if (!userId) {
           set({ error: 'Kullanıcı kimlik doğrulaması gerekli' });
           return;

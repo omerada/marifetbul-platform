@@ -62,7 +62,10 @@ export async function generateMetadata({
 
 const BlogComments = dynamic(() => import('./comments'), { ssr: false });
 
-// Mock blog data - gerçek projede API'dan gelecek
+// TODO: Replace with real backend API call
+// Suggested endpoint: GET /api/v1/blog/posts/{slug}
+// Backend should return BlogPost with content, metadata, author info
+// Mock blog data - REMOVE THIS AFTER BACKEND INTEGRATION
 const mockBlogPosts = [
   {
     id: '1',

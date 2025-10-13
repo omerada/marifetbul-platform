@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
@@ -22,11 +22,24 @@ import {
   Trash2,
 } from 'lucide-react';
 
+interface AdminLog {
+  id: number | string;
+  timestamp: string;
+  level: string;
+  source: string;
+  message: string;
+  details: string;
+  userId: string;
+  ip: string;
+}
+
 export function AdminLogs() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLevel, setSelectedLevel] = useState('all');
   const [selectedSource, setSelectedSource] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
+  const [logs, setLogs] = useState<AdminLog[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const logLevels = [
     { id: 'all', name: 'Tüm Seviyeler', color: 'gray' },
@@ -45,58 +58,56 @@ export function AdminLogs() {
     { id: 'system', name: 'Sistem', icon: Activity },
   ];
 
-  const mockLogs = [
-    {
-      id: 1,
-      timestamp: '2024-01-15 14:30:25',
-      level: 'error',
-      source: 'api',
-      message: 'Failed to process payment for user ID 12345',
-      details: 'Payment gateway timeout after 30 seconds',
-      userId: '12345',
-      ip: '192.168.1.100',
-    },
-    {
-      id: 2,
-      timestamp: '2024-01-15 14:28:12',
-      level: 'warning',
-      source: 'auth',
-      message: 'Multiple failed login attempts detected',
-      details: '5 failed attempts in 2 minutes from IP 192.168.1.50',
-      userId: '67890',
-      ip: '192.168.1.50',
-    },
-    {
-      id: 3,
-      timestamp: '2024-01-15 14:25:45',
-      level: 'info',
-      source: 'user',
-      message: 'User profile updated successfully',
-      details: 'User updated profile information and avatar',
-      userId: '11111',
-      ip: '192.168.1.200',
-    },
-    {
-      id: 4,
-      timestamp: '2024-01-15 14:20:30',
-      level: 'success',
-      source: 'database',
-      message: 'Database backup completed',
-      details: 'Daily backup created successfully - 2.3GB',
-      userId: 'system',
-      ip: 'localhost',
-    },
-    {
-      id: 5,
-      timestamp: '2024-01-15 14:15:18',
-      level: 'error',
-      source: 'system',
-      message: 'Memory usage exceeded threshold',
-      details: 'System memory usage reached 95% - automatic cleanup initiated',
-      userId: 'system',
-      ip: 'localhost',
-    },
-  ];
+  // Fetch logs from backend
+  const fetchLogs = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // TODO: Get real auth token from useAuth or cookies
+      const authHeader = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('auth_token='))
+        ?.split('=')[1];
+
+      const params = new URLSearchParams({
+        page: '1',
+        limit: '50',
+        ...(selectedLevel !== 'all' && { level: selectedLevel }),
+        ...(selectedSource !== 'all' && { source: selectedSource }),
+        ...(searchTerm && { search: searchTerm }),
+      });
+
+      const response = await fetch(`/api/v1/admin/logs?${params}`, {
+        headers: {
+          ...(authHeader && { Authorization: `Bearer ${authHeader}` }),
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Loglar alınamadı');
+      }
+
+      const data = await response.json();
+      setLogs(data.data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
+      // Fallback to empty array on error
+      setLogs([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedLevel, selectedSource, searchTerm]);
+
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
+
+  const handleRefresh = () => {
+    fetchLogs();
+  };
 
   const logStats = [
     {
@@ -176,15 +187,14 @@ export function AdminLogs() {
     return <Icon className="h-4 w-4" />;
   };
 
-  const filteredLogs = mockLogs.filter((log) => {
+  // Client-side filtering is redundant since backend filters,
+  // but kept for instant UI feedback
+  const filteredLogs = logs.filter((log: AdminLog) => {
+    if (!searchTerm) return true;
     const matchesSearch =
       log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.details.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesLevel = selectedLevel === 'all' || log.level === selectedLevel;
-    const matchesSource =
-      selectedSource === 'all' || log.source === selectedSource;
-
-    return matchesSearch && matchesLevel && matchesSource;
+    return matchesSearch;
   });
 
   return (
@@ -201,7 +211,7 @@ export function AdminLogs() {
           <Button
             variant="outline"
             size="sm"
-            onClick={refreshLogs}
+            onClick={handleRefresh}
             disabled={isLoading}
           >
             <RefreshCw

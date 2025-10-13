@@ -120,18 +120,38 @@ export function SearchAutocomplete({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Mock history and trending for demo
-  const mockHistory: SearchSuggestion[] = [
-    { text: 'Web tasarım', type: 'skill', count: 0 },
-    { text: 'React geliştirici', type: 'job', count: 0 },
-    { text: 'Logo tasarım', type: 'service', count: 0 },
-  ];
+  // TODO: Fetch search history and trending data from backend
+  // These could be fetched via useEffect on component mount
+  const [searchHistory, setSearchHistory] = useState<SearchSuggestion[]>([]);
+  const [trendingSearches, setTrendingSearches] = useState<SearchSuggestion[]>(
+    []
+  );
 
-  const mockTrending: SearchSuggestion[] = [
-    { text: 'AI yazılım geliştirme', type: 'category', count: 245 },
-    { text: 'E-ticaret', type: 'category', count: 156 },
-    { text: 'Mobil uygulama', type: 'category', count: 189 },
-  ];
+  useEffect(() => {
+    // Fetch search history and trending on mount
+    const fetchSearchData = async () => {
+      try {
+        const [historyRes, trendingRes] = await Promise.all([
+          fetch('/api/v1/search/history', { credentials: 'include' }),
+          fetch('/api/v1/search/trending', { credentials: 'include' }),
+        ]);
+
+        if (historyRes.ok) {
+          const historyData = await historyRes.json();
+          setSearchHistory(historyData.history || []);
+        }
+
+        if (trendingRes.ok) {
+          const trendingData = await trendingRes.json();
+          setTrendingSearches(trendingData.trending || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch search data:', error);
+      }
+    };
+
+    fetchSearchData();
+  }, []);
 
   return (
     <div ref={containerRef} className={cn('relative w-full', className)}>
@@ -198,13 +218,13 @@ export function SearchAutocomplete({
               </div>
             )}
 
-            {/* History */}
-            {showHistory && !localQuery && mockHistory.length > 0 && (
+            {/* Search history */}
+            {showHistory && !localQuery && searchHistory.length > 0 && (
               <div className="space-y-1">
                 <div className="px-2 py-1 text-xs font-medium tracking-wide text-gray-500 uppercase">
                   Son Aramalar
                 </div>
-                {mockHistory.map((item, index) => (
+                {searchHistory.map((item, index) => (
                   <button
                     key={`history-${index}`}
                     onClick={() => handleSuggestionClick(item)}
@@ -218,12 +238,12 @@ export function SearchAutocomplete({
             )}
 
             {/* Trending */}
-            {showTrending && !localQuery && mockTrending.length > 0 && (
+            {showTrending && !localQuery && trendingSearches.length > 0 && (
               <div className="space-y-1">
                 <div className="px-2 py-1 text-xs font-medium tracking-wide text-gray-500 uppercase">
                   Trend Aramalar
                 </div>
-                {mockTrending.map((item, index) => (
+                {trendingSearches.map((item, index) => (
                   <button
                     key={`trending-${index}`}
                     onClick={() => handleSuggestionClick(item)}

@@ -141,7 +141,10 @@ export function useSearchSuggestions(query: string, type: 'jobs' | 'packages') {
 
     setIsLoading(true);
 
-    // Simulate API call for suggestions
+    // TODO: Replace with real backend API call
+    // Suggested endpoint: GET /api/v1/search/suggestions?query={query}&type={type}
+    // Backend should implement autocomplete/suggestions with indexing
+    // Mock suggestions - REMOVE THIS AFTER BACKEND INTEGRATION
     const timeoutId = setTimeout(() => {
       const mockSuggestions =
         type === 'jobs'

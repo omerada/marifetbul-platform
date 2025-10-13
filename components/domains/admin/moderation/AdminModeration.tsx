@@ -160,10 +160,18 @@ export function AdminModeration() {
         params.append('search', filters.search);
       }
 
+      // TODO: Get real auth token from useAuth or cookies
+      const authHeader = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('auth_token='))
+        ?.split('=')[1];
+
       const response = await fetch(`/api/v1/admin/moderation/queue?${params}`, {
         headers: {
-          Authorization: 'Bearer mock-admin-token',
+          ...(authHeader && { Authorization: `Bearer ${authHeader}` }),
+          'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -186,10 +194,18 @@ export function AdminModeration() {
 
   const fetchModerationStats = useCallback(async () => {
     try {
+      // TODO: Get real auth token from useAuth or cookies
+      const authHeader = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('auth_token='))
+        ?.split('=')[1];
+
       const response = await fetch('/api/v1/admin/moderation/stats', {
         headers: {
-          Authorization: 'Bearer mock-admin-token',
+          ...(authHeader && { Authorization: `Bearer ${authHeader}` }),
+          'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
       if (response.ok) {
         const data = await response.json();

@@ -58,18 +58,27 @@ export function AdminAnalytics() {
     setError(null);
 
     try {
+      // TODO: Get real auth token from useAuth or cookies
+      // const { token } = useAuth();
+      const authHeader = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('auth_token='))
+        ?.split('=')[1];
+
       const [userResponse, revenueResponse] = await Promise.all([
         fetch(`/api/v1/admin/analytics/users?period=${period}`, {
           headers: {
-            Authorization: 'Bearer mock-admin-token',
+            ...(authHeader && { Authorization: `Bearer ${authHeader}` }),
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
         }),
         fetch(`/api/v1/admin/analytics/revenue?period=${period}`, {
           headers: {
-            Authorization: 'Bearer mock-admin-token',
+            ...(authHeader && { Authorization: `Bearer ${authHeader}` }),
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
         }),
       ]);
 
@@ -104,18 +113,26 @@ export function AdminAnalytics() {
       setError(null);
 
       try {
+        // TODO: Get real auth token from useAuth or cookies
+        const authHeader = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('auth_token='))
+          ?.split('=')[1];
+
         const [userResponse, revenueResponse] = await Promise.all([
           fetch(`/api/v1/admin/analytics/users?period=${period}`, {
             headers: {
-              Authorization: 'Bearer mock-admin-token',
+              ...(authHeader && { Authorization: `Bearer ${authHeader}` }),
               'Content-Type': 'application/json',
             },
+            credentials: 'include',
           }),
           fetch(`/api/v1/admin/analytics/revenue?period=${period}`, {
             headers: {
-              Authorization: 'Bearer mock-admin-token',
+              ...(authHeader && { Authorization: `Bearer ${authHeader}` }),
               'Content-Type': 'application/json',
             },
+            credentials: 'include',
           }),
         ]);
 

@@ -77,7 +77,9 @@ export const MapView: React.FC<MapViewProps> = ({
   const unifiedLocation = useUnifiedLocation();
   const { getCurrentPosition, isLoadingPosition: geoLoading } = unifiedLocation;
 
-  // Mock functions until they're implemented in unified location
+  // TODO: Replace mock map functions with real map library integration
+  // Suggested libraries: Google Maps API, Mapbox GL JS, or Leaflet
+  // These should integrate with unifiedLocation context for proper map controls
   const fitToCoordinates = useCallback((coordinates: unknown) => {
     console.log('Fitting to coordinates:', coordinates);
   }, []);
@@ -227,7 +229,9 @@ export const MapView: React.FC<MapViewProps> = ({
 
   return (
     <div className={`map-view relative ${className}`} style={{ height }}>
-      {/* Mock Map Container */}
+      {/* TODO: Replace mock map container with real map library component
+          Suggested: <MapboxGL /> or <GoogleMap /> or <LeafletMap />
+          This entire mock rendering should be replaced with proper map tiles and interactions */}
       <div className="absolute inset-0 overflow-hidden rounded-lg bg-gray-100">
         {/* Map Background */}
         <div
@@ -260,7 +264,8 @@ export const MapView: React.FC<MapViewProps> = ({
               const x = e.clientX - rect.left;
               const y = e.clientY - rect.top;
 
-              // Convert pixel coordinates to lat/lng (mock calculation)
+              // TODO: Replace mock coordinate calculation with real map projection
+              // Real map libraries handle this automatically with proper lat/lng conversion
               const lat =
                 mapCenter.latitude +
                 (0.5 - y / rect.height) * 0.01 * Math.pow(2, 15 - mapZoom);

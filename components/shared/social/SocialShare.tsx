@@ -290,6 +290,11 @@ interface SocialProofProps {
 }
 
 export function SocialProof({ type, data, className }: SocialProofProps) {
+  // TODO: Replace with real backend data
+  // Suggested endpoints:
+  // - GET /api/v1/social/testimonials - Real user testimonials
+  // - GET /api/v1/social/stats - Platform statistics
+  // - GET /api/v1/social/activity - Recent platform activity feed
   const mockData = {
     testimonials: [
       {

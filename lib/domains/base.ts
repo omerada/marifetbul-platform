@@ -119,7 +119,10 @@ export abstract class BaseService {
       throw new Error('Simulated network error');
     }
 
-    // In a real implementation, this would make an actual HTTP request
+    // TODO: Replace with real HTTP request implementation
+    // Suggested: Use fetch() with proper authentication and error handling
+    // This should be a real HTTP client with axios or fetch
+    // Mock response for testing - REMOVE THIS AFTER BACKEND INTEGRATION
     const mockResponse = {
       id: Math.random().toString(36).substr(2, 9),
       timestamp: new Date().toISOString(),

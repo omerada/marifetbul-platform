@@ -1,42 +1,35 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 
-/**
- * DELETE /api/v1/admin/alerts/[id]/dismiss
- * Dismiss an alert
- */
+const BACKEND_API_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+
+export const dynamic = 'force-dynamic';
+
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const alertId = params.id;
+    const { id: alertId } = await params;
 
-    // Check authentication
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    // Mock implementation - in real app, update database
-    console.log(`Dismissing alert ${alertId}`);
-
-    return NextResponse.json(
+    const response = await fetch(
+      `${BACKEND_API_URL}/admin/alerts/${alertId}/dismiss`,
       {
-        success: true,
-        message: 'Alert dismissed',
-      },
-      { status: 200 }
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: request.headers.get('Authorization') || '',
+        },
+        credentials: 'include',
+      }
     );
+
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
   } catch (error) {
     console.error('Dismiss alert error:', error);
     return NextResponse.json(
-      {
-        success: false,
-        error: 'Internal server error',
-      },
+      { success: false, error: 'Server error' },
       { status: 500 }
     );
   }
