@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { AppLayout } from '@/components/layout';
 import { Card } from '@/components/ui/Card';
-import type { BlogPost } from '@/types/blog';
 import { UnifiedErrorBoundary as BlogErrorBoundary } from '@/components/ui';
+import { blogApi, type BlogPostSummary } from '@/lib/api/blog';
 
 // Dynamic rendering işaretleme
 export const dynamic = 'force-dynamic';
@@ -16,69 +16,26 @@ export const metadata: Metadata = {
     'Freelance dünyası, teknoloji ve iş hayatı hakkında güncel yazılar.',
 };
 
-// TODO: Replace with real backend API call
-// Suggested endpoint: GET /api/v1/blog/posts?page=1&limit=10
-// Backend should return paginated BlogPost list with categories and authors
-// Mock blog data - REMOVE THIS AFTER BACKEND INTEGRATION
-const mockBlogPosts = [
-  {
-    id: '1',
-    slug: 'freelancer-olarak-ilk-adimlariniz',
-    title: 'Freelancer Olarak İlk Adımlarınız',
-    excerpt:
-      'Freelance kariyerinize başlarken dikkat etmeniz gereken önemli noktalar.',
-    content: 'Blog içeriği...',
-    category: { id: '1', name: 'Kariyer', slug: 'kariyer' },
-    author: { id: '1', name: 'MarifetBul Editörü' },
-    publishedAt: '2025-09-12T10:00:00Z',
-    tags: ['freelance', 'kariyer', 'başlangıç'],
-    views: 120,
-    featured: true,
-  },
-  {
-    id: '2',
-    slug: '2025-web-tasarim-trendleri',
-    title: '2025 Web Tasarım Trendleri',
-    excerpt: 'Bu yıl öne çıkan web tasarım trendleri ve uygulama örnekleri.',
-    content: 'Blog içeriği...',
-    category: { id: '2', name: 'Tasarım', slug: 'tasarim' },
-    author: { id: '2', name: 'Tasarım Uzmanı' },
-    publishedAt: '2025-09-10T09:00:00Z',
-    tags: ['tasarım', 'trend', 'web'],
-    views: 80,
-    featured: false,
-  },
-  {
-    id: '3',
-    slug: 'uzaktan-calisma-ipuclari',
-    title: 'Uzaktan Çalışma İpuçları',
-    excerpt: 'Evden çalışırken verimliliğinizi artıracak pratik öneriler.',
-    content: 'Blog içeriği...',
-    category: { id: '3', name: 'Productivity', slug: 'productivity' },
-    author: { id: '3', name: 'Productivity Uzmanı' },
-    publishedAt: '2025-09-08T08:00:00Z',
-    tags: ['uzaktan çalışma', 'verimlilik', 'home office'],
-    views: 65,
-    featured: false,
-  },
-];
-
 async function getPosts() {
   try {
-    // Geliştirme aşamasında mock data kullan
-    // Production'da bu kısım gerçek API çağrısı ile değiştirilecek
-    await new Promise((resolve) => setTimeout(resolve, 100)); // Simulated loading
+    // Gerçek API'ye bağlan
+    const response = await blogApi.getPublishedPosts({
+      page: 0,
+      size: 10,
+      sort: 'publishedAt,desc',
+    });
 
-    console.log('Blog posts loaded:', mockBlogPosts.length);
+    console.log('Blog posts loaded:', response.content.length);
     return {
-      posts: mockBlogPosts,
-      total: mockBlogPosts.length,
-      page: 1,
-      pageSize: 10,
+      posts: response.content,
+      total: response.totalElements,
+      page: response.number,
+      pageSize: response.size,
     };
   } catch (error) {
     console.error('Blog fetch error:', error);
-    return { posts: [], total: 0, page: 1, pageSize: 10 };
+    // Return empty result on error
+    return { posts: [], total: 0, page: 0, pageSize: 10 };
   }
 }
 
@@ -112,12 +69,10 @@ async function BlogContent() {
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-4xl space-y-8">
           {posts && posts.length > 0 ? (
-            posts.map((post: BlogPost) => (
+            posts.map((post: BlogPostSummary) => (
               <Card key={post.id} className="p-8">
                 <div className="mb-2 text-sm text-blue-600">
-                  {typeof post.category === 'object'
-                    ? post.category.name
-                    : post.category}
+                  {post.category?.name || 'Genel'}
                 </div>
                 <h2 className="mb-3 text-2xl font-bold text-gray-900">
                   <Link href={`/blog/${post.slug}`}>{post.title}</Link>
@@ -125,7 +80,9 @@ async function BlogContent() {
                 <p className="mb-4 text-gray-600">{post.excerpt}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-500">
-                    {new Date(post.publishedAt).toLocaleDateString('tr-TR')}
+                    {post.publishedAt
+                      ? new Date(post.publishedAt).toLocaleDateString('tr-TR')
+                      : new Date(post.createdAt).toLocaleDateString('tr-TR')}
                   </span>
                   <Link
                     href={`/blog/${post.slug}`}

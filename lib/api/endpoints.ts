@@ -463,6 +463,79 @@ export const ADMIN_ENDPOINTS = {
 } as const;
 
 // ================================================
+// BLOG SYSTEM
+// ================================================
+
+export const BLOG_ENDPOINTS = {
+  // Blog Posts
+  GET_POSTS: '/blog/posts',
+  GET_POST_BY_ID: (postId: string | number) => `/blog/posts/${postId}`,
+  GET_POST_BY_SLUG: (slug: string) => `/blog/posts/slug/${slug}`,
+  CREATE_POST: '/blog/posts',
+  UPDATE_POST: (postId: string | number) => `/blog/posts/${postId}`,
+  DELETE_POST: (postId: string | number) => `/blog/posts/${postId}`,
+
+  // Post Actions
+  PUBLISH_POST: (postId: string | number) => `/blog/posts/${postId}/publish`,
+  SCHEDULE_POST: (postId: string | number) => `/blog/posts/${postId}/schedule`,
+  UNPUBLISH_POST: (postId: string | number) =>
+    `/blog/posts/${postId}/unpublish`,
+  ARCHIVE_POST: (postId: string | number) => `/blog/posts/${postId}/archive`,
+  INCREMENT_VIEW: (postId: string | number) => `/blog/posts/${postId}/view`,
+
+  // Post Discovery
+  GET_FEATURED: '/blog/posts/featured',
+  GET_TRENDING: '/blog/posts/trending',
+  GET_POPULAR: '/blog/posts/popular',
+  GET_DISCUSSED: '/blog/posts/discussed',
+  GET_RELATED: (postId: string | number) => `/blog/posts/${postId}/related`,
+  SEARCH_POSTS: '/blog/posts/search',
+
+  // Post by Category/Tag/Author
+  BY_CATEGORY: (categorySlug: string) => `/blog/posts/category/${categorySlug}`,
+  BY_TAG: (tagSlug: string) => `/blog/posts/tag/${tagSlug}`,
+  BY_AUTHOR: (authorId: string) => `/blog/posts/author/${authorId}`,
+
+  // Author Posts
+  MY_POSTS: '/blog/posts/my-posts',
+  MY_DRAFTS: '/blog/posts/my-drafts',
+
+  // Admin
+  ADMIN_ALL_POSTS: '/blog/posts/admin/all',
+  ADMIN_BY_STATUS: (status: string) => `/blog/posts/admin/status/${status}`,
+  ADMIN_STATISTICS: '/blog/posts/admin/statistics',
+
+  // Blog Categories
+  GET_CATEGORIES: '/blog/categories',
+  GET_CATEGORY_BY_ID: (categoryId: string | number) =>
+    `/blog/categories/${categoryId}`,
+  GET_CATEGORY_BY_SLUG: (slug: string) => `/blog/categories/slug/${slug}`,
+  CREATE_CATEGORY: '/blog/categories',
+  UPDATE_CATEGORY: (categoryId: string | number) =>
+    `/blog/categories/${categoryId}`,
+  DELETE_CATEGORY: (categoryId: string | number) =>
+    `/blog/categories/${categoryId}`,
+
+  // Blog Comments
+  GET_COMMENTS_BY_POST: (postId: string | number) =>
+    `/blog/comments/post/${postId}`,
+  GET_APPROVED_COMMENTS: (postId: string | number) =>
+    `/blog/comments/post/${postId}/approved`,
+  CREATE_COMMENT: (postId: string | number) => `/blog/comments/post/${postId}`,
+  GET_COMMENT_REPLIES: (commentId: string | number) =>
+    `/blog/comments/${commentId}/replies`,
+  DELETE_COMMENT: (commentId: string | number) => `/blog/comments/${commentId}`,
+
+  // Comment Moderation
+  APPROVE_COMMENT: (commentId: string | number) =>
+    `/blog/comments/${commentId}/approve`,
+  REJECT_COMMENT: (commentId: string | number) =>
+    `/blog/comments/${commentId}/reject`,
+  SPAM_COMMENT: (commentId: string | number) =>
+    `/blog/comments/${commentId}/spam`,
+} as const;
+
+// ================================================
 // WEBHOOKS
 // ================================================
 
@@ -557,6 +630,7 @@ export function getAllEndpoints(): string[] {
   addEndpoints(SEARCH_ENDPOINTS);
   addEndpoints(DASHBOARD_ENDPOINTS);
   addEndpoints(ADMIN_ENDPOINTS);
+  addEndpoints(BLOG_ENDPOINTS);
   addEndpoints(WEBHOOK_ENDPOINTS);
 
   return endpoints;
@@ -582,6 +656,7 @@ const API_ENDPOINTS = {
   SEARCH: SEARCH_ENDPOINTS,
   DASHBOARD: DASHBOARD_ENDPOINTS,
   ADMIN: ADMIN_ENDPOINTS,
+  BLOG: BLOG_ENDPOINTS,
   WEBHOOK: WEBHOOK_ENDPOINTS,
 };
 

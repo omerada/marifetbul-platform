@@ -3,7 +3,6 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import { BlogPost } from '@/types/blog';
 import { AppLayout } from '@/components/layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import {
@@ -17,6 +16,7 @@ import {
   Tag,
   Heart,
 } from 'lucide-react';
+import { blogApi, type BlogPost } from '@/lib/api/blog';
 
 // Dynamic rendering işaretleme
 export const dynamicParams = true;
