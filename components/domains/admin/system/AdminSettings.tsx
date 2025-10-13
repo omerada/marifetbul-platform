@@ -147,7 +147,7 @@ interface PlatformSettings {
 }
 
 export function AdminSettings() {
-  const { token } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
   const [settings, setSettings] = useState<PlatformSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -164,12 +164,9 @@ export function AdminSettings() {
         'Content-Type': 'application/json',
       };
 
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
-
       const response = await fetch('/api/v1/admin/settings', {
         headers,
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -183,7 +180,7 @@ export function AdminSettings() {
     } finally {
       setIsLoading(false);
     }
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     fetchSettings();
@@ -200,13 +197,10 @@ export function AdminSettings() {
         'Content-Type': 'application/json',
       };
 
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
-
       const response = await fetch('/api/v1/admin/settings', {
         method: 'PUT',
         headers,
+        credentials: 'include',
         body: JSON.stringify(settings),
       });
 

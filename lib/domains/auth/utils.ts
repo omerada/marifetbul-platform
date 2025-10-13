@@ -29,10 +29,13 @@ export function isAuthenticated(): boolean {
 }
 
 /**
- * Get auth token
+ * Get auth token (deprecated - now using httpOnly cookies)
+ * @deprecated Use cookie-based authentication instead
  */
 export function getAuthToken(): string | null {
-  return useAuthStore.getState().token;
+  // Token is now stored in httpOnly cookies managed by backend
+  // This function is kept for backward compatibility but returns null
+  return null;
 }
 
 /**

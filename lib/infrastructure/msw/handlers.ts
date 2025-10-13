@@ -23,6 +23,17 @@ import { paymentHandlers } from './handlers/payment';
 import { notificationHandlers } from './handlers/notification';
 import { adminHandlers } from './handlers/admin';
 import { authHandlers } from './handlers/auth';
+import { dashboardHandlers } from './admin/dashboardHandlers';
+import { moderationHandlers } from './admin/moderationHandlers';
+import { filteringHandlers } from './admin/filteringHandlers';
+import { reportHandlers } from './admin/reportHandlers';
+import { generateCategoryPlaceholder } from '@/lib/domains/media/image-fallback';
+
+// Enable mocks only in development or when explicitly enabled via env
+export const enableMocks =
+  (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') ||
+  (typeof process !== 'undefined' &&
+    process.env.NEXT_PUBLIC_ENABLE_MOCKS === 'true');
 
 // Helper function to convert User to ConversationParticipant
 function userToParticipant(user: User): ConversationParticipant {
@@ -47,11 +58,6 @@ function userToParticipant(user: User): ConversationParticipant {
     location: user.location,
   };
 }
-import { dashboardHandlers } from './admin/dashboardHandlers';
-import { moderationHandlers } from './admin/moderationHandlers';
-import { filteringHandlers } from './admin/filteringHandlers';
-import { reportHandlers } from './admin/reportHandlers';
-import { generateCategoryPlaceholder } from '@/lib/domains/media/image-fallback';
 
 // Mock employer data
 const mockEmployer: Employer = {
@@ -1175,8 +1181,8 @@ function createApiResponse<T>(data: T): ApiResponse<T> {
   };
 }
 
-// API Handlers
-export const handlers = [
+// API Handlers - build the internal handlers array then export based on enableMocks
+const _handlers = [
   // Test endpoint for MSW functionality
   http.get('/api/test-msw', () => {
     console.log('🧪 MSW: Test endpoint hit - MSW is working!');
@@ -2818,3 +2824,8 @@ export const handlers = [
   // Admin Report handlers
   ...reportHandlers,
 ];
+
+// Conditional export: only expose handlers when mocks are enabled
+export const handlers = enableMocks ? _handlers : [];
+
+export { enableMocks };

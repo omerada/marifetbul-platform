@@ -89,8 +89,8 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${useAuthStore.getState().token}`,
         },
+        credentials: 'include',
         body: JSON.stringify(userData),
       });
 
@@ -161,9 +161,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
 
       const response = await fetch('/api/users/avatar', {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${useAuthStore.getState().token}`,
-        },
+        credentials: 'include',
         body: formData,
       });
 

@@ -8,7 +8,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const { refreshAuth, token, isAuthenticated } = useAuthStore();
+  const { refreshAuth, isAuthenticated } = useAuthStore();
   const [isMounted, setIsMounted] = useState(false);
 
   // Prevent hydration mismatch
@@ -27,15 +27,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     if (!isMounted) return;
 
-    if (isAuthenticated && token) {
-      // Set cookie for middleware
-      document.cookie = `marifetbul-auth-token=${token}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax; Secure=${location.protocol === 'https:'}`;
-    } else {
-      // Clear cookie when not authenticated
-      document.cookie =
-        'marifetbul-auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    }
-  }, [isAuthenticated, token, isMounted]);
+    // Note: Token management is now handled by httpOnly cookies on the backend
+    // No need to manually manage cookies on the frontend
+  }, [isAuthenticated, isMounted]);
 
   return <>{children}</>;
 }

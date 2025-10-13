@@ -192,29 +192,13 @@ export class UnifiedApiClient {
         'Content-Type': 'application/json',
         ...finalConfig.headers,
       },
+      credentials: 'include', // IMPORTANT: Include httpOnly cookies in all requests
       ...finalConfig,
     };
 
-    // Add authentication if available
-    if (typeof window !== 'undefined') {
-      const authData =
-        typeof window !== 'undefined'
-          ? localStorage.getItem('marifetbul-auth')
-          : null;
-      if (authData) {
-        try {
-          const parsed = JSON.parse(authData);
-          if (parsed.state?.token) {
-            requestConfig.headers = {
-              ...requestConfig.headers,
-              Authorization: `Bearer ${parsed.state.token}`,
-            };
-          }
-        } catch (error) {
-          console.warn('Failed to parse auth data:', error);
-        }
-      }
-    }
+    // NOTE: Authentication is now handled by httpOnly cookies
+    // No need to manually add Authorization header
+    // Cookies are automatically sent with credentials: 'include'
 
     // Check cache for GET requests
     const cacheKey = this.getCacheKey(url, finalConfig);
@@ -583,7 +567,11 @@ export class UnifiedApiClient {
 
 // Create singleton instance
 export const unifiedApiClient = new UnifiedApiClient({
-  baseURL: '/api',
+  baseURL:
+    process.env.NEXT_PUBLIC_API_URL ||
+    (typeof window !== 'undefined' && process.env.NODE_ENV === 'development'
+      ? '/api/v1'
+      : 'http://localhost:8080/api/v1'),
   timeout: 30000,
   retries: 3,
   retryDelay: 1000,

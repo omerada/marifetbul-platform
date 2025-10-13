@@ -26,3 +26,39 @@ export type {
   WebSocketMessage,
   WebSocketEventHandler,
 } from './websocket';
+
+// API Services
+export { JobService } from './api/jobService';
+export { PackageService } from './api/packageService';
+export { AuthService, UserService } from './api/authService';
+
+// Other Services
+export { MessagingService } from './messaging.service';
+export { PaymentService } from './payment.service';
+export { NotificationService } from './notification.service';
+
+// Service Types
+export type {
+  SendMessageRequest,
+  CreateConversationRequest,
+  SendMessageData,
+  CreateConversationData,
+} from './messaging.service';
+
+export type {
+  CreatePaymentRequest,
+  PaymentFilters,
+  RefundRequest,
+  Invoice,
+} from './payment.service';
+
+export type {
+  CreateNotificationRequest,
+  NotificationFilters,
+} from './notification.service';
+
+export type {
+  LoginRequest,
+  RegisterRequest,
+  UpdateProfileRequest,
+} from './api/authService';

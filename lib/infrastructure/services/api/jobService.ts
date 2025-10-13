@@ -1,4 +1,6 @@
 import type { Job, PaginatedResponse } from '@/types';
+import type { ApiResponse } from '@/types/shared/api';
+import { apiClient } from '@/lib/infrastructure/api/client';
 
 export interface JobFilters {
   search?: string;
@@ -16,11 +18,11 @@ export interface JobSearchParams extends JobFilters {
   limit: number;
 }
 
+/**
+ * Production-ready JobService using real backend API
+ * Endpoints: /api/v1/jobs
+ */
 export class JobService {
-  private static mockJobs: Job[] = [
-    // Mock data will be moved here
-  ];
-
   static async searchJobs(
     params: JobSearchParams
   ): Promise<PaginatedResponse<Job>> {
@@ -37,47 +39,29 @@ export class JobService {
       sortOrder = 'desc',
     } = params;
 
-    let filteredJobs = [...this.mockJobs];
+    // Build query parameters
+    const queryParams = new URLSearchParams();
+    queryParams.set('page', page.toString());
+    queryParams.set('limit', limit.toString());
+    queryParams.set('sortBy', sortBy);
+    queryParams.set('sortOrder', sortOrder);
 
-    // Apply filters
-    if (search) {
-      filteredJobs = this.filterBySearch(filteredJobs, search);
+    if (search) queryParams.set('search', search);
+    if (category) queryParams.set('category', category);
+    if (location) queryParams.set('location', location);
+    if (minBudget) queryParams.set('minBudget', minBudget.toString());
+    if (maxBudget) queryParams.set('maxBudget', maxBudget.toString());
+    if (skills.length > 0) queryParams.set('skills', skills.join(','));
+
+    const response = await apiClient.get<ApiResponse<PaginatedResponse<Job>>>(
+      `/jobs?${queryParams.toString()}`
+    );
+
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to fetch jobs');
     }
 
-    if (category) {
-      filteredJobs = this.filterByCategory(filteredJobs, category);
-    }
-
-    if (location) {
-      filteredJobs = this.filterByLocation(filteredJobs, location);
-    }
-
-    if (minBudget || maxBudget) {
-      filteredJobs = this.filterByBudget(filteredJobs, minBudget, maxBudget);
-    }
-
-    if (skills.length > 0) {
-      filteredJobs = this.filterBySkills(filteredJobs, skills);
-    }
-
-    // Apply sorting
-    filteredJobs = this.sortJobs(filteredJobs, sortBy, sortOrder);
-
-    // Apply pagination
-    const total = filteredJobs.length;
-    const totalPages = Math.ceil(total / limit);
-    const offset = (page - 1) * limit;
-    const paginatedJobs = filteredJobs.slice(offset, offset + limit);
-
-    return {
-      data: paginatedJobs,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages,
-      },
-    };
+    return response.data;
   }
 
   private static filterBySearch(jobs: Job[], search: string): Job[] {
@@ -184,44 +168,58 @@ export class JobService {
   }
 
   static async getJobById(id: string): Promise<Job | null> {
-    return this.mockJobs.find((job) => job.id === id) || null;
+    try {
+      const response = await apiClient.get<ApiResponse<Job>>(`/jobs/${id}`);
+
+      if (!response.success || !response.data) {
+        return null;
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch job:', error);
+      return null;
+    }
   }
 
   static async createJob(jobData: Partial<Job>): Promise<Job> {
-    const newJob: Job = {
-      id: `job-${Date.now()}`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      proposalsCount: 0,
-      status: 'open',
-      ...jobData,
-    } as Job;
+    const response = await apiClient.post<ApiResponse<Job>>('/jobs', jobData);
 
-    this.mockJobs.push(newJob);
-    return newJob;
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to create job');
+    }
+
+    return response.data;
   }
 
   static async updateJob(
     id: string,
     updates: Partial<Job>
   ): Promise<Job | null> {
-    const jobIndex = this.mockJobs.findIndex((job) => job.id === id);
-    if (jobIndex === -1) return null;
+    try {
+      const response = await apiClient.put<ApiResponse<Job>>(
+        `/jobs/${id}`,
+        updates
+      );
 
-    this.mockJobs[jobIndex] = {
-      ...this.mockJobs[jobIndex],
-      ...updates,
-      updatedAt: new Date().toISOString(),
-    };
+      if (!response.success || !response.data) {
+        return null;
+      }
 
-    return this.mockJobs[jobIndex];
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update job:', error);
+      return null;
+    }
   }
 
   static async deleteJob(id: string): Promise<boolean> {
-    const jobIndex = this.mockJobs.findIndex((job) => job.id === id);
-    if (jobIndex === -1) return false;
-
-    this.mockJobs.splice(jobIndex, 1);
-    return true;
+    try {
+      const response = await apiClient.delete<ApiResponse<void>>(`/jobs/${id}`);
+      return response.success;
+    } catch (error) {
+      console.error('Failed to delete job:', error);
+      return false;
+    }
   }
 }

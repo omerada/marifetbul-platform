@@ -41,9 +41,12 @@ const publicRoutes = [
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Get the token from the cookies (localStorage is not accessible in middleware)
-  // Note: We'll need to sync localStorage auth with cookies in the auth store
-  const token = request.cookies.get('marifetbul-auth-token')?.value;
+  // Get the token from httpOnly cookies (set by backend)
+  // Backend sets cookie name as "marifetbul_token" (httpOnly, secure)
+  const token = request.cookies.get('marifetbul_token')?.value;
+  
+  // User role might be stored in a separate non-httpOnly cookie for middleware access
+  // Or we can verify role via API call (but that adds latency)
   const userRole = request.cookies.get('marifetbul-user-role')?.value;
 
   // Allow public profile viewing: /profile/[id] but not /profile/edit

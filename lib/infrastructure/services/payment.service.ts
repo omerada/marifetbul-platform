@@ -1,4 +1,6 @@
 import { Payment } from '@/types';
+import type { ApiResponse } from '@/types/shared/api';
+import { apiClient } from '@/lib/infrastructure/api/client';
 
 export interface CreatePaymentRequest {
   userId: string;
@@ -43,7 +45,6 @@ export interface Invoice {
 
 export class PaymentService {
   private static instance: PaymentService;
-  private baseUrl = '/api/payments';
 
   private constructor() {}
 
@@ -55,30 +56,28 @@ export class PaymentService {
   }
 
   async createPayment(request: CreatePaymentRequest): Promise<Payment> {
-    const response = await fetch(this.baseUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(request),
-    });
+    const response = await apiClient.post<ApiResponse<{ payment: Payment }>>(
+      '/payments',
+      request
+    );
 
-    if (!response.ok) {
-      throw new Error('Failed to create payment');
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to create payment');
     }
 
-    const data = await response.json();
-    return data.payment;
+    return response.data.payment;
   }
 
   async getPayment(paymentId: string): Promise<Payment> {
-    const response = await fetch(`${this.baseUrl}/${paymentId}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch payment');
+    const response = await apiClient.get<ApiResponse<{ payment: Payment }>>(
+      `/payments/${paymentId}`
+    );
+
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to fetch payment');
     }
 
-    const data = await response.json();
-    return data.payment;
+    return response.data.payment;
   }
 
   async getPaymentHistory(
@@ -96,38 +95,31 @@ export class PaymentService {
     if (filters?.maxAmount)
       params.append('maxAmount', String(filters.maxAmount));
 
-    const response = await fetch(
-      `${this.baseUrl}/history/${userId}?${params.toString()}`
+    const response = await apiClient.get<ApiResponse<{ payments: Payment[] }>>(
+      `/payments/history/${userId}?${params.toString()}`
     );
-    if (!response.ok) {
-      throw new Error('Failed to fetch payment history');
+
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to fetch payment history');
     }
 
-    const data = await response.json();
-    return data.payments || [];
+    return response.data.payments || [];
   }
 
   async requestRefund(refundRequest: RefundRequest): Promise<Payment> {
-    const response = await fetch(
-      `${this.baseUrl}/${refundRequest.paymentId}/refund`,
+    const response = await apiClient.post<ApiResponse<{ payment: Payment }>>(
+      `/payments/${refundRequest.paymentId}/refund`,
       {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount: refundRequest.amount,
-          reason: refundRequest.reason,
-        }),
+        amount: refundRequest.amount,
+        reason: refundRequest.reason,
       }
     );
 
-    if (!response.ok) {
-      throw new Error('Failed to request refund');
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to request refund');
     }
 
-    const data = await response.json();
-    return data.payment;
+    return response.data.payment;
   }
 
   async releaseEscrow(
@@ -135,56 +127,41 @@ export class PaymentService {
     amount?: number,
     reason?: string
   ): Promise<Payment> {
-    const response = await fetch(
-      `${this.baseUrl}/${paymentId}/release-escrow`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ amount, reason }),
-      }
+    const response = await apiClient.post<ApiResponse<{ payment: Payment }>>(
+      `/payments/${paymentId}/release-escrow`,
+      { amount, reason }
     );
 
-    if (!response.ok) {
-      throw new Error('Failed to release escrow');
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to release escrow');
     }
 
-    const data = await response.json();
-    return data.payment;
+    return response.data.payment;
   }
 
   async generateInvoice(orderId: string, paymentId: string): Promise<Invoice> {
-    const response = await fetch(`${this.baseUrl}/${paymentId}/invoice`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ orderId }),
-    });
+    const response = await apiClient.post<ApiResponse<{ invoice: Invoice }>>(
+      `/payments/${paymentId}/invoice`,
+      { orderId }
+    );
 
-    if (!response.ok) {
-      throw new Error('Failed to generate invoice');
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to generate invoice');
     }
 
-    const data = await response.json();
-    return data.invoice;
+    return response.data.invoice;
   }
 
   async cancelPayment(paymentId: string, reason: string): Promise<Payment> {
-    const response = await fetch(`${this.baseUrl}/${paymentId}/cancel`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ reason }),
-    });
+    const response = await apiClient.post<ApiResponse<{ payment: Payment }>>(
+      `/payments/${paymentId}/cancel`,
+      { reason }
+    );
 
-    if (!response.ok) {
-      throw new Error('Failed to cancel payment');
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to cancel payment');
     }
 
-    const data = await response.json();
-    return data.payment;
+    return response.data.payment;
   }
 }

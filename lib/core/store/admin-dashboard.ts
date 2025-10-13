@@ -23,7 +23,6 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
           // Import auth store here to avoid circular dependency
           const { useAuthStore } = await import('./domains/auth/authStore');
           const authState = useAuthStore.getState();
-          const token = authState.token || 'mock-admin-token'; // Use mock token if no real token
 
           if (!authState.isAuthenticated) {
             // For demo purposes, create a mock admin session
@@ -43,14 +42,13 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
             };
             authState.user = mockUser;
             authState.isAuthenticated = true;
-            authState.token = 'mock-admin-token';
           }
 
           const response = await fetch('/api/v1/admin/dashboard', {
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
             },
+            credentials: 'include',
           });
 
           if (!response.ok) {

@@ -29,13 +29,13 @@ export interface RegisterData {
 }
 
 export interface AuthUser extends User {
-  token: string;
+  token?: string; // Optional - token now stored in httpOnly cookies
 }
 
 interface AuthState {
   // State
   user: User | null;
-  token: string | null;
+  // NOTE: token removed - now stored in httpOnly cookies managed by backend
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
@@ -49,9 +49,8 @@ interface AuthState {
 interface AuthActions {
   // Authentication
   login: (credentials: LoginCredentials) => Promise<void>;
-  loginWithToken: (user: User, token: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>; // Changed to async for backend logout call
 
   // User management
   updateUser: (userData: Partial<User>) => void;
@@ -73,7 +72,6 @@ type AuthStore = AuthState & AuthActions;
 
 const initialState: AuthState = {
   user: null,
-  token: null,
   isAuthenticated: false,
   isLoading: false,
   error: null,
@@ -105,12 +103,13 @@ export const useAuthStore = create<AuthStore>()(
 
           try {
             console.log(
-              '📡 Auth Store: Sending login request to /api/auth/login'
+              '📡 Auth Store: Sending login request to /api/v1/auth/login with cookies'
             );
 
-            const response = await fetch('/api/auth/login', {
+            const response = await fetch('/api/v1/auth/login', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
+              credentials: 'include', // IMPORTANT: Include cookies in request
               body: JSON.stringify(credentials),
             });
 
@@ -135,7 +134,8 @@ export const useAuthStore = create<AuthStore>()(
               throw new Error(result.error || 'Giriş başarısız');
             }
 
-            const { user, token } = result.data;
+            const { user } = result.data;
+            // NOTE: Token is now in httpOnly cookie, not returned in response
             console.log('👤 Auth Store: User data received:', {
               userId: user.id,
               email: user.email,
@@ -149,18 +149,9 @@ export const useAuthStore = create<AuthStore>()(
                 ? 30 * 24 * 60 * 60 * 1000
                 : 24 * 60 * 60 * 1000); // 30 days or 1 day
 
-            // Set cookies for middleware
-            if (typeof window !== 'undefined') {
-              const expiryDate = new Date(expiry);
-              const cookieOptions = `expires=${expiryDate.toUTCString()}; path=/; SameSite=lax`;
-
-              document.cookie = `marifetbul-auth-token=${token}; ${cookieOptions}`;
-              document.cookie = `marifetbul-user-role=${user.role}; ${cookieOptions}`;
-            }
-
             set((draft) => {
               draft.user = user;
-              draft.token = token;
+              // draft.token removed - now stored in httpOnly cookie
               draft.isAuthenticated = true;
               draft.isLoading = false;
               draft.error = null;
@@ -168,6 +159,8 @@ export const useAuthStore = create<AuthStore>()(
               draft.lastActivity = now;
               draft.sessionExpiry = expiry;
             });
+
+            console.log('✅ Auth Store: Login successful - cookies managed by backend');
           } catch (error) {
             set((draft) => {
               draft.error =
@@ -175,40 +168,6 @@ export const useAuthStore = create<AuthStore>()(
               draft.isLoading = false;
               draft.isAuthenticated = false;
             });
-            throw error;
-          }
-        },
-
-        // Login with existing token (for auto-login)
-        loginWithToken: async (user: User, token: string) => {
-          set((draft) => {
-            draft.isLoading = true;
-            draft.error = null;
-          });
-
-          try {
-            // Verify token with server
-            const response = await fetch('/api/auth/verify', {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (!response.ok) {
-              throw new Error('Token geçersiz');
-            }
-
-            const now = Date.now();
-
-            set((draft) => {
-              draft.user = user;
-              draft.token = token;
-              draft.isAuthenticated = true;
-              draft.isLoading = false;
-              draft.error = null;
-              draft.lastActivity = now;
-            });
-          } catch (error) {
-            // Token invalid, clear auth state
-            get().logout();
             throw error;
           }
         },
@@ -221,9 +180,10 @@ export const useAuthStore = create<AuthStore>()(
           });
 
           try {
-            const response = await fetch('/api/auth/register', {
+            const response = await fetch('/api/v1/auth/register', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
+              credentials: 'include', // IMPORTANT: Include cookies
               body: JSON.stringify(data),
             });
 
@@ -239,13 +199,14 @@ export const useAuthStore = create<AuthStore>()(
               throw new Error(result.error || 'Kayıt başarısız');
             }
 
-            const { user, token } = result.data;
+            const { user } = result.data;
+            // NOTE: Token is now in httpOnly cookie
             const now = Date.now();
             const expiry = now + 24 * 60 * 60 * 1000; // 1 day
 
             set((draft) => {
               draft.user = user;
-              draft.token = token;
+              // draft.token removed - now in httpOnly cookie
               draft.isAuthenticated = true;
               draft.isLoading = false;
               draft.error = null;
@@ -263,18 +224,32 @@ export const useAuthStore = create<AuthStore>()(
         },
 
         // Logout
-        logout: () => {
-          // Clear cookies
+        logout: async () => {
+          try {
+            // Call backend logout to blacklist token
+            await fetch('/api/v1/auth/logout', {
+              method: 'POST',
+              credentials: 'include', // IMPORTANT: Send cookies to backend
+            });
+            console.log('✅ Auth Store: Backend logout successful - token blacklisted');
+          } catch (error) {
+            console.error('❌ Auth Store: Backend logout failed:', error);
+            // Continue with client-side logout even if backend fails
+          }
+
+          // Clear client-side state
+          // httpOnly cookies are cleared by backend, but clear any other cookies
           if (typeof window !== 'undefined') {
+            // Clear any non-httpOnly cookies (if any exist)
             document.cookie =
-              'marifetbul-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-            document.cookie =
-              'marifetbul-user-role=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+              'marifetbul-user-role=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax';
           }
 
           set(() => ({
             ...initialState,
           }));
+
+          console.log('✅ Auth Store: Client-side logout complete');
         },
 
         // Update user data
@@ -288,16 +263,18 @@ export const useAuthStore = create<AuthStore>()(
 
         // Refresh authentication
         refreshAuth: async () => {
-          const { token } = get();
+          const { isAuthenticated } = get();
 
-          if (!token) {
+          if (!isAuthenticated) {
             get().logout();
             return;
           }
 
           try {
-            const response = await fetch('/api/auth/refresh', {
-              headers: { Authorization: `Bearer ${token}` },
+            // Token is in httpOnly cookie, automatically sent with credentials: 'include'
+            const response = await fetch('/api/v1/auth/refresh', {
+              method: 'POST',
+              credentials: 'include', // IMPORTANT: Send cookies
             });
 
             if (!response.ok) {
@@ -305,38 +282,61 @@ export const useAuthStore = create<AuthStore>()(
             }
 
             const result = await response.json();
-            const { user, token: newToken } = result.data;
+            const { user } = result.data;
+            // New token is set in httpOnly cookie by backend
 
             set((draft) => {
               draft.user = user;
-              draft.token = newToken || token;
+              // draft.token removed - now in httpOnly cookie
               draft.lastActivity = Date.now();
             });
+
+            console.log('✅ Auth Store: Token refreshed - new cookie set by backend');
           } catch (error) {
-            get().logout();
+            console.error('❌ Auth Store: Token refresh failed:', error);
+            await get().logout();
             throw error;
           }
         },
 
         // Check auth status
         checkAuthStatus: async () => {
-          const { token, sessionExpiry } = get();
+          const { sessionExpiry, isAuthenticated } = get();
 
-          if (!token) {
-            get().logout();
+          if (!isAuthenticated) {
+            await get().logout();
             return;
           }
 
           // Check session expiry
           if (sessionExpiry && Date.now() > sessionExpiry) {
-            get().logout();
+            await get().logout();
             return;
           }
 
           try {
-            await get().refreshAuth();
+            // Verify with backend using cookie
+            const response = await fetch('/api/v1/auth/me', {
+              credentials: 'include', // IMPORTANT: Send cookies
+            });
+
+            if (!response.ok) {
+              throw new Error('Auth check failed');
+            }
+
+            const result = await response.json();
+            if (result.success && result.data) {
+              set((draft) => {
+                draft.user = result.data;
+                draft.isAuthenticated = true;
+                draft.lastActivity = Date.now();
+              });
+            } else {
+              throw new Error('Invalid auth response');
+            }
           } catch (error) {
             console.error('Auth status check failed:', error);
+            await get().logout();
           }
         },
 
@@ -391,7 +391,7 @@ export const useAuthStore = create<AuthStore>()(
       skipHydration: true, // Skip SSR hydration to prevent mismatches
       partialize: (state) => ({
         user: state.user,
-        token: state.token,
+        // token removed - now stored ONLY in httpOnly cookies
         isAuthenticated: state.isAuthenticated,
         rememberMe: state.rememberMe,
         sessionExpiry: state.sessionExpiry,
@@ -421,7 +421,6 @@ export const authSelectors = {
   useActions: () =>
     useAuthStore((state) => ({
       login: state.login,
-      loginWithToken: state.loginWithToken,
       register: state.register,
       logout: state.logout,
       updateUser: state.updateUser,

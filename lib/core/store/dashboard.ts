@@ -32,16 +32,16 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const token = useAuthStore.getState().token;
-      if (!token) {
+      const authState = useAuthStore.getState();
+      if (!authState.isAuthenticated) {
         throw new Error('Kullanıcı girişi gerekli');
       }
 
       const response = await fetch(`/api/dashboard/${userType}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
 
       const data = await response.json();

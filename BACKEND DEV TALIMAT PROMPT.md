@@ -60,3 +60,9 @@ Görevin: elimde mevcut olan bir web uygulaması projesine özel, kurumsal düze
 Amaç: Bu doküman, AI tabanlı bir yazılım geliştirme ajanının sıfırdan backend geliştirmesini kendi başına yapabileceği kadar **detaylı, sistematik ve açıklayıcı** olmalıdır.
 
 #codebase
+
+Sprint 18 (2 hafta) → Frontend-Backend Integration (CRITICAL)
+Sprint 19 (2 hafta) → TODO Cleanup + Domain Completion
+Sprint 20 (2 hafta) → Production Preparation
+Sprint 21 (1 hafta) → Staging Deployment & Testing
+Sprint 22 (1 hafta) → Production Deployment

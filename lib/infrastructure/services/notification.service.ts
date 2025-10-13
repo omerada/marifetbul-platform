@@ -1,4 +1,6 @@
 import { Notification } from '@/types';
+import type { ApiResponse } from '@/types/shared/api';
+import { apiClient } from '@/lib/infrastructure/api/client';
 
 export interface CreateNotificationRequest {
   userId: string;
@@ -26,7 +28,6 @@ export interface NotificationFilters {
 
 export class NotificationService {
   private static instance: NotificationService;
-  private baseUrl = '/api/notifications';
 
   private constructor() {}
 
@@ -48,73 +49,74 @@ export class NotificationService {
     if (filters?.dateFrom) params.append('dateFrom', filters.dateFrom);
     if (filters?.dateTo) params.append('dateTo', filters.dateTo);
 
-    const response = await fetch(
-      `${this.baseUrl}/${userId}?${params.toString()}`
-    );
-    if (!response.ok) {
-      throw new Error('Failed to fetch notifications');
+    const response = await apiClient.get<
+      ApiResponse<{ notifications: Notification[] }>
+    >(`/notifications/${userId}?${params.toString()}`);
+
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to fetch notifications');
     }
 
-    const data = await response.json();
-    return data.notifications || [];
+    return response.data.notifications || [];
   }
 
   async markAsRead(notificationId: string): Promise<void> {
-    const response = await fetch(`${this.baseUrl}/${notificationId}/read`, {
-      method: 'PUT',
-    });
+    const response = await apiClient.put<ApiResponse<void>>(
+      `/notifications/${notificationId}/read`
+    );
 
-    if (!response.ok) {
-      throw new Error('Failed to mark notification as read');
+    if (!response.success) {
+      throw new Error(
+        response.message || 'Failed to mark notification as read'
+      );
     }
   }
 
   async markAllAsRead(userId: string): Promise<void> {
-    const response = await fetch(`${this.baseUrl}/${userId}/read-all`, {
-      method: 'PUT',
-    });
+    const response = await apiClient.put<ApiResponse<void>>(
+      `/notifications/${userId}/read-all`
+    );
 
-    if (!response.ok) {
-      throw new Error('Failed to mark all notifications as read');
+    if (!response.success) {
+      throw new Error(
+        response.message || 'Failed to mark all notifications as read'
+      );
     }
   }
 
   async deleteNotification(notificationId: string): Promise<void> {
-    const response = await fetch(`${this.baseUrl}/${notificationId}`, {
-      method: 'DELETE',
-    });
+    const response = await apiClient.delete<ApiResponse<void>>(
+      `/notifications/${notificationId}`
+    );
 
-    if (!response.ok) {
-      throw new Error('Failed to delete notification');
+    if (!response.success) {
+      throw new Error(response.message || 'Failed to delete notification');
     }
   }
 
   async createNotification(
     request: CreateNotificationRequest
   ): Promise<Notification> {
-    const response = await fetch(this.baseUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(request),
-    });
+    const response = await apiClient.post<
+      ApiResponse<{ notification: Notification }>
+    >('/notifications', request);
 
-    if (!response.ok) {
-      throw new Error('Failed to create notification');
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to create notification');
     }
 
-    const data = await response.json();
-    return data.notification;
+    return response.data.notification;
   }
 
   async getUnreadCount(userId: string): Promise<number> {
-    const response = await fetch(`${this.baseUrl}/${userId}/unread-count`);
-    if (!response.ok) {
-      throw new Error('Failed to get unread count');
+    const response = await apiClient.get<ApiResponse<{ count: number }>>(
+      `/notifications/${userId}/unread-count`
+    );
+
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to get unread count');
     }
 
-    const data = await response.json();
-    return data.count || 0;
+    return response.data.count || 0;
   }
 }

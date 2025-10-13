@@ -2,8 +2,14 @@
 class ApiClient {
   private baseURL: string;
 
-  constructor(baseURL = '/api') {
-    this.baseURL = baseURL;
+  constructor(baseURL?: string) {
+    // Use environment variable or fallback to Next.js proxy in development
+    this.baseURL =
+      baseURL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      (typeof window !== 'undefined' && process.env.NODE_ENV === 'development'
+        ? '/api/v1'
+        : 'http://localhost:8080/api/v1');
   }
 
   private async request<T>(
@@ -17,29 +23,13 @@ class ApiClient {
         'Content-Type': 'application/json',
         ...options.headers,
       },
+      credentials: 'include', // IMPORTANT: Include httpOnly cookies in all requests
       ...options,
     };
 
-    // Add auth token if available
-    if (typeof window !== 'undefined') {
-      const authData =
-        typeof window !== 'undefined'
-          ? localStorage.getItem('marifetbul-auth')
-          : null;
-      if (authData) {
-        try {
-          const parsed = JSON.parse(authData);
-          if (parsed.state?.token) {
-            config.headers = {
-              ...config.headers,
-              Authorization: `Bearer ${parsed.state.token}`,
-            };
-          }
-        } catch (error) {
-          console.warn('Failed to parse auth data:', error);
-        }
-      }
-    }
+    // NOTE: Authentication is now handled by httpOnly cookies
+    // No need to manually add Authorization header
+    // Cookies are automatically sent with credentials: 'include'
 
     try {
       const response = await fetch(url, config);
