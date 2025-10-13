@@ -200,6 +200,34 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: false,
   },
+
+  // ================================================
+  // WEBPACK CONFIGURATION
+  // ================================================
+  webpack: (config, { isServer, dev }) => {
+    // Exclude MSW from production builds
+    if (!dev) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        // Replace MSW with empty module in production
+        'msw/node': false,
+        'msw/browser': false,
+        msw: false,
+      };
+
+      // Ignore MSW-related imports in production
+      config.externals = config.externals || [];
+      if (!isServer) {
+        config.externals.push({
+          msw: 'msw',
+          'msw/node': 'msw/node',
+          'msw/browser': 'msw/browser',
+        });
+      }
+    }
+
+    return config;
+  },
 };
 
 module.exports = nextConfig;

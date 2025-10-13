@@ -63,6 +63,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Check if MSW should be enabled (development only)
+  const mswEnabled = process.env.NEXT_PUBLIC_ENABLE_MSW === 'true';
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const shouldUseMSW = mswEnabled && isDevelopment;
+
   return (
     <html lang="tr" className="h-full" data-scroll-behavior="smooth">
       <SEOHead />
@@ -71,11 +76,17 @@ export default function RootLayout({
       >
         <MonitoringProvider>
           <ThemeProvider>
-            <MSWProvider>
+            {shouldUseMSW ? (
+              <MSWProvider>
+                <AuthProvider>
+                  <ToastProvider>{children}</ToastProvider>
+                </AuthProvider>
+              </MSWProvider>
+            ) : (
               <AuthProvider>
                 <ToastProvider>{children}</ToastProvider>
               </AuthProvider>
-            </MSWProvider>
+            )}
           </ThemeProvider>
         </MonitoringProvider>
       </body>

@@ -8,14 +8,24 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setIsMounted(true);
 
-    // Only start MSW in development environment and in browser
-    if (
-      process.env.NODE_ENV === 'development' &&
-      typeof window !== 'undefined'
-    ) {
+    // Only start MSW if explicitly enabled via environment variable AND in development
+    const mswEnabled = process.env.NEXT_PUBLIC_ENABLE_MSW === 'true';
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const isDebugMode = process.env.NEXT_PUBLIC_ENABLE_DEBUG === 'true';
+
+    // MSW should NEVER run in production
+    if (process.env.NODE_ENV === 'production') {
+      if (isDebugMode) {
+        console.log('✅ Production mode: MSW disabled (as expected)');
+      }
+      return;
+    }
+
+    // In development, only run if explicitly enabled
+    if (mswEnabled && isDevelopment && typeof window !== 'undefined') {
       const startMSW = async () => {
         try {
-          console.log('🔧 MSW Provider: Starting MSW...');
+          console.log('🔧 MSW Provider: Starting MSW in development mode...');
 
           // Add a small delay to ensure proper initialization
           await new Promise((resolve) => setTimeout(resolve, 100));
@@ -78,12 +88,18 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
             '📋 MSW handlers registered:',
             worker.listHandlers().length
           );
+          console.log('⚠️  MSW is active - API calls will be mocked!');
         } catch (error) {
           console.error('❌ Failed to start MSW worker:', error);
         }
       };
 
       startMSW();
+    } else if (!mswEnabled && isDevelopment) {
+      console.log('ℹ️  MSW is disabled - API calls will go to real backend');
+      console.log(
+        '💡 To enable MSW, set NEXT_PUBLIC_ENABLE_MSW=true in .env.local'
+      );
     }
   }, []);
 
