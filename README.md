@@ -1,0 +1,422 @@
+# 🚀 MarifetBul - Türkiye'nin Freelance Platformu
+
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Next.js](https://img.shields.io/badge/Next.js-15.1.6-black.svg)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.0.0-blue.svg)](https://reactjs.org/)
+[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7.3-blue.svg)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org/)
+[![Redis](https://img.shields.io/badge/Redis-7-red.svg)](https://redis.io/)
+[![License](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
+
+Modern, ölçeklenebilir ve güvenli freelance platformu. Spring Boot backend + Next.js frontend ile geliştirilmiş production-ready web uygulaması.
+
+---
+
+## 📋 İçindekiler
+
+- [Özellikler](#-özellikler)
+- [Teknoloji Stack](#-teknoloji-stack)
+- [Proje Yapısı](#-proje-yapısı)
+- [Kurulum](#-kurulum)
+- [Kullanım](#-kullanım)
+- [API Dokümantasyonu](#-api-dokümantasyonu)
+- [Deployment](#-deployment)
+- [Katkıda Bulunma](#-katkıda-bulunma)
+- [Lisans](#-lisans)
+
+---
+
+## ✨ Özellikler
+
+### 🎯 Core Features
+
+- ✅ **Kullanıcı Yönetimi**: JWT tabanlı güvenli authentication & authorization
+- ✅ **Paket/Hizmet Listeme**: Freelancer'ların hizmetlerini sergilemesi
+- ✅ **İş İlanları**: Employer'ların proje ilanları oluşturması
+- ✅ **Teklif Sistemi**: Freelancer'ların işlere teklif vermesi
+- ✅ **Mesajlaşma**: Real-time mesajlaşma sistemi
+- ✅ **Ödeme Sistemi**: Stripe entegrasyonu ile güvenli ödemeler
+- ✅ **Review & Rating**: İki yönlü değerlendirme sistemi
+- ✅ **Blog Sistemi**: SEO-friendly blog platformu
+- ✅ **Destek Sistemi**: Ticket-based support management
+
+### 🔐 Security
+
+- JWT authentication with refresh tokens
+- CSRF protection
+- Rate limiting
+- Input validation & sanitization
+- SQL injection prevention
+- XSS protection
+- Secure password hashing (BCrypt)
+
+### 🚀 Performance
+
+- Redis caching (user sessions, API responses)
+- Elasticsearch full-text search
+- Database query optimization
+- API response caching
+- Lazy loading & code splitting
+- Image optimization
+
+### 📊 Monitoring & Analytics
+
+- Sentry error tracking
+- Prometheus metrics
+- Grafana dashboards
+- Actuator health checks
+- Custom business metrics
+
+---
+
+## 🛠️ Teknoloji Stack
+
+### Backend (Spring Boot)
+
+```
+├── Spring Boot 3.4.1          # Core framework
+├── Spring Security            # Authentication & authorization
+├── Spring Data JPA            # Database ORM
+├── PostgreSQL 16              # Primary database
+├── Redis 7                    # Caching & sessions
+├── Elasticsearch 8            # Full-text search
+├── Flyway                     # Database migrations
+├── JWT (jjwt 0.12.6)         # Token authentication
+├── MapStruct 1.6.3           # DTO mapping
+├── Lombok 1.18.36            # Code generation
+├── Stripe SDK                 # Payment processing
+├── SendGrid                   # Email service
+├── AWS S3                     # File storage
+└── Sentry                     # Error tracking
+```
+
+### Frontend (Next.js)
+
+```
+├── Next.js 15.1.6            # React framework
+├── React 19.0.0              # UI library
+├── TypeScript 5.7.3          # Type safety
+├── Tailwind CSS 4.1.1        # Styling
+├── React Hook Form 7.54.2    # Form management
+├── Zod 4.1.5                 # Schema validation
+├── SWR 2.3.6                 # Data fetching
+├── Zustand 5.0.8             # State management
+├── Framer Motion 12.23.22    # Animations
+└── Lucide React 0.469.0      # Icons
+```
+
+### DevOps & Infrastructure
+
+```
+├── Docker & Docker Compose   # Containerization
+├── Nginx                      # Reverse proxy
+├── Prometheus                 # Metrics
+├── Grafana                    # Monitoring dashboards
+├── GitHub Actions (CI/CD)    # Automation
+└── Vercel (Frontend hosting) # Deployment
+```
+
+---
+
+## 📁 Proje Yapısı
+
+```
+marifeto/
+├── marifetbul-backend/              # Spring Boot Backend
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/marifetbul/api/
+│   │   │   │   ├── common/          # Common utilities
+│   │   │   │   ├── config/          # Spring configurations
+│   │   │   │   ├── domain/          # Business logic (DDD)
+│   │   │   │   │   ├── auth/        # Authentication
+│   │   │   │   │   ├── user/        # User management
+│   │   │   │   │   ├── packages/    # Services/Packages
+│   │   │   │   │   ├── job/         # Job postings
+│   │   │   │   │   ├── proposal/    # Proposals/Bids
+│   │   │   │   │   ├── order/       # Orders
+│   │   │   │   │   ├── payment/     # Payments
+│   │   │   │   │   ├── message/     # Messaging
+│   │   │   │   │   ├── review/      # Reviews
+│   │   │   │   │   ├── blog/        # Blog system
+│   │   │   │   │   └── support/     # Support tickets
+│   │   │   │   ├── infrastructure/  # External services
+│   │   │   │   ├── presentation/    # API DTOs
+│   │   │   │   └── security/        # Security config
+│   │   │   └── resources/
+│   │   │       ├── application.yml
+│   │   │       ├── application-dev.yml
+│   │   │       ├── application-prod.yml
+│   │   │       └── db/migration/    # Flyway migrations
+│   │   └── test/                    # Unit & integration tests
+│   ├── docker/                      # Docker configurations
+│   ├── k8s/                         # Kubernetes manifests
+│   ├── pom.xml                      # Maven dependencies
+│   └── Dockerfile.prod              # Production build
+│
+├── app/                             # Next.js pages (App Router)
+│   ├── (auth)/                      # Auth pages
+│   ├── admin/                       # Admin panel
+│   ├── api/                         # API routes
+│   ├── blog/                        # Blog pages
+│   ├── dashboard/                   # User dashboards
+│   ├── marketplace/                 # Marketplace pages
+│   ├── profile/                     # User profiles
+│   └── ...
+│
+├── components/                      # React components
+│   ├── domains/                     # Domain-specific components
+│   ├── layout/                      # Layout components
+│   ├── shared/                      # Shared/common components
+│   └── ui/                          # UI primitives
+│
+├── lib/                             # Utilities & services
+│   ├── api/                         # API client
+│   ├── domains/                     # Domain services
+│   ├── infrastructure/              # Infrastructure services
+│   └── shared/                      # Shared utilities
+│
+├── public/                          # Static assets
+├── scripts/                         # Development scripts
+├── docs/                            # Documentation
+├── PRODUCTION-DEPLOYMENT.md         # Deployment guide
+└── package.json                     # NPM dependencies
+```
+
+---
+
+## 🚀 Kurulum
+
+### Ön Gereksinimler
+
+- **Java 17+** ([Download](https://adoptium.net/))
+- **Node.js 18.17+** ([Download](https://nodejs.org/))
+- **PostgreSQL 15+** ([Download](https://www.postgresql.org/download/))
+- **Redis 7+** ([Download](https://redis.io/download))
+- **Docker** (Opsiyonel) ([Download](https://www.docker.com/))
+
+### 1. Repository'yi Klonlayın
+
+```bash
+git clone https://github.com/omerada/marifet.git
+cd marifeto
+```
+
+### 2. Backend Setup
+
+#### Option A: Docker ile (Önerilen)
+
+```bash
+cd marifetbul-backend
+docker-compose up -d
+```
+
+Bu komut PostgreSQL, Redis ve Elasticsearch'ü otomatik başlatır.
+
+#### Option B: Manuel Kurulum
+
+**Database Oluşturma:**
+
+```sql
+CREATE DATABASE marifetbul_dev;
+CREATE USER marifetbul WITH ENCRYPTED PASSWORD 'postgres';
+GRANT ALL PRIVILEGES ON DATABASE marifetbul_dev TO marifetbul;
+```
+
+**Redis Başlatma:**
+
+```bash
+redis-server --requirepass redis123
+```
+
+**Backend Çalıştırma:**
+
+```bash
+cd marifetbul-backend
+./mvnw spring-boot:run
+```
+
+Backend şimdi `http://localhost:8080` adresinde çalışıyor.
+
+### 3. Frontend Setup
+
+```bash
+# Dependencies yükleme
+npm install
+
+# Development server başlatma
+npm run dev
+```
+
+Frontend şimdi `http://localhost:3000` adresinde çalışıyor.
+
+---
+
+## 🔧 Kullanım
+
+### Development Mode
+
+**Backend:**
+
+```bash
+cd marifetbul-backend
+./mvnw spring-boot:run
+```
+
+**Frontend:**
+
+```bash
+npm run dev
+```
+
+### Production Build
+
+**Backend:**
+
+```bash
+cd marifetbul-backend
+./mvnw clean package -DskipTests
+java -jar target/marifetbul-api.jar
+```
+
+**Frontend:**
+
+```bash
+npm run build
+npm start
+```
+
+### Docker ile Full Stack
+
+```bash
+cd marifetbul-backend
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+---
+
+## 📚 API Dokümantasyonu
+
+### Swagger UI (Development)
+
+Backend çalıştıktan sonra:
+
+```
+http://localhost:8080/swagger-ui.html
+```
+
+### OpenAPI Spec
+
+```
+http://localhost:8080/api-docs
+```
+
+### Postman Collection
+
+Postman koleksiyonu `/docs/postman/` klasöründe bulunmaktadır.
+
+---
+
+## 🌐 Deployment
+
+Detaylı deployment rehberi için: [PRODUCTION-DEPLOYMENT.md](./PRODUCTION-DEPLOYMENT.md)
+
+### Quick Deploy - Vercel (Frontend)
+
+```bash
+vercel --prod
+```
+
+### Quick Deploy - Docker (Full Stack)
+
+```bash
+cd marifetbul-backend
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+---
+
+## 🧪 Testing
+
+### Backend Tests
+
+```bash
+cd marifetbul-backend
+./mvnw test
+```
+
+**Coverage Report:**
+
+```bash
+./mvnw test jacoco:report
+open target/site/jacoco/index.html
+```
+
+### Frontend Tests
+
+```bash
+npm test
+```
+
+**Coverage:**
+
+```bash
+npm run test:ci
+```
+
+---
+
+## 📈 Monitoring
+
+### Health Checks
+
+- **Backend Health:** `http://localhost:8080/actuator/health`
+- **Database:** `http://localhost:8080/actuator/health/db`
+- **Redis:** `http://localhost:8080/actuator/health/redis`
+
+### Metrics
+
+- **Prometheus:** `http://localhost:8080/actuator/prometheus`
+- **Grafana:** `http://localhost:3000` (Docker setup)
+
+---
+
+## 🤝 Katkıda Bulunma
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+### Coding Standards
+
+- Backend: [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html)
+- Frontend: ESLint + Prettier (configured)
+
+---
+
+## 📝 Lisans
+
+Bu proje özel lisans altında korunmaktadır. Tüm hakları saklıdır.
+
+Copyright © 2025 MarifetBul
+
+---
+
+## 👥 İletişim
+
+- **Email:** dev@marifetbul.com
+- **Website:** https://www.marifetbul.com
+- **GitHub:** https://github.com/omerada/marifet
+
+---
+
+## 🙏 Teşekkürler
+
+Bu projeyi mümkün kılan tüm açık kaynak katkıcılarına teşekkürler!
+
+---
+
+**Built with ❤️ by MarifetBul Development Team**
