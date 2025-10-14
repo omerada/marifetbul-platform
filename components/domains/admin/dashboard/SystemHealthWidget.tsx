@@ -86,10 +86,9 @@ export default function SystemHealthWidget({
       // Call backend health check API
       const apiUrl =
         process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+      // Authentication is handled by httpOnly cookies automatically
       const response = await fetch(`${apiUrl}/admin/system/health`, {
-        headers: {
-          Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`,
-        },
+        credentials: 'include', // Include cookies for authentication
       });
 
       if (!response.ok) {

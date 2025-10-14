@@ -3,17 +3,6 @@ import { PushNotificationManager } from '@/lib/domains/notification/push-notific
 import { logger } from '@/lib/shared/utils/logger';
 import { Notification, NotificationSettings } from '@/types';
 
-// Production note: Helper to retrieve auth token from cookie
-const getAuthToken = (): string => {
-  if (typeof document === 'undefined') return '';
-  return (
-    document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('auth_token='))
-      ?.split('=')[1] || ''
-  );
-};
-
 interface UsePushNotificationsReturn {
   notifications: Notification[];
   unreadCount: number;
@@ -52,12 +41,11 @@ export function usePushNotifications(
       setError(null);
 
       try {
+        // API client handles authentication via httpOnly cookies automatically
         const response = await fetch(
           `/api/notifications?page=${page}&limit=20`,
           {
-            headers: {
-              Authorization: `Bearer mock-token-${userId}`,
-            },
+            credentials: 'include', // Include cookies for authentication
           }
         );
 
@@ -99,8 +87,8 @@ export function usePushNotifications(
           `/api/notifications/${notificationId}/read`,
           {
             method: 'PATCH',
+            credentials: 'include', // Include cookies for authentication
             headers: {
-              Authorization: `Bearer mock-token-${userId}`,
               'Content-Type': 'application/json',
             },
           }
@@ -145,8 +133,8 @@ export function usePushNotifications(
         unreadNotifications.map((notif) =>
           fetch(`/api/notifications/${notif.id}/read`, {
             method: 'PATCH',
+            credentials: 'include', // Include cookies for authentication
             headers: {
-              Authorization: `Bearer mock-token-${userId}`,
               'Content-Type': 'application/json',
             },
           })
@@ -193,9 +181,7 @@ export function usePushNotifications(
 
     try {
       const response = await fetch('/api/notifications/settings', {
-        headers: {
-          Authorization: `Bearer mock-token-${userId}`,
-        },
+        credentials: 'include', // Include cookies for authentication
       });
 
       const data = await response.json();
@@ -219,8 +205,8 @@ export function usePushNotifications(
       try {
         const response = await fetch('/api/notifications/settings', {
           method: 'PATCH',
+          credentials: 'include', // Include cookies for authentication
           headers: {
-            Authorization: `Bearer mock-token-${userId}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(newSettings),
@@ -258,9 +244,9 @@ export function usePushNotifications(
         // Send subscription to server
         const response = await fetch('/api/push/subscribe', {
           method: 'POST',
+          credentials: 'include', // Include cookies for authentication
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer mock-token-${userId}`,
           },
           body: JSON.stringify(subscription),
         });
@@ -297,9 +283,9 @@ export function usePushNotifications(
         // Notify server about unsubscription
         const response = await fetch('/api/push/unsubscribe', {
           method: 'DELETE',
+          credentials: 'include', // Include cookies for authentication
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer mock-token-${userId}`,
           },
           body: JSON.stringify({
             subscriptionId: 'current-subscription-id',
@@ -327,9 +313,9 @@ export function usePushNotifications(
     try {
       const response = await fetch('/api/push/send', {
         method: 'POST',
+        credentials: 'include', // Include cookies for authentication
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer mock-token-${userId}`,
         },
         body: JSON.stringify({
           title: 'Test Bildirimi',

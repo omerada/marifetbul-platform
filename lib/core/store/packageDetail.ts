@@ -143,17 +143,14 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
         );
 
         try {
-          const token =
-            typeof window !== 'undefined'
-              ? localStorage.getItem('auth_token')
-              : null;
+          // Authentication is handled by httpOnly cookies automatically
           const response = await fetch(
             `/api/packages/${orderData.packageId}/orders`,
             {
               method: 'POST',
+              credentials: 'include', // Include cookies for authentication
               headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
               },
               body: JSON.stringify(orderData),
             }

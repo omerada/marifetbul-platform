@@ -42,22 +42,6 @@ interface JobDetailStore {
   shouldRefresh: (jobId: string) => boolean;
 }
 
-// Utility function to get auth token
-const getAuthToken = (): string | null => {
-  if (typeof window === 'undefined') return null;
-  try {
-    return typeof window !== 'undefined'
-      ? localStorage.getItem('auth_token')
-      : null;
-  } catch (error) {
-    logger.warn(
-      'Failed to access localStorage',
-      error instanceof Error ? error : new Error(String(error))
-    );
-    return null;
-  }
-};
-
 export const useJobDetailStore = create<JobDetailStore>()(
   devtools(
     immer((set, get) => ({
@@ -147,15 +131,9 @@ export const useJobDetailStore = create<JobDetailStore>()(
 
       fetchProposals: async (jobId: string) => {
         try {
-          const token = getAuthToken();
-          if (!token) {
-            throw new Error("Yetkilendirme token'ı bulunamadı");
-          }
-
+          // Authentication is handled by httpOnly cookies automatically
           const response = await fetch(`/api/jobs/${jobId}/proposals`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            credentials: 'include', // Include cookies for authentication
           });
 
           if (!response.ok) {
@@ -190,18 +168,14 @@ export const useJobDetailStore = create<JobDetailStore>()(
         });
 
         try {
-          const token = getAuthToken();
-          if (!token) {
-            throw new Error("Yetkilendirme token'ı bulunamadı");
-          }
-
+          // Authentication is handled by httpOnly cookies automatically
           const response = await fetch(
             `/api/jobs/${proposalData.jobId}/proposals`,
             {
               method: 'POST',
+              credentials: 'include', // Include cookies for authentication
               headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
               },
               body: JSON.stringify(proposalData),
             }
@@ -248,16 +222,12 @@ export const useJobDetailStore = create<JobDetailStore>()(
         note?: string
       ) => {
         try {
-          const token = getAuthToken();
-          if (!token) {
-            throw new Error("Yetkilendirme token'ı bulunamadı");
-          }
-
+          // Authentication is handled by httpOnly cookies automatically
           const response = await fetch(`/api/proposals/${proposalId}/status`, {
             method: 'PATCH',
+            credentials: 'include', // Include cookies for authentication
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({ status, note }),
           });
