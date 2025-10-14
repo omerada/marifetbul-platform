@@ -12,6 +12,8 @@
  * @see https://developers.google.com/analytics/devguides/collection/ga4
  */
 
+import { logger } from '@/lib/shared/utils/logger';
+
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -86,7 +88,7 @@ export function initGA(): void {
     cookie_flags: 'SameSite=None;Secure',
   });
 
-  console.info('✅ Google Analytics initialized');
+  logger.info('✅ Google Analytics initialized');
 }
 
 /**

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
+import { logger } from '@/lib/shared/utils/logger';
 import { Notification } from '@/types';
 
 interface NotificationModalProps {
@@ -64,7 +65,7 @@ export function NotificationModal({
           setPage(pageNum);
         }
       } catch (error) {
-        console.error('Bildirimler yüklenemedi:', error);
+        logger.error('Bildirimler yüklenemedi:', error);
       } finally {
         setIsLoading(false);
       }
@@ -106,7 +107,7 @@ export function NotificationModal({
         );
       }
     } catch (error) {
-      console.error('Bildirim okundu olarak işaretlenemedi:', error);
+      logger.error('Bildirim okundu olarak işaretlenemedi:', error);
     }
   };
 

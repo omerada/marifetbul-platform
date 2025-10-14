@@ -4,6 +4,7 @@ import React, { Component, ReactNode, ErrorInfo, ComponentType } from 'react';
 import { AlertCircle, RefreshCw, Home, Send, Bug } from 'lucide-react';
 import { UnifiedButton } from './UnifiedButton';
 import { Card } from './Card';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // UNIFIED ERROR BOUNDARY SYSTEM - PRODUCTION READY
@@ -96,9 +97,9 @@ export class UnifiedErrorBoundary extends Component<
     // Log error to console in development
     if (process.env.NODE_ENV === 'development') {
       console.group('🚨 Error Boundary Caught Error');
-      console.error('Error:', error);
-      console.error('Error Info:', errorInfo);
-      console.error('Event ID:', eventId);
+      logger.error('Error:', error);
+      logger.error('Error Info:', errorInfo);
+      logger.error('Event ID:', eventId);
       console.groupEnd();
     }
 
@@ -162,7 +163,7 @@ export class UnifiedErrorBoundary extends Component<
         body: JSON.stringify(errorData),
       });
     } catch (reportingError) {
-      console.error('Failed to report error:', reportingError);
+      logger.error('Failed to report error:', reportingError);
     }
   };
 

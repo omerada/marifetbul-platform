@@ -1,3 +1,5 @@
+import { logger } from '@/lib/shared/utils/logger';
+
 // ================================================
 // SIMPLIFIED MESSAGING HOOKS
 // ================================================
@@ -67,7 +69,7 @@ export function useMessaging() {
         const data = await response.json();
         return data.data;
       } catch (error) {
-        console.error('Error sending message:', error);
+        logger.error('Error sending message:', error);
         throw error;
       }
     },
@@ -78,7 +80,7 @@ export function useMessaging() {
           credentials: 'include',
         });
       } catch (error) {
-        console.error('Error marking message as read:', error);
+        logger.error('Error marking message as read:', error);
       }
     },
     createConversation: async (userId: string) => {
@@ -97,7 +99,7 @@ export function useMessaging() {
         const data = await response.json();
         return data.data;
       } catch (error) {
-        console.error('Error creating conversation:', error);
+        logger.error('Error creating conversation:', error);
         throw error;
       }
     },
@@ -108,7 +110,7 @@ export function useMessaging() {
           credentials: 'include',
         });
       } catch (error) {
-        console.error('Error deleting message:', error);
+        logger.error('Error deleting message:', error);
       }
     },
     isLoading: false,

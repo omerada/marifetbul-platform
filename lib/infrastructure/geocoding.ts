@@ -9,8 +9,10 @@
  * @version 2.0.0 (Production)
  */
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+import { getBackendApiUrl } from '@/lib/config/api';
+import { logger } from '@/lib/shared/utils/logger';
+
+const API_URL = getBackendApiUrl();
 
 // ================================================
 // TYPE DEFINITIONS
@@ -61,14 +63,17 @@ export class GeocodingService {
       const response = await fetch(url);
 
       if (!response.ok) {
-        console.error('Geocoding API error:', response.status);
+        logger.error(
+          'Geocoding API error',
+          new Error(`Status: ${response.status}`)
+        );
         return null;
       }
 
       const data = await response.json();
 
       if (!data.success || !data.data || data.data.length === 0) {
-        console.warn('No geocoding results found for:', address);
+        logger.warn('No geocoding results found', { address });
         return null;
       }
 
@@ -81,7 +86,10 @@ export class GeocodingService {
         lng: result.longitude,
       };
     } catch (error) {
-      console.error('Geocoding error:', error);
+      logger.error(
+        'Geocoding error',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -101,20 +109,26 @@ export class GeocodingService {
       const response = await fetch(url);
 
       if (!response.ok) {
-        console.error('Geocoding search API error:', response.status);
+        logger.error(
+          'Geocoding search API error',
+          new Error(`Status: ${response.status}`)
+        );
         return [];
       }
 
       const data = await response.json();
 
       if (!data.success || !data.data) {
-        console.warn('No search results found for:', query);
+        logger.warn('No search results found', { query });
         return [];
       }
 
       return data.data;
     } catch (error) {
-      console.error('Geocoding search error:', error);
+      logger.error(
+        'Geocoding search error',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return [];
     }
   }
@@ -131,21 +145,27 @@ export class GeocodingService {
       const response = await fetch(url);
 
       if (!response.ok) {
-        console.error('Reverse geocoding API error:', response.status);
+        logger.error(
+          'Reverse geocoding API error',
+          new Error(`Status: ${response.status}`)
+        );
         return null;
       }
 
       const data = await response.json();
 
       if (!data.success || !data.data) {
-        console.warn('No reverse geocoding result found for:', coordinates);
+        logger.warn('No reverse geocoding result found', { coordinates });
         return null;
       }
 
       const result: GeocodingResult = data.data;
       return result.formattedAddress;
     } catch (error) {
-      console.error('Reverse geocoding error:', error);
+      logger.error(
+        'Reverse geocoding error',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -153,7 +173,9 @@ export class GeocodingService {
   /**
    * Get detailed location information
    */
-  async getLocationDetails(coordinates: Coordinates): Promise<GeocodingResult | null> {
+  async getLocationDetails(
+    coordinates: Coordinates
+  ): Promise<GeocodingResult | null> {
     try {
       const { latitude, longitude } = coordinates;
       const url = `${API_URL}/geocoding/reverse?lat=${latitude}&lng=${longitude}`;
@@ -161,20 +183,26 @@ export class GeocodingService {
       const response = await fetch(url);
 
       if (!response.ok) {
-        console.error('Location details API error:', response.status);
+        logger.error(
+          'Location details API error',
+          new Error(`Status: ${response.status}`)
+        );
         return null;
       }
 
       const data = await response.json();
 
       if (!data.success || !data.data) {
-        console.warn('No location details found for:', coordinates);
+        logger.warn('No location details found', { coordinates });
         return null;
       }
 
       return data.data;
     } catch (error) {
-      console.error('Location details error:', error);
+      logger.error(
+        'Location details error',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -200,10 +228,7 @@ export class GeocodingService {
    * Calculate distance between two coordinates (in kilometers)
    * Uses Haversine formula
    */
-  calculateDistance(
-    coord1: Coordinates,
-    coord2: Coordinates
-  ): number {
+  calculateDistance(coord1: Coordinates, coord2: Coordinates): number {
     const R = 6371; // Earth's radius in kilometers
 
     const lat1 = this.toRadians(coord1.latitude);

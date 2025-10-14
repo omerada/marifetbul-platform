@@ -46,6 +46,7 @@ import {
   Star,
 } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface ModerationFilters {
   status: string[];
@@ -212,7 +213,7 @@ export function AdminModeration() {
         setStats(data.data);
       }
     } catch (err) {
-      console.error('Moderasyon istatistikleri alınamadı:', err);
+      logger.error('Moderasyon istatistikleri alınamadı:', err);
     }
   }, []);
 

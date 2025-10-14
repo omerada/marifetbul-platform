@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ZodError, z } from 'zod';
+import { logger } from '@/lib/shared/utils/logger';
+import { getBackendApiUrl } from '@/lib/config/api';
 
 // Simple rate limiting implementation
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -356,7 +358,7 @@ export function errorHandlerMiddleware() {
       try {
         return await handler(ctx);
       } catch (error) {
-        console.error('[API Error]', {
+        logger.error('API Error', {
           requestId: ctx.metadata.requestId,
           error: error instanceof Error ? error.message : 'Unknown error',
           stack: error instanceof Error ? error.stack : undefined,
@@ -394,7 +396,7 @@ export function loggingMiddleware() {
     return async (ctx: ApiContext) => {
       const startTime = Date.now();
 
-      console.log('[API Request]', {
+      logger.info('API Request', {
         requestId: ctx.metadata.requestId,
         method: ctx.req.method,
         url: ctx.req.url,
@@ -407,7 +409,7 @@ export function loggingMiddleware() {
 
       const duration = Date.now() - startTime;
 
-      console.log('[API Response]', {
+      logger.info('API Response', {
         requestId: ctx.metadata.requestId,
         status: response.status,
         duration: `${duration}ms`,
@@ -500,16 +502,13 @@ async function validateToken(
 ): Promise<NonNullable<ApiContext['user']>> {
   try {
     // Validate JWT token with backend
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/auth/verify`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await fetch(`${getBackendApiUrl()}/auth/verify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     if (!response.ok) {
       throw new Error('Invalid token');

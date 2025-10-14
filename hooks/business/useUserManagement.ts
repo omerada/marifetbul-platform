@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   useAdminUserStore,
   useAdminUserSelectors,
 } from '@/lib/core/store/admin-users';
@@ -65,7 +66,7 @@ export function useUserManagement() {
           search: selectors.filters.search || '',
         });
       } catch (error) {
-        console.error('User action failed:', error);
+        logger.error('User action failed:', error);
       } finally {
         setIsActionLoading(false);
       }
@@ -80,7 +81,7 @@ export function useUserManagement() {
         await performBulkAction(action);
         clearBulkSelection();
       } catch (error) {
-        console.error('Bulk action failed:', error);
+        logger.error('Bulk action failed:', error);
       } finally {
         setIsActionLoading(false);
       }
@@ -93,7 +94,7 @@ export function useUserManagement() {
       try {
         await fetchUserById(userId);
       } catch (error) {
-        console.error('User fetch failed:', error);
+        logger.error('User fetch failed:', error);
       }
     },
     [fetchUserById]

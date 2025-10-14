@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { logger } from '@/lib/shared/utils/logger';
 
 /**
  * SEO analytics hook for tracking page views and user interactions
@@ -84,7 +85,12 @@ function trackPageView(pathname: string) {
         userAgent: navigator.userAgent,
         referrer: document.referrer,
       }),
-    }).catch(console.error);
+    }).catch((error) =>
+      logger.error(
+        'Pageview tracking failed',
+        error instanceof Error ? error : new Error(String(error))
+      )
+    );
   }
 }
 
@@ -106,7 +112,12 @@ function trackCustomEvent(eventName: string, parameters?: Record<string, any>) {
         timestamp: new Date().toISOString(),
         pathname: window.location.pathname,
       }),
-    }).catch(console.error);
+    }).catch((error) =>
+      logger.error(
+        'Custom event tracking failed',
+        error instanceof Error ? error : new Error(String(error))
+      )
+    );
   }
 }
 
@@ -128,7 +139,12 @@ function trackConversion(conversionName: string, value?: number) {
         timestamp: new Date().toISOString(),
         pathname: window.location.pathname,
       }),
-    }).catch(console.error);
+    }).catch((error) =>
+      logger.error(
+        'Conversion tracking failed',
+        error instanceof Error ? error : new Error(String(error))
+      )
+    );
   }
 }
 

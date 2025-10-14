@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { logger } from '@/lib/shared/utils/logger';
 import type {
   ReviewData,
   ReviewSummary,
@@ -227,7 +228,10 @@ export const useReviewStore = create<ReviewStore>()(
             }));
           }
         } catch (error) {
-          console.error('Helpful mark error:', error);
+          logger.error(
+            'Helpful mark error',
+            error instanceof Error ? error : new Error(String(error))
+          );
         }
       },
 

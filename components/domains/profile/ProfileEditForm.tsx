@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { Progress } from '@/components/ui/Progress';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   Save,
   ArrowLeft,
   User as UserIcon,
@@ -114,7 +115,7 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
         success('Başarılı', 'Değişiklikler otomatik kaydedildi');
       } catch {
         // Silent fail for auto-save
-        console.log('Auto-save failed');
+        logger.debug('Auto-save failed');
       }
     }, 3000); // 3 seconds delay
 

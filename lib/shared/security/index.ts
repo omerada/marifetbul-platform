@@ -1,6 +1,8 @@
 // Production-ready security utilities
 'use client';
 
+import { logger } from '@/lib/shared/utils/logger';
+
 // Content Security Policy helper
 export interface CSPDirectives {
   'default-src'?: string[];
@@ -221,7 +223,10 @@ export class SecureStorage {
     try {
       localStorage.setItem(this.PREFIX + key, JSON.stringify(data));
     } catch (error) {
-      console.warn('Secure storage failed:', error);
+      logger.warn(
+        'Secure storage failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }
 
@@ -471,7 +476,10 @@ export class SecurityMonitor {
       this.sendViolationReport(violation);
     }
 
-    console.warn('Security violation detected:', violation);
+    logger.warn(
+      'Security violation detected',
+      new Error(`Type: ${violation.type}, Details: ${violation.details}`)
+    );
   }
 
   private static sendViolationReport(violation: {

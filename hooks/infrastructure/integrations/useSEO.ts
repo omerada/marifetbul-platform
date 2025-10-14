@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { useSEOStore } from '@/lib/core/store/seo';
+import { logger } from '@/lib/shared/utils/logger';
 import type { SEOPageData } from '@/types/shared/seo';
 
 /**
@@ -27,7 +28,7 @@ export function useSEO() {
         setPageData(data);
         await generateMetaTags(data);
       } catch (err) {
-        console.error('Failed to update page SEO:', err);
+        logger.error('Failed to update page SEO:', err);
       }
     },
     [setPageData, generateMetaTags]
@@ -40,7 +41,7 @@ export function useSEO() {
         const targetUrl = url || window.location.href;
         await fetchMetaTags(targetUrl);
       } catch (err) {
-        console.error('Failed to refresh meta tags:', err);
+        logger.error('Failed to refresh meta tags:', err);
       }
     },
     [fetchMetaTags]

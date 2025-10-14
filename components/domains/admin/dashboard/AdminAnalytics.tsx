@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   BarChart3,
   TrendingUp,
   TrendingDown,
@@ -187,7 +188,7 @@ export function AdminAnalytics() {
         }
       } catch (err) {
         if (mounted) {
-          console.error('Analytics fetch error:', err);
+          logger.error('Analytics fetch error:', err);
           setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
         }
       } finally {

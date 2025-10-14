@@ -15,6 +15,7 @@ import { useHelpCenter } from '@/hooks';
 import { ArticleCard } from '@/components/shared/ArticleCard';
 import { cn } from '@/lib/utils';
 import type { HelpArticle, HelpCategory } from '@/types';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface SearchResultsProps {
   query?: string;
@@ -71,7 +72,10 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         limit: 20,
       });
     } catch (error) {
-      console.error('Search failed:', error);
+      logger.error(
+        'Search failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }, [searchQuery, selectedCategory, sortBy, searchArticles]);
 

@@ -3,6 +3,8 @@
 // ================================================
 // Advanced bundle optimization for production performance
 
+import { logger } from '@/lib/shared/utils/logger';
+
 export interface BundleAnalysisReport {
   totalSize: number;
   chunkCount: number;
@@ -146,7 +148,10 @@ export const initializeBundleOptimization = () => {
           const loadTime = navigation.loadEventEnd - navigation.loadEventStart;
 
           if (loadTime > 3000) {
-            console.warn('Slow page load detected:', loadTime, 'ms');
+            logger.warn(
+              'Slow page load detected',
+              new Error(`Load time: ${loadTime}ms`)
+            );
           }
         }, 0);
       });

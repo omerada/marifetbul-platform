@@ -1,4 +1,6 @@
 // Production-ready performance monitoring core
+import { logger } from '@/lib/shared/utils/logger';
+
 export interface PerformanceMetric {
   name: string;
   value: number;
@@ -115,7 +117,7 @@ export class PerformanceMonitor {
   private reportMetric(metric: PerformanceMetric): void {
     // Report to console in development
     if (process.env.NODE_ENV === 'development') {
-      console.log(
+      logger.debug(
         `[Performance] ${metric.name}: ${metric.value}${metric.unit}`,
         metric.context
       );
@@ -423,19 +425,19 @@ export function analyzeBundleSize() {
     document.querySelectorAll('link[rel="stylesheet"]')
   );
 
-  console.group('Bundle Analysis');
+  logger.debug('Bundle Analysis - Scripts');
 
   scripts.forEach((script) => {
     const src = (script as HTMLScriptElement).src;
-    console.log(`Script: ${src}`);
+    logger.debug(`Script: ${src}`);
   });
+
+  logger.debug('Bundle Analysis - Stylesheets');
 
   stylesheets.forEach((link) => {
     const href = (link as HTMLLinkElement).href;
-    console.log(`Stylesheet: ${href}`);
+    logger.debug(`Stylesheet: ${href}`);
   });
-
-  console.groupEnd();
 }
 
 // Memory usage tracking

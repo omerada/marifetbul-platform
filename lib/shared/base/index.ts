@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { logger } from '@/lib/shared/utils/logger';
 
 // Base hooks
 export const useLocalStorage = <T>(key: string, initialValue: T) => {
@@ -10,7 +11,10 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
       }
       return initialValue;
     } catch (error) {
-      console.error('Error reading localStorage:', error);
+      logger.error(
+        'Error reading localStorage',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return initialValue;
     }
   });
@@ -25,7 +29,10 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
           window.localStorage.setItem(key, JSON.stringify(valueToStore));
         }
       } catch (error) {
-        console.error('Error setting localStorage:', error);
+        logger.error(
+          'Error setting localStorage',
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
     },
     [key, storedValue]
@@ -375,7 +382,10 @@ export abstract class BaseService {
     try {
       return await fn();
     } catch (error) {
-      console.error(`${operation} failed:`, error);
+      logger.error(
+        `${operation} failed`,
+        error instanceof Error ? error : new Error(String(error))
+      );
       throw error;
     }
   }

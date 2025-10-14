@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { PushNotificationManager } from '@/lib/domains/notification/push-notifications';
+import { logger } from '@/lib/shared/utils/logger';
 import { Notification, NotificationSettings } from '@/types';
 
 // Production note: Helper to retrieve auth token from cookie
@@ -80,7 +81,7 @@ export function usePushNotifications(
         const errorMessage =
           err instanceof Error ? err.message : 'Bilinmeyen hata';
         setError(errorMessage);
-        console.error('Bildirimler yüklenemedi:', err);
+        logger.error('Bildirimler yüklenemedi:', err);
       } finally {
         setIsLoading(false);
       }
@@ -119,7 +120,7 @@ export function usePushNotifications(
           throw new Error(data.message || 'Bildirim güncellenemedi');
         }
       } catch (err) {
-        console.error('Bildirim okundu olarak işaretlenemedi:', err);
+        logger.error('Bildirim okundu olarak işaretlenemedi:', err);
         setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
       }
     },
@@ -152,7 +153,7 @@ export function usePushNotifications(
         )
       );
     } catch (err) {
-      console.error('Tüm bildirimler okundu olarak işaretlenemedi:', err);
+      logger.error('Tüm bildirimler okundu olarak işaretlenemedi:', err);
       setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
       // Reload notifications to restore correct state
       loadNotifications();
@@ -177,7 +178,7 @@ export function usePushNotifications(
         // This would be a DELETE request to /api/notifications/:id
         // Notification deleted successfully
       } catch (err) {
-        console.error('Bildirim silinemedi:', err);
+        logger.error('Bildirim silinemedi:', err);
         setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
         // Reload notifications to restore correct state
         loadNotifications();
@@ -205,7 +206,7 @@ export function usePushNotifications(
         throw new Error(data.message || 'Ayarlar yüklenemedi');
       }
     } catch (err) {
-      console.error('Bildirim ayarları yüklenemedi:', err);
+      logger.error('Bildirim ayarları yüklenemedi:', err);
       setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
     }
   }, [userId]);
@@ -233,7 +234,7 @@ export function usePushNotifications(
           throw new Error(data.message || 'Ayarlar güncellenemedi');
         }
       } catch (err) {
-        console.error('Bildirim ayarları güncellenemedi:', err);
+        logger.error('Bildirim ayarları güncellenemedi:', err);
         setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
       }
     },
@@ -275,7 +276,7 @@ export function usePushNotifications(
 
       return false;
     } catch (err) {
-      console.error('Push notification aboneliği başarısız:', err);
+      logger.error('Push notification aboneliği başarısız:', err);
       setError(
         err instanceof Error
           ? err.message
@@ -311,7 +312,7 @@ export function usePushNotifications(
 
       return false;
     } catch (err) {
-      console.error('Push notification abonelikten çıkma başarısız:', err);
+      logger.error('Push notification abonelikten çıkma başarısız:', err);
       setError(
         err instanceof Error ? err.message : 'Abonelikten çıkma başarısız'
       );
@@ -356,7 +357,7 @@ export function usePushNotifications(
         throw new Error(data.message || 'Test bildirimi gönderilemedi');
       }
     } catch (err) {
-      console.error('Test bildirimi başarısız:', err);
+      logger.error('Test bildirimi başarısız:', err);
       setError(
         err instanceof Error
           ? err.message

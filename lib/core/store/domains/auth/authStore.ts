@@ -9,6 +9,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { devtools } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { User } from '@/types';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================
 // TYPES & INTERFACES
@@ -92,7 +93,7 @@ export const useAuthStore = create<AuthStore>()(
 
         // Login with credentials
         login: async (credentials: LoginCredentials) => {
-          console.log('🔐 Auth Store: Login attempt with credentials:', {
+          logger.debug('Auth Store: Login attempt', {
             email: credentials.email,
           });
 
@@ -102,8 +103,8 @@ export const useAuthStore = create<AuthStore>()(
           });
 
           try {
-            console.log(
-              '📡 Auth Store: Sending login request to /api/v1/auth/login with cookies'
+            logger.debug(
+              'Auth Store: Sending login request to /api/v1/auth/login with cookies'
             );
 
             const response = await fetch('/api/v1/auth/login', {
@@ -113,7 +114,7 @@ export const useAuthStore = create<AuthStore>()(
               body: JSON.stringify(credentials),
             });
 
-            console.log('📨 Auth Store: Response received:', {
+            logger.debug('Auth Store: Response received', {
               status: response.status,
               ok: response.ok,
             });
@@ -125,18 +126,21 @@ export const useAuthStore = create<AuthStore>()(
             }
 
             const result = await response.json();
-            console.log('📋 Auth Store: Response data:', result);
-            console.log('📋 Auth Store: Response success:', result.success);
-            console.log('📋 Auth Store: Response error:', result.error);
+            logger.debug('Auth Store: Response data received', {
+              success: result.success,
+              hasUser: !!result.data?.user,
+            });
 
             if (!result.success) {
-              console.log('❌ Auth Store: API returned error:', result.error);
+              logger.warn('Auth Store: API returned error', {
+                error: result.error,
+              });
               throw new Error(result.error || 'Giriş başarısız');
             }
 
             const { user } = result.data;
             // NOTE: Token is now in httpOnly cookie, not returned in response
-            console.log('👤 Auth Store: User data received:', {
+            logger.debug('Auth Store: User data received', {
               userId: user.id,
               email: user.email,
               role: user.role,
@@ -160,7 +164,9 @@ export const useAuthStore = create<AuthStore>()(
               draft.sessionExpiry = expiry;
             });
 
-            console.log('✅ Auth Store: Login successful - cookies managed by backend');
+            logger.info(
+              'Auth Store: Login successful - cookies managed by backend'
+            );
           } catch (error) {
             set((draft) => {
               draft.error =
@@ -231,9 +237,12 @@ export const useAuthStore = create<AuthStore>()(
               method: 'POST',
               credentials: 'include', // IMPORTANT: Send cookies to backend
             });
-            console.log('✅ Auth Store: Backend logout successful - token blacklisted');
+            logger.info('Backend logout successful - token blacklisted');
           } catch (error) {
-            console.error('❌ Auth Store: Backend logout failed:', error);
+            logger.error(
+              'Backend logout failed',
+              error instanceof Error ? error : new Error(String(error))
+            );
             // Continue with client-side logout even if backend fails
           }
 
@@ -249,7 +258,7 @@ export const useAuthStore = create<AuthStore>()(
             ...initialState,
           }));
 
-          console.log('✅ Auth Store: Client-side logout complete');
+          logger.info('Client-side logout complete');
         },
 
         // Update user data
@@ -291,9 +300,12 @@ export const useAuthStore = create<AuthStore>()(
               draft.lastActivity = Date.now();
             });
 
-            console.log('✅ Auth Store: Token refreshed - new cookie set by backend');
+            logger.info('Token refreshed - new cookie set by backend');
           } catch (error) {
-            console.error('❌ Auth Store: Token refresh failed:', error);
+            logger.error(
+              'Token refresh failed',
+              error instanceof Error ? error : new Error(String(error))
+            );
             await get().logout();
             throw error;
           }
@@ -335,7 +347,10 @@ export const useAuthStore = create<AuthStore>()(
               throw new Error('Invalid auth response');
             }
           } catch (error) {
-            console.error('Auth status check failed:', error);
+            logger.error(
+              'Auth status check failed',
+              error instanceof Error ? error : new Error(String(error))
+            );
             await get().logout();
           }
         },

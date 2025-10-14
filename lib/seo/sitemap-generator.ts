@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { SitemapEntry } from '@/types/shared/seo';
+import { logger } from '@/lib/shared/utils/logger';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://marifetbul.com';
 
@@ -27,7 +28,10 @@ export class SitemapGenerator {
         priority: 0.7,
       }));
     } catch (error) {
-      console.error('Error generating blog sitemap:', error);
+      logger.error(
+        'Error generating blog sitemap',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return [];
     }
   }
@@ -46,7 +50,10 @@ export class SitemapGenerator {
         priority: 0.8,
       }));
     } catch (error) {
-      console.error('Error generating jobs sitemap:', error);
+      logger.error(
+        'Error generating jobs sitemap',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return [];
     }
   }
@@ -65,7 +72,10 @@ export class SitemapGenerator {
         priority: 0.8,
       }));
     } catch (error) {
-      console.error('Error generating packages sitemap:', error);
+      logger.error(
+        'Error generating packages sitemap',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return [];
     }
   }
@@ -84,7 +94,10 @@ export class SitemapGenerator {
         priority: 0.6,
       }));
     } catch (error) {
-      console.error('Error generating profiles sitemap:', error);
+      logger.error(
+        'Error generating profiles sitemap',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return [];
     }
   }
@@ -103,7 +116,10 @@ export class SitemapGenerator {
         priority: 0.7,
       }));
     } catch (error) {
-      console.error('Error generating categories sitemap:', error);
+      logger.error(
+        'Error generating categories sitemap',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return [];
     }
   }
@@ -122,7 +138,10 @@ export class SitemapGenerator {
         priority: 0.6,
       }));
     } catch (error) {
-      console.error('Error generating help sitemap:', error);
+      logger.error(
+        'Error generating help sitemap',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return [];
     }
   }
@@ -179,7 +198,10 @@ export class SitemapGenerator {
         updatedAt: p.updatedAt || p.createdAt,
       }));
     } catch (e) {
-      console.error('fetchBlogPosts error:', e);
+      logger.error(
+        'fetchBlogPosts error',
+        e instanceof Error ? e : new Error(String(e))
+      );
       return [];
     }
   }
@@ -203,7 +225,10 @@ export class SitemapGenerator {
         updatedAt: j.updatedAt || j.modifiedAt || j.createdAt,
       }));
     } catch (e) {
-      console.error('fetchActiveJobs error:', e);
+      logger.error(
+        'fetchActiveJobs error',
+        e instanceof Error ? e : new Error(String(e))
+      );
       return [];
     }
   }
@@ -227,7 +252,10 @@ export class SitemapGenerator {
         updatedAt: p.updatedAt || p.modifiedAt || p.createdAt,
       }));
     } catch (e) {
-      console.error('fetchActivePackages error:', e);
+      logger.error(
+        'fetchActivePackages error',
+        e instanceof Error ? e : new Error(String(e))
+      );
       return [];
     }
   }
@@ -251,7 +279,10 @@ export class SitemapGenerator {
         updatedAt: u.updatedAt || u.modifiedAt || u.createdAt,
       }));
     } catch (e) {
-      console.error('fetchPublicProfiles error:', e);
+      logger.error(
+        'fetchPublicProfiles error',
+        e instanceof Error ? e : new Error(String(e))
+      );
       return [];
     }
   }
@@ -273,7 +304,10 @@ export class SitemapGenerator {
         slug: c.slug || c.name || String(c.id),
       }));
     } catch (e) {
-      console.error('fetchCategories error:', e);
+      logger.error(
+        'fetchCategories error',
+        e instanceof Error ? e : new Error(String(e))
+      );
       return [];
     }
   }
@@ -297,7 +331,10 @@ export class SitemapGenerator {
         updatedAt: a.updatedAt || a.modifiedAt || a.createdAt,
       }));
     } catch (e) {
-      console.error('fetchHelpArticles error:', e);
+      logger.error(
+        'fetchHelpArticles error',
+        e instanceof Error ? e : new Error(String(e))
+      );
       return [];
     }
   }

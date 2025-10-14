@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getBackendApiUrl } from '@/lib/config/api';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface AdminUser {
   id: string;
@@ -187,16 +189,13 @@ export async function getUserFromRequest(
     }
 
     // Validate JWT token with backend
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/auth/verify`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Cookie: `auth-token=${authCookie.value}`,
-        },
-      }
-    );
+    const response = await fetch(`${getBackendApiUrl()}/auth/verify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: `auth-token=${authCookie.value}`,
+      },
+    });
 
     if (!response.ok) {
       return null;
@@ -211,7 +210,10 @@ export async function getUserFromRequest(
       isActive: data.user.isActive,
     };
   } catch (error) {
-    console.error('Error getting user from request:', error);
+    logger.error(
+      'Error getting user from request',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return null;
   }
 }

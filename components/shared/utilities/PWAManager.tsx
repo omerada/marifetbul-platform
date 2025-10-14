@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   Download,
   Wifi,
   WifiOff,
@@ -108,7 +109,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
         setCacheSize(`${(totalSize / (1024 * 1024)).toFixed(1)} MB`);
       }
     } catch (error) {
-      console.error('Cache size calculation failed:', error);
+      logger.error('Cache size calculation failed:', error);
     }
   };
 
@@ -126,7 +127,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
 
       setInstallPrompt(null);
     } catch (error) {
-      console.error('Installation failed:', error);
+      logger.error('Installation failed:', error);
     }
   };
 
@@ -147,7 +148,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
         });
       }
     } catch (error) {
-      console.error('Notification permission failed:', error);
+      logger.error('Notification permission failed:', error);
     }
   };
 
@@ -162,7 +163,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
         alert('Önbellek temizlendi!');
       }
     } catch (error) {
-      console.error('Cache clearing failed:', error);
+      logger.error('Cache clearing failed:', error);
     }
   };
 

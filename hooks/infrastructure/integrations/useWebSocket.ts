@@ -4,6 +4,7 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import { useMessagingStore } from '@/lib/core/store/messaging';
 import { useOrderStore } from '@/lib/core/store/orders';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { logger } from '@/lib/shared/utils/logger';
 import type { OrderTimeline, Order, Message } from '@/types';
 
 interface WebSocketMessage {
@@ -153,10 +154,10 @@ export const useWebSocket = ({
             break;
 
           default:
-            console.warn('Unknown WebSocket message type:', message.type);
+            logger.warn('Unknown WebSocket message type:', message.type);
         }
       } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
+        logger.error('Error parsing WebSocket message:', error);
       }
     },
     [
@@ -240,7 +241,7 @@ export const useWebSocket = ({
       };
 
       ws.current.onerror = (error) => {
-        console.error('WebSocket error:', error);
+        logger.error('WebSocket error:', error);
         setState((prev) => ({
           ...prev,
           error: 'WebSocket connection error',
@@ -248,7 +249,7 @@ export const useWebSocket = ({
         }));
       };
     } catch (error) {
-      console.error('Failed to create WebSocket connection:', error);
+      logger.error('Failed to create WebSocket connection:', error);
       setState((prev) => ({
         ...prev,
         error: 'Failed to create WebSocket connection',
@@ -282,7 +283,7 @@ export const useWebSocket = ({
       ws.current.send(JSON.stringify(message));
       return true;
     }
-    console.warn('WebSocket is not connected');
+    logger.warn('WebSocket is not connected');
     return false;
   }, []);
 

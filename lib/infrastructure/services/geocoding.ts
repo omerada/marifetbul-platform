@@ -9,6 +9,8 @@ export interface GeocodeResult {
   formattedAddress: string;
 }
 
+import { logger } from '@/lib/shared/utils/logger';
+
 export interface GoogleGeocodeComponent {
   long_name: string;
   short_name: string;
@@ -88,7 +90,10 @@ export class GeocodingService {
         formattedAddress: result.formatted_address,
       }));
     } catch (error) {
-      console.error('Geocoding error:', error);
+      logger.error(
+        'Geocoding error',
+        error instanceof Error ? error : new Error(String(error))
+      );
       throw error;
     }
   }
@@ -131,7 +136,10 @@ export class GeocodingService {
         formattedAddress: result.formatted_address,
       }));
     } catch (error) {
-      console.error('Reverse geocoding error:', error);
+      logger.error(
+        'Reverse geocoding error',
+        error instanceof Error ? error : new Error(String(error))
+      );
       throw error;
     }
   }

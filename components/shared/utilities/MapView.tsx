@@ -19,6 +19,7 @@ import { Card } from '@/components/ui/Card';
 import { Coordinates, MapBounds } from '@/types';
 import { useUnifiedLocation } from '@/hooks';
 import { MapUtils } from '@/lib/shared/utils/map-utils';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface MapMarker {
   id: string;
@@ -80,14 +81,14 @@ export const MapView: React.FC<MapViewProps> = ({
   // Production note: This component requires a real map library (Google Maps, Mapbox GL JS, or Leaflet).
   // Until integrated, the component renders a placeholder with controls. No mock data is used.
   const fitToCoordinates = useCallback((coordinates: unknown) => {
-    console.log(
+    logger.debug(
       'Fitting to coordinates (awaiting map library integration):',
       coordinates
     );
   }, []);
 
   const setBounds = useCallback((bounds: unknown) => {
-    console.log('Setting bounds (awaiting map library integration):', bounds);
+    logger.debug('Setting bounds (awaiting map library integration):', bounds);
   }, []);
 
   // Handle marker click
@@ -153,7 +154,7 @@ export const MapView: React.FC<MapViewProps> = ({
   const handleCurrentLocation = useCallback(async () => {
     try {
       if (!getCurrentPosition) {
-        console.warn('getCurrentPosition not available');
+        logger.warn('getCurrentPosition not available');
         return;
       }
 
@@ -171,7 +172,7 @@ export const MapView: React.FC<MapViewProps> = ({
         setMapZoom(15);
       }
     } catch (error) {
-      console.error('Failed to get current location:', error);
+      logger.error('Failed to get current location:', error);
     }
   }, [getCurrentPosition, unifiedLocation.currentPosition]);
 

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
 import { getWebSocketManager } from '@/lib/infrastructure/services';
+import { logger } from '@/lib/shared/utils/logger';
 import {
   EnhancedNotification,
   NotificationCenter,
@@ -599,11 +600,17 @@ export const useNotificationStore = create<NotificationStore>()(
               set({ isConnected: true });
             })
             .catch((error: unknown) => {
-              console.error('Failed to establish real-time connection:', error);
+              logger.error(
+                'Failed to establish real-time connection',
+                error instanceof Error ? error : new Error(String(error))
+              );
               set({ isConnected: false });
             });
         } catch (error) {
-          console.error('Error starting real-time connection:', error);
+          logger.error(
+            'Error starting real-time connection',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set({ isConnected: false });
         }
       },
@@ -614,7 +621,10 @@ export const useNotificationStore = create<NotificationStore>()(
           wsManager.disconnect();
           set({ isConnected: false });
         } catch (error) {
-          console.error('Error stopping real-time connection:', error);
+          logger.error(
+            'Error stopping real-time connection',
+            error instanceof Error ? error : new Error(String(error))
+          );
         }
       },
 
@@ -712,7 +722,9 @@ if (typeof window !== 'undefined') {
         store.stopRealtimeConnection();
       }
     } catch (error) {
-      console.warn('Error during notification store cleanup:', error);
+      logger.warn('Error during notification store cleanup', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   };
 

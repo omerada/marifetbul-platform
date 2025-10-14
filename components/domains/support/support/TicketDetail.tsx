@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
 import { formatDate } from '@/lib/shared/utils/date';
 import { TicketChat } from './TicketChat';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface TicketDetailProps {
   ticketId: string;
@@ -33,7 +34,10 @@ export function TicketDetail({ ticketId }: TicketDetailProps) {
     try {
       await closeTicket(ticketId);
     } catch (error) {
-      console.error('Ticket kapatılırken hata:', error);
+      logger.error(
+        'Ticket kapatılırken hata',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   };
 

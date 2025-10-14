@@ -5,6 +5,7 @@ import { AvatarUpload } from './AvatarUpload';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
+import { logger } from '@/lib/shared/utils/logger';
 import { User, Freelancer, Employer } from '@/types';
 
 interface ProfileAvatarSectionProps {
@@ -50,7 +51,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
       onUserUpdate(formData);
       setIsEditingBasic(false);
     } catch (error) {
-      console.error('Error updating user:', error);
+      logger.error('Error updating user:', error);
     }
   };
 

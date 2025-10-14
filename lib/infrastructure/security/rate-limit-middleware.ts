@@ -23,9 +23,9 @@ import {
   RateLimitPresets,
   RateLimitConfig,
   RateLimitResult,
-  createRateLimitError,
 } from './rate-limiter';
 import { Logger } from '../monitoring/logger';
+import { getBackendApiUrl } from '@/lib/config/api';
 
 const logger = new Logger({ level: 'info' });
 
@@ -115,21 +115,46 @@ function getClientIp(request: NextRequest): string {
 }
 
 /**
- * Get user identifier from request (e.g., user ID from JWT)
+ * Get user identifier from request using JWT token validation
  */
 async function getUserIdentifier(request: NextRequest): Promise<string> {
   try {
-    // Try to get user ID from cookie or header
-    // This is a placeholder - implement based on your auth system
-    const userId = request.cookies.get('userId')?.value;
-    if (userId) {
-      return `user:${userId}`;
+    // Get JWT token from httpOnly cookie
+    const token = request.cookies.get('marifetbul_token')?.value;
+
+    if (!token) {
+      // No token, fallback to IP
+      return `ip:${getClientIp(request)}`;
     }
 
-    // Fallback to IP
+    // Validate token with backend (lightweight validation endpoint)
+    const backendUrl = getBackendApiUrl();
+    const response = await fetch(`${backendUrl}/auth/validate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: `marifetbul_token=${token}`,
+      },
+      credentials: 'include',
+      cache: 'no-store',
+      // Short timeout for rate limiting to not slow down requests
+      signal: AbortSignal.timeout(2000),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const userId = data.user?.id || data.userId;
+
+      if (userId) {
+        return `user:${userId}`;
+      }
+    }
+
+    // Token validation failed or no userId, fallback to IP
     return `ip:${getClientIp(request)}`;
   } catch (error) {
-    logger.warn('Failed to get user identifier', {
+    // On error (timeout, network issue), fallback to IP-based limiting
+    logger.warn('Failed to get user identifier, falling back to IP', {
       error: error instanceof Error ? error.message : String(error),
     });
     return `ip:${getClientIp(request)}`;
@@ -246,7 +271,6 @@ export function withRateLimit(
         }
 
         // Create error response
-        const error = createRateLimitError(result);
         const response = NextResponse.json(
           {
             error: 'Too Many Requests',

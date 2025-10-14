@@ -8,6 +8,7 @@ import React, {
   useCallback,
 } from 'react';
 import { UnifiedLoading } from '@/components/ui/UnifiedLoadingSystem';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // UNIFIED LAZY LOADING SYSTEM
@@ -165,10 +166,10 @@ export function useComponentPreloader() {
           await import('@/components/shared/utilities/MapView');
           break;
         default:
-          console.warn(`Unknown component: ${componentName}`);
+          logger.warn(`Unknown component: ${componentName}`);
       }
     } catch (error) {
-      console.error(`Failed to preload component ${componentName}:`, error);
+      logger.error(`Failed to preload component ${componentName}:`, error);
     }
   }, []);
 
@@ -201,7 +202,7 @@ export function useCriticalComponentsPreloader() {
           import('@/components/ui/UnifiedImage').catch(() => {}),
         ]);
       } catch (error) {
-        console.error('Failed to preload critical components:', error);
+        logger.error('Failed to preload critical components:', error);
       }
     };
 

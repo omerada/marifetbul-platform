@@ -1,4 +1,6 @@
 // Production-ready caching system with multiple strategies
+import { logger } from '@/lib/shared/utils/logger';
+
 export interface CacheConfig {
   ttl?: number; // Time to live in milliseconds
   maxSize?: number; // Maximum number of items
@@ -253,7 +255,10 @@ export class MemoryCache<T> implements ICache<T> {
         this.cacheStats = data.stats || { hits: 0, misses: 0 };
       }
     } catch (error) {
-      console.warn('Failed to load cache from localStorage:', error);
+      logger.warn(
+        'Failed to load cache from localStorage',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }
 
@@ -272,7 +277,10 @@ export class MemoryCache<T> implements ICache<T> {
         JSON.stringify(data)
       );
     } catch (error) {
-      console.warn('Failed to save cache to localStorage:', error);
+      logger.warn(
+        'Failed to save cache to localStorage',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }
 
@@ -282,7 +290,10 @@ export class MemoryCache<T> implements ICache<T> {
     try {
       localStorage.removeItem(`cache:${this.config.namespace}`);
     } catch (error) {
-      console.warn('Failed to clear cache from localStorage:', error);
+      logger.warn(
+        'Failed to clear cache from localStorage',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }
 }

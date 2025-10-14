@@ -3,6 +3,8 @@
  * Provides local fallback when external services are unavailable
  */
 
+import { logger } from '@/lib/shared/utils/logger';
+
 export interface PlaceholderConfig {
   width?: number;
   height?: number;
@@ -86,7 +88,9 @@ export function convertPlaceholderUrl(url: string): string {
     // Return original URL if not a placeholder
     return url;
   } catch (error) {
-    console.warn('Failed to convert placeholder URL:', error);
+    logger.warn('Failed to convert placeholder URL', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return generatePlaceholderDataUrl({ text: 'Görsel Yüklenemedi' });
   }
 }

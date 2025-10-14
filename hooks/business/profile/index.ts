@@ -8,6 +8,7 @@ import { createDataHook, createMutationHook } from '../../shared/base/patterns';
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { useAuthState } from '../../shared/useAuth';
 import type { User, Freelancer, Employer } from '@/types';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // PROFILE TYPES
@@ -220,7 +221,7 @@ export function useUpdateProfile() {
         // Profile updated successfully
       },
       onError: (error: Error) => {
-        console.error('Failed to update profile:', error.message);
+        logger.error('Failed to update profile', error);
       },
     }
   )();
@@ -252,7 +253,7 @@ export function useAvatarUpload() {
         // Avatar uploaded successfully
       },
       onError: (error: Error) => {
-        console.error('Failed to upload avatar:', error.message);
+        logger.error('Failed to upload avatar', error);
       },
     }
   )();
@@ -272,7 +273,7 @@ export function useDeleteAvatar() {
         // Avatar deleted successfully
       },
       onError: (error: Error) => {
-        console.error('Failed to delete avatar:', error.message);
+        logger.error('Failed to delete avatar', error);
       },
     }
   )();
@@ -302,7 +303,7 @@ export function useUpdateFreelancerProfile() {
         // Freelancer profile updated
       },
       onError: (error: Error) => {
-        console.error('Failed to update freelancer profile:', error.message);
+        logger.error('Failed to update freelancer profile', error);
       },
     }
   )();
@@ -328,7 +329,7 @@ export function useUpdateEmployerProfile() {
         // Employer profile updated
       },
       onError: (error: Error) => {
-        console.error('Failed to update employer profile:', error.message);
+        logger.error('Failed to update employer profile', error);
       },
     }
   )();

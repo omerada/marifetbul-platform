@@ -15,6 +15,7 @@ import {
   getCategoryById,
   getPopularCategories,
 } from '@/lib/domains/marketplace/categories-data';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ==========================================
 // MARKETPLACE CATEGORIES STORE (ZUSTAND)
@@ -161,7 +162,10 @@ export const useCategoryStore = create<CategoryStore>()(
           await new Promise((resolve) => setTimeout(resolve, 200));
           set({ platformStats: PLATFORM_STATS });
         } catch (error) {
-          console.error('Platform istatistikleri yüklenirken hata:', error);
+          logger.error(
+            'Platform istatistikleri yüklenirken hata',
+            error instanceof Error ? error : new Error(String(error))
+          );
         }
       },
 

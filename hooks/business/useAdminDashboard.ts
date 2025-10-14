@@ -3,6 +3,7 @@ import {
   useAdminDashboardStore,
   useAdminDashboardSelectors,
 } from '@/lib/core/store/admin-dashboard';
+import { logger } from '@/lib/shared/utils/logger';
 
 /**
  * Hook for admin dashboard functionality
@@ -23,7 +24,7 @@ export function useAdminDashboard() {
   // Auto-fetch dashboard data on mount (only once)
   useEffect(() => {
     if (!hasInitialized.current && !selectors.hasData && !selectors.isLoading) {
-      console.log('🔄 Admin Dashboard: Initial fetch');
+      logger.debug('🔄 Admin Dashboard: Initial fetch');
       hasInitialized.current = true;
       fetchDashboard();
     }
@@ -38,10 +39,10 @@ export function useAdminDashboard() {
 
     // Only setup interval if we have data
     if (selectors.hasData) {
-      console.log('⏰ Admin Dashboard: Setting up auto-refresh interval');
+      logger.debug('⏰ Admin Dashboard: Setting up auto-refresh interval');
       intervalRef.current = setInterval(
         () => {
-          console.log('🔄 Admin Dashboard: Auto-refresh triggered');
+          logger.debug('🔄 Admin Dashboard: Auto-refresh triggered');
           refreshDashboard();
         },
         5 * 60 * 1000
@@ -51,7 +52,7 @@ export function useAdminDashboard() {
     // Cleanup
     return () => {
       if (intervalRef.current) {
-        console.log('🧹 Admin Dashboard: Cleaning up auto-refresh interval');
+        logger.debug('🧹 Admin Dashboard: Cleaning up auto-refresh interval');
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
@@ -67,7 +68,10 @@ export function useAdminDashboard() {
           await dismissAlert(alertId);
         }
       } catch (error) {
-        console.error('Alert action failed:', error);
+        logger.error(
+          'Alert action failed',
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
     },
     [markAlertAsRead, dismissAlert]
@@ -77,7 +81,10 @@ export function useAdminDashboard() {
     try {
       await refreshDashboard();
     } catch (error) {
-      console.error('Dashboard refresh failed:', error);
+      logger.error(
+        'Dashboard refresh failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }, [refreshDashboard]);
 

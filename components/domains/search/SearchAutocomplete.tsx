@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
 import { useUnifiedSearch } from '@/hooks';
 import type { SearchSuggestion } from '@/types/shared/search';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface SearchAutocompleteProps {
   placeholder?: string;
@@ -145,7 +146,10 @@ export function SearchAutocomplete({
           setTrendingSearches(trendingData.trending || []);
         }
       } catch (error) {
-        console.error('Failed to fetch search data:', error);
+        logger.error(
+          'Failed to fetch search data',
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
     };
 

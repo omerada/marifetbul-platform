@@ -19,6 +19,7 @@ import { Card } from '@/components/ui/Card';
 import { LocationPicker } from '@/components/shared/utilities';
 import { Coordinates, LocationSearchParams, LocationData } from '@/types';
 import { useUnifiedLocation } from '@/hooks';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface LocationSearchProps {
   onResults?: (results: LocationData[]) => void;
@@ -110,7 +111,10 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({
         onResults(results as never);
       }
     } catch (err) {
-      console.error('Search error:', err);
+      logger.error(
+        'Search error',
+        err instanceof Error ? err : new Error(String(err))
+      );
     }
   }, [currentLocation, filters, searchQuery, onResults]);
 
@@ -136,7 +140,10 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({
   const handleUseCurrentLocation = useCallback(async () => {
     try {
       if (!getCurrentPosition) {
-        console.warn('getCurrentPosition not available');
+        logger.warn(
+          'getCurrentPosition not available',
+          new Error('Geolocation API unavailable')
+        );
         return;
       }
 
@@ -154,7 +161,10 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({
         handleLocationSelect(locationData);
       }
     } catch (err) {
-      console.error('Current location error:', err);
+      logger.error(
+        'Current location error',
+        err instanceof Error ? err : new Error(String(err))
+      );
     }
   }, [
     getCurrentPosition,

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { FreelancerDashboard, EmployerDashboard } from '@/types';
 import { useAuthStore } from './domains/auth/authStore';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface DashboardStore {
   // State
@@ -60,7 +61,10 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
         });
       }
     } catch (error) {
-      console.error('Dashboard fetch error:', error);
+      logger.error(
+        'Dashboard fetch error',
+        error instanceof Error ? error : new Error(String(error))
+      );
       set({
         error: 'Dashboard yüklenirken bir hata oluştu',
         isLoading: false,

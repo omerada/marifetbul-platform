@@ -12,6 +12,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { Input, Badge } from '@/components/ui';
+import { logger } from '@/lib/shared/utils/logger';
 import { CategorySearchProps } from '@/types/business/features/marketplace-categories';
 
 // Animation variants
@@ -145,7 +146,7 @@ const CategorySearch: React.FC<CategorySearchProps> = ({
         try {
           setRecentSearches(JSON.parse(saved).slice(0, 5));
         } catch (e) {
-          console.error('Error loading search history:', e);
+          logger.error('Error loading search history:', e);
         }
       }
     }

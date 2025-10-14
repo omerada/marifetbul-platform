@@ -3,6 +3,8 @@
  * Initialize production optimizations in the main application
  */
 
+import { logger } from '@/lib/shared/utils/logger';
+
 /**
  * Initialize production optimizations when app starts
  * This should be called in your main app component or _app.tsx
@@ -27,7 +29,7 @@ export async function initializeProductionApp() {
 
     // In development, show optimization status
     if (process.env.NODE_ENV === 'development') {
-      console.log('🔧 Production Optimization Status:', {
+      logger.debug('🔧 Production Optimization Status:', {
         deploymentReady: deploymentResult.readyForDeployment,
         optimizationScore: deploymentResult.report.overallScore,
         nextSteps: deploymentResult.nextSteps.slice(0, 3),
@@ -36,7 +38,10 @@ export async function initializeProductionApp() {
 
     return deploymentResult;
   } catch (error) {
-    console.error('Failed to initialize production optimizations:', error);
+    logger.error(
+      'Failed to initialize production optimizations',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return null;
   }
 }

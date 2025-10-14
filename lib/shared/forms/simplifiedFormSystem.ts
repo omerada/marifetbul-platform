@@ -5,6 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { z } from 'zod';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================
 // TYPES
@@ -125,7 +126,10 @@ export function useForm(config: FormConfig) {
       try {
         await config.onSubmit(state.values);
       } catch (error) {
-        console.error('Form submission error:', error);
+        logger.error(
+          'Form submission error',
+          error instanceof Error ? error : new Error(String(error))
+        );
       } finally {
         setState((prev) => ({ ...prev, isSubmitting: false }));
       }
@@ -282,7 +286,10 @@ export const formHelpers = {
     try {
       localStorage.setItem(`form_${formId}`, JSON.stringify(data));
     } catch (error) {
-      console.warn('Form data could not be saved to localStorage:', error);
+      logger.warn(
+        'Form data could not be saved to localStorage',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   },
 
@@ -292,7 +299,10 @@ export const formHelpers = {
       const saved = localStorage.getItem(`form_${formId}`);
       return saved ? JSON.parse(saved) : null;
     } catch (error) {
-      console.warn('Form data could not be loaded from localStorage:', error);
+      logger.warn(
+        'Form data could not be loaded from localStorage',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   },
@@ -302,7 +312,10 @@ export const formHelpers = {
     try {
       localStorage.removeItem(`form_${formId}`);
     } catch (error) {
-      console.warn('Form data could not be cleared from localStorage:', error);
+      logger.warn(
+        'Form data could not be cleared from localStorage',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   },
 };

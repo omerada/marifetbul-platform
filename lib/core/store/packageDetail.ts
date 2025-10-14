@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { PackageDetail, ServicePackage, Review } from '@/types';
 import { OrderFormData } from '@/lib/core/validations/details';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface PackageDetailStore {
   // State properties
@@ -95,7 +96,10 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
             );
           }
         } catch (error) {
-          console.error('Package detail fetch error:', error);
+          logger.error(
+            'Package detail fetch error',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set(
             { error: 'Paket detayları yüklenemedi', isLoading: false },
             false,
@@ -118,10 +122,16 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
               'packageDetail/reviewsFetchSuccess'
             );
           } else {
-            console.error('Failed to fetch reviews:', data.error);
+            logger.error(
+              'Failed to fetch reviews',
+              new Error(data.error || 'Unknown error')
+            );
           }
         } catch (error) {
-          console.error('Reviews fetch error:', error);
+          logger.error(
+            'Reviews fetch error',
+            error instanceof Error ? error : new Error(String(error))
+          );
         }
       },
 
@@ -154,7 +164,9 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
           if (data.success) {
             set({ isOrdering: false }, false, 'packageDetail/orderSuccess');
 
-            console.log('Sipariş başarıyla oluşturuldu!');
+            logger.info('Order created successfully', {
+              orderId: data.data.id,
+            });
             return data.data.id;
           } else {
             set(
@@ -168,7 +180,10 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
             throw new Error(data.error);
           }
         } catch (error) {
-          console.error('Order creation error:', error);
+          logger.error(
+            'Order creation error',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set(
             { error: 'Sipariş oluşturulamadı', isOrdering: false },
             false,

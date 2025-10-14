@@ -33,6 +33,7 @@ import {
 } from '@/components/ui/AlertDialog';
 import { Checkbox } from '@/components/ui/Checkbox';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   Search,
   Filter,
   CheckCircle,
@@ -91,7 +92,7 @@ export function ContentModerationQueue({
       setShowActionDialog(false);
       setModerationReason('');
     } catch (error) {
-      console.error('Error performing moderation action:', error);
+      logger.error('Error performing moderation action:', error);
     } finally {
       setActionItem(null);
       setActionType('');

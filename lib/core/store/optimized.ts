@@ -1,6 +1,7 @@
 import { create, StateCreator } from 'zustand';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // OPTIMIZED STORE PATTERNS
@@ -88,7 +89,7 @@ export class StorePerformanceMonitor {
 
     // Log slow renders in development
     if (process.env.NODE_ENV === 'development' && renderTime > 50) {
-      console.warn(`Slow render detected in ${storeName}: ${renderTime}ms`);
+      logger.warn(`Slow render detected in ${storeName}: ${renderTime}ms`);
     }
   }
 

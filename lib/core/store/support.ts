@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { logger } from '@/lib/shared/utils/logger';
 import type { SupportTicket, PaginationMeta } from '@/types';
 import type {
   CreateTicketFormData,
@@ -112,7 +113,10 @@ export const useSupportStore = create<SupportState>()(
             });
           }
         } catch (error) {
-          console.error('Failed to fetch tickets:', error);
+          logger.error(
+            'Failed to fetch tickets',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set({
             ticketsError: 'Ağ hatası: Destek talepleri yüklenemedi',
             ticketsLoading: false,
@@ -139,7 +143,10 @@ export const useSupportStore = create<SupportState>()(
             });
           }
         } catch (error) {
-          console.error('Failed to fetch ticket by ID:', error);
+          logger.error(
+            'Failed to fetch ticket by ID',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set({
             currentTicketError: 'Ağ hatası: Destek talebi yüklenemedi',
             currentTicketLoading: false,
@@ -198,7 +205,10 @@ export const useSupportStore = create<SupportState>()(
             return { success: false };
           }
         } catch (error) {
-          console.error('Failed to create ticket:', error);
+          logger.error(
+            'Failed to create ticket',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set({
             createTicketError: 'Ağ hatası: Destek talebi oluşturulamadı',
             createTicketLoading: false,
@@ -258,7 +268,10 @@ export const useSupportStore = create<SupportState>()(
             });
           }
         } catch (error) {
-          console.error('Failed to add ticket response:', error);
+          logger.error(
+            'Failed to add ticket response',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set({
             responseSubmissionError: 'Ağ hatası: Yanıt gönderilemedi',
             responseSubmissionLoading: false,
@@ -292,7 +305,10 @@ export const useSupportStore = create<SupportState>()(
             }));
           }
         } catch (error) {
-          console.error('Failed to close ticket:', error);
+          logger.error(
+            'Failed to close ticket',
+            error instanceof Error ? error : new Error(String(error))
+          );
         }
       },
 

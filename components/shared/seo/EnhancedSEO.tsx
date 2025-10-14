@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================
 // TYPES
@@ -267,7 +268,7 @@ export function usePagePerformance() {
         setMetrics(newMetrics);
         setIsLoading(false);
       } catch (error) {
-        console.warn('Performance measurement failed:', error);
+        logger.warn('Performance measurement failed:', error);
         setIsLoading(false);
       }
     };

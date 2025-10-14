@@ -1,6 +1,8 @@
 // Production-ready error handling system
 'use client';
 
+import { logger } from '@/lib/shared/utils/logger';
+
 export class AppError extends Error {
   public readonly code: string;
   public readonly statusCode: number;
@@ -97,26 +99,23 @@ export interface ErrorLogger {
 // Console logger implementation
 export class ConsoleLogger implements ErrorLogger {
   error(error: Error | AppError, context?: Record<string, unknown>): void {
-    console.error('[ERROR]', {
-      message: error.message,
-      stack: error.stack,
+    logger.error('[ERROR]', error, {
       ...(error instanceof AppError ? error.toJSON() : {}),
       context,
-      timestamp: new Date().toISOString(),
     });
   }
 
   warn(message: string, context?: Record<string, unknown>): void {
-    console.warn('[WARN]', {
-      message,
-      context,
-      timestamp: new Date().toISOString(),
-    });
+    logger.warn(
+      `[WARN] ${message}`,
+      new Error(
+        JSON.stringify({ context, timestamp: new Date().toISOString() })
+      )
+    );
   }
 
   info(message: string, context?: Record<string, unknown>): void {
-    console.info('[INFO]', {
-      message,
+    logger.info(`[INFO] ${message}`, {
       context,
       timestamp: new Date().toISOString(),
     });
@@ -124,8 +123,7 @@ export class ConsoleLogger implements ErrorLogger {
 
   debug(message: string, context?: Record<string, unknown>): void {
     if (process.env.NODE_ENV === 'development') {
-      console.debug('[DEBUG]', {
-        message,
+      logger.debug(`[DEBUG] ${message}`, {
         context,
         timestamp: new Date().toISOString(),
       });

@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchStore } from '@/lib/core/store/search';
+import { logger } from '@/lib/shared/utils/logger';
 import type {
   SearchFilters,
   AdvancedSearchRequest,
@@ -122,7 +123,7 @@ export function useUnifiedSearch(
         : currentFilters;
 
       if (!searchQuery.trim()) {
-        console.warn('Empty search query');
+        logger.warn('Empty search query');
         return;
       }
 
@@ -149,7 +150,7 @@ export function useUnifiedSearch(
           store.addToHistory(searchQuery, searchFilters, store.results.length);
         }
       } catch (error) {
-        console.error('Search failed:', error);
+        logger.error('Search failed:', error);
       }
     },
     [store, currentFilters, autoHistory]
@@ -183,7 +184,7 @@ export function useUnifiedSearch(
         try {
           await store.fetchSuggestions(query);
         } catch (error) {
-          console.error('Suggestions failed:', error);
+          logger.error('Suggestions failed:', error);
         } finally {
           setIsTyping(false);
         }
@@ -254,14 +255,14 @@ export function useUnifiedSearch(
   const saveSearch = useCallback(
     async (name: string) => {
       if (!store.query) {
-        console.warn('No query to save');
+        logger.warn('No query to save');
         return;
       }
 
       try {
         store.saveSearch(name, store.query, currentFilters);
       } catch (error) {
-        console.error('Save search failed:', error);
+        logger.error('Save search failed:', error);
       }
     },
     [store, currentFilters]

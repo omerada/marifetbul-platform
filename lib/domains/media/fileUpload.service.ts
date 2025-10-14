@@ -4,9 +4,10 @@
  */
 
 import { FileAttachment } from '@/types';
+import { logger } from '@/lib/shared/utils/logger';
 
 export interface UploadOptions {
-  provider?: 'aws-s3' | 'cloudinary' | 'local' | 'mock';
+  provider?: 'aws-s3' | 'cloudinary' | 'local';
   maxFileSize?: number;
   allowedTypes?: string[];
   folder?: string;
@@ -47,8 +48,13 @@ export class FileUploadService {
   private s3Config?: S3Config;
 
   constructor(options: UploadOptions = {}) {
+    // Determine provider from environment or options
+    const defaultProvider =
+      (process.env.NEXT_PUBLIC_UPLOAD_PROVIDER as UploadOptions['provider']) ||
+      'cloudinary';
+
     this.options = {
-      provider: 'mock',
+      provider: defaultProvider,
       maxFileSize: 5 * 1024 * 1024, // 5MB
       allowedTypes: [
         'image/jpeg',
@@ -111,7 +117,7 @@ export class FileUploadService {
           return await this.uploadToLocal(file);
       }
     } catch (error) {
-      console.error('File upload failed:', error);
+      logger.error('File upload failed', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Upload failed',
@@ -266,14 +272,13 @@ let fileUploadService: FileUploadService | null = null;
 export function getFileUploadService(): FileUploadService {
   if (!fileUploadService) {
     // Determine provider based on environment
-    let provider: UploadOptions['provider'] = 'mock';
+    let provider: UploadOptions['provider'] = 'local';
 
-    if (process.env.NODE_ENV === 'production') {
-      if (process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) {
-        provider = 'cloudinary';
-      } else if (process.env.AWS_S3_BUCKET) {
-        provider = 'aws-s3';
-      }
+    // Check for cloud providers first (production preference)
+    if (process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) {
+      provider = 'cloudinary';
+    } else if (process.env.AWS_S3_BUCKET) {
+      provider = 'aws-s3';
     }
 
     fileUploadService = new FileUploadService({

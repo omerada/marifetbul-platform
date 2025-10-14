@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useCallback } from 'react';
+import { logger } from '@/lib/shared/utils/logger';
 
 export interface ErrorReport {
   id: string;
@@ -130,20 +131,42 @@ class ErrorReportingService {
   }
 
   private logToConsole(report: ErrorReport): void {
-    const logMethod =
+    const logLevel =
       report.level === 'error'
-        ? console.error
+        ? 'error'
         : report.level === 'warning'
-          ? console.warn
-          : console.log;
+          ? 'warn'
+          : 'info';
 
-    logMethod(`[${report.level.toUpperCase()}] ${report.message}`, {
-      id: report.id,
-      timestamp: new Date(report.timestamp).toISOString(),
-      stack: report.stack,
-      context: report.context,
-      handled: report.handled,
-    });
+    const errorObj = new Error(report.message);
+    if (report.stack) {
+      errorObj.stack = report.stack;
+    }
+
+    if (logLevel === 'error') {
+      logger.error(
+        `[${report.level.toUpperCase()}] ${report.message}`,
+        errorObj,
+        {
+          id: report.id,
+          timestamp: new Date(report.timestamp).toISOString(),
+          context: report.context,
+          handled: report.handled,
+        }
+      );
+    } else if (logLevel === 'warn') {
+      logger.warn(
+        `[${report.level.toUpperCase()}] ${report.message}`,
+        errorObj
+      );
+    } else {
+      logger.info(`[${report.level.toUpperCase()}] ${report.message}`, {
+        id: report.id,
+        timestamp: new Date(report.timestamp).toISOString(),
+        context: report.context,
+        handled: report.handled,
+      });
+    }
   }
 
   private async sendToRemote(report: ErrorReport): Promise<void> {
@@ -164,12 +187,18 @@ class ErrorReportingService {
       });
 
       if (!response.ok) {
-        console.warn('Failed to send error report:', response.status);
+        logger.warn(
+          'Failed to send error report',
+          new Error(`Status: ${response.status}`)
+        );
       }
     } catch (err) {
       // Silently fail - don't create infinite error loops
       if (this.config.enableConsoleLogging) {
-        console.warn('Error reporting service failed:', err);
+        logger.warn(
+          'Error reporting service failed',
+          err instanceof Error ? err : new Error(String(err))
+        );
       }
     }
   }

@@ -4,6 +4,7 @@
 // WCAG 2.1 AA compliant accessibility utilities
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================
 // TYPES
@@ -749,9 +750,9 @@ export class AccessibilityManager {
     this.metrics.colorContrastViolations = violations.length;
 
     if (violations.length > 0) {
-      console.warn(
-        `Found ${violations.length} color contrast violations:`,
-        violations
+      logger.warn(
+        `Found ${violations.length} color contrast violations`,
+        new Error(`Violations: ${JSON.stringify(violations)}`)
       );
     }
 

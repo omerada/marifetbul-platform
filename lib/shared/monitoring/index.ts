@@ -8,6 +8,8 @@
  * - Business metrics collection
  */
 
+import { logger } from '@/lib/shared/utils/logger';
+
 // Monitoring Configuration
 export interface MonitoringConfig {
   enabled: boolean;
@@ -337,7 +339,10 @@ export class MonitoringManager {
         body: JSON.stringify(data),
       });
     } catch (error) {
-      console.error('Failed to send monitoring data:', error);
+      logger.error(
+        'Failed to send monitoring data',
+        error instanceof Error ? error : new Error(String(error))
+      );
       // Restore data to buffer on failure
       this.buffer.metrics.push(...data.metrics);
       this.buffer.interactions.push(...data.interactions);

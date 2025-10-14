@@ -5,6 +5,7 @@
 
 import { useCallback, useEffect, useMemo } from 'react';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   useAsyncOperation,
   usePagination,
   type AsyncHookReturn,
@@ -326,7 +327,7 @@ export function withErrorBoundary<TReturn>(
     try {
       return hook();
     } catch (error) {
-      console.error('Hook error caught:', error);
+      logger.error('Hook error caught:', error);
       return fallbackValue;
     }
   };
@@ -354,7 +355,7 @@ export function withPerformanceMonitoring<TParams, TReturn>(
 
       if (duration > 16) {
         // Longer than one frame
-        console.warn(`Hook ${hookName} took ${duration.toFixed(2)}ms`);
+        logger.warn(`Hook ${hookName} took ${duration.toFixed(2)}ms`);
       }
     });
 

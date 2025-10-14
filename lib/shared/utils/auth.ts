@@ -7,6 +7,7 @@
  * For getting user data, call the /api/v1/auth/me endpoint instead of
  * decoding the JWT client-side (tokens are in httpOnly cookies).
  */
+import { logger } from '@/lib/shared/utils/logger';
 
 /**
  * Get cookie value by name
@@ -50,7 +51,10 @@ export const getCurrentUserId = async (): Promise<string | null> => {
     const data = await response.json();
     return data.data?.id || null;
   } catch (error) {
-    console.error('Error getting current user ID:', error);
+    logger.error(
+      'Error getting current user ID',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return null;
   }
 };
@@ -73,7 +77,10 @@ export const isAuthenticated = async (): Promise<boolean> => {
 
     return response.ok;
   } catch (error) {
-    console.error('Error checking authentication:', error);
+    logger.error(
+      'Error checking authentication',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return false;
   }
 };
@@ -106,7 +113,7 @@ export const logout = async (): Promise<boolean> => {
  * @deprecated Use cookie-based authentication instead
  */
 export const getAuthToken = (): null => {
-  console.warn('getAuthToken is deprecated. Tokens are in httpOnly cookies.');
+  logger.warn('getAuthToken is deprecated. Tokens are in httpOnly cookies.');
   return null;
 };
 
@@ -114,12 +121,12 @@ export const getAuthToken = (): null => {
  * @deprecated Authentication is handled by httpOnly cookies
  */
 export const setAuthToken = (): void => {
-  console.warn('setAuthToken is deprecated. Use backend login endpoint.');
+  logger.warn('setAuthToken is deprecated. Use backend login endpoint.');
 };
 
 /**
  * @deprecated Authentication is handled by httpOnly cookies
  */
 export const removeAuthToken = (): void => {
-  console.warn('removeAuthToken is deprecated. Use logout() function instead.');
+  logger.warn('removeAuthToken is deprecated. Use logout() function instead.');
 };

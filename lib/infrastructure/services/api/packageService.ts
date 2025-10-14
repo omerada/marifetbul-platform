@@ -1,6 +1,7 @@
 import type { ServicePackage, PaginatedResponse } from '@/types';
 import type { ApiResponse } from '@/types/shared/api';
 import { apiClient } from '@/lib/infrastructure/api/client';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface PackageSearchParams {
   keyword?: string;
@@ -64,7 +65,10 @@ export class PackageService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch package:', error);
+      logger.error(
+        'Failed to fetch package',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -84,7 +88,10 @@ export class PackageService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch package by slug:', error);
+      logger.error(
+        'Failed to fetch package by slug',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -258,7 +265,10 @@ export class PackageService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to update package:', error);
+      logger.error(
+        'Failed to update package',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -273,7 +283,10 @@ export class PackageService {
       );
       return response.success;
     } catch (error) {
-      console.error('Failed to delete package:', error);
+      logger.error(
+        'Failed to delete package',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return false;
     }
   }

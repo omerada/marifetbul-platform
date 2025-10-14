@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { User, Order, Proposal } from '@/types';
 import { Card } from '@/components/ui/Card';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   Clock,
   DollarSign,
   MessageCircle,
@@ -80,7 +81,7 @@ export function ActivityTimeline({
         const data = await response.json();
         setActivities(data.data || []);
       } catch (error) {
-        console.error('Error fetching activities:', error);
+        logger.error('Error fetching activities:', error);
         setActivities([]);
       } finally {
         setLoading(false);

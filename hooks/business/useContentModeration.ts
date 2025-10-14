@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   useAdminModerationStore,
   useAdminModerationSelectors,
 } from '@/lib/core/store/admin-moderation';
@@ -74,7 +75,7 @@ export function useContentModeration() {
         // Refresh current page after action
         await fetchModerationQueue(selectors.filters);
       } catch (error) {
-        console.error('Moderation action failed:', error);
+        logger.error('Moderation action failed:', error);
       } finally {
         setIsActionLoading(false);
       }
@@ -88,7 +89,7 @@ export function useContentModeration() {
       try {
         await assignModerator(itemId, moderatorId);
       } catch (error) {
-        console.error('Moderator assignment failed:', error);
+        logger.error('Moderator assignment failed:', error);
       } finally {
         setIsActionLoading(false);
       }
@@ -102,7 +103,7 @@ export function useContentModeration() {
       try {
         await escalateItem(itemId, reason);
       } catch (error) {
-        console.error('Escalation failed:', error);
+        logger.error('Escalation failed:', error);
       } finally {
         setIsActionLoading(false);
       }

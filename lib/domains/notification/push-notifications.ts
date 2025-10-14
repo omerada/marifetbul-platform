@@ -2,6 +2,7 @@
  * Push Notification Utilities
  * Tarayıcı push notification yönetimi
  */
+import { logger } from '@/lib/shared/utils/logger';
 
 export class PushNotificationManager {
   private static instance: PushNotificationManager;
@@ -22,7 +23,7 @@ export class PushNotificationManager {
   // Service Worker kaydı
   async registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
     if (!('serviceWorker' in navigator)) {
-      console.warn('Service Worker desteklenmiyor');
+      logger.warn('Service Worker desteklenmiyor');
       return null;
     }
 
@@ -32,7 +33,10 @@ export class PushNotificationManager {
 
       return registration;
     } catch (error) {
-      console.error('Service Worker kayıt hatası:', error);
+      logger.error(
+        'Service Worker kayıt hatası',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -40,7 +44,7 @@ export class PushNotificationManager {
   // Bildirim izni kontrolü
   async checkPermission(): Promise<NotificationPermission> {
     if (typeof window === 'undefined' || !('Notification' in window)) {
-      console.warn('Tarayıcı bildirimleri desteklenmiyor');
+      logger.warn('Tarayıcı bildirimleri desteklenmiyor');
       return 'denied';
     }
 
@@ -63,7 +67,10 @@ export class PushNotificationManager {
       const result = await Notification.requestPermission();
       return result;
     } catch (error) {
-      console.error('Bildirim izni isteme hatası:', error);
+      logger.error(
+        'Bildirim izni isteme hatası',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return 'denied';
     }
   }
@@ -88,7 +95,10 @@ export class PushNotificationManager {
 
       return subscription;
     } catch (error) {
-      console.error('Push subscription hatası:', error);
+      logger.error(
+        'Push subscription hatası',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -197,7 +207,10 @@ export class PushNotificationManager {
         subscription: subscription || undefined,
       };
     } catch (error) {
-      console.error('Subscription durumu kontrol hatası:', error);
+      logger.error(
+        'Subscription durumu kontrol hatası',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return { isSubscribed: false };
     }
   }
@@ -304,7 +317,10 @@ export class PushNotificationManager {
       const subscription = await registration.pushManager.getSubscription();
       return !!subscription;
     } catch (error) {
-      console.error('Abonelik durumu kontrol edilemedi:', error);
+      logger.error(
+        'Abonelik durumu kontrol edilemedi',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return false;
     }
   }

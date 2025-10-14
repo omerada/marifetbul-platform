@@ -5,6 +5,7 @@ import { usePackageDetailStore } from '@/lib/core/store';
 import { OrderFormData, orderSchema } from '@/lib/core/validations/details';
 import { useRouter } from 'next/navigation';
 import type { PackageDetail, ServicePackage } from '@/types';
+import { logger } from '@/lib/shared/utils/logger';
 
 export function usePackageOrder(packageId: string) {
   const router = useRouter();
@@ -83,7 +84,10 @@ export function usePackageOrder(packageId: string) {
       // Navigate to payment page or order confirmation
       router.push(`/orders/${orderId}/payment`);
     } catch (error) {
-      console.error('Order creation error:', error);
+      logger.error(
+        'Order creation error',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   };
 

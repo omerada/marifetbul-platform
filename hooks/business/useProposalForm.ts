@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useJobDetailStore } from '@/lib/core/store';
 import { ProposalFormData, proposalSchema } from '@/lib/core/validations/details';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface FileUploadProgress {
   [fileName: string]: number;
@@ -89,7 +90,7 @@ export function useProposalForm(jobId: string) {
         url: data.success ? data.data.url : '',
       };
     } catch (error) {
-      console.error('File upload error:', error);
+      logger.error('File upload error:', error);
       return { success: false, url: '' };
     }
   };
@@ -156,7 +157,7 @@ export function useProposalForm(jobId: string) {
       setUploadedFiles([]);
       setUploadProgress({});
     } catch (error) {
-      console.error('Proposal submission error:', error);
+      logger.error('Proposal submission error:', error);
     }
   };
 

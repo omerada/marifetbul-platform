@@ -4,6 +4,8 @@
 // Production-ready error handling with monitoring and recovery
 
 import { ErrorInfo, ReactNode } from 'react';
+import { logger } from '@/lib/shared/utils/logger';
+import { getBackendApiUrl } from '@/lib/config/api';
 
 // ================================
 // ERROR TYPES
@@ -115,7 +117,7 @@ export function getRecoveryActions(error: AppError): RecoveryAction[] {
         label: 'Bağlantıyı Kontrol Et',
         action: () => {
           // Open network diagnostic or show network status
-          console.log('Checking network connection...');
+          logger.debug('Checking network connection...');
         },
         type: 'secondary',
       });
@@ -137,7 +139,7 @@ export function getRecoveryActions(error: AppError): RecoveryAction[] {
           label: 'Tekrar Dene',
           action: async () => {
             // Retry the failed API call
-            console.log('Retrying API call...');
+            logger.debug('Retrying API call...');
           },
           type: 'primary',
         });
@@ -223,7 +225,7 @@ export class ErrorMonitor {
       const endpoint =
         typeof window !== 'undefined'
           ? '/api/v1/errors/report'
-          : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/errors/report`;
+          : `${getBackendApiUrl()}/errors/report`;
 
       await fetch(endpoint, {
         method: 'POST',
@@ -246,7 +248,7 @@ export class ErrorMonitor {
         }),
       });
     } catch (sendError) {
-      console.error('Failed to send error to remote service:', sendError);
+      logger.error('Failed to send error to remote service', sendError);
     }
   }
 

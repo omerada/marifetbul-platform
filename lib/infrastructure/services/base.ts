@@ -3,6 +3,8 @@
  * Provides common functionality for all domain services
  * Handles error management, logging, and validation
  */
+import { logger } from '@/lib/shared/utils/logger';
+
 export abstract class BaseService {
   protected readonly serviceName: string;
 
@@ -23,11 +25,7 @@ export abstract class BaseService {
     );
 
     // Log error for monitoring
-    console.error(`[${this.serviceName}] ${operation} failed:`, {
-      error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
-      timestamp: new Date().toISOString(),
-    });
+    logger.error(`[${this.serviceName}] ${operation} failed`, serviceError);
 
     throw serviceError;
   }
@@ -40,9 +38,9 @@ export abstract class BaseService {
     fn: () => Promise<T>
   ): Promise<T> {
     try {
-      console.debug(`[${this.serviceName}] Starting ${operation}`);
+      logger.debug(`[${this.serviceName}] Starting ${operation}`);
       const result = await fn();
-      console.debug(`[${this.serviceName}] Completed ${operation}`);
+      logger.debug(`[${this.serviceName}] Completed ${operation}`);
       return result;
     } catch (error) {
       this.handleError(operation, error);

@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   AlertTriangle,
   CheckCircle,
   Clock,
@@ -165,7 +166,7 @@ export default function ContentAppealSystem() {
       const data = await response.json();
       setAppeals(data.appeals || []);
     } catch (error) {
-      console.error('Error fetching appeals:', error);
+      logger.error('Error fetching appeals:', error);
     } finally {
       setLoading(false);
     }
@@ -177,7 +178,7 @@ export default function ContentAppealSystem() {
       const data = await response.json();
       setStats(data.stats);
     } catch (error) {
-      console.error('Error fetching stats:', error);
+      logger.error('Error fetching stats:', error);
     }
   };
 
@@ -204,7 +205,7 @@ export default function ContentAppealSystem() {
         setShowDetailModal(false);
       }
     } catch (error) {
-      console.error('Error processing appeal action:', error);
+      logger.error('Error processing appeal action:', error);
     }
   };
 

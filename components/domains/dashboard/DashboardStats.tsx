@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { User } from '@/types';
 import { Card } from '@/components/ui/Card';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   Briefcase,
   Star,
   Eye,
@@ -67,7 +68,7 @@ export function DashboardStats({ user }: DashboardStatsProps) {
         const data = await response.json();
         setStats(data.data || null);
       } catch (error) {
-        console.error('Error fetching stats:', error);
+        logger.error('Error fetching stats:', error);
       } finally {
         setLoading(false);
       }

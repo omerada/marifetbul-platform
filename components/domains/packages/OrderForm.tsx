@@ -9,6 +9,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { ShoppingCart, CreditCard, Calendar, FileText } from 'lucide-react';
+import { logger } from '@/lib/shared/utils/logger';
 
 const orderSchema = z.object({
   requirements: z
@@ -83,7 +84,7 @@ export function OrderForm({
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      console.log('Order submitted:', {
+      logger.debug('Order submitted:', {
         servicePackageId: servicePackage.id,
         ...data,
         selectedServices,
@@ -92,7 +93,7 @@ export function OrderForm({
 
       onSubmit(data);
     } catch (error) {
-      console.error('Error submitting order:', error);
+      logger.error('Error submitting order:', error);
     } finally {
       setIsSubmitting(false);
     }

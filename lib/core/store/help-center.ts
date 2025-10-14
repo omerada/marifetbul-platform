@@ -7,6 +7,7 @@ import type {
   PaginationMeta,
 } from '@/types';
 import type { ArticleSearchFormData } from '@/lib/core/validations/support';
+import { logger } from '@/lib/shared/utils/logger';
 
 // Base types for async state
 interface BaseAsyncState {
@@ -118,7 +119,10 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
             });
           }
         } catch (error) {
-          console.error('Failed to fetch categories:', error);
+          logger.error(
+            'Failed to fetch categories',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set({
             categoriesError: 'Ağ hatası: Kategoriler yüklenemedi',
             categoriesLoading: false,
@@ -160,7 +164,10 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
             });
           }
         } catch (error) {
-          console.error('Failed to fetch articles:', error);
+          logger.error(
+            'Failed to fetch articles',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set({
             articlesError: 'Ağ hatası: Makaleler yüklenemedi',
             articlesLoading: false,
@@ -186,7 +193,10 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
             set({ featuredLoading: false });
           }
         } catch (error) {
-          console.error('Failed to fetch featured articles:', error);
+          logger.error(
+            'Failed to fetch featured articles',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set({ featuredLoading: false });
         }
       },
@@ -213,7 +223,10 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
             });
           }
         } catch (error) {
-          console.error('Failed to fetch article by ID:', error);
+          logger.error(
+            'Failed to fetch article by ID',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set({
             currentArticleError: 'Ağ hatası: Makale yüklenemedi',
             currentArticleLoading: false,
@@ -257,7 +270,10 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
             });
           }
         } catch (error) {
-          console.error('Failed to search articles:', error);
+          logger.error(
+            'Failed to search articles',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set({
             searchError: 'Ağ hatası: Arama yapılamadı',
             searchLoading: false,
@@ -293,7 +309,10 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
             }));
           }
         } catch (error) {
-          console.error('Rating submission failed:', error);
+          logger.error(
+            'Rating submission failed',
+            error instanceof Error ? error : new Error(String(error))
+          );
         }
       },
 

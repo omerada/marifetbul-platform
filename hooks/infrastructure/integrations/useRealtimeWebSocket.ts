@@ -5,6 +5,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   getWebSocketManager,
   subscribeToNotifications,
   subscribeToMessages,
@@ -78,7 +79,7 @@ export function useWebSocket(
   useEffect(() => {
     const unsubscribe = subscribeToConnection((data) => {
       if (debug) {
-        console.log('[useWebSocket] Connection status:', data.status);
+        logger.debug('[useWebSocket] Connection status:', data.status);
       }
 
       setIsConnected(data.status === 'connected');
@@ -100,7 +101,7 @@ export function useWebSocket(
         setIsConnected(true);
       } catch (error) {
         if (debug) {
-          console.error('[useWebSocket] Connection failed:', error);
+          logger.error('[useWebSocket] Connection failed:', error);
         }
       } finally {
         setIsConnecting(false);
@@ -156,7 +157,7 @@ export function useWebSocket(
       setIsConnected(true);
     } catch (error) {
       if (debug) {
-        console.error('[useWebSocket] Connection failed:', error);
+        logger.error('[useWebSocket] Connection failed:', error);
       }
       throw error;
     } finally {

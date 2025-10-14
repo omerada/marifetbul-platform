@@ -1,3 +1,5 @@
+import { logger } from '@/lib/shared/utils/logger';
+
 export interface BaseServiceConfig {
   retryAttempts?: number;
   retryDelay?: number;
@@ -80,9 +82,9 @@ export abstract class BaseService {
         };
       } catch (error) {
         lastError = error;
-        console.warn(
-          `Operation ${operationName} failed (attempt ${attempt}):`,
-          error
+        logger.warn(
+          `Operation ${operationName} failed (attempt ${attempt})`,
+          error instanceof Error ? error : new Error(String(error))
         );
 
         if (attempt < (this.config.retryAttempts || 3)) {
@@ -161,11 +163,14 @@ export abstract class BaseService {
   }
 
   protected logError(operation: string, error: unknown): void {
-    console.error(`[${this.constructor.name}] ${operation} failed:`, error);
+    logger.error(
+      `[${this.constructor.name}] ${operation} failed`,
+      error instanceof Error ? error : new Error(String(error))
+    );
   }
 
   protected logInfo(operation: string, message: string): void {
-    console.info(`[${this.constructor.name}] ${operation}: ${message}`);
+    logger.info(`[${this.constructor.name}] ${operation}: ${message}`);
   }
 
   protected validateRequired(

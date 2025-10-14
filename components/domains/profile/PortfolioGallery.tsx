@@ -13,6 +13,7 @@ import {
   Trash2,
   Image as ImageIcon,
 } from 'lucide-react';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface PortfolioGalleryProps {
   freelancer?: Freelancer;
@@ -50,7 +51,10 @@ export function PortfolioGallery({
       try {
         await removePortfolioItem(itemId);
       } catch (error) {
-        console.error('Portfolyo öğesi silinirken hata:', error);
+        logger.error(
+          'Portfolyo öğesi silinirken hata',
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
     }
   };
@@ -132,7 +136,10 @@ export function PortfolioGallery({
               }
               setShowAddModal(false);
             } catch (error) {
-              console.error('Portfolyo kaydedilirken hata:', error);
+              logger.error(
+                'Portfolyo kaydedilirken hata',
+                error instanceof Error ? error : new Error(String(error))
+              );
             }
           }}
         />

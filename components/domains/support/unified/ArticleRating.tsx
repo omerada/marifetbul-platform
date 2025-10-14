@@ -6,6 +6,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Textarea } from '@/components/ui/Textarea';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface ArticleRatingProps {
   articleId: string;
@@ -54,7 +55,10 @@ export function ArticleRating({
       setHasRated(true);
       setShowFeedback(false);
     } catch (error) {
-      console.error('Rating submission failed:', error);
+      logger.error(
+        'Rating submission failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
     } finally {
       setIsSubmitting(false);
     }

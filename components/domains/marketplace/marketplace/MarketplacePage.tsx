@@ -27,6 +27,7 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/shared/utils/logger';
 
 type MarketplaceMode = 'jobs' | 'packages';
 
@@ -85,7 +86,7 @@ export function MarketplacePage() {
         await applyPackageFilters();
       }
     } catch (error) {
-      console.error('Error clearing filters:', error);
+      logger.error('Error clearing filters:', error);
     }
   }, [mode, applyJobFilters, applyPackageFilters]);
 
@@ -97,7 +98,7 @@ export function MarketplacePage() {
         await applyPackageFilters();
       }
     } catch (error) {
-      console.error('Error showing all items:', error);
+      logger.error('Error showing all items:', error);
     }
   }, [mode, applyJobFilters, applyPackageFilters]);
 

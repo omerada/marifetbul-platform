@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { getCurrentUserId } from '@/lib/shared/utils/auth';
 import { devtools } from 'zustand/middleware';
+import { logger } from '@/lib/shared/utils/logger';
 import type {
   ReputationScore,
   SecurityStatus,
@@ -100,7 +101,10 @@ export const useReputationStore = create<ReputationStore>()(
             throw new Error(data.error || 'Bilinmeyen hata');
           }
         } catch (error) {
-          console.error('Security alerts fetch error:', error);
+          logger.error(
+            'Security alerts fetch error',
+            error instanceof Error ? error : new Error(String(error))
+          );
         }
       },
 

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useSupport } from '@/hooks';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface TicketFormProps {
   onBack?: () => void;
@@ -250,7 +251,10 @@ export const TicketForm: React.FC<TicketFormProps> = ({
         router.push('/dashboard/support');
       }
     } catch (error) {
-      console.error('Ticket creation failed:', error);
+      logger.error(
+        'Ticket creation failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
       setErrors({
         submit:
           'Destek talebi oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.',

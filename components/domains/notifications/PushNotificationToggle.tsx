@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 import { PushNotificationManager } from '@/lib/domains/notification/push-notifications';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface PushNotificationToggleProps {
   userId?: string;
@@ -38,7 +39,7 @@ export function PushNotificationToggle({
       const subscribed = await PushNotificationManager.isSubscribed();
       setIsSubscribed(subscribed);
     } catch (error) {
-      console.error('Abonelik durumu kontrol edilemedi:', error);
+      logger.error('Abonelik durumu kontrol edilemedi:', error);
     }
   };
 
@@ -88,7 +89,7 @@ export function PushNotificationToggle({
         }
       }
     } catch (error) {
-      console.error('Push notification aboneliği başarısız:', error);
+      logger.error('Push notification aboneliği başarısız:', error);
       setErrorMessage(
         error instanceof Error
           ? error.message
@@ -136,7 +137,7 @@ export function PushNotificationToggle({
         }
       }
     } catch (error) {
-      console.error('Push notification abonelikten çıkma başarısız:', error);
+      logger.error('Push notification abonelikten çıkma başarısız:', error);
       setErrorMessage(
         error instanceof Error
           ? error.message
@@ -188,7 +189,7 @@ export function PushNotificationToggle({
         throw new Error(data.message || 'Test bildirimi gönderilemedi');
       }
     } catch (error) {
-      console.error('Test bildirimi başarısız:', error);
+      logger.error('Test bildirimi başarısız:', error);
       setErrorMessage(
         error instanceof Error
           ? error.message

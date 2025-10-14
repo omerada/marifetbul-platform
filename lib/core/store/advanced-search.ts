@@ -12,6 +12,7 @@ import {
   User,
   SaveSearchRequest,
 } from '@/types';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface AdvancedSearchStore {
   // State properties
@@ -360,9 +361,9 @@ export const useAdvancedSearchStore = create<AdvancedSearchStore>()(
                 );
               }
             } catch (error) {
-              console.warn(
-                'Failed to save recent searches to localStorage:',
-                error
+              logger.warn(
+                'Failed to save recent searches to localStorage',
+                error instanceof Error ? error : new Error(String(error))
               );
             }
 
@@ -417,6 +418,9 @@ if (typeof window !== 'undefined') {
       }
     }
   } catch (error) {
-    console.warn('Failed to load recent searches from localStorage:', error);
+    logger.warn(
+      'Failed to load recent searches from localStorage',
+      error instanceof Error ? error : new Error(String(error))
+    );
   }
 }

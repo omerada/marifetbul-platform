@@ -20,6 +20,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface SystemHealthData {
   uptime: {
@@ -99,7 +100,7 @@ export default function SystemHealthWidget({
       setHealthData(data);
       setLastRefresh(new Date());
     } catch (error) {
-      console.error('Failed to fetch health data:', error);
+      logger.error('Failed to fetch health data:', error);
     } finally {
       setIsLoading(false);
     }

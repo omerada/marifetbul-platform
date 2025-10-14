@@ -2,6 +2,7 @@ import { apiCache, CachePresets } from '../cache/apiCache';
 import { retryManager, RetryPresets } from '../retry/retryManager';
 import { apiLogger } from '../monitoring/logger';
 import { captureSentryError } from '../monitoring/sentry';
+import { getBackendApiUrl } from '@/lib/config/api';
 import {
   addCsrfTokenToHeaders,
   requiresCsrfProtection,
@@ -25,13 +26,8 @@ class ApiClient {
   private baseURL: string;
 
   constructor(baseURL?: string) {
-    // Use environment variable or fallback to Next.js proxy in development
-    this.baseURL =
-      baseURL ||
-      process.env.NEXT_PUBLIC_API_URL ||
-      (typeof window !== 'undefined' && process.env.NODE_ENV === 'development'
-        ? '/api/v1'
-        : 'http://localhost:8080/api/v1');
+    // Use environment variable or centralized config
+    this.baseURL = baseURL || getBackendApiUrl();
   }
 
   private async request<T>(

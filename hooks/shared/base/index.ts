@@ -5,6 +5,7 @@
 // Async operations are handled by unified async system
 
 import { useEffect, useRef, useCallback, useState } from 'react';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // ASYNC OPERATION HOOKS (UNIFIED SYSTEM)
@@ -306,7 +307,7 @@ export function useLocalStorage<T>(
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
+      logger.warn(`Error reading localStorage key "${key}":`, error);
       return initialValue;
     }
   });
@@ -325,7 +326,7 @@ export function useLocalStorage<T>(
           window.localStorage.setItem(key, JSON.stringify(valueToStore));
         }
       } catch (error) {
-        console.warn(`Error setting localStorage key "${key}":`, error);
+        logger.warn(`Error setting localStorage key "${key}":`, error);
       }
     },
     [key, storedValue]
@@ -339,7 +340,7 @@ export function useLocalStorage<T>(
         window.localStorage.removeItem(key);
       }
     } catch (error) {
-      console.warn(`Error removing localStorage key "${key}":`, error);
+      logger.warn(`Error removing localStorage key "${key}":`, error);
     }
   }, [key, initialValue]);
 

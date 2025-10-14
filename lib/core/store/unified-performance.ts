@@ -6,6 +6,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import { logger } from '@/lib/shared/utils/logger';
 
 // === Additional Type Definitions ===
 interface PerformanceEventTiming extends PerformanceEntry {
@@ -387,7 +388,7 @@ export const useUnifiedPerformanceStore = create<UnifiedPerformanceStore>()(
 
         // Log slow renders in development
         if (process.env.NODE_ENV === 'development' && renderTime > 50) {
-          console.warn(
+          logger.warn(
             `🐌 Slow render detected in ${storeName}: ${renderTime}ms`
           );
         }

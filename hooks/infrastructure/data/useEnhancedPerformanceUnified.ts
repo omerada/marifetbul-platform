@@ -7,6 +7,7 @@
 
 import { useEffect, useCallback, useMemo } from 'react';
 import { useUnifiedPerformanceStore } from '../../../lib/core/store/unified-performance';
+import { logger } from '@/lib/shared/utils/logger';
 
 export interface UsePerformanceOptions {
   autoStart?: boolean;
@@ -127,7 +128,7 @@ export const useEnhancedPerformance = (options: UsePerformanceOptions = {}) => {
         resourceObserver.observe({ type: 'resource', buffered: true });
         cleanupFunctions.push(() => resourceObserver.disconnect());
       } catch (error) {
-        console.warn('Performance Observer not fully supported:', error);
+        logger.warn('Performance Observer not fully supported:', error);
       }
     }
 

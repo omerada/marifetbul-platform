@@ -13,6 +13,7 @@ import {
 } from '@/lib/core/validations/payment';
 import { useToast } from '@/hooks/shared/ui';
 import { ZodError } from 'zod';
+import { logger } from '@/lib/shared/utils/logger';
 
 type PaymentStatus =
   | 'pending'
@@ -104,7 +105,10 @@ export const usePayment = (): UsePaymentReturn => {
 
   const handleError = useCallback(
     (error: Error | unknown, defaultMessage: string) => {
-      console.error('Payment operation error:', error);
+      logger.error(
+        'Payment operation error',
+        error instanceof Error ? error : new Error(String(error))
+      );
       const message = error instanceof Error ? error.message : defaultMessage;
       setError(message);
       toastError('Hata', message);

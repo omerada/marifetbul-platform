@@ -13,6 +13,7 @@ import { Progress } from '@/components/ui/Progress';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
 import { Label } from '@/components/ui/Label';
 import { Switch } from '@/components/ui/Switch';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface ReviewFormProps {
   orderId: string;
@@ -98,7 +99,7 @@ export function ReviewForm({
         onSuccess?.();
       }
     } catch (error) {
-      console.error('Review submission error:', error);
+      logger.error('Review submission error:', error);
     }
   };
 

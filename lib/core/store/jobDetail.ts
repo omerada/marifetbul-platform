@@ -4,6 +4,7 @@ import { immer } from 'zustand/middleware/immer';
 import { JobDetail } from '@/types';
 import { Proposal } from '@/types/core/jobs';
 import { ProposalFormData } from '@/lib/core/validations/details';
+import { logger } from '@/lib/shared/utils/logger';
 
 // Cache timeout for preventing excessive API calls
 const CACHE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
@@ -49,7 +50,10 @@ const getAuthToken = (): string | null => {
       ? localStorage.getItem('auth_token')
       : null;
   } catch (error) {
-    console.warn('Failed to access localStorage:', error);
+    logger.warn(
+      'Failed to access localStorage',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return null;
   }
 };
@@ -129,7 +133,10 @@ export const useJobDetailStore = create<JobDetailStore>()(
             throw new Error(data.error || 'İş ilanı yüklenemedi');
           }
         } catch (error) {
-          console.error('Job detail fetch error:', error);
+          logger.error(
+            'Job detail fetch error',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set((state) => {
             state.error =
               error instanceof Error ? error.message : 'İş ilanı yüklenemedi';
@@ -165,7 +172,10 @@ export const useJobDetailStore = create<JobDetailStore>()(
             throw new Error(data.error || 'Teklifler yüklenemedi');
           }
         } catch (error) {
-          console.error('Proposals fetch error:', error);
+          logger.error(
+            'Proposals fetch error',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set((state) => {
             state.error =
               error instanceof Error ? error.message : 'Teklifler yüklenemedi';
@@ -220,7 +230,10 @@ export const useJobDetailStore = create<JobDetailStore>()(
             throw new Error(data.error || 'Teklif gönderilemedi');
           }
         } catch (error) {
-          console.error('Proposal submission error:', error);
+          logger.error(
+            'Proposal submission error',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set((state) => {
             state.error =
               error instanceof Error ? error.message : 'Teklif gönderilemedi';
@@ -274,7 +287,10 @@ export const useJobDetailStore = create<JobDetailStore>()(
             throw new Error(data.error || 'Teklif durumu güncellenemedi');
           }
         } catch (error) {
-          console.error('Proposal status update error:', error);
+          logger.error(
+            'Proposal status update error',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set((state) => {
             state.error =
               error instanceof Error

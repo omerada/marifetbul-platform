@@ -1,6 +1,7 @@
 import type { Job, PaginatedResponse } from '@/types';
 import type { ApiResponse } from '@/types/shared/api';
 import { apiClient } from '@/lib/infrastructure/api/client';
+import { logger } from '@/lib/shared/utils/logger';
 
 export interface JobFilters {
   search?: string;
@@ -177,7 +178,10 @@ export class JobService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch job:', error);
+      logger.error(
+        'Failed to fetch job',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -208,7 +212,10 @@ export class JobService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to update job:', error);
+      logger.error(
+        'Failed to update job',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -218,7 +225,10 @@ export class JobService {
       const response = await apiClient.delete<ApiResponse<void>>(`/jobs/${id}`);
       return response.success;
     } catch (error) {
-      console.error('Failed to delete job:', error);
+      logger.error(
+        'Failed to delete job',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return false;
     }
   }

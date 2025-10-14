@@ -19,6 +19,7 @@ import {
   Calendar,
   Image as ImageIcon,
 } from 'lucide-react';
+import { logger } from '@/lib/shared/utils/logger';
 
 const portfolioSchema = z.object({
   title: z.string().min(3, 'Proje başlığı en az 3 karakter olmalı'),
@@ -77,7 +78,10 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
       success('Başarılı', 'Portfolyo öğesi kaydedildi!');
       onClose();
     } catch (err) {
-      console.error('Portfolio save error:', err);
+      logger.error(
+        'Portfolio save error',
+        err instanceof Error ? err : new Error(String(err))
+      );
       error('Hata', 'Kaydetme sırasında bir hata oluştu');
     } finally {
       setIsSubmitting(false);

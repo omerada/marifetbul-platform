@@ -1,6 +1,7 @@
 import type { User } from '@/types';
 import type { ApiResponse } from '@/types/shared/api';
 import { apiClient } from '@/lib/infrastructure/api/client';
+import { logger } from '@/lib/shared/utils/logger';
 
 export interface LoginRequest {
   email: string;
@@ -85,7 +86,10 @@ export class AuthService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to get current user:', error);
+      logger.error(
+        'Failed to get current user',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -108,7 +112,10 @@ export class AuthService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to update profile:', error);
+      logger.error(
+        'Failed to update profile',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -131,7 +138,10 @@ export class AuthService {
 
       return response.success;
     } catch (error) {
-      console.error('Failed to change password:', error);
+      logger.error(
+        'Failed to change password',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return false;
     }
   }
@@ -150,7 +160,10 @@ export class AuthService {
 
       return response.success;
     } catch (error) {
-      console.error('Failed to request password reset:', error);
+      logger.error(
+        'Failed to request password reset',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return false;
     }
   }
@@ -173,7 +186,10 @@ export class AuthService {
 
       return response.success;
     } catch (error) {
-      console.error('Failed to reset password:', error);
+      logger.error(
+        'Failed to reset password',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return false;
     }
   }
@@ -192,7 +208,10 @@ export class AuthService {
 
       return response.success;
     } catch (error) {
-      console.error('Failed to verify email:', error);
+      logger.error(
+        'Failed to verify email',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return false;
     }
   }
@@ -208,7 +227,10 @@ export class AuthService {
 
       return response.success;
     } catch (error) {
-      console.error('Failed to resend verification:', error);
+      logger.error(
+        'Failed to resend verification',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return false;
     }
   }
@@ -228,7 +250,10 @@ export class UserService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch user:', error);
+      logger.error(
+        'Failed to fetch user',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -278,7 +303,10 @@ export class UserService {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch public profile:', error);
+      logger.error(
+        'Failed to fetch public profile',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -294,7 +322,10 @@ export class UserService {
 
       return response.success && response.data?.following === true;
     } catch (error) {
-      console.error('Failed to toggle follow:', error);
+      logger.error(
+        'Failed to toggle follow',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return false;
     }
   }

@@ -8,6 +8,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   useLocalStorage,
   useMediaQuery,
   useDebounce,
@@ -410,7 +411,7 @@ export function useClipboard() {
       setTimeout(() => setCopied(false), 2000);
       return true;
     } catch (error) {
-      console.error('Failed to copy text:', error);
+      logger.error('Failed to copy text:', error);
       return false;
     }
   }, []);

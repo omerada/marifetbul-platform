@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useLocationStore } from '@/lib/core/store';
+import { logger } from '@/lib/shared/utils/logger';
 import type { Coordinates, LocationData } from '@/types/core/base';
 
 interface UseUnifiedLocationOptions {
@@ -94,7 +95,7 @@ export function useUnifiedLocation(
   // Get current position
   const getCurrentPosition = useCallback(async () => {
     if (!navigator.geolocation) {
-      console.error('Geolocation is not supported by this browser');
+      logger.error('Geolocation is not supported by this browser');
       return;
     }
 
@@ -115,7 +116,7 @@ export function useUnifiedLocation(
       await store.getCurrentLocation();
       setAccuracy(position.coords.accuracy);
     } catch (error) {
-      console.error('Failed to get current position:', error);
+      logger.error('Failed to get current position:', error);
     } finally {
       setIsLoadingPosition(false);
     }
@@ -124,7 +125,7 @@ export function useUnifiedLocation(
   // Watch position
   const watchPosition = useCallback(() => {
     if (!navigator.geolocation) {
-      console.error('Geolocation is not supported by this browser');
+      logger.error('Geolocation is not supported by this browser');
       return;
     }
 
@@ -139,7 +140,7 @@ export function useUnifiedLocation(
         setAccuracy(position.coords.accuracy);
       },
       (error) => {
-        console.error('Position watch error:', error);
+        logger.error('Position watch error:', error);
       },
       positionOptions
     );
@@ -172,7 +173,7 @@ export function useUnifiedLocation(
 
         await store.searchLocations(request);
       } catch (error) {
-        console.error('Location search failed:', error);
+        logger.error('Location search failed:', error);
       }
     },
     [store]
@@ -204,7 +205,7 @@ export function useUnifiedLocation(
 
           await store.getAutocomplete(request);
         } catch (error) {
-          console.error('Autocomplete failed:', error);
+          logger.error('Autocomplete failed:', error);
         }
       }, autocompleteDelay);
     },

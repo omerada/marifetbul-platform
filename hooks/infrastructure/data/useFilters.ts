@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { logger } from '@/lib/shared/utils/logger';
 import { JobFilters, PackageFilters } from '@/types';
 
 // Advanced Job Filters Hook
@@ -165,7 +166,7 @@ export function useSearchSuggestions(query: string, type: 'jobs' | 'packages') {
           setSuggestions([]);
         }
       } catch (error) {
-        console.error('Search suggestions fetch error:', error);
+        logger.error('Search suggestions fetch error:', error);
         setSuggestions([]);
       } finally {
         setIsLoading(false);
@@ -189,7 +190,7 @@ export function useFilterPersistence(key: string) {
         localStorage.setItem(key, JSON.stringify(filters));
       }
     } catch (error) {
-      console.error('Failed to save filters to localStorage:', error);
+      logger.error('Failed to save filters to localStorage:', error);
     }
   };
 
@@ -201,7 +202,7 @@ export function useFilterPersistence(key: string) {
       }
       return null;
     } catch (error) {
-      console.error('Failed to load filters from localStorage:', error);
+      logger.error('Failed to load filters from localStorage:', error);
       return null;
     }
   };
@@ -212,7 +213,7 @@ export function useFilterPersistence(key: string) {
         localStorage.removeItem(key);
       }
     } catch (error) {
-      console.error('Failed to clear filters from localStorage:', error);
+      logger.error('Failed to clear filters from localStorage:', error);
     }
   };
 

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback } from 'react';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface HapticEngine {
   impactOccurred: (intensity: HapticIntensity) => void;
@@ -93,7 +94,7 @@ export function useHapticFeedback() {
           }
         }
       } catch (error) {
-        console.warn('Haptic feedback not available:', error);
+        logger.warn('Haptic feedback not available:', error);
       }
     },
     []

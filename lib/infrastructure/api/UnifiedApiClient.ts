@@ -4,6 +4,8 @@
 // Single API client with standardized responses, error handling, and performance optimization
 // Replaces: Multiple API client implementations and inconsistent response handling
 
+import { getBackendApiUrl } from '@/lib/config/api';
+
 // Types for standardized API responses
 export interface ApiResponse<T = unknown> {
   data: T;
@@ -567,11 +569,7 @@ export class UnifiedApiClient {
 
 // Create singleton instance
 export const unifiedApiClient = new UnifiedApiClient({
-  baseURL:
-    process.env.NEXT_PUBLIC_API_URL ||
-    (typeof window !== 'undefined' && process.env.NODE_ENV === 'development'
-      ? '/api/v1'
-      : 'http://localhost:8080/api/v1'),
+  baseURL: getBackendApiUrl(),
   timeout: 30000,
   retries: 3,
   retryDelay: 1000,

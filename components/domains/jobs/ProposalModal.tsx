@@ -7,6 +7,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
+import { logger } from '@/lib/shared/utils/logger';
 import { isJobBudgetObject } from '@/lib/shared/utils/typeGuards';
 
 interface ProposalModalProps {
@@ -42,7 +43,7 @@ export function ProposalModal({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Log jobId for debugging - will be used for API calls
-  console.log('Creating proposal for job:', jobId);
+  logger.debug('Creating proposal for job:', jobId);
 
   const [formData, setFormData] = useState<ProposalData>({
     coverLetter: '',
@@ -148,10 +149,10 @@ export function ProposalModal({
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log('Submitting proposal:', formData);
+      logger.debug('Submitting proposal:', formData);
       onClose();
     } catch (error) {
-      console.error('Proposal submission error:', error);
+      logger.error('Proposal submission error:', error);
     } finally {
       setIsSubmitting(false);
     }

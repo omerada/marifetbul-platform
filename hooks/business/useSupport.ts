@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { useSupportStore } from '@/lib/core/store/support';
+import { logger } from '@/lib/shared/utils/logger';
 import type { SupportTicket, PaginationMeta } from '@/types';
 import type {
   CreateTicketFormData,
@@ -67,7 +68,7 @@ export interface UseSupportReturn {
  *   const handleCreateTicket = async (data: CreateTicketFormData) => {
  *     const result = await createTicket(data);
  *     if (result.success) {
- *       console.log('Ticket created:', result.ticketId);
+ *       logger.debug('Ticket created:', result.ticketId);
  *     }
  *   };
  *

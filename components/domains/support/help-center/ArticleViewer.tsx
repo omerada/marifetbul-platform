@@ -23,6 +23,7 @@ import {
 import { useHelpCenter } from '@/hooks';
 import { cn } from '@/lib/utils';
 import type { HelpArticle } from '@/types';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface ArticleViewerProps {
   article: HelpArticle;
@@ -61,7 +62,10 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
       });
       setUserRating(rating);
     } catch (error) {
-      console.error('Rating failed:', error);
+      logger.error(
+        'Rating failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   };
 
@@ -70,7 +74,10 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
       // API call would go here
       setIsHelpful(helpful);
     } catch (error) {
-      console.error('Helpful vote failed:', error);
+      logger.error(
+        'Helpful vote failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   };
 
@@ -85,7 +92,10 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
           setCopiedToClipboard(true);
           setTimeout(() => setCopiedToClipboard(false), 2000);
         } catch (error) {
-          console.error('Copy failed:', error);
+          logger.error(
+            'Copy failed',
+            error instanceof Error ? error : new Error(String(error))
+          );
         }
         break;
       case 'facebook':

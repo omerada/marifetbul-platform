@@ -8,6 +8,7 @@ import {
   SocialLoginProvider,
   ReferralData,
 } from '@/types/shared/social';
+import { logger } from '@/lib/shared/utils/logger';
 
 const defaultProviders: SocialLoginProvider[] = [
   {
@@ -161,7 +162,7 @@ export const useSocialStore = create<SocialStore>()(
 
       trackReferral: (data: Partial<ReferralData>) => {
         // In a real app, this would send to analytics
-        console.log('Referral tracked:', {
+        logger.debug('Referral tracked', {
           ...data,
           timestamp: new Date().toISOString(),
         });
@@ -302,7 +303,7 @@ function waitForAuthResult(popup: Window | null): Promise<SocialLoginResponse> {
 
 function trackShareEvent(platform: string, data: SocialShareData) {
   // In a real app, this would send to analytics
-  console.log('Share tracked:', {
+  logger.debug('Share tracked', {
     platform,
     url: data.url,
     title: data.title,

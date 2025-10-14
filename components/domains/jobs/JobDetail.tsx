@@ -28,6 +28,7 @@ import { ProposalModal } from './ProposalModal';
 import { ProposalCard } from './ProposalCard';
 import { Loading } from '@/components/ui';
 import { ErrorState } from '@/components/shared/utilities';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface JobDetailProps {
   jobId: string;
@@ -101,7 +102,7 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
     try {
       await updateProposalStatus(proposalId, action);
     } catch (error) {
-      console.error('Proposal action error:', error);
+      logger.error('Proposal action error:', error);
     }
   };
 

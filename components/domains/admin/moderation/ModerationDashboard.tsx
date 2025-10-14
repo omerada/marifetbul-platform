@@ -24,6 +24,7 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface ModerationItem {
   id: string;
@@ -159,7 +160,7 @@ export default function ModerationDashboard() {
         setStats(statsData.data);
         setModerationItems(itemsData.data || []);
       } catch (error) {
-        console.error('Error fetching moderation data:', error);
+        logger.error('Error fetching moderation data:', error);
         // Set empty data on error
         setStats({
           totalReports: 0,
@@ -174,7 +175,7 @@ export default function ModerationDashboard() {
         setModerationItems([]);
       }
     } catch (error) {
-      console.error('Failed to fetch moderation data:', error);
+      logger.error('Failed to fetch moderation data:', error);
     } finally {
       setIsLoading(false);
     }
@@ -212,7 +213,7 @@ export default function ModerationDashboard() {
         body: JSON.stringify({ action }),
       });
     } catch (error) {
-      console.error(`Failed to ${action} item:`, error);
+      logger.error(`Failed to ${action} item:`, error);
     }
   };
 

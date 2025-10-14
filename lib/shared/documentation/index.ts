@@ -243,11 +243,14 @@ export class DocumentationGenerator {
     this.generateFullDocumentation();
 
     // This would write files in a real implementation
-    console.log('Documentation generated:', {
-      apiEndpoints: this.apiDocs.size,
-      components: this.componentDocs.size,
-      outputDir,
-    });
+    // Note: console.log kept here as this is a development/build-time tool
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Documentation generated:', {
+        apiEndpoints: this.apiDocs.size,
+        components: this.componentDocs.size,
+        outputDir,
+      });
+    }
   }
 }
 

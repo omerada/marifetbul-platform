@@ -27,6 +27,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { redirect } from 'next/navigation';
 import { Logger } from '../monitoring/logger';
+import { getBackendApiUrl } from '@/lib/config/api';
 
 const logger = new Logger({ level: 'info' });
 
@@ -85,7 +86,7 @@ type NextRouteHandler = (
 
 /**
  * Extract user context from request
- * This is a placeholder - implement based on your auth system
+ * Uses JWT token validation against backend API
  */
 export async function getUserFromRequest(
   request: NextRequest
@@ -97,34 +98,40 @@ export async function getUserFromRequest(
       return null;
     }
 
-    // Get user role from cookie (non-httpOnly for middleware access)
-    const roleStr = request.cookies.get('marifetbul-user-role')?.value;
-    const role = (roleStr as UserRole) || 'user';
+    // Validate token with backend API
+    const backendUrl = getBackendApiUrl();
+    const response = await fetch(`${backendUrl}/auth/validate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: `marifetbul_token=${token}`,
+      },
+      credentials: 'include',
+      cache: 'no-store',
+    });
 
-    // Get user ID from cookie
-    const userId = request.cookies.get('marifetbul-user-id')?.value;
-    if (!userId) {
+    if (!response.ok) {
+      logger.warn('Token validation failed', {
+        status: response.status,
+        url: request.url,
+      });
       return null;
     }
 
-    // Get user email from cookie
-    const email = request.cookies.get('marifetbul-user-email')?.value || '';
+    const data = await response.json();
 
-    // In a real implementation, you would:
-    // 1. Verify the JWT token
-    // 2. Decode the token to get user info
-    // 3. Optionally fetch full user data from database
-
+    // Extract user info from validated response
     return {
-      id: userId,
-      email,
-      role,
+      id: data.user?.id || data.userId,
+      email: data.user?.email || data.email,
+      role: (data.user?.role || data.role || 'user') as UserRole,
+      name: data.user?.name || data.name,
     };
   } catch (error) {
     logger.error(
       'Failed to extract user from request',
       error instanceof Error ? error : new Error(String(error)),
-      {}
+      { url: request.url }
     );
     return null;
   }

@@ -9,6 +9,7 @@
  */
 
 import { getCurrentUserId } from '@/lib/domains/auth/utils';
+import { logger } from '@/lib/shared/utils/logger';
 
 export interface WebSocketMessage<T = unknown> {
   type: WebSocketEventType;
@@ -143,7 +144,7 @@ export class WebSocketManager {
           this.stats.lastConnectedAt = new Date().toISOString();
 
           if (this.options.debug) {
-            console.log('[WebSocket] Connected to', this.options.url);
+            logger.debug('WebSocket: Connected to', this.options.url);
           }
 
           if (this.options.enableHeartbeat) {
@@ -167,7 +168,10 @@ export class WebSocketManager {
           this.stopHeartbeat();
 
           if (this.options.debug) {
-            console.log('[WebSocket] Disconnected:', event.code, event.reason);
+            logger.debug('WebSocket: Disconnected', {
+              code: event.code,
+              reason: event.reason,
+            });
           }
 
           // Emit connection event
@@ -189,7 +193,7 @@ export class WebSocketManager {
           this.isConnecting = false;
 
           if (this.options.debug) {
-            console.error('[WebSocket] Error:', error);
+            logger.error('WebSocket: Error', error);
           }
 
           // Emit error event
@@ -229,7 +233,7 @@ export class WebSocketManager {
   send<T = unknown>(type: WebSocketEventType, payload: T): boolean {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       if (this.options.debug) {
-        console.warn('[WebSocket] Cannot send, not connected');
+        logger.warn('WebSocket: Cannot send, not connected');
       }
       return false;
     }
@@ -247,14 +251,14 @@ export class WebSocketManager {
       this.stats.messagesSent++;
 
       if (this.options.debug) {
-        console.log('[WebSocket] Sent:', type, payload);
+        logger.debug('WebSocket: Sent', { type, payload });
       }
 
       return true;
     } catch (error) {
       this.stats.errors++;
       if (this.options.debug) {
-        console.error('[WebSocket] Send failed:', error);
+        logger.error('WebSocket: Send failed', error);
       }
       return false;
     }
@@ -326,7 +330,7 @@ export class WebSocketManager {
           handler(payload);
         } catch (error) {
           if (this.options.debug) {
-            console.error('[WebSocket] Handler error:', error);
+            logger.error('WebSocket: Handler error', error);
           }
         }
       });
@@ -342,7 +346,10 @@ export class WebSocketManager {
       this.stats.messagesReceived++;
 
       if (this.options.debug) {
-        console.log('[WebSocket] Received:', message.type, message.payload);
+        logger.debug('WebSocket: Received', {
+          type: message.type,
+          payload: message.payload,
+        });
       }
 
       // Handle heartbeat/pong messages
@@ -359,7 +366,7 @@ export class WebSocketManager {
     } catch (error) {
       this.stats.errors++;
       if (this.options.debug) {
-        console.error('[WebSocket] Parse error:', error);
+        logger.error('WebSocket: Parse error', error);
       }
     }
   }
@@ -381,19 +388,19 @@ export class WebSocketManager {
     );
 
     if (this.options.debug) {
-      console.log(
-        `[WebSocket] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`
+      logger.debug(
+        `WebSocket: Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`
       );
     }
 
     this.reconnectTimer = setTimeout(() => {
       this.connect().catch((error) => {
-        console.error('Reconnection failed:', error);
+        logger.error('WebSocket: Reconnection failed', error);
 
         if (this.reconnectAttempts < this.options.maxReconnectAttempts) {
           this.scheduleReconnect();
         } else {
-          console.error('Max reconnection attempts reached');
+          logger.error('WebSocket: Max reconnection attempts reached');
         }
       });
     }, delay);
@@ -417,7 +424,7 @@ export class WebSocketManager {
         // Check if we received pong recently
         const timeSinceLastPong = Date.now() - this.lastPongTime;
         if (timeSinceLastPong > this.options.heartbeatInterval * 2) {
-          console.warn('Heartbeat timeout, reconnecting...');
+          logger.warn('WebSocket: Heartbeat timeout, reconnecting...');
           this.ws.close(1000, 'Heartbeat timeout');
         }
       }
@@ -468,7 +475,7 @@ export async function initializeWebSocket(): Promise<WebSocketManager> {
     await wsManager.connect();
     return wsManager;
   } catch (error) {
-    console.error('Failed to initialize WebSocket:', error);
+    logger.error('Failed to initialize WebSocket', error);
     throw error;
   }
 }

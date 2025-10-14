@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   Search,
   Download,
   RefreshCw,
@@ -177,7 +178,7 @@ export function AdminLogs() {
         a.click();
       }
     } catch (error) {
-      console.error('Failed to export logs:', error);
+      logger.error('Failed to export logs:', error);
     }
   };
 

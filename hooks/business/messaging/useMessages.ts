@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { logger } from '@/lib/shared/utils/logger';
 import type { Conversation, Message } from '@/types';
 
 export function useConversations() {
@@ -131,7 +132,7 @@ export function useMessaging() {
         throw new Error('Failed to send message');
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      logger.error('Error sending message:', error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -147,7 +148,7 @@ export function useMessaging() {
         credentials: 'include',
       });
     } catch (error) {
-      console.error('Error marking as read:', error);
+      logger.error('Error marking as read:', error);
     }
   };
 
@@ -164,7 +165,7 @@ export function useMessaging() {
         return await response.json();
       }
     } catch (error) {
-      console.error('Error creating conversation:', error);
+      logger.error('Error creating conversation:', error);
       throw error;
     }
   };
@@ -176,7 +177,7 @@ export function useMessaging() {
         credentials: 'include',
       });
     } catch (error) {
-      console.error('Error deleting message:', error);
+      logger.error('Error deleting message:', error);
       throw error;
     }
   };

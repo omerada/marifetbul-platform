@@ -13,6 +13,7 @@ import {
 import { Input } from '@/components/ui/Input';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface SearchSuggestion {
   id: string;
@@ -106,7 +107,10 @@ export function UniversalSearch({
 
       setSearchResults(results);
     } catch (error) {
-      console.error('Search error:', error);
+      logger.error(
+        'Search error',
+        error instanceof Error ? error : new Error(String(error))
+      );
       // Fallback to empty results
       setSuggestions([]);
       setSearchResults({ services: [], jobs: [], freelancers: [] });

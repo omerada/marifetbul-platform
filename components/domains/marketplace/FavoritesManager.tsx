@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   Heart,
   HeartOff,
   FolderPlus,
@@ -330,7 +331,7 @@ export const FavoritesManager: React.FC<FavoritesManagerProps> = ({
   // Event handlers
   const handleViewFavorite = useCallback(
     (item: Freelancer | Job | ServicePackage) => {
-      console.log('Viewing favorite:', item);
+      logger.debug('Viewing favorite:', item);
     },
     []
   );

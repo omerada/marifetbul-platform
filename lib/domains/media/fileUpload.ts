@@ -5,6 +5,7 @@
 
 import { FileAttachment } from '@/types';
 import { getFileUploadService } from './fileUpload.service';
+import { logger } from '@/lib/shared/utils/logger';
 
 // Allowed file types
 export const ALLOWED_FILE_TYPES = {
@@ -198,7 +199,10 @@ export async function deleteFile(fileId: string): Promise<void> {
       throw new Error('File deletion failed');
     }
   } catch (error) {
-    console.error('Error deleting file:', error);
+    logger.error(
+      'Error deleting file',
+      error instanceof Error ? error : new Error(String(error))
+    );
     throw error;
   }
 }

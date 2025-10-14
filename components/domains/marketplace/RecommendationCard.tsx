@@ -13,6 +13,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   Star,
   ThumbsUp,
   ThumbsDown,
@@ -489,7 +490,7 @@ export const RecommendationList: React.FC<RecommendationListProps> = ({
 
   const handleView = useCallback((item: Freelancer | Job | ServicePackage) => {
     // Navigate to item detail page
-    console.log('Viewing item:', item);
+    logger.debug('Viewing item:', item);
   }, []);
 
   const displayedRecommendations = recommendations.slice(0, limit);
@@ -593,7 +594,7 @@ export const RecommendationList: React.FC<RecommendationListProps> = ({
       {/* Load More */}
       {recommendations.length > limit && (
         <div className="text-center">
-          <Button variant="outline" onClick={() => console.log('Load more')}>
+          <Button variant="outline" onClick={() => logger.debug('Load more')}>
             Daha Fazla Öneri Göster
           </Button>
         </div>

@@ -28,6 +28,7 @@ import {
   validateFiles,
 } from '@/lib/shared/utils';
 import { useToast } from '@/hooks';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface ChatInterfaceProps {
   conversationId: string;
@@ -107,7 +108,7 @@ export function ChatInterface({
         textareaRef.current.style.height = 'auto';
       }
     } catch (error) {
-      console.error('Failed to send message:', error);
+      logger.error('Failed to send message:', error);
       toast.error('Mesaj gönderilemedi');
     }
   };

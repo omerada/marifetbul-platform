@@ -1,3 +1,5 @@
+import { logger } from '@/lib/shared/utils/logger';
+
 export interface WebSocketConfig {
   url: string;
   reconnectInterval?: number;
@@ -63,7 +65,10 @@ export class WebSocketManager {
             const message: WebSocketMessage = JSON.parse(event.data);
             this.handleMessage(message);
           } catch (error) {
-            console.error('Failed to parse WebSocket message:', error);
+            logger.error(
+              'Failed to parse WebSocket message',
+              error instanceof Error ? error : new Error(String(error))
+            );
           }
         };
 
@@ -77,7 +82,12 @@ export class WebSocketManager {
         };
 
         this.ws.onerror = (error) => {
-          console.error('WebSocket error:', error);
+          logger.error(
+            'WebSocket error',
+            error instanceof Error
+              ? error
+              : new Error('WebSocket error occurred')
+          );
           reject(error);
         };
       } catch (error) {
@@ -164,7 +174,10 @@ export class WebSocketManager {
         try {
           handler(message.data);
         } catch (error) {
-          console.error('Error in WebSocket event handler:', error);
+          logger.error(
+            'Error in WebSocket event handler',
+            error instanceof Error ? error : new Error(String(error))
+          );
         }
       });
     }
@@ -183,7 +196,10 @@ export class WebSocketManager {
       this.reconnectAttempts++;
 
       this.connect().catch((error) => {
-        console.error('Reconnection failed:', error);
+        logger.error(
+          'Reconnection failed',
+          error instanceof Error ? error : new Error(String(error))
+        );
       });
     }, this.config.reconnectInterval);
   }
@@ -198,7 +214,10 @@ export class WebSocketManager {
         try {
           this.send('ping', { timestamp: Date.now() });
         } catch (error) {
-          console.error('Failed to send ping:', error);
+          logger.error(
+            'Failed to send ping',
+            error instanceof Error ? error : new Error(String(error))
+          );
         }
       }
     }, this.config.pingInterval);

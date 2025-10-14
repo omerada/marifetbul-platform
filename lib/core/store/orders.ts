@@ -9,6 +9,7 @@ import type {
   OrderDispute,
   PaginationMeta,
 } from '@/types';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface OrderFilters {
   status?: string;
@@ -663,7 +664,10 @@ export const useOrderStore = create<OrderStore>()(
             }
           });
         } catch (error) {
-          console.error('Error updating milestone:', error);
+          logger.error(
+            'Error updating milestone',
+            error instanceof Error ? error : new Error(String(error))
+          );
           throw error;
         }
       },

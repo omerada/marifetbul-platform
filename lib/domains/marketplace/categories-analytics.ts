@@ -3,6 +3,7 @@
 // ==========================================
 
 import { CategoryAnalyticsEvent } from '@/types/business/features/marketplace-categories';
+import { logger } from '@/lib/shared/utils/logger';
 
 // Analytics service for category interactions
 export class CategoryAnalytics {
@@ -97,7 +98,7 @@ export class CategoryAnalytics {
 
     // In a real app, you would send this to your analytics service
     if (process.env.NODE_ENV === 'development') {
-      console.log('📊 Analytics Event:', analyticsEvent);
+      logger.debug('📊 Analytics Event:', analyticsEvent);
     }
 
     // Send to analytics services (Google Analytics, Mixpanel, etc.)
@@ -152,7 +153,12 @@ export class CategoryAnalytics {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(event),
-      }).catch(console.error);
+      }).catch((error) =>
+        logger.error(
+          'Analytics endpoint failed',
+          error instanceof Error ? error : new Error(String(error))
+        )
+      );
     }
   }
 

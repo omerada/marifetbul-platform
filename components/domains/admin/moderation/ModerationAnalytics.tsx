@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   BarChart3,
   TrendingUp,
   TrendingDown,
@@ -160,7 +161,7 @@ export default function ModerationAnalytics() {
       const data = await response.json();
       setAnalytics(data.analytics);
     } catch (error) {
-      console.error('Error fetching analytics:', error);
+      logger.error('Error fetching analytics:', error);
     } finally {
       setLoading(false);
     }
@@ -200,7 +201,7 @@ export default function ModerationAnalytics() {
         window.URL.revokeObjectURL(url);
       }
     } catch (error) {
-      console.error('Error exporting data:', error);
+      logger.error('Error exporting data:', error);
     }
   };
 

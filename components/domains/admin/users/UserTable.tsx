@@ -51,6 +51,7 @@ import {
   Briefcase,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/shared/utils/logger';
 
 // Modern BulkActions component
 function BulkActions({
@@ -189,10 +190,10 @@ export function UserTable({ className }: UserTableProps) {
               // Successfully deleted, refresh the user list
               window.location.reload();
             } else {
-              console.error('Delete failed:', result.message);
+              logger.error('Delete failed:', result.message);
             }
           } catch (error) {
-            console.error('Error deleting user:', error);
+            logger.error('Error deleting user:', error);
           }
           setShowDeleteDialog(false);
           break;
@@ -206,7 +207,7 @@ export function UserTable({ className }: UserTableProps) {
           break;
       }
     } catch (error) {
-      console.error('Error performing user action:', error);
+      logger.error('Error performing user action:', error);
     } finally {
       setActionUser(null);
     }
@@ -316,7 +317,7 @@ export function UserTable({ className }: UserTableProps) {
                         }
                       }
                     } catch (error) {
-                      console.error('Export failed:', error);
+                      logger.error('Export failed:', error);
                     }
                   }}
                   disabled={isLoading}

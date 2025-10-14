@@ -23,6 +23,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Loading } from '@/components/ui';
 import { OrderForm } from './OrderForm';
+import { logger } from '@/lib/shared/utils/logger';
 
 // Helper function to get image source as string
 const getPackageImageSrc = (
@@ -119,7 +120,7 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
           url: window.location.href,
         });
       } catch (err) {
-        console.log('Error sharing:', err);
+        logger.debug('Error sharing:', err);
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
@@ -573,7 +574,7 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
         <OrderForm
           servicePackage={servicePackage}
           onSubmit={(data) => {
-            console.log('Order submitted:', data);
+            logger.debug('Order submitted:', data);
             setShowOrderForm(false);
           }}
           onCancel={() => setShowOrderForm(false)}

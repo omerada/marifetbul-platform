@@ -16,6 +16,7 @@ import type { SecurityAlert as SecurityAlertType } from '@/types';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface SecurityAlertProps {
   alert: SecurityAlertType;
@@ -65,7 +66,7 @@ export function SecurityAlert({
     try {
       await onDismiss(alert.id);
     } catch (error) {
-      console.error('Alert dismiss error:', error);
+      logger.error('Alert dismiss error:', error);
     } finally {
       setIsProcessing(false);
     }
@@ -78,7 +79,7 @@ export function SecurityAlert({
     try {
       await onAction(alert.id, action);
     } catch (error) {
-      console.error('Alert action error:', error);
+      logger.error('Alert action error:', error);
     } finally {
       setIsProcessing(false);
     }
@@ -226,7 +227,7 @@ export function SecurityAlertsList({
 
   const handleAction = async (alertId: string, action: string) => {
     // Handle specific actions based on action type
-    console.log('Security alert action:', { alertId, action });
+    logger.debug('Security alert action:', { alertId, action });
     // Implement specific action handlers here
   };
 

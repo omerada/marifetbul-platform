@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
+import { logger } from '@/lib/shared/utils/logger';
   useAdminSettingsStore,
   useAdminSettingsSelectors,
   useAdminSettingsActions,
@@ -38,7 +39,7 @@ export function usePlatformSettings() {
       try {
         await updateSettings(settings);
       } catch (error) {
-        console.error('Settings update failed:', error);
+        logger.error('Settings update failed:', error);
       } finally {
         setIsSaving(false);
       }
@@ -71,7 +72,7 @@ export function usePlatformSettings() {
     try {
       await resetSettings();
     } catch (error) {
-      console.error('Settings reset failed:', error);
+      logger.error('Settings reset failed:', error);
     } finally {
       setIsResetting(false);
     }
@@ -82,7 +83,7 @@ export function usePlatformSettings() {
     try {
       await exportSettings();
     } catch (error) {
-      console.error('Settings export failed:', error);
+      logger.error('Settings export failed:', error);
     } finally {
       setIsExporting(false);
     }
@@ -94,7 +95,7 @@ export function usePlatformSettings() {
       try {
         await importSettings(settings);
       } catch (error) {
-        console.error('Settings import failed:', error);
+        logger.error('Settings import failed:', error);
       } finally {
         setIsSaving(false);
       }

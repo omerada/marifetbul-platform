@@ -8,6 +8,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { Send, X, Upload, FileText } from 'lucide-react';
+import { logger } from '@/lib/shared/utils/logger';
 
 const proposalSchema = z.object({
   coverLetter: z
@@ -57,7 +58,7 @@ export function ProposalForm({ jobId, onSubmit, onCancel }: ProposalFormProps) {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      console.log('Proposal submitted:', {
+      logger.debug('Proposal submitted:', {
         jobId,
         ...data,
         attachments: attachments.map((f) => f.name),
@@ -65,7 +66,7 @@ export function ProposalForm({ jobId, onSubmit, onCancel }: ProposalFormProps) {
 
       onSubmit(data);
     } catch (error) {
-      console.error('Error submitting proposal:', error);
+      logger.error('Error submitting proposal:', error);
     } finally {
       setIsSubmitting(false);
     }
