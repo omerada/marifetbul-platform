@@ -23,6 +23,7 @@
  * ```
  */
 
+import React from 'react';
 import DOMPurify from 'isomorphic-dompurify';
 import type { Config } from 'isomorphic-dompurify';
 import { Logger } from '../monitoring/logger';
@@ -350,14 +351,14 @@ export function encodeJavaScript(str: string): string {
  */
 export function SafeHtml({
   html,
-  config = 'BASIC',
+  config = 'default',
   className,
   as: Component = 'div',
 }: {
   html: string;
   config?: keyof typeof SANITIZE_CONFIG | Config;
   className?: string;
-  as?: keyof JSX.IntrinsicElements;
+  as?: React.ElementType;
 }) {
   const cleanHtml = sanitizeHtml(html, config);
 
@@ -379,7 +380,7 @@ export function SafeText({
 }: {
   text: string;
   className?: string;
-  as?: keyof JSX.IntrinsicElements;
+  as?: React.ElementType;
 }) {
   const cleanText = sanitizeToText(text);
 

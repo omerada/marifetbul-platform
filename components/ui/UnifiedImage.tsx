@@ -307,6 +307,7 @@ export const UnifiedImage = forwardRef<HTMLImageElement, UnifiedImageProps>(
         >
           <NextImage
             ref={ref}
+            src={props.src}
             alt={alt}
             width={width as number}
             height={height as number}

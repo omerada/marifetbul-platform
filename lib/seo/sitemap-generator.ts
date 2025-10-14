@@ -22,7 +22,7 @@ export class SitemapGenerator {
       // For now, return empty array or mock data
       const blogPosts = await this.fetchBlogPosts();
 
-      return blogPosts.map((post) => ({
+      return blogPosts.map((post: any) => ({
         url: `${this.baseUrl}/blog/${post.slug}`,
         lastModified: new Date(post.updatedAt),
         changeFrequency: 'weekly' as const,
@@ -41,7 +41,7 @@ export class SitemapGenerator {
     try {
       const jobs = await this.fetchActiveJobs();
 
-      return jobs.map((job) => ({
+      return jobs.map((job: any) => ({
         url: `${this.baseUrl}/marketplace/jobs/${job.id}`,
         lastModified: new Date(job.updatedAt),
         changeFrequency: 'weekly' as const,
@@ -60,7 +60,7 @@ export class SitemapGenerator {
     try {
       const packages = await this.fetchActivePackages();
 
-      return packages.map((pkg) => ({
+      return packages.map((pkg: any) => ({
         url: `${this.baseUrl}/marketplace/packages/${pkg.id}`,
         lastModified: new Date(pkg.updatedAt),
         changeFrequency: 'weekly' as const,
@@ -79,7 +79,7 @@ export class SitemapGenerator {
     try {
       const publicProfiles = await this.fetchPublicProfiles();
 
-      return publicProfiles.map((profile) => ({
+      return publicProfiles.map((profile: any) => ({
         url: `${this.baseUrl}/profile/${profile.id}`,
         lastModified: new Date(profile.updatedAt),
         changeFrequency: 'monthly' as const,
@@ -98,7 +98,7 @@ export class SitemapGenerator {
     try {
       const categories = await this.fetchCategories();
 
-      return categories.map((category) => ({
+      return categories.map((category: any) => ({
         url: `${this.baseUrl}/marketplace/categories/${category.slug}`,
         lastModified: new Date(),
         changeFrequency: 'monthly' as const,
@@ -117,7 +117,7 @@ export class SitemapGenerator {
     try {
       const helpArticles = await this.fetchHelpArticles();
 
-      return helpArticles.map((article) => ({
+      return helpArticles.map((article: any) => ({
         url: `${this.baseUrl}/support/help/articles/${article.slug}`,
         lastModified: new Date(article.updatedAt),
         changeFrequency: 'monthly' as const,
