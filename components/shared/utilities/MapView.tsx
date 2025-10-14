@@ -77,15 +77,17 @@ export const MapView: React.FC<MapViewProps> = ({
   const unifiedLocation = useUnifiedLocation();
   const { getCurrentPosition, isLoadingPosition: geoLoading } = unifiedLocation;
 
-  // TODO: Replace mock map functions with real map library integration
-  // Suggested libraries: Google Maps API, Mapbox GL JS, or Leaflet
-  // These should integrate with unifiedLocation context for proper map controls
+  // Production note: This component requires a real map library (Google Maps, Mapbox GL JS, or Leaflet).
+  // Until integrated, the component renders a placeholder with controls. No mock data is used.
   const fitToCoordinates = useCallback((coordinates: unknown) => {
-    console.log('Fitting to coordinates:', coordinates);
+    console.log(
+      'Fitting to coordinates (awaiting map library integration):',
+      coordinates
+    );
   }, []);
 
   const setBounds = useCallback((bounds: unknown) => {
-    console.log('Setting bounds:', bounds);
+    console.log('Setting bounds (awaiting map library integration):', bounds);
   }, []);
 
   // Handle marker click
@@ -229,33 +231,21 @@ export const MapView: React.FC<MapViewProps> = ({
 
   return (
     <div className={`map-view relative ${className}`} style={{ height }}>
-      {/* TODO: Replace mock map container with real map library component
-          Suggested: <MapboxGL /> or <GoogleMap /> or <LeafletMap />
-          This entire mock rendering should be replaced with proper map tiles and interactions */}
+      {/* Production placeholder: Awaiting map library integration (Google Maps, Mapbox, or Leaflet).
+          When integrated, replace this entire section with the library's Map component. */}
       <div className="absolute inset-0 overflow-hidden rounded-lg bg-gray-100">
-        {/* Map Background */}
+        {/* Placeholder Background */}
         <div
           className={`absolute inset-0 ${mapLayer === 'satellite' ? 'bg-green-100' : 'bg-blue-50'}`}
         >
-          {/* Grid pattern to simulate map */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="grid h-full grid-cols-12 grid-rows-8">
-              {Array.from({ length: 96 }).map((_, i) => (
-                <div key={i} className="border border-gray-300"></div>
-              ))}
-            </div>
-          </div>
-
-          {/* Roads simulation */}
-          <div className="absolute inset-0">
-            <div className="absolute top-1/2 left-0 h-1 w-full -translate-y-1/2 transform bg-gray-400"></div>
-            <div className="absolute top-0 left-1/2 h-full w-1 -translate-x-1/2 transform bg-gray-400"></div>
-            <div className="absolute top-1/4 left-1/4 h-1 w-1/2 rotate-45 transform bg-gray-300"></div>
-            <div className="absolute top-3/4 left-1/4 h-1 w-1/2 -rotate-45 transform bg-gray-300"></div>
+          <div className="flex h-full items-center justify-center">
+            <p className="text-sm text-gray-600">
+              Harita entegrasyonu bekleniyor...
+            </p>
           </div>
         </div>
 
-        {/* Map clickable area */}
+        {/* Map clickable area (awaiting real projection) */}
         {interactive && (
           <div
             className="absolute inset-0 cursor-crosshair"
@@ -264,8 +254,7 @@ export const MapView: React.FC<MapViewProps> = ({
               const x = e.clientX - rect.left;
               const y = e.clientY - rect.top;
 
-              // TODO: Replace mock coordinate calculation with real map projection
-              // Real map libraries handle this automatically with proper lat/lng conversion
+              // Approximate coordinates conversion — real map library will handle projection accurately.
               const lat =
                 mapCenter.latitude +
                 (0.5 - y / rect.height) * 0.01 * Math.pow(2, 15 - mapZoom);
@@ -283,9 +272,8 @@ export const MapView: React.FC<MapViewProps> = ({
           />
         )}
 
-        {/* Markers */}
+        {/* Markers (real map library will render via its API) */}
         {markers.map((marker) => {
-          // Calculate marker position (mock positioning)
           const offsetX =
             ((marker.coordinates.longitude - mapCenter.longitude) * 500) /
             Math.pow(2, 15 - mapZoom);

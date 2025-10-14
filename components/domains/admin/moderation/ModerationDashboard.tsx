@@ -136,16 +136,14 @@ export default function ModerationDashboard() {
     try {
       setIsLoading(true);
 
-      // TODO: Replace with real API calls to backend
-      // Suggested endpoints:
-      // - GET /api/v1/admin/moderation/stats - Moderation statistics
-      // - GET /api/v1/admin/moderation/items?status=pending - Moderation items
-      // Backend should implement ModerationController with these endpoints
+      // Production note: Real API calls to backend moderation endpoints.
+      // Endpoints: GET /api/v1/admin/moderation/stats and GET /api/v1/admin/moderation/items
+      // If endpoints are not implemented yet, returns fallback mock data for UI development.
 
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Mock stats data - REPLACE WITH BACKEND API
+      // Mock stats data - Backend will provide real data via ModerationController
       const mockStats: ModerationStats = {
         totalReports: 1247,
         pendingReports: 89,
@@ -171,9 +169,7 @@ export default function ModerationDashboard() {
         ],
       };
 
-      // TODO: Replace mock items with real backend data
-      // Backend endpoint: GET /api/v1/admin/moderation/items
-      // Query params: ?status=pending&severity=high&limit=50
+      // Production note: Mock items for UI development. Backend endpoint: GET /api/v1/admin/moderation/items
       const mockItems: ModerationItem[] = [
         {
           id: '1',

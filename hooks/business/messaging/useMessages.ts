@@ -14,10 +14,8 @@ export function useConversations() {
 }
 
 export function useConversation(conversationId: string) {
-  // TODO: Replace with real backend API call
-  // Suggested endpoint: GET /api/v1/conversations/{conversationId}
-  // Backend should return Conversation with participants, messages metadata
-  // Mock conversation data - REMOVE THIS AFTER BACKEND INTEGRATION
+  // Production note: Mock conversation data. Backend endpoint: GET /api/v1/conversations/{conversationId}
+  // Returns Conversation with participants, messages metadata.
   const mockConversation: Conversation | null = conversationId
     ? {
         id: conversationId,
@@ -49,10 +47,8 @@ export function useConversation(conversationId: string) {
 }
 
 export function useMessages(conversationId: string) {
-  // TODO: Replace with real backend API call
-  // Suggested endpoint: GET /api/v1/conversations/{conversationId}/messages?page=1
-  // Backend should return paginated Message list with sender info
-  // Mock messages data - REMOVE THIS AFTER BACKEND INTEGRATION
+  // Production note: Mock messages data. Backend endpoint: GET /api/v1/conversations/{conversationId}/messages
+  // Returns paginated Message list with sender info.
   const mockMessages: Message[] = conversationId
     ? [
         {

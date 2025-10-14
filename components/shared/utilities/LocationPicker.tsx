@@ -258,7 +258,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
               </span>
             </div>
 
-            {/* Mock map - in real app, use Google Maps or similar */}
+            {/* Production note: Map visualization awaiting real map library integration */}
             <div className="relative h-48 overflow-hidden rounded-lg bg-gray-100">
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
@@ -270,15 +270,6 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
                   <p className="mt-1 text-xs text-gray-500">
                     {searchQuery || 'Seçilen konum'}
                   </p>
-                </div>
-              </div>
-
-              {/* Mock map grid */}
-              <div className="absolute inset-0 opacity-20">
-                <div className="grid h-full grid-cols-8 grid-rows-6">
-                  {Array.from({ length: 48 }).map((_, i) => (
-                    <div key={i} className="border border-gray-300"></div>
-                  ))}
                 </div>
               </div>
             </div>

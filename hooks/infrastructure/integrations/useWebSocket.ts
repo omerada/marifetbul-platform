@@ -183,7 +183,13 @@ export const useWebSocket = ({
     setState((prev) => ({ ...prev, isConnecting: true, error: null }));
 
     try {
-      const wsUrl = `${url}?userId=${user.id}&token=mock-token`;
+      // Production note: Auth token retrieved from cookie for WebSocket connection
+      const authToken =
+        document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('auth_token='))
+          ?.split('=')[1] || '';
+      const wsUrl = `${url}?userId=${user.id}&token=${authToken}`;
       ws.current = new WebSocket(wsUrl);
 
       ws.current.onopen = () => {

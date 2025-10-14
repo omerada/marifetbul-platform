@@ -71,8 +71,7 @@ export function UniversalSearch({
     setIsLoading(true);
 
     try {
-      // TODO: Replace with real backend API call
-      // Suggested endpoint: GET /api/v1/search/suggestions?q={query}
+      // Production: Real backend API call for universal search suggestions
       const response = await fetch(
         `/api/v1/search/suggestions?q=${encodeURIComponent(searchQuery)}`,
         {

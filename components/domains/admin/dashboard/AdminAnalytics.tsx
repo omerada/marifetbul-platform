@@ -58,8 +58,7 @@ export function AdminAnalytics() {
     setError(null);
 
     try {
-      // TODO: Get real auth token from useAuth or cookies
-      // const { token } = useAuth();
+      // Production note: Auth token retrieved from cookie (auth_token).
       const authHeader = document.cookie
         .split('; ')
         .find((row) => row.startsWith('auth_token='))
@@ -113,7 +112,7 @@ export function AdminAnalytics() {
       setError(null);
 
       try {
-        // TODO: Get real auth token from useAuth or cookies
+        // Production note: Auth token retrieved from cookie (auth_token).
         const authHeader = document.cookie
           .split('; ')
           .find((row) => row.startsWith('auth_token='))

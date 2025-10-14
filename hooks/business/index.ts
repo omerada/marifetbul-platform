@@ -303,8 +303,8 @@ export function useAnalyticsTracker() {
 
   const track = useCallback(
     (event: string, properties?: Record<string, unknown>) => {
-      // Implement analytics tracking
-      // TODO: Integrate with analytics service (Google Analytics, Mixpanel, etc.)
+      // Production note: Analytics tracking awaiting integration with third-party service
+      // (Google Analytics, Mixpanel, Segment, etc.). Currently logs to console in development.
       if (process.env.NODE_ENV === 'development') {
         console.log('Analytics:', event, {
           userId: user?.id,

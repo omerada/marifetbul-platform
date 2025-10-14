@@ -141,36 +141,35 @@ export function useSearchSuggestions(query: string, type: 'jobs' | 'packages') {
 
     setIsLoading(true);
 
-    // TODO: Replace with real backend API call
-    // Suggested endpoint: GET /api/v1/search/suggestions?query={query}&type={type}
-    // Backend should implement autocomplete/suggestions with indexing
-    // Mock suggestions - REMOVE THIS AFTER BACKEND INTEGRATION
-    const timeoutId = setTimeout(() => {
-      const mockSuggestions =
-        type === 'jobs'
-          ? [
-              'React Developer',
-              'Frontend Developer',
-              'Full Stack Developer',
-              'UI/UX Designer',
-              'Mobile App Developer',
-              'WordPress Developer',
-            ]
-          : [
-              'Logo Tasarım',
-              'Web Sitesi Geliştirme',
-              'Mobile Uygulama',
-              'SEO Hizmeti',
-              'İçerik Yazımı',
-              'Sosyal Medya Yönetimi',
-            ];
+    // Production: real backend API call for autocomplete suggestions
+    const timeoutId = setTimeout(async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
+        const res = await fetch(
+          `${apiUrl}/search/suggestions?query=${encodeURIComponent(query)}&type=${type}`,
+          {
+            cache: 'no-store',
+          }
+        );
 
-      const filtered = mockSuggestions.filter((suggestion) =>
-        suggestion.toLowerCase().includes(query.toLowerCase())
-      );
-
-      setSuggestions(filtered.slice(0, 5));
-      setIsLoading(false);
+        if (res.ok) {
+          const data = await res.json();
+          const items = Array.isArray(data?.data)
+            ? data.data
+            : Array.isArray(data)
+              ? data
+              : [];
+          setSuggestions(items.slice(0, 5));
+        } else {
+          // If endpoint doesn't exist yet or error, fall back to empty
+          setSuggestions([]);
+        }
+      } catch (error) {
+        console.error('Search suggestions fetch error:', error);
+        setSuggestions([]);
+      } finally {
+        setIsLoading(false);
+      }
     }, 300);
 
     return () => {

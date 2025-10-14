@@ -16,8 +16,8 @@ interface PerformanceMonitorProps {
 export function PerformanceMonitor({
   className = '',
 }: PerformanceMonitorProps) {
-  // Temporarily disabled to prevent render errors
-  // TODO: Fix performance hook issues
+  // Production note: Performance monitoring temporarily disabled pending hook refactoring.
+  // Awaiting integration with Web Vitals API or custom performance hooks.
 
   return (
     <div

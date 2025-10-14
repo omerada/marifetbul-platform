@@ -160,77 +160,149 @@ export class SitemapGenerator {
   }
 
   // Mock data fetchers - Replace with actual database calls
+  // Production-ready fetchers: call backend API endpoints. If an endpoint is missing
+  // the functions will safely return an empty array.
   private async fetchBlogPosts() {
-    // TODO: Implement actual database fetch
-    return [
-      {
-        slug: 'freelancing-tips-2025',
-        updatedAt: '2024-12-01T00:00:00Z',
-      },
-      {
-        slug: 'how-to-price-your-services',
-        updatedAt: '2024-11-28T00:00:00Z',
-      },
-    ];
+    try {
+      const base = process.env.NEXT_PUBLIC_API_URL || `${this.baseUrl}/api/v1`;
+      const res = await fetch(
+        `${base}/blog/posts?status=published&limit=1000`,
+        { cache: 'no-store' }
+      );
+      if (!res.ok) return [];
+      const json = await res.json();
+      // Expecting { success: boolean, data: [...] } or raw array
+      const items = Array.isArray(json?.data)
+        ? json.data
+        : Array.isArray(json)
+          ? json
+          : [];
+      return items.map((p: any) => ({
+        slug: p.slug,
+        updatedAt: p.updatedAt || p.createdAt,
+      }));
+    } catch (e) {
+      console.error('fetchBlogPosts error:', e);
+      return [];
+    }
   }
 
   private async fetchActiveJobs() {
-    // TODO: Implement actual database fetch
-    return [
-      {
-        id: 'job-1',
-        updatedAt: '2024-12-01T00:00:00Z',
-      },
-    ];
+    try {
+      const base = process.env.NEXT_PUBLIC_API_URL || `${this.baseUrl}/api/v1`;
+      const res = await fetch(
+        `${base}/marketplace/jobs?status=active&limit=1000`,
+        { cache: 'no-store' }
+      );
+      if (!res.ok) return [];
+      const json = await res.json();
+      const items = Array.isArray(json?.data)
+        ? json.data
+        : Array.isArray(json)
+          ? json
+          : [];
+      return items.map((j: any) => ({
+        id: j.id,
+        updatedAt: j.updatedAt || j.modifiedAt || j.createdAt,
+      }));
+    } catch (e) {
+      console.error('fetchActiveJobs error:', e);
+      return [];
+    }
   }
 
   private async fetchActivePackages() {
-    // TODO: Implement actual database fetch
-    return [
-      {
-        id: 'package-1',
-        updatedAt: '2024-12-01T00:00:00Z',
-      },
-    ];
+    try {
+      const base = process.env.NEXT_PUBLIC_API_URL || `${this.baseUrl}/api/v1`;
+      const res = await fetch(
+        `${base}/marketplace/packages?status=active&limit=1000`,
+        { cache: 'no-store' }
+      );
+      if (!res.ok) return [];
+      const json = await res.json();
+      const items = Array.isArray(json?.data)
+        ? json.data
+        : Array.isArray(json)
+          ? json
+          : [];
+      return items.map((p: any) => ({
+        id: p.id,
+        updatedAt: p.updatedAt || p.modifiedAt || p.createdAt,
+      }));
+    } catch (e) {
+      console.error('fetchActivePackages error:', e);
+      return [];
+    }
   }
 
   private async fetchPublicProfiles() {
-    // TODO: Implement actual database fetch
-    return [
-      {
-        id: 'user-1',
-        updatedAt: '2024-12-01T00:00:00Z',
-      },
-    ];
+    try {
+      const base = process.env.NEXT_PUBLIC_API_URL || `${this.baseUrl}/api/v1`;
+      // Assumption: backend exposes a public users endpoint; if not, service will return empty list.
+      const res = await fetch(`${base}/users/public?limit=1000`, {
+        cache: 'no-store',
+      });
+      if (!res.ok) return [];
+      const json = await res.json();
+      const items = Array.isArray(json?.data)
+        ? json.data
+        : Array.isArray(json)
+          ? json
+          : [];
+      return items.map((u: any) => ({
+        id: u.id,
+        updatedAt: u.updatedAt || u.modifiedAt || u.createdAt,
+      }));
+    } catch (e) {
+      console.error('fetchPublicProfiles error:', e);
+      return [];
+    }
   }
 
   private async fetchCategories() {
-    // TODO: Implement actual database fetch
-    return [
-      {
-        slug: 'web-development',
-      },
-      {
-        slug: 'graphic-design',
-      },
-      {
-        slug: 'digital-marketing',
-      },
-    ];
+    try {
+      const base = process.env.NEXT_PUBLIC_API_URL || `${this.baseUrl}/api/v1`;
+      const res = await fetch(`${base}/marketplace/categories`, {
+        cache: 'no-store',
+      });
+      if (!res.ok) return [];
+      const json = await res.json();
+      const items = Array.isArray(json?.data)
+        ? json.data
+        : Array.isArray(json)
+          ? json
+          : [];
+      return items.map((c: any) => ({
+        slug: c.slug || c.name || String(c.id),
+      }));
+    } catch (e) {
+      console.error('fetchCategories error:', e);
+      return [];
+    }
   }
 
   private async fetchHelpArticles() {
-    // TODO: Implement actual database fetch
-    return [
-      {
-        slug: 'getting-started',
-        updatedAt: '2024-12-01T00:00:00Z',
-      },
-      {
-        slug: 'payment-methods',
-        updatedAt: '2024-11-15T00:00:00Z',
-      },
-    ];
+    try {
+      const base = process.env.NEXT_PUBLIC_API_URL || `${this.baseUrl}/api/v1`;
+      // Try common help endpoints; fall back to empty list
+      const res = await fetch(`${base}/support/help/articles?limit=1000`, {
+        cache: 'no-store',
+      });
+      if (!res.ok) return [];
+      const json = await res.json();
+      const items = Array.isArray(json?.data)
+        ? json.data
+        : Array.isArray(json)
+          ? json
+          : [];
+      return items.map((a: any) => ({
+        slug: a.slug,
+        updatedAt: a.updatedAt || a.modifiedAt || a.createdAt,
+      }));
+    } catch (e) {
+      console.error('fetchHelpArticles error:', e);
+      return [];
+    }
   }
 }
 

@@ -120,8 +120,7 @@ export function SearchAutocomplete({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // TODO: Fetch search history and trending data from backend
-  // These could be fetched via useEffect on component mount
+  // Production: Fetch search history and trending data from backend on mount
   const [searchHistory, setSearchHistory] = useState<SearchSuggestion[]>([]);
   const [trendingSearches, setTrendingSearches] = useState<SearchSuggestion[]>(
     []

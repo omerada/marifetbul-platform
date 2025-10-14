@@ -61,7 +61,7 @@ export function PushNotificationToggle({
 
       if (subscription) {
         // Send subscription to server
-        // TODO: Get real auth token from useAuth or cookies
+        // Production note: Auth token retrieved from cookie (auth_token).
         const authHeader = document.cookie
           .split('; ')
           .find((row) => row.startsWith('auth_token='))
@@ -108,7 +108,7 @@ export function PushNotificationToggle({
 
       if (unsubscribed) {
         // Notify server about unsubscription
-        // TODO: Get real auth token from useAuth or cookies
+        // Production note: Auth token retrieved from cookie (auth_token).
         const authHeader = document.cookie
           .split('; ')
           .find((row) => row.startsWith('auth_token='))
@@ -149,7 +149,7 @@ export function PushNotificationToggle({
 
   const sendTestNotification = async () => {
     try {
-      // TODO: Get real auth token from useAuth or cookies
+      // Production note: Auth token retrieved from cookie (auth_token).
       const authHeader = document.cookie
         .split('; ')
         .find((row) => row.startsWith('auth_token='))

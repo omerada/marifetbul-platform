@@ -2,6 +2,17 @@ import { useState, useEffect, useCallback } from 'react';
 import { PushNotificationManager } from '@/lib/domains/notification/push-notifications';
 import { Notification, NotificationSettings } from '@/types';
 
+// Production note: Helper to retrieve auth token from cookie
+const getAuthToken = (): string => {
+  if (typeof document === 'undefined') return '';
+  return (
+    document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('auth_token='))
+      ?.split('=')[1] || ''
+  );
+};
+
 interface UsePushNotificationsReturn {
   notifications: Notification[];
   unreadCount: number;

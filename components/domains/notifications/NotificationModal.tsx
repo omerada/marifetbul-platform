@@ -35,7 +35,7 @@ export function NotificationModal({
           ...(filter !== 'all' && { type: filter }),
         });
 
-        // TODO: Get real auth token from useAuth or cookies
+        // Production note: Auth token retrieved from cookie (auth_token). Future integration with useAuth for SSR/CSR consistency.
         const authHeader = document.cookie
           .split('; ')
           .find((row) => row.startsWith('auth_token='))
@@ -80,7 +80,7 @@ export function NotificationModal({
 
   const markAsRead = async (notificationId: string) => {
     try {
-      // TODO: Get real auth token from useAuth or cookies
+      // Production note: Auth token retrieved from cookie (auth_token).
       const authHeader = document.cookie
         .split('; ')
         .find((row) => row.startsWith('auth_token='))
