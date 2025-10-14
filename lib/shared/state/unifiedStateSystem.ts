@@ -3,7 +3,7 @@
 // ================================================
 // Modern Zustand-based state management with performance optimizations
 
-import { create } from 'zustand';
+import { create, StoreApi, UseBoundStore } from 'zustand';
 import { devtools, persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
@@ -47,24 +47,28 @@ export interface CacheState<T> {
 // ================================
 
 export function createStoreWithMiddleware<T>(
-  storeCreator: any,
+  storeCreator: (
+    set: StoreApi<T>['setState'],
+    get: StoreApi<T>['getState'],
+    api: StoreApi<T>
+  ) => T,
   config: {
     name: string;
     persist?: boolean;
     devtools?: boolean;
   }
-) {
-  let store = storeCreator;
+): UseBoundStore<StoreApi<T>> {
+  let store: typeof storeCreator = storeCreator;
 
   if (config.persist) {
     store = persist(store, {
       name: `marifet-${config.name}`,
       storage: createJSONStorage(() => localStorage),
-    });
+    }) as typeof storeCreator;
   }
 
   if (config.devtools && process.env.NODE_ENV === 'development') {
-    store = devtools(store, { name: config.name });
+    store = devtools(store, { name: config.name }) as typeof storeCreator;
   }
 
   return create(immer(store));
@@ -74,42 +78,45 @@ export function createStoreWithMiddleware<T>(
 // PERFORMANCE OPTIMIZATIONS
 // ================================
 
-export function withDebounce<T extends (...args: any[]) => any>(
+export function withDebounce<T extends (...args: unknown[]) => unknown>(
   fn: T,
   delay: number
-): T {
+): (...args: Parameters<T>) => void {
   let timeoutId: NodeJS.Timeout;
 
-  return ((...args: Parameters<T>) => {
+  return (...args: Parameters<T>) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => fn(...args), delay);
-  }) as T;
+  };
 }
 
-export function createAsyncAction<T>(
+export function createAsyncAction<TState extends BaseState, TResult>(
   actionName: string,
-  asyncFn: () => Promise<T>
+  asyncFn: () => Promise<TResult>
 ) {
-  return async (set: any, get: any) => {
+  return async (
+    set: (fn: (draft: TState) => void) => void,
+    get: () => TState
+  ) => {
     const state = get();
 
     if (state.isLoading) return;
 
-    set((draft: any) => {
+    set((draft: TState) => {
       draft.isLoading = true;
       draft.error = null;
     });
 
     try {
       const result = await asyncFn();
-      set((draft: any) => {
+      set((draft: TState & AsyncState<TResult>) => {
         draft.data = result;
         draft.isLoading = false;
         draft.lastUpdated = new Date();
       });
       return result;
     } catch (error) {
-      set((draft: any) => {
+      set((draft: TState) => {
         draft.error =
           error instanceof Error ? error.message : 'An error occurred';
         draft.isLoading = false;
