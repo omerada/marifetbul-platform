@@ -455,7 +455,9 @@ export function useMemo<T>(
   deps: React.DependencyList,
   cacheKey?: string
 ): T {
-  const memoRef = useRef<{ value: T; deps: React.DependencyList }>();
+  const memoRef = useRef<{ value: T; deps: React.DependencyList } | undefined>(
+    undefined
+  );
 
   return reactUseMemo(() => {
     // If we have a cache key, try to get from component cache

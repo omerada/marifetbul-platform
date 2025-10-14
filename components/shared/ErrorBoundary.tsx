@@ -196,7 +196,7 @@ export function SimpleErrorFallback({
 }: {
   error: Error;
   resetError?: () => void;
-}): JSX.Element {
+}): React.ReactElement {
   return (
     <div className="rounded-lg border border-red-200 bg-red-50 p-4">
       <div className="flex items-start">

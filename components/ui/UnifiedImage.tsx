@@ -153,7 +153,7 @@ export const UnifiedImage = forwardRef<HTMLImageElement, UnifiedImageProps>(
     const height = props.height || config.defaultSize.height;
 
     // Styling classes
-    const roundedClasses = {
+    const roundedClasses: Record<string, string> = {
       none: '',
       sm: 'rounded-sm',
       md: 'rounded-md',
@@ -162,7 +162,7 @@ export const UnifiedImage = forwardRef<HTMLImageElement, UnifiedImageProps>(
       full: 'rounded-full',
     };
 
-    const shadowClasses = {
+    const shadowClasses: Record<string, string> = {
       none: '',
       sm: 'shadow-sm',
       md: 'shadow-md',
@@ -170,7 +170,7 @@ export const UnifiedImage = forwardRef<HTMLImageElement, UnifiedImageProps>(
       xl: 'shadow-xl',
     };
 
-    const objectFitClasses = {
+    const objectFitClasses: Record<string, string> = {
       cover: 'object-cover',
       contain: 'object-contain',
       fill: 'object-fill',
@@ -178,14 +178,14 @@ export const UnifiedImage = forwardRef<HTMLImageElement, UnifiedImageProps>(
       none: 'object-none',
     };
 
-    const overlayClasses = {
+    const overlayClasses: Record<string, string> = {
       black: 'bg-black',
       white: 'bg-white',
       blue: 'bg-blue-600',
       gray: 'bg-gray-600',
     };
 
-    const overlayOpacityClasses = {
+    const overlayOpacityClasses: Record<number, string> = {
       10: 'bg-opacity-10',
       20: 'bg-opacity-20',
       30: 'bg-opacity-30',

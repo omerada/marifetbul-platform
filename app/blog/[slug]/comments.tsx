@@ -1,67 +1,69 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { BlogComment } from '@/types/blog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { MessageCircle, Clock, Send, ThumbsUp } from 'lucide-react';
-
-// Mock yorumlar - gerçek projede API'den çekilmeli
-const comments: BlogComment[] = [
-  {
-    id: 'c1',
-    postId: '1',
-    author: 'Ahmet Yılmaz',
-    content:
-      'Çok faydalı bir yazı olmuş, özellikle fiyatlandırma konusundaki öneriler çok değerli. Teşekkürler!',
-    createdAt: '2025-09-13T12:00:00Z',
-    approved: true,
-  },
-  {
-    id: 'c2',
-    postId: '1',
-    author: 'Zeynep Kaya',
-    content:
-      'Freelance olarak yeni başladım ve bu yazı tam zamanında geldi. Portföy hazırlama kısmını çok beğendim.',
-    createdAt: '2025-09-14T08:30:00Z',
-    approved: true,
-  },
-  {
-    id: 'c3',
-    postId: '1',
-    author: 'Mehmet Demir',
-    content:
-      'Yasal konulara değinmeniz çok iyi olmuş. Bu konuda daha detaylı bir yazı gelirse harika olur.',
-    createdAt: '2025-09-15T16:45:00Z',
-    approved: true,
-  },
-];
+import { apiClient } from '@/lib/infrastructure/api/client';
+import API_ENDPOINTS from '@/lib/api/endpoints';
 
 export default function BlogComments({ postId }: { postId: string }) {
+  const [comments, setComments] = useState<BlogComment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [newComment, setNewComment] = useState('');
   const [authorName, setAuthorName] = useState('');
+  const [authorEmail, setAuthorEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const postComments = comments.filter(
-    (c) => c.postId === postId && c.approved
-  );
+  // Fetch comments from API
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        setIsLoading(true);
+        const response = await apiClient.get<BlogComment[]>(
+          API_ENDPOINTS.BLOG.GET_APPROVED_COMMENTS(postId)
+        );
+        setComments(response);
+      } catch (err) {
+        console.error('Failed to fetch comments:', err);
+        setComments([]); // Fallback to empty array on error
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchComments();
+  }, [postId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim() || !authorName.trim()) return;
 
     setIsSubmitting(true);
+    setError(null);
 
-    // Mock submission - gerçek projede API'ye gönderilmeli
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      await apiClient.post(API_ENDPOINTS.BLOG.CREATE_COMMENT(postId), {
+        author: authorName,
+        email: authorEmail || undefined,
+        content: newComment,
+      });
 
-    setNewComment('');
-    setAuthorName('');
-    setIsSubmitting(false);
+      setNewComment('');
+      setAuthorName('');
+      setAuthorEmail('');
 
-    // Başarılı mesajı göster
-    alert(
-      'Yorumunuz başarıyla gönderildi! İncelendikten sonra yayınlanacaktır.'
-    );
+      // Show success message
+      alert(
+        'Yorumunuz başarıyla gönderildi! İncelendikten sonra yayınlanacaktır.'
+      );
+    } catch (err) {
+      setError('Yorum gönderilemedi. Lütfen tekrar deneyin.');
+      console.error('Failed to submit comment:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -69,20 +71,30 @@ export default function BlogComments({ postId }: { postId: string }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <MessageCircle className="h-5 w-5 text-blue-600" />
-          Yorumlar ({postComments.length})
+          Yorumlar ({comments.length})
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {/* Loading State */}
+        {isLoading && (
+          <div className="py-8 text-center">
+            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
+            <p className="text-gray-500">Yorumlar yükleniyor...</p>
+          </div>
+        )}
+
         {/* Existing Comments */}
-        {postComments.length === 0 ? (
+        {!isLoading && comments.length === 0 && (
           <div className="py-8 text-center">
             <MessageCircle className="mx-auto mb-4 h-12 w-12 text-gray-400" />
             <p className="mb-2 text-gray-500">Henüz yorum yapılmamış.</p>
             <p className="text-sm text-gray-400">İlk yorumu sen yap!</p>
           </div>
-        ) : (
+        )}
+
+        {!isLoading && comments.length > 0 && (
           <div className="mb-8 space-y-6">
-            {postComments.map((comment) => (
+            {comments.map((comment) => (
               <div key={comment.id} className="border-l-4 border-blue-100 pl-4">
                 <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 font-semibold text-white">
@@ -135,6 +147,11 @@ export default function BlogComments({ postId }: { postId: string }) {
           <h3 className="mb-4 text-lg font-semibold text-gray-900">
             Yorum Yap
           </h3>
+          {error && (
+            <div className="mb-4 rounded-lg bg-red-50 p-4 text-red-800">
+              {error}
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
@@ -164,6 +181,8 @@ export default function BlogComments({ postId }: { postId: string }) {
                 <input
                   type="email"
                   id="email"
+                  value={authorEmail}
+                  onChange={(e) => setAuthorEmail(e.target.value)}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                   placeholder="E-posta adresiniz..."
                 />

@@ -63,7 +63,7 @@ export function useWebSocket(
   });
 
   const wsManagerRef = useRef(getWebSocketManager());
-  const presenceIntervalRef = useRef<NodeJS.Timeout>();
+  const presenceIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Update stats periodically
   useEffect(() => {
@@ -268,7 +268,7 @@ export function useTypingIndicator(
 export function useConversationTyping(conversationId: string) {
   const [isTyping, setIsTyping] = useState(false);
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
-  const typingTimeoutRef = useRef<NodeJS.Timeout>();
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Track other users' typing status
   useTypingIndicator(

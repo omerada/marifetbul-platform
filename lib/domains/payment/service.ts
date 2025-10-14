@@ -5,6 +5,8 @@ import {
   createSuccessResult,
   createErrorResult,
 } from '../../infrastructure/services/base';
+import { apiClient } from '../../infrastructure/api/client';
+import API_ENDPOINTS from '../../api/endpoints';
 
 export interface PaymentData {
   orderId: string;
@@ -90,32 +92,17 @@ export class PaymentService extends BaseService {
         return createErrorResult("Ödeme tutarı 0'dan büyük olmalı");
       }
 
-      // API call simulation
-      const paymentResponse = await this.simulateApiCall('/api/payments', {
-        method: 'POST',
-        body: {
+      // Real API call
+      const payment = await apiClient.post<PaymentRecord>(
+        API_ENDPOINTS.PAYMENT.CREATE_INTENT,
+        {
           orderId: data.orderId,
           amount: data.amount,
           currency: data.currency,
           method: data.method,
           description: data.description,
-        },
-      });
-
-      const payment: PaymentRecord = {
-        id: (paymentResponse.id as string) || `pay-${Date.now()}`,
-        orderId: data.orderId,
-        amount: data.amount,
-        currency: data.currency,
-        method: data.method,
-        status: 'pending',
-        description: data.description,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        escrowStatus: 'held',
-        feeAmount: Math.round(data.amount * 0.03), // 3% platform fee
-        netAmount: Math.round(data.amount * 0.97),
-      };
+        }
+      );
 
       return createSuccessResult(payment);
     } catch (error) {
@@ -138,36 +125,21 @@ export class PaymentService extends BaseService {
         return createErrorResult('Ödeme ID gerekli');
       }
 
-      const paymentResponse = await this.simulateApiCall(
-        `/api/payments/${paymentId}`
+      const payment = await apiClient.get<PaymentRecord>(
+        API_ENDPOINTS.PAYMENT.GET_BY_ID(paymentId)
       );
-
-      if (!paymentResponse) {
-        return createSuccessResult(null);
-      }
-
-      const payment: PaymentRecord = {
-        id: paymentId,
-        orderId: (paymentResponse.orderId as string) || 'order-123',
-        amount: (paymentResponse.amount as number) || 1500,
-        currency: (paymentResponse.currency as string) || 'TRY',
-        method: (paymentResponse.method as string) || 'credit_card',
-        status:
-          (paymentResponse.status as PaymentRecord['status']) || 'completed',
-        description: (paymentResponse.description as string) || 'Test payment',
-        createdAt:
-          (paymentResponse.createdAt as string) || new Date().toISOString(),
-        updatedAt:
-          (paymentResponse.updatedAt as string) || new Date().toISOString(),
-        escrowStatus:
-          (paymentResponse.escrowStatus as PaymentRecord['escrowStatus']) ||
-          'held',
-        feeAmount: (paymentResponse.feeAmount as number) || 45,
-        netAmount: (paymentResponse.netAmount as number) || 1455,
-      };
 
       return createSuccessResult(payment);
     } catch (error) {
+      // If 404, return null instead of error
+      if (
+        error &&
+        typeof error === 'object' &&
+        'status' in error &&
+        error.status === 404
+      ) {
+        return createSuccessResult(null);
+      }
       return createErrorResult(
         `Ödeme bilgileri alınırken hata: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`
       );
@@ -189,54 +161,22 @@ export class PaymentService extends BaseService {
     serviceOptions?: ServiceOptions
   ): Promise<ServiceResult<PaymentRecord[]>> {
     try {
-      const queryParams = new URLSearchParams();
+      const queryParams: Record<string, string> = {};
 
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined) {
           if (Array.isArray(value)) {
-            value.forEach((v) => queryParams.append(key, v));
+            queryParams[key] = value.join(',');
           } else {
-            queryParams.append(key, value);
+            queryParams[key] = value;
           }
         }
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const paymentsResponse = await this.simulateApiCall(
-        `/api/payments?${queryParams.toString()}`
+      const payments = await apiClient.get<PaymentRecord[]>(
+        API_ENDPOINTS.PAYMENT.GET_HISTORY,
+        queryParams
       );
-
-      // Mock payment history
-      const payments: PaymentRecord[] = [
-        {
-          id: 'pay-1',
-          orderId: 'order-123',
-          amount: 1500,
-          currency: 'TRY',
-          method: 'credit_card',
-          status: 'completed',
-          description: 'Logo tasarımı',
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-          updatedAt: new Date(Date.now() - 86400000).toISOString(),
-          escrowStatus: 'released',
-          feeAmount: 45,
-          netAmount: 1455,
-        },
-        {
-          id: 'pay-2',
-          orderId: 'order-124',
-          amount: 2500,
-          currency: 'TRY',
-          method: 'bank_transfer',
-          status: 'pending',
-          description: 'Web sitesi geliştirme',
-          createdAt: new Date(Date.now() - 43200000).toISOString(),
-          updatedAt: new Date(Date.now() - 43200000).toISOString(),
-          escrowStatus: 'held',
-          feeAmount: 75,
-          netAmount: 2425,
-        },
-      ];
 
       return createSuccessResult(payments);
     } catch (error) {
@@ -259,33 +199,13 @@ export class PaymentService extends BaseService {
         return createErrorResult('Ödeme ID ve iade nedeni gerekli');
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const refundResponse = await this.simulateApiCall(
-        '/api/payments/refund',
+      const payment = await apiClient.post<PaymentRecord>(
+        API_ENDPOINTS.PAYMENT.REFUND(data.paymentId),
         {
-          method: 'POST',
-          body: {
-            paymentId: data.paymentId,
-            amount: data.amount,
-            reason: data.reason,
-          },
+          amount: data.amount,
+          reason: data.reason,
         }
       );
-
-      const payment: PaymentRecord = {
-        id: data.paymentId,
-        orderId: 'order-123',
-        amount: data.amount || 1500,
-        currency: 'TRY',
-        method: 'credit_card',
-        status: 'refunded',
-        description: `İade: ${data.reason}`,
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        updatedAt: new Date().toISOString(),
-        escrowStatus: 'refunded',
-        feeAmount: 45,
-        netAmount: (data.amount || 1500) - 45,
-      };
 
       return createSuccessResult(payment);
     } catch (error) {
@@ -308,32 +228,13 @@ export class PaymentService extends BaseService {
         return createErrorResult('Ödeme ID gerekli');
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const releaseResponse = await this.simulateApiCall(
-        '/api/payments/escrow/release',
+      // Backend should have this endpoint for escrow release
+      const payment = await apiClient.post<PaymentRecord>(
+        `/payments/${data.paymentId}/escrow/release`,
         {
-          method: 'POST',
-          body: {
-            paymentId: data.paymentId,
-            reason: data.reason,
-          },
+          reason: data.reason,
         }
       );
-
-      const payment: PaymentRecord = {
-        id: data.paymentId,
-        orderId: 'order-123',
-        amount: 1500,
-        currency: 'TRY',
-        method: 'credit_card',
-        status: 'completed',
-        description: 'Escrow serbest bırakıldı',
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        updatedAt: new Date().toISOString(),
-        escrowStatus: 'released',
-        feeAmount: 45,
-        netAmount: 1455,
-      };
 
       return createSuccessResult(payment);
     } catch (error) {
@@ -356,22 +257,10 @@ export class PaymentService extends BaseService {
         return createErrorResult('Ödeme ID gerekli');
       }
 
-      const invoiceResponse = await this.simulateApiCall('/api/invoices', {
-        method: 'POST',
-        body: { paymentId },
-      });
-
-      const invoice: InvoiceRecord = {
-        id: (invoiceResponse.id as string) || `inv-${Date.now()}`,
+      // Backend should have an invoice generation endpoint
+      const invoice = await apiClient.post<InvoiceRecord>(`/invoices`, {
         paymentId,
-        orderId: 'order-123',
-        invoiceNumber: `INV-${Date.now()}`,
-        amount: 1500,
-        currency: 'TRY',
-        issueDate: new Date().toISOString(),
-        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        downloadUrl: `/api/invoices/${invoiceResponse.id || `inv-${Date.now()}`}/download`,
-      };
+      });
 
       return createSuccessResult(invoice);
     } catch (error) {

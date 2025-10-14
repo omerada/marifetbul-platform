@@ -9,7 +9,7 @@ import {
 
 // React hooks for performance monitoring
 export function usePerformanceMonitor() {
-  const monitor = useRef<PerfMonitor>();
+  const monitor = useRef<PerfMonitor | undefined>(undefined);
 
   useEffect(() => {
     monitor.current = new PerfMonitor();
@@ -52,7 +52,7 @@ export function withPerformanceTracking<T extends Record<string, unknown>>(
   return function PerformanceTrackedComponent(props: T) {
     const { trackMetric } = usePerformanceMonitor();
 
-    const renderStartTime = useRef<number>();
+    const renderStartTime = useRef<number | undefined>(undefined);
 
     useEffect(() => {
       renderStartTime.current = performance.now();
