@@ -35,16 +35,6 @@ export function isAuthenticated(): boolean {
 }
 
 /**
- * Get auth token (deprecated - now using httpOnly cookies)
- * @deprecated Use cookie-based authentication instead
- */
-export function getAuthToken(): string | null {
-  // Token is now stored in httpOnly cookies managed by backend
-  // This function is kept for backward compatibility but returns null
-  return null;
-}
-
-/**
  * Helper to ensure user is authenticated, throws error if not
  */
 export function requireAuth(): string {

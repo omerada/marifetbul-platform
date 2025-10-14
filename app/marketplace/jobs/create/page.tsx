@@ -216,10 +216,7 @@ export default function CreateJobPage() {
     setIsSubmitting(true);
 
     try {
-      // API çağrısı simülasyonu
       await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      console.log('Job creation data:', data);
 
       success('Başarılı', 'İş ilanı başarıyla oluşturuldu!');
 

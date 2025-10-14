@@ -16,13 +16,11 @@ async function getCategories(): Promise<BlogCategory[]> {
     });
 
     if (!res.ok) {
-      console.error('Categories API error:', res.status, res.statusText);
       return [];
     }
 
     return await res.json();
   } catch (error) {
-    console.error('Categories fetch error:', error);
     return [];
   }
 }

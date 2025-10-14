@@ -94,7 +94,6 @@ export const logout = async (): Promise<boolean> => {
 
     return response.ok;
   } catch (error) {
-    console.error('Error during logout:', error);
     return false;
   }
 };

@@ -113,14 +113,11 @@ export default function CreatePackagePage() {
 
   const onSubmit = async (data: PackageFormData) => {
     try {
-      // Simulate API call
-      console.log('Package data:', data);
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       success('Paket başarıyla oluşturuldu!');
       router.push('/marketplace?view=packages');
     } catch (err) {
-      console.error('Package creation error:', err);
       error('Paket oluşturulurken bir hata oluştu');
     }
   };

@@ -20,85 +20,21 @@ import {
 import { MARKETPLACE_CATEGORIES } from '@/lib/domains/marketplace/categories-data';
 import { notFound } from 'next/navigation';
 
-// TODO: Replace with real backend API call
-// Suggested endpoint: GET /api/v1/marketplace/freelancers?categoryId={id}&subcategoryId={id}&page=1
-// Backend should return paginated FreelancerProfile list with skills, ratings, availability
-// Mock freelancer data - REMOVE THIS AFTER BACKEND INTEGRATION
-const mockFreelancers = [
-  {
-    id: '1',
-    name: 'Ahmet Yılmaz',
-    title: 'Full Stack Developer',
-    rating: 4.9,
-    reviewCount: 127,
-    completedJobs: 89,
-    hourlyRate: 150,
-    location: 'İstanbul',
-    avatar: '/avatars/avatar-1.jpg',
-    skills: ['React', 'Node.js', 'MongoDB', 'TypeScript'],
-    services: ['Web Sitesi', 'E-ticaret', 'API Geliştirme', 'Mobil Uygulama'],
-    description:
-      '5+ yıl deneyimli full stack developer. Modern web teknolojileri ile profesyonel çözümler.',
-    available: true,
-  },
-  {
-    id: '2',
-    name: 'Elif Demir',
-    title: 'SEO & SEM Uzmanı',
-    rating: 4.8,
-    reviewCount: 95,
-    completedJobs: 64,
-    hourlyRate: 120,
-    location: 'Ankara',
-    avatar: '/avatars/avatar-2.jpg',
-    skills: ['SEO', 'Google Ads', 'Anahtar Kelime Araştırması', 'Analytics'],
-    services: [
-      'SEO Audit',
-      'Google Ads Campaign',
-      'Keyword Research',
-      'On-Page SEO',
-    ],
-    description:
-      'SEO ve SEM konusunda 7 yıllık deneyim. Organik trafiği 3 katına çıkardım.',
-    available: true,
-  },
-  {
-    id: '3',
-    name: 'Mehmet Kaya',
-    title: 'Google Ads Uzmanı',
-    rating: 4.9,
-    reviewCount: 143,
-    completedJobs: 112,
-    hourlyRate: 180,
-    location: 'İstanbul',
-    avatar: '/avatars/avatar-3.jpg',
-    skills: ['Google Ads', 'PPC', 'Facebook Ads', 'Instagram Ads'],
-    services: [
-      'Google Ads Campaign',
-      'Facebook Reklamları',
-      'PPC Yönetimi',
-      'ROI Analizi',
-    ],
-    description:
-      'Dijital reklam kampanyalarında uzman. 500+ başarılı kampanya yönetimi.',
-    available: true,
-  },
-  {
-    id: '4',
-    name: 'Ayşe Yıldız',
-    title: 'SEO Specialist',
-    rating: 4.7,
-    reviewCount: 78,
-    completedJobs: 56,
-    hourlyRate: 100,
-    location: 'İzmir',
-    avatar: '/avatars/avatar-4.jpg',
-    skills: ['Technical SEO', 'Content SEO', 'Link Building', 'Local SEO'],
-    services: ['Technical SEO', 'Local SEO', 'Link Building', 'SEO Audit'],
-    description: 'Teknik SEO ve içerik optimizasyonu konusunda uzman.',
-    available: false,
-  },
-];
+interface Freelancer {
+  id: string;
+  name: string;
+  title: string;
+  rating: number;
+  reviewCount: number;
+  completedJobs: number;
+  hourlyRate: number;
+  location: string;
+  avatar: string;
+  skills: string[];
+  services: string[];
+  description: string;
+  available: boolean;
+}
 
 export default function SubcategoryDetailPage() {
   const params = useParams();
@@ -106,22 +42,24 @@ export default function SubcategoryDetailPage() {
   const categorySlug = params.categoryId as string;
   const subcategorySlug = params.subcategoryId as string;
 
-  // Get selected service from URL query parameter
   const selectedServiceFromUrl = searchParams.get('service');
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [sortBy, setSortBy] = useState('rating');
   const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  // Set selected service from URL on mount
   useEffect(() => {
     if (selectedServiceFromUrl) {
       setSelectedService(selectedServiceFromUrl);
     }
   }, [selectedServiceFromUrl]);
 
-  // Find category and subcategory by slug
   const { category, subcategory } = useMemo(() => {
     const cat = MARKETPLACE_CATEGORIES.find((c) => c.slug === categorySlug);
     if (!cat) return { category: null, subcategory: null };
@@ -130,61 +68,76 @@ export default function SubcategoryDetailPage() {
     return { category: cat, subcategory: subcat };
   }, [categorySlug, subcategorySlug]);
 
+  useEffect(() => {
+    const fetchFreelancers = async () => {
+      if (!category || !subcategory) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        const params = new URLSearchParams({
+          categoryId: category.id.toString(),
+          subcategoryId: subcategory.id.toString(),
+          page: page.toString(),
+          limit: '20',
+          sortBy,
+        });
+
+        if (searchTerm.trim()) {
+          params.append('search', searchTerm);
+        }
+
+        if (selectedService) {
+          params.append('service', selectedService);
+        }
+
+        if (selectedFilter === 'available') {
+          params.append('available', 'true');
+        } else if (selectedFilter === 'top-rated') {
+          params.append('minRating', '4.8');
+        }
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/marketplace/freelancers?${params}`,
+          {
+            cache: 'no-cache',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Freelancer listesi yüklenirken bir hata oluştu');
+        }
+
+        const data = await response.json();
+        setFreelancers(data.data.items || []);
+        setTotalPages(data.data.totalPages || 1);
+      } catch (err) {
+        console.error('Freelancers fetch error:', err);
+        setError(err instanceof Error ? err.message : 'Bir hata oluştu');
+        setFreelancers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFreelancers();
+  }, [
+    category,
+    subcategory,
+    page,
+    sortBy,
+    searchTerm,
+    selectedService,
+    selectedFilter,
+  ]);
+
   if (!category || !subcategory) {
     notFound();
   }
-
-  // Filter freelancers based on selected service, search, and filters
-  const filteredFreelancers = useMemo(() => {
-    let filtered = [...mockFreelancers];
-
-    // Filter by selected service
-    if (selectedService) {
-      filtered = filtered.filter((f) =>
-        f.services.some((s) =>
-          s.toLowerCase().includes(selectedService.toLowerCase())
-        )
-      );
-    }
-
-    // Filter by search term
-    if (searchTerm.trim()) {
-      const searchLower = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (f) =>
-          f.name.toLowerCase().includes(searchLower) ||
-          f.title.toLowerCase().includes(searchLower) ||
-          f.description.toLowerCase().includes(searchLower) ||
-          f.skills.some((s) => s.toLowerCase().includes(searchLower)) ||
-          f.services.some((s) => s.toLowerCase().includes(searchLower))
-      );
-    }
-
-    // Filter by availability
-    if (selectedFilter === 'available') {
-      filtered = filtered.filter((f) => f.available);
-    } else if (selectedFilter === 'top-rated') {
-      filtered = filtered.filter((f) => f.rating >= 4.8);
-    }
-
-    // Sort freelancers
-    switch (sortBy) {
-      case 'rating':
-        filtered.sort((a, b) => b.rating - a.rating);
-        break;
-      case 'price-low':
-        filtered.sort((a, b) => a.hourlyRate - b.hourlyRate);
-        break;
-      case 'price-high':
-        filtered.sort((a, b) => b.hourlyRate - a.hourlyRate);
-        break;
-      case 'completed':
-        filtered.sort((a, b) => b.completedJobs - a.completedJobs);
-        break;
-    }
-
-    return filtered;
-  }, [selectedService, searchTerm, selectedFilter, sortBy]);
 
   // Clear service filter
   const clearServiceFilter = () => {
@@ -294,7 +247,7 @@ export default function SubcategoryDetailPage() {
             <div>
               <p className="text-gray-600">
                 <span className="font-semibold text-gray-900">
-                  {filteredFreelancers.length}
+                  {freelancers.length}
                 </span>{' '}
                 hizmet bulundu
                 {selectedService && (
@@ -303,7 +256,7 @@ export default function SubcategoryDetailPage() {
                   </span>
                 )}
               </p>
-              {selectedService && filteredFreelancers.length === 0 && (
+              {selectedService && freelancers.length === 0 && (
                 <p className="mt-2 text-sm text-gray-500">
                   Bu hizmet türü için sonuç bulunamadı. Filtreyi kaldırmayı
                   deneyin.
@@ -321,7 +274,25 @@ export default function SubcategoryDetailPage() {
             </Link>
           </div>
 
-          {filteredFreelancers.length === 0 ? (
+          {loading ? (
+            <Card className="p-12 text-center">
+              <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+              <p className="text-gray-600">Uzmanlar yükleniyor...</p>
+            </Card>
+          ) : error ? (
+            <Card className="p-12 text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
+                <X className="h-8 w-8 text-red-500" />
+              </div>
+              <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                Bir Hata Oluştu
+              </h3>
+              <p className="mb-6 text-gray-600">{error}</p>
+              <Button onClick={() => window.location.reload()}>
+                Tekrar Dene
+              </Button>
+            </Card>
+          ) : freelancers.length === 0 ? (
             <Card className="p-12 text-center">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-50">
                 <Search className="h-8 w-8 text-blue-500" />
@@ -355,7 +326,7 @@ export default function SubcategoryDetailPage() {
             </Card>
           ) : (
             <div className="grid gap-4">
-              {filteredFreelancers.map((freelancer) => (
+              {freelancers.map((freelancer) => (
                 <Card
                   key={freelancer.id}
                   className="group overflow-hidden border-gray-200 transition-all duration-300 hover:border-blue-200 hover:bg-blue-50/30"
@@ -510,16 +481,25 @@ export default function SubcategoryDetailPage() {
             </div>
           )}
 
-          {/* Load More */}
-          {filteredFreelancers.length > 0 && (
-            <div className="mt-8 text-center">
+          {/* Pagination */}
+          {freelancers.length > 0 && totalPages > 1 && (
+            <div className="mt-8 flex justify-center gap-2">
               <Button
                 variant="outline"
-                size="lg"
-                className="group/btn transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1 || loading}
               >
-                Daha Fazla Hizmet Yükle
-                <ChevronRight className="ml-2 h-4 w-4 transition-transform duration-200 group-hover/btn:translate-x-1" />
+                Önceki
+              </Button>
+              <span className="flex items-center px-4 text-gray-700">
+                Sayfa {page} / {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages || loading}
+              >
+                Sonraki
               </Button>
             </div>
           )}

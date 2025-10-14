@@ -392,21 +392,6 @@ export function createErrorBoundaryConfig(
 }
 
 // ================================
-// DEVELOPMENT HELPERS
-// ================================
-
-export function triggerTestError(category: ErrorCategory = 'system'): void {
-  if (process.env.NODE_ENV === 'development') {
-    const testError = createAppError('Test error for development', {
-      severity: 'low',
-      category,
-      metadata: { isTestError: true },
-    });
-
-    globalErrorMonitor.reportError(testError);
-  }
-}
-
 // ================================
 // EXPORTS
 // ================================
@@ -421,5 +406,4 @@ export default {
   withErrorHandling,
   createAsyncErrorHandler,
   createErrorBoundaryConfig,
-  triggerTestError,
 };

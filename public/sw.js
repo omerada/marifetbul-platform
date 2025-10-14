@@ -1,8 +1,5 @@
 self.addEventListener('push', function (event) {
-  console.log('Push event received:', event);
-
   if (!event.data) {
-    console.log('Push event but no data');
     return;
   }
 
@@ -10,7 +7,6 @@ self.addEventListener('push', function (event) {
   try {
     data = event.data.json();
   } catch (e) {
-    console.error('Error parsing push data:', e);
     return;
   }
 

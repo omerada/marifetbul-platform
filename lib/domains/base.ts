@@ -101,7 +101,7 @@ export abstract class BaseService {
     };
   }
 
-  protected async simulateApiCall<T>(
+  protected async executeWithRetry<T>(
     endpoint: string,
     options: {
       method?: string;
@@ -111,28 +111,41 @@ export abstract class BaseService {
   ): Promise<T> {
     const { method = 'GET', body, headers = {} } = options;
 
-    // Simulate network delay
-    await this.delay(Math.random() * 500 + 200);
+    for (
+      let attempt = 1;
+      attempt <= (this.config.retryAttempts || 3);
+      attempt++
+    ) {
+      try {
+        const response = await fetch(endpoint, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            ...headers,
+          },
+          body: body ? JSON.stringify(body) : undefined,
+          credentials: 'include',
+        });
 
-    // Simulate occasional failures for testing
-    if (Math.random() < 0.05) {
-      throw new Error('Simulated network error');
+        if (!response.ok) {
+          throw new Error(
+            `HTTP Error: ${response.status} ${response.statusText}`
+          );
+        }
+
+        return (await response.json()) as T;
+      } catch (error) {
+        this.logError(`Request to ${endpoint}`, error);
+
+        if (attempt < (this.config.retryAttempts || 3)) {
+          await this.delay(this.config.retryDelay || 1000);
+        } else {
+          throw error;
+        }
+      }
     }
 
-    // TODO: Replace with real HTTP request implementation
-    // Suggested: Use fetch() with proper authentication and error handling
-    // This should be a real HTTP client with axios or fetch
-    // Mock response for testing - REMOVE THIS AFTER BACKEND INTEGRATION
-    const mockResponse = {
-      id: Math.random().toString(36).substr(2, 9),
-      timestamp: new Date().toISOString(),
-      endpoint,
-      method,
-      body,
-      headers,
-    };
-
-    return mockResponse as T;
+    throw new Error(`Failed after ${this.config.retryAttempts} attempts`);
   }
 
   protected async delay(ms: number): Promise<void> {

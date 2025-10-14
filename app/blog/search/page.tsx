@@ -21,13 +21,11 @@ async function searchPosts(
     );
 
     if (!res.ok) {
-      console.error('Search API error:', res.status, res.statusText);
       return { posts: [], total: 0 };
     }
 
     return await res.json();
   } catch (error) {
-    console.error('Search fetch error:', error);
     return { posts: [], total: 0 };
   }
 }

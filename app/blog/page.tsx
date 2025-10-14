@@ -18,14 +18,12 @@ export const metadata: Metadata = {
 
 async function getPosts() {
   try {
-    // Gerçek API'ye bağlan
     const response = await blogApi.getPublishedPosts({
       page: 0,
       size: 10,
       sort: 'publishedAt,desc',
     });
 
-    console.log('Blog posts loaded:', response.content.length);
     return {
       posts: response.content,
       total: response.totalElements,
@@ -33,8 +31,6 @@ async function getPosts() {
       pageSize: response.size,
     };
   } catch (error) {
-    console.error('Blog fetch error:', error);
-    // Return empty result on error
     return { posts: [], total: 0, page: 0, pageSize: 10 };
   }
 }

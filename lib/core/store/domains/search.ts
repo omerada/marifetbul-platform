@@ -126,37 +126,30 @@ export const useSearchStore = create<SearchStore>()(
       });
 
       try {
-        // TODO: Replace with real backend API call
-        // Suggested endpoint: GET /api/v1/search/messages?query={query}&page=1&filters=...
-        // Backend should implement full-text search with Elasticsearch or database search
-        // Should return: { results: SearchResult[], totalResults, hasMore }
-        // Mock search results - REMOVE THIS AFTER BACKEND INTEGRATION
-        const mockResults: SearchResult[] = [
+        const response = await fetch(
+          `/api/v1/search/messages?query=${encodeURIComponent(query)}&page=1`,
           {
-            messageId: '1',
-            conversationId: 'conv1',
-            content: `Bu mesaj "${query}" aramasına uygun bir sonuç`,
-            timestamp: new Date().toISOString(),
-            authorId: 'user1',
-            authorName: 'John Doe',
-            conversationTitle: 'Proje Görüşmesi',
-            highlights: [`"${query}" aramasına uygun`],
-            context: {
-              before: ['Önceki mesaj 1', 'Önceki mesaj 2'],
-              after: ['Sonraki mesaj 1', 'Sonraki mesaj 2'],
-            },
-          },
-        ];
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Arama başarısız oldu');
+        }
+
+        const result = await response.json();
+        const searchResults: SearchResult[] = result.data?.results || [];
 
         set((state) => {
-          state.results = mockResults;
-          state.totalResults = mockResults.length;
-          state.hasMore = false;
+          state.results = searchResults;
+          state.totalResults = result.data?.totalResults || 0;
+          state.hasMore = result.data?.hasMore || false;
           state.isSearching = false;
         });
 
-        // Add to search history and recent searches
-        get().addToHistory(query, filters, mockResults.length);
+        get().addToHistory(query, filters, searchResults.length);
         get().addToRecentSearches(query);
       } catch {
         set((state) => {
@@ -177,21 +170,33 @@ export const useSearchStore = create<SearchStore>()(
       });
 
       try {
-        // TODO: Replace with real backend API call for pagination
-        // Suggested endpoint: GET /api/v1/search/messages?query={query}&page={page}&filters=...
-        // Mock pagination results - REMOVE THIS AFTER BACKEND INTEGRATION
-        const mockMoreResults: SearchResult[] = [];
+        const { currentPage } = get();
+        const response = await fetch(
+          `/api/v1/search/messages?query=${encodeURIComponent(currentQuery)}&page=${currentPage}`,
+          {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Sayfalama başarısız oldu');
+        }
+
+        const result = await response.json();
+        const moreResults: SearchResult[] = result.data?.results || [];
 
         set((state) => {
-          state.results.push(...mockMoreResults);
-          state.hasMore = mockMoreResults.length === state.resultsPerPage;
+          state.results.push(...moreResults);
+          state.hasMore = result.data?.hasMore || false;
           state.isSearching = false;
         });
       } catch {
         set((state) => {
           state.searchError = 'Daha fazla sonuç yüklenirken hata oluştu';
           state.isSearching = false;
-          state.currentPage -= 1; // Revert page increment
+          state.currentPage -= 1;
         });
       }
     },

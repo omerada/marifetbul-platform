@@ -332,24 +332,23 @@ export const useMessagingStore = create<MessagingState>()(
         });
 
         try {
-          // TODO: Replace with actual API call
-          const response: MessageSearchResponse = {
-            messages: [],
-            pagination: {
-              page: 1,
-              limit: 20,
-              total: 0,
-              totalPages: 0,
-              hasNext: false,
-              hasPrev: false,
-            },
-            totalResults: 0,
-            query: '',
-          };
+          const response = await fetch(
+            `/api/v1/messages/search?query=${encodeURIComponent(query)}`,
+            {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error('Mesaj arama başarısız oldu');
+          }
+
+          const data = (await response.json()) as MessageSearchResponse;
 
           set((state) => {
-            // Convert messages to MessageSearchResult format
-            state.searchResults = response.messages.map((message) => ({
+            state.searchResults = data.messages.map((message) => ({
               message,
               conversation: state.conversations.find(
                 (c) => c.id === message.conversationId
@@ -391,35 +390,32 @@ export const useMessagingStore = create<MessagingState>()(
         });
 
         try {
-          // TODO: Replace with actual API call
-          const tempMessage: Message = {
-            id: `temp-${Date.now()}`,
-            conversationId: request.conversationId,
-            senderId: 'current-user', // TODO: Get from auth
-            content: request.content,
-            type: request.type || 'text',
-            timestamp: new Date().toISOString(),
-            createdAt: new Date().toISOString(),
-            sentAt: new Date().toISOString(),
-            isRead: false,
-            // Convert File objects to FileAttachment format
-            attachments:
-              request.attachments?.map((file) => ({
-                id: `att-${Date.now()}-${Math.random()}`,
-                name: file.name,
-                type: file.type,
-                filename: file.name,
-                size: file.size,
-                mimetype: file.type,
-                url: URL.createObjectURL(file),
-                uploadedAt: new Date().toISOString(),
-              })) || [],
-          };
+          const formData = new FormData();
+          formData.append('conversationId', request.conversationId);
+          formData.append('content', request.content);
+          if (request.type) formData.append('type', request.type);
+          if (request.attachments) {
+            request.attachments.forEach((file) => {
+              formData.append('attachments', file);
+            });
+          }
+
+          const response = await fetch('/api/v1/messages', {
+            method: 'POST',
+            body: formData,
+            credentials: 'include',
+          });
+
+          if (!response.ok) {
+            throw new Error('Mesaj gönderme başarısız oldu');
+          }
+
+          const { data: sentMessage } = await response.json();
 
           set((state) => {
             const conversationMessages =
               state.messages[request.conversationId] || [];
-            conversationMessages.push(tempMessage);
+            conversationMessages.push(sentMessage);
             state.messages[request.conversationId] = conversationMessages;
             state.isSendingMessage = false;
           });
@@ -433,25 +429,24 @@ export const useMessagingStore = create<MessagingState>()(
       },
 
       createConversation: async (request: CreateConversationRequest) => {
-        // Acknowledge parameter for future implementation
-        void request;
-
         set((state) => {
           state.isLoadingConversations = true;
           state.error = null;
         });
 
         try {
-          // TODO: Replace with actual API call
-          const conversation: Conversation = {
-            id: `conv-${Date.now()}`,
-            participants: [], // TODO: Map participant IDs to User objects
-            participantIds: request.participantIds,
-            lastActivity: new Date().toISOString(),
-            unreadCount: 0,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          };
+          const response = await fetch('/api/v1/conversations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(request),
+            credentials: 'include',
+          });
+
+          if (!response.ok) {
+            throw new Error('Konuşma oluşturma başarısız oldu');
+          }
+
+          const { data: conversation } = await response.json();
 
           set((state) => {
             state.conversations.push(conversation);
@@ -482,8 +477,16 @@ export const useMessagingStore = create<MessagingState>()(
         });
 
         try {
-          // TODO: Replace with actual API call
-          const response = await fetch('/api/conversations');
+          const response = await fetch('/api/v1/conversations', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+          });
+
+          if (!response.ok) {
+            throw new Error('Konuşmalar yüklenemedi');
+          }
+
           const data = (await response.json()) as ConversationsResponse;
 
           set((state) => {
@@ -513,10 +516,19 @@ export const useMessagingStore = create<MessagingState>()(
         });
 
         try {
-          // TODO: Replace with actual API call
           const response = await fetch(
-            `/api/conversations/${conversationId}/messages`
+            `/api/v1/conversations/${conversationId}/messages`,
+            {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+            }
           );
+
+          if (!response.ok) {
+            throw new Error('Mesajlar yüklenemedi');
+          }
+
           const data = (await response.json()) as MessagesResponse;
 
           set((state) => {
@@ -537,16 +549,16 @@ export const useMessagingStore = create<MessagingState>()(
 
       editMessage: async (messageId: string, content: string) => {
         try {
-          // TODO: Replace with actual API call
-          const response = await fetch(`/api/messages/${messageId}`, {
+          const response = await fetch(`/api/v1/messages/${messageId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ content }),
+            credentials: 'include',
           });
 
-          if (!response.ok) throw new Error('Failed to edit message');
+          if (!response.ok) throw new Error('Mesaj düzenlenemedi');
 
-          const updatedMessage = (await response.json()) as Message;
+          const { data: updatedMessage } = await response.json();
 
           set((state) => {
             // Find and update the message
@@ -569,12 +581,12 @@ export const useMessagingStore = create<MessagingState>()(
 
       deleteMessage: async (messageId: string) => {
         try {
-          // TODO: Replace with actual API call
-          const response = await fetch(`/api/messages/${messageId}`, {
+          const response = await fetch(`/api/v1/messages/${messageId}`, {
             method: 'DELETE',
+            credentials: 'include',
           });
 
-          if (!response.ok) throw new Error('Failed to delete message');
+          if (!response.ok) throw new Error('Mesaj silinemedi');
 
           set((state) => {
             // Find and remove the message
@@ -598,15 +610,16 @@ export const useMessagingStore = create<MessagingState>()(
 
       markMessagesAsRead: async (conversationId: string) => {
         try {
-          // TODO: Replace with actual API call
           const response = await fetch(
-            `/api/conversations/${conversationId}/mark-read`,
+            `/api/v1/conversations/${conversationId}/mark-read`,
             {
               method: 'POST',
+              credentials: 'include',
             }
           );
 
-          if (!response.ok) throw new Error('Failed to mark messages as read');
+          if (!response.ok)
+            throw new Error('Mesajlar okundu olarak işaretlenemedi');
 
           set((state) => {
             // Update conversation unread count
@@ -679,9 +692,18 @@ export const useMessagingStore = create<MessagingState>()(
 
       markAsRead: async (conversationId: string, messageId?: string) => {
         try {
-          // TODO: API call to mark as read
-          // The messageId parameter is reserved for future implementation
-          void messageId; // Acknowledge parameter for future use
+          const endpoint = messageId
+            ? `/api/v1/messages/${messageId}/read`
+            : `/api/v1/conversations/${conversationId}/mark-read`;
+
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            credentials: 'include',
+          });
+
+          if (!response.ok) {
+            throw new Error('Okundu olarak işaretlenemedi');
+          }
 
           set((state) => {
             const conversationIndex = state.conversations.findIndex(

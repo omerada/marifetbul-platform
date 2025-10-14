@@ -1,9 +1,3 @@
-// @ts-nocheck
-// TODO: URGENT - Fix type mismatches between mock data and BlogPost interface
-// This file needs backend API integration - mock data structure doesn't match current BlogPost type
-// Issues: id (string vs number), tags (string[] vs BlogTag[]), missing fields (status, viewCount, etc.)
-// Priority: HIGH - Implement real backend API or update mock data structure
-
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Link from 'next/link';
@@ -24,9 +18,53 @@ import {
 } from 'lucide-react';
 import { type BlogPost } from '@/lib/api/blog';
 
-// Dynamic rendering işaretleme
+// Dynamic rendering
 export const dynamicParams = true;
-export const revalidate = 0;
+export const revalidate = 60;
+
+const BlogComments = dynamic(() => import('./comments'), { ssr: false });
+
+async function getPost(slug: string): Promise<BlogPost | null> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/blog/posts/${slug}`,
+      {
+        next: { revalidate: 60 },
+      }
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    return data.data as BlogPost;
+  } catch {
+    return null;
+  }
+}
+
+async function getRelatedPosts(currentPost: BlogPost): Promise<BlogPost[]> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/blog/posts?categoryId=${currentPost.category?.id}&limit=3`,
+      {
+        next: { revalidate: 300 },
+      }
+    );
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const data = await response.json();
+    return (data.data?.content || [])
+      .filter((post: BlogPost) => post.id !== currentPost.id)
+      .slice(0, 3);
+  } catch {
+    return [];
+  }
+}
 
 export async function generateMetadata({
   params,
@@ -45,16 +83,14 @@ export async function generateMetadata({
   return {
     title: `${post.title} - MarifetBul Blog`,
     description: post.excerpt,
-    keywords: post.tags?.join(', '),
+    keywords: post.tags?.map((tag) => tag.name).join(', '),
     openGraph: {
       title: post.title,
       description: post.excerpt,
       type: 'article',
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt,
-      authors: [
-        typeof post.author === 'object' ? post.author.name : post.author,
-      ].filter((author): author is string => author !== undefined),
+      authors: [post.author.fullName],
       images: post.coverImageUrl ? [post.coverImageUrl] : [],
     },
     twitter: {
@@ -66,165 +102,6 @@ export async function generateMetadata({
   };
 }
 
-const BlogComments = dynamic(() => import('./comments'), { ssr: false });
-
-// TODO: Replace with real backend API call
-// Suggested endpoint: GET /api/v1/blog/posts/{slug}
-// Backend should return BlogPost with content, metadata, author info
-// Mock blog data - REMOVE THIS AFTER BACKEND INTEGRATION
-const mockBlogPosts = [
-  {
-    id: '1',
-    slug: 'freelancer-olarak-ilk-adimlariniz',
-    title: 'Freelancer Olarak İlk Adımlarınız',
-    excerpt:
-      'Freelance kariyerinize başlarken dikkat etmeniz gereken önemli noktalar.',
-    content: `
-      <div class="prose max-w-none">
-        <h2>Freelance Kariyerine Başlamak</h2>
-        <p>Freelance çalışma hayatı, birçok avantaj sunan fakat aynı zamanda dikkatli planlama gerektiren bir kariyer yoludur. Bu rehberde, başarılı bir freelancer olmak için atmanız gereken ilk adımları detaylı olarak inceleyeceğiz.</p>
-        
-        <h3>1. Kendinizi Tanıyın ve Becerilerinizi Değerlendirin</h3>
-        <p>Freelance kariyerinize başlamadan önce, hangi alanlarda güçlü olduğunuzu ve hangi hizmetleri sunabileceğinizi objektif bir şekilde değerlendirmelisiniz. Bu süreçte aşağıdaki sorulara yanıt arayın:</p>
-        <ul>
-          <li>Hangi teknik becerileriniz var ve bunlar ne kadar güçlü?</li>
-          <li>Hangi projelerde başarılı oldunuz?</li>
-          <li>Müşterilerle iletişim konusunda ne kadar rahat hissediyorsunuz?</li>
-          <li>Zaman yönetimi ve proje planlama becerileriniz nasıl?</li>
-        </ul>
-        
-        <h3>2. Profesyonel Bir Portföy Hazırlayın</h3>
-        <p>Portföyünüz, potansiel müşterilere yeteneklerinizi gösterdiğiniz en önemli araçtır. Etkili bir portföy oluşturmak için:</p>
-        <ul>
-          <li>En iyi çalışmalarınızı seçin ve her proje için detaylı açıklama yapın</li>
-          <li>Kullandığınız teknolojileri ve süreçleri belirtin</li>
-          <li>Projelerin sonuçlarını ve müşteri geri bildirimlerini paylaşın</li>
-          <li>Düzenli olarak portföyünüzü güncelleyin</li>
-        </ul>
-        
-        <h3>3. Rekabetçi Fiyatlandırma Stratejisi Belirleyin</h3>
-        <p>Fiyatlandırma, freelancer olarak karşılaştığınız en zor konulardan biridir. Başlangıç için:</p>
-        <ul>
-          <li>Piyasa araştırması yaparak benzer hizmetlerin fiyatlarını inceleyin</li>
-          <li>Saatlik ücret, proje bazlı fiyat veya paket fiyatlama modellerini değerlendirin</li>
-          <li>İlk müşterileriniz için biraz daha uygun fiyatlar sunabilirsiniz</li>
-          <li>Tecrübe kazandıkça fiyatlarınızı artırmayı planlayın</li>
-        </ul>
-        
-        <h3>4. Etkili İletişim ve Müşteri İlişkileri</h3>
-        <p>Başarılı bir freelancer olmak sadece teknik beceriler gerektirmez, aynı zamanda güçlü iletişim becerileri de çok önemlidir:</p>
-        <ul>
-          <li>Her zaman profesyonel ve saygılı bir dil kullanın</li>
-          <li>Proje süreçleri hakkında düzenli güncellemeler paylaşın</li>
-          <li>Sorunlar çıktığında hemen iletişim kurun</li>
-          <li>Müşteri geri bildirimlerini ciddiye alın ve sürekli gelişim için kullanın</li>
-        </ul>
-        
-        <h3>5. Yasal ve Mali Konulara Dikkat Edin</h3>
-        <p>Freelance çalışırken yasal ve mali yükümlülüklerinizi unutmayın:</p>
-        <ul>
-          <li>Vergi mükellefi olun ve düzenli beyannamelerinizi verin</li>
-          <li>Müşterilerinizle yapacağınız sözleşmelerde net şartlar belirleyin</li>
-          <li>Gelir-gider takibinizi düzenli yapın</li>
-          <li>Gerekirse bir muhasebeci ile çalışın</li>
-        </ul>
-        
-        <h3>Sonuç</h3>
-        <p>Freelance kariyer, doğru planlama ve tutarlı çalışma ile büyük fırsatlar sunabilir. Sabırlı olun, sürekli kendinizi geliştirin ve müşteri memnuniyetini her zaman ön planda tutun. Unutmayın ki, başarılı bir freelancer olmak bir gecede gerçekleşmez, ancak doğru adımlarla hedefinize ulaşabilirsiniz.</p>
-      </div>
-    `,
-    category: { id: '1', name: 'Kariyer', slug: 'kariyer' },
-    author: {
-      id: '1',
-      name: 'MarifetBul Editörü',
-      avatar: '/avatars/editor.jpg',
-    },
-    publishedAt: '2025-09-12T10:00:00Z',
-    updatedAt: '2025-09-15T14:30:00Z',
-    tags: ['freelance', 'kariyer', 'başlangıç', 'rehber'],
-    views: 1547,
-    readTime: 8,
-    featured: true,
-    coverImage: '/blog/freelancer-cover.jpg',
-  },
-  {
-    id: '2',
-    slug: '2025-web-tasarim-trendleri',
-    title: '2025 Web Tasarım Trendleri',
-    excerpt: 'Bu yıl öne çıkan web tasarım trendleri ve uygulama örnekleri.',
-    content: `
-      <div class="prose max-w-none">
-        <h2>2025'te Web Tasarım Dünyası</h2>
-        <p>Web tasarım dünyası sürekli evrim geçiriyor ve 2025 yılı da birçok yenilikle dolu. Bu yazıda, bu yıl dikkat çeken trendleri ve bunları projelerinizde nasıl uygulayabileceğinizi ele alacağız.</p>
-        <p>Tasarım trendleri hakkında detaylı bilgi...</p>
-      </div>
-    `,
-    category: { id: '2', name: 'Tasarım', slug: 'tasarim' },
-    author: {
-      id: '2',
-      name: 'Tasarım Uzmanı',
-      avatar: '/avatars/designer.jpg',
-    },
-    publishedAt: '2025-09-10T09:00:00Z',
-    tags: ['tasarım', 'trend', 'web'],
-    views: 980,
-    readTime: 6,
-    featured: false,
-  },
-  {
-    id: '3',
-    slug: 'uzaktan-calisma-ipuclari',
-    title: 'Uzaktan Çalışma İpuçları',
-    excerpt: 'Evden çalışırken verimliliğinizi artıracak pratik öneriler.',
-    content: `
-      <div class="prose max-w-none">
-        <h2>Uzaktan Çalışma Rehberi</h2>
-        <p>Evden çalışma artık yeni normal. İşte başarılı olmanın yolları...</p>
-      </div>
-    `,
-    category: { id: '3', name: 'Productivity', slug: 'productivity' },
-    author: {
-      id: '3',
-      name: 'Productivity Uzmanı',
-      avatar: '/avatars/productivity.jpg',
-    },
-    publishedAt: '2025-09-08T08:00:00Z',
-    tags: ['uzaktan çalışma', 'verimlilik', 'home office'],
-    views: 756,
-    readTime: 5,
-    featured: false,
-  },
-];
-
-async function getPost(slug: string): Promise<BlogPost | null> {
-  try {
-    // TODO: Replace with real backend API call
-    // Suggested endpoint: GET /api/v1/blog/posts/{slug}
-    // Backend should return BlogPost with all required fields
-
-    // Mock data'dan slug'a göre post bul (geçici type assertion)
-    const post = mockBlogPosts.find((p) => p.slug === slug);
-    return (post as any) || null; // Type assertion for mock data
-  } catch (error) {
-    console.error('Blog post fetch error:', error);
-    return null;
-  }
-}
-
-// Related posts fonksiyonu
-function getRelatedPosts(currentPost: BlogPost): BlogPost[] {
-  return mockBlogPosts
-    .filter(
-      (post) =>
-        post.id !== currentPost.id &&
-        (post.tags?.some((tag) => currentPost.tags?.includes(tag)) ||
-          (typeof post.category === 'object' &&
-            typeof currentPost.category === 'object' &&
-            post.category.slug === currentPost.category.slug))
-    )
-    .slice(0, 3);
-}
-
 export default async function BlogDetailPage({
   params,
 }: {
@@ -233,13 +110,7 @@ export default async function BlogDetailPage({
   const post = await getPost(params.slug);
   if (!post) return notFound();
 
-  const relatedPosts = getRelatedPosts(post);
-  const categoryName =
-    typeof post.category === 'object' ? post.category.name : post.category;
-  const authorName =
-    typeof post.author === 'object' ? post.author.name : post.author;
-  const authorAvatar =
-    typeof post.author === 'object' ? post.author.avatar : undefined;
+  const relatedPosts = await getRelatedPosts(post);
 
   return (
     <AppLayout>
@@ -275,12 +146,14 @@ export default async function BlogDetailPage({
             </Link>
 
             {/* Category Badge */}
-            <div className="mb-4">
-              <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
-                <Tag className="mr-1 h-3 w-3" />
-                {categoryName}
-              </span>
-            </div>
+            {post.category && (
+              <div className="mb-4">
+                <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
+                  <Tag className="mr-1 h-3 w-3" />
+                  {post.category.name}
+                </span>
+              </div>
+            )}
 
             {/* Title */}
             <h1 className="mb-6 text-4xl leading-tight font-bold text-gray-900 md:text-5xl">
@@ -290,10 +163,10 @@ export default async function BlogDetailPage({
             {/* Meta Information */}
             <div className="mb-8 flex flex-wrap items-center gap-6 text-sm text-gray-600">
               <div className="flex items-center gap-2">
-                {authorAvatar ? (
+                {post.author.avatarUrl ? (
                   <Image
-                    src={authorAvatar}
-                    alt={authorName}
+                    src={post.author.avatarUrl}
+                    alt={post.author.fullName}
                     width={32}
                     height={32}
                     className="rounded-full"
@@ -303,28 +176,32 @@ export default async function BlogDetailPage({
                     <User className="h-4 w-4" />
                   </div>
                 )}
-                <span className="font-medium">{authorName}</span>
+                <span className="font-medium">{post.author.fullName}</span>
               </div>
 
-              <div className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
-                <span>
-                  {new Date(post.publishedAt).toLocaleDateString('tr-TR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </span>
-              </div>
+              {post.publishedAt && (
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4" />
+                  <span>
+                    {new Date(post.publishedAt).toLocaleDateString('tr-TR', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </span>
+                </div>
+              )}
 
               <div className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
-                <span>{post.readTime || 5} dk okuma</span>
+                <span>{post.readingTime} dk okuma</span>
               </div>
 
               <div className="flex items-center gap-1">
                 <Eye className="h-4 w-4" />
-                <span>{post.views?.toLocaleString('tr-TR')} görüntüleme</span>
+                <span>
+                  {post.viewCount.toLocaleString('tr-TR')} görüntüleme
+                </span>
               </div>
             </div>
 
@@ -352,10 +229,10 @@ export default async function BlogDetailPage({
               <article className="lg:col-span-3">
                 <Card className="p-0">
                   {/* Cover Image */}
-                  {post.coverImage && (
+                  {post.coverImageUrl && (
                     <div className="relative h-64 overflow-hidden rounded-t-lg md:h-80">
                       <Image
-                        src={post.coverImage}
+                        src={post.coverImageUrl}
                         alt={post.title}
                         fill
                         className="object-cover"
@@ -380,10 +257,10 @@ export default async function BlogDetailPage({
                         <div className="flex flex-wrap gap-2">
                           {post.tags.map((tag) => (
                             <span
-                              key={tag}
+                              key={tag.id}
                               className="cursor-pointer rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700 transition-colors hover:bg-gray-200"
                             >
-                              #{tag}
+                              #{tag.name}
                             </span>
                           ))}
                         </div>
@@ -393,10 +270,10 @@ export default async function BlogDetailPage({
                     {/* Author Info */}
                     <div className="mt-8 border-t border-gray-200 pt-8">
                       <div className="flex items-start gap-4">
-                        {authorAvatar ? (
+                        {post.author.avatarUrl ? (
                           <Image
-                            src={authorAvatar}
-                            alt={authorName}
+                            src={post.author.avatarUrl}
+                            alt={post.author.fullName}
                             width={64}
                             height={64}
                             className="rounded-full"
@@ -408,18 +285,11 @@ export default async function BlogDetailPage({
                         )}
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900">
-                            {authorName}
+                            {post.author.fullName}
                           </h3>
                           <p className="mt-1 text-gray-600">
-                            MarifetBul editör ekibinde yer alan uzman yazar.
-                            Freelance dünyası ve teknoloji trendleri hakkında
-                            yazılar kaleme alıyor.
+                            @{post.author.username}
                           </p>
-                          <div className="mt-2 flex items-center gap-4 text-sm text-gray-500">
-                            <span>MarifetBul&apos;da editör</span>
-                            <span>•</span>
-                            <span>50+ yazı</span>
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -428,54 +298,13 @@ export default async function BlogDetailPage({
 
                 {/* Comments */}
                 <div className="mt-8">
-                  <BlogComments postId={post.id} />
+                  <BlogComments postId={post.id.toString()} />
                 </div>
               </article>
 
               {/* Sidebar */}
               <aside className="lg:col-span-1">
                 <div className="sticky top-8 space-y-6">
-                  {/* Table of Contents */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">İçindekiler</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <nav className="space-y-2 text-sm">
-                        <a
-                          href="#"
-                          className="block text-blue-600 transition-colors hover:text-blue-700"
-                        >
-                          1. Kendinizi Tanıyın
-                        </a>
-                        <a
-                          href="#"
-                          className="block text-gray-600 transition-colors hover:text-blue-600"
-                        >
-                          2. Portföy Hazırlayın
-                        </a>
-                        <a
-                          href="#"
-                          className="block text-gray-600 transition-colors hover:text-blue-600"
-                        >
-                          3. Fiyatlandırma Yapın
-                        </a>
-                        <a
-                          href="#"
-                          className="block text-gray-600 transition-colors hover:text-blue-600"
-                        >
-                          4. İletişim Kurun
-                        </a>
-                        <a
-                          href="#"
-                          className="block text-gray-600 transition-colors hover:text-blue-600"
-                        >
-                          5. Yasal Konular
-                        </a>
-                      </nav>
-                    </CardContent>
-                  </Card>
-
                   {/* Share */}
                   <Card>
                     <CardHeader>
@@ -526,13 +355,13 @@ export default async function BlogDetailPage({
                     className="transition-shadow hover:shadow-lg"
                   >
                     <CardContent className="p-6">
-                      <div className="mb-3">
-                        <span className="rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-600">
-                          {typeof relatedPost.category === 'object'
-                            ? relatedPost.category.name
-                            : relatedPost.category}
-                        </span>
-                      </div>
+                      {relatedPost.category && (
+                        <div className="mb-3">
+                          <span className="rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-600">
+                            {relatedPost.category.name}
+                          </span>
+                        </div>
+                      )}
                       <h3 className="mb-2 line-clamp-2 font-semibold text-gray-900">
                         <Link
                           href={`/blog/${relatedPost.slug}`}
@@ -545,14 +374,16 @@ export default async function BlogDetailPage({
                         {relatedPost.excerpt}
                       </p>
                       <div className="flex items-center justify-between text-xs text-gray-500">
-                        <span>
-                          {new Date(relatedPost.publishedAt).toLocaleDateString(
-                            'tr-TR'
-                          )}
-                        </span>
+                        {relatedPost.publishedAt && (
+                          <span>
+                            {new Date(
+                              relatedPost.publishedAt
+                            ).toLocaleDateString('tr-TR')}
+                          </span>
+                        )}
                         <div className="flex items-center gap-1">
                           <Eye className="h-3 w-3" />
-                          <span>{relatedPost.views}</span>
+                          <span>{relatedPost.viewCount}</span>
                         </div>
                       </div>
                     </CardContent>

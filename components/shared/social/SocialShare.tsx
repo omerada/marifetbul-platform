@@ -290,51 +290,11 @@ interface SocialProofProps {
 }
 
 export function SocialProof({ type, data, className }: SocialProofProps) {
-  // TODO: Replace with real backend data
-  // Suggested endpoints:
-  // - GET /api/v1/social/testimonials - Real user testimonials
-  // - GET /api/v1/social/stats - Platform statistics
-  // - GET /api/v1/social/activity - Recent platform activity feed
-  const mockData = {
-    testimonials: [
-      {
-        id: '1',
-        name: 'Ahmet Yılmaz',
-        avatar: '/images/avatars/1.jpg',
-        text: 'Harika bir platform! Çok kolay iş buldum.',
-        rating: 5,
-        company: 'Tech Startup',
-      },
-      {
-        id: '2',
-        name: 'Ayşe Kaya',
-        avatar: '/images/avatars/2.jpg',
-        text: 'Kaliteli freelancerlar ile çalışma fırsatı buldum.',
-        rating: 5,
-        company: 'Digital Agency',
-      },
-    ],
-    userCount: 15420,
-    recentActivity: [
-      {
-        user: 'Mehmet D.',
-        action: 'yeni bir proje paylaştı',
-        timestamp: '2 dakika önce',
-      },
-      {
-        user: 'Zeynep A.',
-        action: 'bir işe başvurdu',
-        timestamp: '5 dakika önce',
-      },
-      {
-        user: 'Can B.',
-        action: 'profil oluşturdu',
-        timestamp: '8 dakika önce',
-      },
-    ],
+  const content = data || {
+    testimonials: [],
+    userCount: 0,
+    recentActivity: [],
   };
-
-  const content = data || mockData;
 
   switch (type) {
     case 'testimonials':

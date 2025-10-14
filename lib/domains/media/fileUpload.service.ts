@@ -107,10 +107,8 @@ export class FileUploadService {
         case 'cloudinary':
           return await this.uploadToCloudinary(file);
         case 'local':
-          return await this.uploadToLocal(file);
-        case 'mock':
         default:
-          return await this.mockUpload(file);
+          return await this.uploadToLocal(file);
       }
     } catch (error) {
       console.error('File upload failed:', error);
@@ -180,15 +178,14 @@ export class FileUploadService {
   /**
    * Upload to AWS S3
    */
-  private async uploadToS3(file: File): Promise<UploadResult> {
-    if (!this.s3Config) {
+  private async uploadToS3(_file: File): Promise<UploadResult> {
+    if (!this.s3Config?.bucket) {
       throw new Error('S3 configuration not found');
     }
 
-    // This would require AWS SDK implementation
-    // For now, return mock response
-    console.warn('S3 upload not implemented, using mock response');
-    return this.mockUpload(file);
+    throw new Error(
+      'AWS S3 upload not implemented. Please use Cloudinary or configure S3 properly.'
+    );
   }
 
   /**
@@ -251,50 +248,12 @@ export class FileUploadService {
   }
 
   /**
-   * Upload to local storage (development only)
+   * Upload to local storage (development/testing)
    */
-  private async uploadToLocal(file: File): Promise<UploadResult> {
-    // In a real implementation, this would save to local filesystem
-    // For browser environment, we'll use mock
-    console.warn('Local upload not available in browser, using mock response');
-    return this.mockUpload(file);
-  }
-
-  /**
-   * Mock upload for development/testing
-   * TODO: Replace with real file upload service integration
-   * Suggested: Implement AWS S3 or Cloudinary upload
-   * Backend should handle file uploads with proper validation and storage
-   * Mock upload implementation - REMOVE THIS AFTER BACKEND INTEGRATION
-   */
-  private async mockUpload(file: File): Promise<UploadResult> {
-    // Simulate upload delay
-    await new Promise((resolve) =>
-      setTimeout(resolve, 1000 + Math.random() * 2000)
+  private async uploadToLocal(_file: File): Promise<UploadResult> {
+    throw new Error(
+      'Local upload not implemented. Please configure S3 or Cloudinary for file uploads.'
     );
-
-    // Simulate occasional failures
-    if (Math.random() < 0.1) {
-      throw new Error('Simulated upload failure');
-    }
-
-    const key = `${this.options.folder}/${Date.now()}-${file.name}`;
-    const url = `https://via.placeholder.com/300x200?text=${encodeURIComponent(file.name)}`;
-
-    return {
-      success: true,
-      data: {
-        url,
-        key,
-        thumbnails: this.options.generateThumbnails
-          ? {
-              small: `${url}&size=150x150`,
-              medium: `${url}&size=300x300`,
-              large: `${url}&size=600x600`,
-            }
-          : undefined,
-      },
-    };
   }
 }
 

@@ -20,30 +20,11 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
         });
 
         try {
-          // Import auth store here to avoid circular dependency
           const { useAuthStore } = await import('./domains/auth/authStore');
           const authState = useAuthStore.getState();
 
           if (!authState.isAuthenticated) {
-            // TODO: Remove mock admin session - implement proper authentication
-            // This should redirect to login or return 401 error
-            // Mock admin session for demo - REMOVE THIS AFTER BACKEND INTEGRATION
-            console.log('🔐 Admin Dashboard: Creating mock admin session');
-            const mockUser = {
-              id: 'admin-1',
-              email: 'admin@marifet.com',
-              role: 'admin' as const,
-              firstName: 'Admin',
-              lastName: 'User',
-              name: 'Admin User',
-              userType: 'admin' as const,
-              avatar: '',
-              isVerified: true,
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            };
-            authState.user = mockUser;
-            authState.isAuthenticated = true;
+            throw new Error('Yetkisiz erişim: Lütfen giriş yapın');
           }
 
           const response = await fetch('/api/v1/admin/dashboard', {
