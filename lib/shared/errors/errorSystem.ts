@@ -219,31 +219,32 @@ export class ErrorMonitor {
 
   private async sendToRemote(error: AppError): Promise<void> {
     try {
-      // Mock implementation - replace with actual error reporting service
-      const payload = {
-        id: error.id,
-        message: error.message,
-        code: error.code,
-        severity: error.severity,
-        category: error.category,
-        metadata: error.metadata,
-        stackTrace: error.stackTrace,
-        url: error.url,
-        timestamp: error.timestamp?.toISOString(),
-        userAgent:
-          typeof window !== 'undefined'
-            ? window.navigator.userAgent
-            : undefined,
-      };
+      // Send to backend error reporting API
+      const endpoint =
+        typeof window !== 'undefined'
+          ? '/api/v1/errors/report'
+          : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/errors/report`;
 
-      // In production, send to error monitoring service like Sentry
-      console.log('📡 Sending error to monitoring service:', payload);
-
-      // await fetch('/api/errors', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(payload),
-      // });
+      await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          id: error.id,
+          message: error.message,
+          code: error.code,
+          severity: error.severity,
+          category: error.category,
+          metadata: error.metadata,
+          stackTrace: error.stackTrace,
+          url: error.url,
+          timestamp: error.timestamp?.toISOString(),
+          userAgent:
+            typeof window !== 'undefined'
+              ? window.navigator.userAgent
+              : undefined,
+        }),
+      });
     } catch (sendError) {
       console.error('Failed to send error to remote service:', sendError);
     }

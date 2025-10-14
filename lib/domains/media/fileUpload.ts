@@ -185,14 +185,22 @@ export async function uploadFiles(files: File[]): Promise<FileAttachment[]> {
 }
 
 /**
- * Mock file deletion function
+ * Delete file from storage
  */
 export async function deleteFile(fileId: string): Promise<void> {
-  // Simulate deletion delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  try {
+    const response = await fetch(`/api/v1/files/${fileId}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
 
-  // In a real app, this would delete from cloud storage
-  console.log(`Mock: Deleted file ${fileId}`);
+    if (!response.ok) {
+      throw new Error('File deletion failed');
+    }
+  } catch (error) {
+    console.error('Error deleting file:', error);
+    throw error;
+  }
 }
 
 /**

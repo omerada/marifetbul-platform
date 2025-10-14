@@ -53,8 +53,7 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
     loadOrders();
   }, [loadConversations, loadOrders]);
 
-  // For future use when we need user-specific data
-  console.log('Dashboard for user:', userId);
+  // userId available for future user-specific features
 
   if (isLoading) {
     return <DashboardSkeleton type="freelancer" />;

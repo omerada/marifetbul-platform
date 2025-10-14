@@ -1,76 +1,104 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import type { Conversation, Message } from '@/types';
 
-// Simplified messaging hooks with chat support removed
-
 export function useConversations() {
-  return {
-    conversations: [] as Conversation[],
-    isLoading: false,
-    error: null,
-    refresh: () => Promise.resolve(),
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refresh = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/v1/conversations', {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setConversations(data.data || []);
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to load conversations'
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  useEffect(() => {
+    refresh();
+  }, []);
+
+  return { conversations, isLoading, error, refresh };
 }
 
 export function useConversation(conversationId: string) {
-  // Production note: Mock conversation data. Backend endpoint: GET /api/v1/conversations/{conversationId}
-  // Returns Conversation with participants, messages metadata.
-  const mockConversation: Conversation | null = conversationId
-    ? {
-        id: conversationId,
-        participants: [
-          {
-            userId: 'user1',
-            id: 'user1',
-            firstName: 'John',
-            lastName: 'Doe',
-            avatar: '/default-avatar.png',
-            userType: 'freelancer' as const,
-          },
-        ],
-        participantIds: ['user1', 'user2'],
-        unreadCount: 0,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        jobId: 'job1',
-        packageId: 'package1',
-      }
-    : null;
+  const [conversation, setConversation] = useState<Conversation | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  return {
-    conversation: mockConversation,
-    isLoading: false,
-    error: null,
-    refetch: () => Promise.resolve(),
+  const refetch = async () => {
+    if (!conversationId) return;
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/v1/conversations/${conversationId}`, {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setConversation(data.data);
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to load conversation'
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  useEffect(() => {
+    refetch();
+  }, [conversationId]);
+
+  return { conversation, isLoading, error, refetch };
 }
 
 export function useMessages(conversationId: string) {
-  // Production note: Mock messages data. Backend endpoint: GET /api/v1/conversations/{conversationId}/messages
-  // Returns paginated Message list with sender info.
-  const mockMessages: Message[] = conversationId
-    ? [
-        {
-          id: 'msg1',
-          conversationId,
-          senderId: 'user1',
-          content: 'Merhaba, nasılsınız?',
-          type: 'text' as const,
-          isRead: true,
-          sentAt: new Date().toISOString(),
-          createdAt: new Date().toISOString(),
-          timestamp: new Date().toISOString(),
-        },
-      ]
-    : [];
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  return {
-    messages: mockMessages,
-    isLoading: false,
-    error: null,
-    refresh: () => Promise.resolve(),
+  const refresh = async () => {
+    if (!conversationId) return;
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(
+        `/api/v1/conversations/${conversationId}/messages`,
+        {
+          credentials: 'include',
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setMessages(data.data || []);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load messages');
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  useEffect(() => {
+    refresh();
+  }, [conversationId]);
+
+  return { messages, isLoading, error, refresh };
 }
 
 export function useUnreadCount() {
@@ -84,21 +112,81 @@ export function useUnreadCount() {
 }
 
 export function useMessaging() {
-  return {
-    sendMessage: (conversationId: string, content: string) => {
-      // Use both parameters in mock implementation
-      console.log(`Sending message to ${conversationId}: ${content}`);
-      return Promise.resolve();
-    },
-    markAsRead: (conversationId?: string) => {
-      if (conversationId) {
-        console.log(`Marking conversation ${conversationId} as read`);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const sendMessage = async (conversationId: string, content: string) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(
+        `/api/v1/conversations/${conversationId}/messages`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ content }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
       }
-      return Promise.resolve();
-    },
-    createConversation: () => Promise.resolve(),
-    deleteMessage: () => Promise.resolve(),
-    isLoading: false,
+    } catch (error) {
+      console.error('Error sending message:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const markAsRead = async (conversationId?: string) => {
+    if (!conversationId) return;
+
+    try {
+      await fetch(`/api/v1/conversations/${conversationId}/read`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.error('Error marking as read:', error);
+    }
+  };
+
+  const createConversation = async (participantIds: string[]) => {
+    try {
+      const response = await fetch('/api/v1/conversations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ participantIds }),
+      });
+
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (error) {
+      console.error('Error creating conversation:', error);
+      throw error;
+    }
+  };
+
+  const deleteMessage = async (messageId: string) => {
+    try {
+      await fetch(`/api/v1/messages/${messageId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      throw error;
+    }
+  };
+
+  return {
+    sendMessage,
+    markAsRead,
+    createConversation,
+    deleteMessage,
+    isLoading,
     isSending: false,
     isMarkingRead: false,
     isCreating: false,

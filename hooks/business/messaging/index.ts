@@ -51,17 +51,66 @@ export function useUnreadCount() {
 
 export function useMessaging() {
   return {
-    sendMessage: (content: string) => {
-      return Promise.resolve({
-        id: 'msg-' + Date.now(),
-        content: content || 'Mock message',
-        sender_id: 'user-1',
-        created_at: new Date().toISOString(),
-      });
+    sendMessage: async (content: string, conversationId: string) => {
+      try {
+        const response = await fetch('/api/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ content, conversationId }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to send message');
+        }
+
+        const data = await response.json();
+        return data.data;
+      } catch (error) {
+        console.error('Error sending message:', error);
+        throw error;
+      }
     },
-    markAsRead: () => Promise.resolve(),
-    createConversation: () => Promise.resolve(),
-    deleteMessage: () => Promise.resolve(),
+    markAsRead: async (messageId: string) => {
+      try {
+        await fetch(`/api/v1/messages/${messageId}/read`, {
+          method: 'PUT',
+          credentials: 'include',
+        });
+      } catch (error) {
+        console.error('Error marking message as read:', error);
+      }
+    },
+    createConversation: async (userId: string) => {
+      try {
+        const response = await fetch('/api/v1/conversations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ userId }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to create conversation');
+        }
+
+        const data = await response.json();
+        return data.data;
+      } catch (error) {
+        console.error('Error creating conversation:', error);
+        throw error;
+      }
+    },
+    deleteMessage: async (messageId: string) => {
+      try {
+        await fetch(`/api/v1/messages/${messageId}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
+      } catch (error) {
+        console.error('Error deleting message:', error);
+      }
+    },
     isLoading: false,
     isSending: false,
     isMarkingRead: false,

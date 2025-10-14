@@ -55,13 +55,38 @@ function SearchContent() {
     setActiveTab(tab);
   };
 
-  // Mock search results counts
-  const searchResults = {
-    all: 1247,
-    services: 856,
-    jobs: 234,
-    freelancers: 157,
-  };
+  // Fetch search results counts from backend
+  const [searchResults, setSearchResults] = useState({
+    all: 0,
+    services: 0,
+    jobs: 0,
+    freelancers: 0,
+  });
+
+  useEffect(() => {
+    const fetchSearchCounts = async () => {
+      try {
+        const response = await fetch(
+          `/api/v1/search/counts?query=${searchParams?.get('query') || ''}`,
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setSearchResults(
+            data.data || { all: 0, services: 0, jobs: 0, freelancers: 0 }
+          );
+        }
+      } catch (error) {
+        console.error('Error fetching search counts:', error);
+      }
+    };
+
+    fetchSearchCounts();
+  }, [searchParams]);
 
   const tabs = [
     {

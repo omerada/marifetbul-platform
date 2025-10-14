@@ -136,152 +136,43 @@ export default function ModerationDashboard() {
     try {
       setIsLoading(true);
 
-      // Production note: Real API calls to backend moderation endpoints.
-      // Endpoints: GET /api/v1/admin/moderation/stats and GET /api/v1/admin/moderation/items
-      // If endpoints are not implemented yet, returns fallback mock data for UI development.
+      // Real API calls to backend moderation endpoints
+      try {
+        const [statsResponse, itemsResponse] = await Promise.all([
+          fetch('/api/v1/admin/moderation/stats', {
+            method: 'GET',
+            credentials: 'include',
+          }),
+          fetch('/api/v1/admin/moderation/items', {
+            method: 'GET',
+            credentials: 'include',
+          }),
+        ]);
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+        if (!statsResponse.ok || !itemsResponse.ok) {
+          throw new Error('Failed to fetch moderation data');
+        }
 
-      // Mock stats data - Backend will provide real data via ModerationController
-      const mockStats: ModerationStats = {
-        totalReports: 1247,
-        pendingReports: 89,
-        resolvedToday: 34,
-        autoFlagged: 156,
-        averageResponseTime: 2.4,
-        moderationAccuracy: 94.2,
-        trendsData: [
-          { date: '2025-09-07', reports: 45, resolved: 38 },
-          { date: '2025-09-08', reports: 52, resolved: 47 },
-          { date: '2025-09-09', reports: 38, resolved: 41 },
-          { date: '2025-09-10', reports: 61, resolved: 55 },
-          { date: '2025-09-11', reports: 44, resolved: 39 },
-          { date: '2025-09-12', reports: 57, resolved: 52 },
-          { date: '2025-09-13', reports: 34, resolved: 34 },
-        ],
-        categoryBreakdown: [
-          { category: 'Spam', count: 45, percentage: 35.2 },
-          { category: 'Uygunsuz İçerik', count: 32, percentage: 25.0 },
-          { category: 'Sahte Profil', count: 28, percentage: 21.9 },
-          { category: 'Taciz', count: 18, percentage: 14.1 },
-          { category: 'Diğer', count: 5, percentage: 3.8 },
-        ],
-      };
+        const statsData = await statsResponse.json();
+        const itemsData = await itemsResponse.json();
 
-      // Production note: Mock items for UI development. Backend endpoint: GET /api/v1/admin/moderation/items
-      const mockItems: ModerationItem[] = [
-        {
-          id: '1',
-          type: 'user_report',
-          contentType: 'job_post',
-          title: 'Şüpheli İş İlanı',
-          description: 'Gerçekçi olmayan maaş ve koşullar sunuluyor',
-          reportedBy: {
-            id: 'user1',
-            name: 'Ahmet Yılmaz',
-            email: 'ahmet@example.com',
-          },
-          reportedUser: {
-            id: 'user2',
-            name: 'Fake Company Ltd.',
-            email: 'contact@fakecompany.com',
-          },
-          reportReason: 'Yanıltıcı bilgiler ve gerçekçi olmayan teklifler',
-          severity: 'high',
-          status: 'pending',
-          createdAt: new Date('2025-09-13T08:30:00'),
-          content: {
-            text: 'Aylık 50.000 TL maaşla junior developer arıyoruz. Hiç deneyim gerekmez, evden çalışma imkanı.',
-            metadata: {
-              jobId: 'job_123',
-              category: 'Yazılım Geliştirme',
-              location: 'İstanbul',
-            },
-          },
-          autoFlags: {
-            spam: true,
-            inappropriate: false,
-            fake: true,
-            harassment: false,
-            score: 0.85,
-          },
-        },
-        {
-          id: '2',
-          type: 'auto_flagged',
-          contentType: 'user_profile',
-          title: 'Sahte Profil Şüphesi',
-          description:
-            'Otomatik sistem tarafından sahte profil olarak işaretlendi',
-          reportedUser: {
-            id: 'user3',
-            name: 'Dr. Mehmet Profesör',
-            email: 'fake@tempmail.com',
-          },
-          reportReason: 'Sahte kimlik bilgileri ve çalıntı fotoğraflar',
-          severity: 'critical',
-          status: 'pending',
-          createdAt: new Date('2025-09-13T07:15:00'),
-          content: {
-            text: "Harvard mezunu doktor, NASA'da çalıştım, şimdi freelance danışman",
-            images: ['profile1.jpg', 'certificate1.jpg'],
-            metadata: {
-              registrationDate: '2025-09-12',
-              ipAddress: '185.x.x.x',
-              deviceInfo: 'Mobile - Android',
-            },
-          },
-          autoFlags: {
-            spam: false,
-            inappropriate: false,
-            fake: true,
-            harassment: false,
-            score: 0.92,
-          },
-        },
-        {
-          id: '3',
-          type: 'user_report',
-          contentType: 'message',
-          title: 'Taciz İçerikli Mesaj',
-          description: 'Kullanıcı uygunsuz mesajlar gönderiyor',
-          reportedBy: {
-            id: 'user4',
-            name: 'Ayşe Demir',
-            email: 'ayse@example.com',
-          },
-          reportedUser: {
-            id: 'user5',
-            name: 'Problematic User',
-            email: 'problem@example.com',
-          },
-          reportReason: 'Cinsel taciz içerikli mesajlar',
-          severity: 'critical',
-          status: 'escalated',
-          createdAt: new Date('2025-09-13T06:45:00'),
-          reviewedAt: new Date('2025-09-13T09:00:00'),
-          reviewedBy: 'admin1',
-          content: {
-            text: '[Uygunsuz içerik - moderatör tarafından gizlendi]',
-            metadata: {
-              conversationId: 'conv_789',
-              messageCount: 15,
-              timeSpan: '2 gün',
-            },
-          },
-          autoFlags: {
-            spam: false,
-            inappropriate: true,
-            fake: false,
-            harassment: true,
-            score: 0.78,
-          },
-        },
-      ];
-
-      setStats(mockStats);
-      setModerationItems(mockItems);
+        setStats(statsData.data);
+        setModerationItems(itemsData.data || []);
+      } catch (error) {
+        console.error('Error fetching moderation data:', error);
+        // Set empty data on error
+        setStats({
+          totalReports: 0,
+          pendingReports: 0,
+          resolvedToday: 0,
+          autoFlagged: 0,
+          averageResponseTime: 0,
+          moderationAccuracy: 0,
+          trendsData: [],
+          categoryBreakdown: [],
+        });
+        setModerationItems([]);
+      }
     } catch (error) {
       console.error('Failed to fetch moderation data:', error);
     } finally {
@@ -313,8 +204,13 @@ export default function ModerationDashboard() {
         )
       );
 
-      // In real app, make API call here
-      console.log(`Item ${itemId} ${action}ed`);
+      // Real API call to update moderation item
+      await fetch(`/api/v1/admin/moderation/items/${itemId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ action }),
+      });
     } catch (error) {
       console.error(`Failed to ${action} item:`, error);
     }

@@ -209,6 +209,8 @@ import {
   AsyncUtils,
 } from './async';
 
+import { logger, debug, info, warn, error } from './logger';
+
 // ================================================
 // RE-EXPORT ALL UTILITIES
 // ================================================
@@ -417,6 +419,9 @@ export {
   createFileAttachment,
   validateFiles,
 };
+
+// Logger utilities
+export { logger, debug, info, warn, error };
 
 // ================================================
 // COMMONLY USED UTILITIES (CONVENIENCE OBJECT)

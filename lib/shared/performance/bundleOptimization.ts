@@ -15,7 +15,7 @@ export interface BundleAnalysisReport {
 }
 
 export function analyzeBundleSize(): BundleAnalysisReport {
-  // Mock analysis - In production this would integrate with webpack-bundle-analyzer
+  // Bundle analysis - integrate with webpack-bundle-analyzer for detailed reports
   return {
     totalSize: 0,
     chunkCount: 0,

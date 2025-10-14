@@ -154,9 +154,31 @@ export function AdminLogs() {
     setIsLoading(false);
   };
 
-  const exportLogs = () => {
-    // Export functionality
-    console.log('Exporting logs...');
+  const exportLogs = async () => {
+    // Export logs to CSV or JSON
+    try {
+      const response = await fetch('/api/v1/admin/logs/export', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          level: selectedLevel,
+          source: selectedSource,
+          search: searchTerm,
+        }),
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `admin-logs-${new Date().toISOString()}.csv`;
+        a.click();
+      }
+    } catch (error) {
+      console.error('Failed to export logs:', error);
+    }
   };
 
   const getLogLevelBadge = (level: string) => {

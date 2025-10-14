@@ -1,5 +1,7 @@
 'use client';
 
+import { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/lib/shared/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
@@ -14,7 +16,6 @@ import {
   Download,
   RefreshCw,
 } from 'lucide-react';
-import { useState, useEffect, useCallback } from 'react';
 
 interface AnalyticsData {
   userAnalytics: {
@@ -144,13 +145,13 @@ export function AdminAnalytics() {
           revenueResponse.json(),
         ]);
 
-        console.log('📊 User Analytics Data:', userData);
-        console.log('💰 Revenue Analytics Data:', revenueData);
+        logger.debug('📊 User Analytics Data:', userData);
+        logger.debug('💰 Revenue Analytics Data:', revenueData);
 
         // Also log to Next.js server console
         if (typeof window === 'undefined') {
-          console.log('🖥️ Server-side User Analytics Data:', userData);
-          console.log('🖥️ Server-side Revenue Analytics Data:', revenueData);
+          logger.debug('🖥️ Server-side User Analytics Data:', userData);
+          logger.debug('🖥️ Server-side Revenue Analytics Data:', revenueData);
         }
 
         if (
@@ -160,7 +161,7 @@ export function AdminAnalytics() {
           revenueData?.success &&
           revenueData?.data
         ) {
-          console.log('✅ Setting analytics data:', {
+          logger.debug('✅ Setting analytics data:', {
             userAnalytics: userData.data,
             revenueAnalytics: revenueData.data,
           });
@@ -169,7 +170,7 @@ export function AdminAnalytics() {
             revenueAnalytics: revenueData.data,
           });
         } else {
-          console.log('❌ Data validation failed:', {
+          logger.warn('❌ Data validation failed:', {
             mounted,
             userDataSuccess: userData?.success,
             userDataExists: !!userData?.data,
@@ -250,7 +251,7 @@ export function AdminAnalytics() {
 
   const { userAnalytics, revenueAnalytics } = analytics;
 
-  console.log('🔍 Analytics validation check:', {
+  logger.debug('🔍 Analytics validation check:', {
     userAnalytics: !!userAnalytics,
     usersByType: !!userAnalytics?.usersByType,
     usersByStatus: !!userAnalytics?.usersByStatus,
@@ -265,7 +266,7 @@ export function AdminAnalytics() {
     !revenueAnalytics ||
     typeof revenueAnalytics !== 'object'
   ) {
-    console.log('❌ Basic analytics validation failed');
+    logger.warn('❌ Basic analytics validation failed');
     return (
       <div className="space-y-6">
         <Card className="border-red-200 bg-red-50">

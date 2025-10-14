@@ -48,15 +48,21 @@ export function useAuthState(): AuthState & {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      // Mock login implementation
-      const user: AuthUser = {
-        id: '1',
-        email: credentials.email,
-        name: 'Test User',
-        isVerified: true,
-        userType: 'freelancer',
-        role: 'freelancer',
-      };
+      // Real API call to backend
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+        credentials: 'include', // Send cookies
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Login failed');
+      }
+
+      const data = await response.json();
+      const user: AuthUser = data.user;
 
       setState({
         user,
@@ -77,9 +83,22 @@ export function useAuthState(): AuthState & {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      // Mock register implementation
+      // Real API call to backend
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Registration failed');
+      }
+
+      const result = await response.json();
       const user: AuthUser = {
-        id: '1',
+        id: result.user.id,
         email: data.email,
         name: `${data.firstName} ${data.lastName}`,
         isVerified: false,

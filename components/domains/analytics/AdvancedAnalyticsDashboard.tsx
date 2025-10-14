@@ -98,13 +98,13 @@ export function Sprint8AnalyticsDashboard({
         data: {
           revenue: {
             current: freelancerData.earnings?.totalEarnings || 0,
-            previous: (freelancerData.earnings?.totalEarnings || 0) * 0.8, // Mock previous value
+            previous: freelancerData.earnings?.lastMonth || 0,
           },
           totalProjects: overview.completedOrders || 0,
           activeProjects: overview.activeOrders || 0,
           completedProjects: overview.completedOrders || 0,
           averageRating: overview.clientSatisfaction || 0,
-          averageResponseTime: 2, // Mock response time in hours
+          averageResponseTime: overview.responseTime || 0,
           profileViews: overview.profileViews || 0,
           repeatClientRate: overview.repeatClientRate || 0,
           topCategories:
@@ -138,7 +138,7 @@ export function Sprint8AnalyticsDashboard({
           : 'stable',
         projects:
           (overviewData.completedProjects as number) > 0 ? 'up' : 'stable',
-        rating: 4.5, // Mock rating
+        rating: (overviewData.freelancerSatisfaction as number) || 0,
         responses: 'fast',
       };
 
@@ -146,15 +146,18 @@ export function Sprint8AnalyticsDashboard({
         data: {
           revenue: {
             current: employerData.spending?.total || 0,
-            previous: (employerData.spending?.total || 0) * 0.8,
+            previous:
+              ((employerData.spending as Record<string, unknown>)
+                ?.previousMonthTotal as number) || 0,
           },
           totalProjects: overviewData.completedProjects || 0,
           activeProjects: overviewData.activeProjects || 0,
           completedProjects: overviewData.completedProjects || 0,
-          averageRating: 4.5, // Mock rating
-          averageResponseTime: 12, // Mock response time
+          averageRating: (overviewData.freelancerSatisfaction as number) || 0,
+          averageResponseTime:
+            (overviewData.averageResponseTime as number) || 0,
           profileViews: 0, // Not applicable for employers
-          repeatClientRate: 75, // Mock value
+          repeatClientRate: (overviewData.repeatFreelancerRate as number) || 0,
           topCategories: Array.isArray(employerData.projects)
             ? employerData.projects
                 .filter((p): p is Record<string, unknown> =>

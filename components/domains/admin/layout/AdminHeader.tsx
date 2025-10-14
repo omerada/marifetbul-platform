@@ -39,7 +39,7 @@ export function AdminHeader({
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Searching for:', searchQuery);
+    // Search functionality to be implemented with navigation
   };
 
   return (

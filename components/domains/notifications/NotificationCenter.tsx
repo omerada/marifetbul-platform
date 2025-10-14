@@ -54,10 +54,26 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
       fetchNotifications,
     } = useNotification();
 
-    // Mock archive function since it's not in the hook
-    const archiveNotification = (notificationId: string) => {
-      // For now, just delete the notification
-      deleteNotification(notificationId);
+    // Archive notification via API
+    const archiveNotification = async (notificationId: string) => {
+      try {
+        const response = await fetch(
+          `/api/v1/notifications/${notificationId}/archive`,
+          {
+            method: 'POST',
+            credentials: 'include',
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to archive notification');
+        }
+
+        // Refresh notifications after archiving
+        fetchNotifications();
+      } catch (error) {
+        console.error('Error archiving notification:', error);
+      }
     };
 
     const [activeTab, setActiveTab] = useState<

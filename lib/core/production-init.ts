@@ -11,16 +11,19 @@ export async function initializeProductionApp() {
   if (typeof window === 'undefined') return;
 
   try {
-    // Mock deployment result for now
-    const deploymentResult = {
-      readyForDeployment: true,
-      report: { overallScore: 95 },
-      nextSteps: [
-        'Review performance',
-        'Check security',
-        'Test production build',
-      ],
-    };
+    // Perform health check and get deployment readiness
+    const healthResponse = await fetch('/api/health', {
+      method: 'GET',
+      cache: 'no-store',
+    });
+
+    const deploymentResult = healthResponse.ok
+      ? await healthResponse.json()
+      : {
+          readyForDeployment: false,
+          report: { overallScore: 0 },
+          nextSteps: ['Fix health check issues'],
+        };
 
     // In development, show optimization status
     if (process.env.NODE_ENV === 'development') {

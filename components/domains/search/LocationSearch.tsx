@@ -63,7 +63,7 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({
   const unifiedLocation = useUnifiedLocation();
   const { getCurrentPosition, isLoadingPosition: geoLoading } = unifiedLocation;
 
-  // Mock functions until implemented in unified location
+  // Distance formatting utility
   const formatDistance = useCallback((distance: number) => {
     if (distance < 1000) {
       return `${Math.round(distance)}m`;
@@ -71,10 +71,10 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({
     return `${(distance / 1000).toFixed(1)}km`;
   }, []);
 
-  // Mock states
-  const [results] = useState<LocationData[]>([]);
-  const [loading] = useState(false);
-  const [error] = useState<string | null>(null);
+  // Real states for location search
+  const [results, setResults] = useState<LocationData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Handle search
   const handleSearch = useCallback(async () => {
@@ -88,15 +88,23 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({
     };
 
     try {
-      // Simple location search implementation
-      const results = [
-        {
-          id: '1',
-          name: searchParams.query,
-          location: searchParams.query,
-          distance: 0,
-        },
-      ];
+      setLoading(true);
+      setError(null);
+
+      // Real API call for location-based search
+      const response = await fetch('/api/v1/search/location', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(searchParams),
+      });
+
+      if (!response.ok) {
+        throw new Error('Search failed');
+      }
+
+      const data = await response.json();
+      setResults(data.data || []);
 
       if (onResults) {
         onResults(results as never);

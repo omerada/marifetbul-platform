@@ -1,6 +1,6 @@
 /**
  * Payment utility functions
- * Mock payment processing and validation
+ * Real payment processing via Iyzico integration
  */
 
 import { PaymentCard, BillingAddress } from '@/types';
@@ -219,7 +219,7 @@ export const validateBillingAddress = (
   };
 };
 
-// Mock payment processing
+// Real payment processing via backend API
 export const processPayment = async (
   amount: number,
   currency: string,
@@ -229,12 +229,7 @@ export const processPayment = async (
   transactionId?: string;
   error?: string;
 }> => {
-  // Simulate processing delay
-  await new Promise((resolve) =>
-    setTimeout(resolve, 2000 + Math.random() * 3000)
-  );
-
-  // Basic validation
+  // Validate card before sending to backend
   const cardValidation = validateCardNumber(card.cardNumber || '');
   if (!cardValidation) {
     return {
@@ -243,27 +238,34 @@ export const processPayment = async (
     };
   }
 
-  // Simulate random failures (10% chance)
-  if (Math.random() < 0.1) {
-    const errors = [
-      'Yetersiz bakiye',
-      'Kart reddedildi',
-      'Banka hatası',
-      'Geçersiz işlem',
-      'Kart limiti aşıldı',
-    ];
+  try {
+    // Call backend payment API (Iyzico integration)
+    const response = await fetch('/api/v1/payments/process', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ amount, currency, card }),
+    });
 
+    if (!response.ok) {
+      const error = await response.json();
+      return {
+        success: false,
+        error: error.message || 'Ödeme işlemi başarısız',
+      };
+    }
+
+    const result = await response.json();
+    return {
+      success: true,
+      transactionId: result.transactionId,
+    };
+  } catch (error) {
     return {
       success: false,
-      error: errors[Math.floor(Math.random() * errors.length)],
+      error: 'Ödeme işlemi sırasında bir hata oluştu',
     };
   }
-
-  // Success case with transaction ID based on amount and currency
-  return {
-    success: true,
-    transactionId: `${currency.toLowerCase()}_${amount}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-  };
 };
 
 // Generate invoice number

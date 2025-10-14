@@ -498,18 +498,33 @@ function extractToken(req: NextRequest): string | null {
 async function validateToken(
   token: string
 ): Promise<NonNullable<ApiContext['user']>> {
-  // This would typically validate against your auth service
-  // For now, return a mock user
-  if (token === 'invalid') {
-    throw new Error('Invalid token');
-  }
+  try {
+    // Validate JWT token with backend
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/auth/verify`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-  return {
-    id: 'user-123',
-    email: 'user@example.com',
-    role: 'user',
-    permissions: ['read:profile', 'write:profile'],
-  };
+    if (!response.ok) {
+      throw new Error('Invalid token');
+    }
+
+    const data = await response.json();
+    return {
+      id: data.user.id,
+      email: data.user.email,
+      role: data.user.role,
+      permissions: data.user.permissions || [],
+    };
+  } catch (error) {
+    throw new Error('Token validation failed');
+  }
 }
 
 function hasPermissions(

@@ -627,8 +627,22 @@ export const useOrderStore = create<OrderStore>()(
         data: { status?: string; feedback?: string }
       ) => {
         try {
-          // Mock API call
-          console.log('Updating milestone:', milestoneId, data);
+          // Real API call to update milestone
+          const response = await fetch(
+            `/api/v1/orders/milestones/${milestoneId}`,
+            {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify(data),
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error('Failed to update milestone');
+          }
+
+          const result = await response.json();
 
           // Update milestone in current order
           set((state) => {
@@ -650,6 +664,7 @@ export const useOrderStore = create<OrderStore>()(
           });
         } catch (error) {
           console.error('Error updating milestone:', error);
+          throw error;
         }
       },
     })),

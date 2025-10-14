@@ -48,32 +48,24 @@ export function DashboardStats({ user }: DashboardStatsProps) {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        // Mock API call
-        await new Promise((resolve) => setTimeout(resolve, 800));
 
-        if (user.userType === 'freelancer') {
-          setStats({
-            totalEarnings: 15420,
-            activeProjects: 3,
-            completedJobs: 28,
-            rating: 4.9,
-            profileViews: 156,
-            responseRate: 95,
-            onTimeDelivery: 98,
-            repeatClients: 12,
-          });
-        } else {
-          setStats({
-            totalSpent: 8750,
-            activeJobs: 2,
-            totalJobs: 15,
-            receivedProposals: 23,
-            hiredFreelancers: 8,
-            avgProjectValue: 1200,
-            successRate: 92,
-            savedFreelancers: 5,
-          });
+        // Real API call to get dashboard stats
+        const endpoint =
+          user.userType === 'freelancer'
+            ? '/api/v1/dashboard/freelancer/stats'
+            : '/api/v1/dashboard/employer/stats';
+
+        const response = await fetch(endpoint, {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch stats');
         }
+
+        const data = await response.json();
+        setStats(data.data || null);
       } catch (error) {
         console.error('Error fetching stats:', error);
       } finally {

@@ -54,129 +54,34 @@ export function ActivityTimeline({
 }: ActivityTimelineProps) {
   const [activities, setActivities] = useState<Activity[]>([]);
 
-  // Use the props to prevent unused variable warnings
-  console.log('ActivityTimeline props:', {
-    user,
-    items,
-    type,
-    showTitle,
-    className,
-  });
+  // Props are used in component logic below
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchActivities = async () => {
       try {
         setLoading(true);
-        // Mock API call
-        await new Promise((resolve) => setTimeout(resolve, 600));
 
-        if (user?.userType === 'freelancer') {
-          setActivities([
-            {
-              id: '1',
-              type: 'message',
-              title: 'Yeni mesaj aldınız',
-              description: 'Ahmet Yılmaz size bir mesaj gönderdi.',
-              timestamp: '2 dakika önce',
-              user: { name: 'Ahmet Yılmaz' },
-            },
-            {
-              id: '2',
-              type: 'proposal',
-              title: 'Teklifiniz kabul edildi',
-              description:
-                'E-ticaret web sitesi projeniz için teklifiniz onaylandı.',
-              timestamp: '1 saat önce',
-              amount: 2500,
-            },
-            {
-              id: '3',
-              type: 'payment',
-              title: 'Ödeme alındı',
-              description: 'Logo tasarım projesi için ödemenizi aldınız.',
-              timestamp: '3 saat önce',
-              amount: 750,
-            },
-            {
-              id: '4',
-              type: 'review',
-              title: 'Yeni değerlendirme',
-              description: 'Mobil uygulama projesi için 5 yıldız aldınız.',
-              timestamp: '1 gün önce',
-              rating: 5,
-              user: { name: 'Zehra Kaya' },
-            },
-            {
-              id: '5',
-              type: 'milestone',
-              title: 'Proje tamamlandı',
-              description:
-                'Web sitesi geliştirme projesi başarıyla teslim edildi.',
-              timestamp: '2 gün önce',
-            },
-            {
-              id: '6',
-              type: 'profile_view',
-              title: 'Profil görüntülendi',
-              description: '12 yeni kişi profilinizi görüntüledi.',
-              timestamp: '3 gün önce',
-            },
-          ]);
-        } else {
-          setActivities([
-            {
-              id: '1',
-              type: 'proposal',
-              title: 'Yeni teklifler',
-              description:
-                'Mobil uygulama projeniz için 8 yeni teklif aldınız.',
-              timestamp: '1 saat önce',
-            },
-            {
-              id: '2',
-              type: 'message',
-              title: 'Yeni mesaj',
-              description: 'Mehmet Can size bir mesaj gönderdi.',
-              timestamp: '2 saat önce',
-              user: { name: 'Mehmet Can' },
-            },
-            {
-              id: '3',
-              type: 'job_posted',
-              title: 'İş ilanı yayınlandı',
-              description: 'Logo tasarım projesi başarıyla yayınlandı.',
-              timestamp: '5 saat önce',
-            },
-            {
-              id: '4',
-              type: 'project_update',
-              title: 'Proje güncellendi',
-              description: 'Web sitesi projesi %75 tamamlandı.',
-              timestamp: '1 gün önce',
-            },
-            {
-              id: '5',
-              type: 'payment',
-              title: 'Ödeme yapıldı',
-              description: 'E-ticaret projesi için ödeme gerçekleştirildi.',
-              timestamp: '2 gün önce',
-              amount: 3200,
-            },
-            {
-              id: '6',
-              type: 'review',
-              title: 'Değerlendirme yaptınız',
-              description:
-                'Ayşe Demir için 5 yıldızlı değerlendirme bıraktınız.',
-              timestamp: '3 gün önce',
-              rating: 5,
-              user: { name: 'Ayşe Demir' },
-            },
-          ]);
+        // Real API call to get user activities
+        const endpoint =
+          user?.userType === 'freelancer'
+            ? '/api/v1/dashboard/freelancer/activities'
+            : '/api/v1/dashboard/employer/activities';
+
+        const response = await fetch(endpoint, {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch activities');
         }
+
+        const data = await response.json();
+        setActivities(data.data || []);
       } catch (error) {
         console.error('Error fetching activities:', error);
+        setActivities([]);
       } finally {
         setLoading(false);
       }

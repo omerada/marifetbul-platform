@@ -52,9 +52,10 @@ export const useAdminUserStore = create<AdminUserStore>()(
           const response = await fetch(
             `/api/v1/admin/users?${queryParams.toString()}`,
             {
+              method: 'GET',
+              credentials: 'include',
               headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer mock-admin-token',
               },
             }
           );
@@ -88,9 +89,10 @@ export const useAdminUserStore = create<AdminUserStore>()(
 
         try {
           const response = await fetch(`/api/v1/admin/users/${userId}`, {
+            method: 'GET',
+            credentials: 'include',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: 'Bearer mock-admin-token',
             },
           });
 
@@ -124,9 +126,9 @@ export const useAdminUserStore = create<AdminUserStore>()(
             `/api/v1/admin/users/${request.userId}/action`,
             {
               method: 'POST',
+              credentials: 'include',
               headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer mock-admin-token',
               },
               body: JSON.stringify(request),
             }
@@ -175,9 +177,9 @@ export const useAdminUserStore = create<AdminUserStore>()(
         try {
           const response = await fetch(`/api/v1/admin/users/${userId}`, {
             method: 'PATCH',
+            credentials: 'include',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: 'Bearer mock-admin-token',
             },
             body: JSON.stringify(data),
           });
@@ -225,9 +227,9 @@ export const useAdminUserStore = create<AdminUserStore>()(
         try {
           const response = await fetch('/api/v1/admin/users/bulk-action', {
             method: 'POST',
+            credentials: 'include',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: 'Bearer mock-admin-token',
             },
             body: JSON.stringify(action),
           });

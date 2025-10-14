@@ -189,10 +189,16 @@ export default function ModerationAnalytics() {
       const response = await fetch(
         `/api/moderation/analytics/export?${params}`
       );
-      const data = await response.json();
 
-      // In a real app, you would handle the file download
-      console.log('Export data:', data);
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `moderation-analytics-${format}.${format}`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      }
     } catch (error) {
       console.error('Error exporting data:', error);
     }

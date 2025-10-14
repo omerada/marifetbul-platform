@@ -58,7 +58,7 @@ export function useMarketplace() {
   const loadMoreJobs = useJobsStore((state) => state.loadMore);
   const loadMorePackages = usePackagesStore((state) => state.loadMore);
 
-  // Mock state for features not yet implemented in BaseStore
+  // State for features - using BaseStore data
   const jobFilters: JobFilters = useMemo(
     () => ({
       page: jobsPagination.page,
@@ -138,10 +138,10 @@ export function useMarketplace() {
   }, [fetchPackages]);
 
   const updateViewPreferences = useCallback(() => {
-    // For now, just ignore - not implemented in BaseStore
+    // View preferences update - to be implemented in BaseStore
   }, []);
 
-  // Mock functions for features not implemented yet
+  // Action placeholders for features to be implemented
   const setSearchQuery = useCallback(() => {}, []);
   const addToSearchHistory = useCallback(() => {}, []);
   const clearSearchHistory = useCallback(() => {}, []);

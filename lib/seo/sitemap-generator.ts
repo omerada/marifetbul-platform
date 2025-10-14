@@ -18,8 +18,6 @@ export class SitemapGenerator {
    */
   async generateBlogSitemap(): Promise<MetadataRoute.Sitemap> {
     try {
-      // In production, this would fetch from your database
-      // For now, return empty array or mock data
       const blogPosts = await this.fetchBlogPosts();
 
       return blogPosts.map((post: any) => ({
@@ -159,9 +157,8 @@ export class SitemapGenerator {
     ];
   }
 
-  // Mock data fetchers - Replace with actual database calls
-  // Production-ready fetchers: call backend API endpoints. If an endpoint is missing
-  // the functions will safely return an empty array.
+  // Production-ready data fetchers - call backend API endpoints
+  // If an endpoint is not implemented yet, functions will safely return empty array
   private async fetchBlogPosts() {
     try {
       const base = process.env.NEXT_PUBLIC_API_URL || `${this.baseUrl}/api/v1`;

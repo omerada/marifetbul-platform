@@ -176,23 +176,39 @@ export function getUserPermissions(role: string): string[] {
 /**
  * Get user from cookie/session (simplified)
  */
-export function getUserFromRequest(request: NextRequest): AdminUser | null {
+export async function getUserFromRequest(
+  request: NextRequest
+): Promise<AdminUser | null> {
   try {
-    // In a real app, you would validate JWT token from cookies
     const authCookie = request.cookies.get('auth-token');
 
     if (!authCookie) {
       return null;
     }
 
-    // For demo purposes, return a mock admin user
-    // In production, decode and validate JWT token here
+    // Validate JWT token with backend
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/auth/verify`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Cookie: `auth-token=${authCookie.value}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
     return {
-      id: '1',
-      email: 'admin@marifetbul.com',
-      role: 'super_admin',
-      permissions: getUserPermissions('super_admin'),
-      isActive: true,
+      id: data.user.id,
+      email: data.user.email,
+      role: data.user.role,
+      permissions: getUserPermissions(data.user.role),
+      isActive: data.user.isActive,
     };
   } catch (error) {
     console.error('Error getting user from request:', error);
@@ -204,7 +220,7 @@ export function getUserFromRequest(request: NextRequest): AdminUser | null {
  * Admin middleware for route protection
  */
 export async function adminMiddleware(request: NextRequest) {
-  const user = getUserFromRequest(request);
+  const user = await getUserFromRequest(request);
 
   // Check if user is authenticated
   if (!user) {
@@ -248,7 +264,7 @@ export async function adminMiddleware(request: NextRequest) {
  * API middleware for admin API routes
  */
 export async function adminApiMiddleware(request: NextRequest) {
-  const user = getUserFromRequest(request);
+  const user = await getUserFromRequest(request);
 
   if (!user) {
     return NextResponse.json(
@@ -303,7 +319,7 @@ export function withAdminAuth(
     req: NextRequest,
     context: { params: Record<string, string> }
   ) => {
-    const user = getUserFromRequest(req);
+    const user = await getUserFromRequest(req);
 
     if (!user) {
       return NextResponse.json(
