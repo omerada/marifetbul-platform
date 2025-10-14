@@ -1,21 +1,16 @@
 Sen bir üst düzey yazılım mimarı ve Spring Boot + Fullstack (React/Next.js) uzmanısın.
 marifetbul-backend projesi ile web-app yapısını baştan sona incele.
-Amaç: sistemi production-ready, clean, maintainable hale getirmek.
+Amaç: mock yapıların tamamen silinip, frontend ve backend sisteminin tam entegre production-ready, clean, maintainable hale getirmek.
 
 Görevlerin:
 
 Mevcut backend ve web-app’i analiz et.
-
 Gereksiz, duplicate, mock veya test amaçlı kalmış tüm kodları, servisleri, componentleri tespit et ve temizle.
-
 Kod yapısını, konfigürasyonları, paketleme ve bağımlılıkları modern Spring Boot standartlarına göre yeniden düzenle.
-
-Güvenlik, performans, logging, test, CI/CD ve environment yapılarını production düzeyine getir.
-
-Sonuçta çalışan, optimize, ölçeklenebilir, sürdürülebilir bir backend ve web-app oluştur.
+Sonuçta çalışan, optimize, ölçeklenebilir, sürdürülebilir bir backend ve web-app haline getir yapıyı.
 
 Sadece işlemi yap, rapor veya kod örneği verme.
-Hedef: temiz, production-ready, deployment’a hazır backend-frontend yapısı. #codebase
+Hedef: temiz, production-ready, deployment’a hazır backend-frontend yapısı. #codebasee
 
 Sen bir üst düzey yazılım mimarı ve Spring Boot uzmanısın.
 

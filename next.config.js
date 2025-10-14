@@ -14,40 +14,33 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'localhost',
+        hostname: 'marifetbul.com',
       },
       {
         protocol: 'https',
-        hostname: 'vercel.app',
-      },
-      {
-        protocol: 'https',
-        hostname: 'picsum.photos',
+        hostname: '*.marifetbul.com',
       },
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
-      {
-        protocol: 'https',
-        hostname: 'marifet.vercel.app',
-      },
-      {
-        protocol: 'https',
-        hostname: 'via.placeholder.com',
-      },
     ],
     formats: ['image/webp', 'image/avif'],
-    dangerouslyAllowSVG: true,
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    unoptimized: process.env.NODE_ENV === 'development',
+    dangerouslyAllowSVG: false,
+    minimumCacheTTL: 60,
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
 
   // ================================================
   // PERFORMANCE OPTIMIZATIONS
   // ================================================
-  experimental: {
-    optimizeCss: true,
+  reactStrictMode: true,
+  swcMinify: true,
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
+    },
   },
 
   // ================================================
@@ -102,15 +95,6 @@ const nextConfig = {
   // API PROXY CONFIGURATION
   // ================================================
   async rewrites() {
-    // Only proxy in development, in production use direct API URL
-    if (process.env.NODE_ENV === 'development') {
-      return [
-        {
-          source: '/api/v1/:path*',
-          destination: 'http://localhost:8080/api/v1/:path*',
-        },
-      ];
-    }
     return [];
   },
 
@@ -204,28 +188,7 @@ const nextConfig = {
   // ================================================
   // WEBPACK CONFIGURATION
   // ================================================
-  webpack: (config, { isServer, dev }) => {
-    // Exclude MSW from production builds
-    if (!dev) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        // Replace MSW with empty module in production
-        'msw/node': false,
-        'msw/browser': false,
-        msw: false,
-      };
-
-      // Ignore MSW-related imports in production
-      config.externals = config.externals || [];
-      if (!isServer) {
-        config.externals.push({
-          msw: 'msw',
-          'msw/node': 'msw/node',
-          'msw/browser': 'msw/browser',
-        });
-      }
-    }
-
+  webpack: (config) => {
     return config;
   },
 };

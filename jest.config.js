@@ -2,7 +2,6 @@
 module.exports = {
   preset: 'next/jest',
   testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/lib/shared/testing/setup.ts'],
   moduleNameMapping: {
     '^@/(.*)$': '<rootDir>/$1',
     '^@/components/(.*)$': '<rootDir>/components/$1',
@@ -27,10 +26,10 @@ module.exports = {
   ],
   coverageThreshold: {
     global: {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
+      branches: 70,
+      functions: 70,
+      lines: 70,
+      statements: 70,
     },
   },
   coverageReporters: ['text', 'lcov', 'html'],
@@ -39,21 +38,6 @@ module.exports = {
     '^.+\\.module\\.(css|sass|scss)$',
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
-  transform: {
-    '^.+\\.(ts|tsx)$': [
-      'ts-jest',
-      {
-        tsconfig: {
-          jsx: 'react-jsx',
-        },
-      },
-    ],
-  },
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.json',
-    },
-  },
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
   watchPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
 };

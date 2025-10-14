@@ -4,5 +4,15 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "regions": ["iad1"]
+  "regions": ["iad1"],
+  "env": {
+    "NEXT_PUBLIC_API_URL": "@marifetbul_api_url",
+    "NEXT_PUBLIC_APP_URL": "@marifetbul_app_url"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_API_URL": "@marifetbul_api_url",
+      "NEXT_PUBLIC_APP_URL": "@marifetbul_app_url"
+    }
+  }
 }
