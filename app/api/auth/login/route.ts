@@ -1,123 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+const BACKEND_API_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+
 /**
  * POST /api/auth/login
- * User authentication endpoint
+ * Proxy authentication request to backend API
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password } = body;
 
-    console.log('🔐 Auth API: Login attempt for:', email);
+    console.log('🔐 Auth API: Proxying login request to backend');
 
-    if (!email || !password) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'E-posta ve şifre gereklidir',
-        },
-        { status: 400 }
+    const response = await fetch(`${BACKEND_API_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.log(
+        '❌ Auth API: Login failed:',
+        data.message || 'Unknown error'
       );
+      return NextResponse.json(data, { status: response.status });
     }
 
-    // Mock authentication - replace with real authentication logic
-    const validCredentials = [
-      {
-        email: 'admin@marifetbul.com',
-        password: 'admin123',
-        user: {
-          id: 'admin-1',
-          email: 'admin@marifetbul.com',
-          firstName: 'Admin',
-          lastName: 'User',
-          name: 'Admin User',
-          role: 'admin',
-          userType: 'admin',
-          avatar: '',
-          isVerified: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        token: 'admin-token-12345',
-      },
-      {
-        email: 'demo@example.com',
-        password: 'demo123',
-        user: {
-          id: 'freelancer-1',
-          email: 'demo@example.com',
-          firstName: 'Demo',
-          lastName: 'Freelancer',
-          name: 'Demo Freelancer',
-          role: 'freelancer',
-          userType: 'freelancer',
-          avatar: '',
-          isVerified: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        token: 'freelancer-token-12345',
-      },
-      {
-        email: 'employer@example.com',
-        password: 'employer123',
-        user: {
-          id: 'employer-1',
-          email: 'employer@example.com',
-          firstName: 'Demo',
-          lastName: 'Employer',
-          name: 'Demo Employer',
-          role: 'employer',
-          userType: 'employer',
-          avatar: '',
-          isVerified: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        token: 'employer-token-12345',
-      },
-    ];
-
-    const foundUser = validCredentials.find(
-      (cred) => cred.email === email && cred.password === password
-    );
-
-    if (!foundUser) {
-      console.log('❌ Auth API: Invalid credentials for:', email);
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Geçersiz e-posta veya şifre',
-        },
-        { status: 401 }
-      );
-    }
-
-    console.log(
-      '✅ Auth API: Login successful for:',
-      email,
-      'Role:',
-      foundUser.user.role
-    );
-
-    return NextResponse.json(
-      {
-        success: true,
-        data: {
-          user: foundUser.user,
-          token: foundUser.token,
-        },
-        message: 'Giriş başarılı',
-      },
-      { status: 200 }
-    );
+    console.log('✅ Auth API: Login successful');
+    return NextResponse.json(data, { status: 200 });
   } catch (error) {
     console.error('Auth API Error:', error);
     return NextResponse.json(
       {
         success: false,
-        error: 'Internal server error',
+        message: 'Backend bağlantı hatası. Lütfen daha sonra tekrar deneyin.',
       },
       { status: 500 }
     );

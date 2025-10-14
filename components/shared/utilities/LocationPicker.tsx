@@ -70,57 +70,26 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
       setIsSearching(true);
 
       try {
-        // TODO: Replace with real geocoding API (Google Maps, Mapbox, or backend endpoint)
-        // Currently using mock data for development
-        // Backend endpoint suggestion: GET /api/v1/geocoding/search?q={query}
-        const mockResults: SearchResult[] = [
-          {
-            id: '1',
-            displayName: 'Kızılay, Çankaya',
-            address: 'Kızılay, Çankaya, Ankara, Türkiye',
-            coordinates: {
-              latitude: 39.9199,
-              longitude: 32.8543,
-              lat: 39.9199,
-              lng: 32.8543,
-            },
-            type: 'neighborhood',
-          },
-          {
-            id: '2',
-            displayName: 'Bahçelievler',
-            address: 'Bahçelievler, Ankara, Türkiye',
-            coordinates: {
-              latitude: 39.94,
-              longitude: 32.82,
-              lat: 39.94,
-              lng: 32.82,
-            },
-            type: 'district',
-          },
-          {
-            id: '3',
-            displayName: 'Bilkent',
-            address: 'Bilkent, Çankaya, Ankara, Türkiye',
-            coordinates: {
-              latitude: 39.8681,
-              longitude: 32.7489,
-              lat: 39.8681,
-              lng: 32.7489,
-            },
-            type: 'neighborhood',
-          },
-        ].filter(
-          (result) =>
-            result.displayName.toLowerCase().includes(value.toLowerCase()) ||
-            result.address.toLowerCase().includes(value.toLowerCase())
+        // Call backend geocoding API
+        const apiUrl =
+          process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+        const response = await fetch(
+          `${apiUrl}/geocoding/search?q=${encodeURIComponent(value)}`
         );
 
-        setSearchResults(mockResults);
+        if (!response.ok) {
+          throw new Error('Geocoding search failed');
+        }
+
+        const data = await response.json();
+        const results: SearchResult[] = data.results || [];
+
+        setSearchResults(results);
         setShowResults(true);
       } catch (error) {
-        console.error('Search error:', error);
+        console.error('Geocoding search error:', error);
         setSearchResults([]);
+        setShowResults(false);
       }
 
       setIsSearching(false);

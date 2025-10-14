@@ -82,95 +82,21 @@ export default function SystemHealthWidget({
     try {
       setIsLoading(true);
 
-      // TODO: Replace with real backend health check API
-      // Suggested endpoint: GET /api/v1/admin/system/health
-      // Backend should implement Spring Boot Actuator endpoints or custom health check
-      // Should return real metrics from server monitoring (CPU, memory, services status)
+      // Call backend health check API
+      const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+      const response = await fetch(`${apiUrl}/admin/system/health`, {
+        headers: {
+          Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`,
+        },
+      });
 
-      // Simulate API call with realistic data
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
-
-      const mockData: SystemHealthData = {
-        uptime: {
-          value: 99.8,
-          status: 'healthy',
-          percentage: 99.8,
-        },
-        responseTime: {
-          value: 120,
-          status: 'healthy',
-          trend: 'stable',
-        },
-        errorRate: {
-          value: 0.02,
-          status: 'healthy',
-          trend: 'down',
-        },
-        cpu: {
-          usage: Math.random() * 30 + 20, // 20-50%
-          status: 'healthy',
-        },
-        memory: {
-          usage: Math.random() * 2 + 6, // 6-8 GB
-          total: 16,
-          status: 'healthy',
-        },
-        disk: {
-          usage: Math.random() * 10 + 40, // 40-50 GB
-          total: 100,
-          status: 'healthy',
-        },
-        database: {
-          status: 'healthy',
-          connections: Math.floor(Math.random() * 20 + 10), // 10-30 connections
-          maxConnections: 100,
-          responseTime: Math.random() * 5 + 2, // 2-7ms
-        },
-        services: [
-          {
-            name: 'Web Server',
-            status: 'online',
-            responseTime: Math.random() * 50 + 100,
-          },
-          {
-            name: 'Database',
-            status: 'online',
-            responseTime: Math.random() * 10 + 5,
-          },
-          {
-            name: 'Redis Cache',
-            status: 'online',
-            responseTime: Math.random() * 5 + 1,
-          },
-          {
-            name: 'Email Service',
-            status: 'online',
-            responseTime: Math.random() * 100 + 200,
-          },
-          {
-            name: 'File Storage',
-            status: 'online',
-            responseTime: Math.random() * 30 + 50,
-          },
-        ],
-        lastUpdate: new Date(),
-      };
-
-      // Add some randomization for demo purposes
-      if (Math.random() < 0.1) {
-        // 10% chance of warning
-        mockData.cpu.status = 'warning';
-        mockData.cpu.usage = Math.random() * 20 + 70; // 70-90%
+      if (!response.ok) {
+        throw new Error('Failed to fetch health data');
       }
 
-      if (Math.random() < 0.05) {
-        // 5% chance of critical
-        mockData.errorRate.status = 'critical';
-        mockData.errorRate.value = Math.random() * 2 + 3; // 3-5%
-        mockData.errorRate.trend = 'up';
-      }
-
-      setHealthData(mockData);
+      const data = await response.json();
+      setHealthData(data);
       setLastRefresh(new Date());
     } catch (error) {
       console.error('Failed to fetch health data:', error);

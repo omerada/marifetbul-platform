@@ -1,6 +1,6 @@
 {
   "name": "marifetbul",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -16,35 +16,19 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:ci": "jest --ci --coverage --maxWorkers=2",
-    "icons:generate": "node scripts/generate-icons.js",
-    "icons:from-logo": "node scripts/generate-icons-from-logo.js",
-    "icons:from-original": "node scripts/generate-icons-from-original.js",
-    "icons:clean": "rimraf public/icons/* && rimraf public/favicon.*",
-    "analyze": "cross-env ANALYZE=true next build",
-    "analyze:server": "cross-env ANALYZE=true next build && npx serve@latest .next/static",
-    "bundle:analyze": "npx @next/bundle-analyzer .next",
-    "deploy:staging": "vercel --env=staging",
-    "deploy:production": "vercel --prod",
-    "health:check": "node scripts/health-check.js",
-    "db:migrate": "prisma migrate dev",
-    "db:migrate:deploy": "prisma migrate deploy",
-    "db:studio": "prisma studio",
-    "db:seed": "node scripts/seed.js"
+    "analyze": "cross-env ANALYZE=true next build"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
     "clsx": "^2.1.1",
-    "critters": "^0.0.23",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.22",
     "immer": "^10.1.3",
-    "isomorphic-dompurify": "^2.28.0",
     "lucide-react": "^0.543.0",
     "next": "^14.2.33",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-hook-form": "^7.62.0",
-    "react-markdown": "^10.1.0",
     "swr": "^2.3.6",
     "tailwind-merge": "^3.3.1",
     "zod": "^4.1.5",
@@ -70,5 +54,9 @@
     "sharp": "^0.34.3",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18.17.0",
+    "npm": ">=9.0.0"
   }
 }

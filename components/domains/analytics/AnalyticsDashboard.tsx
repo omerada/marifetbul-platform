@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import {
   TrendingUp,
   TrendingDown,
@@ -54,98 +54,47 @@ interface AnalyticsData {
   }[];
 }
 
-// TODO: Replace with real backend analytics API
-// Suggested endpoint: GET /api/v1/analytics/dashboard?period=month&userType=admin
-// Backend should aggregate data from database and return metrics, trends, charts
-// Mock data generator - REMOVE THIS AFTER BACKEND INTEGRATION
-const generateMockData = (period: AnalyticsData['period']): AnalyticsData => {
-  const baseData = {
-    day: {
-      multiplier: 1,
-      labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
-    },
-    week: {
-      multiplier: 7,
-      labels: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'],
-    },
-    month: { multiplier: 30, labels: ['Hf1', 'Hf2', 'Hf3', 'Hf4'] },
-    year: {
-      multiplier: 365,
-      labels: [
-        'Oca',
-        'Şub',
-        'Mar',
-        'Nis',
-        'May',
-        'Haz',
-        'Tem',
-        'Ağu',
-        'Eyl',
-        'Eki',
-        'Kas',
-        'Ara',
-      ],
-    },
-  };
+// Fetch analytics data from backend API
+const fetchAnalyticsData = async (
+  period: AnalyticsData['period']
+): Promise<AnalyticsData> => {
+  const apiUrl =
+    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
 
-  const config = baseData[period];
+  try {
+    const response = await fetch(
+      `${apiUrl}/analytics/dashboard?period=${period}`,
+      {
+        headers: {
+          Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`,
+        },
+      }
+    );
 
-  return {
-    period,
-    metrics: {
-      totalJobs: Math.floor(Math.random() * 1000) * config.multiplier,
-      totalFreelancers: Math.floor(Math.random() * 500) * config.multiplier,
-      totalRevenue: Math.floor(Math.random() * 50000) * config.multiplier,
-      averageRating: 4.2 + Math.random() * 0.8,
-      completionRate: 85 + Math.random() * 15,
-      responseTime: Math.floor(Math.random() * 24) + 1,
-    },
-    trends: {
-      jobs: (Math.random() - 0.5) * 40,
-      freelancers: (Math.random() - 0.5) * 30,
-      revenue: (Math.random() - 0.5) * 50,
-      rating: (Math.random() - 0.5) * 10,
-    },
-    chartData: {
-      labels: config.labels,
-      jobs: config.labels.map(() => Math.floor(Math.random() * 100)),
-      revenue: config.labels.map(() => Math.floor(Math.random() * 10000)),
-      users: config.labels.map(() => Math.floor(Math.random() * 50)),
-    },
-    categoryDistribution: [
-      { name: 'Web Development', value: 35, color: '#3B82F6' },
-      { name: 'Mobile Apps', value: 25, color: '#10B981' },
-      { name: 'UI/UX Design', value: 20, color: '#F59E0B' },
-      { name: 'Content Writing', value: 12, color: '#EF4444' },
-      { name: 'Other', value: 8, color: '#6B7280' },
-    ],
-    topPerformers: [
-      {
-        id: '1',
-        name: 'Ahmet Yılmaz',
-        avatar: '👨‍💻',
-        rating: 4.9,
-        projects: 47,
-        revenue: 125000,
+    if (!response.ok) {
+      throw new Error('Failed to fetch analytics data');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Analytics fetch error:', error);
+    // Return empty data structure on error
+    return {
+      period,
+      metrics: {
+        totalJobs: 0,
+        totalFreelancers: 0,
+        totalRevenue: 0,
+        averageRating: 0,
+        completionRate: 0,
+        responseTime: 0,
       },
-      {
-        id: '2',
-        name: 'Zeynep Demir',
-        avatar: '👩‍🎨',
-        rating: 4.8,
-        projects: 32,
-        revenue: 98000,
-      },
-      {
-        id: '3',
-        name: 'Mehmet Özkan',
-        avatar: '👨‍💼',
-        rating: 4.7,
-        projects: 28,
-        revenue: 87000,
-      },
-    ],
-  };
+      trends: { jobs: 0, freelancers: 0, revenue: 0, rating: 0 },
+      chartData: { labels: [], jobs: [], revenue: [], users: [] },
+      categoryDistribution: [],
+      topPerformers: [],
+    };
+  }
 };
 
 interface AnalyticsDashboardProps {
@@ -158,20 +107,29 @@ export function AnalyticsDashboard({
   const [selectedPeriod, setSelectedPeriod] =
     useState<AnalyticsData['period']>('week');
   const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState<AnalyticsData | null>(null);
 
-  const data = useMemo(
-    () => generateMockData(selectedPeriod),
-    [selectedPeriod]
-  );
+  // Fetch data when period changes
+  const loadAnalyticsData = async () => {
+    setIsLoading(true);
+    try {
+      const analyticsData = await fetchAnalyticsData(selectedPeriod);
+      setData(analyticsData);
+    } catch (error) {
+      console.error('Failed to load analytics:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Load data on mount and period change
+  useEffect(() => {
+    loadAnalyticsData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPeriod]);
 
   const handlePeriodChange = (period: AnalyticsData['period']) => {
-    setIsLoading(true);
     setSelectedPeriod(period);
-
-    // Simulate loading
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
   };
 
   const formatCurrency = (amount: number) => {
@@ -185,6 +143,16 @@ export function AnalyticsDashboard({
   const formatNumber = (num: number) => {
     return new Intl.NumberFormat('tr-TR').format(num);
   };
+
+  if (!data) {
+    return (
+      <div className={`space-y-6 ${className}`}>
+        <div className="flex h-64 items-center justify-center">
+          <RefreshCw className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`space-y-6 ${className}`}>

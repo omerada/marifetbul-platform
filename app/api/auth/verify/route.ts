@@ -1,60 +1,50 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+const BACKEND_API_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+
 /**
  * GET /api/auth/verify
- * Token verification endpoint
+ * Proxy token verification request to backend API
  */
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const token = authHeader?.replace('Bearer ', '');
 
-    console.log('🔍 Auth Verify: Token verification attempt');
+    console.log('🔍 Auth Verify: Proxying verification request to backend');
 
-    if (!token) {
+    if (!authHeader) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Token gereklidir',
+          message: 'Token gereklidir',
         },
         { status: 401 }
       );
     }
 
-    // Mock token verification - replace with real JWT verification
-    const validTokens = [
-      'admin-token-12345',
-      'freelancer-token-12345',
-      'employer-token-12345',
-      'mock-admin-token',
-    ];
+    const response = await fetch(`${BACKEND_API_URL}/auth/verify`, {
+      method: 'GET',
+      headers: {
+        Authorization: authHeader,
+      },
+    });
 
-    if (!validTokens.includes(token)) {
-      console.log('❌ Auth Verify: Invalid token:', token);
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Geçersiz token',
-        },
-        { status: 401 }
-      );
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.log('❌ Auth Verify: Verification failed');
+      return NextResponse.json(data, { status: response.status });
     }
 
     console.log('✅ Auth Verify: Token valid');
-
-    return NextResponse.json(
-      {
-        success: true,
-        message: 'Token geçerli',
-      },
-      { status: 200 }
-    );
+    return NextResponse.json(data, { status: 200 });
   } catch (error) {
     console.error('Auth Verify Error:', error);
     return NextResponse.json(
       {
         success: false,
-        error: 'Internal server error',
+        message: 'Backend bağlantı hatası',
       },
       { status: 500 }
     );

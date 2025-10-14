@@ -48,6 +48,7 @@ export interface BlogPostSummary {
   slug: string;
   title: string;
   excerpt: string;
+  coverImageUrl?: string;
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' | 'SCHEDULED';
   featured: boolean;
   viewCount: number;

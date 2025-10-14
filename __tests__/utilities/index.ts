@@ -65,7 +65,7 @@ export class MockApiResponseFactory {
 export class UserFactory {
   private static counter = 1;
 
-  static create(overrides: any = {}) {
+  static create(overrides: Record<string, unknown> = {}) {
     const id = UserFactory.counter++;
     return {
       id: `user-${id}`,
@@ -85,11 +85,11 @@ export class UserFactory {
 
   static build = UserFactory.create;
 
-  static createMany(count: number, overrides: any = {}) {
+  static createMany(count: number, overrides: Record<string, unknown> = {}) {
     return Array.from({ length: count }, () => UserFactory.create(overrides));
   }
 
-  static admin(overrides: any = {}) {
+  static admin(overrides: Record<string, unknown> = {}) {
     return UserFactory.create({
       role: 'admin',
       permissions: ['*'],
@@ -97,14 +97,14 @@ export class UserFactory {
     });
   }
 
-  static employer(overrides: any = {}) {
+  static employer(overrides: Record<string, unknown> = {}) {
     return UserFactory.create({
       role: 'employer',
       ...overrides,
     });
   }
 
-  static freelancer(overrides: any = {}) {
+  static freelancer(overrides: Record<string, unknown> = {}) {
     return UserFactory.create({
       role: 'freelancer',
       ...overrides,
@@ -116,7 +116,7 @@ export class UserFactory {
 export class MessageFactory {
   private static counter = 1;
 
-  static create(overrides: any = {}) {
+  static create(overrides: Record<string, unknown> = {}) {
     const id = MessageFactory.counter++;
     return {
       id: `message-${id}`,
@@ -133,13 +133,13 @@ export class MessageFactory {
 
   static build = MessageFactory.create;
 
-  static createMany(count: number, overrides: any = {}) {
+  static createMany(count: number, overrides: Record<string, unknown> = {}) {
     return Array.from({ length: count }, () =>
       MessageFactory.create(overrides)
     );
   }
 
-  static withAttachment(overrides: any = {}) {
+  static withAttachment(overrides: Record<string, unknown> = {}) {
     return MessageFactory.create({
       type: 'file',
       attachments: [
@@ -160,7 +160,7 @@ export class MessageFactory {
 export class ConversationFactory {
   private static counter = 1;
 
-  static create(overrides: any = {}) {
+  static create(overrides: Record<string, unknown> = {}) {
     const id = ConversationFactory.counter++;
     return {
       id: `conversation-${id}`,
@@ -177,13 +177,13 @@ export class ConversationFactory {
 
   static build = ConversationFactory.create;
 
-  static createMany(count: number, overrides: any = {}) {
+  static createMany(count: number, overrides: Record<string, unknown> = {}) {
     return Array.from({ length: count }, () =>
       ConversationFactory.create(overrides)
     );
   }
 
-  static group(overrides: any = {}) {
+  static group(overrides: Record<string, unknown> = {}) {
     return ConversationFactory.create({
       type: 'group',
       participantIds: [`user-1`, `user-2`, `user-3`],
