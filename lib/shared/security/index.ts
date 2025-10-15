@@ -266,33 +266,122 @@ export class SecureStorage {
     keys.forEach((key) => localStorage.removeItem(key));
   }
 
-  private static simpleEncrypt(text: string): string {
-    // Simple XOR encryption for basic obfuscation
-    // NOTE: This is not cryptographically secure, use proper encryption in production
-    const key = 'marifet_key_2024';
-    let result = '';
+  /**
+   * Secure AES-GCM encryption using Web Crypto API
+   * @param text - Plain text to encrypt
+   * @param password - Encryption password (should be from secure source)
+   * @returns Base64 encoded encrypted data with salt and IV
+   */
+  private static async secureEncrypt(
+    text: string,
+    password: string
+  ): Promise<string> {
+    try {
+      // Generate random salt and IV
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
 
-    for (let i = 0; i < text.length; i++) {
-      result += String.fromCharCode(
-        text.charCodeAt(i) ^ key.charCodeAt(i % key.length)
+      // Derive key from password using PBKDF2
+      const enc = new TextEncoder();
+      const keyMaterial = await crypto.subtle.importKey(
+        'raw',
+        enc.encode(password),
+        { name: 'PBKDF2' },
+        false,
+        ['deriveBits', 'deriveKey']
       );
-    }
 
-    return btoa(result);
+      const key = await crypto.subtle.deriveKey(
+        {
+          name: 'PBKDF2',
+          salt,
+          iterations: 100000,
+          hash: 'SHA-256',
+        },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        true,
+        ['encrypt', 'decrypt']
+      );
+
+      // Encrypt the text
+      const encrypted = await crypto.subtle.encrypt(
+        { name: 'AES-GCM', iv },
+        key,
+        enc.encode(text)
+      );
+
+      // Combine salt + iv + encrypted data
+      const result = new Uint8Array(
+        salt.length + iv.length + encrypted.byteLength
+      );
+      result.set(salt, 0);
+      result.set(iv, salt.length);
+      result.set(new Uint8Array(encrypted), salt.length + iv.length);
+
+      // Return as base64
+      return btoa(String.fromCharCode(...result));
+    } catch (error) {
+      logger.error('Encryption failed', error as Error);
+      throw new Error('Encryption failed');
+    }
   }
 
-  private static simpleDecrypt(encrypted: string): string {
-    const key = 'marifet_key_2024';
-    const text = atob(encrypted);
-    let result = '';
+  /**
+   * Secure AES-GCM decryption
+   * @param encryptedData - Base64 encoded encrypted data
+   * @param password - Decryption password
+   * @returns Decrypted plain text
+   */
+  private static async secureDecrypt(
+    encryptedData: string,
+    password: string
+  ): Promise<string> {
+    try {
+      // Decode base64
+      const data = Uint8Array.from(atob(encryptedData), (c) => c.charCodeAt(0));
 
-    for (let i = 0; i < text.length; i++) {
-      result += String.fromCharCode(
-        text.charCodeAt(i) ^ key.charCodeAt(i % key.length)
+      // Extract salt, iv, and encrypted data
+      const salt = data.slice(0, 16);
+      const iv = data.slice(16, 28);
+      const encrypted = data.slice(28);
+
+      // Derive key from password
+      const enc = new TextEncoder();
+      const keyMaterial = await crypto.subtle.importKey(
+        'raw',
+        enc.encode(password),
+        { name: 'PBKDF2' },
+        false,
+        ['deriveBits', 'deriveKey']
       );
-    }
 
-    return result;
+      const key = await crypto.subtle.deriveKey(
+        {
+          name: 'PBKDF2',
+          salt,
+          iterations: 100000,
+          hash: 'SHA-256',
+        },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        true,
+        ['encrypt', 'decrypt']
+      );
+
+      // Decrypt
+      const decrypted = await crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv },
+        key,
+        encrypted
+      );
+
+      const dec = new TextDecoder();
+      return dec.decode(decrypted);
+    } catch (error) {
+      logger.error('Decryption failed', error as Error);
+      throw new Error('Decryption failed');
+    }
   }
 }
 
