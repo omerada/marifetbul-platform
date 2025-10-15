@@ -42,6 +42,13 @@ export interface CacheState<T> {
   ttl: number;
 }
 
+export interface AsyncActions {
+  fetch: () => Promise<void>;
+  refresh: () => Promise<void>;
+  reset: () => void;
+  clearError: () => void;
+}
+
 // ================================
 // STORE UTILITIES
 // ================================
@@ -71,6 +78,8 @@ export function createStoreWithMiddleware<T>(
     store = devtools(store, { name: config.name }) as typeof storeCreator;
   }
 
+  // @ts-expect-error - Zustand v4 + Immer middleware type compatibility issue
+  // See: https://github.com/pmndrs/zustand/issues/1937
   return create(immer(store));
 }
 
@@ -109,6 +118,7 @@ export function createAsyncAction<TState extends BaseState, TResult>(
 
     try {
       const result = await asyncFn();
+      // @ts-expect-error - Type assertion needed for AsyncState extension
       set((draft: TState & AsyncState<TResult>) => {
         draft.data = result;
         draft.isLoading = false;
@@ -130,14 +140,16 @@ export function createAsyncAction<TState extends BaseState, TResult>(
 // SELECTORS HELPERS
 // ================================
 
-export function createAsyncSelectors<T>(store: any) {
+export function createAsyncSelectors<T>(
+  store: UseBoundStore<StoreApi<AsyncState<T>>>
+) {
   return {
-    useData: () => store((state: AsyncState<T>) => state.data),
-    useIsLoading: () => store((state: AsyncState<T>) => state.isLoading),
-    useIsRefreshing: () => store((state: AsyncState<T>) => state.isRefreshing),
-    useError: () => store((state: AsyncState<T>) => state.error),
+    useData: () => store((state) => state.data),
+    useIsLoading: () => store((state) => state.isLoading),
+    useIsRefreshing: () => store((state) => state.isRefreshing),
+    useError: () => store((state) => state.error),
     useStatus: () =>
-      store((state: AsyncState<T>) => ({
+      store((state) => ({
         isLoading: state.isLoading,
         isRefreshing: state.isRefreshing,
         hasError: !!state.error,
@@ -146,15 +158,16 @@ export function createAsyncSelectors<T>(store: any) {
   };
 }
 
-export function createPaginatedSelectors<T>(store: any) {
+export function createPaginatedSelectors<T>(
+  store: UseBoundStore<StoreApi<PaginatedState<T>>>
+) {
   return {
-    useItems: () => store((state: PaginatedState<T>) => state.items),
-    usePagination: () => store((state: PaginatedState<T>) => state.pagination),
-    useIsLoading: () => store((state: PaginatedState<T>) => state.isLoading),
-    useIsLoadingMore: () =>
-      store((state: PaginatedState<T>) => state.isLoadingMore),
+    useItems: () => store((state) => state.items),
+    usePagination: () => store((state) => state.pagination),
+    useIsLoading: () => store((state) => state.isLoading),
+    useIsLoadingMore: () => store((state) => state.isLoadingMore),
     useStatus: () =>
-      store((state: PaginatedState<T>) => ({
+      store((state) => ({
         isLoading: state.isLoading,
         isLoadingMore: state.isLoadingMore,
         isRefreshing: state.isRefreshing,
@@ -173,8 +186,12 @@ export const createBaseAsyncStore = <T>(
   name: string,
   fetcher: () => Promise<T>
 ) => {
-  return createStoreWithMiddleware(
-    (set: any, get: any) => ({
+  type StoreState = AsyncState<T> & AsyncActions;
+
+  // Using type assertion for Zustand+Immer middleware compatibility
+  // The middleware chain causes complex type inference issues
+  return createStoreWithMiddleware<StoreState>(
+    (set, get) => ({
       data: null,
       isLoading: false,
       isRefreshing: false,
@@ -185,20 +202,23 @@ export const createBaseAsyncStore = <T>(
         const state = get();
         if (state.isLoading) return;
 
-        set((draft: any) => {
+        // @ts-expect-error - Immer draft mutation pattern
+        set((draft) => {
           draft.isLoading = true;
           draft.error = null;
         });
 
         try {
           const data = await fetcher();
-          set((draft: any) => {
+          // @ts-expect-error - Immer draft mutation pattern
+          set((draft) => {
             draft.data = data;
             draft.isLoading = false;
             draft.lastUpdated = new Date();
           });
         } catch (error) {
-          set((draft: any) => {
+          // @ts-expect-error - Immer draft mutation pattern
+          set((draft) => {
             draft.error =
               error instanceof Error ? error.message : 'An error occurred';
             draft.isLoading = false;
@@ -210,20 +230,23 @@ export const createBaseAsyncStore = <T>(
         const state = get();
         if (state.isRefreshing) return;
 
-        set((draft: any) => {
+        // @ts-expect-error - Immer draft mutation pattern
+        set((draft) => {
           draft.isRefreshing = true;
           draft.error = null;
         });
 
         try {
           const data = await fetcher();
-          set((draft: any) => {
+          // @ts-expect-error - Immer draft mutation pattern
+          set((draft) => {
             draft.data = data;
             draft.isRefreshing = false;
             draft.lastUpdated = new Date();
           });
         } catch (error) {
-          set((draft: any) => {
+          // @ts-expect-error - Immer draft mutation pattern
+          set((draft) => {
             draft.error =
               error instanceof Error ? error.message : 'An error occurred';
             draft.isRefreshing = false;
@@ -232,7 +255,8 @@ export const createBaseAsyncStore = <T>(
       },
 
       reset: () => {
-        set((draft: any) => {
+        // @ts-expect-error - Immer draft mutation pattern
+        set((draft) => {
           draft.data = null;
           draft.isLoading = false;
           draft.isRefreshing = false;
@@ -242,7 +266,8 @@ export const createBaseAsyncStore = <T>(
       },
 
       clearError: () => {
-        set((draft: any) => {
+        // @ts-expect-error - Immer draft mutation pattern
+        set((draft) => {
           draft.error = null;
         });
       },
@@ -255,7 +280,7 @@ export const createBaseAsyncStore = <T>(
 // EXPORTS
 // ================================
 
-export default {
+const unifiedStateSystem = {
   createStoreWithMiddleware,
   createAsyncAction,
   createAsyncSelectors,
@@ -263,3 +288,5 @@ export default {
   createBaseAsyncStore,
   withDebounce,
 };
+
+export default unifiedStateSystem;

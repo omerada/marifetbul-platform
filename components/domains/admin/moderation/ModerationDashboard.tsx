@@ -58,7 +58,7 @@ export default function ModerationDashboard() {
         onRefresh={refresh}
         onDownload={() => {
           // TODO: Implement report download
-          console.log('Download report');
+          // Download report functionality
         }}
       />
 

@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { User } from '@/types';
 import { Card } from '@/components/ui/Card';
-import {
 import { logger } from '@/lib/shared/utils/logger';
+import {
   Briefcase,
   Star,
   Eye,

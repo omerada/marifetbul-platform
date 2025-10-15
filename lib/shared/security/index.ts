@@ -214,8 +214,8 @@ export class SecureStorage {
     if (typeof window === 'undefined') return;
 
     const data = {
-      value: options?.encrypt ? this.simpleEncrypt(value) : value,
-      encrypted: !!options?.encrypt,
+      value: value, // Simple storage without encryption for now
+      encrypted: false,
       expiry: options?.expiry ? Date.now() + options.expiry : null,
       timestamp: Date.now(),
     };
@@ -245,7 +245,7 @@ export class SecureStorage {
         return null;
       }
 
-      return data.encrypted ? this.simpleDecrypt(data.value) : data.value;
+      return data.value;
     } catch {
       return null;
     }

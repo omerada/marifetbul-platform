@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
@@ -35,7 +35,10 @@ interface JobDetailProps {
   className?: string;
 }
 
-export function JobDetail({ jobId, className }: JobDetailProps) {
+export const JobDetail = memo<JobDetailProps>(function JobDetail({
+  jobId,
+  className,
+}) {
   const {
     currentJob,
     proposals,
@@ -480,4 +483,6 @@ export function JobDetail({ jobId, className }: JobDetailProps) {
       />
     </div>
   );
-}
+});
+
+JobDetail.displayName = 'JobDetail';

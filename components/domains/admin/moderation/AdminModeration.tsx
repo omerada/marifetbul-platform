@@ -1,6 +1,6 @@
 /**
  * AdminModerationNew Component
- * 
+ *
  * Main coordinator for admin moderation interface
  * Refactored from 808 lines to ~300 lines (-63%)
  */
@@ -21,7 +21,10 @@ import {
 import { useModerationData } from './moderation/hooks/useModerationData';
 import { useModerationFilters } from './moderation/hooks/useModerationFilters';
 import { useModerationActions } from './moderation/hooks/useModerationActions';
-import type { ModerationItem, ModerationAction } from './moderation/types/moderationTypes';
+import type {
+  ModerationItem,
+  ModerationAction,
+} from './moderation/types/moderationTypes';
 
 export default function AdminModerationNew() {
   // Pagination state
@@ -34,14 +37,11 @@ export default function AdminModerationNew() {
 
   // Custom hooks
   const { filters, handleFilterChange, clearFilters } = useModerationFilters();
-  
-  const {
-    items,
-    stats,
-    isLoading,
-    error,
-    refetch,
-  } = useModerationData(filters, pagination);
+
+  const { items, stats, isLoading, error, refetch } = useModerationData(
+    filters,
+    pagination
+  );
 
   const {
     selectedItem,
@@ -59,22 +59,25 @@ export default function AdminModerationNew() {
   });
 
   // Event handlers
-  const handleActionClick = (item: ModerationItem, action: ModerationAction) => {
+  const handleActionClick = (
+    item: ModerationItem,
+    action: ModerationAction
+  ) => {
     setSelectedItem(item);
     setActionType(action);
     setShowActionDialog(true);
   };
 
-  const handleViewDetails = (item: ModerationItem) => {
+  const handleViewDetails = (_item: ModerationItem) => {
     // TODO: Implement view details modal or navigation
-    console.log('View details for:', item);
+    // Navigate to detail view
   };
 
   const handleActionConfirm = async () => {
     if (!selectedItem) return;
 
     await handleAction();
-    
+
     // Close dialog and reset
     setShowActionDialog(false);
     setSelectedItem(null);
@@ -122,7 +125,10 @@ export default function AdminModerationNew() {
       <ModerationStats stats={stats} isLoading={isLoading} />
 
       {/* Filters */}
-      <ModerationFilters filters={filters} onFilterChange={handleFilterChange} />
+      <ModerationFilters
+        filters={filters}
+        onFilterChange={handleFilterChange}
+      />
 
       {/* Table */}
       <ModerationTable

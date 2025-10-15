@@ -17,8 +17,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/AlertDialog';
 import { PlatformSettings } from '@/types';
-import {
 import { logger } from '@/lib/shared/utils/logger';
+import {
   Save,
   RefreshCw,
   Settings,
@@ -109,7 +109,7 @@ export function SystemSettings({ className }: SystemSettingsProps) {
   }, [settings]);
 
   const handleInputChange = (field: string, value: unknown) => {
-    setFormData((prev) => ({
+    setFormData((prev: PlatformSettings) => ({
       ...prev,
       [field]: value,
     }));

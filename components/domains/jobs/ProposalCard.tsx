@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { Star, MessageCircle, CheckCircle, X } from 'lucide-react';
@@ -17,13 +17,13 @@ interface ProposalCardProps {
   className?: string;
 }
 
-export function ProposalCard({
+export const ProposalCard = memo<ProposalCardProps>(function ProposalCard({
   proposal,
   onAccept,
   onReject,
   onMessage,
   className,
-}: ProposalCardProps) {
+}) {
   const getStatusColor = (status: Proposal['status']) => {
     switch (status) {
       case 'pending':
@@ -180,4 +180,6 @@ export function ProposalCard({
       )}
     </div>
   );
-}
+});
+
+ProposalCard.displayName = 'ProposalCard';

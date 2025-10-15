@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { Card, CardContent } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
+import { logger } from '@/lib/shared/utils/logger';
 import {
   BarChart3,
   Users,
@@ -46,7 +47,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     });
 
     if (!isAuthenticated) {
-      console.log('❌ Admin Layout: Not authenticated, redirecting to login');
+      logger.warn('Admin Layout: Not authenticated, redirecting to login');
       hasRedirected.current = true;
       router.push('/admin/login');
       return;
@@ -62,7 +63,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       return;
     }
 
-    console.log('✅ Admin Layout: Admin access granted');
+    logger.debug('Admin Layout: Admin access granted');
   }, [isAuthenticated, isLoading, user, router, pathname]);
 
   // Skip layout for login page

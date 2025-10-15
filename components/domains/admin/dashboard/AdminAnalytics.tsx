@@ -1,12 +1,11 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { logger } from '@/lib/shared/utils';
+import { logger } from '@/lib/shared/utils/logger';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
-import { logger } from '@/lib/shared/utils/logger';
   BarChart3,
   TrendingUp,
   TrendingDown,

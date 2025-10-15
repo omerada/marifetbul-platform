@@ -1,6 +1,13 @@
 import { MetadataRoute } from 'next';
-import { SitemapEntry } from '@/types/shared/seo';
 import { logger } from '@/lib/shared/utils/logger';
+import type {
+  BlogPost,
+  Job,
+  Package,
+  PublicProfile,
+  Category,
+  HelpArticle,
+} from '@/types/seo/sitemap';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://marifetbul.com';
 
@@ -21,7 +28,7 @@ export class SitemapGenerator {
     try {
       const blogPosts = await this.fetchBlogPosts();
 
-      return blogPosts.map((post: any) => ({
+      return blogPosts.map((post: BlogPost) => ({
         url: `${this.baseUrl}/blog/${post.slug}`,
         lastModified: new Date(post.updatedAt),
         changeFrequency: 'weekly' as const,
@@ -43,7 +50,7 @@ export class SitemapGenerator {
     try {
       const jobs = await this.fetchActiveJobs();
 
-      return jobs.map((job: any) => ({
+      return jobs.map((job: Job) => ({
         url: `${this.baseUrl}/marketplace/jobs/${job.id}`,
         lastModified: new Date(job.updatedAt),
         changeFrequency: 'weekly' as const,
@@ -65,7 +72,7 @@ export class SitemapGenerator {
     try {
       const packages = await this.fetchActivePackages();
 
-      return packages.map((pkg: any) => ({
+      return packages.map((pkg: Package) => ({
         url: `${this.baseUrl}/marketplace/packages/${pkg.id}`,
         lastModified: new Date(pkg.updatedAt),
         changeFrequency: 'weekly' as const,
@@ -87,7 +94,7 @@ export class SitemapGenerator {
     try {
       const publicProfiles = await this.fetchPublicProfiles();
 
-      return publicProfiles.map((profile: any) => ({
+      return publicProfiles.map((profile: PublicProfile) => ({
         url: `${this.baseUrl}/profile/${profile.id}`,
         lastModified: new Date(profile.updatedAt),
         changeFrequency: 'monthly' as const,
@@ -109,7 +116,7 @@ export class SitemapGenerator {
     try {
       const categories = await this.fetchCategories();
 
-      return categories.map((category: any) => ({
+      return categories.map((category: Category) => ({
         url: `${this.baseUrl}/marketplace/categories/${category.slug}`,
         lastModified: new Date(),
         changeFrequency: 'monthly' as const,
@@ -131,7 +138,7 @@ export class SitemapGenerator {
     try {
       const helpArticles = await this.fetchHelpArticles();
 
-      return helpArticles.map((article: any) => ({
+      return helpArticles.map((article: HelpArticle) => ({
         url: `${this.baseUrl}/support/help/articles/${article.slug}`,
         lastModified: new Date(article.updatedAt),
         changeFrequency: 'monthly' as const,
@@ -193,10 +200,13 @@ export class SitemapGenerator {
         : Array.isArray(json)
           ? json
           : [];
-      return items.map((p: any) => ({
-        slug: p.slug,
-        updatedAt: p.updatedAt || p.createdAt,
-      }));
+      return items.map(
+        (p: BlogPost): BlogPost => ({
+          slug: p.slug,
+          updatedAt: p.updatedAt || p.createdAt,
+          createdAt: p.createdAt,
+        })
+      );
     } catch (e) {
       logger.error(
         'fetchBlogPosts error',
@@ -220,10 +230,13 @@ export class SitemapGenerator {
         : Array.isArray(json)
           ? json
           : [];
-      return items.map((j: any) => ({
-        id: j.id,
-        updatedAt: j.updatedAt || j.modifiedAt || j.createdAt,
-      }));
+      return items.map(
+        (j: Job): Job => ({
+          id: j.id,
+          updatedAt: j.updatedAt || j.modifiedAt || j.createdAt,
+          createdAt: j.createdAt || j.updatedAt,
+        })
+      );
     } catch (e) {
       logger.error(
         'fetchActiveJobs error',
@@ -247,10 +260,13 @@ export class SitemapGenerator {
         : Array.isArray(json)
           ? json
           : [];
-      return items.map((p: any) => ({
-        id: p.id,
-        updatedAt: p.updatedAt || p.modifiedAt || p.createdAt,
-      }));
+      return items.map(
+        (p: Package): Package => ({
+          id: p.id,
+          updatedAt: p.updatedAt || p.modifiedAt || p.createdAt,
+          createdAt: p.createdAt || p.updatedAt,
+        })
+      );
     } catch (e) {
       logger.error(
         'fetchActivePackages error',
@@ -274,10 +290,12 @@ export class SitemapGenerator {
         : Array.isArray(json)
           ? json
           : [];
-      return items.map((u: any) => ({
-        id: u.id,
-        updatedAt: u.updatedAt || u.modifiedAt || u.createdAt,
-      }));
+      return items.map(
+        (u: PublicProfile): PublicProfile => ({
+          id: u.id,
+          updatedAt: u.updatedAt,
+        })
+      );
     } catch (e) {
       logger.error(
         'fetchPublicProfiles error',
@@ -300,9 +318,12 @@ export class SitemapGenerator {
         : Array.isArray(json)
           ? json
           : [];
-      return items.map((c: any) => ({
-        slug: c.slug || c.name || String(c.id),
-      }));
+      return items.map(
+        (c: Category): Category => ({
+          slug: c.slug || c.name || String(c.id),
+          name: c.name,
+        })
+      );
     } catch (e) {
       logger.error(
         'fetchCategories error',
@@ -326,10 +347,13 @@ export class SitemapGenerator {
         : Array.isArray(json)
           ? json
           : [];
-      return items.map((a: any) => ({
-        slug: a.slug,
-        updatedAt: a.updatedAt || a.modifiedAt || a.createdAt,
-      }));
+      return items.map(
+        (a: HelpArticle): HelpArticle => ({
+          slug: a.slug,
+          updatedAt: a.updatedAt || a.modifiedAt || a.createdAt,
+          createdAt: a.createdAt || a.updatedAt,
+        })
+      );
     } catch (e) {
       logger.error(
         'fetchHelpArticles error',

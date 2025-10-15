@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import {
 import { logger } from '@/lib/shared/utils/logger';
+import {
   Download,
   Wifi,
   WifiOff,

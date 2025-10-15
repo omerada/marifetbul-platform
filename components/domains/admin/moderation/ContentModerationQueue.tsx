@@ -32,8 +32,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/AlertDialog';
 import { Checkbox } from '@/components/ui/Checkbox';
-import {
 import { logger } from '@/lib/shared/utils/logger';
+import {
   Search,
   Filter,
   CheckCircle,
@@ -111,7 +111,7 @@ export function ContentModerationQueue({
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedItems(items.map((item) => item.id));
+      setSelectedItems(items.map((item: ModerationItem) => item.id));
     } else {
       setSelectedItems([]);
     }
@@ -397,7 +397,7 @@ export function ContentModerationQueue({
                     </TableCell>
                   </TableRow>
                 ) : (
-                  items.map((item) => (
+                  items.map((item: ModerationItem) => (
                     <TableRow key={item.id}>
                       <TableCell>
                         <Checkbox
