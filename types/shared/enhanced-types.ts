@@ -137,9 +137,6 @@ export interface JobEnhanced {
   // Budget (complete structure)
   budget: JobBudgetComplete;
 
-  // Or simple number for backward compatibility
-  budgetAmount?: number; // Deprecated, use budget.amount
-
   // Relations
   categoryId: string;
   category?: {

@@ -104,29 +104,3 @@ export const logout = async (): Promise<boolean> => {
     return false;
   }
 };
-
-/**
- * Legacy functions - Deprecated
- * These are kept for backwards compatibility but should not be used.
- * The backend uses httpOnly cookies, not localStorage.
- *
- * @deprecated Use cookie-based authentication instead
- */
-export const getAuthToken = (): null => {
-  logger.warn('getAuthToken is deprecated. Tokens are in httpOnly cookies.');
-  return null;
-};
-
-/**
- * @deprecated Authentication is handled by httpOnly cookies
- */
-export const setAuthToken = (): void => {
-  logger.warn('setAuthToken is deprecated. Use backend login endpoint.');
-};
-
-/**
- * @deprecated Authentication is handled by httpOnly cookies
- */
-export const removeAuthToken = (): void => {
-  logger.warn('removeAuthToken is deprecated. Use logout() function instead.');
-};
