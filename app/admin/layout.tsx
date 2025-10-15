@@ -39,7 +39,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       return;
     }
 
-    console.log('🏗️ Admin Layout: Auth state changed:', {
+    logger.debug('Admin Layout: Auth state changed', {
       isAuthenticated,
       isLoading,
       userRole: user?.role,
@@ -54,10 +54,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
 
     if (user?.role !== 'admin') {
-      console.log(
-        '❌ Admin Layout: User is not admin, redirecting to dashboard'
-      );
-      console.log('👤 Admin Layout: Current user:', user);
+      logger.warn('Admin Layout: User is not admin, redirecting to dashboard', {
+        userId: user?.id,
+        userRole: user?.role,
+      });
       hasRedirected.current = true;
       router.push('/dashboard');
       return;

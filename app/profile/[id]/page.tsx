@@ -43,8 +43,12 @@ export default function ProfilePage() {
         const data = await response.json();
         setUser(data.data);
       } catch (err) {
-        console.error('Profile fetch error:', err);
-        setError(err instanceof Error ? err.message : 'Bir hata oluştu');
+        // Log error for monitoring (will be sent to error tracking service)
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('Bir hata oluştu');
+        }
       } finally {
         setLoading(false);
       }

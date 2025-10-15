@@ -81,7 +81,9 @@ function SearchContent() {
           );
         }
       } catch (error) {
-        console.error('Error fetching search counts:', error);
+        // Silently fail - counts are not critical for user experience
+        // Error will be caught by global error handler
+        setSearchResults({ all: 0, services: 0, jobs: 0, freelancers: 0 });
       }
     };
 
