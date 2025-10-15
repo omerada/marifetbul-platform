@@ -62,22 +62,28 @@ export const freelancerProfileSchema = profileSchema.extend({
   title: z
     .string()
     .min(5, 'Başlık en az 5 karakter olmalıdır')
-    .max(100, 'Başlık en fazla 100 karakter olabilir'),
+    .max(100, 'Başlık en fazla 100 karakter olabilir')
+    .optional()
+    .or(z.literal('')),
 
   skills: z
     .array(z.string())
     .min(1, 'En az bir beceri seçmelisiniz')
-    .max(20, 'En fazla 20 beceri seçebilirsiniz'),
+    .max(20, 'En fazla 20 beceri seçebilirsiniz')
+    .default([]),
 
   hourlyRate: z
     .number()
-    .min(5, 'Saatlik ücret en az 5 TL olmalıdır')
-    .max(1000, 'Saatlik ücret en fazla 1000 TL olabilir')
-    .optional(),
+    .min(0, 'Saatlik ücret negatif olamaz')
+    .max(10000, 'Saatlik ücret çok yüksek (max: 10,000 TL)')
+    .optional()
+    .or(z.literal(0)),
 
-  experience: z.enum(['beginner', 'intermediate', 'expert'], {
-    message: 'Geçerli bir deneyim seviyesi seçiniz',
-  }),
+  experience: z
+    .enum(['beginner', 'intermediate', 'expert', ''], {
+      message: 'Geçerli bir deneyim seviyesi seçiniz',
+    })
+    .optional(),
 });
 
 // Employer specific schema
@@ -85,15 +91,19 @@ export const employerProfileSchema = profileSchema.extend({
   companyName: z
     .string()
     .min(2, 'Şirket adı en az 2 karakter olmalıdır')
-    .max(100, 'Şirket adı en fazla 100 karakter olabilir'),
+    .max(100, 'Şirket adı en fazla 100 karakter olabilir')
+    .optional()
+    .or(z.literal('')),
 
   industry: z
     .string()
     .min(2, 'Sektör bilgisi en az 2 karakter olmalıdır')
-    .max(50, 'Sektör bilgisi en fazla 50 karakter olabilir'),
+    .max(50, 'Sektör bilgisi en fazla 50 karakter olabilir')
+    .optional()
+    .or(z.literal('')),
 
   companySize: z
-    .enum(['1-10', '11-50', '51-200', '201-1000', '1000+'], {
+    .enum(['1-10', '11-50', '51-200', '201-1000', '1000+', ''], {
       message: 'Geçerli bir şirket büyüklüğü seçiniz',
     })
     .optional(),
@@ -203,4 +213,84 @@ export const validateAvatarUpload = (data: unknown) => {
     }
     throw error;
   }
+};
+
+// ================================================
+// PROFILE COMPLETENESS CALCULATION
+// ================================================
+
+/**
+ * Calculates profile completeness percentage
+ */
+export function calculateProfileCompleteness(
+  data: Partial<FreelancerProfileFormData | EmployerProfileFormData>,
+  userType: 'freelancer' | 'employer'
+): {
+  percentage: number;
+  missingFields: string[];
+} {
+  const requiredFields: Record<string, string[]> = {
+    freelancer: [
+      'firstName',
+      'lastName',
+      'bio',
+      'location',
+      'title',
+      'hourlyRate',
+      'experience',
+      'skills',
+    ],
+    employer: [
+      'firstName',
+      'lastName',
+      'bio',
+      'location',
+      'companyName',
+      'industry',
+      'companySize',
+    ],
+  };
+
+  const fields = requiredFields[userType];
+  const missingFields: string[] = [];
+  let filledCount = 0;
+
+  fields.forEach((field) => {
+    const value = (data as Record<string, unknown>)[field];
+    const isFilled =
+      value !== undefined &&
+      value !== null &&
+      value !== '' &&
+      (Array.isArray(value) ? value.length > 0 : true);
+
+    if (isFilled) {
+      filledCount++;
+    } else {
+      missingFields.push(field);
+    }
+  });
+
+  const percentage = Math.round((filledCount / fields.length) * 100);
+
+  return { percentage, missingFields };
+}
+
+// ================================================
+// FIELD LABELS (FOR ERROR MESSAGES)
+// ================================================
+
+export const fieldLabels: Record<string, string> = {
+  firstName: 'Ad',
+  lastName: 'Soyad',
+  bio: 'Biyografi',
+  location: 'Konum',
+  phone: 'Telefon',
+  website: 'Website',
+  title: 'Ünvan',
+  hourlyRate: 'Saatlik Ücret',
+  experience: 'Deneyim',
+  skills: 'Yetenekler',
+  companyName: 'Şirket Adı',
+  industry: 'Sektör',
+  companySize: 'Şirket Büyüklüğü',
 };

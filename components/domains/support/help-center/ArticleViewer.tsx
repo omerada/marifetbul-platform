@@ -24,6 +24,7 @@ import { useHelpCenter } from '@/hooks';
 import { cn } from '@/lib/utils';
 import type { HelpArticle } from '@/types';
 import { logger } from '@/lib/shared/utils/logger';
+import { SafeHtml } from '@/lib/infrastructure/security/xss-protection';
 
 interface ArticleViewerProps {
   article: HelpArticle;
@@ -277,9 +278,10 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
       {/* Content */}
       <div className="mb-6 rounded-xl border border-gray-200 bg-white shadow-sm">
         <div className="p-6">
-          <div
+          <SafeHtml
+            html={article.content}
+            config="RICH"
             className="prose prose-lg prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-strong:text-gray-900 max-w-none"
-            dangerouslySetInnerHTML={{ __html: article.content }}
           />
         </div>
       </div>

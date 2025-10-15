@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   ArrowLeft,
   AlertCircle,
@@ -14,6 +16,13 @@ import {
 import { useSupport } from '@/hooks';
 import { cn } from '@/lib/utils';
 import { logger } from '@/lib/shared/utils/logger';
+import { createTicketSchema } from '@/lib/core/validations/support';
+import { z } from 'zod';
+
+// Extend ticket schema to include subcategory
+const ticketFormSchema = createTicketSchema.extend({
+  subcategory: z.string().min(1, 'Alt kategori seçimi gereklidir'),
+});
 
 interface TicketFormProps {
   onBack?: () => void;
@@ -21,14 +30,7 @@ interface TicketFormProps {
   className?: string;
 }
 
-interface TicketFormData {
-  subject: string;
-  description: string;
-  category: string;
-  subcategory: string;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  attachments: File[];
-}
+type TicketFormData = z.infer<typeof ticketFormSchema>;
 
 export const TicketForm: React.FC<TicketFormProps> = ({
   onBack,
@@ -38,18 +40,38 @@ export const TicketForm: React.FC<TicketFormProps> = ({
   const router = useRouter();
   const { createTicket } = useSupport();
 
-  const [formData, setFormData] = React.useState<TicketFormData>({
-    subject: '',
-    description: '',
-    category: '',
-    subcategory: '',
-    priority: 'medium',
-    attachments: [],
+  // React Hook Form setup with Zod validation
+  const form = useForm<TicketFormData>({
+    resolver: zodResolver(ticketFormSchema),
+    defaultValues: {
+      subject: '',
+      description: '',
+      category: 'general', // Default category
+      subcategory: '',
+      priority: 'medium',
+      attachments: [],
+    },
+    mode: 'onBlur',
   });
 
-  const [errors, setErrors] = React.useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const {
+    register,
+    handleSubmit: handleFormSubmit,
+    watch,
+    setValue,
+    formState: { errors: formErrors, isSubmitting },
+    setError,
+  } = form;
+
+  const [attachmentFiles, setAttachmentFiles] = React.useState<File[]>([]);
   const [dragActive, setDragActive] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState<string | null>(null);
+
+  // Watch category changes to reset subcategory
+  const selectedCategoryValue = watch('category');
+  React.useEffect(() => {
+    setValue('subcategory', '');
+  }, [selectedCategoryValue, setValue]);
 
   const categories = [
     {
@@ -134,50 +156,49 @@ export const TicketForm: React.FC<TicketFormProps> = ({
     }
   };
 
-  const handleInputChange = (
-    field: keyof TicketFormData,
-    value: string | File[]
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: '',
-      }));
-    }
-  };
-
   const handleFileUpload = (files: FileList | null) => {
     if (!files) return;
 
-    const newFiles = Array.from(files).filter((file) => {
-      // Validate file size (max 10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        setErrors((prev) => ({
-          ...prev,
-          attachments: "Dosya boyutu 10MB'tan küçük olmalıdır",
-        }));
-        return false;
-      }
-      return true;
-    });
+    const currentAttachments = watch('attachments') || [];
+    const newFiles = Array.from(files);
 
-    setFormData((prev) => ({
-      ...prev,
-      attachments: [...prev.attachments, ...newFiles].slice(0, 5), // Max 5 files
-    }));
+    // Validate file size (max 10MB)
+    const validFiles: typeof currentAttachments = [];
+    const fileObjects = [...attachmentFiles];
+
+    for (const file of newFiles) {
+      if (file.size > 10 * 1024 * 1024) {
+        setError('attachments', {
+          type: 'manual',
+          message: "Dosya boyutu 10MB'tan küçük olmalıdır",
+        });
+        continue;
+      }
+
+      validFiles.push({
+        name: file.name,
+        url: '', // Will be set after upload
+        size: file.size,
+        type: file.type,
+      });
+      fileObjects.push(file);
+    }
+
+    // Max 5 files
+    const totalAttachments = [...currentAttachments, ...validFiles].slice(0, 5);
+    const totalFiles = [...attachmentFiles, ...fileObjects].slice(0, 5);
+
+    setValue('attachments', totalAttachments);
+    setAttachmentFiles(totalFiles);
   };
 
   const removeAttachment = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      attachments: prev.attachments.filter((_, i) => i !== index),
-    }));
+    const currentAttachments = watch('attachments') || [];
+    setValue(
+      'attachments',
+      currentAttachments.filter((_, i) => i !== index)
+    );
+    setAttachmentFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const getFileIcon = (file: File) => {
@@ -190,60 +211,11 @@ export const TicketForm: React.FC<TicketFormProps> = ({
     return <File className="h-4 w-4" />;
   };
 
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
+  const onSubmit = async (data: TicketFormData) => {
+    setSubmitError(null);
 
-    if (!formData.subject.trim()) {
-      newErrors.subject = 'Konu alanı gereklidir';
-    }
-
-    if (!formData.description.trim()) {
-      newErrors.description = 'Açıklama alanı gereklidir';
-    } else if (formData.description.trim().length < 10) {
-      newErrors.description = 'Açıklama en az 10 karakter olmalıdır';
-    }
-
-    if (!formData.category) {
-      newErrors.category = 'Kategori seçimi gereklidir';
-    }
-
-    if (!formData.subcategory) {
-      newErrors.subcategory = 'Alt kategori seçimi gereklidir';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) return;
-
-    setIsSubmitting(true);
     try {
-      const ticketData = {
-        subject: formData.subject.trim(),
-        description: formData.description.trim(),
-        category: formData.category as
-          | 'technical'
-          | 'billing'
-          | 'account'
-          | 'general'
-          | 'report_user'
-          | 'feature_request'
-          | 'bug_report',
-        subcategory: formData.subcategory,
-        priority: formData.priority,
-        attachments: formData.attachments.map((file) => ({
-          name: file.name,
-          url: '', // This would be set by the backend after upload
-          size: file.size,
-          type: file.type,
-        })),
-      };
-
-      const response = await createTicket(ticketData);
+      const response = await createTicket(data);
 
       if (onSuccess && response?.ticketId) {
         onSuccess(response.ticketId);
@@ -255,12 +227,9 @@ export const TicketForm: React.FC<TicketFormProps> = ({
         'Ticket creation failed',
         error instanceof Error ? error : new Error(String(error))
       );
-      setErrors({
-        submit:
-          'Destek talebi oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.',
-      });
-    } finally {
-      setIsSubmitting(false);
+      setSubmitError(
+        'Destek talebi oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.'
+      );
     }
   };
 
@@ -285,8 +254,10 @@ export const TicketForm: React.FC<TicketFormProps> = ({
   };
 
   const selectedCategory = categories.find(
-    (cat) => cat.id === formData.category
+    (cat) => cat.id === selectedCategoryValue
   );
+
+  const descriptionValue = watch('description');
 
   return (
     <div className={cn('mx-auto max-w-2xl', className)}>
@@ -313,7 +284,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6 p-6">
+        <form onSubmit={handleFormSubmit(onSubmit)} className="space-y-6 p-6">
           {/* Subject */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -321,19 +292,18 @@ export const TicketForm: React.FC<TicketFormProps> = ({
             </label>
             <input
               type="text"
-              value={formData.subject}
-              onChange={(e) => handleInputChange('subject', e.target.value)}
+              {...register('subject')}
               placeholder="Sorununuzu kısaca özetleyin"
               className={cn(
                 'w-full rounded-lg border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500',
-                errors.subject ? 'border-red-300' : 'border-gray-300'
+                formErrors.subject ? 'border-red-300' : 'border-gray-300'
               )}
-              maxLength={100}
+              maxLength={200}
             />
-            {errors.subject && (
+            {formErrors.subject && (
               <p className="mt-1 flex items-center gap-1 text-sm text-red-600">
                 <AlertCircle className="h-4 w-4" />
-                {errors.subject}
+                {formErrors.subject.message}
               </p>
             )}
           </div>
@@ -344,14 +314,10 @@ export const TicketForm: React.FC<TicketFormProps> = ({
               Kategori <span className="text-red-500">*</span>
             </label>
             <select
-              value={formData.category}
-              onChange={(e) => {
-                handleInputChange('category', e.target.value);
-                handleInputChange('subcategory', ''); // Reset subcategory
-              }}
+              {...register('category')}
               className={cn(
                 'w-full rounded-lg border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500',
-                errors.category ? 'border-red-300' : 'border-gray-300'
+                formErrors.category ? 'border-red-300' : 'border-gray-300'
               )}
             >
               <option value="">Kategori seçin</option>
@@ -361,10 +327,10 @@ export const TicketForm: React.FC<TicketFormProps> = ({
                 </option>
               ))}
             </select>
-            {errors.category && (
+            {formErrors.category && (
               <p className="mt-1 flex items-center gap-1 text-sm text-red-600">
                 <AlertCircle className="h-4 w-4" />
-                {errors.category}
+                {formErrors.category.message}
               </p>
             )}
           </div>
@@ -376,13 +342,10 @@ export const TicketForm: React.FC<TicketFormProps> = ({
                 Alt Kategori <span className="text-red-500">*</span>
               </label>
               <select
-                value={formData.subcategory}
-                onChange={(e) =>
-                  handleInputChange('subcategory', e.target.value)
-                }
+                {...register('subcategory')}
                 className={cn(
                   'w-full rounded-lg border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500',
-                  errors.subcategory ? 'border-red-300' : 'border-gray-300'
+                  formErrors.subcategory ? 'border-red-300' : 'border-gray-300'
                 )}
               >
                 <option value="">Alt kategori seçin</option>
@@ -392,10 +355,10 @@ export const TicketForm: React.FC<TicketFormProps> = ({
                   </option>
                 ))}
               </select>
-              {errors.subcategory && (
+              {formErrors.subcategory && (
                 <p className="mt-1 flex items-center gap-1 text-sm text-red-600">
                   <AlertCircle className="h-4 w-4" />
-                  {errors.subcategory}
+                  {formErrors.subcategory.message}
                 </p>
               )}
             </div>
@@ -407,13 +370,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
               Öncelik
             </label>
             <select
-              value={formData.priority}
-              onChange={(e) =>
-                handleInputChange(
-                  'priority',
-                  e.target.value as 'low' | 'medium' | 'high' | 'urgent'
-                )
-              }
+              {...register('priority')}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
             >
               <option value="low">Düşük</option>
@@ -429,27 +386,26 @@ export const TicketForm: React.FC<TicketFormProps> = ({
               Açıklama <span className="text-red-500">*</span>
             </label>
             <textarea
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
+              {...register('description')}
               placeholder="Sorununuzu detaylı bir şekilde açıklayın. Hata mesajları, yapmaya çalıştığınız işlem ve beklediğiniz sonucu belirtin."
               rows={6}
               className={cn(
                 'w-full resize-none rounded-lg border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500',
-                errors.description ? 'border-red-300' : 'border-gray-300'
+                formErrors.description ? 'border-red-300' : 'border-gray-300'
               )}
               maxLength={2000}
             />
             <div className="mt-1 flex items-center justify-between">
-              {errors.description ? (
+              {formErrors.description ? (
                 <p className="flex items-center gap-1 text-sm text-red-600">
                   <AlertCircle className="h-4 w-4" />
-                  {errors.description}
+                  {formErrors.description.message}
                 </p>
               ) : (
                 <div />
               )}
               <span className="text-sm text-gray-500">
-                {formData.description.length}/2000
+                {descriptionValue?.length || 0}/2000
               </span>
             </div>
           </div>
@@ -494,9 +450,9 @@ export const TicketForm: React.FC<TicketFormProps> = ({
             </div>
 
             {/* Uploaded Files */}
-            {formData.attachments.length > 0 && (
+            {attachmentFiles.length > 0 && (
               <div className="mt-4 space-y-2">
-                {formData.attachments.map((file, index) => (
+                {attachmentFiles.map((file, index) => (
                   <div
                     key={index}
                     className="flex items-center justify-between rounded-lg border bg-gray-50 p-3"
@@ -524,20 +480,20 @@ export const TicketForm: React.FC<TicketFormProps> = ({
               </div>
             )}
 
-            {errors.attachments && (
+            {formErrors.attachments && (
               <p className="mt-1 flex items-center gap-1 text-sm text-red-600">
                 <AlertCircle className="h-4 w-4" />
-                {errors.attachments}
+                {formErrors.attachments.message}
               </p>
             )}
           </div>
 
           {/* Submit Error */}
-          {errors.submit && (
+          {submitError && (
             <div className="rounded-lg border border-red-200 bg-red-50 p-4">
               <p className="flex items-center gap-2 text-sm text-red-600">
                 <AlertCircle className="h-4 w-4" />
-                {errors.submit}
+                {submitError}
               </p>
             </div>
           )}
