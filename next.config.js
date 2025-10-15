@@ -36,7 +36,7 @@ const nextConfig = {
   // PERFORMANCE OPTIMIZATIONS
   // ================================================
   reactStrictMode: true,
-  swcMinify: true,
+  // swcMinify is now default in Next.js 15 and deprecated
   modularizeImports: {
     'lucide-react': {
       transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
