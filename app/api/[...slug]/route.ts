@@ -10,8 +10,19 @@ const BACKEND_API_URL =
 async function proxyToBackend(request: Request, method: string) {
   try {
     const url = new URL(request.url);
-    const backendPath = url.pathname.replace('/api', '');
+    // FIX: Correctly extract backend path to avoid double /v1
+    // Frontend: /api/v1/packages -> Backend: /api/v1/packages
+    const backendPath = url.pathname.replace('/api/v1', '');
     const backendUrl = `${BACKEND_API_URL}${backendPath}${url.search}`;
+
+    // Debug logging for development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[API Proxy]', {
+        original: url.pathname,
+        backend: backendUrl,
+        method,
+      });
+    }
 
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
@@ -47,11 +58,15 @@ async function proxyToBackend(request: Request, method: string) {
       },
     });
   } catch (error) {
-    console.error('API proxy error:', error);
+    console.error('[API Proxy] Error:', error);
     return new Response(
       JSON.stringify({
-        error: 'Backend API unavailable',
-        message: 'Unable to connect to backend service',
+        success: false,
+        error: {
+          code: 'BACKEND_UNAVAILABLE',
+          message: 'Unable to connect to backend service',
+        },
+        timestamp: new Date().toISOString(),
       }),
       {
         status: 503,

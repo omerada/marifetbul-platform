@@ -241,6 +241,19 @@ Backend şimdi `http://localhost:8080` adresinde çalışıyor.
 
 ### 3. Frontend Setup
 
+**Environment Variables:**
+
+```bash
+# .env.local oluşturun (development için)
+cp .env.local.example .env.local
+
+# Gerekli değişkenleri düzenleyin:
+NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+**Dependencies ve Server:**
+
 ```bash
 # Dependencies yükleme
 npm install
@@ -315,6 +328,128 @@ http://localhost:8080/api-docs
 ### Postman Collection
 
 Postman koleksiyonu `/docs/postman/` klasöründe bulunmaktadır.
+
+### 🔑 Önemli API Endpoint'leri
+
+#### Authentication & User Management
+
+```http
+# Authentication
+POST   /api/v1/auth/register           # Kullanıcı kaydı
+POST   /api/v1/auth/login              # Giriş yapma
+POST   /api/v1/auth/logout             # Çıkış yapma
+POST   /api/v1/auth/refresh            # Token yenileme
+GET    /api/v1/auth/me                 # Mevcut kullanıcı bilgisi
+PUT    /api/v1/auth/profile            # Profil güncelleme
+PUT    /api/v1/auth/password           # Şifre değiştirme
+
+# Password Reset
+POST   /api/v1/auth/password/reset-request  # Şifre sıfırlama talebi
+POST   /api/v1/auth/password/reset          # Şifre sıfırlama
+
+# Email Verification
+POST   /api/v1/auth/verify-email            # Email doğrulama
+POST   /api/v1/auth/resend-verification     # Doğrulama email'i tekrar gönder
+
+# User Management
+GET    /api/v1/users/{id}              # Kullanıcı detayı
+GET    /api/v1/users/{id}/profile      # Kullanıcı profil özeti
+GET    /api/v1/users/search            # Kullanıcı arama
+POST   /api/v1/users/{id}/follow       # Kullanıcı takip et
+GET    /api/v1/users/{id}/followers    # Takipçiler
+GET    /api/v1/users/{id}/following    # Takip edilenler
+```
+
+#### Packages (Services)
+
+```http
+GET    /api/v1/packages                # Paket listesi (pagination)
+GET    /api/v1/packages/{packageId}    # Paket detayı (UUID)
+GET    /api/v1/packages/slug/{slug}    # Paket detayı (slug)
+POST   /api/v1/packages                # Yeni paket oluştur
+PUT    /api/v1/packages/{id}           # Paket güncelle
+DELETE /api/v1/packages/{id}           # Paket sil
+GET    /api/v1/packages/search         # Paket arama
+```
+
+#### Jobs & Proposals
+
+```http
+GET    /api/v1/jobs                    # İş ilanları listesi
+GET    /api/v1/jobs/{id}               # İlan detayı
+POST   /api/v1/jobs                    # İlan oluştur
+PUT    /api/v1/jobs/{id}               # İlan güncelle
+POST   /api/v1/jobs/{id}/proposals     # İlana teklif ver
+GET    /api/v1/proposals/my            # Tekliflerim
+```
+
+#### Messaging
+
+```http
+GET    /api/v1/conversations           # Konuşma listesi
+GET    /api/v1/conversations/{id}      # Konuşma detayı
+POST   /api/v1/conversations           # Yeni konuşma başlat
+POST   /api/v1/messages                # Mesaj gönder
+GET    /api/v1/messages/{conversationId} # Mesajlar
+```
+
+#### Categories & Blog
+
+```http
+GET    /api/v1/categories              # Kategori listesi
+GET    /api/v1/blog/posts              # Blog yazıları
+GET    /api/v1/blog/posts/{slug}       # Blog yazı detayı
+```
+
+### 📊 Response Format
+
+Tüm API yanıtları standardize edilmiş `ApiResponse<T>` formatındadır:
+
+```json
+{
+  "success": true,
+  "message": "İşlem başarılı",
+  "data": { ... },
+  "timestamp": "2025-10-15T10:30:00Z",
+  "path": "/api/v1/packages"
+}
+```
+
+### 🚨 Error Response Format
+
+```json
+{
+  "success": false,
+  "message": "Hata mesajı",
+  "errors": [
+    {
+      "field": "email",
+      "message": "Geçerli bir email adresi giriniz"
+    }
+  ],
+  "timestamp": "2025-10-15T10:30:00Z",
+  "path": "/api/v1/auth/register"
+}
+```
+
+### 📄 Pagination Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "content": [...],
+    "pageNumber": 0,
+    "pageSize": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false,
+    "hasNext": true,
+    "hasPrevious": false
+  }
+}
+```
 
 ---
 
