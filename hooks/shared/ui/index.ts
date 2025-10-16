@@ -8,7 +8,6 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import {
-import { logger } from '@/lib/shared/utils/logger';
   useLocalStorage,
   useMediaQuery,
   useDebounce,
@@ -16,6 +15,7 @@ import { logger } from '@/lib/shared/utils/logger';
   useIntersectionObserver,
   usePrevious,
 } from '../../../lib/shared/base';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // MODAL HOOKS

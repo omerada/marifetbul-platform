@@ -515,6 +515,20 @@ npm run test:ci
 - **Prometheus:** `http://localhost:8080/actuator/prometheus`
 - **Grafana:** `http://localhost:3000` (Docker setup)
 
+### Admin Panel
+
+**Development:**
+
+- **URL:** `http://localhost:3000/admin/login`
+- **Test Credentials:** admin@marifetbul.com / Admin123!
+- ⚠️ Development helper visible only in NODE_ENV=development
+
+**Production:**
+
+- ⚠️ **CRITICAL**: Change default admin password immediately after first login
+- Enable 2FA for all admin accounts
+- See [ADMIN_SECURITY_GUIDE.md](./docs/ADMIN_SECURITY_GUIDE.md) for complete security setup
+
 ---
 
 ## 🤝 Katkıda Bulunma

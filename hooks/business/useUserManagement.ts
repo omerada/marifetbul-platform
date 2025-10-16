@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
-import { logger } from '@/lib/shared/utils/logger';
   useAdminUserStore,
   useAdminUserSelectors,
 } from '@/lib/core/store/admin-users';
+import { logger } from '@/lib/shared/utils/logger';
 import type {
   UserFilters,
   UserActionRequest,

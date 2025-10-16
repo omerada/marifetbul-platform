@@ -5,13 +5,13 @@
 
 import { useCallback, useEffect, useMemo } from 'react';
 import {
-import { logger } from '@/lib/shared/utils/logger';
   useAsyncOperation,
   usePagination,
   type AsyncHookReturn,
   type MutationHookReturn as BaseMutationHookReturn,
   type PaginatedHookReturn,
 } from './index';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // HOOK RESPONSIBILITY CATEGORIES

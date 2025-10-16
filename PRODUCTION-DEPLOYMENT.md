@@ -474,6 +474,14 @@ Already configured in both frontend and backend. Ensure DSN is set in environmen
 - [ ] Non-root user for application
 - [ ] Fail2ban installed (optional)
 - [ ] Security headers verified
+- [ ] **Admin default password changed** ⚠️ CRITICAL
+- [ ] **2FA enabled for all admin accounts**
+- [ ] Admin password policy enforced (12+ chars)
+- [ ] IP whitelist configured for admin panel (optional)
+- [ ] Audit logging enabled and monitored
+- [ ] Session timeout configured (15 minutes)
+
+**See [ADMIN_SECURITY_GUIDE.md](./docs/ADMIN_SECURITY_GUIDE.md) for complete admin security setup**
 
 ### Application
 

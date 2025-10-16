@@ -5,7 +5,6 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import {
-import { logger } from '@/lib/shared/utils/logger';
   getWebSocketManager,
   subscribeToNotifications,
   subscribeToMessages,
@@ -18,6 +17,7 @@ import { logger } from '@/lib/shared/utils/logger';
   type PresenceStatus,
   type ConnectionStats,
 } from '@/lib/infrastructure/websocket';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface UseWebSocketOptions {
   autoConnect?: boolean;

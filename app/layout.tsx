@@ -5,7 +5,6 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { ToastProvider } from '@/components/providers/ToastProvider';
 import { MonitoringProvider } from '@/components/providers/MonitoringProvider';
 import { SEOHead } from '@/components/shared/seo/SEOHead';
-import { seoMetadata } from '@/lib/seo/metadata';
 import './globals.css';
 
 const inter = Inter({
@@ -14,7 +13,29 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  ...seoMetadata.home(),
+  title: {
+    default: "MarifetBul - Türkiye'nin Freelance Platformu",
+    template: '%s | MarifetBul',
+  },
+  description:
+    "Türkiye'nin en güvenilir freelance platformu. Profesyonel freelancer'lar ve kaliteli hizmetler ile projelerinizi hayata geçirin.",
+  keywords: [
+    'freelance',
+    'iş',
+    'hizmet',
+    'proje',
+    'freelancer',
+    'işveren',
+    'Türkiye',
+  ],
+  authors: [{ name: 'MarifetBul' }],
+  creator: 'MarifetBul',
+  publisher: 'MarifetBul',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,

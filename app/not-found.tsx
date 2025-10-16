@@ -1,42 +1,9 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import {
-  Home,
-  Search,
-  ArrowLeft,
-  Compass,
-  HelpCircle,
-  MessageCircle,
-} from 'lucide-react';
+import { Home, Search, Compass, HelpCircle, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui';
-import { UniversalSearch } from '@/components/shared/features';
 
 export default function NotFound() {
-  const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const handleSearch = (query: string, type?: string) => {
-    if (!query.trim()) return;
-
-    const params = new URLSearchParams();
-    params.set('q', query);
-
-    if (type === 'packages') {
-      params.set('view', 'packages');
-    } else if (type === 'jobs') {
-      params.set('view', 'jobs');
-    }
-
-    router.push(`/marketplace?${params.toString()}`);
-  };
-
   const quickLinks = [
     {
       href: '/',
@@ -73,10 +40,6 @@ export default function NotFound() {
     'Grafik tasarım',
   ];
 
-  if (!mounted) {
-    return null; // Hydration mismatch'i önlemek için
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -112,29 +75,21 @@ export default function NotFound() {
             </p>
           </div>
 
-          {/* Search Section */}
+          {/* Popular Searches Section */}
           <div className="mb-12 w-full max-w-lg">
             <h2 className="mb-4 text-lg font-semibold text-gray-900">
-              Arama Yapın
+              Popüler Aramalar
             </h2>
-            <UniversalSearch
-              onSearch={handleSearch}
-              placeholder="Ne arıyorsunuz?"
-              className="w-full"
-            />
-            <div className="mt-4">
-              <p className="mb-2 text-sm text-gray-500">Popüler aramalar:</p>
-              <div className="flex flex-wrap justify-center gap-2">
-                {popularSearches.map((search, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleSearch(search)}
-                    className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700 transition-colors hover:bg-gray-200"
-                  >
-                    {search}
-                  </button>
-                ))}
-              </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {popularSearches.map((search, index) => (
+                <Link
+                  key={index}
+                  href={`/search?q=${encodeURIComponent(search)}`}
+                  className="rounded-full bg-gray-100 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-blue-100 hover:text-blue-700"
+                >
+                  {search}
+                </Link>
+              ))}
             </div>
           </div>
 
@@ -166,19 +121,16 @@ export default function NotFound() {
 
           {/* Action Buttons */}
           <div className="flex flex-col gap-4 sm:flex-row">
-            <Button
-              onClick={() => router.back()}
-              variant="outline"
-              size="lg"
-              className="w-full sm:w-auto"
-            >
-              <ArrowLeft className="mr-2 h-5 w-5" />
-              Geri Dön
-            </Button>
             <Link href="/">
               <Button size="lg" className="w-full sm:w-auto">
                 <Home className="mr-2 h-5 w-5" />
                 Ana Sayfaya Git
+              </Button>
+            </Link>
+            <Link href="/marketplace">
+              <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                <Compass className="mr-2 h-5 w-5" />
+                İş & Hizmet Bul
               </Button>
             </Link>
           </div>

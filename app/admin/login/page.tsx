@@ -158,40 +158,50 @@ export default function AdminLoginPage() {
                 </Button>
               </form>
 
-              {/* Demo Credentials */}
-              <div className="mt-6 rounded-lg bg-blue-50 p-4">
-                <h4 className="mb-2 text-sm font-medium text-blue-900">
-                  Demo Kimlik Bilgileri:
-                </h4>
-                <div className="space-y-1 text-xs text-blue-700">
-                  <div className="flex justify-between">
-                    <span className="font-medium">Admin:</span>
-                    <span>admin@marifetbul.com / admin123</span>
+              {/* Development Environment Helper - Only visible in development */}
+              {process.env.NODE_ENV === 'development' && (
+                <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
+                  <div className="mb-2 flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4 text-amber-600" />
+                    <h4 className="text-sm font-medium text-amber-900">
+                      Development Mode
+                    </h4>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Freelancer:</span>
-                    <span>demo@example.com / demo123</span>
+                  <p className="text-xs text-amber-700">
+                    Bu yardımcı bilgiler yalnızca development ortamında görünür.
+                    Production ortamında otomatik olarak gizlenir.
+                  </p>
+                  <div className="mt-3 space-y-2 text-xs text-amber-700">
+                    <p className="font-medium">Test Admin Hesabı:</p>
+                    <p>
+                      E-posta:{' '}
+                      <code className="rounded bg-amber-100 px-1 py-0.5">
+                        admin@marifetbul.com
+                      </code>
+                    </p>
+                    <p>
+                      Şifre:{' '}
+                      <code className="rounded bg-amber-100 px-1 py-0.5">
+                        Admin123!
+                      </code>
+                    </p>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Employer:</span>
-                    <span>employer@example.com / employer123</span>
+                  <div className="mt-3 border-t border-amber-200 pt-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setCredentials({
+                          email: 'admin@marifetbul.com',
+                          password: 'Admin123!',
+                        })
+                      }
+                      className="text-xs text-amber-600 underline hover:text-amber-800"
+                    >
+                      Test bilgilerini otomatik doldur
+                    </button>
                   </div>
                 </div>
-                <div className="mt-2 border-t border-blue-200 pt-2">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setCredentials({
-                        email: 'admin@marifetbul.com',
-                        password: 'admin123',
-                      })
-                    }
-                    className="text-xs text-blue-600 underline hover:text-blue-800"
-                  >
-                    Admin bilgilerini doldur
-                  </button>
-                </div>
-              </div>
+              )}
 
               {/* Security Notice */}
               <div className="mt-4 text-center">
