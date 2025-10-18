@@ -1,9 +1,9 @@
 /**
  * AdminSidebar Component (Refactored)
- * 
+ *
  * Main orchestrator for admin navigation sidebar.
  * Handles state management and delegates rendering to specialized components.
- * 
+ *
  * Reduction: 808 lines → ~100 lines (-87.6%)
  * Components: 13 modular files
  * Config: Extracted to navigationConfig.ts (reusable)
@@ -14,6 +14,7 @@
 
 import { useMemo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { NAVIGATION_ITEMS } from './sidebar/config/navigationConfig';
 import {
   filterNavigationByPermissions,
@@ -26,19 +27,6 @@ import { DesktopSidebar } from './sidebar/components/DesktopSidebar';
 import { MobileSidebar } from './sidebar/components/MobileSidebar';
 import type { AdminSidebarProps } from './sidebar/types/sidebarTypes';
 
-// Mock user - replace with actual auth data
-const MOCK_USER = {
-  name: 'Admin User',
-  email: 'admin@marifetbul.com',
-  role: 'Super Admin',
-  avatar: '/avatars/admin.jpg',
-};
-
-// Mock alerts - replace with actual data
-const MOCK_ALERTS = {
-  unread: 23,
-};
-
 export default function AdminSidebar({
   isOpen,
   isCollapsed,
@@ -47,12 +35,40 @@ export default function AdminSidebar({
 }: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { user, logout } = useAuthStore();
+
+  // Get user data from auth store
+  const currentUser = useMemo(
+    () => ({
+      name:
+        user?.name || (user?.firstName && user?.lastName)
+          ? `${user.firstName} ${user.lastName}`
+          : 'Admin User',
+      email: user?.email || 'admin@marifetbul.com',
+      role:
+        user?.role === 'admin' || user?.role === 'super_admin'
+          ? 'Administrator'
+          : 'Admin',
+      avatar: user?.avatar || '/avatars/admin.jpg',
+    }),
+    [user]
+  );
+
+  // Get alerts - can be extended with real notification system
+  const alertsSummary = useMemo(
+    () => ({
+      unread: 0, // TODO: Integrate with notification system
+    }),
+    []
+  );
 
   // Get navigation items with active states
   const navigationWithActive = useMemo(() => {
     return NAVIGATION_ITEMS.map((item) => ({
       ...item,
-      current: isPathActive(pathname, item.href) || isChildPathActive(pathname, item.subItems),
+      current:
+        isPathActive(pathname, item.href) ||
+        isChildPathActive(pathname, item.subItems),
       subItems: item.subItems?.map((subItem) => ({
         ...subItem,
         current: isPathActive(pathname, subItem.href),
@@ -66,21 +82,26 @@ export default function AdminSidebar({
 
   // Apply filters (permissions & search)
   const filteredNavigation = useMemo(() => {
-    // TODO: Get actual user role from auth
-    const userRole = 'super_admin';
-    
-    let filtered = filterNavigationByPermissions(navigationWithActive, userRole);
+    // Get user role from auth
+    const userRole = user?.role || 'admin';
+
+    let filtered = filterNavigationByPermissions(
+      navigationWithActive,
+      userRole
+    );
     filtered = filterNavigationBySearch(filtered, searchQuery);
-    
+
     return filtered.map((item) => ({
       ...item,
-      current: isPathActive(pathname, item.href) || isChildPathActive(pathname, item.subItems),
+      current:
+        isPathActive(pathname, item.href) ||
+        isChildPathActive(pathname, item.subItems),
     }));
-  }, [navigationWithActive, searchQuery, pathname]);
+  }, [navigationWithActive, searchQuery, pathname, user?.role]);
 
   // Logout handler
-  const handleLogout = () => {
-    // TODO: Implement actual logout logic
+  const handleLogout = async () => {
+    await logout();
     router.push('/admin/login');
   };
 
@@ -89,11 +110,11 @@ export default function AdminSidebar({
       {/* Desktop Sidebar */}
       <DesktopSidebar
         isCollapsed={isCollapsed}
-        user={MOCK_USER}
+        user={currentUser}
         navigation={filteredNavigation}
         expandedItems={expandedItems}
         searchQuery={searchQuery}
-        alertsSummary={MOCK_ALERTS}
+        alertsSummary={alertsSummary}
         onToggleCollapse={onToggleCollapse}
         onToggleExpanded={toggleExpanded}
         onSearchChange={setSearchQuery}
@@ -104,10 +125,10 @@ export default function AdminSidebar({
       {/* Mobile Sidebar */}
       <MobileSidebar
         isOpen={isOpen}
-        user={MOCK_USER}
+        user={currentUser}
         navigation={filteredNavigation}
         expandedItems={expandedItems}
-        alertsSummary={MOCK_ALERTS}
+        alertsSummary={alertsSummary}
         onClose={onClose}
         onToggleExpanded={toggleExpanded}
         onLogout={handleLogout}

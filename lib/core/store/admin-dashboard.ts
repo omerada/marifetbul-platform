@@ -1,209 +1,406 @@
+/**
+ * Admin Dashboard Store - Refactored for Backend Integration
+ *
+ * Production-ready admin dashboard state management with:
+ * - Full backend API integration
+ * - Type-safe data handling
+ * - Comprehensive error handling
+ * - Real-time data updates
+ * - No mock/demo data
+ *
+ * @module lib/core/store/admin-dashboard
+ * @refactored 2025-10-18
+ */
+
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import type { AdminDashboardStore } from '@/types';
+import {
+  adminDashboardApi,
+  type AdminDashboardBackendDto,
+} from '@/lib/api/admin-dashboard';
+import { logger } from '@/lib/shared/utils/logger';
 
+/**
+ * Frontend Dashboard State (transformed from backend DTO)
+ */
+export interface AdminDashboardState {
+  // Raw backend data
+  backendData: AdminDashboardBackendDto | null;
+
+  // Transformed stats for UI
+  stats: {
+    totalUsers: number;
+    activeUsers: number;
+    newUsers: number;
+    userGrowthRate: number;
+
+    totalPackages: number;
+    activePackages: number;
+    newPackages: number;
+
+    totalRevenue: number;
+    netRevenue: number;
+    platformFee: number;
+    revenueGrowthRate: number;
+
+    totalOrders: number;
+    completedOrders: number;
+    pendingOrders: number;
+    completionRate: number;
+
+    averageOrderValue: number;
+    conversionRate: number;
+    repeatPurchaseRate: number;
+    customerSatisfaction: number;
+  } | null;
+
+  // System health
+  systemHealth: {
+    status: 'healthy' | 'warning' | 'critical' | 'unknown';
+    databaseHealthy: boolean;
+    elasticsearchHealthy: boolean;
+    uptime: number; // seconds
+    uptimeSeconds: number; // deprecated, use uptime
+    responseTime: number; // ms
+    heapUsagePercent: number;
+    activeConnections: number;
+    errorRate: number;
+    memoryUsage: number; // percentage
+    cpuUsage: number; // percentage
+    diskUsage: number; // percentage
+    lastCheck: string;
+  } | null;
+
+  // Chart data for trends
+  trends: {
+    dailyRevenue: Array<{ date: string; value: number }>;
+    dailyOrders: Array<{ date: string; value: number }>;
+    dailyUsers: Array<{ date: string; value: number }>;
+    dailyPackageViews: Array<{ date: string; value: number }>;
+  } | null;
+
+  // Top performers
+  topPackages: Array<{
+    packageId: string;
+    title: string;
+    sellerName: string;
+    views: number;
+    orders: number;
+    revenue: number;
+  }> | null;
+
+  // Metadata
+  periodDays: number;
+  periodStart: string | null;
+  periodEnd: string | null;
+  generatedAt: string | null;
+  fromCache: boolean;
+
+  // UI State
+  isLoading: boolean;
+  error: string | null;
+  lastUpdated: string | null;
+}
+
+/**
+ * Admin Dashboard Store Actions
+ */
+export interface AdminDashboardActions {
+  // Data fetching
+  fetchDashboard: (days?: number) => Promise<void>;
+  fetchDashboardRealtime: () => Promise<void>;
+  refreshDashboard: () => Promise<void>;
+
+  // Actions
+  refreshAllDashboards: () => Promise<boolean>;
+
+  // State management
+  clearError: () => void;
+  reset: () => void;
+}
+
+/**
+ * Complete Store Interface
+ */
+export type AdminDashboardStore = AdminDashboardState & AdminDashboardActions;
+
+/**
+ * Initial State
+ */
+const initialState: AdminDashboardState = {
+  backendData: null,
+  stats: null,
+  systemHealth: null,
+  trends: null,
+  topPackages: null,
+  periodDays: 30,
+  periodStart: null,
+  periodEnd: null,
+  generatedAt: null,
+  fromCache: false,
+  isLoading: false,
+  error: null,
+  lastUpdated: null,
+};
+
+/**
+ * Transform backend DTO to frontend state
+ */
+function transformBackendData(
+  dto: AdminDashboardBackendDto
+): Omit<AdminDashboardState, 'isLoading' | 'error' | 'lastUpdated'> {
+  return {
+    backendData: dto,
+
+    stats: {
+      // User metrics
+      totalUsers: dto.userMetrics?.totalUsers || 0,
+      activeUsers: dto.userMetrics?.activeUsers || 0,
+      newUsers: dto.userMetrics?.newUsers || 0,
+      userGrowthRate: dto.userMetrics?.userGrowthRate || 0,
+
+      // Package metrics
+      totalPackages: dto.packageMetrics?.totalPackages || 0,
+      activePackages: dto.packageMetrics?.activePackages || 0,
+      newPackages: dto.packageMetrics?.newPackages || 0,
+
+      // Revenue metrics
+      totalRevenue: Number(dto.revenueMetrics?.totalRevenue) || 0,
+      netRevenue: Number(dto.revenueMetrics?.netRevenue) || 0,
+      platformFee: Number(dto.revenueMetrics?.platformFee) || 0,
+      revenueGrowthRate: dto.revenueMetrics?.revenueGrowthRate || 0,
+
+      // Order metrics
+      totalOrders: dto.orderMetrics?.totalOrders || 0,
+      completedOrders: dto.orderMetrics?.completedOrders || 0,
+      pendingOrders: dto.orderMetrics?.pendingOrders || 0,
+      completionRate: dto.orderMetrics?.completionRate || 0,
+
+      // Business metrics
+      averageOrderValue: Number(dto.revenueMetrics?.averageOrderValue) || 0,
+      conversionRate: dto.businessMetrics?.conversionRate || 0,
+      repeatPurchaseRate: dto.businessMetrics?.repeatPurchaseRate || 0,
+      customerSatisfaction: dto.businessMetrics?.customerSatisfactionScore || 0,
+    },
+
+    systemHealth: {
+      status:
+        dto.systemHealth?.systemStatus === 'HEALTHY'
+          ? 'healthy'
+          : dto.systemHealth?.systemStatus === 'DEGRADED'
+            ? 'warning'
+            : dto.systemHealth?.systemStatus === 'DOWN'
+              ? 'critical'
+              : 'unknown',
+      databaseHealthy: dto.systemHealth?.databaseHealthy || false,
+      elasticsearchHealthy: dto.systemHealth?.elasticsearchHealthy || false,
+      uptime: dto.systemHealth?.uptimeSeconds || 0,
+      uptimeSeconds: dto.systemHealth?.uptimeSeconds || 0,
+      responseTime: dto.activityMetrics?.averageResponseTime || 0,
+      heapUsagePercent: dto.systemHealth?.heapUsagePercent || 0,
+      activeConnections: dto.systemHealth?.activeConnections || 0,
+      errorRate: dto.activityMetrics?.errorRate || 0,
+      memoryUsage: dto.systemHealth?.heapUsagePercent || 0,
+      cpuUsage: 0, // Not available in current backend DTO
+      diskUsage: 0, // Not available in current backend DTO
+      lastCheck: dto.generatedAt || new Date().toISOString(),
+    },
+
+    trends: dto.trends || null,
+
+    topPackages: dto.packageMetrics?.topPackages || null,
+
+    periodDays: dto.periodDays || 30,
+    periodStart: dto.periodStart || null,
+    periodEnd: dto.periodEnd || null,
+    generatedAt: dto.generatedAt || null,
+    fromCache: dto.fromCache || false,
+  };
+}
+
+/**
+ * Admin Dashboard Store
+ */
 export const useAdminDashboardStore = create<AdminDashboardStore>()(
   devtools(
     immer((set, get) => ({
-      // State
-      data: null,
-      isLoading: false,
-      error: null,
-      lastUpdated: null,
+      ...initialState,
 
-      // Actions
-      fetchDashboard: async () => {
+      // Fetch dashboard for specified days
+      fetchDashboard: async (days = 30) => {
         set((state) => {
           state.isLoading = true;
           state.error = null;
         });
 
         try {
-          const { useAuthStore } = await import('./domains/auth/authStore');
-          const authState = useAuthStore.getState();
+          logger.debug(`📊 Fetching admin dashboard for last ${days} days`);
 
-          if (!authState.isAuthenticated) {
-            throw new Error('Yetkisiz erişim: Lütfen giriş yapın');
-          }
-
-          const response = await fetch('/api/v1/admin/dashboard', {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-          });
-
-          if (!response.ok) {
-            throw new Error('Dashboard verisi alınamadı');
-          }
-
-          const result = await response.json();
+          const backendData =
+            await adminDashboardApi.getAdminDashboardByDays(days);
+          const transformedData = transformBackendData(backendData);
 
           set((state) => {
-            state.data = result.data;
+            Object.assign(state, transformedData);
             state.isLoading = false;
             state.lastUpdated = new Date().toISOString();
+            state.error = null;
           });
+
+          logger.info(
+            `✅ Admin dashboard loaded successfully (${days} days, from cache: ${backendData.fromCache})`
+          );
         } catch (error) {
-          set((state) => {
-            state.error =
-              error instanceof Error ? error.message : 'Bilinmeyen hata';
-            state.isLoading = false;
-          });
-        }
-      },
-
-      refreshDashboard: async () => {
-        const { fetchDashboard } = get();
-        await fetchDashboard();
-      },
-
-      markAlertAsRead: async (alertId: string) => {
-        try {
-          const response = await fetch(`/api/v1/admin/alerts/${alertId}/read`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-
-          if (!response.ok) {
-            throw new Error('Alert okundu olarak işaretlenemedi');
-          }
-
-          set((state) => {
-            if (state.data?.alerts) {
-              const alertIndex = state.data.alerts.findIndex(
-                (alert) => alert.id === alertId
-              );
-              if (alertIndex !== -1) {
-                state.data.alerts[alertIndex].isRead = true;
-              }
-            }
-          });
-        } catch (error) {
-          set((state) => {
-            state.error =
-              error instanceof Error ? error.message : 'Bilinmeyen hata';
-          });
-        }
-      },
-
-      dismissAlert: async (alertId: string) => {
-        try {
-          const response = await fetch(
-            `/api/v1/admin/alerts/${alertId}/dismiss`,
-            {
-              method: 'DELETE',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            }
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : 'Dashboard verisi alınamadı';
+          logger.error(
+            '❌ Admin dashboard fetch failed',
+            error instanceof Error ? error : new Error(String(error))
           );
 
-          if (!response.ok) {
-            throw new Error('Alert kapatılamadı');
-          }
+          set((state) => {
+            state.isLoading = false;
+            state.error = errorMessage;
+          });
 
-          set((state) => {
-            if (state.data?.alerts) {
-              state.data.alerts = state.data.alerts.filter(
-                (alert) => alert.id !== alertId
-              );
-            }
-          });
-        } catch (error) {
-          set((state) => {
-            state.error =
-              error instanceof Error ? error.message : 'Bilinmeyen hata';
-          });
+          throw error;
         }
       },
 
-      clearAllAlerts: async () => {
+      // Fetch real-time dashboard (last 24 hours)
+      fetchDashboardRealtime: async () => {
+        set((state) => {
+          state.isLoading = true;
+          state.error = null;
+        });
+
         try {
-          const response = await fetch('/api/v1/admin/alerts/clear-all', {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
+          logger.debug('📊 Fetching real-time admin dashboard');
 
-          if (!response.ok) {
-            throw new Error('Tüm alertler temizlenemedi');
-          }
+          const backendData =
+            await adminDashboardApi.getAdminDashboardRealtime();
+          const transformedData = transformBackendData(backendData);
 
           set((state) => {
-            if (state.data?.alerts) {
-              state.data.alerts = [];
-            }
+            Object.assign(state, transformedData);
+            state.isLoading = false;
+            state.lastUpdated = new Date().toISOString();
+            state.error = null;
           });
+
+          logger.info('✅ Real-time admin dashboard loaded successfully');
         } catch (error) {
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : 'Dashboard verisi alınamadı';
+          logger.error(
+            '❌ Real-time dashboard fetch failed',
+            error instanceof Error ? error : new Error(String(error))
+          );
+
           set((state) => {
-            state.error =
-              error instanceof Error ? error.message : 'Bilinmeyen hata';
+            state.isLoading = false;
+            state.error = errorMessage;
           });
+
+          throw error;
         }
       },
 
+      // Refresh current dashboard
+      refreshDashboard: async () => {
+        const { periodDays, fetchDashboard } = get();
+        logger.debug(`🔄 Refreshing admin dashboard (${periodDays} days)`);
+        await fetchDashboard(periodDays);
+      },
+
+      // Refresh all dashboard caches on backend
+      refreshAllDashboards: async () => {
+        try {
+          logger.debug('🔄 Requesting backend dashboard cache refresh');
+          const success = await adminDashboardApi.refreshAllDashboards();
+
+          if (success) {
+            logger.info('✅ Backend dashboard caches refreshed successfully');
+            // Re-fetch current dashboard
+            await get().refreshDashboard();
+          }
+
+          return success;
+        } catch (error) {
+          logger.error(
+            '❌ Dashboard cache refresh failed',
+            error instanceof Error ? error : new Error(String(error))
+          );
+          return false;
+        }
+      },
+
+      // Clear error
       clearError: () => {
         set((state) => {
           state.error = null;
         });
       },
 
-      // Computed properties
-      get unreadAlerts() {
-        const state = get();
-        return state.data?.alerts?.filter((alert) => !alert.isRead) || [];
-      },
-
-      get criticalAlerts() {
-        const state = get();
-        return (
-          state.data?.alerts?.filter(
-            (alert) =>
-              alert.severity === 'critical' || alert.priority === 'critical'
-          ) || []
-        );
+      // Reset to initial state
+      reset: () => {
+        set(initialState);
       },
     })),
     {
       name: 'admin-dashboard',
+      enabled: process.env.NODE_ENV === 'development',
     }
   )
 );
 
-// Selectors
+/**
+ * Selectors for computed values
+ */
 export const useAdminDashboardSelectors = () => {
   const store = useAdminDashboardStore();
 
   return {
-    // Basic selectors
-    stats: store.data?.stats,
-    charts: store.data?.charts,
-    alerts: store.data?.alerts || [],
-    recentActivity: store.data?.recentActivity || [],
-    systemHealth: store.data?.systemHealth,
+    // Raw data
+    backendData: store.backendData,
 
-    // Computed selectors
-    unreadAlerts: store.data?.alerts?.filter((alert) => !alert.isRead) || [],
-    criticalAlerts:
-      store.data?.alerts?.filter(
-        (alert) =>
-          alert.severity === 'critical' || alert.priority === 'critical'
-      ) || [],
-    systemStatus: store.data?.systemHealth?.status || 'unknown',
-    totalUsers: store.data?.stats?.totalUsers || 0,
-    totalRevenue: store.data?.stats?.totalRevenue || 0,
-    isHealthy: store.data?.systemHealth?.status === 'healthy',
+    // Stats
+    stats: store.stats,
+    systemHealth: store.systemHealth,
+    trends: store.trends,
+    topPackages: store.topPackages,
 
-    // State selectors
+    // Computed values
+    isHealthy: store.systemHealth?.status === 'healthy',
+    systemStatus: store.systemHealth?.status || 'unknown',
+    totalUsers: store.stats?.totalUsers || 0,
+    totalRevenue: store.stats?.totalRevenue || 0,
+    activeUsers: store.stats?.activeUsers || 0,
+    pendingOrders: store.stats?.pendingOrders || 0,
+
+    // Chart data
+    hasChartData: !!store.trends,
+    revenueChartData: store.trends?.dailyRevenue || [],
+    ordersChartData: store.trends?.dailyOrders || [],
+    usersChartData: store.trends?.dailyUsers || [],
+
+    // Metadata
+    periodDays: store.periodDays,
+    periodStart: store.periodStart,
+    periodEnd: store.periodEnd,
+    generatedAt: store.generatedAt,
+    fromCache: store.fromCache,
+
+    // UI State
     isLoading: store.isLoading,
     error: store.error,
     lastUpdated: store.lastUpdated,
-    hasData: !!store.data,
+    hasData: !!store.backendData,
   };
 };
 

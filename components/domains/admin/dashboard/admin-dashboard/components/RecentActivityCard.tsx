@@ -6,7 +6,6 @@
 
 import { Activity, ChevronRight } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
   DEFAULT_ACTIVITIES,
   ACTIVITY_COLOR_MAP,
@@ -18,7 +17,7 @@ export function RecentActivityCard({
 }: RecentActivityCardProps) {
   return (
     <Card className="border-2 shadow-lg">
-      <CardHeader className="flex flex-row items-center justify-between pb-3">
+      <CardHeader className="pb-3">
         <div className="flex items-center space-x-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 shadow-md">
             <Activity className="h-5 w-5 text-green-600" />
@@ -27,9 +26,6 @@ export function RecentActivityCard({
             Son Aktiviteler
           </CardTitle>
         </div>
-        <Button variant="ghost" size="sm" className="text-green-600">
-          Tümünü Görüntüle
-        </Button>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="space-y-4">

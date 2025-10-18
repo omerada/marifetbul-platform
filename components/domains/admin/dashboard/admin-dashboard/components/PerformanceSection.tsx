@@ -2,13 +2,27 @@
  * PerformanceSection Component
  *
  * Performance monitor section wrapper
+ * TODO: Backend'den trends verisi geldiğinde grafikleri ekle
  */
 
 import { Activity } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 
-export function PerformanceSection() {
+interface PerformanceSectionProps {
+  trends?: {
+    dailyRevenue: Array<{ date: string; value: number }>;
+    dailyUsers: Array<{ date: string; value: number }>;
+    dailyOrders: Array<{ date: string; value: number }>;
+    dailyPackageViews: Array<{ date: string; value: number }>;
+  } | null;
+}
+
+export function PerformanceSection({ trends }: PerformanceSectionProps) {
+  // Eğer trends verisi yoksa component'i gösterme
+  if (!trends || !trends.dailyRevenue?.length) {
+    return null;
+  }
+
   return (
     <Card className="border-2 shadow-lg">
       <CardHeader className="flex flex-row items-center justify-between pb-3">
@@ -20,13 +34,11 @@ export function PerformanceSection() {
             Performans İzleme
           </CardTitle>
         </div>
-        <Button variant="ghost" size="sm" className="text-purple-600">
-          Detayları Görüntüle
-        </Button>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="text-center text-sm text-gray-500">
-          Performans grafikleri burada görüntülenecek
+          {/* TODO: Chart component eklenecek */}
+          Grafik verisi mevcut: {trends.dailyRevenue.length} veri noktası
         </div>
       </CardContent>
     </Card>

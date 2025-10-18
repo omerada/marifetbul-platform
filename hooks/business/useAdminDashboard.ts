@@ -1,3 +1,12 @@
+/**
+ * useAdminDashboard Hook - Production Ready
+ * 
+ * Provides admin dashboard data and actions with full backend integration
+ * 
+ * @module hooks/business/useAdminDashboard
+ * @refactored 2025-10-18
+ */
+
 import { useCallback, useEffect, useRef } from 'react';
 import {
   useAdminDashboardStore,
@@ -7,13 +16,19 @@ import { logger } from '@/lib/shared/utils/logger';
 
 /**
  * Hook for admin dashboard functionality
+ * 
+ * Features:
+ * - Auto-fetch on mount
+ * - Auto-refresh every 5 minutes
+ * - Error handling
+ * - Loading states
+ * - Real-time data from backend
  */
 export function useAdminDashboard() {
   const {
     fetchDashboard,
     refreshDashboard,
-    markAlertAsRead,
-    dismissAlert,
+    refreshAllDashboards,
     clearError,
   } = useAdminDashboardStore();
 
@@ -24,13 +39,13 @@ export function useAdminDashboard() {
   // Auto-fetch dashboard data on mount (only once)
   useEffect(() => {
     if (!hasInitialized.current && !selectors.hasData && !selectors.isLoading) {
-      logger.debug('🔄 Admin Dashboard: Initial fetch');
+      logger.debug('🔄 Admin Dashboard: Initial fetch (30 days)');
       hasInitialized.current = true;
-      fetchDashboard();
+      fetchDashboard(30);
     }
   }, [fetchDashboard, selectors.hasData, selectors.isLoading]);
 
-  // Auto-refresh every 5 minutes (setup once)
+  // Auto-refresh every 5 minutes
   useEffect(() => {
     // Clear existing interval
     if (intervalRef.current) {
@@ -39,7 +54,7 @@ export function useAdminDashboard() {
 
     // Only setup interval if we have data
     if (selectors.hasData) {
-      logger.debug('⏰ Admin Dashboard: Setting up auto-refresh interval');
+      logger.debug('⏰ Admin Dashboard: Setting up auto-refresh (5min interval)');
       intervalRef.current = setInterval(
         () => {
           logger.debug('🔄 Admin Dashboard: Auto-refresh triggered');
@@ -52,33 +67,19 @@ export function useAdminDashboard() {
     // Cleanup
     return () => {
       if (intervalRef.current) {
-        logger.debug('🧹 Admin Dashboard: Cleaning up auto-refresh interval');
+        logger.debug('🧹 Admin Dashboard: Cleaning up auto-refresh');
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
     };
-  }, [selectors.hasData, refreshDashboard]); // Include refreshDashboard dependency
+  }, [selectors.hasData, refreshDashboard]);
 
-  const handleAlertAction = useCallback(
-    async (alertId: string, action: 'read' | 'dismiss') => {
-      try {
-        if (action === 'read') {
-          await markAlertAsRead(alertId);
-        } else {
-          await dismissAlert(alertId);
-        }
-      } catch (error) {
-        logger.error(
-          'Alert action failed',
-          error instanceof Error ? error : new Error(String(error))
-        );
-      }
-    },
-    [markAlertAsRead, dismissAlert]
-  );
-
+  /**
+   * Manual refresh handler
+   */
   const handleRefresh = useCallback(async () => {
     try {
+      logger.info('🔄 Manual dashboard refresh initiated');
       await refreshDashboard();
     } catch (error) {
       logger.error(
@@ -88,33 +89,75 @@ export function useAdminDashboard() {
     }
   }, [refreshDashboard]);
 
+  /**
+   * Force backend cache refresh
+   */
+  const handleRefreshAll = useCallback(async () => {
+    try {
+      logger.info('🔄 Backend cache refresh initiated');
+      const success = await refreshAllDashboards();
+      return success;
+    } catch (error) {
+      logger.error(
+        'Backend cache refresh failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      return false;
+    }
+  }, [refreshAllDashboards]);
+
   return {
-    // Data
-    ...selectors,
+    // Data selectors
+    stats: selectors.stats,
+    systemHealth: selectors.systemHealth,
+    trends: selectors.trends,
+    topPackages: selectors.topPackages,
+    backendData: selectors.backendData,
+    
+    // Computed values
+    isHealthy: selectors.isHealthy,
+    systemStatus: selectors.systemStatus,
+    totalUsers: selectors.totalUsers,
+    totalRevenue: selectors.totalRevenue,
+    activeUsers: selectors.activeUsers,
+    pendingOrders: selectors.pendingOrders,
+    
+    // Chart data
+    hasChartData: selectors.hasChartData,
+    revenueChartData: selectors.revenueChartData,
+    ordersChartData: selectors.ordersChartData,
+    usersChartData: selectors.usersChartData,
+    
+    // Metadata
+    periodDays: selectors.periodDays,
+    periodStart: selectors.periodStart,
+    periodEnd: selectors.periodEnd,
+    generatedAt: selectors.generatedAt,
+    fromCache: selectors.fromCache,
+    
+    // UI State
+    isLoading: selectors.isLoading,
+    error: selectors.error,
+    lastUpdated: selectors.lastUpdated,
+    hasData: selectors.hasData,
 
     // Actions
     refresh: handleRefresh,
-    alertAction: handleAlertAction,
+    refreshAll: handleRefreshAll,
     clearError,
 
-    // Computed values
+    // Legacy compatibility (for gradual migration)
     healthStatus: {
       isHealthy: selectors.isHealthy,
       status: selectors.systemStatus,
-      hasIssues: (selectors.systemHealth?.issues?.length ?? 0) > 0,
-    },
-
-    alertsSummary: {
-      total: selectors.alerts.length,
-      unread: selectors.unreadAlerts.length,
-      critical: selectors.criticalAlerts.length,
+      hasIssues: !selectors.isHealthy,
     },
 
     statsSummary: {
-      usersGrowth: selectors.stats?.revenueGrowth || 0,
-      revenueGrowth: selectors.stats?.revenueGrowth || 0,
+      usersGrowth: selectors.stats?.userGrowthRate || 0,
+      revenueGrowth: selectors.stats?.revenueGrowthRate || 0,
       conversionRate: selectors.stats?.conversionRate || 0,
-      retentionRate: selectors.stats?.userRetentionRate || 0,
+      retentionRate: selectors.stats?.repeatPurchaseRate || 0,
     },
   };
 }

@@ -36,6 +36,7 @@ export interface PendingTask {
   description: string;
   count: number;
   color: 'orange' | 'red' | 'blue' | 'purple';
+  link?: string;
 }
 
 export interface DemoFeature {

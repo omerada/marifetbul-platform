@@ -27,28 +27,28 @@ import type {
 
 export const STAT_CARDS_CONFIG: Omit<StatCard, 'value' | 'change'>[] = [
   {
-    title: 'Toplam Kullanıcı',
+    title: 'Kullanıcılar',
     name: 'users',
     icon: Users,
     color: 'blue',
     trend: 'up',
   },
   {
-    title: 'Aylık Gelir',
+    title: 'Gelir',
     name: 'revenue',
     icon: DollarSign,
     color: 'green',
     trend: 'up',
   },
   {
-    title: 'Aktif Siparişler',
+    title: 'Siparişler',
     name: 'orders',
     icon: ShoppingCart,
     color: 'orange',
     trend: 'up',
   },
   {
-    title: 'Dönüşüm Oranı',
+    title: 'Dönüşüm',
     name: 'conversion',
     icon: TrendingUp,
     color: 'purple',
@@ -102,6 +102,7 @@ export const DEFAULT_TASKS: PendingTask[] = [
     description: 'Bekleyen kullanıcı onaylarını inceleyin',
     count: 23,
     color: 'orange',
+    link: '/admin/users?status=pending',
   },
   {
     icon: AlertTriangle,
@@ -109,6 +110,7 @@ export const DEFAULT_TASKS: PendingTask[] = [
     description: 'İçerikleri denetleyin ve onaylayın',
     count: 12,
     color: 'red',
+    link: '/admin/moderation',
   },
   {
     icon: MessageSquare,
@@ -116,6 +118,7 @@ export const DEFAULT_TASKS: PendingTask[] = [
     description: 'Bekleyen destek taleplerini yanıtlayın',
     count: 8,
     color: 'blue',
+    link: '/admin/support',
   },
   {
     icon: ShoppingCart,
@@ -123,6 +126,7 @@ export const DEFAULT_TASKS: PendingTask[] = [
     description: 'Ödeme işlemlerini kontrol edin',
     count: 5,
     color: 'purple',
+    link: '/admin/payments?status=pending',
   },
 ];
 

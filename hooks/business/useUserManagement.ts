@@ -29,13 +29,16 @@ export function useUserManagement() {
 
   const selectors = useAdminUserSelectors();
   const [isActionLoading, setIsActionLoading] = useState(false);
+  const [hasFetched, setHasFetched] = useState(false);
 
-  // Auto-fetch users on mount
+  // Auto-fetch users on mount (only once)
   useEffect(() => {
-    if (!selectors.hasData && !selectors.isLoading) {
+    if (!hasFetched && !selectors.hasData && !selectors.isLoading) {
+      setHasFetched(true);
       fetchUsers();
     }
-  }, [fetchUsers, selectors.hasData, selectors.isLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
 
   const handleFilterChange = useCallback(
     (newFilters: Partial<UserFilters>) => {

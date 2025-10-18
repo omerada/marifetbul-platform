@@ -1,12 +1,14 @@
 /**
  * PendingTasksCard Component
  *
- * Pending tasks list display
+ * Pending tasks list display with navigation
  */
 
+'use client';
+
+import { useRouter } from 'next/navigation';
 import { ListTodo, ChevronRight } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { DEFAULT_TASKS, TASK_COLOR_MAP } from '../utils/dashboardConstants';
 import type { PendingTasksCardProps } from '../types/adminDashboardTypes';
@@ -14,9 +16,17 @@ import type { PendingTasksCardProps } from '../types/adminDashboardTypes';
 export function PendingTasksCard({
   tasks = DEFAULT_TASKS,
 }: PendingTasksCardProps) {
+  const router = useRouter();
+
+  const handleTaskClick = (link?: string) => {
+    if (link) {
+      router.push(link);
+    }
+  };
+
   return (
     <Card className="border-2 shadow-lg">
-      <CardHeader className="flex flex-row items-center justify-between pb-3">
+      <CardHeader className="pb-3">
         <div className="flex items-center space-x-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 shadow-md">
             <ListTodo className="h-5 w-5 text-orange-600" />
@@ -25,9 +35,6 @@ export function PendingTasksCard({
             Bekleyen İşlemler
           </CardTitle>
         </div>
-        <Button variant="ghost" size="sm" className="text-orange-600">
-          Tümünü Görüntüle
-        </Button>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="space-y-3">
@@ -38,7 +45,10 @@ export function PendingTasksCard({
             return (
               <div
                 key={index}
-                className="group flex items-center justify-between rounded-lg border border-gray-100 bg-gradient-to-r from-gray-50 to-white p-4 transition-all duration-300 hover:border-gray-200 hover:shadow-md"
+                onClick={() => handleTaskClick(task.link)}
+                className={`group flex items-center justify-between rounded-lg border border-gray-100 bg-gradient-to-r from-gray-50 to-white p-4 transition-all duration-300 hover:border-gray-200 hover:shadow-md ${
+                  task.link ? 'cursor-pointer' : ''
+                }`}
               >
                 <div className="flex items-center space-x-4">
                   <div
@@ -53,7 +63,9 @@ export function PendingTasksCard({
                 </div>
                 <div className="flex items-center space-x-3">
                   <Badge className={colorClass}>{task.count}</Badge>
-                  <ChevronRight className="h-5 w-5 text-gray-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  {task.link && (
+                    <ChevronRight className="h-5 w-5 text-gray-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  )}
                 </div>
               </div>
             );

@@ -23,7 +23,7 @@ export function SecurityAlertsCard({
 
   return (
     <Card className="border-2 shadow-lg">
-      <CardHeader className="flex flex-row items-center justify-between pb-3">
+      <CardHeader className="pb-3">
         <div className="flex items-center space-x-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-100 shadow-md">
             <Shield className="h-5 w-5 text-red-600" />
@@ -39,9 +39,6 @@ export function SecurityAlertsCard({
             )}
           </div>
         </div>
-        <Button variant="ghost" size="sm" className="text-red-600">
-          Tümünü Görüntüle
-        </Button>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="space-y-3">
@@ -88,7 +85,7 @@ export function SecurityAlertsCard({
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => onAlertAction(alert.id, 'mark-read')}
+                            onClick={() => onAlertAction(alert.id, 'read')}
                             className="h-7 px-2 text-xs opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                           >
                             Okundu İşaretle
@@ -97,10 +94,10 @@ export function SecurityAlertsCard({
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => onAlertAction(alert.id, 'view')}
+                          onClick={() => onAlertAction(alert.id, 'dismiss')}
                           className="h-7 px-2 text-xs opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                         >
-                          <span>Detay</span>
+                          <span>Kapat</span>
                           <ChevronRight className="ml-1 h-3 w-3" />
                         </Button>
                       </div>

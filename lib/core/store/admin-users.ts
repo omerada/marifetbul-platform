@@ -9,6 +9,11 @@ import type {
   BulkUserActionRequest,
 } from '@/types';
 
+// Request tracking to prevent duplicate calls
+let lastFetchRequest: string | null = null;
+let lastFetchTime = 0;
+const MIN_FETCH_INTERVAL = 500; // Minimum 500ms between requests
+
 export const useAdminUserStore = create<AdminUserStore>()(
   devtools(
     immer((set, get) => ({
@@ -27,6 +32,29 @@ export const useAdminUserStore = create<AdminUserStore>()(
 
       // Actions
       fetchUsers: async (filters?: UserFilters) => {
+        // Prevent duplicate requests
+        const currentFilters = { ...get().filters, ...filters };
+        const requestKey = JSON.stringify(currentFilters);
+        const now = Date.now();
+
+        // Skip if same request within interval
+        if (
+          lastFetchRequest === requestKey &&
+          now - lastFetchTime < MIN_FETCH_INTERVAL
+        ) {
+          console.log('[useAdminUserStore] Skipping duplicate request');
+          return;
+        }
+
+        // Skip if already loading
+        if (get().isLoading) {
+          console.log('[useAdminUserStore] Already loading, skipping request');
+          return;
+        }
+
+        lastFetchRequest = requestKey;
+        lastFetchTime = now;
+
         set((state) => {
           state.isLoading = true;
           state.error = null;

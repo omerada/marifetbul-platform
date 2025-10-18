@@ -31,10 +31,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch - wait for client-side mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
-    // Skip auth check for login page
-    if (isLoading || pathname === '/admin/login') {
+    // Skip auth check for login page or during SSR
+    if (!mounted || isLoading || pathname === '/admin/login') {
       return;
     }
 
@@ -61,7 +67,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
 
     logger.debug('Admin Layout: Admin access granted');
-  }, [isAuthenticated, isLoading, user, router, pathname]);
+  }, [mounted, isAuthenticated, isLoading, user, router, pathname]);
 
   // Skip layout for login page
   if (pathname === '/admin/login') {

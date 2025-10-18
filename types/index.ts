@@ -1731,7 +1731,7 @@ export interface AdminDashboardStore {
 }
 
 export interface SystemHealth {
-  status: 'healthy' | 'warning' | 'critical';
+  status: 'healthy' | 'warning' | 'critical' | 'unknown';
   uptime: number;
   responseTime: number;
   lastCheck: string;

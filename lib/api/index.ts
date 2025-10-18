@@ -19,3 +19,10 @@ export {
 // Export endpoints
 export { default as API_ENDPOINTS } from './endpoints';
 export * from './endpoints';
+
+// Export Admin Dashboard API
+export { adminDashboardApi } from './admin-dashboard';
+export type {
+  AdminDashboardBackendDto,
+  PlatformSnapshotDto,
+} from './admin-dashboard';

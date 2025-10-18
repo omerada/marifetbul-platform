@@ -50,7 +50,7 @@ export function formatPercentage(value: number): string {
 export function getStatColorConfig(color: string): ColorConfig {
   return (
     STAT_COLOR_CONFIG[color as keyof typeof STAT_COLOR_CONFIG] ||
-    STAT_COLOR_CONFIG.blue
+    STAT_COLOR_CONFIG.users
   );
 }
 
@@ -94,7 +94,7 @@ export function buildStatCards(
     {
       ...STAT_CARDS_CONFIG[1],
       value: formatCurrency(stats.monthlyRevenue || 0),
-      change: `${formatPercentage(stats.revenueGrowth ?? 0)} büyüme`,
+      change: `%${formatNumber(stats.revenueGrowth ?? 0)} büyüme`,
     },
     {
       ...STAT_CARDS_CONFIG[2],
@@ -103,8 +103,8 @@ export function buildStatCards(
     },
     {
       ...STAT_CARDS_CONFIG[3],
-      value: formatPercentage(stats.conversionRate ?? 0),
-      change: `${formatPercentage(stats.userRetentionRate ?? 0)} tutma oranı`,
+      value: `%${formatNumber(stats.conversionRate ?? 0)}`,
+      change: `%${formatNumber(stats.userRetentionRate ?? 0)} elde tutma`,
     },
   ];
 }

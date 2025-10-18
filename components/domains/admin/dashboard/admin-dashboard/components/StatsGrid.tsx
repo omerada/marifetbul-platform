@@ -27,7 +27,7 @@ export function StatsGrid({ stats }: StatsGridProps) {
             />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-semibold text-gray-700">
-                {stat.name}
+                {stat.title}
               </CardTitle>
               <div
                 className={`flex h-10 w-10 items-center justify-center rounded-lg ${colorConfig.bg} ${colorConfig.text} shadow-md transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg`}
