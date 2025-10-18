@@ -9,7 +9,6 @@ import { Progress } from '@/components/ui/Progress';
 import {
   Server,
   Cpu,
-  HardDrive,
   AlertTriangle,
   CheckCircle,
   XCircle,
@@ -138,12 +137,19 @@ export default function SystemHealthWidget({
             status: 'healthy',
           },
           memory: {
-            usage: Math.round(
-              (backendData.memory?.heapUsed || 0) / (1024 * 1024)
-            ), // Convert to MB
-            total: Math.round(
-              (backendData.memory?.heapMax || 0) / (1024 * 1024)
-            ), // Convert to MB
+            // Memory comes in bytes, convert to GB with 2 decimals
+            usage:
+              backendData.memory?.heapUsed && backendData.memory.heapUsed > 0
+                ? Math.round(
+                    (backendData.memory.heapUsed / (1024 * 1024 * 1024)) * 100
+                  ) / 100
+                : 0,
+            total:
+              backendData.memory?.heapMax && backendData.memory.heapMax > 0
+                ? Math.round(
+                    (backendData.memory.heapMax / (1024 * 1024 * 1024)) * 100
+                  ) / 100
+                : 4, // Default 4GB if not available
             status:
               (backendData.memory?.heapUsagePercent || 0) > 85
                 ? 'critical'
@@ -157,8 +163,15 @@ export default function SystemHealthWidget({
             status: 'healthy',
           },
           database: {
-            connections: backendData.database?.activeConnections || 0,
-            maxConnections: backendData.database?.maxConnections || 100,
+            // Show total connections (active + idle)
+            connections:
+              (backendData.database?.activeConnections || 0) +
+              (backendData.database?.idleConnections || 0),
+            maxConnections:
+              backendData.database?.maxConnections &&
+              backendData.database.maxConnections > 0
+                ? backendData.database.maxConnections
+                : 100, // Default max if 0
             responseTime: 0,
             status: backendData.database?.healthy ? 'healthy' : 'critical',
           },
@@ -174,7 +187,7 @@ export default function SystemHealthWidget({
               responseTime: 0,
             },
             {
-              name: 'Redis Cache',
+              name: 'Redis',
               status: backendData.redis?.healthy ? 'online' : 'offline',
               responseTime: 0,
             },
@@ -331,12 +344,22 @@ export default function SystemHealthWidget({
             Kaynak Kullanımı
           </h4>
           <div className="space-y-2">
+            {/* CPU backend'de yok - memory usage percentage göster */}
             <div className="flex items-center gap-2">
               <Cpu className="h-3 w-3 text-gray-400" />
-              <span className="w-12 text-xs text-gray-600">CPU</span>
-              <Progress value={healthData.cpu.usage} className="h-1.5 flex-1" />
+              <span className="w-12 text-xs text-gray-600">Heap</span>
+              <Progress
+                value={
+                  healthData.memory.total > 0
+                    ? (healthData.memory.usage / healthData.memory.total) * 100
+                    : 0
+                }
+                className="h-1.5 flex-1"
+              />
               <span className="w-12 text-right text-xs font-medium text-gray-900">
-                {healthData.cpu.usage.toFixed(1)}%
+                {healthData.memory.total > 0
+                  ? `${((healthData.memory.usage / healthData.memory.total) * 100).toFixed(1)}%`
+                  : 'N/A'}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -344,23 +367,30 @@ export default function SystemHealthWidget({
               <span className="w-12 text-xs text-gray-600">RAM</span>
               <Progress
                 value={
-                  (healthData.memory.usage / healthData.memory.total) * 100
+                  healthData.memory.total > 0
+                    ? (healthData.memory.usage / healthData.memory.total) * 100
+                    : 0
                 }
                 className="h-1.5 flex-1"
               />
               <span className="w-12 text-right text-xs font-medium text-gray-900">
-                {healthData.memory.usage.toFixed(1)}GB
+                {healthData.memory.usage > 0
+                  ? `${healthData.memory.usage.toFixed(2)}GB`
+                  : 'N/A'}
               </span>
             </div>
+            {/* CPU yerine uptime göster - disk backend'de yok */}
             <div className="flex items-center gap-2">
-              <HardDrive className="h-3 w-3 text-gray-400" />
-              <span className="w-12 text-xs text-gray-600">Disk</span>
-              <Progress
-                value={(healthData.disk.usage / healthData.disk.total) * 100}
-                className="h-1.5 flex-1"
-              />
+              <Activity className="h-3 w-3 text-gray-400" />
+              <span className="w-12 text-xs text-gray-600">Uptime</span>
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-200">
+                <div
+                  className="h-full bg-green-500 transition-all"
+                  style={{ width: `${healthData.uptime.percentage}%` }}
+                />
+              </div>
               <span className="w-12 text-right text-xs font-medium text-gray-900">
-                {healthData.disk.usage.toFixed(1)}GB
+                {healthData.uptime.percentage.toFixed(1)}%
               </span>
             </div>
           </div>
