@@ -128,6 +128,18 @@ export function middleware(request: NextRequest) {
   // Or we can verify role via API call (but that adds latency)
   const userRole = request.cookies.get('marifetbul-user-role')?.value;
 
+  // Debug: Log all requests in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Middleware] Request:', {
+      pathname,
+      hasToken: !!token,
+      userRole: userRole || 'none',
+      allCookies: request.cookies
+        .getAll()
+        .map((c) => ({ name: c.name, hasValue: !!c.value })),
+    });
+  }
+
   // Allow public profile viewing: /profile/[id] but not /profile/edit
   const isProfileView =
     pathname.startsWith('/profile/') && !pathname.includes('/edit');
@@ -161,28 +173,55 @@ export function middleware(request: NextRequest) {
 
   // Admin route protection
   if (isAdminRoute) {
+    console.log('[Middleware] Admin route check:', {
+      pathname,
+      hasToken: !!token,
+      tokenValue: token ? 'exists' : 'missing',
+      userRole,
+      cookies: {
+        marifetbul_token: token ? 'SET' : 'NOT SET',
+        'marifetbul-user-role': userRole || 'NOT SET',
+      },
+    });
+
     if (!token) {
+      console.log('[Middleware] No token found, redirecting to admin login');
       const adminLoginUrl = new URL(adminLoginRoute, request.url);
       adminLoginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(adminLoginUrl);
     }
 
-    if (userRole !== 'admin') {
+    if (userRole?.toUpperCase() !== 'ADMIN') {
+      console.log('[Middleware] User is not admin, redirecting to dashboard');
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
+    console.log('[Middleware] Admin access granted');
     const response = NextResponse.next();
     return addSecurityHeaders(response);
   }
 
   // If accessing admin login page with admin token, redirect to admin dashboard
-  if (isAdminLoginPage && token && userRole === 'admin') {
+  if (isAdminLoginPage && token && userRole?.toUpperCase() === 'ADMIN') {
+    console.log(
+      '[Middleware] Admin already logged in, redirecting to admin panel'
+    );
     return NextResponse.redirect(new URL('/admin', request.url));
   }
 
   // If accessing admin login page without token, allow access
+  // Clear any role cookie to prevent redirect loops
   if (isAdminLoginPage) {
     const response = NextResponse.next();
+
+    // If there's a role cookie but no token, clear it to prevent loops
+    if (userRole && !token) {
+      console.log(
+        '[Middleware] Clearing role cookie on login page (no token found)'
+      );
+      response.cookies.delete('marifetbul-user-role');
+    }
+
     return addSecurityHeaders(response);
   }
 

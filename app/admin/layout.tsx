@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { Card, CardContent } from '@/components/ui/Card';
@@ -31,11 +31,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const hasRedirected = useRef(false);
 
   useEffect(() => {
-    // Prevent multiple redirects
-    if (hasRedirected.current || isLoading || pathname === '/admin/login') {
+    // Skip auth check for login page
+    if (isLoading || pathname === '/admin/login') {
       return;
     }
 
@@ -48,17 +47,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
     if (!isAuthenticated) {
       logger.warn('Admin Layout: Not authenticated, redirecting to login');
-      hasRedirected.current = true;
       router.push('/admin/login');
       return;
     }
 
-    if (user?.role !== 'admin') {
+    if (user?.role?.toUpperCase() !== 'ADMIN') {
       logger.warn('Admin Layout: User is not admin, redirecting to dashboard', {
         userId: user?.id,
         userRole: user?.role,
       });
-      hasRedirected.current = true;
       router.push('/dashboard');
       return;
     }
@@ -140,7 +137,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   // Show loading if not authenticated or not admin (will redirect)
-  if (!isAuthenticated || user?.role !== 'admin') {
+  if (!isAuthenticated || user?.role?.toUpperCase() !== 'ADMIN') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-gray-100">
         <Card className="w-96 border-0 shadow-xl">

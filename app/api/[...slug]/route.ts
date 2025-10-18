@@ -34,10 +34,16 @@ async function proxyToBackend(request: Request, method: string) {
       headers['Authorization'] = authHeader;
     }
 
+    // CRITICAL: Forward cookies from client to backend
+    const cookieHeader = request.headers.get('Cookie');
+    if (cookieHeader) {
+      headers['Cookie'] = cookieHeader;
+    }
+
     const options: RequestInit = {
       method,
       headers,
-      credentials: 'include',
+      credentials: 'include', // Important for cookies
     };
 
     // Add body for POST, PUT, PATCH
@@ -51,11 +57,35 @@ async function proxyToBackend(request: Request, method: string) {
     const response = await fetch(backendUrl, options);
     const data = await response.text();
 
+    // CRITICAL: Forward ALL headers from backend to client, especially Set-Cookie
+    const responseHeaders = new Headers();
+
+    // Copy all headers from backend response
+    response.headers.forEach((value, key) => {
+      // Forward all headers including Set-Cookie
+      responseHeaders.append(key, value);
+    });
+
+    if (process.env.NODE_ENV === 'development') {
+      const hasCookies = response.headers.has('set-cookie');
+      console.log('[API Proxy] Response status:', response.status);
+      console.log('[API Proxy] Has Set-Cookie header:', hasCookies);
+
+      if (hasCookies) {
+        // Log cookie details
+        const cookies = response.headers.get('set-cookie');
+        console.log('[API Proxy] Set-Cookie value:', cookies);
+      } else {
+        console.log(
+          '[API Proxy] All headers:',
+          Array.from(response.headers.entries())
+        );
+      }
+    }
+
     return new Response(data, {
       status: response.status,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: responseHeaders,
     });
   } catch (error) {
     console.error('[API Proxy] Error:', error);

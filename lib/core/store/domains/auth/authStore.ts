@@ -111,7 +111,10 @@ export const useAuthStore = create<AuthStore>()(
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               credentials: 'include', // IMPORTANT: Include cookies in request
-              body: JSON.stringify(credentials),
+              body: JSON.stringify({
+                usernameOrEmail: credentials.email, // Backend expects usernameOrEmail field
+                password: credentials.password,
+              }),
             });
 
             logger.debug('Auth Store: Response received', {
@@ -152,6 +155,12 @@ export const useAuthStore = create<AuthStore>()(
               (credentials.rememberMe
                 ? 30 * 24 * 60 * 60 * 1000
                 : 24 * 60 * 60 * 1000); // 30 days or 1 day
+
+            // Set user role cookie for middleware (non-httpOnly, readable by middleware)
+            if (typeof window !== 'undefined' && user.role) {
+              document.cookie = `marifetbul-user-role=${user.role}; path=/; SameSite=Lax; max-age=${credentials.rememberMe ? 2592000 : 86400}`;
+              logger.debug('Auth Store: User role cookie set for middleware');
+            }
 
             set((draft) => {
               draft.user = user;
@@ -209,6 +218,12 @@ export const useAuthStore = create<AuthStore>()(
             // NOTE: Token is now in httpOnly cookie
             const now = Date.now();
             const expiry = now + 24 * 60 * 60 * 1000; // 1 day
+
+            // Set user role cookie for middleware (non-httpOnly, readable by middleware)
+            if (typeof window !== 'undefined' && user.role) {
+              document.cookie = `marifetbul-user-role=${user.role}; path=/; SameSite=Lax; max-age=86400`; // 1 day
+              logger.debug('Auth Store: User role cookie set for middleware');
+            }
 
             set((draft) => {
               draft.user = user;
@@ -275,8 +290,7 @@ export const useAuthStore = create<AuthStore>()(
           const { isAuthenticated } = get();
 
           if (!isAuthenticated) {
-            get().logout();
-            return;
+            return; // Don't logout if not authenticated
           }
 
           try {
@@ -286,7 +300,19 @@ export const useAuthStore = create<AuthStore>()(
               credentials: 'include', // IMPORTANT: Send cookies
             });
 
+            // Only logout on 401 - other errors might be temporary
+            if (response.status === 401) {
+              logger.warn('Token refresh: 401 Unauthorized - logging out');
+              await get().logout();
+              throw new Error('Token expired');
+            }
+
             if (!response.ok) {
+              // Server error or network issue - don't logout
+              logger.error(
+                'Token refresh failed with status:',
+                response.status
+              );
               throw new Error('Token yenileme başarısız');
             }
 
@@ -306,7 +332,7 @@ export const useAuthStore = create<AuthStore>()(
               'Token refresh failed',
               error instanceof Error ? error : new Error(String(error))
             );
-            await get().logout();
+            // Don't always logout - only on 401 (handled above)
             throw error;
           }
         },
@@ -316,8 +342,7 @@ export const useAuthStore = create<AuthStore>()(
           const { sessionExpiry, isAuthenticated } = get();
 
           if (!isAuthenticated) {
-            await get().logout();
-            return;
+            return; // Don't logout if not authenticated
           }
 
           // Check session expiry
@@ -332,8 +357,17 @@ export const useAuthStore = create<AuthStore>()(
               credentials: 'include', // IMPORTANT: Send cookies
             });
 
+            // Only logout on 401 Unauthorized - other errors might be temporary
+            if (response.status === 401) {
+              logger.warn('Auth check: 401 Unauthorized - logging out');
+              await get().logout();
+              return;
+            }
+
             if (!response.ok) {
-              throw new Error('Auth check failed');
+              // Network error or server error - don't logout, just log
+              logger.error('Auth check failed with status:', response.status);
+              return;
             }
 
             const result = await response.json();
@@ -344,14 +378,14 @@ export const useAuthStore = create<AuthStore>()(
                 draft.lastActivity = Date.now();
               });
             } else {
-              throw new Error('Invalid auth response');
+              logger.warn('Auth check: Invalid response format');
             }
           } catch (error) {
+            // Network error - don't logout, might be temporary
             logger.error(
-              'Auth status check failed',
+              'Auth status check failed (network error)',
               error instanceof Error ? error : new Error(String(error))
             );
-            await get().logout();
           }
         },
 
