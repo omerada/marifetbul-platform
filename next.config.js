@@ -95,7 +95,23 @@ const nextConfig = {
   // API PROXY CONFIGURATION
   // ================================================
   async rewrites() {
-    return [];
+    // Proxy API requests to backend server
+    // This prevents CORS issues and allows cookies to work properly
+    const backendUrl =
+      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+
+    console.log('[Next.js] API proxy configured:', backendUrl);
+
+    return [
+      {
+        source: '/api/v1/:path*',
+        destination: `${backendUrl}/api/v1/:path*`,
+      },
+      {
+        source: '/api/:path*',
+        destination: `${backendUrl}/api/:path*`,
+      },
+    ];
   },
 
   // ================================================
