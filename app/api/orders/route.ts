@@ -77,6 +77,12 @@ export async function GET(request: NextRequest) {
       'Content-Type': 'application/json',
     };
 
+    // Forward Authorization header if present
+    const authHeader = request.headers.get('Authorization');
+    if (authHeader) {
+      headers['Authorization'] = authHeader;
+    }
+
     // Forward authentication cookies
     const cookieHeader = request.headers.get('Cookie');
     if (cookieHeader) {
@@ -178,6 +184,12 @@ export async function POST(request: NextRequest) {
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     };
+
+    // Forward Authorization header if present
+    const authHeader = request.headers.get('Authorization');
+    if (authHeader) {
+      headers['Authorization'] = authHeader;
+    }
 
     const cookieHeader = request.headers.get('Cookie');
     if (cookieHeader) {

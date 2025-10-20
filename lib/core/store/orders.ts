@@ -166,7 +166,13 @@ export const useOrderStore = create<OrderStore>()(
             console.log('[Orders Store] Loading orders:', { url, filters });
           }
 
+          // Authorization token will be sent via httpOnly cookie automatically
+          const headers: HeadersInit = {
+            'Content-Type': 'application/json',
+          };
+
           const response = await fetch(url, {
+            headers,
             credentials: 'include',
           });
 

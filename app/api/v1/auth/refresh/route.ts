@@ -35,10 +35,20 @@ export async function POST(request: NextRequest) {
       headers['Authorization'] = authHeader;
     }
 
+    // Get request body to forward to backend
+    let body;
+    try {
+      body = await request.text();
+    } catch {
+      // If no body, send empty JSON
+      body = '{}';
+    }
+
     const response = await fetch(backendUrl, {
       method: 'POST',
       headers,
       credentials: 'include',
+      body: body || '{}', // Always send a body
     });
 
     console.log('[Token Refresh] Backend response status:', response.status);

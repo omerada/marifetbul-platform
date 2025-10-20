@@ -297,7 +297,11 @@ export const useAuthStore = create<AuthStore>()(
             // Token is in httpOnly cookie, automatically sent with credentials: 'include'
             const response = await fetch('/api/v1/auth/refresh', {
               method: 'POST',
-              credentials: 'include', // IMPORTANT: Send cookies
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+              body: JSON.stringify({}),
             });
 
             // Only logout on 401 - other errors might be temporary

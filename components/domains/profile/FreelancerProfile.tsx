@@ -102,6 +102,7 @@ export function FreelancerProfile({ user }: FreelancerProfileProps) {
                 alt={`${user.firstName} ${user.lastName}`}
                 width={120}
                 height={120}
+                priority
                 className="h-24 w-24 rounded-full border-4 border-white object-cover shadow-lg sm:h-32 sm:w-32"
               />
               <div

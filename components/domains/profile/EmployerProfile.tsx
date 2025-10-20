@@ -71,6 +71,7 @@ export function EmployerProfile({ user }: EmployerProfileProps) {
                 alt={`${user.firstName} ${user.lastName}`}
                 width={120}
                 height={120}
+                priority
                 className="h-24 w-24 rounded-full border-4 border-white object-cover shadow-lg sm:h-32 sm:w-32"
               />
               <div className="absolute right-1 bottom-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-green-500">
