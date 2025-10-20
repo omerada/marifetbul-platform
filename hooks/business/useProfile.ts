@@ -13,7 +13,8 @@ export function useProfile(userId?: string) {
     if (targetUserId && targetUserId !== store.currentProfile?.id) {
       store.fetchProfile(targetUserId);
     }
-  }, [targetUserId, store]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetUserId, store.currentProfile?.id]);
 
   // Auto-save functionality
   useEffect(() => {
@@ -24,7 +25,8 @@ export function useProfile(userId?: string) {
     }, 3000); // Auto-save after 3 seconds of inactivity
 
     return () => clearTimeout(autoSaveTimer);
-  }, [store.isDirty, store]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [store.isDirty]);
 
   const isOwnProfile = user?.id === store.currentProfile?.id;
 

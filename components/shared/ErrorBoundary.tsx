@@ -152,7 +152,7 @@ export class ErrorBoundary extends Component<
               <div className="mt-6 flex justify-center gap-4">
                 <button
                   onClick={this.handleReset}
-                  className="bg-primary-600 hover:bg-primary-700 focus:ring-primary-600 inline-flex items-center rounded-md px-4 py-2 text-sm font-semibold text-white shadow-sm focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                  className="bg-primary-600 hover:bg-primary-700 focus:ring-primary-600 inline-flex items-center rounded-md px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm focus:ring-2 focus:ring-offset-2 focus:outline-none"
                 >
                   Tekrar Dene
                 </button>

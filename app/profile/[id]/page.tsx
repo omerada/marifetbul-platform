@@ -23,7 +23,7 @@ export default function ProfilePage() {
         setError(null);
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${params.id}/profile`,
+          `${process.env.NEXT_PUBLIC_API_URL}/users/${params.id}/profile`,
           {
             cache: 'no-cache',
             headers: {
