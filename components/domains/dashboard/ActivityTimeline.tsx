@@ -18,24 +18,27 @@ import {
 
 interface Activity {
   id: string;
-  type:
-    | 'message'
-    | 'payment'
-    | 'project_update'
-    | 'review'
-    | 'proposal'
-    | 'milestone'
-    | 'job_posted'
-    | 'profile_view';
+  type: string; // ActivityType enum from backend (ORDER_PLACED, PAYMENT_RECEIVED, etc.)
   title: string;
   description: string;
   timestamp: string;
+  entityType?: string; // ORDER, PAYMENT, MESSAGE, etc.
+  entityId?: string;
   user?: {
+    id?: string;
     name: string;
     avatar?: string;
+    role?: string;
   };
-  amount?: number;
-  rating?: number;
+  status?: string;
+  metadata?: {
+    amount?: number;
+    currency?: string;
+    orderNumber?: string;
+    [key: string]: any;
+  };
+  isRead?: boolean;
+  variant?: string; // success, destructive, default, secondary
 }
 
 interface ActivityTimelineProps {
@@ -91,50 +94,56 @@ export function ActivityTimeline({
     fetchActivities();
   }, [user]);
 
-  const getActivityIcon = (type: Activity['type']) => {
-    switch (type) {
-      case 'message':
-        return <MessageCircle className="h-5 w-5 text-blue-600" />;
-      case 'payment':
-        return <DollarSign className="h-5 w-5 text-green-600" />;
-      case 'project_update':
-        return <CheckCircle className="h-5 w-5 text-purple-600" />;
-      case 'review':
-        return <Star className="h-5 w-5 text-yellow-600" />;
-      case 'proposal':
-        return <Briefcase className="h-5 w-5 text-indigo-600" />;
-      case 'milestone':
-        return <Award className="h-5 w-5 text-emerald-600" />;
-      case 'job_posted':
-        return <AlertCircle className="h-5 w-5 text-orange-600" />;
-      case 'profile_view':
-        return <UserIcon className="h-5 w-5 text-gray-600" />;
-      default:
-        return <Clock className="h-5 w-5 text-gray-600" />;
+  const getActivityIcon = (type: string) => {
+    // Map backend ActivityType enum to icons
+    if (type.includes('MESSAGE')) {
+      return <MessageCircle className="h-5 w-5 text-blue-600" />;
     }
+    if (type.includes('PAYMENT') || type.includes('PAYOUT')) {
+      return <DollarSign className="h-5 w-5 text-green-600" />;
+    }
+    if (type.includes('ORDER')) {
+      return <CheckCircle className="h-5 w-5 text-purple-600" />;
+    }
+    if (type.includes('REVIEW')) {
+      return <Star className="h-5 w-5 text-yellow-600" />;
+    }
+    if (type.includes('PROPOSAL')) {
+      return <Briefcase className="h-5 w-5 text-indigo-600" />;
+    }
+    if (type.includes('JOB')) {
+      return <AlertCircle className="h-5 w-5 text-orange-600" />;
+    }
+    if (type.includes('PROFILE')) {
+      return <UserIcon className="h-5 w-5 text-gray-600" />;
+    }
+    return <Clock className="h-5 w-5 text-gray-600" />;
   };
 
-  const getActivityBgColor = (type: Activity['type']) => {
-    switch (type) {
-      case 'message':
-        return 'bg-blue-100';
-      case 'payment':
-        return 'bg-green-100';
-      case 'project_update':
-        return 'bg-purple-100';
-      case 'review':
-        return 'bg-yellow-100';
-      case 'proposal':
-        return 'bg-indigo-100';
-      case 'milestone':
-        return 'bg-emerald-100';
-      case 'job_posted':
-        return 'bg-orange-100';
-      case 'profile_view':
-        return 'bg-gray-100';
-      default:
-        return 'bg-gray-100';
+  const getActivityBgColor = (type: string) => {
+    // Map backend ActivityType enum to colors
+    if (type.includes('MESSAGE')) {
+      return 'bg-blue-100';
     }
+    if (type.includes('PAYMENT') || type.includes('PAYOUT')) {
+      return 'bg-green-100';
+    }
+    if (type.includes('ORDER')) {
+      return 'bg-purple-100';
+    }
+    if (type.includes('REVIEW')) {
+      return 'bg-yellow-100';
+    }
+    if (type.includes('PROPOSAL')) {
+      return 'bg-indigo-100';
+    }
+    if (type.includes('JOB')) {
+      return 'bg-orange-100';
+    }
+    if (type.includes('PROFILE')) {
+      return 'bg-gray-100';
+    }
+    return 'bg-gray-100';
   };
 
   if (loading) {
@@ -200,21 +209,11 @@ export function ActivityTimeline({
                       </span>
                     )}
 
-                    {activity.amount && (
+                    {activity.metadata?.amount && (
                       <span className="text-xs font-medium text-green-600">
-                        ₺{activity.amount.toLocaleString('tr-TR')}
+                        {activity.metadata.currency || '₺'}
+                        {activity.metadata.amount.toLocaleString('tr-TR')}
                       </span>
-                    )}
-
-                    {activity.rating && (
-                      <div className="flex items-center space-x-1">
-                        {[...Array(activity.rating)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className="h-3 w-3 fill-current text-yellow-400"
-                          />
-                        ))}
-                      </div>
                     )}
                   </div>
                 </div>
