@@ -264,6 +264,33 @@ npm run dev
 
 Frontend şimdi `http://localhost:3000` adresinde çalışıyor.
 
+### 4. Test Kullanıcıları ile Giriş 🔐
+
+Backend başlatıldığında otomatik olarak test kullanıcıları oluşturulur:
+
+**Freelancer:**
+
+```
+Email: freelancer@test.com
+Password: Test123!
+```
+
+**Employer:**
+
+```
+Email: employer@test.com
+Password: Test123!
+```
+
+**Admin:**
+
+```
+Email: admin@marifetbul.com
+Password: Admin123!
+```
+
+> 📚 **Detaylı bilgi için:** [TEST_USERS.md](./TEST_USERS.md) - Tüm test kullanıcıları ve kullanım örnekleri
+
 ---
 
 ## 🔧 Kullanım
