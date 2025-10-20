@@ -32,18 +32,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     // Only verify auth status if already authenticated, don't refresh on auth pages
     if (isAuthenticated && !isAuthPage) {
-      console.log('[AuthProvider] Checking auth status for authenticated user');
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          '[AuthProvider] Checking auth status for authenticated user'
+        );
+      }
       checkAuthStatus().catch((error) => {
-        console.error('[AuthProvider] Auth status check failed:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[AuthProvider] Auth status check failed:', error);
+        }
         // Don't logout on auth pages - let them try to login
       });
     } else {
-      console.log('[AuthProvider] Skipping auth check', {
-        isMounted,
-        isAuthenticated,
-        isAuthPage,
-        pathname,
-      });
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[AuthProvider] Skipping auth check', {
+          isMounted,
+          isAuthenticated,
+          isAuthPage,
+          pathname,
+        });
+      }
     }
   }, [isMounted, isAuthenticated, pathname, checkAuthStatus]);
 

@@ -134,7 +134,7 @@ export const useMessagingStore = create<MessagingState>()(
             ...conv,
             participants: [],
             unreadCount: conv.unreadCount || 0,
-          })) as any;
+          })) as Conversation[];
           state.conversationsPagination = response.pagination;
           state.isLoadingConversations = false;
 
@@ -484,14 +484,50 @@ export const useMessagingStore = create<MessagingState>()(
           });
 
           if (!response.ok) {
+            // Don't throw error for 400/401/404, just set empty data
+            if (
+              response.status === 400 ||
+              response.status === 401 ||
+              response.status === 404
+            ) {
+              if (process.env.NODE_ENV === 'development') {
+                console.log(
+                  '[MessagingStore] Conversations endpoint not ready or not authenticated, status:',
+                  response.status
+                );
+              }
+              set((state) => {
+                state.conversations = [];
+                state.conversationsPagination = {
+                  page: 0,
+                  pageSize: 20,
+                  limit: 20,
+                  total: 0,
+                  totalPages: 0,
+                  hasNext: false,
+                  hasPrev: false,
+                };
+                state.isLoadingConversations = false;
+                state.totalUnreadCount = 0;
+              });
+              return;
+            }
             throw new Error('Konuşmalar yüklenemedi');
           }
 
           const data = (await response.json()) as ConversationsResponse;
 
           set((state) => {
-            state.conversations = data.conversations;
-            state.conversationsPagination = data.pagination;
+            state.conversations = data.conversations || [];
+            state.conversationsPagination = data.pagination || {
+              page: 0,
+              pageSize: 20,
+              limit: 20,
+              total: 0,
+              totalPages: 0,
+              hasNext: false,
+              hasPrev: false,
+            };
             state.isLoadingConversations = false;
             state.totalUnreadCount = state.conversations.reduce(
               (sum, conv) => sum + conv.unreadCount,
@@ -499,8 +535,15 @@ export const useMessagingStore = create<MessagingState>()(
             );
           });
         } catch (error) {
+          if (process.env.NODE_ENV === 'development') {
+            console.error(
+              '[MessagingStore] Error loading conversations:',
+              error
+            );
+          }
           set((state) => {
             state.isLoadingConversations = false;
+            state.conversations = [];
             state.error =
               error instanceof Error
                 ? error.message

@@ -30,10 +30,11 @@ export class MessagingService {
     return MessagingService.instance;
   }
 
-  async getConversations(userId: string): Promise<Conversation[]> {
-    const response = await apiClient.get<
-      ApiResponse<{ conversations: Conversation[] }>
-    >(`/messages/conversations/${userId}`);
+  async getConversations(): Promise<Conversation[]> {
+    const response =
+      await apiClient.get<ApiResponse<{ conversations: Conversation[] }>>(
+        '/v1/conversations'
+      );
 
     if (!response.success || !response.data) {
       throw new Error(response.message || 'Failed to fetch conversations');
@@ -44,11 +45,11 @@ export class MessagingService {
 
   async getMessages(
     conversationId: string,
-    page: number = 1,
+    page: number = 0,
     limit: number = 50
   ): Promise<Message[]> {
     const response = await apiClient.get<ApiResponse<{ messages: Message[] }>>(
-      `/messages/conversations/${conversationId}/messages?page=${page}&limit=${limit}`
+      `/v1/conversations/${conversationId}/messages?page=${page}&size=${limit}`
     );
 
     if (!response.success || !response.data) {
@@ -60,7 +61,7 @@ export class MessagingService {
 
   async sendMessage(request: SendMessageRequest): Promise<Message> {
     const response = await apiClient.post<ApiResponse<{ message: Message }>>(
-      '/messages',
+      '/v1/messages',
       request
     );
 
@@ -73,7 +74,7 @@ export class MessagingService {
 
   async markAsRead(messageId: string): Promise<void> {
     const response = await apiClient.put<ApiResponse<void>>(
-      `/messages/${messageId}/read`
+      `/v1/messages/${messageId}/mark-read`
     );
 
     if (!response.success) {
@@ -86,7 +87,7 @@ export class MessagingService {
   ): Promise<Conversation> {
     const response = await apiClient.post<
       ApiResponse<{ conversation: Conversation }>
-    >('/messages/conversations', request);
+    >('/v1/conversations', request);
 
     if (!response.success || !response.data) {
       throw new Error(response.message || 'Failed to create conversation');
@@ -97,7 +98,7 @@ export class MessagingService {
 
   async deleteMessage(messageId: string): Promise<void> {
     const response = await apiClient.delete<ApiResponse<void>>(
-      `/messages/${messageId}`
+      `/v1/messages/${messageId}`
     );
 
     if (!response.success) {
@@ -105,9 +106,9 @@ export class MessagingService {
     }
   }
 
-  async searchMessages(query: string, userId: string): Promise<Message[]> {
+  async searchMessages(query: string): Promise<Message[]> {
     const response = await apiClient.get<ApiResponse<{ messages: Message[] }>>(
-      `/messages/search?q=${encodeURIComponent(query)}&userId=${userId}`
+      `/v1/messages/search?keyword=${encodeURIComponent(query)}`
     );
 
     if (!response.success || !response.data) {

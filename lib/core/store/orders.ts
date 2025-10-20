@@ -196,12 +196,19 @@ export const useOrderStore = create<OrderStore>()(
             state.isLoadingOrders = false;
           });
         } catch (error) {
-          console.error('[Orders Store] Load orders error:', error);
+          if (process.env.NODE_ENV === 'development') {
+            console.error('[Orders Store] Load orders error:', error);
+          }
           set((state) => {
+            // Set empty data instead of keeping old data on error
+            state.orders = [];
             state.error =
-              error instanceof Error ? error.message : 'Unknown error';
+              error instanceof Error
+                ? error.message
+                : 'Failed to fetch orders from backend';
             state.isLoadingOrders = false;
           });
+          // Don't throw - let the UI handle the error state gracefully
         }
       },
 

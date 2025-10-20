@@ -57,15 +57,38 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
     // Load initial data
     const loadInitialData = async () => {
       try {
-        await Promise.allSettled([
-          loadConversations(),
-          loadOrders({ freelancerId: userId || 'me' }),
+        // Load data without blocking on failures
+        const results = await Promise.allSettled([
+          loadConversations().catch(() => {
+            if (process.env.NODE_ENV === 'development') {
+              console.log(
+                '[FreelancerDashboard] Conversations failed to load, continuing...'
+              );
+            }
+          }),
+          loadOrders({ freelancerId: userId || 'me' }).catch(() => {
+            if (process.env.NODE_ENV === 'development') {
+              console.log(
+                '[FreelancerDashboard] Orders failed to load, continuing...'
+              );
+            }
+          }),
         ]);
+
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            '[FreelancerDashboard] Initial data load results:',
+            results
+          );
+        }
       } catch (error) {
-        console.error(
-          '[FreelancerDashboard] Error loading initial data:',
-          error
-        );
+        // Log but don't block - dashboard should still render
+        if (process.env.NODE_ENV === 'development') {
+          console.error(
+            '[FreelancerDashboard] Error loading initial data:',
+            error
+          );
+        }
       }
     };
 
@@ -88,16 +111,25 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
     );
   }
 
-  if (!dashboardData) {
-    return (
-      <ErrorState
-        message="Dashboard verileri bulunamadı"
-        onRetry={refreshDashboard}
-      />
-    );
-  }
-
-  const data = dashboardData as FreelancerDashboardType;
+  // Provide default data structure if dashboard data is not available
+  const data = (dashboardData as FreelancerDashboardType) || {
+    stats: {
+      totalEarnings: 0,
+      currentMonthEarnings: 0,
+      activeOrders: 0,
+      completedJobs: 0,
+      rating: 0,
+      profileViews: 0,
+      responseRate: 0,
+    },
+    quickStats: {
+      pendingProposals: 0,
+      messagesWaiting: 0,
+      reviewsPending: 0,
+    },
+    recentOrders: [],
+    recentProposals: [],
+  };
 
   return (
     <div className="space-y-4 p-4 lg:space-y-6 lg:p-6">
