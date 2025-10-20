@@ -131,10 +131,10 @@ export function EmployerProfile({ user }: EmployerProfileProps) {
                 <Star className="h-5 w-5 text-yellow-600" />
               </div>
               <div className="text-2xl font-bold text-gray-900">
-                {user.rating}
+                {user.rating ?? 0}
               </div>
               <div className="text-sm text-gray-500">
-                {user.totalReviews} Değerlendirme
+                {user.totalReviews ?? 0} Değerlendirme
               </div>
             </Card>
 
@@ -143,7 +143,7 @@ export function EmployerProfile({ user }: EmployerProfileProps) {
                 <CheckCircle className="h-5 w-5 text-green-600" />
               </div>
               <div className="text-2xl font-bold text-gray-900">
-                {user.completedJobs}
+                {user.completedJobs ?? 0}
               </div>
               <div className="text-sm text-gray-500">Tamamlanan İş</div>
             </Card>
@@ -153,7 +153,7 @@ export function EmployerProfile({ user }: EmployerProfileProps) {
                 <Briefcase className="h-5 w-5 text-blue-600" />
               </div>
               <div className="text-2xl font-bold text-gray-900">
-                {user.activeJobs}
+                {user.activeJobs ?? 0}
               </div>
               <div className="text-sm text-gray-500">Aktif İş</div>
             </Card>
@@ -163,7 +163,7 @@ export function EmployerProfile({ user }: EmployerProfileProps) {
                 <DollarSign className="h-5 w-5 text-purple-600" />
               </div>
               <div className="text-2xl font-bold text-gray-900">
-                ₺{user.totalSpent.toLocaleString('tr-TR')}
+                ₺{(user.totalSpent ?? 0).toLocaleString('tr-TR')}
               </div>
               <div className="text-sm text-gray-500">Toplam Harcama</div>
             </Card>
@@ -323,15 +323,15 @@ export function EmployerProfile({ user }: EmployerProfileProps) {
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Toplam İş</span>
                 <span className="font-medium text-gray-900">
-                  {user.totalJobs}
+                  {user.totalJobs ?? 0}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Başarı Oranı</span>
                 <span className="font-medium text-gray-900">
-                  {(user.totalJobs || 0) > 0
+                  {(user.totalJobs ?? 0) > 0
                     ? Math.round(
-                        ((user.completedJobs || 0) / (user.totalJobs || 1)) *
+                        ((user.completedJobs ?? 0) / (user.totalJobs ?? 1)) *
                           100
                       )
                     : 0}
@@ -343,7 +343,7 @@ export function EmployerProfile({ user }: EmployerProfileProps) {
                 <div className="flex items-center">
                   <Star className="mr-1 h-4 w-4 text-yellow-400" />
                   <span className="font-medium text-gray-900">
-                    {user.rating}
+                    {user.rating ?? 0}
                   </span>
                 </div>
               </div>
