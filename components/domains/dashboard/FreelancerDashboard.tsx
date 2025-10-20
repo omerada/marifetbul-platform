@@ -45,13 +45,32 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
   // Real-time messaging and order tracking
   const { conversations, totalUnreadCount, loadConversations } =
     useMessagingStore();
-  const { orders, loadOrders } = useOrderStore();
+  const {
+    orders,
+    isLoadingOrders,
+    loadOrders,
+    error: ordersError,
+  } = useOrderStore();
   const { isConnected, isConnecting } = useWebSocket();
 
   React.useEffect(() => {
-    loadConversations();
-    loadOrders();
-  }, [loadConversations, loadOrders]);
+    // Load initial data
+    const loadInitialData = async () => {
+      try {
+        await Promise.allSettled([
+          loadConversations(),
+          loadOrders({ freelancerId: userId || 'me' }),
+        ]);
+      } catch (error) {
+        console.error(
+          '[FreelancerDashboard] Error loading initial data:',
+          error
+        );
+      }
+    };
+
+    loadInitialData();
+  }, [loadConversations, loadOrders, userId]);
 
   // userId available for future user-specific features
 
@@ -466,7 +485,26 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
             </div>
           </div>
 
-          {orders.length > 0 ? (
+          {isLoadingOrders ? (
+            <Card className="p-8 text-center">
+              <div className="border-primary-500 mx-auto h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
+              <p className="mt-4 text-gray-600">Siparişler yükleniyor...</p>
+            </Card>
+          ) : ordersError ? (
+            <Card className="p-8 text-center">
+              <Package className="mx-auto h-12 w-12 text-red-400" />
+              <h3 className="mt-4 text-lg font-medium text-gray-900">
+                Siparişler yüklenemedi
+              </h3>
+              <p className="mt-2 text-gray-500">{ordersError}</p>
+              <Button
+                className="mt-4"
+                onClick={() => loadOrders({ freelancerId: userId || 'me' })}
+              >
+                Tekrar Dene
+              </Button>
+            </Card>
+          ) : orders.length > 0 ? (
             <div className="space-y-4">
               {orders.slice(0, 5).map((order) => (
                 <Card key={order.id} className="p-6">

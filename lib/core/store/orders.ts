@@ -156,12 +156,33 @@ export const useOrderStore = create<OrderStore>()(
             }
           });
 
-          const response = await fetch(
-            `/api/orders?${searchParams.toString()}`
-          );
-          if (!response.ok) throw new Error('Failed to load orders');
+          // Build the URL with params
+          const queryString = searchParams.toString();
+          const url = queryString
+            ? `/api/orders?${queryString}`
+            : '/api/orders';
+
+          if (process.env.NODE_ENV === 'development') {
+            console.log('[Orders Store] Loading orders:', { url, filters });
+          }
+
+          const response = await fetch(url, {
+            credentials: 'include',
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(
+              errorData?.error?.message ||
+                `Failed to load orders: ${response.status}`
+            );
+          }
 
           const data: OrdersResponse = await response.json();
+
+          if (process.env.NODE_ENV === 'development') {
+            console.log('[Orders Store] Orders loaded:', data);
+          }
 
           set((state) => {
             state.orders = data.data || [];
@@ -169,6 +190,7 @@ export const useOrderStore = create<OrderStore>()(
             state.isLoadingOrders = false;
           });
         } catch (error) {
+          console.error('[Orders Store] Load orders error:', error);
           set((state) => {
             state.error =
               error instanceof Error ? error.message : 'Unknown error';
@@ -643,7 +665,7 @@ export const useOrderStore = create<OrderStore>()(
             throw new Error('Failed to update milestone');
           }
 
-          const result = await response.json();
+          await response.json();
 
           // Update milestone in current order
           set((state) => {
