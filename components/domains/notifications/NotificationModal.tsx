@@ -70,7 +70,7 @@ export function NotificationModal({
         setIsLoading(false);
       }
     },
-    [userId, filter]
+    [filter]
   );
 
   useEffect(() => {

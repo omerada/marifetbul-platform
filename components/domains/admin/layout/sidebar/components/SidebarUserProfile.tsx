@@ -17,7 +17,7 @@ export function SidebarUserProfile({
     return (
       <div className="flex justify-center border-b p-4">
         <Avatar className="h-8 w-8">
-          <AvatarImage src={user.avatar} alt={user.name || 'User'} />
+          <AvatarImage src={user.avatar || ''} alt={user.name || 'User'} />
           <AvatarFallback className="bg-primary text-primary-foreground">
             {(user.name || 'U').substring(0, 2).toUpperCase()}
           </AvatarFallback>
@@ -30,7 +30,7 @@ export function SidebarUserProfile({
     <div className="border-b p-4">
       <div className="flex items-center space-x-3">
         <Avatar className="h-10 w-10">
-          <AvatarImage src={user.avatar} alt={user.name || 'User'} />
+          <AvatarImage src={user.avatar || ''} alt={user.name || 'User'} />
           <AvatarFallback className="bg-primary text-primary-foreground">
             {(user.name || 'U').substring(0, 2).toUpperCase()}
           </AvatarFallback>

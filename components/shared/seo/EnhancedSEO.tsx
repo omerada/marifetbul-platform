@@ -224,8 +224,12 @@ export function usePagePerformance() {
           const clsObserver = new PerformanceObserver((list) => {
             let clsValue = 0;
             for (const entry of list.getEntries()) {
-              if (!(entry as any).hadRecentInput) {
-                clsValue += (entry as any).value;
+              const layoutShift = entry as PerformanceEntry & {
+                hadRecentInput?: boolean;
+                value?: number;
+              };
+              if (!layoutShift.hadRecentInput) {
+                clsValue += layoutShift.value || 0;
               }
             }
             setMetrics((prev) => ({
@@ -243,10 +247,13 @@ export function usePagePerformance() {
           // First Input Delay
           const fidObserver = new PerformanceObserver((list) => {
             for (const entry of list.getEntries()) {
+              const firstInput = entry as PerformanceEntry & {
+                processingStart?: number;
+              };
               setMetrics((prev) => ({
                 ...prev,
                 firstInputDelay:
-                  (entry as any).processingStart - entry.startTime,
+                  (firstInput.processingStart || 0) - entry.startTime,
               }));
             }
           });

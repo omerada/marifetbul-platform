@@ -33,9 +33,10 @@ async function searchPosts(
 export default async function BlogSearchPage({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string }>;
 }) {
-  const q = searchParams.q || '';
+  const { q: query } = await searchParams;
+  const q = query || '';
   const { posts } = q ? await searchPosts(q) : { posts: [] };
   return (
     <main className="container mx-auto max-w-3xl px-4 py-12">

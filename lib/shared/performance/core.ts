@@ -173,7 +173,7 @@ export class PerformanceMonitor {
 
       observer.observe({ entryTypes: ['paint'] });
       this.observers.push(observer);
-    } catch (e) {
+    } catch {
       // Observer not supported
     }
   }
@@ -201,7 +201,7 @@ export class PerformanceMonitor {
 
       observer.observe({ entryTypes: ['layout-shift'] });
       this.observers.push(observer);
-    } catch (e) {
+    } catch {
       // Observer not supported
     }
   }
@@ -227,7 +227,7 @@ export class PerformanceMonitor {
 
       observer.observe({ entryTypes: ['largest-contentful-paint'] });
       this.observers.push(observer);
-    } catch (e) {
+    } catch {
       // Observer not supported
     }
   }
@@ -255,7 +255,7 @@ export class PerformanceMonitor {
 
       observer.observe({ entryTypes: ['first-input'] });
       this.observers.push(observer);
-    } catch (e) {
+    } catch {
       // Observer not supported
     }
   }
@@ -300,7 +300,7 @@ export class PerformanceMonitor {
 
       observer.observe({ entryTypes: ['layout-shift'] });
       this.observers.push(observer);
-    } catch (e) {
+    } catch {
       // Observer not supported
     }
   }
@@ -326,7 +326,7 @@ export class PerformanceMonitor {
 
       observer.observe({ entryTypes: ['resource'] });
       this.observers.push(observer);
-    } catch (e) {
+    } catch {
       // Observer not supported
     }
   }
@@ -393,14 +393,14 @@ export class PerformanceMonitor {
 
       observer.observe({ entryTypes: ['navigation'] });
       this.observers.push(observer);
-    } catch (e) {
+    } catch {
       // Observer not supported
     }
   }
 }
 
 // Web Vitals integration
-export function measureWebVitals(onMetric: (metric: WebVitalsMetric) => void) {
+export function measureWebVitals(_onMetric: (metric: WebVitalsMetric) => void) {
   // This would integrate with web-vitals library
   // For now, we'll provide the interface
 

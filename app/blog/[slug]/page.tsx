@@ -23,7 +23,7 @@ import { SafeHtml } from '@/lib/infrastructure/security/xss-protection';
 export const dynamicParams = true;
 export const revalidate = 60;
 
-const BlogComments = dynamic(() => import('./comments'), { ssr: false });
+const BlogComments = dynamic(() => import('./comments'));
 
 async function getPost(slug: string): Promise<BlogPost | null> {
   try {
@@ -70,9 +70,10 @@ async function getRelatedPosts(currentPost: BlogPost): Promise<BlogPost[]> {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const post = await getPost(params.slug);
+  const { slug } = await params;
+  const post = await getPost(slug);
 
   if (!post) {
     return {
@@ -106,9 +107,10 @@ export async function generateMetadata({
 export default async function BlogDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const post = await getPost(params.slug);
+  const { slug } = await params;
+  const post = await getPost(slug);
   if (!post) return notFound();
 
   const relatedPosts = await getRelatedPosts(post);

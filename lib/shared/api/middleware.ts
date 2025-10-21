@@ -293,7 +293,7 @@ export function validationMiddleware(
       } catch (error) {
         if (error instanceof ZodError) {
           throw new ValidationError('Validation failed', {
-            errors: error.issues.map((err: any) => ({
+            errors: error.issues.map((err) => ({
               path: err.path.join('.'),
               message: err.message,
               code: err.code,

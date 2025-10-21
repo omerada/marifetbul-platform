@@ -14,7 +14,7 @@ import { logger } from '@/lib/shared/utils/logger';
  * Note: httpOnly cookies are NOT accessible via JavaScript for security.
  * This function only works for non-httpOnly cookies.
  */
-function getCookieValue(name: string): string | null {
+function _getCookieValue(name: string): string | null {
   if (typeof document === 'undefined') return null;
 
   const matches = document.cookie.match(
@@ -100,7 +100,7 @@ export const logout = async (): Promise<boolean> => {
     });
 
     return response.ok;
-  } catch (error) {
+  } catch {
     return false;
   }
 };

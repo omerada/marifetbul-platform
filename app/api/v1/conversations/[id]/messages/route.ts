@@ -16,10 +16,11 @@ const BACKEND_API_URL =
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const conversationId = params.id;
+    const { id } = await params;
+    const conversationId = id;
     const { searchParams } = new URL(request.url);
 
     const page = searchParams.get('page') || '0';
@@ -147,10 +148,11 @@ export async function GET(
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const conversationId = params.id;
+    const { id } = await params;
+    const conversationId = id;
     const body = await request.json();
 
     const backendUrl = `${BACKEND_API_URL}/messages/conversations/${conversationId}/messages`;

@@ -1,8 +1,8 @@
 /**
  * useAdminDashboard Hook - Production Ready
- * 
+ *
  * Provides admin dashboard data and actions with full backend integration
- * 
+ *
  * @module hooks/business/useAdminDashboard
  * @refactored 2025-10-18
  */
@@ -16,7 +16,7 @@ import { logger } from '@/lib/shared/utils/logger';
 
 /**
  * Hook for admin dashboard functionality
- * 
+ *
  * Features:
  * - Auto-fetch on mount
  * - Auto-refresh every 5 minutes
@@ -25,12 +25,8 @@ import { logger } from '@/lib/shared/utils/logger';
  * - Real-time data from backend
  */
 export function useAdminDashboard() {
-  const {
-    fetchDashboard,
-    refreshDashboard,
-    refreshAllDashboards,
-    clearError,
-  } = useAdminDashboardStore();
+  const { fetchDashboard, refreshDashboard, refreshAllDashboards, clearError } =
+    useAdminDashboardStore();
 
   const selectors = useAdminDashboardSelectors();
   const hasInitialized = useRef(false);
@@ -54,7 +50,9 @@ export function useAdminDashboard() {
 
     // Only setup interval if we have data
     if (selectors.hasData) {
-      logger.debug('⏰ Admin Dashboard: Setting up auto-refresh (5min interval)');
+      logger.debug(
+        '⏰ Admin Dashboard: Setting up auto-refresh (5min interval)'
+      );
       intervalRef.current = setInterval(
         () => {
           logger.debug('🔄 Admin Dashboard: Auto-refresh triggered');
@@ -113,7 +111,7 @@ export function useAdminDashboard() {
     trends: selectors.trends,
     topPackages: selectors.topPackages,
     backendData: selectors.backendData,
-    
+
     // Computed values
     isHealthy: selectors.isHealthy,
     systemStatus: selectors.systemStatus,
@@ -121,20 +119,20 @@ export function useAdminDashboard() {
     totalRevenue: selectors.totalRevenue,
     activeUsers: selectors.activeUsers,
     pendingOrders: selectors.pendingOrders,
-    
+
     // Chart data
     hasChartData: selectors.hasChartData,
     revenueChartData: selectors.revenueChartData,
     ordersChartData: selectors.ordersChartData,
     usersChartData: selectors.usersChartData,
-    
+
     // Metadata
     periodDays: selectors.periodDays,
     periodStart: selectors.periodStart,
     periodEnd: selectors.periodEnd,
     generatedAt: selectors.generatedAt,
     fromCache: selectors.fromCache,
-    
+
     // UI State
     isLoading: selectors.isLoading,
     error: selectors.error,
@@ -145,6 +143,18 @@ export function useAdminDashboard() {
     refresh: handleRefresh,
     refreshAll: handleRefreshAll,
     clearError,
+
+    // Alerts summary for header
+    alertsSummary: {
+      total: selectors.recentActivity?.length || 0,
+      critical:
+        selectors.recentActivity?.filter(
+          (a: { severity: string }) => a.severity === 'critical'
+        ).length || 0,
+      unread:
+        selectors.recentActivity?.filter((a: { isRead?: boolean }) => !a.isRead)
+          .length || 0,
+    },
 
     // Legacy compatibility (for gradual migration)
     healthStatus: {

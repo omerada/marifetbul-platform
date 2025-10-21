@@ -105,10 +105,11 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({
       }
 
       const data = await response.json();
-      setResults(data.data || []);
+      const searchResults = data.data || [];
+      setResults(searchResults);
 
       if (onResults) {
-        onResults(results as never);
+        onResults(searchResults as never);
       }
     } catch (err) {
       logger.error(

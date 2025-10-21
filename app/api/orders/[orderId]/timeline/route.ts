@@ -16,10 +16,10 @@ const BACKEND_API_URL =
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { orderId: string } }
+  { params }: { params: Promise<{ orderId: string }> }
 ) {
   try {
-    const { orderId } = params;
+    const { orderId } = await params;
     const backendUrl = `${BACKEND_API_URL}/orders/${orderId}/timeline`;
 
     if (process.env.NODE_ENV === 'development') {

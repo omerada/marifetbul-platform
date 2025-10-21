@@ -126,13 +126,15 @@ export function UserTable({ className }: UserTableProps) {
             userCount={users.length}
             isLoading={isLoading}
             onRefresh={() => onFilterChange({})}
-            onExport={(format) => handleExport(format, filters)}
+            onExport={(format) =>
+              handleExport(format, filters as Record<string, unknown>)
+            }
           />
         </CardHeader>
         <CardContent>
           <TableFilters
-            filters={filters}
-            onFilterChange={onFilterChange}
+            filters={filters as any}
+            onFilterChange={onFilterChange as any}
             onSearch={onSearch}
           />
 
@@ -217,7 +219,7 @@ export function UserTable({ className }: UserTableProps) {
                   users.map((user: AdminUserData) => (
                     <UserRow
                       key={user.id}
-                      user={user}
+                      user={user as any}
                       isSelected={bulkSelection.selectedIds.includes(user.id)}
                       onSelect={() => onBulkToggle(user.id)}
                       onAction={(action) => {

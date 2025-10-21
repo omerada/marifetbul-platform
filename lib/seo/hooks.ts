@@ -29,7 +29,7 @@ export function useSEOTracking() {
   }, [pathname]);
 
   return {
-    trackEvent: (eventName: string, parameters?: Record<string, any>) => {
+    trackEvent: (eventName: string, parameters?: Record<string, unknown>) => {
       if (typeof window !== 'undefined') {
         // Google Analytics 4
         if (window.gtag) {
@@ -97,7 +97,10 @@ function trackPageView(pathname: string) {
 /**
  * Custom event tracking
  */
-function trackCustomEvent(eventName: string, parameters?: Record<string, any>) {
+function trackCustomEvent(
+  eventName: string,
+  parameters?: Record<string, unknown>
+) {
   // Send to your analytics backend
   if (process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT) {
     fetch(process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT, {
@@ -149,12 +152,11 @@ function trackConversion(conversionName: string, value?: number) {
 }
 
 /**
- * Declare global types for analytics
+ * Declare Yandex Metrica type
  */
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
-    ym?: (...args: any[]) => void;
+    ym?: (...args: unknown[]) => void;
   }
 }
 

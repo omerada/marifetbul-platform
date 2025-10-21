@@ -112,7 +112,7 @@ export const useWebSocket = ({
   const { user, isAuthenticated } = useAuthStore();
   const { addMessage, updateTypingStatus, updateUserStatus } =
     useMessagingStore();
-  const { handleOrderUpdate } = useOrderStore();
+  const { handleOrderUpdate: _handleOrderUpdate } = useOrderStore();
 
   // Get JWT token from cookie
   const getAuthToken = useCallback(() => {
@@ -229,7 +229,7 @@ export const useWebSocket = ({
         logger.error('Error parsing WebSocket message:', error);
       }
     },
-    [addMessage, handleOrderUpdate, updateTypingStatus, updateUserStatus]
+    [addMessage, updateTypingStatus, updateUserStatus]
   );
 
   // Subscribe to user-specific topics

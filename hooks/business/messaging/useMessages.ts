@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { logger } from '@/lib/shared/utils/logger';
 import type { Conversation, Message } from '@/types';
 
@@ -40,7 +40,7 @@ export function useConversation(conversationId: string) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const refetch = async () => {
+  const refetch = useCallback(async () => {
     if (!conversationId) return;
 
     setIsLoading(true);
@@ -59,11 +59,11 @@ export function useConversation(conversationId: string) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [conversationId]);
 
   useEffect(() => {
     refetch();
-  }, [conversationId]);
+  }, [conversationId, refetch]);
 
   return { conversation, isLoading, error, refetch };
 }
@@ -73,7 +73,7 @@ export function useMessages(conversationId: string) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     if (!conversationId) return;
 
     setIsLoading(true);
@@ -93,11 +93,11 @@ export function useMessages(conversationId: string) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [conversationId]);
 
   useEffect(() => {
     refresh();
-  }, [conversationId]);
+  }, [conversationId, refresh]);
 
   return { messages, isLoading, error, refresh };
 }

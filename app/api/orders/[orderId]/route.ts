@@ -16,10 +16,10 @@ const BACKEND_API_URL =
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { orderId: string } }
+  { params }: { params: Promise<{ orderId: string }> }
 ) {
   try {
-    const { orderId } = params;
+    const { orderId } = await params;
     const backendUrl = `${BACKEND_API_URL}/orders/${orderId}`;
 
     if (process.env.NODE_ENV === 'development') {
@@ -70,10 +70,10 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { orderId: string } }
+  { params }: { params: Promise<{ orderId: string }> }
 ) {
   try {
-    const { orderId } = params;
+    const { orderId } = await params;
     const body = await request.json();
     const backendUrl = `${BACKEND_API_URL}/orders/${orderId}`;
 
@@ -126,10 +126,10 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { orderId: string } }
+  { params }: { params: Promise<{ orderId: string }> }
 ) {
   try {
-    const { orderId } = params;
+    const { orderId } = await params;
     const backendUrl = `${BACKEND_API_URL}/orders/${orderId}/cancel`;
 
     if (process.env.NODE_ENV === 'development') {
