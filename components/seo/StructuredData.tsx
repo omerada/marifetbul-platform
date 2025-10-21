@@ -26,7 +26,7 @@ export const structuredDataSchemas = {
     description: "Türkiye'nin en büyük freelancer ve işveren buluşma platformu",
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+90-XXX-XXX-XXXX',
+      telephone: '+90-850-308-0808',
       contactType: 'customer service',
       availableLanguage: 'Turkish',
     },

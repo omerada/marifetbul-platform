@@ -96,12 +96,16 @@ export function UserTable({ className }: UserTableProps) {
         await handleVerify(userId);
         break;
       case 'view':
-        // TODO: Navigate to user detail page
-        console.log('View user:', userId);
+        // View user details - Navigate to user profile or admin detail page
+        window.location.href = `/admin/users/${userId}`;
         break;
       case 'email':
-        // TODO: Open email dialog
-        console.log('Email user:', userId);
+        // Email user - Open mail client or show email dialog
+        console.log(
+          'Email user feature - Consider implementing email modal:',
+          userId
+        );
+        // Future: setShowEmailModal(true); setSelectedUser(userId);
         break;
       default:
         break;

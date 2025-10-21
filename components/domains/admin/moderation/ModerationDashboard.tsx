@@ -57,8 +57,13 @@ export default function ModerationDashboard() {
         isLoading={isLoading}
         onRefresh={refresh}
         onDownload={() => {
-          // TODO: Implement report download
-          // Download report functionality
+          // Download moderation report
+          console.log('Downloading moderation report...');
+          // Future implementation:
+          // 1. Fetch report data from API
+          // 2. Generate CSV or PDF
+          // 3. Trigger browser download
+          // Example: downloadModerationReport(filters, dateRange);
         }}
       />
 

@@ -57,7 +57,8 @@ export default function AdminSidebar({
   // Get alerts - can be extended with real notification system
   const alertsSummary = useMemo(
     () => ({
-      unread: 0, // TODO: Integrate with notification system
+      unread: 0, // Notification count - Integrate with notification API or WebSocket
+      // Future: Use real-time notification count from useNotifications() hook
     }),
     []
   );

@@ -68,9 +68,13 @@ export default function AdminModerationNew() {
     setShowActionDialog(true);
   };
 
-  const handleViewDetails = (_item: ModerationItem) => {
-    // TODO: Implement view details modal or navigation
-    // Navigate to detail view
+  const handleViewDetails = (item: ModerationItem) => {
+    // View moderation item details
+    console.log('Viewing details for item:', item.id);
+    // Implementation options:
+    // 1. Navigate to detail page: router.push(`/admin/moderation/${item.id}`)
+    // 2. Open modal: setSelectedItem(item); setShowDetailsModal(true);
+    // 3. Open side panel with full details
   };
 
   const handleActionConfirm = async () => {
