@@ -54,7 +54,7 @@ export class GeocodingService {
    */
   async geocodeAddress(
     address: string,
-    options?: GeocodingOptions
+    _options?: GeocodingOptions
   ): Promise<Coordinates | null> {
     try {
       const query = encodeURIComponent(address);
@@ -100,7 +100,7 @@ export class GeocodingService {
    */
   async searchLocations(
     query: string,
-    options?: GeocodingOptions
+    _options?: GeocodingOptions
   ): Promise<GeocodingResult[]> {
     try {
       const encodedQuery = encodeURIComponent(query);

@@ -124,9 +124,13 @@ export default function AdminSettings() {
   const handleUpdate = <S extends keyof PlatformSettings>(
     section: S,
     field: keyof PlatformSettings[S],
-    value: any
+    value: unknown
   ) => {
-    updateSetting(section, field, value);
+    updateSetting(
+      section,
+      field,
+      value as PlatformSettings[S][keyof PlatformSettings[S]]
+    );
   };
 
   // Generic nested update handler for panel components
@@ -265,7 +269,7 @@ export default function AdminSettings() {
                 </Badge>
               )}
               {isSaving && (
-                <Badge variant="info" className="flex items-center gap-1">
+                <Badge variant="secondary" className="flex items-center gap-1">
                   <RefreshCw className="h-3 w-3 animate-spin" />
                   Kaydediliyor...
                 </Badge>

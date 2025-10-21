@@ -212,7 +212,7 @@ export default function CreateJobPage() {
       !selectedSkills.includes(skill)
   );
 
-  const onSubmit = async (data: JobFormData) => {
+  const onSubmit = async (_: JobFormData) => {
     setIsSubmitting(true);
 
     try {

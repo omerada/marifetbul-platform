@@ -25,7 +25,7 @@ async function searchPosts(
     }
 
     return await res.json();
-  } catch (error) {
+  } catch {
     return { posts: [], total: 0 };
   }
 }

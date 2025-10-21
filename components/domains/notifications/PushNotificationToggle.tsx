@@ -10,7 +10,7 @@ interface PushNotificationToggleProps {
 }
 
 export function PushNotificationToggle({
-  userId,
+  userId: _userId,
   onSubscriptionChange,
 }: PushNotificationToggleProps) {
   const [isSubscribed, setIsSubscribed] = useState(false);

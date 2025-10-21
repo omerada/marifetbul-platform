@@ -3,9 +3,10 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import type { UseFormRegister, FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { User, Freelancer, Employer } from '@/types';
-import { useProfile } from '@/hooks';
+import { useProfile, useProfileEdit } from '@/hooks';
 import { useToast } from '@/hooks';
 import { AvatarUpload } from './AvatarUpload';
 import { Card } from '@/components/ui/Card';
@@ -120,28 +121,21 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
     }
   }, [profile, isFreelancer, reset]);
 
-  // Auto-save functionality
+  // Enhanced auto-save with useProfileEdit hook
+  const { queueSave, forceSave, isSaving, hasUnsavedChanges, lastSavedText } =
+    useProfileEdit();
+
+  // Auto-save when form changes
   useEffect(() => {
-    if (!isDirty) return;
+    if (isDirty) {
+      queueSave(formValues as Record<string, unknown>);
+    }
+  }, [formValues, isDirty, queueSave]);
 
-    const autoSaveTimer = setTimeout(async () => {
-      try {
-        await updateProfile(formValues as any);
-        success('Başarılı', 'Değişiklikler otomatik kaydedildi');
-        reset(formValues); // Mark as pristine
-      } catch {
-        // Silent fail for auto-save
-      }
-    }, 3000); // 3 seconds delay
-
-    return () => clearTimeout(autoSaveTimer);
-  }, [formValues, isDirty, updateProfile, reset, success]);
-
-  // Submit handler
+  // Submit handler - Force save and navigate
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await updateProfile(data as any);
-      success('Başarılı', 'Profil başarıyla güncellendi!');
+      await forceSave(data as Record<string, unknown>);
       reset(data); // Mark as pristine
       router.push(`/profile/${user.id}`);
     } catch {
@@ -160,20 +154,24 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
   };
 
   // Skills management for freelancers
-  const skills = watch('skills' as any) || [];
+  const skills = (watch('skills' as keyof ProfileFormData) as string[]) || [];
 
   const addSkill = (skill: string) => {
     if (skill.trim() && !skills.includes(skill.trim())) {
-      setValue('skills' as any, [...skills, skill.trim()], {
-        shouldDirty: true,
-      });
+      setValue(
+        'skills' as keyof ProfileFormData,
+        [...skills, skill.trim()] as never,
+        {
+          shouldDirty: true,
+        }
+      );
     }
   };
 
   const removeSkill = (skillToRemove: string) => {
     setValue(
-      'skills' as any,
-      skills.filter((s: string) => s !== skillToRemove),
+      'skills' as keyof ProfileFormData,
+      skills.filter((s: string) => s !== skillToRemove) as never,
       { shouldDirty: true }
     );
   };
@@ -220,20 +218,38 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
           </div>
         </div>
         <div className="flex items-center space-x-3">
+          {/* Auto-save status */}
+          {isSaving && (
+            <div className="flex items-center text-sm text-gray-600">
+              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
+              Kaydediliyor...
+            </div>
+          )}
+          {!isSaving && lastSavedText && (
+            <div className="text-sm text-gray-500">{lastSavedText}</div>
+          )}
+          {!isSaving && hasUnsavedChanges && (
+            <div className="text-sm text-orange-600">
+              Kaydedilmemiş değişiklikler
+            </div>
+          )}
+
           <Button
             variant="outline"
             onClick={() => router.push(`/profile/${user.id}`)}
-            disabled={isUpdating}
+            disabled={isUpdating || isSaving}
           >
             İptal
           </Button>
           <Button
             onClick={onSubmit}
-            disabled={isSubmitting || !isDirty}
+            disabled={isSubmitting || !isDirty || isSaving}
             className="flex items-center space-x-2"
           >
             <Save className="h-4 w-4" />
-            <span>{isSubmitting ? 'Kaydediliyor...' : 'Kaydet'}</span>
+            <span>
+              {isSubmitting || isSaving ? 'Kaydediliyor...' : 'Kaydet'}
+            </span>
           </Button>
         </div>
       </div>
@@ -376,7 +392,6 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
                   skills={skills}
                   addSkill={addSkill}
                   removeSkill={removeSkill}
-                  watch={watch}
                 />
               ) : (
                 <EmployerFields register={register} errors={errors} />
@@ -413,12 +428,11 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
 // ======================================
 
 interface FreelancerFieldsProps {
-  register: any;
-  errors: any;
+  register: UseFormRegister<ProfileFormData>;
+  errors: FieldErrors<ProfileFormData>;
   skills: string[];
   addSkill: (skill: string) => void;
   removeSkill: (skill: string) => void;
-  watch: any;
 }
 
 function FreelancerFields({
@@ -427,7 +441,6 @@ function FreelancerFields({
   skills,
   addSkill,
   removeSkill,
-  watch,
 }: FreelancerFieldsProps) {
   const [newSkill, setNewSkill] = React.useState('');
 
@@ -453,8 +466,10 @@ function FreelancerFields({
         </label>
         <Input
           {...register('title')}
-          placeholder="ör. Full Stack Developer"
-          error={errors.title?.message}
+          placeholder="Örn: Senior Full-Stack Developer"
+          error={
+            (errors as Record<string, { message?: string }>).title?.message
+          }
         />
       </div>
 
@@ -495,8 +510,10 @@ function FreelancerFields({
             </Badge>
           ))}
         </div>
-        {errors.skills && (
-          <p className="mt-1 text-sm text-red-600">{errors.skills.message}</p>
+        {(errors as Record<string, { message?: string }>).skills && (
+          <p className="mt-1 text-sm text-red-600">
+            {(errors as Record<string, { message?: string }>).skills.message}
+          </p>
         )}
       </div>
 
@@ -510,7 +527,10 @@ function FreelancerFields({
             type="number"
             placeholder="75"
             min="0"
-            error={errors.hourlyRate?.message}
+            error={
+              (errors as Record<string, { message?: string }>).hourlyRate
+                ?.message
+            }
           />
         </div>
         <div>
@@ -526,9 +546,12 @@ function FreelancerFields({
             <option value="intermediate">Orta</option>
             <option value="expert">Uzman</option>
           </select>
-          {errors.experience && (
+          {(errors as Record<string, { message?: string }>).experience && (
             <p className="mt-1 text-sm text-red-600">
-              {errors.experience.message}
+              {
+                (errors as Record<string, { message?: string }>).experience
+                  .message
+              }
             </p>
           )}
         </div>
@@ -538,8 +561,8 @@ function FreelancerFields({
 }
 
 interface EmployerFieldsProps {
-  register: any;
-  errors: any;
+  register: UseFormRegister<ProfileFormData>;
+  errors: FieldErrors<ProfileFormData>;
 }
 
 function EmployerFields({ register, errors }: EmployerFieldsProps) {
@@ -552,7 +575,10 @@ function EmployerFields({ register, errors }: EmployerFieldsProps) {
         <Input
           {...register('companyName')}
           placeholder="Şirket adınızı girin"
-          error={errors.companyName?.message}
+          error={
+            (errors as Record<string, { message?: string }>).companyName
+              ?.message
+          }
         />
       </div>
 
@@ -563,8 +589,10 @@ function EmployerFields({ register, errors }: EmployerFieldsProps) {
           </label>
           <Input
             {...register('industry')}
-            placeholder="ör. Teknoloji"
-            error={errors.industry?.message}
+            placeholder="Örn: Teknoloji"
+            error={
+              (errors as Record<string, { message?: string }>).industry?.message
+            }
           />
         </div>
         <div>
@@ -580,11 +608,14 @@ function EmployerFields({ register, errors }: EmployerFieldsProps) {
             <option value="11-50">11-50 çalışan</option>
             <option value="51-200">51-200 çalışan</option>
             <option value="201-1000">201-1000 çalışan</option>
-            <option value="1000+">1000+ çalışan</option>
+            <option value="1000+">1000+</option>
           </select>
-          {errors.companySize && (
+          {(errors as Record<string, { message?: string }>).companySize && (
             <p className="mt-1 text-sm text-red-600">
-              {errors.companySize.message}
+              {
+                (errors as Record<string, { message?: string }>).companySize
+                  .message
+              }
             </p>
           )}
         </div>

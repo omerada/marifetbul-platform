@@ -4,23 +4,8 @@
  * Configuration constants for filters, actions, colors, and table settings.
  */
 
-import {
-  UserCheck,
-  UserX,
-  Shield,
-  Ban,
-  Trash2,
-  Eye,
-  Mail,
-  Briefcase,
-  Users,
-} from 'lucide-react';
-import {
-  FilterOption,
-  ActionMenuItem,
-  UserStatus,
-  UserRole,
-} from '../types/userTableTypes';
+import { UserCheck, UserX, Shield, Ban, Briefcase, Users } from 'lucide-react';
+import { FilterOption, UserStatus, UserRole } from '../types/userTableTypes';
 
 // ============================================================================
 // Filter Options

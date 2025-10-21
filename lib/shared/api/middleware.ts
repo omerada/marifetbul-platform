@@ -521,7 +521,7 @@ async function validateToken(
       role: data.user.role,
       permissions: data.user.permissions || [],
     };
-  } catch (error) {
+  } catch {
     throw new Error('Token validation failed');
   }
 }

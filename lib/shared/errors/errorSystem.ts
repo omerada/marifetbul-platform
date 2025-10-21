@@ -3,7 +3,7 @@
 // ================================================
 // Production-ready error handling with monitoring and recovery
 
-import { ErrorInfo, ReactNode } from 'react';
+import { ErrorInfo } from 'react';
 import { logger } from '@/lib/shared/utils/logger';
 import { getBackendApiUrl } from '@/lib/config/api';
 

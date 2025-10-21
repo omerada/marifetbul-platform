@@ -41,7 +41,7 @@ export function ForgotPasswordForm() {
           'Şifre sıfırlama isteği gönderilemedi. Lütfen tekrar deneyin.'
         );
       }
-    } catch (err) {
+    } catch {
       setError('Bir hata oluştu. Lütfen tekrar deneyin.');
     } finally {
       setIsLoading(false);

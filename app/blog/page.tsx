@@ -30,7 +30,7 @@ async function getPosts() {
       page: response.number,
       pageSize: response.size,
     };
-  } catch (error) {
+  } catch {
     return { posts: [], total: 0, page: 0, pageSize: 10 };
   }
 }

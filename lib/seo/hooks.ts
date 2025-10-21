@@ -163,7 +163,7 @@ declare global {
  */
 export function useLinkTracking() {
   return {
-    trackExternalLink: (url: string, linkText: string) => {
+    trackExternalLink: (url: string, _linkText: string) => {
       if (typeof window !== 'undefined' && window.gtag) {
         window.gtag('event', 'click', {
           event_category: 'outbound',

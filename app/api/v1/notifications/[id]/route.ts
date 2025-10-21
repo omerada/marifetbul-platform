@@ -1,8 +1,5 @@
 ﻿import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_API_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
-
 export const dynamic = 'force-dynamic';
 
 export async function PATCH(
@@ -12,7 +9,7 @@ export async function PATCH(
   try {
     const { id: notificationId } = await params;
     const body = await request.json();
-    const response = await fetch(`/notifications/`, {
+    const response = await fetch(`/notifications/${notificationId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -38,7 +35,7 @@ export async function DELETE(
 ) {
   try {
     const { id: notificationId } = await params;
-    const response = await fetch(`/notifications/`, {
+    const response = await fetch(`/notifications/${notificationId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

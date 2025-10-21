@@ -7,7 +7,7 @@ import { useMessagingStore } from '@/lib/core/store/messaging';
 import { useOrderStore } from '@/lib/core/store/orders';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { logger } from '@/lib/shared/utils/logger';
-import type { Order, Message } from '@/types';
+import type { Message } from '@/types';
 
 interface WebSocketMessage<T = unknown> {
   type:
@@ -78,7 +78,7 @@ interface UseWebSocketProps {
   url?: string;
   enabled?: boolean;
   reconnectInterval?: number;
-  maxReconnectAttempts?: number;
+  _maxReconnectAttempts?: number;
 }
 
 interface WebSocketState {
@@ -95,7 +95,7 @@ export const useWebSocket = ({
   enabled = typeof window !== 'undefined' &&
     process.env.NEXT_PUBLIC_ENABLE_WEBSOCKET === 'true',
   reconnectInterval = 5000,
-  maxReconnectAttempts = 5, // Used for future manual reconnection logic
+  _maxReconnectAttempts = 5, // Used for future manual reconnection logic
 }: UseWebSocketProps = {}) => {
   const stompClient = useRef<Client | null>(null);
   const subscriptions = useRef<Map<string, StompSubscription>>(new Map());

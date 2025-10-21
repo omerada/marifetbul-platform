@@ -260,7 +260,7 @@ export const processPayment = async (
       success: true,
       transactionId: result.transactionId,
     };
-  } catch (error) {
+  } catch {
     return {
       success: false,
       error: 'Ödeme işlemi sırasında bir hata oluştu',

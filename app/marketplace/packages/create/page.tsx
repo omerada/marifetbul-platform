@@ -111,13 +111,13 @@ export default function CreatePackagePage() {
 
   const selectedCategory = watch('category');
 
-  const onSubmit = async (data: PackageFormData) => {
+  const onSubmit = async (_: PackageFormData) => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       success('Paket başarıyla oluşturuldu!');
       router.push('/marketplace?view=packages');
-    } catch (err) {
+    } catch {
       error('Paket oluşturulurken bir hata oluştu');
     }
   };

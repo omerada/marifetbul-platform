@@ -496,6 +496,17 @@ export function usePerformanceMonitor() {
 // Re-export auth state from shared hooks
 export { useAuthState } from '../shared/useAuth';
 
+// Re-export specific business hooks
+export {
+  useProfile,
+  useAvatarUpload,
+  useProfileValidation,
+} from './useProfile';
+export { useDashboard, useDashboardRefresh } from './useDashboard';
+export { useProposal } from './useProposal';
+export { useOrder } from './useOrder';
+export { useProfileEdit } from './useProfileEdit';
+
 const BusinessHooks = {
   useUnifiedSearch,
   useFavoritesManager,

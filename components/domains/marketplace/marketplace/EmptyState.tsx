@@ -25,7 +25,7 @@ export function EmptyState({
   title,
   description,
   action,
-  onClearFilters,
+  onClearFilters: _onClearFilters,
   onShowAll,
 }: EmptyStateProps) {
   const Icon = mode === 'jobs' ? Briefcase : Package;

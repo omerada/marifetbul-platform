@@ -80,7 +80,7 @@ function SearchContent() {
             data.data || { all: 0, services: 0, jobs: 0, freelancers: 0 }
           );
         }
-      } catch (error) {
+      } catch {
         // Silently fail - counts are not critical for user experience
         // Error will be caught by global error handler
         setSearchResults({ all: 0, services: 0, jobs: 0, freelancers: 0 });

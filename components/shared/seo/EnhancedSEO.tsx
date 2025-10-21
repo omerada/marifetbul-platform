@@ -216,7 +216,7 @@ export function usePagePerformance() {
 
           try {
             lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
-          } catch (e) {
+          } catch {
             // LCP not supported
           }
 
@@ -236,7 +236,7 @@ export function usePagePerformance() {
 
           try {
             clsObserver.observe({ entryTypes: ['layout-shift'] });
-          } catch (e) {
+          } catch {
             // CLS not supported
           }
 
@@ -252,8 +252,11 @@ export function usePagePerformance() {
           });
 
           try {
-            fidObserver.observe({ entryTypes: ['first-input'] });
-          } catch (e) {
+            fidObserver.observe({
+              entryTypes: ['first-input'],
+              buffered: true,
+            });
+          } catch {
             // FID not supported
           }
 

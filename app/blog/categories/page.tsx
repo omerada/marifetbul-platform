@@ -20,7 +20,7 @@ async function getCategories(): Promise<BlogCategory[]> {
     }
 
     return await res.json();
-  } catch (error) {
+  } catch {
     return [];
   }
 }

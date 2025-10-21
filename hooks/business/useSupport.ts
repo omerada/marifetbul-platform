@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
 import { useSupportStore } from '@/lib/core/store/support';
-import { logger } from '@/lib/shared/utils/logger';
 import type { SupportTicket, PaginationMeta } from '@/types';
 import type {
   CreateTicketFormData,

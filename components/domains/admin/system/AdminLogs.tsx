@@ -40,7 +40,7 @@ export function AdminLogs() {
   const [selectedSource, setSelectedSource] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
   const [logs, setLogs] = useState<AdminLog[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
 
   const logLevels = [
     { id: 'all', name: 'Tüm Seviyeler', color: 'gray' },
@@ -148,12 +148,6 @@ export function AdminLogs() {
       borderColor: 'border-purple-200',
     },
   ];
-
-  const refreshLogs = async () => {
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsLoading(false);
-  };
 
   const exportLogs = async () => {
     // Export logs to CSV or JSON
