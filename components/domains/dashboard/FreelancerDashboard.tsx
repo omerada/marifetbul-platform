@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useDashboard } from '@/hooks';
 import { useMessagingStore } from '@/lib/core/store/messaging';
 import { useOrderStore } from '@/lib/core/store/orders';
@@ -14,7 +14,6 @@ import { QuickActions } from './QuickActions';
 import { StatsCard } from './StatsCard';
 import { SkeletonDashboard as DashboardSkeleton } from '@/components/ui/UnifiedSkeleton';
 import { ErrorState } from '@/components/shared/utilities';
-import { OrderTimeline } from '@/components/domains/packages';
 import { logger } from '@/lib/shared/utils/logger';
 import {
   DollarSign,
@@ -27,8 +26,6 @@ import {
   Star,
   Eye,
   Clock,
-  Package,
-  Users,
   Wifi,
   WifiOff,
 } from 'lucide-react';
@@ -38,20 +35,11 @@ interface FreelancerDashboardProps {
 }
 
 export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
-  const [activeTab, setActiveTab] = useState<
-    'overview' | 'messages' | 'orders'
-  >('overview');
   const { dashboardData, isLoading, error, refreshDashboard } = useDashboard();
 
   // Real-time messaging and order tracking
-  const { conversations, totalUnreadCount, loadConversations } =
-    useMessagingStore();
-  const {
-    orders,
-    isLoadingOrders,
-    loadOrders,
-    error: ordersError,
-  } = useOrderStore();
+  const { totalUnreadCount, loadConversations } = useMessagingStore();
+  const { loadOrders } = useOrderStore();
   const { isConnected, isConnecting } = useWebSocket();
 
   React.useEffect(() => {
@@ -164,451 +152,192 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8">
-          {[
-            { id: 'overview', label: 'Genel Bakış', icon: TrendingUp },
-            {
-              id: 'messages',
-              label: 'Mesajlar',
-              icon: MessageCircle,
-              badge: totalUnreadCount,
-            },
-            {
-              id: 'orders',
-              label: 'Siparişler',
-              icon: Package,
-              badge: orders.filter((o) => o.status === 'in_progress').length,
-            },
-          ].map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() =>
-                  setActiveTab(tab.id as 'overview' | 'messages' | 'orders')
-                }
-                className={`inline-flex items-center gap-2 border-b-2 px-1 py-4 text-sm font-medium ${
-                  activeTab === tab.id
-                    ? 'border-primary-500 text-primary-600'
-                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                {tab.label}
-                {tab.badge && tab.badge > 0 && (
-                  <Badge variant="default" size="sm">
-                    {tab.badge}
-                  </Badge>
-                )}
-              </button>
-            );
-          })}
-        </nav>
-      </div>
-
-      {/* Tab Content */}
-      {activeTab === 'overview' && (
-        <>
-          {/* Stats Overview */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-            <StatsCard
-              title="Toplam Kazanç"
-              value={`₺${data.stats.totalEarnings.toLocaleString('tr-TR')}`}
-              subtitle={`Bu ay: ₺${data.stats.currentMonthEarnings.toLocaleString('tr-TR')}`}
-              change="+12%"
-              changeType="positive"
-              icon={<DollarSign className="h-5 w-5" />}
-              iconColor="green"
-            />
-            <StatsCard
-              title="Bu Ay"
-              value={`₺${data.stats.currentMonthEarnings.toLocaleString('tr-TR')}`}
-              subtitle="Aylık gelir"
-              change="+8%"
-              changeType="positive"
-              icon={<TrendingUp className="h-5 w-5" />}
-              iconColor="blue"
-            />
-            <StatsCard
-              title="Aktif Siparişler"
-              value={data.stats.activeOrders.toString()}
-              subtitle="Devam eden işler"
-              icon={<ShoppingCart className="h-5 w-5" />}
-              iconColor="orange"
-            />
-            <StatsCard
-              title="Tamamlanan İşler"
-              value={data.stats.completedJobs.toString()}
-              subtitle={`${data.stats.rating} ⭐ ortalama puan`}
-              icon={<CheckCircle className="h-5 w-5" />}
-              iconColor="purple"
-            />
-          </div>
-
-          {/* Performance Metrics */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <Card className="p-6">
-              <div className="flex items-center space-x-3">
-                <div className="rounded-lg bg-yellow-100 p-3">
-                  <Star className="h-6 w-6 text-yellow-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Ortalama Puan</h3>
-                  <p className="text-2xl font-bold text-yellow-600">
-                    {data.stats.rating}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {data.stats.completedJobs} değerlendirme
-                  </p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6">
-              <div className="flex items-center space-x-3">
-                <div className="rounded-lg bg-blue-100 p-3">
-                  <Eye className="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">
-                    Profil Görüntüleme
-                  </h3>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {data.stats.profileViews}
-                  </p>
-                  <p className="text-sm text-gray-500">Bu hafta +8%</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6">
-              <div className="flex items-center space-x-3">
-                <div className="rounded-lg bg-green-100 p-3">
-                  <Clock className="h-6 w-6 text-green-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Yanıt Oranı</h3>
-                  <p className="text-2xl font-bold text-green-600">
-                    {data.stats.responseRate}%
-                  </p>
-                  <p className="text-sm text-gray-500">24 saat içinde</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          {/* Quick Actions */}
-          <QuickActions
-            title="Hızlı Eylemler"
-            actions={[
-              {
-                label: 'Yeni Paket Ekle',
-                href: '/marketplace/packages/create',
-                icon: <Plus className="h-5 w-5" />,
-                color: 'blue',
-              },
-              {
-                label: 'İş İlanlarını Gör',
-                href: '/marketplace',
-                icon: <Search className="h-5 w-5" />,
-                color: 'green',
-              },
-              {
-                label: 'Mesajlarım',
-                href: '/messages',
-                icon: <MessageCircle className="h-5 w-5" />,
-                color: 'purple',
-                badge:
-                  data.quickStats.messagesWaiting > 0
-                    ? data.quickStats.messagesWaiting
-                    : undefined,
-              },
-            ]}
+      {/* Main Content */}
+      <>
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+          <StatsCard
+            title="Toplam Kazanç"
+            value={`₺${data.stats.totalEarnings.toLocaleString('tr-TR')}`}
+            subtitle={`Bu ay: ₺${data.stats.currentMonthEarnings.toLocaleString('tr-TR')}`}
+            change="+12%"
+            changeType="positive"
+            icon={<DollarSign className="h-5 w-5" />}
+            iconColor="green"
           />
+          <StatsCard
+            title="Bu Ay"
+            value={`₺${data.stats.currentMonthEarnings.toLocaleString('tr-TR')}`}
+            subtitle="Aylık gelir"
+            change="+8%"
+            changeType="positive"
+            icon={<TrendingUp className="h-5 w-5" />}
+            iconColor="blue"
+          />
+          <StatsCard
+            title="Aktif Siparişler"
+            value={data.stats.activeOrders.toString()}
+            subtitle="Devam eden işler"
+            icon={<ShoppingCart className="h-5 w-5" />}
+            iconColor="orange"
+          />
+          <StatsCard
+            title="Tamamlanan İşler"
+            value={data.stats.completedJobs.toString()}
+            subtitle={`${data.stats.rating} ⭐ ortalama puan`}
+            icon={<CheckCircle className="h-5 w-5" />}
+            iconColor="purple"
+          />
+        </div>
 
-          {/* Recent Activity */}
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <Card>
-              <div className="border-b border-gray-200 p-6">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    Son Siparişler
-                  </h2>
-                  <Button variant="ghost" size="sm">
-                    Tümünü Gör
-                  </Button>
-                </div>
-              </div>
-              <div className="p-6">
-                <ActivityTimeline items={data.recentOrders} type="orders" />
-              </div>
-            </Card>
-
-            <Card>
-              <div className="border-b border-gray-200 p-6">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    Son Teklifler
-                  </h2>
-                  <Button variant="ghost" size="sm">
-                    Tümünü Gör
-                  </Button>
-                </div>
-              </div>
-              <div className="p-6">
-                <ActivityTimeline
-                  items={data.recentProposals}
-                  type="proposals"
-                />
-              </div>
-            </Card>
-          </div>
-
-          {/* Quick Stats Summary */}
+        {/* Performance Metrics */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <Card className="p-6">
-            <h2 className="mb-4 text-xl font-semibold text-gray-900">
-              Bekleyen İşlemler
-            </h2>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <div className="flex items-center justify-between rounded-lg bg-blue-50 p-4">
-                <div>
-                  <p className="text-sm font-medium text-blue-900">
-                    Bekleyen Teklifler
-                  </p>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {data.quickStats.pendingProposals}
-                  </p>
-                </div>
-                <Button size="sm" variant="outline">
-                  Görüntüle
-                </Button>
+            <div className="flex items-center space-x-3">
+              <div className="rounded-lg bg-yellow-100 p-3">
+                <Star className="h-6 w-6 text-yellow-600" />
               </div>
-
-              <div className="flex items-center justify-between rounded-lg bg-purple-50 p-4">
-                <div>
-                  <p className="text-sm font-medium text-purple-900">
-                    Okunmamış Mesajlar
-                  </p>
-                  <p className="text-2xl font-bold text-purple-600">
-                    {data.quickStats.messagesWaiting}
-                  </p>
-                </div>
-                <Button size="sm" variant="outline">
-                  Mesajlar
-                </Button>
-              </div>
-
-              <div className="flex items-center justify-between rounded-lg bg-yellow-50 p-4">
-                <div>
-                  <p className="text-sm font-medium text-yellow-900">
-                    Bekleyen Değerlendirmeler
-                  </p>
-                  <p className="text-2xl font-bold text-yellow-600">
-                    {data.quickStats.reviewsPending}
-                  </p>
-                </div>
-                <Button size="sm" variant="outline">
-                  İncele
-                </Button>
+              <div>
+                <h3 className="font-semibold text-gray-900">Ortalama Puan</h3>
+                <p className="text-2xl font-bold text-yellow-600">
+                  {data.stats.rating}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {data.stats.completedJobs} değerlendirme
+                </p>
               </div>
             </div>
           </Card>
-        </>
-      )}
 
-      {/* Messages Tab */}
-      {activeTab === 'messages' && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-gray-900">Mesajlar</h2>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Yeni Sohbet
-            </Button>
-          </div>
-
-          {conversations.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
-              {conversations.slice(0, 6).map((conversation) => (
-                <Card key={conversation.id} className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="bg-primary-100 flex h-10 w-10 items-center justify-center rounded-full">
-                        <Users className="text-primary-600 h-5 w-5" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-gray-900">
-                          {conversation.participants
-                            .filter(
-                              (p: {
-                                userId: string;
-                                user?: {
-                                  firstName?: string;
-                                  lastName?: string;
-                                };
-                              }) => p.userId !== 'current-user'
-                            ) // Filter out current user
-                            .map(
-                              (p: {
-                                userId: string;
-                                user?: {
-                                  firstName?: string;
-                                  lastName?: string;
-                                };
-                              }) =>
-                                `${p.user?.firstName || ''} ${p.user?.lastName || ''}`.trim()
-                            )
-                            .join(', ')}
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          {conversation.lastMessage?.content.slice(0, 50)}...
-                        </p>
-                      </div>
-                    </div>
-                    {conversation.unreadCount > 0 && (
-                      <Badge variant="default">
-                        {conversation.unreadCount}
-                      </Badge>
-                    )}
-                  </div>
-                </Card>
-              ))}
+          <Card className="p-6">
+            <div className="flex items-center space-x-3">
+              <div className="rounded-lg bg-blue-100 p-3">
+                <Eye className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">
+                  Profil Görüntüleme
+                </h3>
+                <p className="text-2xl font-bold text-blue-600">
+                  {data.stats.profileViews}
+                </p>
+                <p className="text-sm text-gray-500">Bu hafta +8%</p>
+              </div>
             </div>
-          ) : (
-            <Card className="p-8 text-center">
-              <MessageCircle className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-4 text-lg font-medium text-gray-900">
-                Henüz mesajınız yok
-              </h3>
-              <p className="mt-2 text-gray-500">
-                Müşterilerle iletişime geçmeye başlayın
-              </p>
-            </Card>
-          )}
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center space-x-3">
+              <div className="rounded-lg bg-green-100 p-3">
+                <Clock className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Yanıt Oranı</h3>
+                <p className="text-2xl font-bold text-green-600">
+                  {data.stats.responseRate}%
+                </p>
+                <p className="text-sm text-gray-500">24 saat içinde</p>
+              </div>
+            </div>
+          </Card>
         </div>
-      )}
 
-      {/* Orders Tab */}
-      {activeTab === 'orders' && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-gray-900">Siparişler</h2>
-            <div className="flex gap-2">
-              <Badge variant="success">
-                {orders.filter((o) => o.status === 'completed').length}{' '}
-                Tamamlandı
-              </Badge>
-              <Badge variant="warning">
-                {orders.filter((o) => o.status === 'in_progress').length} Devam
-                Ediyor
-              </Badge>
-              <Badge variant="secondary">
-                {orders.filter((o) => o.status === 'pending').length} Bekliyor
-              </Badge>
-            </div>
-          </div>
+        {/* Quick Actions */}
+        <QuickActions
+          title="Hızlı Eylemler"
+          actions={[
+            {
+              label: 'Yeni Paket Ekle',
+              href: '/marketplace/packages/create',
+              icon: <Plus className="h-5 w-5" />,
+              color: 'blue',
+            },
+            {
+              label: 'İş İlanlarını Gör',
+              href: '/marketplace',
+              icon: <Search className="h-5 w-5" />,
+              color: 'green',
+            },
+            {
+              label: 'Mesajlarım',
+              href: '/messages',
+              icon: <MessageCircle className="h-5 w-5" />,
+              color: 'purple',
+              badge:
+                data.quickStats.messagesWaiting > 0
+                  ? data.quickStats.messagesWaiting
+                  : undefined,
+            },
+          ]}
+        />
 
-          {isLoadingOrders ? (
-            <Card className="p-8 text-center">
-              <div className="border-primary-500 mx-auto h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
-              <p className="mt-4 text-gray-600">Siparişler yükleniyor...</p>
-            </Card>
-          ) : ordersError ? (
-            <Card className="p-8 text-center">
-              <Package className="mx-auto h-12 w-12 text-red-400" />
-              <h3 className="mt-4 text-lg font-medium text-gray-900">
-                Siparişler yüklenemedi
-              </h3>
-              <p className="mt-2 text-gray-500">{ordersError}</p>
-              <Button
-                className="mt-4"
-                onClick={() => loadOrders({ freelancerId: userId || 'me' })}
-              >
-                Tekrar Dene
+        {/* Recent Activity */}
+        <Card>
+          <div className="border-b border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Son Aktiviteler
+              </h2>
+              <Button variant="ghost" size="sm">
+                Tümünü Gör
               </Button>
-            </Card>
-          ) : orders.length > 0 ? (
-            <div className="space-y-4">
-              {orders.slice(0, 5).map((order) => (
-                <Card key={order.id} className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-gray-900">
-                          {order.title}
-                        </h3>
-                        <Badge
-                          variant={
-                            order.status === 'completed'
-                              ? 'success'
-                              : order.status === 'in_progress'
-                                ? 'warning'
-                                : 'secondary'
-                          }
-                        >
-                          {order.status === 'completed'
-                            ? 'Tamamlandı'
-                            : order.status === 'in_progress'
-                              ? 'Devam Ediyor'
-                              : 'Bekliyor'}
-                        </Badge>
-                      </div>
-                      <p className="mt-2 text-gray-600">{order.description}</p>
-                      <div className="mt-4 flex items-center gap-4 text-sm text-gray-500">
-                        <span className="flex items-center gap-1">
-                          <DollarSign className="h-4 w-4" />₺
-                          {order.amount?.toLocaleString('tr-TR') || '0'}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          {order.deliveryDate
-                            ? new Date(order.deliveryDate).toLocaleDateString(
-                                'tr-TR'
-                              )
-                            : 'Belirsiz'}
-                        </span>
-                      </div>
-                      {order.progress && (
-                        <div className="mt-4">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">İlerleme</span>
-                            <span className="font-medium">
-                              {order.progress.percentage}%
-                            </span>
-                          </div>
-                          <div className="mt-1 h-2 w-full rounded-full bg-gray-200">
-                            <div
-                              className="bg-primary-600 h-2 rounded-full transition-all"
-                              style={{ width: `${order.progress.percentage}%` }}
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {order.timeline && order.timeline.length > 0 && (
-                    <div className="mt-6">
-                      <OrderTimeline order={order} compact />
-                    </div>
-                  )}
-                </Card>
-              ))}
             </div>
-          ) : (
-            <Card className="p-8 text-center">
-              <Package className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-4 text-lg font-medium text-gray-900">
-                Henüz siparişiniz yok
-              </h3>
-              <p className="mt-2 text-gray-500">
-                İlk siparişinizi almak için teklif verin
-              </p>
-            </Card>
-          )}
-        </div>
-      )}
+          </div>
+          <div className="p-6">
+            <ActivityTimeline showTitle={false} />
+          </div>
+        </Card>
+
+        {/* Quick Stats Summary */}
+        <Card className="p-6">
+          <h2 className="mb-4 text-xl font-semibold text-gray-900">
+            Bekleyen İşlemler
+          </h2>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="flex items-center justify-between rounded-lg bg-blue-50 p-4">
+              <div>
+                <p className="text-sm font-medium text-blue-900">
+                  Bekleyen Teklifler
+                </p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {data.quickStats.pendingProposals}
+                </p>
+              </div>
+              <Button size="sm" variant="outline">
+                Görüntüle
+              </Button>
+            </div>
+
+            <div className="flex items-center justify-between rounded-lg bg-purple-50 p-4">
+              <div>
+                <p className="text-sm font-medium text-purple-900">
+                  Okunmamış Mesajlar
+                </p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {data.quickStats.messagesWaiting}
+                </p>
+              </div>
+              <Button size="sm" variant="outline">
+                Mesajlar
+              </Button>
+            </div>
+
+            <div className="flex items-center justify-between rounded-lg bg-yellow-50 p-4">
+              <div>
+                <p className="text-sm font-medium text-yellow-900">
+                  Bekleyen Değerlendirmeler
+                </p>
+                <p className="text-2xl font-bold text-yellow-600">
+                  {data.quickStats.reviewsPending}
+                </p>
+              </div>
+              <Button size="sm" variant="outline">
+                İncele
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </>
     </div>
   );
 }

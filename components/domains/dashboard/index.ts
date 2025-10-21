@@ -8,6 +8,8 @@
 export { FreelancerDashboard } from './FreelancerDashboard';
 export { EmployerDashboard } from './EmployerDashboard';
 export { MobileDashboard } from './MobileDashboard';
+export { DashboardSidebar } from './DashboardSidebar';
+export { DashboardHeader } from './DashboardHeader';
 
 // Dashboard Features
 export { DashboardStats } from './DashboardStats';
