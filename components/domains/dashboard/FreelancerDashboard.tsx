@@ -15,6 +15,7 @@ import { StatsCard } from './StatsCard';
 import { SkeletonDashboard as DashboardSkeleton } from '@/components/ui/UnifiedSkeleton';
 import { ErrorState } from '@/components/shared/utilities';
 import { OrderTimeline } from '@/components/domains/packages';
+import { logger } from '@/lib/shared/utils/logger';
 import {
   DollarSign,
   TrendingUp,
@@ -60,35 +61,27 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
         // Load data without blocking on failures
         const results = await Promise.allSettled([
           loadConversations().catch(() => {
-            if (process.env.NODE_ENV === 'development') {
-              console.log(
-                '[FreelancerDashboard] Conversations failed to load, continuing...'
-              );
-            }
+            logger.debug(
+              '[FreelancerDashboard] Conversations failed to load, continuing...'
+            );
           }),
           loadOrders({ freelancerId: userId || 'me' }).catch(() => {
-            if (process.env.NODE_ENV === 'development') {
-              console.log(
-                '[FreelancerDashboard] Orders failed to load, continuing...'
-              );
-            }
+            logger.debug(
+              '[FreelancerDashboard] Orders failed to load, continuing...'
+            );
           }),
         ]);
 
-        if (process.env.NODE_ENV === 'development') {
-          console.log(
-            '[FreelancerDashboard] Initial data load results:',
-            results
-          );
-        }
+        logger.debug(
+          '[FreelancerDashboard] Initial data load results:',
+          results
+        );
       } catch (error) {
         // Log but don't block - dashboard should still render
-        if (process.env.NODE_ENV === 'development') {
-          console.error(
-            '[FreelancerDashboard] Error loading initial data:',
-            error
-          );
-        }
+        logger.error(
+          '[FreelancerDashboard] Error loading initial data:',
+          error
+        );
       }
     };
 

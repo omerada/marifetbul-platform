@@ -13,6 +13,7 @@ import {
   AdminUserData,
   UserActionType,
 } from './userTable/types/userTableTypes';
+import { logger } from '@/lib/shared/utils/logger';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import {
   Table,
@@ -101,11 +102,8 @@ export function UserTable({ className }: UserTableProps) {
         break;
       case 'email':
         // Email user - Open mail client or show email dialog
-        console.log(
-          'Email user feature - Consider implementing email modal:',
-          userId
-        );
         // Future: setShowEmailModal(true); setSelectedUser(userId);
+        logger.debug('Email user feature to be implemented:', userId);
         break;
       default:
         break;

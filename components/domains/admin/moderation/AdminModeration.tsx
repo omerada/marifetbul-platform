@@ -10,6 +10,7 @@
 import { useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
 import { AlertTriangle } from 'lucide-react';
+import { logger } from '@/lib/shared/utils/logger';
 import {
   ModerationHeader,
   ModerationStats,
@@ -70,7 +71,7 @@ export default function AdminModerationNew() {
 
   const handleViewDetails = (item: ModerationItem) => {
     // View moderation item details
-    console.log('Viewing details for item:', item.id);
+    logger.debug('Viewing moderation item details:', item.id);
     // Implementation options:
     // 1. Navigate to detail page: router.push(`/admin/moderation/${item.id}`)
     // 2. Open modal: setSelectedItem(item); setShowDetailsModal(true);

@@ -13,6 +13,7 @@
 'use client';
 
 import { useModeration } from './moderation-dashboard/hooks/useModeration';
+import { logger } from '@/lib/shared/utils/logger';
 import {
   ModerationLoadingState,
   ModerationHeader,
@@ -58,12 +59,11 @@ export default function ModerationDashboard() {
         onRefresh={refresh}
         onDownload={() => {
           // Download moderation report
-          console.log('Downloading moderation report...');
           // Future implementation:
           // 1. Fetch report data from API
           // 2. Generate CSV or PDF
           // 3. Trigger browser download
-          // Example: downloadModerationReport(filters, dateRange);
+          logger.debug('Moderation report download to be implemented');
         }}
       />
 

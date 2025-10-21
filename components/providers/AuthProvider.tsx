@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { usePathname } from 'next/navigation';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -32,26 +33,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     // Only verify auth status if already authenticated, don't refresh on auth pages
     if (isAuthenticated && !isAuthPage) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log(
-          '[AuthProvider] Checking auth status for authenticated user'
-        );
-      }
+      logger.debug(
+        '[AuthProvider] Checking auth status for authenticated user'
+      );
       checkAuthStatus().catch((error) => {
-        if (process.env.NODE_ENV === 'development') {
-          console.error('[AuthProvider] Auth status check failed:', error);
-        }
+        logger.error('[AuthProvider] Auth status check failed:', error);
         // Don't logout on auth pages - let them try to login
       });
     } else {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[AuthProvider] Skipping auth check', {
-          isMounted,
-          isAuthenticated,
-          isAuthPage,
-          pathname,
-        });
-      }
+      logger.debug('[AuthProvider] Skipping auth check', {
+        isMounted,
+        isAuthenticated,
+        isAuthPage,
+        pathname,
+      });
     }
   }, [isMounted, isAuthenticated, pathname, checkAuthStatus]);
 
