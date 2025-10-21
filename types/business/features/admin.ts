@@ -142,7 +142,7 @@ export interface AdminUserStore {
   clearError: () => void; // Added missing method
 }
 
-export interface AdminUserData extends AdminUser {
+export interface AdminUserData extends Omit<AdminUser, 'verificationStatus'> {
   statistics: {
     actionsPerformed: number;
     usersModerated: number;
@@ -154,7 +154,7 @@ export interface AdminUserData extends AdminUser {
   name: string;
   userType: 'freelancer' | 'employer';
   accountStatus: 'active' | 'suspended' | 'banned';
-  verificationStatus: 'verified' | 'unverified' | 'pending';
+  verificationStatus: 'pending' | 'verified' | 'rejected'; // Aligned with userTable types (override)
   createdAt: string;
   lastLoginAt?: string;
   lastActiveAt?: string;
@@ -209,6 +209,8 @@ export interface UserFilters {
   country?: string; // Made optional for hook compatibility
   adminLevel?: 'super_admin' | 'admin' | 'moderator' | 'all';
   sort?: string; // For hooks compatibility
+  page?: number; // Pagination support
+  size?: number; // Page size support
 }
 
 // Alternative empty UserFilters for initial state compatibility
@@ -230,6 +232,8 @@ export interface EmptyUserFilters extends Partial<UserFilters> {
   country?: string;
   adminLevel?: 'super_admin' | 'admin' | 'moderator' | 'all';
   sort?: string; // For hooks compatibility
+  page?: number; // Pagination support
+  size?: number; // Page size support
 }
 
 export interface UserActionRequest {

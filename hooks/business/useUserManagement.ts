@@ -164,6 +164,7 @@ export function useUserManagement() {
       hasNext: selectors.hasNextPage,
       hasPrev: selectors.hasPrevPage,
       total: selectors.totalUsers,
+      pageSize: selectors.filters.size || 10, // Add pageSize from filters
     },
 
     statistics: {

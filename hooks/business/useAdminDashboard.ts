@@ -144,16 +144,11 @@ export function useAdminDashboard() {
     refreshAll: handleRefreshAll,
     clearError,
 
-    // Alerts summary for header
+    // Alerts summary for header (computed from system health)
     alertsSummary: {
-      total: selectors.recentActivity?.length || 0,
-      critical:
-        selectors.recentActivity?.filter(
-          (a: { severity: string }) => a.severity === 'critical'
-        ).length || 0,
-      unread:
-        selectors.recentActivity?.filter((a: { isRead?: boolean }) => !a.isRead)
-          .length || 0,
+      total: !selectors.isHealthy ? 1 : 0, // Show 1 if system has issues
+      critical: selectors.systemHealth?.status === 'critical' ? 1 : 0, // Critical if status is critical
+      unread: !selectors.isHealthy ? 1 : 0, // Unread if system not healthy
     },
 
     // Legacy compatibility (for gradual migration)
