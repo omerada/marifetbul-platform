@@ -279,7 +279,7 @@ export interface RegisterRequest {
   passwordConfirmation: string;
   firstName: string;
   lastName: string;
-  accountType: 'FREELANCER' | 'CLIENT' | 'BOTH';
+  accountType: 'FREELANCER' | 'EMPLOYER' | 'BOTH';
   termsAccepted: boolean;
 }
 
@@ -294,7 +294,12 @@ export interface RefreshTokenRequest {
 // USER TYPES (UserResponse.java)
 // ================================================
 
-export type UserRole = 'USER' | 'FREELANCER' | 'CLIENT' | 'ADMIN' | 'MODERATOR';
+export type UserRole =
+  | 'USER'
+  | 'FREELANCER'
+  | 'EMPLOYER'
+  | 'ADMIN'
+  | 'MODERATOR';
 
 export interface UserResponse {
   id: string; // UUID
@@ -305,7 +310,7 @@ export interface UserResponse {
   fullName: string;
   avatar?: string;
   roles: UserRole[];
-  accountType: 'FREELANCER' | 'CLIENT' | 'BOTH';
+  accountType: 'FREELANCER' | 'EMPLOYER' | 'BOTH';
   isEmailVerified: boolean;
   isProfileCompleted: boolean;
   rating?: number;

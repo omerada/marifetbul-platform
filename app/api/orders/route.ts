@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     // Extract query parameters
     const status = searchParams.get('status');
-    const clientId = searchParams.get('clientId');
+    const buyerId = searchParams.get('buyerId');
     const freelancerId = searchParams.get('freelancerId');
     const category = searchParams.get('category');
     const startDate = searchParams.get('startDate');
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
     if (freelancerId === 'me' || freelancerId) {
       // Get orders as seller
       backendEndpoint = '/orders/seller/me';
-    } else if (clientId === 'me' || clientId) {
+    } else if (buyerId === 'me' || buyerId) {
       // Get orders as buyer
       backendEndpoint = '/orders/buyer/me';
     } else {
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
         url: backendUrl,
         filters: {
           status,
-          clientId,
+          buyerId,
           freelancerId,
           category,
           startDate,

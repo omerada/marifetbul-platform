@@ -13,7 +13,7 @@ import { logger } from '@/lib/shared/utils/logger';
 
 interface OrderFilters {
   status?: string;
-  clientId?: string;
+  buyerId?: string;
   freelancerId?: string;
   category?: string;
   dateRange?: {
@@ -90,7 +90,7 @@ interface OrderActions {
   // Statistics
   loadStatistics: (
     userId?: string,
-    role?: 'client' | 'freelancer'
+    role?: 'employer' | 'freelancer'
   ) => Promise<void>;
 
   // Filters

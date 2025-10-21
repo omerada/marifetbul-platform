@@ -371,8 +371,7 @@ export interface Order {
   total?: number; // Alternative to totalAmount
   currency?: string;
   paymentStatus?: string;
-  clientId?: string; // Alternative to buyerId
-  freelancerId?: string; // Alternative to sellerId
+  freelancerId?: string; // Seller/freelancer ID
   progress?: {
     percentage: number;
     stagesCompleted: number;

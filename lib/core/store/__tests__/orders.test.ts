@@ -29,7 +29,7 @@ const mockOrder: Order = {
   status: 'active',
   budget: 1000,
   currency: 'TRY',
-  clientId: 'client-1',
+  buyerId: 'buyer-1',
   freelancerId: 'freelancer-1',
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
@@ -111,7 +111,7 @@ describe('Orders Store', () => {
       });
 
       const { result } = renderHook(() => useOrderStore());
-      const filters = { status: 'active', clientId: 'client-1' };
+      const filters = { status: 'active', buyerId: 'buyer-1' };
 
       await act(async () => {
         await result.current.loadOrders(filters);
@@ -122,7 +122,7 @@ describe('Orders Store', () => {
         expect.any(Object)
       );
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('clientId=client-1'),
+        expect.stringContaining('buyerId=buyer-1'),
         expect.any(Object)
       );
     });
@@ -297,7 +297,7 @@ describe('Orders Store', () => {
   describe('setFilters', () => {
     it('should update filters', () => {
       const { result } = renderHook(() => useOrderStore());
-      const filters = { status: 'active', clientId: 'client-1' };
+      const filters = { status: 'active', buyerId: 'buyer-1' };
 
       act(() => {
         result.current.setFilters(filters);
