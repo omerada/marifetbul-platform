@@ -22,7 +22,6 @@ import {
   CheckCircle,
   Plus,
   Search,
-  MessageCircle,
   Star,
   Eye,
   Clock,
@@ -38,7 +37,7 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
   const { dashboardData, isLoading, error, refreshDashboard } = useDashboard();
 
   // Real-time messaging and order tracking
-  const { totalUnreadCount, loadConversations } = useMessagingStore();
+  const { loadConversations } = useMessagingStore();
   const { loadOrders } = useOrderStore();
   const { isConnected, isConnecting } = useWebSocket();
 
@@ -114,41 +113,25 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
 
   return (
     <div className="space-y-4 p-4 lg:space-y-6 lg:p-6">
-      {/* Header with Connection Status */}
+      {/* Connection Status - Compact */}
       <div className="mb-6 lg:mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="mb-2 text-2xl font-bold text-gray-900 lg:text-3xl">
-              Hoş Geldiniz! 👋
-            </h1>
-            <p className="text-base text-gray-600 lg:text-lg">
-              İşlerinizi yönetin ve kazancınızı artırın
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            {isConnecting ? (
-              <Badge variant="secondary" className="flex items-center gap-1">
-                <div className="h-2 w-2 animate-pulse rounded-full bg-yellow-500" />
-                Bağlanıyor...
-              </Badge>
-            ) : isConnected ? (
-              <Badge variant="success" className="flex items-center gap-1">
-                <Wifi className="h-3 w-3" />
-                Çevrimiçi
-              </Badge>
-            ) : (
-              <Badge variant="secondary" className="flex items-center gap-1">
-                <WifiOff className="h-3 w-3" />
-                Çevrimdışı
-              </Badge>
-            )}
-            {totalUnreadCount > 0 && (
-              <Badge variant="default" className="flex items-center gap-1">
-                <MessageCircle className="h-3 w-3" />
-                {totalUnreadCount} Okunmamış
-              </Badge>
-            )}
-          </div>
+        <div className="flex items-center gap-2">
+          {isConnecting ? (
+            <Badge variant="secondary" className="flex items-center gap-1">
+              <div className="h-2 w-2 animate-pulse rounded-full bg-yellow-500" />
+              Bağlanıyor...
+            </Badge>
+          ) : isConnected ? (
+            <Badge variant="success" className="flex items-center gap-1">
+              <Wifi className="h-3 w-3" />
+              Çevrimiçi
+            </Badge>
+          ) : (
+            <Badge variant="secondary" className="flex items-center gap-1">
+              <WifiOff className="h-3 w-3" />
+              Çevrimdışı
+            </Badge>
+          )}
         </div>
       </div>
 
@@ -254,19 +237,9 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
             },
             {
               label: 'İş İlanlarını Gör',
-              href: '/marketplace',
+              href: '/marketplace/jobs',
               icon: <Search className="h-5 w-5" />,
               color: 'green',
-            },
-            {
-              label: 'Mesajlarım',
-              href: '/messages',
-              icon: <MessageCircle className="h-5 w-5" />,
-              color: 'purple',
-              badge:
-                data.quickStats.messagesWaiting > 0
-                  ? data.quickStats.messagesWaiting
-                  : undefined,
             },
           ]}
         />
@@ -288,12 +261,12 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
           </div>
         </Card>
 
-        {/* Quick Stats Summary */}
+        {/* Quick Stats Summary - Compact */}
         <Card className="p-6">
           <h2 className="mb-4 text-xl font-semibold text-gray-900">
             Bekleyen İşlemler
           </h2>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="flex items-center justify-between rounded-lg bg-blue-50 p-4">
               <div>
                 <p className="text-sm font-medium text-blue-900">
@@ -305,20 +278,6 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
               </div>
               <Button size="sm" variant="outline">
                 Görüntüle
-              </Button>
-            </div>
-
-            <div className="flex items-center justify-between rounded-lg bg-purple-50 p-4">
-              <div>
-                <p className="text-sm font-medium text-purple-900">
-                  Okunmamış Mesajlar
-                </p>
-                <p className="text-2xl font-bold text-purple-600">
-                  {data.quickStats.messagesWaiting}
-                </p>
-              </div>
-              <Button size="sm" variant="outline">
-                Mesajlar
               </Button>
             </div>
 
