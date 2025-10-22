@@ -6,7 +6,7 @@
 
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useOrderStore } from '../orders';
-import type { Order, OrdersResponse } from '@/types';
+import type { Order, OrdersResponse } from '../../../../types';
 
 // Mock fetch globally
 global.fetch = jest.fn();
@@ -23,30 +23,49 @@ jest.mock('@/lib/shared/utils/logger', () => ({
 
 const mockOrder: Order = {
   id: 'order-1',
-  orderNumber: 'ORD-2024-001',
+  packageId: 'package-1',
   title: 'Test Order',
   description: 'Test order description',
-  status: 'active',
-  budget: 1000,
+  status: 'pending',
+  totalAmount: 1000,
   currency: 'TRY',
   buyerId: 'buyer-1',
+  sellerId: 'freelancer-1',
   freelancerId: 'freelancer-1',
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
   deliveryDate: '2024-02-01T00:00:00Z',
   milestones: [],
-  attachments: [],
 };
 
 const mockOrdersResponse: OrdersResponse = {
   data: [mockOrder],
+  orders: [mockOrder],
   meta: {
     total: 1,
     page: 1,
+    limit: 10,
     pageSize: 10,
     totalPages: 1,
+    hasNext: false,
+    hasPrev: false,
   },
-  success: true,
+  pagination: {
+    total: 1,
+    page: 1,
+    limit: 10,
+    pageSize: 10,
+    totalPages: 1,
+    hasNext: false,
+    hasPrev: false,
+  },
+  stats: {
+    total: 1,
+    pending: 1,
+    inProgress: 0,
+    completed: 0,
+    cancelled: 0,
+  },
 };
 
 describe('Orders Store', () => {

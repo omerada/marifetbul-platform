@@ -7,7 +7,7 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useProposal } from '../useProposal';
 import { useRouter } from 'next/navigation';
-import { useUIStore } from '@/lib/core/store/domains/ui/uiStore';
+import { useUIStore } from '../../../lib/core/store/domains/ui/uiStore';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({

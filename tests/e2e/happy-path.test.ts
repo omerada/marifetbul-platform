@@ -5,10 +5,10 @@
  */
 
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useOrderStore } from '@/lib/core/store/orders';
-import { useProposal } from '@/hooks/business/useProposal';
+import { useOrderStore } from '../../lib/core/store/orders';
+import { useProposal } from '../../hooks/business/useProposal';
 import { useRouter } from 'next/navigation';
-import { useUIStore } from '@/lib/core/store/domains/ui/uiStore';
+import { useUIStore } from '../../lib/core/store/domains/ui/uiStore';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({

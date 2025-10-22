@@ -31,7 +31,7 @@ export interface User {
   bio?: string;
   isVerified: boolean;
   isActive: boolean;
-  role: 'freelancer' | 'client' | 'admin';
+  role: 'freelancer' | 'employer' | 'admin';
   skills: string[];
   rating: number;
   totalJobs: number;
@@ -48,7 +48,7 @@ export interface Job {
   budget: { min: number; max: number; currency: string };
   duration: string;
   skills: string[];
-  clientId: string;
+  employerId: string;
   status: 'active' | 'in_progress' | 'completed' | 'cancelled';
   isRemote: boolean;
   createdAt: string;

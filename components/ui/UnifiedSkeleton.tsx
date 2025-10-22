@@ -244,7 +244,7 @@ export function SkeletonDashboard({
   type = 'freelancer', // eslint-disable-line @typescript-eslint/no-unused-vars
   className,
 }: {
-  type?: 'freelancer' | 'client' | 'admin' | 'employer';
+  type?: 'freelancer' | 'employer' | 'admin';
   className?: string;
 }) {
   // Different dashboard layouts could be implemented based on type

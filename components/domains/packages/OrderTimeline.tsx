@@ -199,9 +199,9 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
   };
 
   const canApprove =
-    user?.id === order.clientId && milestone.status === 'requires_approval';
+    user?.id === order.buyerId && milestone.status === 'requires_approval';
   const canReject =
-    user?.id === order.clientId && milestone.status === 'requires_approval';
+    user?.id === order.buyerId && milestone.status === 'requires_approval';
 
   const handleApprove = () => {
     onUpdate?.(milestone.id, { status: 'completed', feedback });
