@@ -21,8 +21,10 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { Loading } from '@/components/ui';
 import { OrderForm } from './OrderForm';
+import { PackageReviewsTab } from './PackageReviewsTab';
 import { logger } from '@/lib/shared/utils/logger';
 
 // Helper function to get image source as string
@@ -254,8 +256,27 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
             </div>
           </Card>
 
-          {/* Pricing Tiers */}
-          {'pricing' in servicePackage && servicePackage.pricing && (
+          {/* Tabs Section */}
+          <Tabs defaultValue="overview" className="w-full">
+            <TabsList className="w-full justify-start border-b rounded-none bg-transparent p-0">
+              <TabsTrigger
+                value="overview"
+                className="rounded-none border-b-2 border-transparent px-4 pb-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent"
+              >
+                Genel Bilgiler
+              </TabsTrigger>
+              <TabsTrigger
+                value="reviews"
+                className="rounded-none border-b-2 border-transparent px-4 pb-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent"
+              >
+                Değerlendirmeler
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Overview Tab */}
+            <TabsContent value="overview" className="mt-6 space-y-6">
+              {/* Pricing Tiers */}
+              {'pricing' in servicePackage && servicePackage.pricing && (
             <Card>
               <CardHeader>
                 <CardTitle>Paket Se�enekleri</CardTitle>
@@ -380,28 +401,38 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
             </Card>
           )}
 
-          {/* FAQ */}
-          {'faq' in servicePackage &&
-            servicePackage.faq &&
-            servicePackage.faq.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>S�k�a Sorulan Sorular</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {servicePackage.faq.map((item, index) => (
-                      <div key={index}>
-                        <h4 className="font-medium text-gray-900">
-                          {item.question}
-                        </h4>
-                        <p className="mt-1 text-gray-600">{item.answer}</p>
+              {/* FAQ */}
+              {'faq' in servicePackage &&
+                servicePackage.faq &&
+                servicePackage.faq.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Sıkça Sorulan Sorular</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {servicePackage.faq.map((item, index) => (
+                          <div key={index}>
+                            <h4 className="font-medium text-gray-900">
+                              {item.question}
+                            </h4>
+                            <p className="mt-1 text-gray-600">{item.answer}</p>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+                    </CardContent>
+                  </Card>
+                )}
+            </TabsContent>
+
+            {/* Reviews Tab */}
+            <TabsContent value="reviews" className="mt-6">
+              <PackageReviewsTab
+                packageId={packageId}
+                canReview={false} // TODO: Implement based on user's order status
+              />
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Sidebar */}
