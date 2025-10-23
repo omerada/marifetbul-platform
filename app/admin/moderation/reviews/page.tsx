@@ -19,7 +19,12 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/Dialog';
 import { ReviewCard } from '@/components/shared/ReviewCard';
 import { UnifiedSkeleton } from '@/components/ui/UnifiedLoadingSystem';
 import { Pagination } from '@/components/ui/Pagination';
@@ -38,7 +43,9 @@ export default function AdminReviewModerationPage() {
     clearError,
   } = useReviewStore();
 
-  const [currentTab, setCurrentTab] = useState<'pending' | 'flagged'>('pending');
+  const [currentTab, setCurrentTab] = useState<'pending' | 'flagged'>(
+    'pending'
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
@@ -108,7 +115,11 @@ export default function AdminReviewModerationPage() {
 
   // Handle delete review
   const handleDelete = async (reviewId: string) => {
-    if (!window.confirm('Bu değerlendirmeyi kalıcı olarak silmek istediğinizden emin misiniz?')) {
+    if (
+      !window.confirm(
+        'Bu değerlendirmeyi kalıcı olarak silmek istediğinizden emin misiniz?'
+      )
+    ) {
       return;
     }
 
@@ -122,13 +133,19 @@ export default function AdminReviewModerationPage() {
   };
 
   // Get stats
-  const pendingCount = reviews.filter((r) => r.status === ReviewStatus.PENDING).length;
-  const flaggedCount = reviews.filter((r) => r.flaggedCount && r.flaggedCount > 0).length;
+  const pendingCount = reviews.filter(
+    (r) => r.status === ReviewStatus.PENDING
+  ).length;
+  const flaggedCount = reviews.filter(
+    (r) => r.flaggedCount && r.flaggedCount > 0
+  ).length;
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Değerlendirme Moderasyonu</h1>
+        <h1 className="text-3xl font-bold text-gray-900">
+          Değerlendirme Moderasyonu
+        </h1>
         <p className="mt-2 text-gray-600">
           Bekleyen ve şikayet edilen değerlendirmeleri yönetin
         </p>
@@ -137,50 +154,50 @@ export default function AdminReviewModerationPage() {
       {/* Stats Cards */}
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bekleyen</CardTitle>
-            <Eye className="w-4 h-4 text-gray-500" />
+            <Eye className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{pendingCount}</div>
-            <p className="text-xs text-gray-500 mt-1">Onay bekliyor</p>
+            <p className="mt-1 text-xs text-gray-500">Onay bekliyor</p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Şikayetli</CardTitle>
-            <Flag className="w-4 h-4 text-red-500" />
+            <Flag className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{flaggedCount}</div>
-            <p className="text-xs text-gray-500 mt-1">İnceleme gerekiyor</p>
+            <p className="mt-1 text-xs text-gray-500">İnceleme gerekiyor</p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Onaylanan</CardTitle>
-            <CheckCircle className="w-4 h-4 text-green-500" />
+            <CheckCircle className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {reviews.filter((r) => r.status === ReviewStatus.APPROVED).length}
             </div>
-            <p className="text-xs text-gray-500 mt-1">Bu sayfada</p>
+            <p className="mt-1 text-xs text-gray-500">Bu sayfada</p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Reddedilen</CardTitle>
-            <XCircle className="w-4 h-4 text-red-500" />
+            <XCircle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {reviews.filter((r) => r.status === ReviewStatus.REJECTED).length}
             </div>
-            <p className="text-xs text-gray-500 mt-1">Bu sayfada</p>
+            <p className="mt-1 text-xs text-gray-500">Bu sayfada</p>
           </CardContent>
         </Card>
       </div>
@@ -199,7 +216,7 @@ export default function AdminReviewModerationPage() {
 
       {/* Tabs */}
       <Tabs defaultValue={currentTab} className="w-full">
-        <TabsList className="w-full justify-start border-b rounded-none bg-transparent p-0">
+        <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
           <TabsTrigger
             value="pending"
             className="rounded-none border-b-2 border-transparent px-4 pb-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent"
@@ -221,11 +238,23 @@ export default function AdminReviewModerationPage() {
               {[1, 2, 3].map((i) => (
                 <Card key={i} className="p-6">
                   <div className="space-y-3">
-                    <UnifiedSkeleton.Skeleton variant="rounded" className="h-4 w-1/3" />
-                    <UnifiedSkeleton.Skeleton variant="rounded" className="h-20 w-full" />
+                    <UnifiedSkeleton.Skeleton
+                      variant="rounded"
+                      className="h-4 w-1/3"
+                    />
+                    <UnifiedSkeleton.Skeleton
+                      variant="rounded"
+                      className="h-20 w-full"
+                    />
                     <div className="flex gap-2">
-                      <UnifiedSkeleton.Skeleton variant="rounded" className="h-10 w-24" />
-                      <UnifiedSkeleton.Skeleton variant="rounded" className="h-10 w-24" />
+                      <UnifiedSkeleton.Skeleton
+                        variant="rounded"
+                        className="h-10 w-24"
+                      />
+                      <UnifiedSkeleton.Skeleton
+                        variant="rounded"
+                        className="h-10 w-24"
+                      />
                     </div>
                   </div>
                 </Card>
@@ -245,7 +274,7 @@ export default function AdminReviewModerationPage() {
             <div className="space-y-6">
               {reviews.map((review) => (
                 <Card key={review.id} className="p-6">
-                  <div className="flex items-start justify-between mb-4">
+                  <div className="mb-4 flex items-start justify-between">
                     <div>
                       <Badge
                         variant={
@@ -258,7 +287,8 @@ export default function AdminReviewModerationPage() {
                       >
                         {review.status === ReviewStatus.PENDING && 'Bekliyor'}
                         {review.status === ReviewStatus.APPROVED && 'Onaylandı'}
-                        {review.status === ReviewStatus.REJECTED && 'Reddedildi'}
+                        {review.status === ReviewStatus.REJECTED &&
+                          'Reddedildi'}
                       </Badge>
                     </div>
                     <Button
@@ -266,7 +296,7 @@ export default function AdminReviewModerationPage() {
                       size="sm"
                       onClick={() => handleViewDetails(review)}
                     >
-                      <Eye className="w-4 h-4 mr-2" />
+                      <Eye className="mr-2 h-4 w-4" />
                       Detaylar
                     </Button>
                   </div>
@@ -274,18 +304,18 @@ export default function AdminReviewModerationPage() {
                   <ReviewCard
                     review={review}
                     showActions={false}
-                    className="border-0 shadow-none p-0"
+                    className="border-0 p-0 shadow-none"
                   />
 
                   {review.status === ReviewStatus.PENDING && (
-                    <div className="mt-4 flex gap-3 pt-4 border-t">
+                    <div className="mt-4 flex gap-3 border-t pt-4">
                       <Button
                         size="sm"
                         onClick={() => handleApprove(review.id)}
                         disabled={actionLoading === review.id}
                         className="gap-2"
                       >
-                        <CheckCircle className="w-4 h-4" />
+                        <CheckCircle className="h-4 w-4" />
                         Onayla
                       </Button>
                       <Button
@@ -295,7 +325,7 @@ export default function AdminReviewModerationPage() {
                         disabled={actionLoading === review.id}
                         className="gap-2"
                       >
-                        <XCircle className="w-4 h-4" />
+                        <XCircle className="h-4 w-4" />
                         Reddet
                       </Button>
                       <Button
@@ -305,7 +335,7 @@ export default function AdminReviewModerationPage() {
                         disabled={actionLoading === review.id}
                         className="gap-2 text-red-600 hover:text-red-700"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="h-4 w-4" />
                         Sil
                       </Button>
                     </div>
@@ -323,11 +353,23 @@ export default function AdminReviewModerationPage() {
               {[1, 2, 3].map((i) => (
                 <Card key={i} className="p-6">
                   <div className="space-y-3">
-                    <UnifiedSkeleton.Skeleton variant="rounded" className="h-4 w-1/3" />
-                    <UnifiedSkeleton.Skeleton variant="rounded" className="h-20 w-full" />
+                    <UnifiedSkeleton.Skeleton
+                      variant="rounded"
+                      className="h-4 w-1/3"
+                    />
+                    <UnifiedSkeleton.Skeleton
+                      variant="rounded"
+                      className="h-20 w-full"
+                    />
                     <div className="flex gap-2">
-                      <UnifiedSkeleton.Skeleton variant="rounded" className="h-10 w-24" />
-                      <UnifiedSkeleton.Skeleton variant="rounded" className="h-10 w-24" />
+                      <UnifiedSkeleton.Skeleton
+                        variant="rounded"
+                        className="h-10 w-24"
+                      />
+                      <UnifiedSkeleton.Skeleton
+                        variant="rounded"
+                        className="h-10 w-24"
+                      />
                     </div>
                   </div>
                 </Card>
@@ -347,10 +389,10 @@ export default function AdminReviewModerationPage() {
             <div className="space-y-6">
               {reviews.map((review) => (
                 <Card key={review.id} className="p-6">
-                  <div className="flex items-start justify-between mb-4">
+                  <div className="mb-4 flex items-start justify-between">
                     <div className="flex items-center gap-2">
                       <Badge variant="destructive">
-                        <Flag className="w-3 h-3 mr-1" />
+                        <Flag className="mr-1 h-3 w-3" />
                         {review.flaggedCount || 0} Şikayet
                       </Badge>
                       <Badge
@@ -362,7 +404,8 @@ export default function AdminReviewModerationPage() {
                       >
                         {review.status === ReviewStatus.PENDING && 'Bekliyor'}
                         {review.status === ReviewStatus.APPROVED && 'Onaylandı'}
-                        {review.status === ReviewStatus.REJECTED && 'Reddedildi'}
+                        {review.status === ReviewStatus.REJECTED &&
+                          'Reddedildi'}
                       </Badge>
                     </div>
                     <Button
@@ -370,7 +413,7 @@ export default function AdminReviewModerationPage() {
                       size="sm"
                       onClick={() => handleViewDetails(review)}
                     >
-                      <Eye className="w-4 h-4 mr-2" />
+                      <Eye className="mr-2 h-4 w-4" />
                       Detaylar
                     </Button>
                   </div>
@@ -378,10 +421,10 @@ export default function AdminReviewModerationPage() {
                   <ReviewCard
                     review={review}
                     showActions={false}
-                    className="border-0 shadow-none p-0"
+                    className="border-0 p-0 shadow-none"
                   />
 
-                  <div className="mt-4 flex gap-3 pt-4 border-t">
+                  <div className="mt-4 flex gap-3 border-t pt-4">
                     {review.status === ReviewStatus.APPROVED && (
                       <Button
                         size="sm"
@@ -390,7 +433,7 @@ export default function AdminReviewModerationPage() {
                         disabled={actionLoading === review.id}
                         className="gap-2"
                       >
-                        <XCircle className="w-4 h-4" />
+                        <XCircle className="h-4 w-4" />
                         Reddet
                       </Button>
                     )}
@@ -401,7 +444,7 @@ export default function AdminReviewModerationPage() {
                         disabled={actionLoading === review.id}
                         className="gap-2"
                       >
-                        <CheckCircle className="w-4 h-4" />
+                        <CheckCircle className="h-4 w-4" />
                         Onayla
                       </Button>
                     )}
@@ -412,7 +455,7 @@ export default function AdminReviewModerationPage() {
                       disabled={actionLoading === review.id}
                       className="gap-2 text-red-600 hover:text-red-700"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="h-4 w-4" />
                       Sil
                     </Button>
                   </div>
@@ -424,20 +467,23 @@ export default function AdminReviewModerationPage() {
       </Tabs>
 
       {/* Pagination */}
-      {!loading && reviews.length > 0 && pagination && pagination.totalPages > 1 && (
-        <div className="mt-8">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={pagination.totalPages}
-            onPageChange={handlePageChange}
-          />
-        </div>
-      )}
+      {!loading &&
+        reviews.length > 0 &&
+        pagination &&
+        pagination.totalPages > 1 && (
+          <div className="mt-8">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={pagination.totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
 
       {/* Review Detail Dialog */}
       {selectedReview && (
         <Dialog open={showDetailDialog} onOpenChange={setShowDetailDialog}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Değerlendirme Detayları</DialogTitle>
             </DialogHeader>
@@ -452,19 +498,21 @@ export default function AdminReviewModerationPage() {
               {/* TODO: Add moderatorNote to Review interface */}
 
               {/* Flag Info */}
-              {selectedReview.flaggedCount && selectedReview.flaggedCount > 0 && (
-                <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-                  <h4 className="font-medium text-red-900 mb-2">
-                    Şikayet Bilgisi ({selectedReview.flaggedCount})
-                  </h4>
-                  <p className="text-sm text-red-800">
-                    Bu değerlendirme {selectedReview.flaggedCount} kez şikayet edildi.
-                  </p>
-                </div>
-              )}
+              {selectedReview.flaggedCount &&
+                selectedReview.flaggedCount > 0 && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                    <h4 className="mb-2 font-medium text-red-900">
+                      Şikayet Bilgisi ({selectedReview.flaggedCount})
+                    </h4>
+                    <p className="text-sm text-red-800">
+                      Bu değerlendirme {selectedReview.flaggedCount} kez şikayet
+                      edildi.
+                    </p>
+                  </div>
+                )}
 
               {/* Actions */}
-              <div className="flex gap-3 pt-4 border-t">
+              <div className="flex gap-3 border-t pt-4">
                 {selectedReview.status === ReviewStatus.PENDING && (
                   <>
                     <Button
@@ -475,7 +523,7 @@ export default function AdminReviewModerationPage() {
                       disabled={actionLoading === selectedReview.id}
                       className="gap-2"
                     >
-                      <CheckCircle className="w-4 h-4" />
+                      <CheckCircle className="h-4 w-4" />
                       Onayla
                     </Button>
                     <Button
@@ -487,7 +535,7 @@ export default function AdminReviewModerationPage() {
                       disabled={actionLoading === selectedReview.id}
                       className="gap-2"
                     >
-                      <XCircle className="w-4 h-4" />
+                      <XCircle className="h-4 w-4" />
                       Reddet
                     </Button>
                   </>
@@ -502,7 +550,7 @@ export default function AdminReviewModerationPage() {
                     disabled={actionLoading === selectedReview.id}
                     className="gap-2"
                   >
-                    <XCircle className="w-4 h-4" />
+                    <XCircle className="h-4 w-4" />
                     Reddet
                   </Button>
                 )}
@@ -515,7 +563,7 @@ export default function AdminReviewModerationPage() {
                     disabled={actionLoading === selectedReview.id}
                     className="gap-2"
                   >
-                    <CheckCircle className="w-4 h-4" />
+                    <CheckCircle className="h-4 w-4" />
                     Onayla
                   </Button>
                 )}
@@ -528,7 +576,7 @@ export default function AdminReviewModerationPage() {
                   disabled={actionLoading === selectedReview.id}
                   className="gap-2 text-red-600 hover:text-red-700"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="h-4 w-4" />
                   Sil
                 </Button>
               </div>

@@ -36,7 +36,7 @@ interface ReviewListProps {
   stats?: ReviewStats | null;
   loading?: boolean;
   error?: string | null;
-  
+
   // Pagination
   currentPage: number;
   totalPages: number;
@@ -111,7 +111,8 @@ export function ReviewList({
 
   // Handle sort changes
   const handleSortChange = (newSortBy: string) => {
-    const newDirection = sortBy === newSortBy && sortDirection === 'DESC' ? 'ASC' : 'DESC';
+    const newDirection =
+      sortBy === newSortBy && sortDirection === 'DESC' ? 'ASC' : 'DESC';
     setSortBy(newSortBy);
     setSortDirection(newDirection);
     onSortChange?.(newSortBy, newDirection);
@@ -129,7 +130,11 @@ export function ReviewList({
     return (
       <div className={cn('space-y-4', className)}>
         {[...Array(3)].map((_, i) => (
-          <UnifiedSkeleton.Skeleton key={i} variant="rounded" className="h-64 w-full" />
+          <UnifiedSkeleton.Skeleton
+            key={i}
+            variant="rounded"
+            className="h-64 w-full"
+          />
         ))}
       </div>
     );
@@ -138,7 +143,7 @@ export function ReviewList({
   // Error state
   if (error) {
     return (
-      <div className={cn('text-center py-12', className)}>
+      <div className={cn('py-12 text-center', className)}>
         <p className="text-red-600">{error}</p>
         <Button
           onClick={() => window.location.reload()}
@@ -154,11 +159,9 @@ export function ReviewList({
   // Empty state
   if (reviews.length === 0) {
     return (
-      <div className={cn('text-center py-12', className)}>
-        <p className="text-gray-600 mb-2">Henüz değerlendirme bulunmuyor</p>
-        <p className="text-sm text-gray-500">
-          İlk değerlendirmeyi siz yapın!
-        </p>
+      <div className={cn('py-12 text-center', className)}>
+        <p className="mb-2 text-gray-600">Henüz değerlendirme bulunmuyor</p>
+        <p className="text-sm text-gray-500">İlk değerlendirmeyi siz yapın!</p>
       </div>
     );
   }
@@ -167,10 +170,10 @@ export function ReviewList({
     <div className={cn('space-y-6', className)}>
       {/* Stats Section */}
       {showStats && stats && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {/* Rating Summary */}
           <div className="md:col-span-2">
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="rounded-lg border border-gray-200 bg-white p-6">
               <RatingSummary
                 averageRating={stats.averageRating}
                 totalReviews={stats.totalReviews}
@@ -179,13 +182,15 @@ export function ReviewList({
               />
               <RatingDistribution
                 stats={stats}
-                onFilterByRating={(rating) => handleFilterChange({ minRating: rating })}
+                onFilterByRating={(rating) =>
+                  handleFilterChange({ minRating: rating })
+                }
               />
             </div>
           </div>
 
           {/* Rating Breakdown */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="rounded-lg border border-gray-200 bg-white p-6">
             <RatingBreakdown stats={stats} />
           </div>
         </div>
@@ -193,7 +198,7 @@ export function ReviewList({
 
       {/* Filters & Sort Controls */}
       {showFilters && (
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
           <div className="flex items-center justify-between gap-4">
             {/* Filter Toggle */}
             <Button
@@ -202,33 +207,26 @@ export function ReviewList({
               onClick={() => setShowFilterPanel(!showFilterPanel)}
               className="gap-2"
             >
-              <Filter className="w-4 h-4" />
+              <Filter className="h-4 w-4" />
               Filtrele
             </Button>
 
             <div className="flex items-center gap-3">
               {/* Sort By */}
               <div className="w-48">
-                <Select
-                  value={sortBy}
-                  onValueChange={handleSortChange}
-                >
-                <option value="CREATED_AT">Tarihe Göre</option>
-                <option value="RATING">Puana Göre</option>
-                <option value="HELPFUL_COUNT">Faydalılığa Göre</option>
+                <Select value={sortBy} onValueChange={handleSortChange}>
+                  <option value="CREATED_AT">Tarihe Göre</option>
+                  <option value="RATING">Puana Göre</option>
+                  <option value="HELPFUL_COUNT">Faydalılığa Göre</option>
                 </Select>
               </div>
 
               {/* Sort Direction */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleSortDirection}
-              >
+              <Button variant="outline" size="sm" onClick={toggleSortDirection}>
                 {sortDirection === 'DESC' ? (
-                  <SortDesc className="w-4 h-4" />
+                  <SortDesc className="h-4 w-4" />
                 ) : (
-                  <SortAsc className="w-4 h-4" />
+                  <SortAsc className="h-4 w-4" />
                 )}
               </Button>
             </div>
@@ -236,23 +234,25 @@ export function ReviewList({
 
           {/* Filter Panel */}
           {showFilterPanel && (
-            <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
+            <div className="mt-4 space-y-3 border-t border-gray-200 pt-4">
               {/* Min Rating Filter */}
               <div>
                 <Label htmlFor="minRating">Minimum Puan</Label>
-                <div className="w-full mt-1">
+                <div className="mt-1 w-full">
                   <Select
                     value={filters.minRating?.toString() || ''}
                     onValueChange={(value) =>
-                      handleFilterChange({ minRating: value ? Number(value) : undefined })
+                      handleFilterChange({
+                        minRating: value ? Number(value) : undefined,
+                      })
                     }
                   >
-                  <option value="">Tümü</option>
-                  <option value="5">5 Yıldız</option>
-                  <option value="4">4+ Yıldız</option>
-                  <option value="3">3+ Yıldız</option>
-                  <option value="2">2+ Yıldız</option>
-                  <option value="1">1+ Yıldız</option>
+                    <option value="">Tümü</option>
+                    <option value="5">5 Yıldız</option>
+                    <option value="4">4+ Yıldız</option>
+                    <option value="3">3+ Yıldız</option>
+                    <option value="2">2+ Yıldız</option>
+                    <option value="1">1+ Yıldız</option>
                   </Select>
                 </div>
               </div>
@@ -295,7 +295,7 @@ export function ReviewList({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center mt-8">
+        <div className="mt-8 flex justify-center">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

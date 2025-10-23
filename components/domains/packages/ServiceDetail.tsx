@@ -258,7 +258,7 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
 
           {/* Tabs Section */}
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="w-full justify-start border-b rounded-none bg-transparent p-0">
+            <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
               <TabsTrigger
                 value="overview"
                 className="rounded-none border-b-2 border-transparent px-4 pb-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent"
@@ -277,129 +277,132 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
             <TabsContent value="overview" className="mt-6 space-y-6">
               {/* Pricing Tiers */}
               {'pricing' in servicePackage && servicePackage.pricing && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Paket Se�enekleri</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                  {Object.entries(servicePackage.pricing).map(
-                    ([tier, details]) => (
-                      <div
-                        key={tier}
-                        className={`cursor-pointer rounded-lg border-2 p-4 transition-colors ${
-                          selectedTier === tier
-                            ? 'border-blue-500 bg-blue-50'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                        onClick={() =>
-                          setSelectedTier(
-                            tier as 'basic' | 'standard' | 'premium'
-                          )
-                        }
-                      >
-                        <div className="mb-2 flex items-center justify-between">
-                          <h3 className="font-semibold">{details.title}</h3>
-                          <Badge
-                            variant={tier === 'premium' ? 'default' : 'outline'}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Paket Se�enekleri</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                      {Object.entries(servicePackage.pricing).map(
+                        ([tier, details]) => (
+                          <div
+                            key={tier}
+                            className={`cursor-pointer rounded-lg border-2 p-4 transition-colors ${
+                              selectedTier === tier
+                                ? 'border-blue-500 bg-blue-50'
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                            onClick={() =>
+                              setSelectedTier(
+                                tier as 'basic' | 'standard' | 'premium'
+                              )
+                            }
                           >
-                            {formatPrice(details.price)}
-                          </Badge>
-                        </div>
-                        <p className="mb-3 text-sm text-gray-600">
-                          {details.description}
-                        </p>
-                        <div className="space-y-1 text-sm">
-                          <div className="flex items-center">
-                            <Clock className="mr-1 h-3 w-3" />
-                            {formatDeliveryTime(details.deliveryTime)}
-                          </div>
-                          <div className="flex items-center">
-                            <RefreshCw className="mr-1 h-3 w-3" />
-                            {details.revisions} revizyon
-                          </div>
-                        </div>
-                        <ul className="mt-3 space-y-1">
-                          {details.features?.map(
-                            (feature: string, index: number) => (
-                              <li
-                                key={index}
-                                className="flex items-start text-sm"
+                            <div className="mb-2 flex items-center justify-between">
+                              <h3 className="font-semibold">{details.title}</h3>
+                              <Badge
+                                variant={
+                                  tier === 'premium' ? 'default' : 'outline'
+                                }
                               >
-                                <Check className="mt-0.5 mr-1 h-3 w-3 text-green-500" />
-                                {feature}
-                              </li>
-                            )
-                          )}
-                        </ul>
-                      </div>
-                    )
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Add-ons */}
-          {'addOns' in servicePackage &&
-            servicePackage.addOns &&
-            servicePackage.addOns.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Ek Hizmetler</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {servicePackage.addOns.map((addOn) => (
-                      <div
-                        key={addOn.id}
-                        className="flex items-center justify-between rounded-lg border p-3"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <input
-                            type="checkbox"
-                            checked={selectedAddOns.includes(addOn.id)}
-                            onChange={() => toggleAddOn(addOn.id)}
-                            className="h-4 w-4 rounded border-gray-300"
-                          />
-                          <div>
-                            <h4 className="font-medium">{addOn.title}</h4>
-                            {addOn.deliveryTime !== 0 && (
-                              <p className="text-sm text-gray-600">
-                                {addOn.deliveryTime > 0 ? '+' : ''}
-                                {addOn.deliveryTime} g�n
-                              </p>
-                            )}
+                                {formatPrice(details.price)}
+                              </Badge>
+                            </div>
+                            <p className="mb-3 text-sm text-gray-600">
+                              {details.description}
+                            </p>
+                            <div className="space-y-1 text-sm">
+                              <div className="flex items-center">
+                                <Clock className="mr-1 h-3 w-3" />
+                                {formatDeliveryTime(details.deliveryTime)}
+                              </div>
+                              <div className="flex items-center">
+                                <RefreshCw className="mr-1 h-3 w-3" />
+                                {details.revisions} revizyon
+                              </div>
+                            </div>
+                            <ul className="mt-3 space-y-1">
+                              {details.features?.map(
+                                (feature: string, index: number) => (
+                                  <li
+                                    key={index}
+                                    className="flex items-start text-sm"
+                                  >
+                                    <Check className="mt-0.5 mr-1 h-3 w-3 text-green-500" />
+                                    {feature}
+                                  </li>
+                                )
+                              )}
+                            </ul>
                           </div>
-                        </div>
-                        <span className="font-semibold">
-                          +{formatPrice(addOn.price)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+                        )
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
-          {/* What's Included */}
-          {'whatIncluded' in servicePackage && servicePackage.whatIncluded && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Paket �eri�i</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {servicePackage.whatIncluded?.map((item, index) => (
-                    <li key={index} className="flex items-start">
-                      <Check className="mt-0.5 mr-2 h-4 w-4 text-green-500" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          )}
+              {/* Add-ons */}
+              {'addOns' in servicePackage &&
+                servicePackage.addOns &&
+                servicePackage.addOns.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Ek Hizmetler</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {servicePackage.addOns.map((addOn) => (
+                          <div
+                            key={addOn.id}
+                            className="flex items-center justify-between rounded-lg border p-3"
+                          >
+                            <div className="flex items-center space-x-3">
+                              <input
+                                type="checkbox"
+                                checked={selectedAddOns.includes(addOn.id)}
+                                onChange={() => toggleAddOn(addOn.id)}
+                                className="h-4 w-4 rounded border-gray-300"
+                              />
+                              <div>
+                                <h4 className="font-medium">{addOn.title}</h4>
+                                {addOn.deliveryTime !== 0 && (
+                                  <p className="text-sm text-gray-600">
+                                    {addOn.deliveryTime > 0 ? '+' : ''}
+                                    {addOn.deliveryTime} g�n
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <span className="font-semibold">
+                              +{formatPrice(addOn.price)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+              {/* What's Included */}
+              {'whatIncluded' in servicePackage &&
+                servicePackage.whatIncluded && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Paket �eri�i</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {servicePackage.whatIncluded?.map((item, index) => (
+                          <li key={index} className="flex items-start">
+                            <Check className="mt-0.5 mr-2 h-4 w-4 text-green-500" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                )}
 
               {/* FAQ */}
               {'faq' in servicePackage &&

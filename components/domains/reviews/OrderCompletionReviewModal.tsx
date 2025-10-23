@@ -15,7 +15,12 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Star, X, Calendar } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/Dialog';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { ReviewForm } from '@/components/shared/ReviewForm';
 import { ReviewType } from '@/types/business/review';
@@ -89,16 +94,16 @@ export function OrderCompletionReviewModal({
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                <Star className="h-5 w-5 fill-yellow-500 text-yellow-500" />
                 Siparişiniz Tamamlandı!
               </DialogTitle>
             </DialogHeader>
 
             <div className="space-y-6">
               {/* Order Info */}
-              <div className="flex items-start gap-4 p-4 rounded-lg bg-gray-50">
+              <div className="flex items-start gap-4 rounded-lg bg-gray-50 p-4">
                 {packageImage && (
-                  <div className="relative flex-shrink-0 w-20 h-20 rounded-lg bg-gray-200 overflow-hidden">
+                  <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-gray-200">
                     <Image
                       src={packageImage}
                       alt={packageTitle}
@@ -107,14 +112,14 @@ export function OrderCompletionReviewModal({
                     />
                   </div>
                 )}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-gray-900 truncate">
+                <div className="min-w-0 flex-1">
+                  <h3 className="truncate font-semibold text-gray-900">
                     {packageTitle}
                   </h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="mt-1 text-sm text-gray-600">
                     Satıcı: <span className="font-medium">{sellerName}</span>
                   </p>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="mt-1 text-sm text-gray-500">
                     Tamamlandı {completedTimeAgo}
                   </p>
                 </div>
@@ -123,20 +128,27 @@ export function OrderCompletionReviewModal({
               {/* Review Prompt */}
               <div className="space-y-3">
                 <p className="text-gray-700">
-                  <span className="font-semibold">{sellerName}</span> ile çalışma deneyiminiz nasıldı?
-                  Değerlendirmeniz diğer kullanıcıların doğru kararlar almasına yardımcı olur.
+                  <span className="font-semibold">{sellerName}</span> ile
+                  çalışma deneyiminiz nasıldı? Değerlendirmeniz diğer
+                  kullanıcıların doğru kararlar almasına yardımcı olur.
                 </p>
 
-                <div className="flex items-center gap-2 text-sm text-gray-600 p-3 rounded-lg bg-blue-50 border border-blue-200">
-                  <Calendar className="w-4 h-4 flex-shrink-0 text-blue-600" />
+                <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-gray-600">
+                  <Calendar className="h-4 w-4 flex-shrink-0 text-blue-600" />
                   <span>
                     {daysUntilDeadline > 0 ? (
                       <>
-                        Değerlendirme için <span className="font-semibold">{daysUntilDeadline} gün</span> süreniz var
+                        Değerlendirme için{' '}
+                        <span className="font-semibold">
+                          {daysUntilDeadline} gün
+                        </span>{' '}
+                        süreniz var
                       </>
                     ) : (
                       <>
-                        <span className="font-semibold text-red-600">Değerlendirme süresi dolmak üzere!</span>
+                        <span className="font-semibold text-red-600">
+                          Değerlendirme süresi dolmak üzere!
+                        </span>
                       </>
                     )}
                   </span>
@@ -145,30 +157,34 @@ export function OrderCompletionReviewModal({
 
               {/* Benefits */}
               <div className="space-y-2">
-                <h4 className="font-medium text-gray-900">Neden değerlendirme yapmalısınız?</h4>
+                <h4 className="font-medium text-gray-900">
+                  Neden değerlendirme yapmalısınız?
+                </h4>
                 <ul className="space-y-2 text-sm text-gray-600">
                   <li className="flex items-start gap-2">
-                    <Star className="w-4 h-4 flex-shrink-0 mt-0.5 text-yellow-500" />
+                    <Star className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-500" />
                     <span>Topluluk için güvenilir bir kaynak oluşturun</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Star className="w-4 h-4 flex-shrink-0 mt-0.5 text-yellow-500" />
+                    <Star className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-500" />
                     <span>Satıcıların gelişmesine katkı sağlayın</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Star className="w-4 h-4 flex-shrink-0 mt-0.5 text-yellow-500" />
-                    <span>Deneyiminizi paylaşarak diğerlerine yardımcı olun</span>
+                    <Star className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-500" />
+                    <span>
+                      Deneyiminizi paylaşarak diğerlerine yardımcı olun
+                    </span>
                   </li>
                 </ul>
               </div>
 
               {/* Actions */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+              <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row">
                 <Button
                   onClick={() => setShowReviewForm(true)}
                   className="flex-1 gap-2"
                 >
-                  <Star className="w-4 h-4" />
+                  <Star className="h-4 w-4" />
                   Değerlendirme Yaz
                 </Button>
                 <Button
@@ -183,7 +199,7 @@ export function OrderCompletionReviewModal({
                   onClick={handleSkip}
                   className="sm:w-auto"
                 >
-                  <X className="w-4 h-4 mr-2" />
+                  <X className="mr-2 h-4 w-4" />
                   Atla
                 </Button>
               </div>

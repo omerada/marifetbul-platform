@@ -134,40 +134,47 @@ export function ReviewForm({
   const isTextValid = charCount >= minChars && charCount <= maxChars;
 
   // Handle image selection
-  const handleImageSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files) return;
+  const handleImageSelect = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const files = event.target.files;
+      if (!files) return;
 
-    const newFiles = Array.from(files);
-    const totalImages = images.length + newFiles.length;
+      const newFiles = Array.from(files);
+      const totalImages = images.length + newFiles.length;
 
-    if (totalImages > 5) {
-      setError('Maksimum 5 resim yükleyebilirsiniz');
-      return;
-    }
+      if (totalImages > 5) {
+        setError('Maksimum 5 resim yükleyebilirsiniz');
+        return;
+      }
 
-    // Validate file sizes (max 5MB each)
-    const invalidFiles = newFiles.filter((file) => file.size > 5 * 1024 * 1024);
-    if (invalidFiles.length > 0) {
-      setError('Her resim maksimum 5MB olabilir');
-      return;
-    }
+      // Validate file sizes (max 5MB each)
+      const invalidFiles = newFiles.filter(
+        (file) => file.size > 5 * 1024 * 1024
+      );
+      if (invalidFiles.length > 0) {
+        setError('Her resim maksimum 5MB olabilir');
+        return;
+      }
 
-    // Validate file types
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-    const invalidTypes = newFiles.filter((file) => !validTypes.includes(file.type));
-    if (invalidTypes.length > 0) {
-      setError('Sadece JPEG, PNG ve WebP formatları desteklenmektedir');
-      return;
-    }
+      // Validate file types
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      const invalidTypes = newFiles.filter(
+        (file) => !validTypes.includes(file.type)
+      );
+      if (invalidTypes.length > 0) {
+        setError('Sadece JPEG, PNG ve WebP formatları desteklenmektedir');
+        return;
+      }
 
-    // Create preview URLs
-    const newPreviewUrls = newFiles.map((file) => URL.createObjectURL(file));
+      // Create preview URLs
+      const newPreviewUrls = newFiles.map((file) => URL.createObjectURL(file));
 
-    setImages((prev) => [...prev, ...newFiles]);
-    setImagePreviewUrls((prev) => [...prev, ...newPreviewUrls]);
-    setError(null);
-  }, [images.length]);
+      setImages((prev) => [...prev, ...newFiles]);
+      setImagePreviewUrls((prev) => [...prev, ...newPreviewUrls]);
+      setError(null);
+    },
+    [images.length]
+  );
 
   // Remove image
   const removeImage = useCallback((index: number) => {
@@ -190,7 +197,10 @@ export function ReviewForm({
 
       if (isEditMode) {
         // Update existing review
-        savedReview = await reviewApi.update(review.id, data as UpdateReviewRequest);
+        savedReview = await reviewApi.update(
+          review.id,
+          data as UpdateReviewRequest
+        );
       } else {
         // Create new review
         savedReview = await reviewApi.create(data as CreateReviewRequest);
@@ -231,7 +241,10 @@ export function ReviewForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={cn('space-y-6', className)}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className={cn('space-y-6', className)}
+    >
       {/* Error Alert */}
       {error && (
         <Alert variant="destructive">
@@ -242,16 +255,16 @@ export function ReviewForm({
       {/* Rating Section */}
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h3 className="mb-2 text-lg font-semibold text-gray-900">
             Değerlendirme
           </h3>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="mb-4 text-sm text-gray-600">
             Deneyiminizi 1-5 yıldız arasında değerlendirin
           </p>
         </div>
 
         {/* Overall Rating */}
-        <div className="p-4 bg-gray-50 rounded-lg">
+        <div className="rounded-lg bg-gray-50 p-4">
           <RatingCategory
             label={RATING_LABELS.overall}
             value={overallRating}
@@ -259,19 +272,19 @@ export function ReviewForm({
             required
           />
           {overallRating > 0 && (
-            <p className="text-sm text-gray-600 mt-2 ml-auto text-right">
+            <p className="mt-2 ml-auto text-right text-sm text-gray-600">
               {getRatingDescription(overallRating)}
             </p>
           )}
           {errors.overallRating && (
-            <p className="text-sm text-red-600 mt-1">
+            <p className="mt-1 text-sm text-red-600">
               {errors.overallRating.message}
             </p>
           )}
         </div>
 
         {/* Category Ratings */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div>
             <RatingCategory
               label={RATING_LABELS.communication}
@@ -280,7 +293,7 @@ export function ReviewForm({
               required
             />
             {errors.communicationRating && (
-              <p className="text-sm text-red-600 mt-1">
+              <p className="mt-1 text-sm text-red-600">
                 {errors.communicationRating.message}
               </p>
             )}
@@ -294,7 +307,7 @@ export function ReviewForm({
               required
             />
             {errors.qualityRating && (
-              <p className="text-sm text-red-600 mt-1">
+              <p className="mt-1 text-sm text-red-600">
                 {errors.qualityRating.message}
               </p>
             )}
@@ -308,7 +321,7 @@ export function ReviewForm({
               required
             />
             {errors.deliveryRating && (
-              <p className="text-sm text-red-600 mt-1">
+              <p className="mt-1 text-sm text-red-600">
                 {errors.deliveryRating.message}
               </p>
             )}
@@ -326,10 +339,7 @@ export function ReviewForm({
           {...register('reviewText')}
           placeholder="Deneyiminizi detaylı bir şekilde anlatın... (En az 50 karakter)"
           rows={6}
-          className={cn(
-            'resize-none',
-            errors.reviewText && 'border-red-500'
-          )}
+          className={cn('resize-none', errors.reviewText && 'border-red-500')}
         />
         <div className="flex items-center justify-between text-sm">
           <div>
@@ -355,16 +365,17 @@ export function ReviewForm({
       <div className="space-y-3">
         <Label>Resimler (Opsiyonel)</Label>
         <p className="text-sm text-gray-600">
-          Değerlendirmenizi desteklemek için resim ekleyin (Maksimum 5 adet, her biri 5MB)
+          Değerlendirmenizi desteklemek için resim ekleyin (Maksimum 5 adet, her
+          biri 5MB)
         </p>
 
         {/* Image Previews */}
         {imagePreviewUrls.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
             {imagePreviewUrls.map((url, index) => (
               <div
                 key={url}
-                className="relative aspect-square rounded-lg overflow-hidden border border-gray-200"
+                className="relative aspect-square overflow-hidden rounded-lg border border-gray-200"
               >
                 <Image
                   src={url}
@@ -375,9 +386,9 @@ export function ReviewForm({
                 <button
                   type="button"
                   onClick={() => removeImage(index)}
-                  className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                  className="absolute top-1 right-1 rounded-full bg-red-500 p-1 text-white transition-colors hover:bg-red-600"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="h-4 w-4" />
                 </button>
               </div>
             ))}
@@ -388,9 +399,9 @@ export function ReviewForm({
         {images.length < 5 && (
           <label
             htmlFor="image-upload"
-            className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors"
+            className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 p-4 transition-colors hover:border-gray-400"
           >
-            <ImageIcon className="w-5 h-5 text-gray-500" />
+            <ImageIcon className="h-5 w-5 text-gray-500" />
             <span className="text-sm text-gray-600">
               Resim Yükle ({images.length}/5)
             </span>
@@ -407,7 +418,7 @@ export function ReviewForm({
       </div>
 
       {/* Form Actions */}
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+      <div className="flex items-center justify-end gap-3 border-t border-gray-200 pt-4">
         {onCancel && (
           <Button
             type="button"
@@ -426,7 +437,7 @@ export function ReviewForm({
         >
           {isSubmitting || uploadingImages ? (
             <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               {uploadingImages ? 'Resimler yükleniyor...' : 'Kaydediliyor...'}
             </>
           ) : isEditMode ? (

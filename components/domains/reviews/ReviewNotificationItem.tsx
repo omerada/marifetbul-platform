@@ -54,19 +54,19 @@ export function ReviewNotificationItem({
   const getIcon = () => {
     switch (notification.type) {
       case 'REVIEW_REMINDER':
-        return <AlertCircle className="w-5 h-5 text-blue-600" />;
+        return <AlertCircle className="h-5 w-5 text-blue-600" />;
       case 'SELLER_RESPONSE':
-        return <MessageSquare className="w-5 h-5 text-green-600" />;
+        return <MessageSquare className="h-5 w-5 text-green-600" />;
       case 'HELPFUL_VOTE':
-        return <ThumbsUp className="w-5 h-5 text-purple-600" />;
+        return <ThumbsUp className="h-5 w-5 text-purple-600" />;
       case 'REVIEW_FLAGGED':
-        return <AlertCircle className="w-5 h-5 text-red-600" />;
+        return <AlertCircle className="h-5 w-5 text-red-600" />;
       case 'REVIEW_APPROVED':
-        return <Star className="w-5 h-5 text-green-600" />;
+        return <Star className="h-5 w-5 text-green-600" />;
       case 'REVIEW_REJECTED':
-        return <Star className="w-5 h-5 text-red-600" />;
+        return <Star className="h-5 w-5 text-red-600" />;
       default:
-        return <Star className="w-5 h-5 text-gray-600" />;
+        return <Star className="h-5 w-5 text-gray-600" />;
     }
   };
 
@@ -127,42 +127,44 @@ export function ReviewNotificationItem({
 
   return (
     <div
-      className={`flex items-start gap-3 p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer ${getBgColor()}`}
+      className={`flex cursor-pointer items-start gap-3 border-b border-gray-100 p-4 transition-colors hover:bg-gray-50 ${getBgColor()}`}
       onClick={handleClick}
     >
       {/* Icon */}
-      <div className="flex-shrink-0 mt-1">{getIcon()}</div>
+      <div className="mt-1 flex-shrink-0">{getIcon()}</div>
 
       {/* Content */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2 mb-1">
-          <h4 className="text-sm font-medium text-gray-900 truncate">
+      <div className="min-w-0 flex-1">
+        <div className="mb-1 flex items-start justify-between gap-2">
+          <h4 className="truncate text-sm font-medium text-gray-900">
             {notification.title}
           </h4>
           {!notification.read && (
-            <Badge variant="default" className="flex-shrink-0 h-5 px-2 text-xs">
+            <Badge variant="default" className="h-5 flex-shrink-0 px-2 text-xs">
               Yeni
             </Badge>
           )}
         </div>
 
-        <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+        <p className="mb-2 line-clamp-2 text-sm text-gray-600">
           {notification.message}
         </p>
 
         {notification.packageTitle && (
-          <p className="text-xs text-gray-500 truncate mb-1">
-            Paket: <span className="font-medium">{notification.packageTitle}</span>
+          <p className="mb-1 truncate text-xs text-gray-500">
+            Paket:{' '}
+            <span className="font-medium">{notification.packageTitle}</span>
           </p>
         )}
 
         {notification.sellerName && (
-          <p className="text-xs text-gray-500 truncate mb-1">
-            Satıcı: <span className="font-medium">{notification.sellerName}</span>
+          <p className="mb-1 truncate text-xs text-gray-500">
+            Satıcı:{' '}
+            <span className="font-medium">{notification.sellerName}</span>
           </p>
         )}
 
-        <div className="flex items-center justify-between mt-2">
+        <div className="mt-2 flex items-center justify-between">
           <span className="text-xs text-gray-500">{timeAgo}</span>
           <span className="text-xs text-gray-400">{getTypeLabel()}</span>
         </div>
@@ -188,12 +190,12 @@ export function ReviewNotificationBadge({
   return (
     <button
       onClick={onClick}
-      className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
+      className="relative rounded-full p-2 transition-colors hover:bg-gray-100"
       aria-label={`${count} yeni değerlendirme bildirimi`}
     >
-      <Star className="w-5 h-5 text-gray-600" />
+      <Star className="h-5 w-5 text-gray-600" />
       {count > 0 && (
-        <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-600 rounded-full">
+        <span className="absolute top-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs font-bold text-white">
           {count > 9 ? '9+' : count}
         </span>
       )}
@@ -222,7 +224,7 @@ export function ReviewNotificationList({
   if (notifications.length === 0) {
     return (
       <div className="p-8 text-center">
-        <Star className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+        <Star className="mx-auto mb-3 h-12 w-12 text-gray-300" />
         <p className="text-sm text-gray-600">Henüz bildiriminiz yok</p>
       </div>
     );
@@ -231,11 +233,13 @@ export function ReviewNotificationList({
   return (
     <div className="max-h-[600px] overflow-y-auto">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
         <div>
-          <h3 className="font-semibold text-gray-900">Değerlendirme Bildirimleri</h3>
+          <h3 className="font-semibold text-gray-900">
+            Değerlendirme Bildirimleri
+          </h3>
           {unreadCount > 0 && (
-            <p className="text-xs text-gray-500 mt-0.5">
+            <p className="mt-0.5 text-xs text-gray-500">
               {unreadCount} okunmamış bildirim
             </p>
           )}
@@ -243,7 +247,7 @@ export function ReviewNotificationList({
         {unreadCount > 0 && (
           <button
             onClick={onMarkAllAsRead}
-            className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+            className="text-xs font-medium text-blue-600 hover:text-blue-700"
           >
             Tümünü Okundu İşaretle
           </button>

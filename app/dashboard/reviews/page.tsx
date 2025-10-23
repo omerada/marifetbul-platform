@@ -15,7 +15,12 @@
 import { useEffect, useState } from 'react';
 import { useReviewStore } from '@/hooks/business/useReviewStore';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/Dialog';
 import { Alert } from '@/components/ui/Alert';
 import { ReviewList } from '@/components/shared/ReviewList';
 import { ReviewForm } from '@/components/shared/ReviewForm';
@@ -88,10 +93,10 @@ export default function DashboardReviewsPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="mb-2 text-3xl font-bold text-gray-900">
           Değerlendirmelerim
         </h1>
         <p className="text-gray-600">
@@ -117,10 +122,10 @@ export default function DashboardReviewsPage() {
       {/* Delete Confirmation */}
       {deleteConfirmId && (
         <Alert variant="destructive" className="mb-6">
-          <p className="font-semibold mb-2">
+          <p className="mb-2 font-semibold">
             Değerlendirmeyi silmek istediğinizden emin misiniz?
           </p>
-          <p className="text-sm mb-4">Bu işlem geri alınamaz.</p>
+          <p className="mb-4 text-sm">Bu işlem geri alınamaz.</p>
           <div className="flex gap-2">
             <Button
               variant="destructive"
@@ -129,11 +134,7 @@ export default function DashboardReviewsPage() {
             >
               Evet, Sil
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleCancelDelete}
-            >
+            <Button variant="outline" size="sm" onClick={handleCancelDelete}>
               İptal
             </Button>
           </div>
@@ -163,7 +164,7 @@ export default function DashboardReviewsPage() {
 
       {/* Edit Review Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Değerlendirmeyi Düzenle</DialogTitle>
           </DialogHeader>
