@@ -9,6 +9,10 @@
  * @since Review System Sprint
  */
 
+// Review Form Modal
+export { ReviewFormModal } from './ReviewFormModal';
+export type { ReviewFormModalProps } from './ReviewFormModal';
+
 // Order completion
 export { OrderCompletionReviewModal } from './OrderCompletionReviewModal';
 
