@@ -8,6 +8,8 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { PortfolioGallery } from '@/components/shared/features';
 import { MessageButton } from '@/components/domains/messaging';
+import { ReviewList } from '@/components/shared/ReviewList';
+import { useSellerReviews } from '@/hooks';
 import {
   MapPin,
   Star,
@@ -34,6 +36,25 @@ export function ProfileView({
   onHire,
 }: ProfileViewProps) {
   const profileCompleteness = calculateProfileCompleteness(freelancer);
+
+  // Fetch seller reviews and stats
+  const {
+    reviews,
+    stats,
+    loading: reviewsLoading,
+    error: reviewsError,
+    currentPage,
+    totalPages,
+    totalElements,
+    pageSize,
+    fetchReviews,
+    filterByRating,
+    sortReviews,
+  } = useSellerReviews({
+    sellerId: freelancer.id,
+    autoFetch: true,
+    pageSize: 10,
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -213,13 +234,29 @@ export function ProfileView({
 
             {/* Reviews */}
             <Card className="p-6">
-              <h2 className="mb-4 text-xl font-semibold text-gray-900">
-                Değerlendirmeler
-              </h2>
-              <div className="py-8 text-center">
-                <Star className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-                <p className="text-gray-600">Henüz değerlendirme yok.</p>
-              </div>
+              <ReviewList
+                reviews={reviews}
+                stats={stats}
+                loading={reviewsLoading}
+                error={reviewsError}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                _pageSize={pageSize}
+                totalElements={totalElements}
+                onPageChange={(page) => fetchReviews(page - 1)}
+                onFilterChange={(filters) => {
+                  if (filters.minRating) {
+                    filterByRating(filters.minRating);
+                  }
+                }}
+                onSortChange={(sortBy, sortDirection) =>
+                  sortReviews(sortBy, sortDirection)
+                }
+                showStats={true}
+                showFilters={true}
+                showPackageInfo={false}
+                showActions={false}
+              />
             </Card>
           </div>
 
@@ -262,6 +299,58 @@ export function ProfileView({
               </h3>
 
               <div className="space-y-4">
+                {/* Review Stats */}
+                {stats && stats.totalReviews > 0 && (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">
+                        Ortalama Puan
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-bold text-gray-900">
+                          {stats.averageRating.toFixed(1)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">
+                        Toplam Değerlendirme
+                      </span>
+                      <span className="text-sm font-semibold text-blue-600">
+                        {stats.totalReviews}
+                      </span>
+                    </div>
+
+                    {/* Category Averages */}
+                    {stats.communicationAvg > 0 && (
+                      <div className="space-y-2 border-t border-gray-200 pt-3">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-600">İletişim</span>
+                          <span className="font-medium text-gray-900">
+                            {stats.communicationAvg.toFixed(1)}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-600">Kalite</span>
+                          <span className="font-medium text-gray-900">
+                            {stats.qualityAvg.toFixed(1)}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-600">Teslimat</span>
+                          <span className="font-medium text-gray-900">
+                            {stats.deliveryAvg.toFixed(1)}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="border-t border-gray-200 pt-3"></div>
+                  </>
+                )}
+
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">
                     Deneyim Seviyesi

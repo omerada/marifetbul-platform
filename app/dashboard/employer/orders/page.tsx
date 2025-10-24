@@ -8,6 +8,7 @@ import {
   ApproveDeliveryModal,
   RequestRevisionModal,
   DisputeModal,
+  OrderReviewButtonCompact,
 } from '@/components/domains/orders';
 import {
   Package,
@@ -284,6 +285,15 @@ export default function EmployerOrdersPage() {
                         Revizyon İste
                       </Button>
                     </>
+                  )}
+                  {order.status === 'completed' && (
+                    <div className="flex items-center justify-center py-2">
+                      <OrderReviewButtonCompact
+                        orderId={order.id}
+                        orderStatus={order.status}
+                        hasExistingReview={false}
+                      />
+                    </div>
                   )}
                   {(order.status === 'in_progress' ||
                     order.status === 'delivered') && (

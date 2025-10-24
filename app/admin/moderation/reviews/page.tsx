@@ -14,7 +14,7 @@
 
 import { useEffect, useState } from 'react';
 import { Flag, CheckCircle, XCircle, Eye, Trash2 } from 'lucide-react';
-import { useReviewStore } from '@/hooks/business/useReviewStore';
+import { useAdminReviews } from '@/hooks/business/useAdminReviews';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -24,32 +24,50 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from '@/components/ui/Dialog';
 import { ReviewCard } from '@/components/shared/ReviewCard';
 import UnifiedSkeleton from '@/components/ui/UnifiedLoadingSystem';
 import { Pagination } from '@/components/ui/Pagination';
 import { ReviewStatus } from '@/types/business/review';
 import type { Review } from '@/types/business/review';
+import { Label } from '@/components/ui/Label';
+import { Textarea } from '@/components/ui/Textarea';
 
 export default function AdminReviewModerationPage() {
   const {
     reviews,
+    stats,
     pagination,
-    loading,
+    isLoading,
     error,
-    fetchPackageReviews,
-    moderateReview,
+    fetchPendingReviews,
+    fetchFlaggedReviews,
+    fetchStats,
+    approveReview,
+    rejectReview,
     deleteReview,
     clearError,
-  } = useReviewStore();
+  } = useAdminReviews({
+    onSuccess: () => {
+      loadReviews();
+    },
+  });
 
   const [currentTab, setCurrentTab] = useState<'pending' | 'flagged'>(
     'pending'
   );
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
+  const [showRejectDialog, setShowRejectDialog] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  // Load stats on mount
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   // Load reviews on mount and tab/page change
   useEffect(() => {
@@ -58,24 +76,23 @@ export default function AdminReviewModerationPage() {
   }, [currentTab, currentPage]);
 
   const loadReviews = () => {
-    // For now, use packageReviews with empty filter
-    // TODO: Implement backend endpoints for fetchForModeration and fetchFlagged
-    fetchPackageReviews({
-      packageId: '', // Empty to get all reviews
-      page: currentPage - 1,
-      pageSize: 10,
-    });
+    if (currentTab === 'pending') {
+      fetchPendingReviews(currentPage, 10);
+    } else {
+      fetchFlaggedReviews(currentPage, 10);
+    }
   };
 
   // Handle page change
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    setCurrentPage(page - 1); // Backend uses 0-indexed pages
   };
 
   // Handle tab change
-  const _handleTabChange = (tab: string) => {
-    setCurrentTab(tab as 'pending' | 'flagged');
-    setCurrentPage(1);
+  const handleTabChange = (value: string) => {
+    const newTab = value as 'pending' | 'flagged';
+    setCurrentTab(newTab);
+    setCurrentPage(0);
   };
 
   // Handle view details
@@ -88,26 +105,31 @@ export default function AdminReviewModerationPage() {
   const handleApprove = async (reviewId: string) => {
     setActionLoading(reviewId);
     try {
-      await moderateReview(reviewId, {
-        action: 'APPROVE',
-      });
-      loadReviews();
+      await approveReview(reviewId);
+    } catch {
+      // Error handled in hook
     } finally {
       setActionLoading(null);
     }
   };
 
-  // Handle reject review
-  const handleReject = async (reviewId: string) => {
-    const reason = window.prompt('Reddetme sebebi:');
-    if (!reason) return;
+  // Handle reject review with dialog
+  const handleRejectClick = (review: Review) => {
+    setSelectedReview(review);
+    setShowRejectDialog(true);
+  };
 
-    setActionLoading(reviewId);
+  const handleRejectConfirm = async () => {
+    if (!selectedReview || !rejectReason.trim()) return;
+
+    setActionLoading(selectedReview.id);
     try {
-      await moderateReview(reviewId, {
-        action: 'REJECT',
-      });
-      loadReviews();
+      await rejectReview(selectedReview.id, rejectReason.trim());
+      setShowRejectDialog(false);
+      setRejectReason('');
+      setSelectedReview(null);
+    } catch {
+      // Error handled in hook
     } finally {
       setActionLoading(null);
     }
@@ -126,19 +148,18 @@ export default function AdminReviewModerationPage() {
     setActionLoading(reviewId);
     try {
       await deleteReview(reviewId);
-      loadReviews();
+    } catch {
+      // Error handled in hook
     } finally {
       setActionLoading(null);
     }
   };
 
   // Get stats
-  const pendingCount = reviews.filter(
-    (r) => r.status === ReviewStatus.PENDING
-  ).length;
-  const flaggedCount = reviews.filter(
-    (r) => r.flaggedCount && r.flaggedCount > 0
-  ).length;
+  const pendingCount = stats?.pendingReviews || 0;
+  const flaggedCount = stats?.flaggedReviews || 0;
+  const approvedCount = stats?.approvedReviews || 0;
+  const rejectedCount = stats?.rejectedReviews || 0;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -181,10 +202,8 @@ export default function AdminReviewModerationPage() {
             <CheckCircle className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {reviews.filter((r) => r.status === ReviewStatus.APPROVED).length}
-            </div>
-            <p className="mt-1 text-xs text-gray-500">Bu sayfada</p>
+            <div className="text-2xl font-bold">{approvedCount}</div>
+            <p className="mt-1 text-xs text-gray-500">Toplam onaylanmış</p>
           </CardContent>
         </Card>
 
@@ -194,10 +213,8 @@ export default function AdminReviewModerationPage() {
             <XCircle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {reviews.filter((r) => r.status === ReviewStatus.REJECTED).length}
-            </div>
-            <p className="mt-1 text-xs text-gray-500">Bu sayfada</p>
+            <div className="text-2xl font-bold">{rejectedCount}</div>
+            <p className="mt-1 text-xs text-gray-500">Toplam reddedilmiş</p>
           </CardContent>
         </Card>
       </div>
@@ -215,7 +232,11 @@ export default function AdminReviewModerationPage() {
       )}
 
       {/* Tabs */}
-      <Tabs defaultValue={currentTab} className="w-full">
+      <Tabs
+        value={currentTab}
+        onValueChange={handleTabChange}
+        className="w-full"
+      >
         <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
           <TabsTrigger
             value="pending"
@@ -233,7 +254,7 @@ export default function AdminReviewModerationPage() {
 
         {/* Pending Reviews Tab */}
         <TabsContent value="pending" className="mt-6">
-          {loading ? (
+          {isLoading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
                 <Card key={i} className="p-6">
@@ -345,7 +366,7 @@ export default function AdminReviewModerationPage() {
 
         {/* Flagged Reviews Tab */}
         <TabsContent value="flagged" className="mt-6">
-          {loading ? (
+          {isLoading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
                 <Card key={i} className="p-6">
@@ -423,7 +444,7 @@ export default function AdminReviewModerationPage() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleReject(review.id)}
+                        onClick={() => handleRejectClick(review)}
                         disabled={actionLoading === review.id}
                         className="gap-2"
                       >
@@ -461,13 +482,13 @@ export default function AdminReviewModerationPage() {
       </Tabs>
 
       {/* Pagination */}
-      {!loading &&
+      {!isLoading &&
         reviews.length > 0 &&
         pagination &&
         pagination.totalPages > 1 && (
           <div className="mt-8">
             <Pagination
-              currentPage={currentPage}
+              currentPage={pagination.currentPage + 1}
               totalPages={pagination.totalPages}
               onPageChange={handlePageChange}
             />
@@ -523,7 +544,7 @@ export default function AdminReviewModerationPage() {
                     <Button
                       variant="outline"
                       onClick={() => {
-                        handleReject(selectedReview.id);
+                        handleRejectClick(selectedReview);
                         setShowDetailDialog(false);
                       }}
                       disabled={actionLoading === selectedReview.id}
@@ -538,7 +559,7 @@ export default function AdminReviewModerationPage() {
                   <Button
                     variant="outline"
                     onClick={() => {
-                      handleReject(selectedReview.id);
+                      handleRejectClick(selectedReview);
                       setShowDetailDialog(false);
                     }}
                     disabled={actionLoading === selectedReview.id}
@@ -575,6 +596,54 @@ export default function AdminReviewModerationPage() {
                 </Button>
               </div>
             </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Reject Reason Dialog */}
+      {showRejectDialog && selectedReview && (
+        <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Değerlendirmeyi Reddet</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                Bu değerlendirmeyi reddetme sebebinizi açıklayın:
+              </p>
+              <div className="space-y-2">
+                <Label htmlFor="reject-reason">Reddetme Sebebi *</Label>
+                <Textarea
+                  id="reject-reason"
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  placeholder="Örn: Uygunsuz dil içeriyor, spam, vb."
+                  rows={4}
+                  className="w-full"
+                />
+              </div>
+            </div>
+            <DialogFooter className="gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowRejectDialog(false);
+                  setRejectReason('');
+                  setSelectedReview(null);
+                }}
+              >
+                İptal
+              </Button>
+              <Button
+                onClick={handleRejectConfirm}
+                disabled={
+                  !rejectReason.trim() || actionLoading === selectedReview.id
+                }
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Reddet
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       )}

@@ -3,9 +3,9 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
+import { RatingStars } from '@/components/shared/RatingStars';
 import {
   Heart,
-  Star,
   Clock,
   ShoppingCart,
   User,
@@ -101,12 +101,9 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
                       </Link>
                     </div>
                     <span className="text-gray-400">•</span>
-                    <div className="flex items-center">
-                      <Star className="mr-1 h-4 w-4 fill-current text-amber-400" />
-                      <span className="font-medium">
-                        {pkg.rating?.toFixed(1) || 'N/A'}
-                      </span>
-                      <span className="text-gray-500">
+                    <div className="flex items-center gap-1">
+                      <RatingStars value={pkg.rating || 0} readonly size="sm" />
+                      <span className="text-xs text-gray-500">
                         (
                         {Array.isArray(pkg.reviews)
                           ? pkg.reviews.length
@@ -312,23 +309,17 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
         </p>
 
         <div className="grid grid-cols-2 gap-2 text-sm">
-          <div className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2">
-            <div className="flex items-center text-gray-600">
-              <Star className="mr-1 h-4 w-4 fill-current text-amber-400" />
-              <span className="font-medium">
-                {pkg.rating?.toFixed(1) || 'N/A'}
-              </span>
-            </div>
-            <span className="text-xs text-gray-500">
-              (
+          <div className="flex flex-col items-start justify-center rounded-lg bg-gray-50 px-3 py-2">
+            <RatingStars value={pkg.rating || 0} readonly size="sm" />
+            <span className="mt-1 text-xs text-gray-500">
               {Array.isArray(pkg.reviews)
                 ? pkg.reviews.length
-                : pkg.reviews || 0}
-              )
+                : pkg.reviews || 0}{' '}
+              değerlendirme
             </span>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2">
+          <div className="flex items-center justify-center rounded-lg bg-gray-50 px-3 py-2">
             <div className="flex items-center text-gray-600">
               <Clock className="mr-1 h-4 w-4" />
               <span className="text-xs font-medium">
