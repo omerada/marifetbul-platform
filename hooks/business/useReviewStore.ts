@@ -58,6 +58,7 @@ interface ReviewState {
   fetchReviews: (params?: ReviewQueryParams) => Promise<void>;
   fetchPackageReviews: (params: PackageReviewsQueryParams) => Promise<void>;
   fetchSellerReviews: (params: SellerReviewsQueryParams) => Promise<void>;
+  fetchUserReviews: (params?: ReviewQueryParams) => Promise<void>;
   fetchReviewById: (reviewId: string) => Promise<void>;
   createReview: (data: CreateReviewRequest) => Promise<Review>;
   updateReview: (
@@ -76,6 +77,15 @@ interface ReviewState {
     data: SellerResponseRequest
   ) => Promise<Review>;
   deleteResponse: (reviewId: string) => Promise<Review>;
+  addSellerResponse: (
+    reviewId: string,
+    data: SellerResponseRequest
+  ) => Promise<Review>;
+  updateSellerResponse: (
+    reviewId: string,
+    data: SellerResponseRequest
+  ) => Promise<Review>;
+  deleteSellerResponse: (reviewId: string) => Promise<Review>;
 
   // Actions - Voting
   voteReview: (reviewId: string, voteType: VoteType) => Promise<void>;
@@ -578,6 +588,110 @@ export const useReviewStore = create<ReviewState>()(
       clearError: () => set({ error: null }),
 
       reset: () => set(initialState),
+
+      // ========================================
+      // Aliases for backwards compatibility
+      // ========================================
+
+      fetchUserReviews: async (params) => {
+        set({ loading: true, error: null });
+        try {
+          const response = await reviewApi.getUserReviews(params);
+          set({
+            reviews: response.reviews,
+            pagination: response.pagination,
+            stats: response.stats || null,
+            loading: false,
+          });
+        } catch (error) {
+          set({
+            error:
+              error instanceof Error
+                ? error.message
+                : 'Failed to fetch user reviews',
+            loading: false,
+          });
+        }
+      },
+
+      addSellerResponse: async (reviewId, data) => {
+        set({ loading: true, error: null });
+        try {
+          const updatedReview = await reviewApi.addResponse(reviewId, data);
+          set((state) => ({
+            reviews: state.reviews.map((r) =>
+              r.id === reviewId ? updatedReview : r
+            ),
+            currentReview:
+              state.currentReview?.id === reviewId
+                ? updatedReview
+                : state.currentReview,
+            loading: false,
+          }));
+          return updatedReview;
+        } catch (error) {
+          set({
+            error:
+              error instanceof Error ? error.message : 'Failed to add response',
+            loading: false,
+          });
+          throw error;
+        }
+      },
+
+      updateSellerResponse: async (reviewId, data) => {
+        set({ loading: true, error: null });
+        try {
+          const updatedReview = await reviewApi.updateResponse(reviewId, data);
+          set((state) => ({
+            reviews: state.reviews.map((r) =>
+              r.id === reviewId ? updatedReview : r
+            ),
+            currentReview:
+              state.currentReview?.id === reviewId
+                ? updatedReview
+                : state.currentReview,
+            loading: false,
+          }));
+          return updatedReview;
+        } catch (error) {
+          set({
+            error:
+              error instanceof Error
+                ? error.message
+                : 'Failed to update response',
+            loading: false,
+          });
+          throw error;
+        }
+      },
+
+      deleteSellerResponse: async (reviewId) => {
+        set({ loading: true, error: null });
+        try {
+          const updatedReview = await reviewApi.deleteResponse(reviewId);
+          set((state) => ({
+            reviews: state.reviews.map((r) =>
+              r.id === reviewId ? updatedReview : r
+            ),
+            currentReview:
+              state.currentReview?.id === reviewId
+                ? updatedReview
+                : state.currentReview,
+            loading: false,
+          }));
+          return updatedReview;
+        } catch (error) {
+          set({
+            error:
+              error instanceof Error
+                ? error.message
+                : 'Failed to delete response',
+            loading: false,
+          });
+          throw error;
+        }
+      },
     }),
     { name: 'ReviewStore' }
   )

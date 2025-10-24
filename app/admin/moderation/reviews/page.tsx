@@ -26,7 +26,7 @@ import {
   DialogTitle,
 } from '@/components/ui/Dialog';
 import { ReviewCard } from '@/components/shared/ReviewCard';
-import { UnifiedSkeleton } from '@/components/ui/UnifiedLoadingSystem';
+import UnifiedSkeleton from '@/components/ui/UnifiedLoadingSystem';
 import { Pagination } from '@/components/ui/Pagination';
 import { ReviewStatus } from '@/types/business/review';
 import type { Review } from '@/types/business/review';
@@ -73,7 +73,7 @@ export default function AdminReviewModerationPage() {
   };
 
   // Handle tab change
-  const handleTabChange = (tab: string) => {
+  const _handleTabChange = (tab: string) => {
     setCurrentTab(tab as 'pending' | 'flagged');
     setCurrentPage(1);
   };
@@ -238,21 +238,18 @@ export default function AdminReviewModerationPage() {
               {[1, 2, 3].map((i) => (
                 <Card key={i} className="p-6">
                   <div className="space-y-3">
-                    <UnifiedSkeleton.Skeleton
-                      variant="rounded"
-                      className="h-4 w-1/3"
-                    />
-                    <UnifiedSkeleton.Skeleton
-                      variant="rounded"
+                    <UnifiedSkeleton variant="skeleton" className="h-4 w-1/3" />
+                    <UnifiedSkeleton
+                      variant="skeleton"
                       className="h-20 w-full"
                     />
                     <div className="flex gap-2">
-                      <UnifiedSkeleton.Skeleton
-                        variant="rounded"
+                      <UnifiedSkeleton
+                        variant="skeleton"
                         className="h-10 w-24"
                       />
-                      <UnifiedSkeleton.Skeleton
-                        variant="rounded"
+                      <UnifiedSkeleton
+                        variant="skeleton"
                         className="h-10 w-24"
                       />
                     </div>
@@ -353,21 +350,18 @@ export default function AdminReviewModerationPage() {
               {[1, 2, 3].map((i) => (
                 <Card key={i} className="p-6">
                   <div className="space-y-3">
-                    <UnifiedSkeleton.Skeleton
-                      variant="rounded"
-                      className="h-4 w-1/3"
-                    />
-                    <UnifiedSkeleton.Skeleton
-                      variant="rounded"
+                    <UnifiedSkeleton variant="skeleton" className="h-4 w-1/3" />
+                    <UnifiedSkeleton
+                      variant="skeleton"
                       className="h-20 w-full"
                     />
                     <div className="flex gap-2">
-                      <UnifiedSkeleton.Skeleton
-                        variant="rounded"
+                      <UnifiedSkeleton
+                        variant="skeleton"
                         className="h-10 w-24"
                       />
-                      <UnifiedSkeleton.Skeleton
-                        variant="rounded"
+                      <UnifiedSkeleton
+                        variant="skeleton"
                         className="h-10 w-24"
                       />
                     </div>

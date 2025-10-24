@@ -22,7 +22,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from '@/components/ui/Select';
 import {
   Dialog,
@@ -38,7 +37,7 @@ import {
   RatingBreakdown,
 } from '@/components/shared/RatingDistribution';
 import { ReviewCard } from '@/components/shared/ReviewCard';
-import { UnifiedSkeleton } from '@/components/ui/UnifiedLoadingSystem';
+import UnifiedSkeleton from '@/components/ui/UnifiedLoadingSystem';
 import { Pagination } from '@/components/ui/Pagination';
 import type { Review } from '@/types/business/review';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
@@ -249,7 +248,7 @@ export default function FreelancerReviewsPage() {
                 </span>
               </div>
               <RatingStars
-                rating={stats.communicationAvg}
+                value={stats.communicationAvg}
                 size="sm"
                 className="mt-2"
               />
@@ -298,9 +297,7 @@ export default function FreelancerReviewsPage() {
 
             <div className="min-w-[200px] flex-1">
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sıralama" />
-                </SelectTrigger>
+                <SelectTrigger placeholder="Sıralama" />
                 <SelectContent>
                   <SelectItem value="CREATED_AT">En Yeni</SelectItem>
                   <SelectItem value="RATING">En Yüksek Puan</SelectItem>
@@ -317,9 +314,7 @@ export default function FreelancerReviewsPage() {
                   setCurrentPage(1);
                 }}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Minimum Puan" />
-                </SelectTrigger>
+                <SelectTrigger placeholder="Minimum Puan" />
                 <SelectContent>
                   <SelectItem value="all">Tüm Puanlar</SelectItem>
                   <SelectItem value="5">5 Yıldız</SelectItem>
@@ -332,7 +327,7 @@ export default function FreelancerReviewsPage() {
             </div>
 
             <Button
-              variant={verifiedOnly ? 'default' : 'outline'}
+              variant={verifiedOnly ? 'primary' : 'outline'}
               onClick={() => {
                 setVerifiedOnly(!verifiedOnly);
                 setCurrentPage(1);
@@ -375,18 +370,9 @@ export default function FreelancerReviewsPage() {
           {[1, 2, 3].map((i) => (
             <Card key={i} className="p-6">
               <div className="space-y-3">
-                <UnifiedSkeleton.Skeleton
-                  variant="rounded"
-                  className="h-4 w-1/3"
-                />
-                <UnifiedSkeleton.Skeleton
-                  variant="rounded"
-                  className="h-20 w-full"
-                />
-                <UnifiedSkeleton.Skeleton
-                  variant="rounded"
-                  className="h-10 w-1/4"
-                />
+                <UnifiedSkeleton variant="skeleton" className="h-4 w-1/3" />
+                <UnifiedSkeleton variant="skeleton" className="h-20 w-full" />
+                <UnifiedSkeleton variant="skeleton" className="h-10 w-1/4" />
               </div>
             </Card>
           ))}
@@ -405,12 +391,19 @@ export default function FreelancerReviewsPage() {
       ) : (
         <div className="space-y-6">
           {reviews.map((review) => (
-            <ReviewCard
-              key={review.id}
-              review={review}
-              showActions={false}
-              onRespond={() => handleRespond(review)}
-            />
+            <div key={review.id} className="relative">
+              <ReviewCard review={review} showActions={false} />
+              {!review.sellerResponse && (
+                <div className="mt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => handleRespond(review)}
+                  >
+                    Yanıtla
+                  </Button>
+                </div>
+              )}
+            </div>
           ))}
         </div>
       )}
@@ -444,7 +437,8 @@ export default function FreelancerReviewsPage() {
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
                 <div className="mb-2 flex items-center gap-2">
                   <RatingStars
-                    rating={selectedReview.overallRating}
+                    value={selectedReview.overallRating}
+                    readonly
                     size="sm"
                   />
                   <span className="text-sm font-medium">

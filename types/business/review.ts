@@ -58,6 +58,18 @@ export enum FlagReason {
 // ========================================
 
 /**
+ * Seller response to a review
+ */
+export interface SellerResponse {
+  id: string;
+  reviewId: string;
+  sellerId: string;
+  responseText: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
  * Review response from backend
  */
 export interface Review {
@@ -70,6 +82,8 @@ export interface Review {
   orderId?: string;
   packageId?: string;
   packageTitle?: string;
+  packageName?: string;
+  serviceName?: string;
   type: ReviewType;
   status: ReviewStatus;
   overallRating: number;
@@ -78,9 +92,11 @@ export interface Review {
   deliveryRating: number;
   reviewText: string;
   responseText?: string;
+  sellerResponse?: SellerResponse;
   helpfulCount: number;
   notHelpfulCount: number;
   isVerifiedPurchase: boolean;
+  verifiedPurchase?: boolean; // Alias for backwards compatibility
   flaggedCount: number;
   adminNotes?: string;
   createdAt: string;
@@ -124,6 +140,28 @@ export interface ReviewStats {
   qualityAvg: number;
   deliveryAvg: number;
   verifiedPurchaseCount: number;
+}
+
+/**
+ * Platform-wide review statistics (admin)
+ */
+export interface PlatformReviewStats extends ReviewStats {
+  totalPending?: number;
+  totalFlagged?: number;
+  totalApproved?: number;
+  totalRejected?: number;
+  pendingCount?: number; // Alias for totalPending
+  flaggedCount?: number; // Alias for totalFlagged
+  approvedCount?: number; // Alias for totalApproved
+  rejectedCount?: number; // Alias for totalRejected
+  responseRate?: number;
+  averageResponseTime?: number; // in hours
+  avgResponseTime?: number; // Alias for averageResponseTime
+  trend?: {
+    total: number; // percentage change
+    rating: number; // percentage change
+    responseRate: number; // percentage change
+  };
 }
 
 /**

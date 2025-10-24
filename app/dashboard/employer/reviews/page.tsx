@@ -29,7 +29,7 @@ import { useReviewStore } from '@/hooks/business/useReviewStore';
 import { RatingSummary } from '@/components/shared/RatingStars';
 import { ReviewCard } from '@/components/shared/ReviewCard';
 import { ReviewFormModal } from '@/components/domains/reviews';
-import { UnifiedSkeleton } from '@/components/ui/UnifiedLoadingSystem';
+import UnifiedSkeleton from '@/components/ui/UnifiedLoadingSystem';
 import { Pagination } from '@/components/ui/Pagination';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
@@ -247,18 +247,9 @@ export default function EmployerReviewsPage() {
           {[1, 2, 3].map((i) => (
             <Card key={i} className="p-6">
               <div className="space-y-3">
-                <UnifiedSkeleton.Skeleton
-                  variant="rounded"
-                  className="h-4 w-1/3"
-                />
-                <UnifiedSkeleton.Skeleton
-                  variant="rounded"
-                  className="h-20 w-full"
-                />
-                <UnifiedSkeleton.Skeleton
-                  variant="rounded"
-                  className="h-10 w-1/4"
-                />
+                <UnifiedSkeleton variant="skeleton" className="h-4 w-1/3" />
+                <UnifiedSkeleton variant="skeleton" className="h-20 w-full" />
+                <UnifiedSkeleton variant="skeleton" className="h-10 w-1/4" />
               </div>
             </Card>
           ))}
@@ -305,7 +296,7 @@ export default function EmployerReviewsPage() {
                               ? 'Beklemede'
                               : 'Reddedildi'}
                         </Badge>
-                        {review.verifiedPurchase && (
+                        {review.isVerifiedPurchase && (
                           <Badge
                             variant="outline"
                             className="border-green-500 text-green-700"
@@ -315,7 +306,7 @@ export default function EmployerReviewsPage() {
                         )}
                       </div>
                       <p className="text-sm text-gray-600">
-                        {review.packageName || review.serviceName}
+                        {review.packageTitle || 'Order Review'}
                       </p>
                       <p className="mt-1 text-xs text-gray-500">{timeAgo}</p>
                     </div>
@@ -401,14 +392,25 @@ export default function EmployerReviewsPage() {
       {/* Edit Review Modal */}
       {editingReview && (
         <ReviewFormModal
-          isOpen={showEditModal}
-          onClose={() => {
-            setShowEditModal(false);
-            setEditingReview(null);
+          open={showEditModal}
+          onOpenChange={(open) => {
+            if (!open) {
+              setShowEditModal(false);
+              setEditingReview(null);
+            }
           }}
           orderId={editingReview.orderId}
-          packageId={editingReview.packageId}
-          existingReview={editingReview}
+          packageId={editingReview.packageId || ''}
+          packageTitle={
+            editingReview.packageTitle ||
+            editingReview.packageName ||
+            editingReview.serviceName ||
+            'Paket'
+          }
+          _sellerId={editingReview.revieweeId}
+          sellerName={editingReview.revieweeName}
+          sellerAvatar={undefined}
+          existingReviewId={editingReview.id}
           onSuccess={() => {
             setShowEditModal(false);
             setEditingReview(null);

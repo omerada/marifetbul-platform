@@ -25,6 +25,7 @@ import type {
   AdminModerationQueryParams,
   ReviewImage,
   VoteType,
+  PlatformReviewStats,
 } from '@/types/business/review';
 
 /**
@@ -322,6 +323,20 @@ export async function getFlaggedReviews(
 }
 
 // ========================================
+// Statistics
+// ========================================
+
+/**
+ * Get platform-wide review statistics (admin only)
+ */
+export async function getPlatformStats(): Promise<PlatformReviewStats> {
+  const response = await apiClient.get<ApiResponse<PlatformReviewStats>>(
+    '/api/v1/admin/reviews/stats'
+  );
+  return response.data;
+}
+
+// ========================================
 // Export API object
 // ========================================
 
@@ -360,6 +375,7 @@ export const reviewApi = {
   getForModeration: getReviewsForModeration,
   moderate: moderateReview,
   getFlagged: getFlaggedReviews,
+  getPlatformStats,
 };
 
 export default reviewApi;

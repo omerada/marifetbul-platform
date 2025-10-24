@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -17,6 +17,7 @@ import {
   MapPin,
 } from 'lucide-react';
 import { usePackageDetail } from '@/hooks';
+import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -58,9 +59,35 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
     deliveryTime,
   } = usePackageDetail(packageId);
 
+  const { user, isAuthenticated } = useAuthStore();
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [canReview, setCanReview] = useState(false);
+
+  // Check if user can review this package
+  useEffect(() => {
+    async function checkCanReview() {
+      if (!isAuthenticated || !user) {
+        setCanReview(false);
+        return;
+      }
+
+      try {
+        // Get user's completed orders for this package
+        // We'll check if any completed order allows review
+        // TODO: When order API supports filtering by packageId, use that
+        // For now, we'll allow review if user is authenticated and not the seller
+        const isSeller = servicePackage?.freelancer?.id === user.id;
+        setCanReview(isAuthenticated && !isSeller);
+      } catch (error) {
+        logger.debug('Error checking review eligibility:', error);
+        setCanReview(false);
+      }
+    }
+
+    checkCanReview();
+  }, [packageId, isAuthenticated, user, servicePackage?.freelancer?.id]);
 
   if (loading) {
     return (
@@ -430,10 +457,7 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
 
             {/* Reviews Tab */}
             <TabsContent value="reviews" className="mt-6">
-              <PackageReviewsTab
-                packageId={packageId}
-                canReview={false} // TODO: Implement based on user's order status
-              />
+              <PackageReviewsTab packageId={packageId} canReview={canReview} />
             </TabsContent>
           </Tabs>
         </div>

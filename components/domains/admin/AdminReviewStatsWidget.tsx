@@ -26,62 +26,29 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { UnifiedSkeleton } from '@/components/ui/UnifiedLoadingSystem';
+import UnifiedSkeleton from '@/components/ui/UnifiedLoadingSystem';
 import { reviewApi } from '@/lib/api/review';
-import type { ReviewStats } from '@/types/business/review';
+import type { PlatformReviewStats } from '@/types/business/review';
 
 interface AdminReviewStatsWidgetProps {
   className?: string;
   refreshInterval?: number; // milliseconds
 }
 
-interface ExtendedStats extends ReviewStats {
-  pendingCount?: number;
-  flaggedCount?: number;
-  approvedCount?: number;
-  rejectedCount?: number;
-  responseRate?: number;
-  avgResponseTime?: number; // hours
-  trend?: {
-    total: number; // percentage change
-    rating: number; // percentage change
-    responseRate: number; // percentage change
-  };
-}
-
 export function AdminReviewStatsWidget({
   className,
   refreshInterval = 30000, // 30 seconds
 }: AdminReviewStatsWidgetProps) {
-  const [stats, setStats] = useState<ExtendedStats | null>(null);
+  const [stats, setStats] = useState<PlatformReviewStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch stats
+  // Fetch stats from backend
   const fetchStats = async () => {
     try {
       setError(null);
-      // TODO: Replace with actual admin stats endpoint when available
-      // For now, we'll use package stats as placeholder
-      const packageStats = await reviewApi.getPackageStats('all');
-
-      // Mock extended stats (will be replaced with real API)
-      const extendedStats: ExtendedStats = {
-        ...packageStats,
-        pendingCount: 12,
-        flaggedCount: 5,
-        approvedCount: 234,
-        rejectedCount: 8,
-        responseRate: 87.5,
-        avgResponseTime: 4.2,
-        trend: {
-          total: 15.3,
-          rating: 2.1,
-          responseRate: 5.7,
-        },
-      };
-
-      setStats(extendedStats);
+      const platformStats = await reviewApi.getPlatformStats();
+      setStats(platformStats);
     } catch (err) {
       console.error('Error fetching review stats:', err);
       setError('İstatistikler yüklenemedi');
@@ -113,14 +80,8 @@ export function AdminReviewStatsWidget({
           <CardContent className="space-y-4">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="space-y-2">
-                <UnifiedSkeleton.Skeleton
-                  variant="rounded"
-                  className="h-4 w-1/3"
-                />
-                <UnifiedSkeleton.Skeleton
-                  variant="rounded"
-                  className="h-8 w-1/2"
-                />
+                <UnifiedSkeleton variant="skeleton" className="h-4 w-1/3" />
+                <UnifiedSkeleton variant="skeleton" className="h-8 w-1/2" />
               </div>
             ))}
           </CardContent>
