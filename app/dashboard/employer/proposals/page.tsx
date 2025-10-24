@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { ProposalCard } from '@/components/domains/jobs/ProposalCard';
 import { useProposal } from '@/hooks/business';
@@ -10,11 +10,11 @@ import { FileText, Check, X, Clock } from 'lucide-react';
 import type { Proposal } from '@/types/core/jobs';
 
 export default function EmployerProposalsPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const jobId = searchParams.get('jobId');
 
   const [proposals, setProposals] = useState<Proposal[]>([]);
+  const [jobTitle, setJobTitle] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,16 +39,28 @@ export default function EmployerProposalsPage() {
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/v1/jobs/${jobId}/proposals`, {
-        credentials: 'include',
-      });
+      // Fetch job details and proposals in parallel
+      const [jobResponse, proposalsResponse] = await Promise.all([
+        fetch(`/api/v1/jobs/${jobId}`, {
+          credentials: 'include',
+        }),
+        fetch(`/api/v1/jobs/${jobId}/proposals`, {
+          credentials: 'include',
+        }),
+      ]);
 
-      if (!response.ok) {
+      if (!proposalsResponse.ok) {
         throw new Error('Teklifler yüklenemedi');
       }
 
-      const data = await response.json();
-      setProposals(data.data?.content || data.data || []);
+      const proposalsData = await proposalsResponse.json();
+      setProposals(proposalsData.data?.content || proposalsData.data || []);
+
+      // Set job title if available
+      if (jobResponse.ok) {
+        const jobData = await jobResponse.json();
+        setJobTitle(jobData.data?.title || '');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Bir hata oluştu');
     } finally {
@@ -75,10 +87,6 @@ export default function EmployerProposalsPage() {
     } catch {
       // Error is already handled in the hook
     }
-  };
-
-  const handleMessage = (freelancerId: string) => {
-    router.push(`/messages?userId=${freelancerId}`);
   };
 
   // Calculate stats
@@ -198,9 +206,9 @@ export default function EmployerProposalsPage() {
             <ProposalCard
               key={proposal.id}
               proposal={proposal}
+              jobTitle={jobTitle}
               onAccept={() => handleAccept(proposal.id)}
               onReject={() => handleReject(proposal.id)}
-              onMessage={() => handleMessage(proposal.freelancer?.id || '')}
             />
           ))}
         </div>

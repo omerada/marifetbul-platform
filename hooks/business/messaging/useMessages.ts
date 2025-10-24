@@ -4,20 +4,29 @@ import { useState, useEffect, useCallback } from 'react';
 import { logger } from '@/lib/shared/utils/logger';
 import type { Conversation, Message } from '@/types';
 
-export function useConversations() {
+export type ConversationFilter = 'all' | 'active' | 'archived';
+
+export function useConversations(filter: ConversationFilter = 'all') {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/v1/conversations', {
+      let endpoint = '/api/v1/conversations';
+      if (filter === 'archived') {
+        endpoint = '/api/v1/conversations/archived';
+      } else if (filter === 'active') {
+        endpoint = '/api/v1/conversations/active';
+      }
+
+      const response = await fetch(endpoint, {
         credentials: 'include',
       });
       if (response.ok) {
         const data = await response.json();
-        setConversations(data.data || []);
+        setConversations(data.data?.content || data.data || []);
       }
     } catch (err) {
       setError(
@@ -26,13 +35,90 @@ export function useConversations() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filter]);
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [refresh]);
 
-  return { conversations, isLoading, error, refresh };
+  const archiveConversation = useCallback(
+    async (conversationId: string) => {
+      try {
+        const response = await fetch(
+          `/api/v1/conversations/${conversationId}/archive`,
+          {
+            method: 'PUT',
+            credentials: 'include',
+          }
+        );
+        if (response.ok) {
+          await refresh();
+          return true;
+        }
+        return false;
+      } catch (err) {
+        logger.error('Error archiving conversation:', err);
+        return false;
+      }
+    },
+    [refresh]
+  );
+
+  const unarchiveConversation = useCallback(
+    async (conversationId: string) => {
+      try {
+        const response = await fetch(
+          `/api/v1/conversations/${conversationId}/unarchive`,
+          {
+            method: 'PUT',
+            credentials: 'include',
+          }
+        );
+        if (response.ok) {
+          await refresh();
+          return true;
+        }
+        return false;
+      } catch (err) {
+        logger.error('Error unarchiving conversation:', err);
+        return false;
+      }
+    },
+    [refresh]
+  );
+
+  const deleteConversation = useCallback(
+    async (conversationId: string) => {
+      try {
+        const response = await fetch(
+          `/api/v1/conversations/${conversationId}`,
+          {
+            method: 'DELETE',
+            credentials: 'include',
+          }
+        );
+        if (response.ok) {
+          await refresh();
+          return true;
+        }
+        return false;
+      } catch (err) {
+        logger.error('Error deleting conversation:', err);
+        return false;
+      }
+    },
+    [refresh]
+  );
+
+  return {
+    conversations,
+    isLoading,
+    error,
+    refresh,
+    archiveConversation,
+    unarchiveConversation,
+    deleteConversation,
+  };
 }
 
 export function useConversation(conversationId: string) {
@@ -112,19 +198,38 @@ export function useUnreadCount() {
   };
 }
 
+export interface AttachmentInfo {
+  url: string;
+  name: string;
+  size: number;
+  type: string;
+}
+
+export interface SendMessageOptions {
+  content: string;
+  attachment?: AttachmentInfo;
+}
+
 export function useMessaging() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const sendMessage = async (conversationId: string, content: string) => {
+  const sendMessage = async (
+    conversationId: string,
+    options: string | SendMessageOptions
+  ) => {
     setIsLoading(true);
     try {
+      // Support both old string format and new options format
+      const payload =
+        typeof options === 'string' ? { content: options } : options;
+
       const response = await fetch(
         `/api/v1/conversations/${conversationId}/messages`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ content }),
+          body: JSON.stringify(payload),
         }
       );
 

@@ -3,7 +3,16 @@
 import React from 'react';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Settings, Bell, Lock, CreditCard, Mail, Shield } from 'lucide-react';
+import {
+  Settings,
+  Bell,
+  Lock,
+  CreditCard,
+  Mail,
+  Shield,
+  FileText,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function DashboardSettingsPage() {
   return (
@@ -92,6 +101,28 @@ export default function DashboardSettingsPage() {
               <Button variant="outline" size="sm" className="mt-4">
                 Düzenle
               </Button>
+            </div>
+          </div>
+        </Card>
+
+        {/* Message Templates */}
+        <Card className="p-6">
+          <div className="flex items-start space-x-4">
+            <div className="rounded-lg bg-indigo-100 p-3">
+              <FileText className="h-6 w-6 text-indigo-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Mesaj Şablonları
+              </h3>
+              <p className="mt-1 text-sm text-gray-600">
+                Sık kullandığınız mesajlar için özel şablonlar oluşturun
+              </p>
+              <Link href="/dashboard/settings/templates">
+                <Button variant="outline" size="sm" className="mt-4">
+                  Yönet
+                </Button>
+              </Link>
             </div>
           </div>
         </Card>

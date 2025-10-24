@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import { Button, Loading } from '@/components/ui';
 import { DeliverOrderModal, DisputeModal } from '@/components/domains/orders';
+import { MessageButton } from '@/components/domains/messaging';
 import {
   Package,
   Clock,
@@ -234,6 +235,28 @@ export default function FreelancerOrdersPage() {
 
                 {/* Actions */}
                 <div className="flex gap-2">
+                  <MessageButton
+                    recipientId={order.buyer?.id || ''}
+                    recipientName={`${order.buyer?.firstName || ''} ${order.buyer?.lastName || ''}`}
+                    context={{
+                      type: 'ORDER',
+                      id: order.id,
+                      title:
+                        order.customOrderDetails?.title ||
+                        `Sipariş #${order.orderNumber}`,
+                      additionalData: {
+                        orderNumber: order.orderNumber,
+                        status: order.status,
+                        amount: order.amount,
+                        currency: order.currency,
+                        deliveryDate: order.deliveryDate,
+                      },
+                    }}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Alıcıyla İletişim
+                  </MessageButton>
                   {order.status === 'in_progress' && (
                     <Button
                       onClick={() => handleDeliverClick(order)}

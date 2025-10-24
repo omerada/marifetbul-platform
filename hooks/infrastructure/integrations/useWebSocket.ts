@@ -5,9 +5,11 @@ import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { useMessagingStore } from '@/lib/core/store/messaging';
 import { useOrderStore } from '@/lib/core/store/orders';
+import { useNotificationStore } from '@/lib/core/store/notificationStore';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { logger } from '@/lib/shared/utils/logger';
 import type { Message } from '@/types';
+import type { MessageNotification } from '@/hooks/business/messaging';
 
 interface WebSocketMessage<T = unknown> {
   type:
@@ -113,6 +115,7 @@ export const useWebSocket = ({
   const { addMessage, updateTypingStatus, updateUserStatus } =
     useMessagingStore();
   const { handleOrderUpdate: _handleOrderUpdate } = useOrderStore();
+  const { addNotification } = useNotificationStore();
 
   // Get JWT token from cookie
   const getAuthToken = useCallback(() => {
@@ -215,9 +218,17 @@ export const useWebSocket = ({
           }
 
           case 'NOTIFICATION': {
-            // General notification
-            if (process.env.NODE_ENV === 'development') {
-              console.log('[WebSocket] Notification:', wsMessage.data);
+            // General notification (e.g., new message notification)
+            const notificationData = wsMessage.data as MessageNotification;
+            if (notificationData) {
+              addNotification(notificationData);
+
+              if (process.env.NODE_ENV === 'development') {
+                console.log(
+                  '[WebSocket] Notification received:',
+                  notificationData
+                );
+              }
             }
             break;
           }
@@ -229,7 +240,7 @@ export const useWebSocket = ({
         logger.error('Error parsing WebSocket message:', error);
       }
     },
-    [addMessage, updateTypingStatus, updateUserStatus]
+    [addMessage, updateTypingStatus, updateUserStatus, addNotification]
   );
 
   // Subscribe to user-specific topics

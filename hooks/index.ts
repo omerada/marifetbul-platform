@@ -72,14 +72,19 @@ export {
   useConversation,
   useMessaging,
   useUnreadCount,
-} from './business/messaging/useMessages';
+  useMessageTemplates,
+  useContextMessage,
+  useMessageAttachments,
+} from './business/messaging';
+export type { MessageAttachment } from './business/messaging';
 
 // LEGACY COMPATIBILITY - For backwards compatibility
 export * from './infrastructure/api';
 export * from './shared/base';
-export * from './business/profile';
-export * from './business';
 export * from './shared/ui';
+
+// Explicitly re-export useAvatarUpload from profile to resolve ambiguity
+export { useAvatarUpload } from './business/profile';
 
 // Hook categories
 export const CoreHooks = [

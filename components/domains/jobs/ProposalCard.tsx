@@ -3,25 +3,26 @@
 import React, { memo } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import { Star, MessageCircle, CheckCircle, X } from 'lucide-react';
+import { Star, CheckCircle, X } from 'lucide-react';
 import { Proposal } from '@/types/core/jobs';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
+import { MessageButton } from '@/components/domains/messaging';
 
 interface ProposalCardProps {
   proposal: Proposal;
+  jobTitle?: string;
   onAccept: () => void;
   onReject: () => void;
-  onMessage: () => void;
   className?: string;
 }
 
 export const ProposalCard = memo<ProposalCardProps>(function ProposalCard({
   proposal,
+  jobTitle,
   onAccept,
   onReject,
-  onMessage,
   className,
 }) {
   const getStatusColor = (status: Proposal['status']) => {
@@ -142,10 +143,25 @@ export const ProposalCard = memo<ProposalCardProps>(function ProposalCard({
       {/* Actions */}
       {proposal.status === 'pending' && (
         <div className="flex items-center justify-between border-t pt-4">
-          <Button variant="outline" onClick={onMessage}>
-            <MessageCircle className="mr-2 h-4 w-4" />
+          <MessageButton
+            recipientId={proposal.freelancerId}
+            recipientName={`${proposal.freelancer?.firstName || ''} ${proposal.freelancer?.lastName || ''}`}
+            context={{
+              type: 'PROPOSAL',
+              id: proposal.id,
+              title: jobTitle || `Teklif #${proposal.id.slice(0, 8)}`,
+              additionalData: {
+                jobId: proposal.jobId,
+                proposedBudget: proposal.proposedBudget,
+                proposedTimeline: proposal.proposedTimeline,
+                status: proposal.status,
+              },
+            }}
+            variant="outline"
+            size="sm"
+          >
             Mesaj Gönder
-          </Button>
+          </MessageButton>
           <div className="flex space-x-2">
             <Button variant="outline" onClick={onReject}>
               <X className="mr-2 h-4 w-4" />
@@ -165,10 +181,25 @@ export const ProposalCard = memo<ProposalCardProps>(function ProposalCard({
             <CheckCircle className="mr-2 h-4 w-4" />
             <span className="font-medium">Bu teklif kabul edildi</span>
           </div>
-          <Button variant="outline" onClick={onMessage}>
-            <MessageCircle className="mr-2 h-4 w-4" />
+          <MessageButton
+            recipientId={proposal.freelancerId}
+            recipientName={`${proposal.freelancer?.firstName || ''} ${proposal.freelancer?.lastName || ''}`}
+            context={{
+              type: 'PROPOSAL',
+              id: proposal.id,
+              title: jobTitle || `Teklif #${proposal.id.slice(0, 8)}`,
+              additionalData: {
+                jobId: proposal.jobId,
+                proposedBudget: proposal.proposedBudget,
+                proposedTimeline: proposal.proposedTimeline,
+                status: proposal.status,
+              },
+            }}
+            variant="outline"
+            size="sm"
+          >
             Mesaj Gönder
-          </Button>
+          </MessageButton>
         </div>
       )}
 

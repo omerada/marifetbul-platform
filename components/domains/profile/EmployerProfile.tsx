@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Employer } from '@/types';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
+import { MessageButton } from '@/components/domains/messaging';
 import {
   MapPin,
   Building,
@@ -14,7 +15,6 @@ import {
   Mail,
   Calendar,
   Heart,
-  MessageCircle,
   Users,
   TrendingUp,
   CheckCircle,
@@ -116,10 +116,14 @@ export function EmployerProfile({ user }: EmployerProfileProps) {
                     />
                     Favorile Ekle
                   </Button>
-                  <Button size="sm">
-                    <MessageCircle className="mr-2 h-4 w-4" />
+                  <MessageButton
+                    recipientId={user.id}
+                    recipientName={`${user.firstName} ${user.lastName}`}
+                    variant="primary"
+                    size="sm"
+                  >
                     Mesaj Gönder
-                  </Button>
+                  </MessageButton>
                 </div>
               </div>
             </div>

@@ -88,6 +88,13 @@ export interface Conversation {
   isArchived?: boolean; // Made optional for MSW compatibility
   isMuted?: boolean; // Made optional for MSW compatibility
   settings?: ConversationSettings; // Made optional for MSW compatibility
+  // Context-aware messaging fields
+  contextType?: ContextType;
+  contextId?: string;
+  contextData?: {
+    title?: string;
+    [key: string]: unknown;
+  };
   // MSW and store compatibility fields
   lastActivity?: string;
   isPinned?: boolean;
@@ -195,3 +202,85 @@ export interface MessageNotification {
   isRead: boolean;
   createdAt: string;
 }
+
+// Context-Aware Messaging Types
+
+export type ContextType = 'ORDER' | 'PROPOSAL' | 'JOB' | 'PACKAGE';
+
+export interface MessageContext {
+  type: ContextType;
+  id: string;
+  title: string;
+  additionalData?: Record<string, unknown>;
+}
+
+export interface MessageTemplate {
+  id: string;
+  code: string;
+  category: string;
+  templateText: string;
+  description: string;
+  isSystem: boolean;
+  userId?: string;
+  username?: string;
+  variables: string[];
+  preview: string;
+  variableCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateTemplateRequest {
+  code: string;
+  category: string;
+  templateText: string;
+  description?: string;
+}
+
+export interface UpdateTemplateRequest {
+  templateText?: string;
+  description?: string;
+}
+
+export interface RenderTemplateRequest {
+  templateCode: string;
+  variables: Record<string, unknown>;
+}
+
+export interface CreateContextConversationRequest {
+  recipientId: string;
+  contextType?: string;
+  contextId?: string;
+  contextData?: string;
+  initialMessage?: string;
+  templateCode?: string;
+  templateVariables?: Record<string, unknown>;
+}
+
+export interface CreateContextMessageRequest {
+  recipientId: string;
+  content: string;
+  context?: MessageContext;
+  templateCode?: string;
+}
+
+export interface CreateContextMessageResponse {
+  conversationId: string;
+  messageId: string;
+  createdAt: string;
+}
+
+export interface MessageTemplateCategory {
+  code: string;
+  label: string;
+  icon?: string;
+}
+
+export const MESSAGE_TEMPLATE_CATEGORIES: MessageTemplateCategory[] = [
+  { code: 'ORDER', label: 'Sipariş İşlemleri', icon: 'Package' },
+  { code: 'PROPOSAL', label: 'Teklif İşlemleri', icon: 'FileText' },
+  { code: 'JOB', label: 'İş İlanları', icon: 'Briefcase' },
+  { code: 'PACKAGE', label: 'Hizmet Paketleri', icon: 'Box' },
+  { code: 'GENERAL', label: 'Genel', icon: 'MessageSquare' },
+  { code: 'ADMIN', label: 'Yönetim', icon: 'Shield' },
+];

@@ -7,13 +7,13 @@ import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { PortfolioGallery } from '@/components/shared/features';
+import { MessageButton } from '@/components/domains/messaging';
 import {
   MapPin,
   Star,
   DollarSign,
   Calendar,
   Globe,
-  MessageCircle,
   Heart,
   Share2,
   Award,
@@ -24,7 +24,6 @@ interface ProfileViewProps {
   freelancer: Freelancer;
   isOwnProfile?: boolean;
   onEditProfile?: () => void;
-  onSendMessage?: () => void;
   onHire?: () => void;
 }
 
@@ -32,7 +31,6 @@ export function ProfileView({
   freelancer,
   isOwnProfile = false,
   onEditProfile,
-  onSendMessage,
   onHire,
 }: ProfileViewProps) {
   const profileCompleteness = calculateProfileCompleteness(freelancer);
@@ -152,10 +150,14 @@ export function ProfileView({
                     </>
                   ) : (
                     <>
-                      <Button onClick={onSendMessage} variant="outline">
-                        <MessageCircle className="mr-2 h-4 w-4" />
+                      <MessageButton
+                        recipientId={freelancer.id}
+                        recipientName={`${freelancer.firstName} ${freelancer.lastName}`}
+                        variant="outline"
+                        size="md"
+                      >
                         Mesaj Gönder
-                      </Button>
+                      </MessageButton>
                       <Button onClick={onHire}>İşe Al</Button>
                       <Button variant="outline" size="sm">
                         <Heart className="h-4 w-4" />

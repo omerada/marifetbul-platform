@@ -1,15 +1,28 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/layout';
 import { Loading } from '@/components/ui';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { MessagesList } from '@/components/domains/messaging';
+import {
+  useConversations,
+  type ConversationFilter,
+} from '@/hooks/business/messaging/useMessages';
 
 export default function MessagesPage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, refreshAuth } = useAuthStore();
+  const [filter, setFilter] = useState<ConversationFilter>('all');
+
+  const {
+    conversations,
+    isLoading: conversationsLoading,
+    archiveConversation,
+    unarchiveConversation,
+    deleteConversation,
+  } = useConversations(filter);
 
   useEffect(() => {
     refreshAuth();
@@ -46,7 +59,15 @@ export default function MessagesPage() {
             </p>
           </div>
 
-          <MessagesList />
+          <MessagesList
+            conversations={conversations}
+            isLoading={conversationsLoading}
+            filter={filter}
+            onFilterChange={setFilter}
+            onArchive={archiveConversation}
+            onUnarchive={unarchiveConversation}
+            onDelete={deleteConversation}
+          />
         </div>
       </div>
     </AppLayout>

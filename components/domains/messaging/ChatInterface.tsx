@@ -3,9 +3,15 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { User, Message, FileAttachment } from '@/types';
+import { User, Message } from '@/types';
 import { Card, Button, Loading, FileUpload } from '@/components/ui';
-import { useConversation, useMessages, useMessaging } from '@/hooks';
+import {
+  useConversation,
+  useMessages,
+  useMessaging,
+  useMessageAttachments,
+  type MessageAttachment,
+} from '@/hooks';
 import {
   ArrowLeft,
   Send,
@@ -18,6 +24,11 @@ import {
   CheckCircle2,
   Eye,
   X,
+  Package,
+  FileText,
+  Briefcase,
+  Box,
+  ShoppingCart,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
@@ -29,6 +40,45 @@ import {
 } from '@/lib/shared/utils';
 import { useToast } from '@/hooks';
 import { logger } from '@/lib/shared/utils/logger';
+import type { ContextType } from '@/types/business/features/messaging';
+
+/**
+ * Get icon and label for context type
+ */
+function getContextInfo(contextType: ContextType) {
+  switch (contextType) {
+    case 'ORDER':
+      return {
+        icon: ShoppingCart,
+        label: 'Sipariş',
+        color: 'bg-blue-50 text-blue-700 border-blue-200',
+      };
+    case 'PROPOSAL':
+      return {
+        icon: FileText,
+        label: 'Teklif',
+        color: 'bg-purple-50 text-purple-700 border-purple-200',
+      };
+    case 'JOB':
+      return {
+        icon: Briefcase,
+        label: 'İş İlanı',
+        color: 'bg-green-50 text-green-700 border-green-200',
+      };
+    case 'PACKAGE':
+      return {
+        icon: Box,
+        label: 'Paket',
+        color: 'bg-amber-50 text-amber-700 border-amber-200',
+      };
+    default:
+      return {
+        icon: Package,
+        label: 'Genel',
+        color: 'bg-gray-50 text-gray-700 border-gray-200',
+      };
+  }
+}
 
 interface ChatInterfaceProps {
   conversationId: string;
@@ -48,10 +98,11 @@ export function ChatInterface({
     refresh: refreshMessages,
   } = useMessages(conversationId);
   const { sendMessage, markAsRead, isLoading: sendingMessage } = useMessaging();
+  const { uploadFiles, isUploading } = useMessageAttachments();
 
   const [messageText, setMessageText] = useState('');
   const [showFileUpload, setShowFileUpload] = useState(false);
-  const [pendingFiles, setPendingFiles] = useState<FileAttachment[]>([]);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -90,23 +141,78 @@ export function ChatInterface({
   }, [messageText]);
 
   const handleSendMessage = async () => {
-    if ((!messageText.trim() && pendingFiles.length === 0) || sendingMessage)
+    if (
+      (!messageText.trim() && pendingFiles.length === 0) ||
+      sendingMessage ||
+      isUploading
+    )
       return;
 
     try {
-      // For now, we'll send the message with text only
-      // In a real implementation, files would be included in the message
-      const content = messageText.trim() || '[Dosya gönderildi]';
-      await sendMessage(conversationId, content);
+      let attachment: MessageAttachment | undefined;
 
+      // Upload files if there are pending files (we support only 1 attachment per message for now)
+      if (pendingFiles.length > 0) {
+        toast.info('Dosyalar yükleniyor...');
+        const uploadedFiles = await uploadFiles(pendingFiles);
+
+        if (uploadedFiles.length > 0) {
+          attachment = uploadedFiles[0]; // Take the first file
+
+          // If multiple files, we'll send them as separate messages
+          if (uploadedFiles.length > 1) {
+            toast.info(
+              `${uploadedFiles.length} dosya ayrı mesajlar olarak gönderiliyor...`
+            );
+
+            // Send additional files as separate messages
+            for (let i = 1; i < uploadedFiles.length; i++) {
+              const file = uploadedFiles[i];
+              await sendMessage(conversationId, {
+                content: `📎 ${file.filename}`,
+                attachment: {
+                  url: file.url,
+                  name: file.filename,
+                  size: file.size,
+                  type: file.mimeType,
+                },
+              });
+            }
+          }
+        }
+      }
+
+      // Prepare message content
+      let content = messageText.trim();
+      if (!content && attachment) {
+        content = `📎 ${attachment.filename}`;
+      }
+
+      // Send main message with first attachment
+      await sendMessage(conversationId, {
+        content,
+        ...(attachment && {
+          attachment: {
+            url: attachment.url,
+            name: attachment.filename,
+            size: attachment.size,
+            type: attachment.mimeType,
+          },
+        }),
+      });
+
+      // Reset state
       setMessageText('');
       setPendingFiles([]);
+      setShowFileUpload(false);
       refreshMessages();
 
       // Reset textarea height
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
       }
+
+      toast.success('Mesaj gönderildi');
     } catch (error) {
       logger.error('Failed to send message:', error);
       toast.error('Mesaj gönderilemedi');
@@ -114,23 +220,31 @@ export function ChatInterface({
   };
 
   const handleFilesUploaded = (files: File[]) => {
-    const { valid, errors } = validateFiles(files, {
+    const validation = validateFiles(files, {
       maxFiles: 3,
       maxSizeInMB: 10,
       allowedTypes: ALLOWED_FILE_TYPES,
     });
 
-    if (errors.length > 0) {
-      errors.forEach((error: string) => toast.error(error));
+    if (validation.errors.length > 0) {
+      validation.errors.forEach((error: string) => toast.error(error));
       return;
     }
 
-    setPendingFiles((prev) => [...prev, ...valid]);
+    // Add valid files (File objects, not FileAttachments yet)
+    const availableSlots = 3 - pendingFiles.length;
+    const filesToAdd = files.slice(0, availableSlots);
+
+    setPendingFiles((prev) => [...prev, ...filesToAdd]);
     setShowFileUpload(false);
+
+    if (filesToAdd.length > 0) {
+      toast.success(`${filesToAdd.length} dosya eklendi`);
+    }
   };
 
-  const handleRemoveFile = (fileId: string) => {
-    setPendingFiles((prev) => prev.filter((f) => f.id !== fileId));
+  const handleRemoveFile = (index: number) => {
+    setPendingFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -225,15 +339,42 @@ export function ChatInterface({
             </div>
           </div>
 
-          {/* Project Info */}
-          {(conversation.jobId || conversation.packageId) && (
-            <div className="mt-3 rounded-lg bg-blue-50 p-3">
-              <p className="text-sm text-blue-800">
-                💼 {conversation.jobId ? 'İş projesi' : 'Hizmet paketi'}{' '}
-                hakkında konuşuyorsunuz
-              </p>
+          {/* Context Info Badge */}
+          {conversation.contextType && conversation.contextId && (
+            <div className="mt-3 flex items-center gap-2">
+              {(() => {
+                const contextInfo = getContextInfo(conversation.contextType);
+                const ContextIcon = contextInfo.icon;
+                return (
+                  <div
+                    className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium ${contextInfo.color}`}
+                  >
+                    <ContextIcon className="h-4 w-4" />
+                    <span>{contextInfo.label}</span>
+                    {conversation.contextData?.title && (
+                      <>
+                        <span className="text-gray-400">•</span>
+                        <span className="font-normal">
+                          {conversation.contextData.title}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           )}
+
+          {/* Legacy Project Info - Keep for backward compatibility */}
+          {!conversation.contextType &&
+            (conversation.jobId || conversation.packageId) && (
+              <div className="mt-3 rounded-lg bg-blue-50 p-3">
+                <p className="text-sm text-blue-800">
+                  💼 {conversation.jobId ? 'İş projesi' : 'Hizmet paketi'}{' '}
+                  hakkında konuşuyorsunuz
+                </p>
+              </div>
+            )}
         </div>
       </div>
 
@@ -285,12 +426,12 @@ export function ChatInterface({
           {pendingFiles.length > 0 && (
             <div className="mb-3 space-y-2">
               <p className="text-sm font-medium text-gray-700">
-                Eklenecek dosyalar:
+                Eklenecek dosyalar ({pendingFiles.length}/3):
               </p>
               <div className="flex flex-wrap gap-2">
-                {pendingFiles.map((file) => (
+                {pendingFiles.map((file, index) => (
                   <div
-                    key={file.id}
+                    key={`${file.name}-${index}`}
                     className="flex items-center space-x-2 rounded-md bg-gray-100 px-3 py-2"
                   >
                     <span className="text-sm">{getFileIcon(file.type)}</span>
@@ -301,8 +442,9 @@ export function ChatInterface({
                       {formatFileSize(file.size)}
                     </span>
                     <button
-                      onClick={() => handleRemoveFile(file.id)}
+                      onClick={() => handleRemoveFile(index)}
                       className="text-red-500 hover:text-red-700"
+                      type="button"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -355,11 +497,13 @@ export function ChatInterface({
               onClick={handleSendMessage}
               disabled={
                 (!messageText.trim() && pendingFiles.length === 0) ||
-                sendingMessage
+                sendingMessage ||
+                isUploading
               }
               className="mb-2"
+              title={isUploading ? 'Dosyalar yükleniyor...' : 'Mesaj gönder'}
             >
-              {sendingMessage ? (
+              {sendingMessage || isUploading ? (
                 <Loading size="sm" />
               ) : (
                 <Send className="h-4 w-4" />
