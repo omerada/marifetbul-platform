@@ -112,6 +112,20 @@ export function ReviewFormModal({
       onSuccess?.(review.id);
       // Update progress to 100%
       setProgress(100);
+
+      // Analytics tracking
+      if (typeof window !== 'undefined') {
+        const gtag = (
+          window as Window & { gtag?: (...args: unknown[]) => void }
+        ).gtag;
+        if (gtag) {
+          gtag('event', 'review_submitted', {
+            event_category: 'Review',
+            event_label: 'Order Review',
+            value: review.overallRating,
+          });
+        }
+      }
     }
   };
 
