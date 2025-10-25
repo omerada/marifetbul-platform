@@ -26,6 +26,9 @@ export * from './business/features/marketplace';
 // Messaging types
 export * from './business/features/messaging';
 
+// Wallet & Payout types
+export * from './business/features/wallet';
+
 // Common utility types
 
 export interface AdvancedSearchRequest {

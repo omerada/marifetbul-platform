@@ -351,6 +351,7 @@ export const WALLET_ENDPOINTS = {
   GET_WALLET: '/wallet',
   GET_BALANCE: '/wallet/balance',
   GET_TRANSACTIONS: '/wallet/transactions',
+  EXPORT_TRANSACTIONS: '/wallet/transactions/export',
 
   // Payouts
   CREATE_PAYOUT: '/payouts',
