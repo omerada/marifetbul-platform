@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { Toaster } from 'sonner';
 import { AuthProvider } from '@/components/providers/AuthProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { ToastProvider } from '@/components/providers/ToastProvider';
@@ -96,6 +97,7 @@ export default function RootLayout({
             </AuthProvider>
           </ThemeProvider>
         </MonitoringProvider>
+        <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
   );
