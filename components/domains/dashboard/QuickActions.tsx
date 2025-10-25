@@ -15,6 +15,7 @@ import {
   Eye,
   Edit,
   BookOpen,
+  BarChart3,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -84,7 +85,7 @@ export function QuickActions({ user }: QuickActionsProps) {
             </div>
           </button>
 
-          <Link href={`/profile/${user.id}`} className="group">
+          <Link href="/dashboard/freelancer/analytics" className="group">
             <div className="flex flex-col items-center rounded-lg border border-gray-200 p-4 transition-all hover:border-orange-300 hover:bg-orange-50">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100 transition-colors group-hover:bg-orange-200">
                 <Eye className="h-6 w-6 text-orange-600" />
@@ -102,6 +103,16 @@ export function QuickActions({ user }: QuickActionsProps) {
             Diğer İşlemler
           </h4>
           <div className="flex flex-wrap gap-2">
+            <Link href="/dashboard/freelancer/analytics">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <BarChart3 className="h-4 w-4" />
+                İstatistikler
+              </Button>
+            </Link>
             <Button
               variant="outline"
               size="sm"
@@ -202,6 +213,16 @@ export function QuickActions({ user }: QuickActionsProps) {
           Diğer İşlemler
         </h4>
         <div className="flex flex-wrap gap-2">
+          <Link href="/dashboard/employer/analytics">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <BarChart3 className="h-4 w-4" />
+              İstatistikler
+            </Button>
+          </Link>
           <Button
             variant="outline"
             size="sm"

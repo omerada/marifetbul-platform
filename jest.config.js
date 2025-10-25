@@ -42,7 +42,7 @@ const customJestConfig = {
   },
   coverageReporters: ['text', 'lcov', 'html'],
   transformIgnorePatterns: [
-    '/node_modules/',
+    'node_modules/(?!(lucide-react|@lucide)/)',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],

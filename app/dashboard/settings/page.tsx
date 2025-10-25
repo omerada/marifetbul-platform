@@ -40,9 +40,11 @@ export default function DashboardSettingsPage() {
               <p className="mt-1 text-sm text-gray-600">
                 E-posta ve push bildirim ayarlarınızı yönetin
               </p>
-              <Button variant="outline" size="sm" className="mt-4">
-                Düzenle
-              </Button>
+              <Link href="/dashboard/settings/notifications">
+                <Button variant="outline" size="sm" className="mt-4">
+                  Düzenle
+                </Button>
+              </Link>
             </div>
           </div>
         </Card>
@@ -58,9 +60,11 @@ export default function DashboardSettingsPage() {
               <p className="mt-1 text-sm text-gray-600">
                 Şifre ve iki faktörlü doğrulama ayarları
               </p>
-              <Button variant="outline" size="sm" className="mt-4">
-                Düzenle
-              </Button>
+              <Link href="/dashboard/settings/security">
+                <Button variant="outline" size="sm" className="mt-4">
+                  Düzenle
+                </Button>
+              </Link>
             </div>
           </div>
         </Card>
@@ -158,9 +162,11 @@ export default function DashboardSettingsPage() {
               <p className="mt-1 text-sm text-gray-600">
                 Dil, zaman dilimi ve diğer tercihler
               </p>
-              <Button variant="outline" size="sm" className="mt-4">
-                Düzenle
-              </Button>
+              <Link href="/dashboard/settings/general">
+                <Button variant="outline" size="sm" className="mt-4">
+                  Düzenle
+                </Button>
+              </Link>
             </div>
           </div>
         </Card>
