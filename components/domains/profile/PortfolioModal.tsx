@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,8 +18,10 @@ import {
   Link as LinkIcon,
   Calendar,
   Image as ImageIcon,
+  Loader2,
 } from 'lucide-react';
 import { logger } from '@/lib/shared/utils/logger';
+import * as portfolioApi from '@/lib/api/portfolio';
 
 const portfolioSchema = z.object({
   title: z.string().min(3, 'Proje başlığı en az 3 karakter olmalı'),
@@ -42,7 +44,18 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
   const [skills, setSkills] = useState<string[]>(item?.skills || []);
   const [newSkill, setNewSkill] = useState('');
   const [images, setImages] = useState<string[]>(item?.images || []);
-  const [newImageUrl, setNewImageUrl] = useState('');
+  const [uploadedImages, setUploadedImages] = useState<
+    Array<{
+      file: File;
+      preview: string;
+      portfolioId?: string;
+      imageId?: string;
+    }>
+  >([]);
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
+    {}
+  );
+  const [isDragging, setIsDragging] = useState(false);
 
   const {
     register,
@@ -62,19 +75,30 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
   const onSubmit = async (data: PortfolioFormData) => {
     setIsSubmitting(true);
     try {
+      // Combine backend images (URLs) with uploaded file previews
+      const allImageUrls = [
+        ...images,
+        ...uploadedImages.map((img) => img.preview),
+      ];
+
       const portfolioData: Omit<PortfolioItem, 'id'> = {
         title: data.title,
         description: data.description,
-        imageUrl: images[0] || '',
+        imageUrl: allImageUrls[0] || '',
         url: data.url || undefined,
         skills,
-        images,
+        images: allImageUrls,
         completedAt: new Date(data.completedAt).toISOString(),
         tags: skills, // Use skills as tags for compatibility
         createdAt: new Date().toISOString(),
       };
 
       await onSave(portfolioData);
+
+      // Upload images after portfolio is created
+      // Note: This will be handled by the parent component (PortfolioGallery)
+      // which will call portfolio API to upload images
+
       success('Başarılı', 'Portfolyo öğesi kaydedildi!');
       onClose();
     } catch (err) {
@@ -99,11 +123,81 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
     setSkills(skills.filter((skill) => skill !== skillToRemove));
   };
 
-  const addImage = () => {
-    if (newImageUrl.trim() && !images.includes(newImageUrl.trim())) {
-      setImages([...images, newImageUrl.trim()]);
-      setNewImageUrl('');
-    }
+  // File upload handlers
+  const handleFileSelect = useCallback(
+    (files: FileList | null) => {
+      if (!files || files.length === 0) return;
+
+      // Validate and add files
+      const maxFiles = 10;
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      const allowedTypes = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+      ];
+
+      const totalImages = images.length + uploadedImages.length;
+      if (totalImages + files.length > maxFiles) {
+        error('Hata', `Maksimum ${maxFiles} görsel ekleyebilirsiniz`);
+        return;
+      }
+
+      Array.from(files).forEach((file) => {
+        // Validate file type
+        if (!allowedTypes.includes(file.type)) {
+          error(
+            'Hata',
+            `Geçersiz dosya tipi: ${file.name}. Sadece JPG, PNG, WebP desteklenir.`
+          );
+          return;
+        }
+
+        // Validate file size
+        if (file.size > maxSize) {
+          error('Hata', `Dosya çok büyük: ${file.name}. Maksimum 5MB`);
+          return;
+        }
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setUploadedImages((prev) => [
+            ...prev,
+            {
+              file,
+              preview: reader.result as string,
+            },
+          ]);
+        };
+        reader.readAsDataURL(file);
+      });
+    },
+    [images.length, uploadedImages.length, error]
+  );
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragging(false);
+      handleFileSelect(e.dataTransfer.files);
+    },
+    [handleFileSelect]
+  );
+
+  const removeUploadedImage = (index: number) => {
+    setUploadedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const removeImage = (imageToRemove: string) => {
@@ -235,66 +329,116 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-700">
                 <ImageIcon className="mr-1 inline h-4 w-4" />
-                Proje Görselleri
+                Proje Görselleri (Maks. 10)
               </label>
 
-              <div className="mb-3">
-                <div className="flex space-x-2">
-                  <Input
-                    value={newImageUrl}
-                    onChange={(e) => setNewImageUrl(e.target.value)}
-                    placeholder="Görsel URL'si ekleyin"
-                    onKeyPress={(e) => handleKeyPress(e, addImage)}
-                  />
-                  <Button
-                    type="button"
-                    onClick={addImage}
-                    variant="outline"
-                    disabled={!newImageUrl.trim()}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
+              {/* File Upload Area with Drag & Drop */}
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`relative mt-2 rounded-lg border-2 border-dashed p-8 text-center transition-all ${
+                  isDragging
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-300 hover:border-gray-400'
+                }`}
+              >
+                <input
+                  type="file"
+                  id="portfolio-images"
+                  className="hidden"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  multiple
+                  onChange={(e) => handleFileSelect(e.target.files)}
+                />
+                <Upload className="mx-auto mb-3 h-12 w-12 text-gray-400" />
+                <p className="mb-2 text-sm font-medium text-gray-700">
+                  Görselleri sürükleyip bırakın veya
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    document.getElementById('portfolio-images')?.click()
+                  }
+                >
+                  Dosya Seçin
+                </Button>
+                <p className="mt-2 text-xs text-gray-500">
+                  JPG, PNG veya WebP (Maks. 5MB)
+                </p>
               </div>
 
-              {/* Image Preview */}
-              {images.length > 0 && (
-                <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-                  {images.map((image, index) => (
-                    <div key={index} className="group relative">
-                      <Image
-                        src={image}
-                        alt={`Proje görseli ${index + 1}`}
-                        width={96}
-                        height={96}
-                        className="h-24 w-full rounded-md object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src =
-                            '/images/placeholder.png';
-                        }}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(image)}
-                        className="absolute top-1 right-1 rounded-full bg-red-600 p-1 text-white opacity-0 transition-colors group-hover:opacity-100 hover:bg-red-700"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ))}
+              {/* Uploaded Images Preview */}
+              {uploadedImages.length > 0 && (
+                <div className="mt-4">
+                  <p className="mb-2 text-sm font-medium text-gray-700">
+                    Yüklenecek Görseller ({uploadedImages.length})
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+                    {uploadedImages.map((image, index) => (
+                      <div key={index} className="group relative">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={image.preview}
+                          alt={`Upload preview ${index + 1}`}
+                          className="h-24 w-full rounded-md object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeUploadedImage(index)}
+                          className="absolute top-1 right-1 rounded-full bg-red-600 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-700"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                        {uploadProgress[image.file.name] && (
+                          <div className="bg-opacity-50 absolute inset-0 flex items-center justify-center rounded-md bg-black">
+                            <div className="text-center">
+                              <Loader2 className="mx-auto h-6 w-6 animate-spin text-white" />
+                              <p className="mt-1 text-xs text-white">
+                                {uploadProgress[image.file.name]}%
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
-              {/* File Upload Area */}
-              <div className="mt-4 rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-colors hover:border-gray-400">
-                <Upload className="mx-auto mb-2 h-8 w-8 text-gray-400" />
-                <p className="mb-1 text-sm text-gray-600">
-                  Dosya yükleme özelliği yakında eklenecek
-                </p>
-                <p className="text-xs text-gray-500">
-                  Şimdilik URL ile görsel ekleyebilirsiniz
-                </p>
-              </div>
+              {/* Existing Images (for edit mode) */}
+              {images.length > 0 && (
+                <div className="mt-4">
+                  <p className="mb-2 text-sm font-medium text-gray-700">
+                    Mevcut Görseller ({images.length})
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+                    {images.map((image, index) => (
+                      <div key={index} className="group relative">
+                        <Image
+                          src={image}
+                          alt={`Proje görseli ${index + 1}`}
+                          width={96}
+                          height={96}
+                          className="h-24 w-full rounded-md object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              '/images/placeholder.png';
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(image)}
+                          className="absolute top-1 right-1 rounded-full bg-red-600 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-700"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Actions */}

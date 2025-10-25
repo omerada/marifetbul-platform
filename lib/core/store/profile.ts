@@ -1,7 +1,8 @@
 import { create } from 'zustand';
-import { User, FreelancerProfile, PortfolioItem } from '@/types';
+import { User, Freelancer, PortfolioItem } from '@/types';
 import { useAuthStore } from './domains/auth/authStore';
 import { logger } from '@/lib/shared/utils/logger';
+import * as portfolioApi from '@/lib/api/portfolio';
 
 interface CropData {
   x: number;
@@ -24,11 +25,11 @@ interface ProfileStore {
   fetchProfile: (userId: string) => Promise<void>;
   updateProfile: (userData: Partial<User>) => Promise<void>;
   uploadAvatar: (file: File, cropData?: CropData) => Promise<void>;
-  addPortfolioItem: (item: Omit<PortfolioItem, 'id'>) => Promise<void>;
+  addPortfolioItem: (item: Omit<PortfolioItem, 'id'>) => Promise<PortfolioItem>;
   updatePortfolioItem: (
     id: string,
     item: Partial<PortfolioItem>
-  ) => Promise<void>;
+  ) => Promise<PortfolioItem>;
   removePortfolioItem: (id: string) => Promise<void>;
   clearError: () => void;
   setDirty: (dirty: boolean) => void;
@@ -226,40 +227,49 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
       throw new Error('Freelancer profili gerekli');
     }
 
-    if (!currentProfile || currentProfile.userType !== 'freelancer') {
-      throw new Error('Freelancer profili bulunamadı');
-    }
-
-    // Safely handle the profile type - use partial types for incomplete profiles
-    const freelancerProfile = {
-      ...currentProfile,
-      skills: 'skills' in currentProfile ? currentProfile.skills : [],
-      hourlyRate:
-        'hourlyRate' in currentProfile ? currentProfile.hourlyRate : 0,
-      certifications:
-        'certifications' in currentProfile ? currentProfile.certifications : [],
-      languages: 'languages' in currentProfile ? currentProfile.languages : [],
-      availability:
-        'availability' in currentProfile ? currentProfile.availability : false,
-      portfolio: 'portfolio' in currentProfile ? currentProfile.portfolio : [],
-    } as FreelancerProfile;
-
-    const newItem: PortfolioItem = {
-      ...item,
-      id: `portfolio-${Date.now()}`,
-    };
-
-    const updatedPortfolio = [...(freelancerProfile.portfolio || []), newItem];
+    set({ isUpdating: true, error: null });
 
     try {
-      await get().updateProfile({
-        portfolio: updatedPortfolio,
-      } as Partial<FreelancerProfile>);
+      // Create portfolio via API (uses httpOnly cookie for auth)
+      const response = await portfolioApi.createPortfolio({
+        title: item.title,
+        description: item.description,
+        url: item.url,
+        completedAt: item.completedAt || new Date().toISOString(),
+        category: item.category,
+        client: item.client,
+        skills: item.skills || item.tags,
+        isPublic: !item.isPrivate,
+      });
+
+      // Convert response to PortfolioItem
+      const newItem = portfolioApi.convertToPortfolioItem(response);
+
+      // Update local state - Cast to Freelancer since we checked userType
+      const freelancerProfile = currentProfile as Freelancer;
+      const currentPortfolio = freelancerProfile.portfolio || [];
+      const updatedPortfolio = [...currentPortfolio, newItem];
+
+      set({
+        currentProfile: {
+          ...freelancerProfile,
+          portfolio: updatedPortfolio,
+        } as User,
+        isUpdating: false,
+        isDirty: false,
+        lastSaved: new Date(),
+      });
+
+      return newItem;
     } catch (error) {
       logger.error(
         'Portfolio add error',
         error instanceof Error ? error : new Error(String(error))
       );
+      set({
+        error: 'Portfolio eklenirken bir hata oluştu',
+        isUpdating: false,
+      });
       throw error;
     }
   },
@@ -271,32 +281,51 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
       throw new Error('Freelancer profili gerekli');
     }
 
-    const freelancerProfile = {
-      ...currentProfile,
-      skills: 'skills' in currentProfile ? currentProfile.skills : [],
-      hourlyRate:
-        'hourlyRate' in currentProfile ? currentProfile.hourlyRate : 0,
-      certifications:
-        'certifications' in currentProfile ? currentProfile.certifications : [],
-      languages: 'languages' in currentProfile ? currentProfile.languages : [],
-      availability:
-        'availability' in currentProfile ? currentProfile.availability : false,
-      portfolio: 'portfolio' in currentProfile ? currentProfile.portfolio : [],
-    } as FreelancerProfile;
-    const updatedPortfolio = (freelancerProfile.portfolio || []).map(
-      (portfolioItem) =>
-        portfolioItem.id === id ? { ...portfolioItem, ...item } : portfolioItem
-    );
+    set({ isUpdating: true, error: null });
 
     try {
-      await get().updateProfile({
-        portfolio: updatedPortfolio,
-      } as Partial<FreelancerProfile>);
+      // Update portfolio via API (uses httpOnly cookie for auth)
+      const response = await portfolioApi.updatePortfolio(id, {
+        title: item.title,
+        description: item.description,
+        url: item.url,
+        completedAt: item.completedAt,
+        category: item.category,
+        client: item.client,
+        skills: item.skills || item.tags,
+        isPublic: item.isPrivate !== undefined ? !item.isPrivate : undefined,
+      });
+
+      // Convert response to PortfolioItem
+      const updatedItem = portfolioApi.convertToPortfolioItem(response);
+
+      // Update local state - Cast to Freelancer since we checked userType
+      const freelancerProfile = currentProfile as Freelancer;
+      const currentPortfolio = freelancerProfile.portfolio || [];
+      const updatedPortfolio = currentPortfolio.map((portfolioItem) =>
+        portfolioItem.id === id ? updatedItem : portfolioItem
+      );
+
+      set({
+        currentProfile: {
+          ...freelancerProfile,
+          portfolio: updatedPortfolio,
+        } as User,
+        isUpdating: false,
+        isDirty: false,
+        lastSaved: new Date(),
+      });
+
+      return updatedItem;
     } catch (error) {
       logger.error(
         'Portfolio update error',
         error instanceof Error ? error : new Error(String(error))
       );
+      set({
+        error: 'Portfolio güncellenirken bir hata oluştu',
+        isUpdating: false,
+      });
       throw error;
     }
   },
@@ -308,31 +337,37 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
       throw new Error('Freelancer profili gerekli');
     }
 
-    const freelancerProfile = {
-      ...currentProfile,
-      skills: 'skills' in currentProfile ? currentProfile.skills : [],
-      hourlyRate:
-        'hourlyRate' in currentProfile ? currentProfile.hourlyRate : 0,
-      certifications:
-        'certifications' in currentProfile ? currentProfile.certifications : [],
-      languages: 'languages' in currentProfile ? currentProfile.languages : [],
-      availability:
-        'availability' in currentProfile ? currentProfile.availability : false,
-      portfolio: 'portfolio' in currentProfile ? currentProfile.portfolio : [],
-    } as FreelancerProfile;
-    const updatedPortfolio = (freelancerProfile.portfolio || []).filter(
-      (item) => item.id !== id
-    );
+    set({ isUpdating: true, error: null });
 
     try {
-      await get().updateProfile({
-        portfolio: updatedPortfolio,
-      } as Partial<FreelancerProfile>);
+      // Delete portfolio via API (uses httpOnly cookie for auth)
+      await portfolioApi.deletePortfolio(id);
+
+      // Update local state - Cast to Freelancer since we checked userType
+      const freelancerProfile = currentProfile as Freelancer;
+      const currentPortfolio = freelancerProfile.portfolio || [];
+      const updatedPortfolio = currentPortfolio.filter(
+        (item) => item.id !== id
+      );
+
+      set({
+        currentProfile: {
+          ...freelancerProfile,
+          portfolio: updatedPortfolio,
+        } as User,
+        isUpdating: false,
+        isDirty: false,
+        lastSaved: new Date(),
+      });
     } catch (error) {
       logger.error(
         'Portfolio remove error',
         error instanceof Error ? error : new Error(String(error))
       );
+      set({
+        error: 'Portfolio silinirken bir hata oluştu',
+        isUpdating: false,
+      });
       throw error;
     }
   },
