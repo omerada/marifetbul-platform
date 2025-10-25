@@ -499,6 +499,16 @@ export async function createComment(
 }
 
 /**
+ * Update a comment (author only)
+ */
+export async function updateComment(
+  commentId: number,
+  data: CreateCommentRequest
+): Promise<BlogComment> {
+  return apiClient.put(BLOG_ENDPOINTS.UPDATE_COMMENT(commentId), data);
+}
+
+/**
  * Get replies for a comment
  */
 export async function getCommentReplies(
@@ -617,6 +627,7 @@ export const blogApi = {
   getCommentsByPost,
   getApprovedComments,
   createComment,
+  updateComment,
   getCommentReplies,
   deleteComment,
   approveComment,

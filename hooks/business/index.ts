@@ -519,6 +519,31 @@ export {
 } from './useJobProposals';
 export { useOrder } from './useOrder';
 export { useProfileEdit } from './useProfileEdit';
+export { useCommentSubmission } from './useCommentSubmission';
+export {
+  type CommentSubmissionData,
+  type UseCommentSubmissionReturn,
+  validateCommentContent,
+} from './useCommentSubmission';
+export { useCommentActions } from './useCommentActions';
+export { type UseCommentActionsReturn } from './useCommentActions';
+export {
+  useCommentReports,
+  REPORT_REASON_LABELS,
+  REPORT_REASON_DESCRIPTIONS,
+} from './useCommentReports';
+export {
+  type CommentReportReason,
+  type CommentReportData,
+  type UseCommentReportsReturn,
+} from './useCommentReports';
+export { useCommentModeration } from './useCommentModeration';
+export {
+  type CommentModerationStatus,
+  type CommentModerationFilters,
+  type CommentModerationData,
+  type UseCommentModerationReturn,
+} from './useCommentModeration';
 
 const BusinessHooks = {
   useUnifiedSearch,

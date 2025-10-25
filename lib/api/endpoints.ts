@@ -522,6 +522,7 @@ export const BLOG_ENDPOINTS = {
   GET_APPROVED_COMMENTS: (postId: string | number) =>
     `/blog/comments/post/${postId}/approved`,
   CREATE_COMMENT: (postId: string | number) => `/blog/comments/post/${postId}`,
+  UPDATE_COMMENT: (commentId: string | number) => `/blog/comments/${commentId}`,
   GET_COMMENT_REPLIES: (commentId: string | number) =>
     `/blog/comments/${commentId}/replies`,
   DELETE_COMMENT: (commentId: string | number) => `/blog/comments/${commentId}`,
