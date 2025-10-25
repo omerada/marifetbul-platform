@@ -21,6 +21,8 @@
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
     "@stomp/stompjs": "^7.2.1",
+    "@stripe/react-stripe-js": "^5.2.0",
+    "@stripe/stripe-js": "^8.1.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.22",

@@ -216,8 +216,130 @@ export interface PaymentIntent {
   status:
     | 'requires_payment_method'
     | 'requires_confirmation'
+    | 'requires_action'
     | 'processing'
     | 'succeeded'
     | 'cancelled';
   createdAt: string;
+  stripePaymentIntentId?: string;
+}
+
+// ================================================
+// STRIPE-SPECIFIC TYPES
+// ================================================
+
+export interface StripePaymentIntentRequest {
+  orderId: string;
+  amount: number;
+  currency: Currency;
+  metadata?: Record<string, string>;
+}
+
+export interface StripePaymentIntentResponse {
+  paymentId: string;
+  clientSecret: string;
+  amount: number;
+  currency: Currency;
+  status: PaymentIntent['status'];
+}
+
+export interface StripeCardElementOptions {
+  hidePostalCode?: boolean;
+  iconStyle?: 'default' | 'solid';
+  style?: {
+    base?: Record<string, string>;
+    invalid?: Record<string, string>;
+  };
+}
+
+export interface StripePaymentError {
+  type:
+    | 'card_error'
+    | 'validation_error'
+    | 'api_error'
+    | 'authentication_error';
+  code?: string;
+  message: string;
+  param?: string;
+  decline_code?: string;
+}
+
+export interface StripePaymentResult {
+  success: boolean;
+  paymentIntent?: {
+    id: string;
+    status: string;
+    amount: number;
+    currency: string;
+  };
+  error?: StripePaymentError;
+}
+
+// ================================================
+// PAYMENT HOOKS RETURN TYPES
+// ================================================
+
+export interface UsePaymentIntentReturn {
+  createIntent: (
+    orderId: string,
+    amount: number
+  ) => Promise<StripePaymentIntentResponse>;
+  isCreating: boolean;
+  error: string | null;
+  clearError: () => void;
+}
+
+export interface UseStripeCheckoutReturn {
+  processPayment: (clientSecret: string) => Promise<StripePaymentResult>;
+  isProcessing: boolean;
+  error: string | null;
+  clearError: () => void;
+}
+
+export interface UseRefundReturn {
+  requestRefund: (
+    paymentId: string,
+    amount?: number,
+    reason?: string
+  ) => Promise<boolean>;
+  isRefunding: boolean;
+  error: string | null;
+  clearError: () => void;
+}
+
+// ================================================
+// CHECKOUT TYPES
+// ================================================
+
+export interface CheckoutSession {
+  orderId: string;
+  packageId?: string;
+  amount: number;
+  currency: Currency;
+  deliveryDate: string;
+  requirements?: string;
+  notes?: string;
+  paymentIntentId?: string;
+  clientSecret?: string;
+}
+
+export interface OrderSummary {
+  packageTitle: string;
+  packagePrice: number;
+  platformFee: number;
+  total: number;
+  currency: Currency;
+  deliveryDays: number;
+  sellerName: string;
+  sellerRating: number;
+}
+
+export interface PaymentConfirmation {
+  orderId: string;
+  orderNumber: string;
+  amount: number;
+  currency: Currency;
+  paymentIntentId: string;
+  status: 'succeeded' | 'processing' | 'requires_action';
+  nextSteps: string[];
 }

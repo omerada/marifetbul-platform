@@ -330,6 +330,7 @@ export const PAYMENT_ENDPOINTS = {
 
   // Payment Actions
   REFUND: (paymentId: string) => `/payments/${paymentId}/refund`,
+  REQUEST_REFUND: '/payments/refund/request',
   UPDATE_STATUS: (paymentId: string) => `/payments/${paymentId}/status`,
 
   // Payment Methods

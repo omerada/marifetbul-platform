@@ -4,7 +4,12 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Button, Loading } from '@/components/ui';
-import { DeliverOrderModal, DisputeModal } from '@/components/domains/orders';
+import {
+  DeliverOrderModal,
+  DisputeModal,
+  OrderTimeline,
+  EscrowStatus,
+} from '@/components/domains/orders';
 import { MessageButton } from '@/components/domains/messaging';
 import {
   Package,
@@ -112,23 +117,6 @@ export default function FreelancerOrderDetailPage() {
       hour: '2-digit',
       minute: '2-digit',
     });
-  };
-
-  const getTimelineIcon = (type: string) => {
-    switch (type) {
-      case 'message':
-        return <FileText className="h-4 w-4" />;
-      case 'delivery':
-        return <Package className="h-4 w-4" />;
-      case 'acceptance':
-        return <CheckCircle className="h-4 w-4" />;
-      case 'revision_request':
-        return <Upload className="h-4 w-4" />;
-      case 'cancellation':
-        return <XCircle className="h-4 w-4" />;
-      default:
-        return <Clock className="h-4 w-4" />;
-    }
   };
 
   const getTimelineLabel = (type: string, from: string) => {
@@ -482,67 +470,42 @@ export default function FreelancerOrderDetailPage() {
           )}
 
           {/* Timeline */}
-          <Card className="p-6">
-            <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">
-              <Clock className="h-5 w-5" />
-              Sipariş Geçmişi
-            </h2>
-            <div className="space-y-4">
-              {order.communications.map((comm, idx) => (
-                <div
-                  key={comm.id}
-                  className={`flex gap-4 ${
-                    idx !== order.communications.length - 1
-                      ? 'border-b border-gray-200 pb-4'
-                      : ''
-                  }`}
-                >
-                  <div
-                    className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${
-                      comm.from === 'seller'
-                        ? 'bg-primary-100 text-primary-600'
-                        : comm.from === 'buyer'
-                          ? 'bg-purple-100 text-purple-600'
-                          : 'bg-gray-100 text-gray-600'
-                    }`}
-                  >
-                    {getTimelineIcon(comm.type)}
-                  </div>
-                  <div className="flex-1">
-                    <div className="mb-1 flex items-start justify-between">
-                      <div className="font-medium text-gray-900">
-                        {getTimelineLabel(comm.type, comm.from)}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {formatDate(comm.timestamp)}
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-600">{comm.message}</p>
-                    {comm.attachments && comm.attachments.length > 0 && (
-                      <div className="mt-2 space-y-1">
-                        {comm.attachments.map((attachment, idx) => (
-                          <a
-                            key={idx}
-                            href={attachment}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary-600 hover:text-primary-700 flex items-center gap-1 text-xs"
-                          >
-                            <Download className="h-3 w-3" />
-                            Ek {idx + 1}
-                          </a>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
+          <OrderTimeline
+            events={order.communications.map((comm) => ({
+              id: comm.id,
+              status: comm.type,
+              title: getTimelineLabel(comm.type, comm.from),
+              description: comm.message,
+              timestamp: comm.timestamp,
+              actor:
+                comm.from === 'seller'
+                  ? 'Siz'
+                  : comm.from === 'buyer'
+                    ? order.buyer?.name || 'Alıcı'
+                    : 'Sistem',
+              isCompleted: true,
+              isCurrent: false,
+            }))}
+          />
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
+          {/* Escrow Status */}
+          {order.paymentStatus === 'paid' && (
+            <EscrowStatus
+              escrow={{
+                status: order.status === 'completed' ? 'RELEASED' : 'HELD',
+                amount: order.amount * 0.85, // %15 platform fee deduction
+                currency: order.currency,
+                heldAt: order.createdAt,
+                releasedAt: order.completedAt,
+                releaseCondition:
+                  'Alıcı teslimatı onayladıktan sonra hesabınıza aktarılacak',
+              }}
+            />
+          )}
+
           {/* Actions */}
           <Card className="p-6">
             <h2 className="mb-4 text-lg font-semibold">İşlemler</h2>
