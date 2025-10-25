@@ -543,6 +543,7 @@ export {
   type CommentModerationFilters,
   type CommentModerationData,
   type UseCommentModerationReturn,
+  type BulkActionResult,
 } from './useCommentModeration';
 
 const BusinessHooks = {

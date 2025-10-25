@@ -45,6 +45,13 @@ export type {
   JobProposalSummary,
   JobProposalMap,
 } from './business/useJobProposals';
+export { useAutoRefresh } from './business/useAutoRefresh';
+export type {
+  UseAutoRefreshOptions,
+  UseAutoRefreshResult,
+} from './business/useAutoRefresh';
+export { useRetry } from './business/useRetry';
+export type { UseRetryOptions, UseRetryResult } from './business/useRetry';
 
 // DATA HOOKS - Analytics, search, and data management
 export { useAnalytics } from './infrastructure/data/useAnalytics';

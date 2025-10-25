@@ -7,5 +7,22 @@
 
 export { CommentModerationQueue } from './CommentModerationQueue';
 export { CommentModerationCard } from './CommentModerationCard';
+export { CommentModerationNotes } from './CommentModerationNotes';
+export { CommentBulkActions } from './CommentBulkActions';
+export {
+  CommentCardSkeleton,
+  StatsCardSkeleton,
+  ModerationQueueSkeleton,
+  DashboardWidgetSkeleton,
+  RecentCommentsSkeleton,
+} from './LoadingSkeletons';
 
 export type { CommentModerationCardProps } from './CommentModerationCard';
+export type {
+  ModerationNote,
+  CommentModerationNotesProps,
+} from './CommentModerationNotes';
+export type {
+  BulkActionResult,
+  CommentBulkActionsProps,
+} from './CommentBulkActions';

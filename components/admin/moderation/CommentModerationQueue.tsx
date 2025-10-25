@@ -4,6 +4,7 @@
  * ================================================
  * Main component for comment moderation dashboard
  * Displays comments with filtering and bulk actions
+ * Includes auto-refresh and loading skeletons
  *
  * @author MarifetBul Development Team
  * @version 1.0.0
@@ -20,13 +21,17 @@ import {
   AlertTriangle,
   RefreshCw,
   Trash2,
+  Clock,
 } from 'lucide-react';
 import {
   useCommentModeration,
   type CommentModerationStatus,
 } from '@/hooks/business/useCommentModeration';
+import { useAutoRefresh } from '@/hooks/business/useAutoRefresh';
 import { CommentModerationCard } from './CommentModerationCard';
 import { CommentPagination } from '@/components/blog/CommentPagination';
+import { CommentBulkActions } from './CommentBulkActions';
+import { ModerationQueueSkeleton } from './LoadingSkeletons';
 
 // ================================================
 // COMPONENT
@@ -38,6 +43,19 @@ export function CommentModerationQueue() {
   // ================================================
 
   const moderation = useCommentModeration();
+
+  // Auto-refresh every 30 seconds
+  const autoRefresh = useAutoRefresh(
+    async () => {
+      await moderation.refresh();
+    },
+    {
+      interval: 30000, // 30 seconds
+      enabled: true,
+      refreshOnFocus: true,
+      refreshOnReconnect: true,
+    }
+  );
 
   // ================================================
   // LOCAL STATE
@@ -76,52 +94,12 @@ export function CommentModerationQueue() {
     }
   };
 
-  const handleBulkApprove = async () => {
-    if (!hasSelection) return;
-    const confirmed = confirm(
-      `${moderation.selectedComments.size} yorumu onaylamak istediğinize emin misiniz?`
-    );
-    if (!confirmed) return;
-
-    const ids = Array.from(moderation.selectedComments);
-    await moderation.bulkApprove(ids);
-  };
-
-  const handleBulkReject = async () => {
-    if (!hasSelection) return;
-    const confirmed = confirm(
-      `${moderation.selectedComments.size} yorumu reddetmek istediğinize emin misiniz?`
-    );
-    if (!confirmed) return;
-
-    const ids = Array.from(moderation.selectedComments);
-    await moderation.bulkReject(ids);
-  };
-
-  const handleBulkSpam = async () => {
-    if (!hasSelection) return;
-    const confirmed = confirm(
-      `${moderation.selectedComments.size} yorumu spam olarak işaretlemek istediğinize emin misiniz?`
-    );
-    if (!confirmed) return;
-
-    const ids = Array.from(moderation.selectedComments);
-    await moderation.bulkMarkAsSpam(ids);
-  };
-
   // ================================================
   // RENDER - Loading
   // ================================================
 
   if (moderation.loading && !moderation.data) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="text-center">
-          <RefreshCw className="mx-auto h-8 w-8 animate-spin text-gray-400" />
-          <p className="mt-2 text-sm text-gray-500">Yorumlar yükleniyor...</p>
-        </div>
-      </div>
-    );
+    return <ModerationQueueSkeleton />;
   }
 
   // ================================================
@@ -163,14 +141,25 @@ export function CommentModerationQueue() {
         </div>
 
         <button
-          onClick={() => moderation.refresh()}
+          onClick={() => autoRefresh.refresh()}
           disabled={moderation.loading}
           className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          aria-label="Yorumları yenile"
         >
           <RefreshCw
-            className={`h-4 w-4 ${moderation.loading ? 'animate-spin' : ''}`}
+            className={`h-4 w-4 ${
+              moderation.loading || autoRefresh.isRefreshing
+                ? 'animate-spin'
+                : ''
+            }`}
           />
           <span>Yenile</span>
+          {autoRefresh.timeUntilRefresh > 0 && !moderation.loading && (
+            <span className="flex items-center gap-1 text-xs text-gray-500">
+              <Clock className="h-3 w-3" />
+              {autoRefresh.timeUntilRefresh}s
+            </span>
+          )}
         </button>
       </div>
 
@@ -298,44 +287,23 @@ export function CommentModerationQueue() {
 
       {/* Bulk Actions */}
       {hasSelection && (
-        <div className="flex items-center gap-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
-          <p className="text-sm font-medium text-blue-900">
-            {moderation.selectedComments.size} yorum seçildi
-          </p>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleBulkApprove}
-              className="flex items-center gap-1 rounded-lg border border-green-600 bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
-            >
-              <CheckCircle className="h-4 w-4" />
-              <span>Onayla</span>
-            </button>
-
-            <button
-              onClick={handleBulkReject}
-              className="flex items-center gap-1 rounded-lg border border-red-600 bg-red-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-red-700"
-            >
-              <XCircle className="h-4 w-4" />
-              <span>Reddet</span>
-            </button>
-
-            <button
-              onClick={handleBulkSpam}
-              className="flex items-center gap-1 rounded-lg border border-gray-600 bg-gray-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-gray-700"
-            >
-              <Trash2 className="h-4 w-4" />
-              <span>Spam</span>
-            </button>
-
-            <button
-              onClick={() => moderation.deselectAll()}
-              className="ml-2 text-sm font-medium text-blue-600 hover:text-blue-700"
-            >
-              Seçimi kaldır
-            </button>
-          </div>
-        </div>
+        <CommentBulkActions
+          selectedCount={moderation.selectedComments.size}
+          onApprove={async () => {
+            const ids = Array.from(moderation.selectedComments);
+            return await moderation.bulkApprove(ids);
+          }}
+          onReject={async () => {
+            const ids = Array.from(moderation.selectedComments);
+            return await moderation.bulkReject(ids);
+          }}
+          onSpam={async () => {
+            const ids = Array.from(moderation.selectedComments);
+            return await moderation.bulkMarkAsSpam(ids);
+          }}
+          onCancel={() => moderation.deselectAll()}
+          disabled={moderation.loading}
+        />
       )}
 
       {/* Select All */}

@@ -77,15 +77,20 @@ export interface UseCommentModerationReturn {
   approveComment: (id: string) => Promise<boolean>;
   rejectComment: (id: string) => Promise<boolean>;
   markAsSpam: (id: string) => Promise<boolean>;
-  bulkApprove: (ids: string[]) => Promise<boolean>;
-  bulkReject: (ids: string[]) => Promise<boolean>;
-  bulkMarkAsSpam: (ids: string[]) => Promise<boolean>;
+  bulkApprove: (ids: string[]) => Promise<BulkActionResult>;
+  bulkReject: (ids: string[]) => Promise<BulkActionResult>;
+  bulkMarkAsSpam: (ids: string[]) => Promise<BulkActionResult>;
 
   // Refresh
   refresh: () => Promise<void>;
 }
 
-// ================================================
+export interface BulkActionResult {
+  success: number;
+  failed: number;
+  total: number;
+  errors?: string[];
+} // ================================================
 // HOOK
 // ================================================
 
@@ -329,69 +334,91 @@ export function useCommentModeration(): UseCommentModerationReturn {
   // ================================================
 
   const bulkApprove = useCallback(
-    async (ids: string[]): Promise<boolean> => {
-      try {
-        await Promise.all(
-          ids.map((id) => apiClient.post(BLOG_ENDPOINTS.APPROVE_COMMENT(id)))
+    async (ids: string[]): Promise<BulkActionResult> => {
+      const results = await Promise.allSettled(
+        ids.map((id) => apiClient.post(BLOG_ENDPOINTS.APPROVE_COMMENT(id)))
+      );
+
+      const success = results.filter((r) => r.status === 'fulfilled').length;
+      const failed = results.filter((r) => r.status === 'rejected').length;
+      const errors = results
+        .filter((r) => r.status === 'rejected')
+        .map(
+          (r) =>
+            (r as PromiseRejectedResult).reason?.message || 'Bilinmeyen hata'
         );
 
-        // Refresh data after bulk operation
-        await fetchComments();
-        setSelectedComments(new Set());
+      // Refresh data after bulk operation
+      await fetchComments();
+      setSelectedComments(new Set());
 
-        return true;
-      } catch (err) {
-        console.error('Failed to bulk approve:', err);
-        setError('Yorumlar onaylanırken bir hata oluştu');
-        return false;
-      }
+      return {
+        success,
+        failed,
+        total: ids.length,
+        errors: errors.length > 0 ? errors : undefined,
+      };
     },
     [fetchComments]
   );
 
   const bulkReject = useCallback(
-    async (ids: string[]): Promise<boolean> => {
-      try {
-        await Promise.all(
-          ids.map((id) => apiClient.post(BLOG_ENDPOINTS.REJECT_COMMENT(id)))
+    async (ids: string[]): Promise<BulkActionResult> => {
+      const results = await Promise.allSettled(
+        ids.map((id) => apiClient.post(BLOG_ENDPOINTS.REJECT_COMMENT(id)))
+      );
+
+      const success = results.filter((r) => r.status === 'fulfilled').length;
+      const failed = results.filter((r) => r.status === 'rejected').length;
+      const errors = results
+        .filter((r) => r.status === 'rejected')
+        .map(
+          (r) =>
+            (r as PromiseRejectedResult).reason?.message || 'Bilinmeyen hata'
         );
 
-        // Refresh data after bulk operation
-        await fetchComments();
-        setSelectedComments(new Set());
+      // Refresh data after bulk operation
+      await fetchComments();
+      setSelectedComments(new Set());
 
-        return true;
-      } catch (err) {
-        console.error('Failed to bulk reject:', err);
-        setError('Yorumlar reddedilirken bir hata oluştu');
-        return false;
-      }
+      return {
+        success,
+        failed,
+        total: ids.length,
+        errors: errors.length > 0 ? errors : undefined,
+      };
     },
     [fetchComments]
   );
 
   const bulkMarkAsSpam = useCallback(
-    async (ids: string[]): Promise<boolean> => {
-      try {
-        await Promise.all(
-          ids.map((id) => apiClient.post(BLOG_ENDPOINTS.SPAM_COMMENT(id)))
+    async (ids: string[]): Promise<BulkActionResult> => {
+      const results = await Promise.allSettled(
+        ids.map((id) => apiClient.post(BLOG_ENDPOINTS.SPAM_COMMENT(id)))
+      );
+
+      const success = results.filter((r) => r.status === 'fulfilled').length;
+      const failed = results.filter((r) => r.status === 'rejected').length;
+      const errors = results
+        .filter((r) => r.status === 'rejected')
+        .map(
+          (r) =>
+            (r as PromiseRejectedResult).reason?.message || 'Bilinmeyen hata'
         );
 
-        // Refresh data after bulk operation
-        await fetchComments();
-        setSelectedComments(new Set());
+      // Refresh data after bulk operation
+      await fetchComments();
+      setSelectedComments(new Set());
 
-        return true;
-      } catch (err) {
-        console.error('Failed to bulk mark as spam:', err);
-        setError('Yorumlar spam olarak işaretlenirken bir hata oluştu');
-        return false;
-      }
+      return {
+        success,
+        failed,
+        total: ids.length,
+        errors: errors.length > 0 ? errors : undefined,
+      };
     },
     [fetchComments]
-  );
-
-  // ================================================
+  ); // ================================================
   // RETURN
   // ================================================
 
