@@ -24,7 +24,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { SocialShare } from '@/components/shared/social/SocialShare';
-import { ProposalModal } from './ProposalModal';
+import { JobProposalButton } from './JobProposalButton';
 import { ProposalCard } from './ProposalCard';
 import { Loading } from '@/components/ui';
 import { ErrorState } from '@/components/shared/utilities';
@@ -45,12 +45,10 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
     isLoading,
     error,
     isJobOwner,
-    canPropose,
     refreshJobDetail,
     updateProposalStatus,
   } = useJobDetail(jobId);
 
-  const [showProposalModal, setShowProposalModal] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
   if (isLoading) {
@@ -189,15 +187,11 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
 
         {/* Action Buttons */}
         <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-3">
-          {canPropose && (
-            <Button
-              size="lg"
-              onClick={() => setShowProposalModal(true)}
+          {!isJobOwner && (
+            <JobProposalButton
+              jobId={jobId}
               className="px-4 text-sm sm:px-8 sm:text-base"
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              Teklif Ver
-            </Button>
+            />
           )}
 
           <Button
@@ -334,9 +328,6 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
                       onReject={() =>
                         handleProposalAction(proposal.id, 'rejected')
                       }
-                      onMessage={() => {
-                        /* Navigate to messages */
-                      }}
                     />
                   ))}
                 </div>
@@ -473,14 +464,6 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
           </Card>
         </div>
       </div>
-
-      {/* Proposal Modal */}
-      <ProposalModal
-        isOpen={showProposalModal}
-        onClose={() => setShowProposalModal(false)}
-        jobId={jobId}
-        job={currentJob}
-      />
     </div>
   );
 });

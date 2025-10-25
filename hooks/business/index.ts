@@ -504,6 +504,19 @@ export {
 } from './useProfile';
 export { useDashboard, useDashboardRefresh } from './useDashboard';
 export { useProposal } from './useProposal';
+export { useProposalEligibility } from './useProposalEligibility';
+export { useFreelancerProposals } from './useFreelancerProposals';
+export { useProposalNotifications } from './useProposalNotifications';
+export {
+  type ProposalNotificationData,
+  type ProposalNotificationType,
+} from './useProposalNotifications';
+export { useReviewNotifications } from './useReviewNotifications';
+export { useJobProposals } from './useJobProposals';
+export {
+  type JobProposalSummary,
+  type JobProposalMap,
+} from './useJobProposals';
 export { useOrder } from './useOrder';
 export { useProfileEdit } from './useProfileEdit';
 

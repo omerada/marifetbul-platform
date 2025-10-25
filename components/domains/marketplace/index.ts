@@ -7,6 +7,13 @@
 // Marketplace Components
 export { MarketplaceHeader } from './MarketplaceHeader';
 
+// Job List Components
+export { JobListFilters } from './JobListFilters';
+export type {
+  JobListFilters as JobListFiltersType,
+  ProposalFilterType,
+} from './JobListFilters';
+
 // Mobile Marketplace
 export { MobileMarketplace } from './marketplace/MobileMarketplace';
 

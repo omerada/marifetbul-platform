@@ -40,6 +40,11 @@ export * from './business/useAdminReviews';
 export { useSellerReviews } from './business/useSellerReviews';
 export { useReviewNotifications } from './business/useReviewNotifications';
 export { useReputation } from './business/useReputation';
+export { useJobProposals } from './business/useJobProposals';
+export type {
+  JobProposalSummary,
+  JobProposalMap,
+} from './business/useJobProposals';
 
 // DATA HOOKS - Analytics, search, and data management
 export { useAnalytics } from './infrastructure/data/useAnalytics';

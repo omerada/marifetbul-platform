@@ -11,8 +11,10 @@ import {
   Users,
   Briefcase,
   Award,
+  FileText,
+  TrendingUp,
 } from 'lucide-react';
-import { useMarketplace } from '@/hooks';
+import { useMarketplace, useJobProposals } from '@/hooks';
 import { formatCurrency } from '@/lib/shared/utils/payment';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
@@ -23,11 +25,31 @@ import { cn } from '@/lib/utils';
 interface JobCardProps {
   job: Job;
   layout: 'grid' | 'list';
+  /**
+   * Show employer-specific features (proposal summary, view proposals button)
+   * Only visible to job owner
+   */
+  showEmployerFeatures?: boolean;
 }
 
-export function JobCard({ job, layout }: JobCardProps) {
+export function JobCard({
+  job,
+  layout,
+  showEmployerFeatures = false,
+}: JobCardProps) {
   const { isFavoriteJob, toggleJobFavorite } = useMarketplace();
   const isFavorite = isFavoriteJob();
+
+  // Fetch proposal summary for employer
+  const { getProposalSummary } = useJobProposals({
+    jobIds: showEmployerFeatures ? [job.id] : undefined,
+    autoFetch: showEmployerFeatures,
+    enablePolling: showEmployerFeatures,
+  });
+
+  const proposalSummary = showEmployerFeatures
+    ? getProposalSummary(job.id)
+    : undefined;
 
   const formatBudget = () => {
     // Type guard for budget object vs number
@@ -144,6 +166,36 @@ export function JobCard({ job, layout }: JobCardProps) {
                     <span className="font-medium">{job.location}</span>
                   </div>
                 )}
+
+                {/* Employer-specific proposal indicators */}
+                {showEmployerFeatures && proposalSummary && (
+                  <>
+                    {proposalSummary.unreadCount > 0 && (
+                      <div className="flex items-center rounded-full bg-blue-600 px-3 py-1 text-white">
+                        <FileText className="mr-1 h-4 w-4" />
+                        <span className="font-medium">
+                          {proposalSummary.unreadCount} yeni teklif
+                        </span>
+                      </div>
+                    )}
+                    {proposalSummary.pendingCount > 0 && (
+                      <div className="flex items-center rounded-full bg-amber-50 px-3 py-1 text-amber-700">
+                        <Clock className="mr-1 h-4 w-4" />
+                        <span className="font-medium">
+                          {proposalSummary.pendingCount} bekliyor
+                        </span>
+                      </div>
+                    )}
+                    {proposalSummary.acceptedCount > 0 && (
+                      <div className="flex items-center rounded-full bg-green-50 px-3 py-1 text-green-700">
+                        <Award className="mr-1 h-4 w-4" />
+                        <span className="font-medium">
+                          {proposalSummary.acceptedCount} kabul edildi
+                        </span>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
 
               <div className="flex flex-wrap gap-2">
@@ -196,29 +248,60 @@ export function JobCard({ job, layout }: JobCardProps) {
                 </Badge>
 
                 <div className="flex gap-2 sm:w-full sm:flex-col sm:space-y-2">
-                  <Link
-                    href={`/marketplace/jobs/${job.id}`}
-                    className="flex-1 sm:block"
-                  >
-                    <Button
-                      size="sm"
-                      className="sm:size-lg w-full bg-blue-600 shadow-md hover:bg-blue-700"
-                    >
-                      Teklif Ver
-                    </Button>
-                  </Link>
-                  <Link
-                    href={`/marketplace/jobs/${job.id}`}
-                    className="flex-1 sm:block"
-                  >
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="sm:size-sm w-full border-gray-300 hover:border-blue-300 hover:bg-blue-50"
-                    >
-                      Detaylar
-                    </Button>
-                  </Link>
+                  {showEmployerFeatures ? (
+                    <>
+                      <Link
+                        href={`/dashboard/employer/proposals?jobId=${job.id}`}
+                        className="flex-1 sm:block"
+                      >
+                        <Button
+                          size="sm"
+                          className="sm:size-lg w-full bg-blue-600 shadow-md hover:bg-blue-700"
+                        >
+                          <FileText className="mr-2 h-4 w-4" />
+                          Teklifleri Gör
+                        </Button>
+                      </Link>
+                      <Link
+                        href={`/marketplace/jobs/${job.id}`}
+                        className="flex-1 sm:block"
+                      >
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="sm:size-sm w-full border-gray-300 hover:border-blue-300 hover:bg-blue-50"
+                        >
+                          Detaylar
+                        </Button>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href={`/marketplace/jobs/${job.id}`}
+                        className="flex-1 sm:block"
+                      >
+                        <Button
+                          size="sm"
+                          className="sm:size-lg w-full bg-blue-600 shadow-md hover:bg-blue-700"
+                        >
+                          Teklif Ver
+                        </Button>
+                      </Link>
+                      <Link
+                        href={`/marketplace/jobs/${job.id}`}
+                        className="flex-1 sm:block"
+                      >
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="sm:size-sm w-full border-gray-300 hover:border-blue-300 hover:bg-blue-50"
+                        >
+                          Detaylar
+                        </Button>
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -305,6 +388,41 @@ export function JobCard({ job, layout }: JobCardProps) {
           </div>
         </div>
 
+        {/* Employer-specific proposal stats */}
+        {showEmployerFeatures && proposalSummary && (
+          <div className="flex flex-wrap gap-2">
+            {proposalSummary.unreadCount > 0 && (
+              <Badge className="border-blue-600 bg-blue-600 text-white">
+                <FileText className="mr-1 h-3 w-3" />
+                {proposalSummary.unreadCount} yeni
+              </Badge>
+            )}
+            {proposalSummary.pendingCount > 0 && (
+              <Badge className="border-amber-200 bg-amber-100 text-amber-800">
+                <Clock className="mr-1 h-3 w-3" />
+                {proposalSummary.pendingCount} bekliyor
+              </Badge>
+            )}
+            {proposalSummary.acceptedCount > 0 && (
+              <Badge className="border-green-200 bg-green-100 text-green-700">
+                <Award className="mr-1 h-3 w-3" />
+                {proposalSummary.acceptedCount} kabul
+              </Badge>
+            )}
+            {proposalSummary.lowestProposedBudget &&
+              proposalSummary.highestProposedBudget && (
+                <Badge
+                  variant="outline"
+                  className="border-gray-300 bg-white text-gray-700"
+                >
+                  <TrendingUp className="mr-1 h-3 w-3" />
+                  {formatCurrency(proposalSummary.lowestProposedBudget)} -{' '}
+                  {formatCurrency(proposalSummary.highestProposedBudget)}
+                </Badge>
+              )}
+          </div>
+        )}
+
         <div className="flex items-center justify-between rounded-lg bg-green-50 px-3 py-2">
           <div className="flex items-center text-green-700">
             <Clock className="mr-1 h-4 w-4" />
@@ -359,14 +477,26 @@ export function JobCard({ job, layout }: JobCardProps) {
           </div>
 
           <div className="space-x-2">
-            <Link href={`/marketplace/jobs/${job.id}`}>
-              <Button
-                size="sm"
-                className="bg-blue-600 shadow-md hover:bg-blue-700"
-              >
-                Teklif Ver
-              </Button>
-            </Link>
+            {showEmployerFeatures ? (
+              <Link href={`/dashboard/employer/proposals?jobId=${job.id}`}>
+                <Button
+                  size="sm"
+                  className="bg-blue-600 shadow-md hover:bg-blue-700"
+                >
+                  <FileText className="mr-1 h-4 w-4" />
+                  Teklifleri Gör
+                </Button>
+              </Link>
+            ) : (
+              <Link href={`/marketplace/jobs/${job.id}`}>
+                <Button
+                  size="sm"
+                  className="bg-blue-600 shadow-md hover:bg-blue-700"
+                >
+                  Teklif Ver
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </CardContent>
