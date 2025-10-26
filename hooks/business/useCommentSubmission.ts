@@ -28,7 +28,13 @@ export interface UseCommentSubmissionReturn {
   error: string | null;
   success: boolean;
   submitComment: (data: CommentSubmissionData) => Promise<BlogComment | null>;
+  replyToComment: (
+    postId: number,
+    parentCommentId: number,
+    content: string
+  ) => Promise<BlogComment | null>;
   resetState: () => void;
+  resetError: () => void;
 }
 
 // ================================================
@@ -138,12 +144,33 @@ export function useCommentSubmission(): UseCommentSubmissionReturn {
     setIsSubmitting(false);
   }, []);
 
+  const resetError = useCallback(() => {
+    setError(null);
+  }, []);
+
+  const replyToComment = useCallback(
+    async (
+      postId: number,
+      parentCommentId: number,
+      content: string
+    ): Promise<BlogComment | null> => {
+      return submitComment({
+        postId,
+        content,
+        parentId: parentCommentId,
+      });
+    },
+    [submitComment]
+  );
+
   return {
     isSubmitting,
     error,
     success,
     submitComment,
+    replyToComment,
     resetState,
+    resetError,
   };
 }
 

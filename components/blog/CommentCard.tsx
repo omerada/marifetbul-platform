@@ -25,9 +25,12 @@ import { useCommentActions } from '@/hooks/business/useCommentActions';
 
 export interface CommentCardProps {
   comment: BlogComment;
-  postId: number;
+  postId?: number;
   level?: number;
   maxLevel?: number;
+  depth?: number;
+  showReplyButton?: boolean;
+  onReply?: () => void;
   onReplySuccess?: (comment: BlogComment) => void;
   onCommentUpdated?: (commentId: number, newContent: string) => void;
   onCommentDeleted?: (commentId: number) => void;
@@ -42,9 +45,12 @@ export interface CommentCardProps {
 
 export function CommentCard({
   comment,
-  postId,
+  postId = 0,
   level = 0,
   maxLevel = 3,
+  depth: _depth = 0,
+  showReplyButton: _showReplyButton = true,
+  onReply: _onReply,
   onReplySuccess,
   onCommentUpdated,
   onCommentDeleted,

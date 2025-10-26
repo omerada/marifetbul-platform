@@ -14,7 +14,6 @@
 
 import React, { useState } from 'react';
 import {
-  Search,
   Filter,
   CheckCircle,
   XCircle,
@@ -23,14 +22,13 @@ import {
   Trash2,
   Clock,
 } from 'lucide-react';
-import {
-  useCommentModeration,
-  type CommentModerationStatus,
-} from '@/hooks/business/useCommentModeration';
+import { useCommentModeration } from '@/hooks/business/useCommentModeration';
 import { useAutoRefresh } from '@/hooks/business/useAutoRefresh';
 import { CommentModerationCard } from './CommentModerationCard';
 import { CommentPagination } from '@/components/blog/CommentPagination';
 import { CommentBulkActions } from './CommentBulkActions';
+import { CommentFilterBar } from './CommentFilterBar';
+import { CommentSearchBar } from './CommentSearchBar';
 import { ModerationQueueSkeleton } from './LoadingSkeletons';
 
 // ================================================
@@ -80,10 +78,6 @@ export function CommentModerationQueue() {
   const handleSearch = (value: string) => {
     setSearchQuery(value);
     moderation.updateFilter('search', value || undefined);
-  };
-
-  const handleStatusFilter = (status: CommentModerationStatus) => {
-    moderation.updateFilter('status', status);
   };
 
   const handleToggleSelectAll = () => {
@@ -204,86 +198,55 @@ export function CommentModerationQueue() {
         </div>
       </div>
 
-      {/* Search and Filters */}
-      <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4">
+      {/* Search and Filter Section */}
+      <div className="grid gap-4 lg:grid-cols-3">
         {/* Search Bar */}
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Yorum içeriğinde ara..."
-              className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-          </div>
+        <div className="lg:col-span-2">
+          <CommentSearchBar
+            value={searchQuery}
+            onChange={handleSearch}
+            isSearching={moderation.loading}
+            placeholder="Yorum içeriğinde, yazarda veya gönderide ara..."
+          />
+        </div>
 
+        {/* Filter Toggle Button (Mobile) */}
+        <div className="lg:hidden">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
+            className={`flex w-full items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
               showFilters
                 ? 'border-blue-500 bg-blue-50 text-blue-700'
                 : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
             }`}
           >
             <Filter className="h-4 w-4" />
-            <span>Filtrele</span>
+            <span>Filtreler</span>
+            {moderation.filters.status !== 'ALL' && (
+              <span className="rounded-full bg-blue-600 px-2 py-0.5 text-xs text-white">
+                Aktif
+              </span>
+            )}
           </button>
         </div>
-
-        {/* Filter Options */}
-        {showFilters && (
-          <div className="space-y-3 border-t border-gray-200 pt-4">
-            {/* Status Filter */}
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Durum
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {(
-                  [
-                    'ALL',
-                    'PENDING',
-                    'APPROVED',
-                    'REJECTED',
-                    'SPAM',
-                  ] as CommentModerationStatus[]
-                ).map((status) => (
-                  <button
-                    key={status}
-                    onClick={() => handleStatusFilter(status)}
-                    className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
-                      moderation.filters.status === status
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    {status === 'ALL' && 'Tümü'}
-                    {status === 'PENDING' && 'Bekliyor'}
-                    {status === 'APPROVED' && 'Onaylı'}
-                    {status === 'REJECTED' && 'Reddedildi'}
-                    {status === 'SPAM' && 'Spam'}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Clear Filters */}
-            <div className="flex justify-end">
-              <button
-                onClick={() => {
-                  moderation.clearFilters();
-                  setSearchQuery('');
-                }}
-                className="text-sm font-medium text-gray-600 hover:text-gray-700"
-              >
-                Filtreleri temizle
-              </button>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Filter Bar */}
+      {(showFilters ||
+        (typeof window !== 'undefined' && window.innerWidth >= 1024)) && (
+        <CommentFilterBar
+          filters={moderation.filters}
+          onFilterChange={moderation.setFilters}
+          onClearFilters={moderation.clearFilters}
+          stats={{
+            pending: data.pending,
+            approved: data.approved,
+            rejected: data.rejected,
+            spam: data.spam,
+            total: data.total,
+          }}
+        />
+      )}
 
       {/* Bulk Actions */}
       {hasSelection && (

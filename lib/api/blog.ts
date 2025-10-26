@@ -547,6 +547,84 @@ export async function markCommentAsSpam(
   return apiClient.post(BLOG_ENDPOINTS.SPAM_COMMENT(commentId), {});
 }
 
+/**
+ * Get pending comments (admin only)
+ */
+export async function getPendingComments(params?: {
+  page?: number;
+  size?: number;
+}): Promise<PageResponse<BlogComment>> {
+  const url = buildUrlWithParams(BLOG_ENDPOINTS.GET_PENDING_COMMENTS, params);
+  return apiClient.get(url);
+}
+
+/**
+ * Get comments by status (admin only)
+ */
+export async function getCommentsByStatus(
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'SPAM',
+  params?: {
+    page?: number;
+    size?: number;
+  }
+): Promise<PageResponse<BlogComment>> {
+  const url = buildUrlWithParams(BLOG_ENDPOINTS.GET_COMMENTS_BY_STATUS, {
+    ...params,
+    status,
+  });
+  return apiClient.get(url);
+}
+
+/**
+ * Get user's comments
+ */
+export async function getUserComments(
+  userId: string,
+  params?: {
+    page?: number;
+    size?: number;
+  }
+): Promise<PageResponse<BlogComment>> {
+  const url = buildUrlWithParams(
+    BLOG_ENDPOINTS.GET_USER_COMMENTS(userId),
+    params
+  );
+  return apiClient.get(url);
+}
+
+/**
+ * Reply to a comment
+ */
+export async function replyToComment(
+  postId: number,
+  parentCommentId: number,
+  data: CreateCommentRequest
+): Promise<BlogComment> {
+  return apiClient.post(BLOG_ENDPOINTS.CREATE_COMMENT(postId), {
+    ...data,
+    parentId: parentCommentId,
+  });
+}
+
+/**
+ * Report a comment
+ */
+export async function reportComment(
+  commentId: number,
+  reason: string
+): Promise<void> {
+  return apiClient.post(BLOG_ENDPOINTS.REPORT_COMMENT(commentId), {
+    reason,
+  });
+}
+
+/**
+ * Get comment count for a post
+ */
+export async function getCommentCount(postId: number): Promise<number> {
+  return apiClient.get(BLOG_ENDPOINTS.COUNT_COMMENTS(postId));
+}
+
 // ================================================
 // ADMIN API
 // ================================================
@@ -633,6 +711,12 @@ export const blogApi = {
   approveComment,
   rejectComment,
   markCommentAsSpam,
+  getPendingComments,
+  getCommentsByStatus,
+  getUserComments,
+  replyToComment,
+  reportComment,
+  getCommentCount,
 
   // Admin
   getAllPosts,

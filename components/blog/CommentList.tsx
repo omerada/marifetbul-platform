@@ -12,7 +12,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, Loader2, AlertCircle } from 'lucide-react';
-import { CommentCard } from './CommentCard';
+import { CommentThreadView } from './CommentThreadView';
 import { CommentForm } from './CommentForm';
 import { blogApi } from '@/lib/api/blog';
 import type { BlogComment } from '@/lib/api/blog';
@@ -49,6 +49,22 @@ export function CommentList({
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [showForm, setShowForm] = useState(false);
+
+  // ================================================
+  // COMPUTED
+  // ================================================
+
+  // Count total comments including nested replies
+  const countTotalComments = (commentsList: BlogComment[]): number => {
+    return commentsList.reduce((total, comment) => {
+      const replyCount = comment.replies
+        ? countTotalComments(comment.replies)
+        : 0;
+      return total + 1 + replyCount;
+    }, 0);
+  };
+
+  const totalCommentCount = countTotalComments(comments);
 
   // ================================================
   // EFFECTS
@@ -107,43 +123,10 @@ export function CommentList({
   };
 
   const handleReplySuccess = (_comment: BlogComment) => {
-    // Refresh comments to show new reply
-    fetchComments(true);
-  };
-
-  const handleCommentUpdated = (commentId: number, newContent: string) => {
-    // Update comment in list optimistically
-    setComments((prev) =>
-      prev.map((comment) =>
-        comment.id === commentId
-          ? {
-              ...comment,
-              content: newContent,
-              updatedAt: new Date().toISOString(),
-            }
-          : comment
-      )
-    );
-  };
-
-  const handleCommentDeleted = (commentId: number) => {
-    // Remove from list
-    setComments((prev) => removeCommentById(prev, commentId));
-  };
-
-  // Recursive function to remove comment from nested structure
-  const removeCommentById = (
-    commentsList: BlogComment[],
-    idToRemove: number
-  ): BlogComment[] => {
-    return commentsList
-      .filter((comment) => comment.id !== idToRemove)
-      .map((comment) => ({
-        ...comment,
-        replies: comment.replies
-          ? removeCommentById(comment.replies, idToRemove)
-          : [],
-      }));
+    // Refresh comments to show new reply (after moderation)
+    setTimeout(() => {
+      fetchComments(true);
+    }, 1000);
   };
 
   const handleEdit = (commentId: number) => {
@@ -221,7 +204,7 @@ export function CommentList({
         <div className="flex items-center gap-3">
           <MessageCircle className="h-6 w-6 text-blue-600" />
           <h2 className="text-2xl font-bold text-gray-900">
-            Yorumlar ({comments.length})
+            Yorumlar ({totalCommentCount})
           </h2>
         </div>
 
@@ -272,13 +255,11 @@ export function CommentList({
       ) : (
         <div className="space-y-4">
           {sortedComments.map((comment) => (
-            <CommentCard
+            <CommentThreadView
               key={comment.id}
               comment={comment}
               postId={postId}
-              onReplySuccess={handleReplySuccess}
-              onCommentUpdated={handleCommentUpdated}
-              onCommentDeleted={handleCommentDeleted}
+              onReply={handleReplySuccess}
               onEdit={handleEdit}
               onDelete={handleDelete}
               onReport={handleReport}

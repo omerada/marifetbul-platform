@@ -9,6 +9,8 @@ export { CommentModerationQueue } from './CommentModerationQueue';
 export { CommentModerationCard } from './CommentModerationCard';
 export { CommentModerationNotes } from './CommentModerationNotes';
 export { CommentBulkActions } from './CommentBulkActions';
+export { CommentFilterBar } from './CommentFilterBar';
+export { CommentSearchBar } from './CommentSearchBar';
 export {
   CommentCardSkeleton,
   StatsCardSkeleton,
@@ -26,3 +28,5 @@ export type {
   BulkActionResult,
   CommentBulkActionsProps,
 } from './CommentBulkActions';
+export type { CommentFilterBarProps } from './CommentFilterBar';
+export type { CommentSearchBarProps } from './CommentSearchBar';

@@ -520,22 +520,35 @@ export const BLOG_ENDPOINTS = {
 
   // Blog Comments
   GET_COMMENTS_BY_POST: (postId: string | number) =>
-    `/blog/comments/post/${postId}`,
+    `/blog/posts/${postId}/comments`,
   GET_APPROVED_COMMENTS: (postId: string | number) =>
-    `/blog/comments/post/${postId}/approved`,
-  CREATE_COMMENT: (postId: string | number) => `/blog/comments/post/${postId}`,
+    `/blog/posts/${postId}/comments`,
+  GET_ALL_COMMENTS_BY_POST: (postId: string | number) =>
+    `/blog/posts/${postId}/comments/all`,
+  GET_COMMENT_BY_ID: (commentId: string | number) =>
+    `/blog/comments/${commentId}`,
+  CREATE_COMMENT: (postId: string | number) => `/blog/posts/${postId}/comments`,
   UPDATE_COMMENT: (commentId: string | number) => `/blog/comments/${commentId}`,
+  DELETE_COMMENT: (commentId: string | number) => `/blog/comments/${commentId}`,
   GET_COMMENT_REPLIES: (commentId: string | number) =>
     `/blog/comments/${commentId}/replies`,
-  DELETE_COMMENT: (commentId: string | number) => `/blog/comments/${commentId}`,
+  COUNT_COMMENTS: (postId: string | number) =>
+    `/blog/posts/${postId}/comments/count`,
 
-  // Comment Moderation
+  // Comment Moderation (Admin)
+  GET_PENDING_COMMENTS: '/blog/admin/comments/pending',
+  GET_COMMENTS_BY_STATUS: '/blog/admin/comments',
+  GET_USER_COMMENTS: (userId: string) => `/blog/users/${userId}/comments`,
   APPROVE_COMMENT: (commentId: string | number) =>
-    `/blog/comments/${commentId}/approve`,
+    `/blog/admin/comments/${commentId}/approve`,
   REJECT_COMMENT: (commentId: string | number) =>
-    `/blog/comments/${commentId}/reject`,
+    `/blog/admin/comments/${commentId}/reject`,
   SPAM_COMMENT: (commentId: string | number) =>
-    `/blog/comments/${commentId}/spam`,
+    `/blog/admin/comments/${commentId}/spam`,
+
+  // Comment Reports (Future)
+  REPORT_COMMENT: (commentId: string | number) =>
+    `/blog/comments/${commentId}/report`,
 } as const;
 
 // ================================================
