@@ -5,7 +5,7 @@
  * Customer-facing package detail with order functionality
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import type { Package } from '@/types/business/features/package';
 import { Button } from '@/components/ui';
+import { favoritesApi } from '@/lib/api/favorites';
+import { OrderModal } from './OrderModal';
 
 interface PublicPackageDetailProps {
   package: Package;
@@ -33,6 +35,23 @@ export function PublicPackageDetail({
     'BASIC' | 'STANDARD' | 'PREMIUM'
   >('BASIC');
   const [isFavorited, setIsFavorited] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+
+  // Check if package is favorited on mount
+  useEffect(() => {
+    const checkFavorite = async () => {
+      try {
+        const response = await favoritesApi.checkPackageFavorite(pkg.id);
+        setIsFavorited(response.isFavorited);
+      } catch (error) {
+        // User might not be logged in, ignore error
+        console.log('Not checking favorite status:', error);
+      }
+    };
+
+    checkFavorite();
+  }, [pkg.id]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('tr-TR', {
@@ -51,13 +70,23 @@ export function PublicPackageDetail({
   if (!currentTier) return null;
 
   const handleOrder = () => {
-    // TODO: Navigate to order page or open order modal
-    console.log('Order package:', pkg.id, selectedTier);
+    setIsOrderModalOpen(true);
   };
 
-  const handleFavorite = () => {
-    setIsFavorited(!isFavorited);
-    // TODO: Call favorite API
+  const handleFavorite = async () => {
+    if (favoriteLoading) return;
+
+    try {
+      setFavoriteLoading(true);
+      const response = await favoritesApi.togglePackageFavorite(pkg.id);
+      setIsFavorited(response.isFavorited);
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+      // Revert on error
+      setIsFavorited(!isFavorited);
+    } finally {
+      setFavoriteLoading(false);
+    }
   };
 
   const handleShare = () => {
@@ -83,13 +112,18 @@ export function PublicPackageDetail({
             variant="outline"
             size="sm"
             onClick={handleFavorite}
+            disabled={favoriteLoading}
             leftIcon={
               <Heart
                 className={`h-4 w-4 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`}
               />
             }
           >
-            Favorile
+            {favoriteLoading
+              ? 'Kaydediliyor...'
+              : isFavorited
+                ? 'Favorilerde'
+                : 'Favorile'}
           </Button>
           <Button
             variant="outline"
@@ -432,6 +466,14 @@ export function PublicPackageDetail({
           </div>
         </div>
       </div>
+
+      {/* Order Modal */}
+      <OrderModal
+        package={pkg}
+        initialTier={selectedTier}
+        isOpen={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
+      />
     </div>
   );
 }

@@ -5,8 +5,11 @@
  * Search and filter controls for public package listings
  */
 
+import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui';
+import { categoryApi } from '@/lib/api/categories';
+import type { Category } from '@/types/business/features/marketplace-categories';
 
 interface MarketplaceFiltersProps {
   searchQuery: string;
@@ -33,15 +36,25 @@ export function MarketplaceFilters({
   sortBy,
   onSortChange,
 }: MarketplaceFiltersProps) {
-  // TODO: Fetch categories from API
-  const categories = [
-    { id: '', name: 'Tüm Kategoriler' },
-    { id: '1', name: 'Grafik Tasarım' },
-    { id: '2', name: 'Web Geliştirme' },
-    { id: '3', name: 'Yazılım' },
-    { id: '4', name: 'Video & Animasyon' },
-    { id: '5', name: 'Müzik & Ses' },
-  ];
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await categoryApi.getAllCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+        // Fallback to empty array
+        setCategories([]);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -69,11 +82,15 @@ export function MarketplaceFilters({
           <select
             value={categoryId}
             onChange={(e) => onCategoryChange(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            disabled={loadingCategories}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100"
           >
+            <option value="">
+              {loadingCategories ? 'Yükleniyor...' : 'Tüm Kategoriler'}
+            </option>
             {categories.map((cat) => (
               <option key={cat.id} value={cat.id}>
-                {cat.name}
+                {cat.title}
               </option>
             ))}
           </select>
