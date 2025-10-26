@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { ToastProvider } from '@/components/providers/ToastProvider';
 import { MonitoringProvider } from '@/components/providers/MonitoringProvider';
 import { SEOHead } from '@/components/shared/seo/SEOHead';
+import { SkipToContent } from '@/components/shared/accessibility';
 import './globals.css';
 
 const inter = Inter({
@@ -90,6 +91,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} h-full bg-gray-50 font-sans antialiased`}
       >
+        <SkipToContent />
         <MonitoringProvider>
           <ThemeProvider>
             <AuthProvider>

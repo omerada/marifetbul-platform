@@ -112,7 +112,11 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
   };
 
   return (
-    <div className="space-y-4 p-4 lg:space-y-6 lg:p-6">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="space-y-4 p-4 lg:space-y-6 lg:p-6"
+    >
       {/* Connection Status - Compact */}
       <div className="mb-6 lg:mb-8">
         <div className="flex items-center gap-2">
@@ -297,6 +301,6 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
           </div>
         </Card>
       </>
-    </div>
+    </main>
   );
 }

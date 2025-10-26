@@ -124,7 +124,11 @@ export function MarketplacePage() {
   const currentTotal = mode === 'jobs' ? stats.totalJobs : stats.totalPackages;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50/50">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="min-h-screen bg-gradient-to-b from-white to-gray-50/50"
+    >
       {/* Hero Section - Yeni Modern Minimal Tasarım */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700">
         {/* Modern Pattern Overlay */}
@@ -489,6 +493,6 @@ export function MarketplacePage() {
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }

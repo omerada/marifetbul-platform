@@ -197,16 +197,10 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
 
-  eslint: {
-    ignoreDuringBuilds: false,
-  },
-
   // ================================================
-  // WEBPACK CONFIGURATION
+  // TURBOPACK CONFIGURATION (Next.js 16+)
   // ================================================
-  webpack: (config) => {
-    return config;
-  },
+  turbopack: {},
 };
 
 module.exports = nextConfig;

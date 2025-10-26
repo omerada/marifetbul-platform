@@ -1,7 +1,5 @@
 'use client';
 
-// @ts-nocheck
-
 /**
  * Package Features Step - Step 3
  */
@@ -18,8 +16,11 @@ export function PackageFeaturesStep() {
     formState: { errors },
   } = useFormContext<CreatePackageFormData>();
 
+  // @ts-expect-error - useFieldArray typing limitation
   const highlights = useFieldArray({ control, name: 'highlights' });
+  // @ts-expect-error - useFieldArray typing limitation
   const deliverables = useFieldArray({ control, name: 'deliverables' });
+  // @ts-expect-error - useFieldArray typing limitation
   const requirements = useFieldArray({ control, name: 'requirements' });
 
   return (

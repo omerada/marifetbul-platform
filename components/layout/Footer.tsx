@@ -14,7 +14,7 @@ import {
 
 export function Footer() {
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer id="footer" className="bg-gray-900 text-white" role="contentinfo">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 gap-8 py-12 md:grid-cols-2 lg:grid-cols-4">
@@ -23,7 +23,7 @@ export function Footer() {
             <div className="flex items-center space-x-2">
               <Image
                 src="/icons/icon-48x48.png"
-                alt="MarifetBul"
+                alt="MarifetBul Logo"
                 width={32}
                 height={32}
                 className="rounded-lg"
@@ -48,27 +48,31 @@ export function Footer() {
             <div className="flex space-x-4">
               <a
                 href="#"
+                aria-label="Facebook'ta bizi takip edin"
                 className="text-gray-400 transition-colors hover:text-white"
               >
-                <Facebook className="h-5 w-5" />
+                <Facebook className="h-5 w-5" aria-hidden="true" />
               </a>
               <a
                 href="#"
+                aria-label="Twitter'da bizi takip edin"
                 className="text-gray-400 transition-colors hover:text-white"
               >
-                <Twitter className="h-5 w-5" />
+                <Twitter className="h-5 w-5" aria-hidden="true" />
               </a>
               <a
                 href="#"
+                aria-label="Instagram'da bizi takip edin"
                 className="text-gray-400 transition-colors hover:text-white"
               >
-                <Instagram className="h-5 w-5" />
+                <Instagram className="h-5 w-5" aria-hidden="true" />
               </a>
               <a
                 href="#"
+                aria-label="LinkedIn'de bizi takip edin"
                 className="text-gray-400 transition-colors hover:text-white"
               >
-                <Linkedin className="h-5 w-5" />
+                <Linkedin className="h-5 w-5" aria-hidden="true" />
               </a>
             </div>
           </div>

@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { Search, MapPin, X, Target, MapIcon } from 'lucide-react';
+import { Search, MapPin, X, Target, Map } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
@@ -253,7 +253,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
         <Card className="mb-4">
           <div className="p-4">
             <div className="mb-3 flex items-center gap-2">
-              <MapIcon className="h-4 w-4 text-gray-600" />
+              <Map className="h-4 w-4 text-gray-600" />
               <span className="text-sm font-medium text-gray-700">
                 Seçilen Konum
               </span>

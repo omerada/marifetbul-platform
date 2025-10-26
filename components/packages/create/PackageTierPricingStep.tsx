@@ -1,7 +1,5 @@
 'use client';
 
-// @ts-nocheck
-
 /**
  * ================================================
  * PACKAGE TIER PRICING STEP
@@ -34,17 +32,20 @@ export function PackageTierPricingStep() {
   // Watch tier data for validation
   const basicTier = watch('basicTier');
 
-  // Feature arrays for each tier
+  // Feature arrays for each tier - TypeScript has issues with nested field arrays
+  // @ts-expect-error - useFieldArray typing limitation with nested paths
   const basicFeatures = useFieldArray({
     control,
     name: 'basicTier.features',
   });
 
+  // @ts-expect-error - useFieldArray typing limitation with nested paths
   const standardFeatures = useFieldArray({
     control,
     name: 'standardTier.features',
   });
 
+  // @ts-expect-error - useFieldArray typing limitation with nested paths
   const premiumFeatures = useFieldArray({
     control,
     name: 'premiumTier.features',
