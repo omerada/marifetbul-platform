@@ -27,7 +27,9 @@ export const getAllCategories = async (): Promise<Category[]> => {
  * Get category by ID
  * GET /api/v1/categories/{id}
  */
-export const getCategoryById = async (categoryId: string): Promise<Category> => {
+export const getCategoryById = async (
+  categoryId: string
+): Promise<Category> => {
   return await apiClient.get<Category>(`/categories/${categoryId}`);
 };
 
@@ -51,7 +53,9 @@ export const getRootCategories = async (): Promise<Category[]> => {
  * Get children of a category
  * GET /api/v1/categories/{id}/children
  */
-export const getCategoryChildren = async (categoryId: string): Promise<Category[]> => {
+export const getCategoryChildren = async (
+  categoryId: string
+): Promise<Category[]> => {
   return await apiClient.get<Category[]>(`/categories/${categoryId}/children`);
 };
 
