@@ -48,6 +48,7 @@ const nextConfig = {
   // ================================================
   async redirects() {
     return [
+      // Info & Support redirects
       {
         source: '/help',
         destination: '/support/help',
@@ -87,6 +88,20 @@ const nextConfig = {
         source: '/cookies',
         destination: '/legal/cookies',
         permanent: true,
+      },
+      // Package route redirects (backward compatibility)
+      // Old packages-detail route
+      {
+        source: '/marketplace/packages-detail/:id',
+        destination: '/api/redirect-to-slug?type=package&id=:id',
+        permanent: false, // 302 - may change
+      },
+      // Old packages/[id] route with UUID pattern
+      {
+        source:
+          '/marketplace/packages/:id([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
+        destination: '/api/redirect-to-slug?type=package&id=:id',
+        permanent: false, // 302 - may change
       },
     ];
   },

@@ -6,11 +6,22 @@
  * Handles posts, categories, comments, and tags
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 2.0.0 - Sprint 4: API Standardization with Validation
  */
 
 import { apiClient } from '../infrastructure/api/client';
 import { BLOG_ENDPOINTS, buildUrlWithParams } from './endpoints';
+import {
+  validateResponse,
+  BlogPostSchema,
+  BlogCategorySchema,
+  BlogCommentSchema,
+} from './validators';
+import type {
+  BlogPost as ValidatedBlogPost,
+  BlogCategory as ValidatedBlogCategory,
+  BlogComment as ValidatedBlogComment,
+} from './validators';
 
 // ================================================
 // TYPE DEFINITIONS
@@ -187,16 +198,26 @@ export async function getPublishedPosts(params?: {
 
 /**
  * Get post by slug
+ * @throws {NotFoundError} Post not found
+ * @throws {ValidationError} Invalid response format
  */
-export async function getPostBySlug(slug: string): Promise<BlogPost> {
-  return apiClient.get(BLOG_ENDPOINTS.GET_POST_BY_SLUG(slug));
+export async function getPostBySlug(slug: string): Promise<ValidatedBlogPost> {
+  const response = await apiClient.get<BlogPost>(
+    BLOG_ENDPOINTS.GET_POST_BY_SLUG(slug)
+  );
+  return validateResponse(BlogPostSchema, response, 'BlogPost');
 }
 
 /**
  * Get post by ID
+ * @throws {NotFoundError} Post not found
+ * @throws {ValidationError} Invalid response format
  */
-export async function getPostById(postId: number): Promise<BlogPost> {
-  return apiClient.get(BLOG_ENDPOINTS.GET_POST_BY_ID(postId));
+export async function getPostById(postId: number): Promise<ValidatedBlogPost> {
+  const response = await apiClient.get<BlogPost>(
+    BLOG_ENDPOINTS.GET_POST_BY_ID(postId)
+  );
+  return validateResponse(BlogPostSchema, response, 'BlogPost');
 }
 
 /**
@@ -309,25 +330,41 @@ export async function getRelatedPosts(
 
 /**
  * Create a new blog post
+ * @throws {ValidationError} Invalid blog post data
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {AuthorizationError} Not authorized to create posts
  */
 export async function createPost(
   data: CreateBlogPostRequest
-): Promise<BlogPost> {
-  return apiClient.post(BLOG_ENDPOINTS.CREATE_POST, data);
+): Promise<ValidatedBlogPost> {
+  const response = await apiClient.post<BlogPost>(
+    BLOG_ENDPOINTS.CREATE_POST,
+    data
+  );
+  return validateResponse(BlogPostSchema, response, 'BlogPost');
 }
 
 /**
  * Update a blog post
+ * @throws {ValidationError} Invalid blog post data
+ * @throws {NotFoundError} Post not found
+ * @throws {AuthorizationError} Not post author
  */
 export async function updatePost(
   postId: number,
   data: UpdateBlogPostRequest
-): Promise<BlogPost> {
-  return apiClient.put(BLOG_ENDPOINTS.UPDATE_POST(postId), data);
+): Promise<ValidatedBlogPost> {
+  const response = await apiClient.put<BlogPost>(
+    BLOG_ENDPOINTS.UPDATE_POST(postId),
+    data
+  );
+  return validateResponse(BlogPostSchema, response, 'BlogPost');
 }
 
 /**
  * Delete a blog post
+ * @throws {NotFoundError} Post not found
+ * @throws {AuthorizationError} Not post author
  */
 export async function deletePost(postId: number): Promise<void> {
   return apiClient.delete(BLOG_ENDPOINTS.DELETE_POST(postId));
@@ -335,9 +372,16 @@ export async function deletePost(postId: number): Promise<void> {
 
 /**
  * Publish a post immediately
+ * @throws {NotFoundError} Post not found
+ * @throws {AuthorizationError} Not post author
+ * @throws {ValidationError} Post not ready for publishing
  */
-export async function publishPost(postId: number): Promise<BlogPost> {
-  return apiClient.post(BLOG_ENDPOINTS.PUBLISH_POST(postId), {});
+export async function publishPost(postId: number): Promise<ValidatedBlogPost> {
+  const response = await apiClient.post<BlogPost>(
+    BLOG_ENDPOINTS.PUBLISH_POST(postId),
+    {}
+  );
+  return validateResponse(BlogPostSchema, response, 'BlogPost');
 }
 
 /**
@@ -417,34 +461,55 @@ export async function getCategoryBySlug(slug: string): Promise<BlogCategory> {
 
 /**
  * Get category by ID
+ * @throws {NotFoundError} Category not found
+ * @throws {ValidationError} Invalid response format
  */
 export async function getCategoryById(
   categoryId: number
-): Promise<BlogCategory> {
-  return apiClient.get(BLOG_ENDPOINTS.GET_CATEGORY_BY_ID(categoryId));
+): Promise<ValidatedBlogCategory> {
+  const response = await apiClient.get<BlogCategory>(
+    BLOG_ENDPOINTS.GET_CATEGORY_BY_ID(categoryId)
+  );
+  return validateResponse(BlogCategorySchema, response, 'BlogCategory');
 }
 
 /**
  * Create a new category (admin only)
+ * @throws {ValidationError} Invalid category data
+ * @throws {AuthorizationError} Not admin
+ * @throws {ConflictError} Category slug already exists
  */
 export async function createCategory(
   data: CreateCategoryRequest
-): Promise<BlogCategory> {
-  return apiClient.post(BLOG_ENDPOINTS.CREATE_CATEGORY, data);
+): Promise<ValidatedBlogCategory> {
+  const response = await apiClient.post<BlogCategory>(
+    BLOG_ENDPOINTS.CREATE_CATEGORY,
+    data
+  );
+  return validateResponse(BlogCategorySchema, response, 'BlogCategory');
 }
 
 /**
  * Update a category (admin only)
+ * @throws {ValidationError} Invalid category data
+ * @throws {NotFoundError} Category not found
+ * @throws {AuthorizationError} Not admin
  */
 export async function updateCategory(
   categoryId: number,
   data: UpdateCategoryRequest
-): Promise<BlogCategory> {
-  return apiClient.put(BLOG_ENDPOINTS.UPDATE_CATEGORY(categoryId), data);
+): Promise<ValidatedBlogCategory> {
+  const response = await apiClient.put<BlogCategory>(
+    BLOG_ENDPOINTS.UPDATE_CATEGORY(categoryId),
+    data
+  );
+  return validateResponse(BlogCategorySchema, response, 'BlogCategory');
 }
 
 /**
  * Delete a category (admin only)
+ * @throws {NotFoundError} Category not found
+ * @throws {AuthorizationError} Not admin
  */
 export async function deleteCategory(categoryId: number): Promise<void> {
   return apiClient.delete(BLOG_ENDPOINTS.DELETE_CATEGORY(categoryId));
@@ -490,22 +555,36 @@ export async function getApprovedComments(
 
 /**
  * Create a comment
+ * @throws {ValidationError} Invalid comment data
+ * @throws {NotFoundError} Post not found
+ * @throws {AuthenticationError} Not authenticated
  */
 export async function createComment(
   postId: number,
   data: CreateCommentRequest
-): Promise<BlogComment> {
-  return apiClient.post(BLOG_ENDPOINTS.CREATE_COMMENT(postId), data);
+): Promise<ValidatedBlogComment> {
+  const response = await apiClient.post<BlogComment>(
+    BLOG_ENDPOINTS.CREATE_COMMENT(postId),
+    data
+  );
+  return validateResponse(BlogCommentSchema, response, 'BlogComment');
 }
 
 /**
  * Update a comment (author only)
+ * @throws {ValidationError} Invalid comment data
+ * @throws {NotFoundError} Comment not found
+ * @throws {AuthorizationError} Not comment author
  */
 export async function updateComment(
   commentId: number,
   data: CreateCommentRequest
-): Promise<BlogComment> {
-  return apiClient.put(BLOG_ENDPOINTS.UPDATE_COMMENT(commentId), data);
+): Promise<ValidatedBlogComment> {
+  const response = await apiClient.put<BlogComment>(
+    BLOG_ENDPOINTS.UPDATE_COMMENT(commentId),
+    data
+  );
+  return validateResponse(BlogCommentSchema, response, 'BlogComment');
 }
 
 /**

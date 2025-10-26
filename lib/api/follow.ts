@@ -5,11 +5,13 @@
  * API client functions for user follow/unfollow functionality
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 2.0.0 - Sprint 4: API Standardization
  * @since 2025-10-26
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
+import { validateResponse, UserProfileSchema } from './validators';
+import type { UserProfile } from './validators';
 import type { User, FollowStatusResponse } from '@/types/core/base';
 import type { PaginationMeta } from '@/types';
 
@@ -50,15 +52,26 @@ export const toggleFollow = async (
  * @param page - Page number (0-based)
  * @param size - Page size
  * @returns Paginated list of followers
+ * @throws {NotFoundError} User not found
+ * @throws {ValidationError} Invalid response format
  */
 export const getFollowers = async (
   userId: string,
   page = 0,
   size = 20
-): Promise<PageResponse<User>> => {
+): Promise<PageResponse<UserProfile>> => {
   const url = `/users/${userId}/followers?page=${page}&size=${size}&sortBy=createdAt&sortDir=DESC`;
   const response = await apiClient.get<ApiResponse<PageResponse<User>>>(url);
-  return response.data;
+
+  // Validate each user in the response
+  const validatedUsers = response.data.data.map((user) =>
+    validateResponse(UserProfileSchema, user, 'User')
+  );
+
+  return {
+    data: validatedUsers,
+    pagination: response.data.pagination,
+  };
 };
 
 /**
@@ -67,15 +80,26 @@ export const getFollowers = async (
  * @param page - Page number (0-based)
  * @param size - Page size
  * @returns Paginated list of users being followed
+ * @throws {NotFoundError} User not found
+ * @throws {ValidationError} Invalid response format
  */
 export const getFollowing = async (
   userId: string,
   page = 0,
   size = 20
-): Promise<PageResponse<User>> => {
+): Promise<PageResponse<UserProfile>> => {
   const url = `/users/${userId}/following?page=${page}&size=${size}&sortBy=createdAt&sortDir=DESC`;
   const response = await apiClient.get<ApiResponse<PageResponse<User>>>(url);
-  return response.data;
+
+  // Validate each user in the response
+  const validatedUsers = response.data.data.map((user) =>
+    validateResponse(UserProfileSchema, user, 'User')
+  );
+
+  return {
+    data: validatedUsers,
+    pagination: response.data.pagination,
+  };
 };
 
 /**

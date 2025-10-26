@@ -7,6 +7,7 @@ import {
   addCsrfTokenToHeaders,
   requiresCsrfProtection,
 } from '../security/csrf';
+import { transformApiError, isRetriableError } from '@/lib/api/errors';
 
 interface RequestOptions extends RequestInit {
   caching?: {
@@ -109,27 +110,35 @@ class ApiClient {
         const duration = performance.now() - startTime;
 
         if (!response.ok) {
-          const error = new Error(
-            `HTTP error! status: ${response.status}`
-          ) as Error & { status: number };
-          error.status = response.status;
+          // Transform HTTP errors to custom error classes
+          const errorData = await response.json().catch(() => ({}));
+          const apiError = transformApiError({
+            status: response.status,
+            message: errorData.message || errorData.error,
+            code: errorData.code,
+            details: errorData.details,
+          });
 
-          // Log and capture error
-          apiLogger.error('API request failed', error, {
+          // Log structured error
+          apiLogger.error('API request failed', apiError, {
             endpoint,
             method: config.method || 'GET',
             status: response.status,
             duration: `${duration.toFixed(2)}ms`,
+            errorCode: apiError.code,
+            errorDetails: apiError.details,
           });
 
-          captureSentryError(error, {
+          // Capture in Sentry with structured context
+          captureSentryError(apiError, {
             endpoint,
             method: config.method || 'GET',
             status: response.status,
             duration,
+            errorCode: apiError.code,
           });
 
-          throw error;
+          throw apiError;
         }
 
         const data = await response.json();
@@ -157,20 +166,27 @@ class ApiClient {
       } catch (error) {
         const duration = performance.now() - startTime;
 
-        // Log unexpected errors
-        apiLogger.error('API request exception', error as Error, {
+        // Transform unknown errors to ApiError
+        const apiError = transformApiError(error);
+
+        // Log structured error
+        apiLogger.error('API request exception', apiError, {
           endpoint,
           method: config.method || 'GET',
           duration: `${duration.toFixed(2)}ms`,
+          errorType: apiError.name,
+          errorCode: apiError.code,
         });
 
-        captureSentryError(error as Error, {
+        // Capture in Sentry
+        captureSentryError(apiError, {
           endpoint,
           method: config.method || 'GET',
           duration,
+          errorType: apiError.name,
         });
 
-        throw error;
+        throw apiError;
       }
     };
 
@@ -179,6 +195,13 @@ class ApiClient {
       return retryManager.execute(fetchFn, endpoint, {
         ...RetryPresets.STANDARD,
         ...retryOptions,
+        // Use our custom retry logic for API errors
+        shouldRetry: (error) => {
+          if (retryOptions?.shouldRetry) {
+            return retryOptions.shouldRetry(error);
+          }
+          return isRetriableError(error);
+        },
       });
     }
 

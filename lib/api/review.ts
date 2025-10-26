@@ -6,11 +6,13 @@
  * Handles all review-related HTTP requests
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 2.0.0 - Sprint 4: API Standardization with Validation
  * @since Review System Sprint
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
+import { validateResponse, ReviewSchema } from './validators';
+import type { Review as ValidatedReview } from './validators';
 import type {
   Review,
   ReviewsResponse,
@@ -44,37 +46,48 @@ interface ApiResponse<T> {
 
 /**
  * Create a new review
+ * @throws {ValidationError} Invalid review data or response
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {AuthorizationError} Not eligible to review
  */
-export async function createReview(data: CreateReviewRequest): Promise<Review> {
+export async function createReview(
+  data: CreateReviewRequest
+): Promise<ValidatedReview> {
   const response = await apiClient.post<ApiResponse<Review>>(
     '/api/v1/user/reviews',
     data
   );
-  return response.data;
+  return validateResponse(ReviewSchema, response.data, 'Review');
 }
 
 /**
  * Get review by ID
+ * @throws {NotFoundError} Review not found
  */
-export async function getReviewById(reviewId: string): Promise<Review> {
+export async function getReviewById(
+  reviewId: string
+): Promise<ValidatedReview> {
   const response = await apiClient.get<ApiResponse<Review>>(
     `/api/v1/user/reviews/${reviewId}`
   );
-  return response.data;
+  return validateResponse(ReviewSchema, response.data, 'Review');
 }
 
 /**
  * Update review
+ * @throws {ValidationError} Invalid review data
+ * @throws {NotFoundError} Review not found
+ * @throws {AuthorizationError} Not review owner
  */
 export async function updateReview(
   reviewId: string,
   data: UpdateReviewRequest
-): Promise<Review> {
+): Promise<ValidatedReview> {
   const response = await apiClient.put<ApiResponse<Review>>(
     `/api/v1/user/reviews/${reviewId}`,
     data
   );
-  return response.data;
+  return validateResponse(ReviewSchema, response.data, 'Review');
 }
 
 /**

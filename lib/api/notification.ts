@@ -1,14 +1,19 @@
+/**
+ * ================================================
+ * NOTIFICATION API CLIENT
+ * ================================================
+ * Handles all notification-related API calls
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0 - Sprint 4: API Standardization
+ */
+
 import { apiClient } from '@/lib/infrastructure/api/client';
 import type {
   Notification,
   NotificationCountResponse,
   NotificationType,
 } from '@/types/core/notification';
-
-/**
- * Notification API Client
- * Handles all notification-related API calls
- */
 
 export interface GetNotificationsParams {
   page?: number;
@@ -18,6 +23,7 @@ export interface GetNotificationsParams {
 
 /**
  * Get paginated notifications
+ * @throws {AuthenticationError} Not authenticated
  */
 export async function getNotifications(params: GetNotificationsParams = {}) {
   const { page = 0, size = 20, type } = params;
@@ -34,6 +40,7 @@ export async function getNotifications(params: GetNotificationsParams = {}) {
 
 /**
  * Get unread notifications
+ * @throws {AuthenticationError} Not authenticated
  */
 export async function getUnreadNotifications(
   page: number = 0,
@@ -48,6 +55,7 @@ export async function getUnreadNotifications(
 
 /**
  * Get recent unread notifications (for dropdown)
+ * @throws {AuthenticationError} Not authenticated
  */
 export async function getRecentNotifications(limit: number = 5) {
   const response = await apiClient.get<Notification[]>(
@@ -58,6 +66,7 @@ export async function getRecentNotifications(limit: number = 5) {
 
 /**
  * Get notification counts
+ * @throws {AuthenticationError} Not authenticated
  */
 export async function getNotificationCounts() {
   const response = await apiClient.get<NotificationCountResponse>(
@@ -68,6 +77,7 @@ export async function getNotificationCounts() {
 
 /**
  * Get unread count only (lightweight)
+ * @throws {AuthenticationError} Not authenticated
  */
 export async function getUnreadCount() {
   const response = await apiClient.get<number>('/notifications/unread-count');
@@ -76,6 +86,8 @@ export async function getUnreadCount() {
 
 /**
  * Mark notification as read
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {NotFoundError} Notification not found
  */
 export async function markAsRead(notificationId: string) {
   await apiClient.put(`/notifications/${notificationId}/read`);
@@ -83,6 +95,8 @@ export async function markAsRead(notificationId: string) {
 
 /**
  * Mark notification as unread
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {NotFoundError} Notification not found
  */
 export async function markAsUnread(notificationId: string) {
   await apiClient.put(`/notifications/${notificationId}/unread`);
@@ -90,6 +104,8 @@ export async function markAsUnread(notificationId: string) {
 
 /**
  * Mark all notifications as read
+ * @throws {AuthenticationError} Not authenticated
+ * @returns Number of notifications marked as read
  */
 export async function markAllAsRead() {
   const response = await apiClient.put<number>('/notifications/mark-all-read');
@@ -98,6 +114,8 @@ export async function markAllAsRead() {
 
 /**
  * Delete notification
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {NotFoundError} Notification not found
  */
 export async function deleteNotification(notificationId: string) {
   await apiClient.delete(`/notifications/${notificationId}`);

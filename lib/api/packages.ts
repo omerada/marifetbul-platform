@@ -11,10 +11,12 @@
  * - PackageAdminController (Admin - 9 endpoints)
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 2.1.0 - Sprint 4: API Standardization with Validation
  */
 
-import { apiClient } from '../infrastructure/api/client';
+import { apiClient } from '@/lib/infrastructure/api/client';
+import { validateResponse, PackageSchema } from './validators';
+import type { Package as ValidatedPackage } from './validators';
 import type {
   Package,
   PackageSummary,
@@ -88,17 +90,25 @@ export const getActivePackages = async (
 /**
  * Get package by ID
  * GET /api/v1/packages/{id}
+ * @throws {NotFoundError} Package not found
+ * @throws {ValidationError} Invalid response format
  */
-export const getPackageById = async (id: string): Promise<Package> => {
-  return await apiClient.get<Package>(`/packages/${id}`);
+export const getPackageById = async (id: string): Promise<ValidatedPackage> => {
+  const response = await apiClient.get<Package>(`/packages/${id}`);
+  return validateResponse(PackageSchema, response, 'Package');
 };
 
 /**
  * Get package by slug
  * GET /api/v1/packages/slug/{slug}
+ * @throws {NotFoundError} Package not found
+ * @throws {ValidationError} Invalid response format
  */
-export const getPackageBySlug = async (slug: string): Promise<Package> => {
-  return await apiClient.get<Package>(`/packages/slug/${slug}`);
+export const getPackageBySlug = async (
+  slug: string
+): Promise<ValidatedPackage> => {
+  const response = await apiClient.get<Package>(`/packages/slug/${slug}`);
+  return validateResponse(PackageSchema, response, 'Package');
 };
 
 /**
@@ -261,22 +271,29 @@ export const getPlatformStats = async (): Promise<PlatformPackageStats> => {
 /**
  * Create new package
  * POST /api/v1/seller/packages
+ * @throws {ValidationError} Invalid package data
+ * @throws {AuthenticationError} Not authenticated
  */
 export const createPackage = async (
   data: CreatePackageRequest
-): Promise<Package> => {
-  return await apiClient.post<Package>('/seller/packages', data);
+): Promise<ValidatedPackage> => {
+  const response = await apiClient.post<Package>('/seller/packages', data);
+  return validateResponse(PackageSchema, response, 'Package');
 };
 
 /**
  * Update existing package
  * PUT /api/v1/seller/packages/{id}
+ * @throws {ValidationError} Invalid package data
+ * @throws {NotFoundError} Package not found
+ * @throws {AuthorizationError} Not package owner
  */
 export const updatePackage = async (
   id: string,
   data: UpdatePackageRequest
-): Promise<Package> => {
-  return await apiClient.put<Package>(`/seller/packages/${id}`, data);
+): Promise<ValidatedPackage> => {
+  const response = await apiClient.put<Package>(`/seller/packages/${id}`, data);
+  return validateResponse(PackageSchema, response, 'Package');
 };
 
 /**

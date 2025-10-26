@@ -31,6 +31,11 @@ export * from './forms';
 // Cross-domain reusable components
 
 export * from './shared';
+export { ErrorAlert, InlineError, FieldErrors } from './shared/ErrorAlert';
+export {
+  ApiErrorBoundary,
+  withApiErrorBoundary,
+} from './shared/ApiErrorBoundary';
 
 // ================================================
 // PROVIDER COMPONENTS

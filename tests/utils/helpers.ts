@@ -35,7 +35,7 @@ export function generateTestUser() {
     firstName: 'Test',
     lastName: 'User',
     password: 'Test@1234Pass!',
-    role: 'CUSTOMER' as const,
+    role: 'EMPLOYER' as const,
   };
 }
 

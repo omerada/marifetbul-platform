@@ -84,7 +84,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
                   </div>
 
                   <Link
-                    href={`/marketplace/packages/${pkg.id}`}
+                    href={`/marketplace/packages/${pkg.slug || pkg.id}`}
                     className="line-clamp-2 block text-xl font-bold text-gray-900 transition-colors hover:text-blue-600"
                   >
                     {pkg.title}
@@ -187,7 +187,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
 
               <div className="flex gap-2 sm:w-full sm:flex-col sm:space-y-2">
                 <Link
-                  href={`/marketplace/packages/${pkg.id}`}
+                  href={`/marketplace/packages/${pkg.slug || pkg.id}`}
                   className="flex-1 sm:block"
                 >
                   <Button
@@ -199,7 +199,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
                   </Button>
                 </Link>
                 <Link
-                  href={`/marketplace/packages/${pkg.id}`}
+                  href={`/marketplace/packages/${pkg.slug || pkg.id}`}
                   className="flex-1 sm:block"
                 >
                   <Button
@@ -286,7 +286,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
         )}
 
         <Link
-          href={`/marketplace/packages/${pkg.id}`}
+          href={`/marketplace/packages/${pkg.slug || pkg.id}`}
           className="line-clamp-2 text-lg leading-tight font-bold text-gray-900 transition-colors hover:text-blue-600"
         >
           {pkg.title}
@@ -375,7 +375,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
           </div>
 
           <div className="space-x-2">
-            <Link href={`/marketplace/packages/${pkg.id}`}>
+            <Link href={`/marketplace/packages/${pkg.slug || pkg.id}`}>
               <Button
                 size="sm"
                 className="bg-blue-600 shadow-md hover:bg-blue-700"

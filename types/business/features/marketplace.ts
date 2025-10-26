@@ -91,6 +91,7 @@ export interface FileAttachment {
 // Enhanced Service Package Type (consolidating both versions)
 export interface ServicePackage {
   id: string;
+  slug?: string; // SEO-friendly URL slug
   title: string;
   description: string;
   shortDescription?: string;

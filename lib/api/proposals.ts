@@ -1,5 +1,17 @@
+/**
+ * ================================================
+ * PROPOSAL API CLIENT
+ * ================================================
+ * API client for job proposal management
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0 - Sprint 4: API Standardization with Validation
+ */
+
+import { apiClient } from '@/lib/infrastructure/api/client';
+import { validateResponse, ProposalSchema } from './validators';
+import type { Proposal as ValidatedProposal } from './validators';
 import {
-  ApiResponse,
   PageResponse,
   ProposalResponse as Proposal,
   ProposalStatus,
@@ -7,8 +19,6 @@ import {
   ProposalQuestion,
 } from '@/types/backend-aligned';
 import { PROPOSAL_ENDPOINTS } from './endpoints';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 // ================================================
 // TYPES
@@ -57,234 +67,122 @@ export interface RejectProposalRequest {
 
 /**
  * Create a new proposal for a job
+ * @throws {ValidationError} Invalid proposal data
+ * @throws {AuthenticationError} Not authenticated
  */
 export async function createProposal(
   data: CreateProposalRequest
-): Promise<ApiResponse<Proposal>> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1${PROPOSAL_ENDPOINTS.CREATE}`,
-    {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    }
+): Promise<ValidatedProposal> {
+  const response = await apiClient.post<Proposal>(
+    PROPOSAL_ENDPOINTS.CREATE,
+    data
   );
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      message: 'Failed to create proposal',
-    }));
-    throw new Error(error.message || 'Failed to create proposal');
-  }
-
-  return response.json();
+  return validateResponse(ProposalSchema, response, 'Proposal');
 }
 
 /**
  * Get proposal by ID
+ * @throws {NotFoundError} Proposal not found
+ * @throws {AuthorizationError} Not authorized to view
  */
 export async function getProposalById(
   proposalId: string
-): Promise<ApiResponse<Proposal>> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1${PROPOSAL_ENDPOINTS.GET_BY_ID(proposalId)}`,
-    {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
+): Promise<ValidatedProposal> {
+  const response = await apiClient.get<Proposal>(
+    PROPOSAL_ENDPOINTS.GET_BY_ID(proposalId)
   );
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      message: 'Failed to fetch proposal',
-    }));
-    throw new Error(error.message || 'Failed to fetch proposal');
-  }
-
-  return response.json();
+  return validateResponse(ProposalSchema, response, 'Proposal');
 }
 
 /**
  * Update proposal (freelancer only, must be PENDING status)
+ * @throws {ValidationError} Invalid proposal data
+ * @throws {NotFoundError} Proposal not found
+ * @throws {AuthorizationError} Not proposal owner or wrong status
  */
 export async function updateProposal(
   proposalId: string,
   data: UpdateProposalRequest
-): Promise<ApiResponse<Proposal>> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1${PROPOSAL_ENDPOINTS.UPDATE(proposalId)}`,
-    {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    }
+): Promise<ValidatedProposal> {
+  const response = await apiClient.put<Proposal>(
+    PROPOSAL_ENDPOINTS.UPDATE(proposalId),
+    data
   );
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      message: 'Failed to update proposal',
-    }));
-    throw new Error(error.message || 'Failed to update proposal');
-  }
-
-  return response.json();
+  return validateResponse(ProposalSchema, response, 'Proposal');
 }
 
 /**
  * Withdraw proposal (freelancer only, must be PENDING status)
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {AuthorizationError} Not authorized (must be proposal owner)
+ * @throws {ValidationError} Proposal not in PENDING status
  */
-export async function withdrawProposal(
-  proposalId: string
-): Promise<ApiResponse<void>> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1${PROPOSAL_ENDPOINTS.WITHDRAW(proposalId)}`,
-    {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      message: 'Failed to withdraw proposal',
-    }));
-    throw new Error(error.message || 'Failed to withdraw proposal');
-  }
-
-  return response.json();
+export async function withdrawProposal(proposalId: string): Promise<void> {
+  await apiClient.post<void>(PROPOSAL_ENDPOINTS.WITHDRAW(proposalId), {});
 }
 
 /**
  * Delete proposal (hard delete)
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {AuthorizationError} Not authorized (must be proposal owner)
+ * @throws {NotFoundError} Proposal not found
  */
-export async function deleteProposal(
-  proposalId: string
-): Promise<ApiResponse<void>> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1${PROPOSAL_ENDPOINTS.DELETE(proposalId)}`,
-    {
-      method: 'DELETE',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      message: 'Failed to delete proposal',
-    }));
-    throw new Error(error.message || 'Failed to delete proposal');
-  }
-
-  return response.json();
+export async function deleteProposal(proposalId: string): Promise<void> {
+  await apiClient.delete<void>(PROPOSAL_ENDPOINTS.DELETE(proposalId));
 }
 
 /**
  * Accept proposal (employer only)
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {AuthorizationError} Not authorized (must be job owner)
+ * @throws {NotFoundError} Proposal not found
  */
 export async function acceptProposal(
   proposalId: string,
   data?: AcceptProposalRequest
-): Promise<ApiResponse<Proposal>> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1${PROPOSAL_ENDPOINTS.ACCEPT(proposalId)}`,
-    {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: data ? JSON.stringify(data) : undefined,
-    }
+): Promise<Proposal> {
+  return apiClient.post<Proposal>(
+    PROPOSAL_ENDPOINTS.ACCEPT(proposalId),
+    data || {}
   );
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      message: 'Failed to accept proposal',
-    }));
-    throw new Error(error.message || 'Failed to accept proposal');
-  }
-
-  return response.json();
 }
 
 /**
  * Reject proposal (employer only)
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {AuthorizationError} Not authorized (must be job owner)
+ * @throws {NotFoundError} Proposal not found
  */
 export async function rejectProposal(
   proposalId: string,
   data?: RejectProposalRequest
-): Promise<ApiResponse<Proposal>> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1${PROPOSAL_ENDPOINTS.REJECT(proposalId)}`,
-    {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: data ? JSON.stringify(data) : undefined,
-    }
+): Promise<Proposal> {
+  return apiClient.post<Proposal>(
+    PROPOSAL_ENDPOINTS.REJECT(proposalId),
+    data || {}
   );
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      message: 'Failed to reject proposal',
-    }));
-    throw new Error(error.message || 'Failed to reject proposal');
-  }
-
-  return response.json();
 }
 
 /**
  * Shortlist proposal (employer only)
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {AuthorizationError} Not authorized (must be job owner)
+ * @throws {NotFoundError} Proposal not found
  */
-export async function shortlistProposal(
-  proposalId: string
-): Promise<ApiResponse<Proposal>> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1${PROPOSAL_ENDPOINTS.SHORTLIST(proposalId)}`,
-    {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      message: 'Failed to shortlist proposal',
-    }));
-    throw new Error(error.message || 'Failed to shortlist proposal');
-  }
-
-  return response.json();
+export async function shortlistProposal(proposalId: string): Promise<Proposal> {
+  return apiClient.post<Proposal>(PROPOSAL_ENDPOINTS.SHORTLIST(proposalId), {});
 }
 
 /**
  * Get all proposals for a specific job (employer only)
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {AuthorizationError} Not authorized (must be job owner)
+ * @throws {NotFoundError} Job not found
  */
 export async function getProposalsByJob(
   jobId: string,
   filters?: ProposalFilters
-): Promise<ApiResponse<PageResponse<Proposal>>> {
+): Promise<PageResponse<Proposal>> {
   const params = new URLSearchParams();
 
   if (filters?.status) {
@@ -316,34 +214,18 @@ export async function getProposalsByJob(
   }
 
   const queryString = params.toString();
-  const url = `${API_BASE_URL}/api/v1${PROPOSAL_ENDPOINTS.BY_JOB(jobId)}${
-    queryString ? `?${queryString}` : ''
-  }`;
+  const url = `${PROPOSAL_ENDPOINTS.BY_JOB(jobId)}${queryString ? `?${queryString}` : ''}`;
 
-  const response = await fetch(url, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      message: 'Failed to fetch job proposals',
-    }));
-    throw new Error(error.message || 'Failed to fetch job proposals');
-  }
-
-  return response.json();
+  return apiClient.get<PageResponse<Proposal>>(url);
 }
 
 /**
  * Get all my proposals (freelancer)
+ * @throws {AuthenticationError} Not authenticated
  */
 export async function getMyProposals(
   filters?: ProposalFilters
-): Promise<ApiResponse<PageResponse<Proposal>>> {
+): Promise<PageResponse<Proposal>> {
   const params = new URLSearchParams();
 
   if (filters?.status) {
@@ -371,158 +253,77 @@ export async function getMyProposals(
   }
 
   const queryString = params.toString();
-  const url = `${API_BASE_URL}/api/v1${PROPOSAL_ENDPOINTS.MY_PROPOSALS}${
-    queryString ? `?${queryString}` : ''
-  }`;
+  const url = `${PROPOSAL_ENDPOINTS.MY_PROPOSALS}${queryString ? `?${queryString}` : ''}`;
 
-  const response = await fetch(url, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      message: 'Failed to fetch my proposals',
-    }));
-    throw new Error(error.message || 'Failed to fetch my proposals');
-  }
-
-  return response.json();
+  return apiClient.get<PageResponse<Proposal>>(url);
 }
 
 /**
  * Get my pending proposals (freelancer)
+ * @throws {AuthenticationError} Not authenticated
  */
 export async function getMyPendingProposals(
   page = 0,
   size = 20
-): Promise<ApiResponse<PageResponse<Proposal>>> {
+): Promise<PageResponse<Proposal>> {
   const params = new URLSearchParams({
     page: page.toString(),
     size: size.toString(),
   });
 
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1${PROPOSAL_ENDPOINTS.MY_PENDING}?${params}`,
-    {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      message: 'Failed to fetch pending proposals',
-    }));
-    throw new Error(error.message || 'Failed to fetch pending proposals');
-  }
-
-  return response.json();
+  const url = `${PROPOSAL_ENDPOINTS.MY_PENDING}?${params}`;
+  return apiClient.get<PageResponse<Proposal>>(url);
 }
 
 /**
  * Get my accepted proposals (freelancer)
+ * @throws {AuthenticationError} Not authenticated
  */
 export async function getMyAcceptedProposals(
   page = 0,
   size = 20
-): Promise<ApiResponse<PageResponse<Proposal>>> {
+): Promise<PageResponse<Proposal>> {
   const params = new URLSearchParams({
     page: page.toString(),
     size: size.toString(),
   });
 
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1${PROPOSAL_ENDPOINTS.MY_ACCEPTED}?${params}`,
-    {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      message: 'Failed to fetch accepted proposals',
-    }));
-    throw new Error(error.message || 'Failed to fetch accepted proposals');
-  }
-
-  return response.json();
+  const url = `${PROPOSAL_ENDPOINTS.MY_ACCEPTED}?${params}`;
+  return apiClient.get<PageResponse<Proposal>>(url);
 }
 
 /**
  * Get my rejected proposals (freelancer)
+ * @throws {AuthenticationError} Not authenticated
  */
 export async function getMyRejectedProposals(
   page = 0,
   size = 20
-): Promise<ApiResponse<PageResponse<Proposal>>> {
+): Promise<PageResponse<Proposal>> {
   const params = new URLSearchParams({
     page: page.toString(),
     size: size.toString(),
   });
 
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1${PROPOSAL_ENDPOINTS.MY_REJECTED}?${params}`,
-    {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      message: 'Failed to fetch rejected proposals',
-    }));
-    throw new Error(error.message || 'Failed to fetch rejected proposals');
-  }
-
-  return response.json();
+  const url = `${PROPOSAL_ENDPOINTS.MY_REJECTED}?${params}`;
+  return apiClient.get<PageResponse<Proposal>>(url);
 }
 
 /**
  * Get my active proposals (freelancer)
+ * @throws {AuthenticationError} Not authenticated
  */
 export async function getMyActiveProposals(
   page = 0,
   size = 20
-): Promise<ApiResponse<PageResponse<Proposal>>> {
+): Promise<PageResponse<Proposal>> {
   const params = new URLSearchParams({
     page: page.toString(),
     size: size.toString(),
   });
 
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1${PROPOSAL_ENDPOINTS.MY_ACTIVE}?${params}`,
-    {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      message: 'Failed to fetch active proposals',
-    }));
-    throw new Error(error.message || 'Failed to fetch active proposals');
-  }
-
-  return response.json();
+  const url = `${PROPOSAL_ENDPOINTS.MY_ACTIVE}?${params}`;
+  return apiClient.get<PageResponse<Proposal>>(url);
 }
 
 // ================================================

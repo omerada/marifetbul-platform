@@ -32,7 +32,7 @@ export async function login(page: Page, email: string, password: string) {
  */
 export async function loginAs(
   page: Page,
-  role: 'admin' | 'freelancer' | 'customer' | 'employer'
+  role: 'admin' | 'freelancer' | 'employer'
 ) {
   const user = TEST_USERS[role];
   await login(page, user.email, user.password);

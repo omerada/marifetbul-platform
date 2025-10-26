@@ -19,13 +19,6 @@ export const TEST_USERS = {
     name: 'Test Freelancer',
     username: 'testfreelancer',
   },
-  customer: {
-    email: 'customer@test.com',
-    password: 'Customer123!',
-    role: 'CUSTOMER',
-    name: 'Test Customer',
-    username: 'testcustomer',
-  },
   employer: {
     email: 'employer@test.com',
     password: 'Employer123!',
@@ -124,7 +117,7 @@ export const TEST_ORDERS = {
     packageId: TEST_PACKAGES.logoDesign.id,
     status: 'COMPLETED',
     amount: TEST_PACKAGES.logoDesign.price,
-    customerId: TEST_USERS.customer.username,
+    customerId: TEST_USERS.employer.username,
     freelancerId: TEST_USERS.freelancer.username,
   },
   inProgress: {
@@ -132,7 +125,7 @@ export const TEST_ORDERS = {
     packageId: TEST_PACKAGES.webDevelopment.id,
     status: 'IN_PROGRESS',
     amount: TEST_PACKAGES.webDevelopment.price,
-    customerId: TEST_USERS.customer.username,
+    customerId: TEST_USERS.employer.username,
     freelancerId: TEST_USERS.freelancer.username,
   },
 } as const;

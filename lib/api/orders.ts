@@ -12,10 +12,12 @@
  * - Order events timeline
  *
  * @author MarifetBul Development Team
- * @version 1.0.0 - Sprint 26
+ * @version 2.0.0 - Sprint 3: API Layer Unification
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
+import { validateResponse, OrderSchema } from './validators';
+import type { Order } from './validators';
 import {
   OrderResponse,
   OrderSummaryResponse,
@@ -104,24 +106,38 @@ export interface OrderListFilters {
 
 /**
  * Create a new package order
+ * @throws {ValidationError} Invalid request or response
+ * @throws {AuthenticationError} Not authenticated
  */
 export async function createPackageOrder(
   request: CreatePackageOrderRequest
-): Promise<OrderResponse> {
-  return apiClient.post<OrderResponse>(ENDPOINTS.CREATE_PACKAGE_ORDER, request);
+): Promise<Order> {
+  const response = await apiClient.post<OrderResponse>(
+    ENDPOINTS.CREATE_PACKAGE_ORDER,
+    request
+  );
+  return validateResponse(OrderSchema, response, 'Order');
 }
 
 /**
  * Create a custom order
+ * @throws {ValidationError} Invalid request or response
+ * @throws {AuthenticationError} Not authenticated
  */
 export async function createCustomOrder(
   request: CreateCustomOrderRequest
-): Promise<OrderResponse> {
-  return apiClient.post<OrderResponse>(ENDPOINTS.CREATE_CUSTOM_ORDER, request);
+): Promise<Order> {
+  const response = await apiClient.post<OrderResponse>(
+    ENDPOINTS.CREATE_CUSTOM_ORDER,
+    request
+  );
+  return validateResponse(OrderSchema, response, 'Order');
 }
 
 /**
  * Get order details by ID
+ * @throws {NotFoundError} Order not found
+ * @throws {AuthenticationError} Not authenticated
  */
 export async function getOrder(orderId: string): Promise<OrderResponse> {
   return apiClient.get<OrderResponse>(ENDPOINTS.GET_ORDER(orderId));

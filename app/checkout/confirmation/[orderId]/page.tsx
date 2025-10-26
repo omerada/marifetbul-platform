@@ -94,7 +94,7 @@ export default function OrderConfirmationPage() {
               Hata Oluştu
             </h2>
             <p className="mb-4 text-red-600">{error || 'Sipariş bulunamadı'}</p>
-            <Button onClick={() => router.push('/dashboard/customer/orders')}>
+            <Button onClick={() => router.push('/dashboard/employer/orders')}>
               Siparişlerime Git
             </Button>
           </div>
@@ -229,7 +229,7 @@ export default function OrderConfirmationPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Button
               variant="outline"
-              onClick={() => router.push('/dashboard/customer/orders')}
+              onClick={() => router.push('/dashboard/employer/orders')}
               className="w-full sm:w-auto"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />

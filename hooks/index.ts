@@ -14,6 +14,8 @@ export type {
 } from './core/useToast';
 export { useAsyncOperation } from './core/useUnifiedAsync';
 export { useNotification } from './core/useNotification';
+export { useApiError } from './shared/useApiError';
+export type { ApiErrorState, UseApiErrorReturn } from './shared/useApiError';
 
 // BUSINESS HOOKS - Domain logic and business features
 export { useJobs } from './business/useJobs';
