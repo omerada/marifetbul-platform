@@ -3,12 +3,15 @@
 /**
  * Order Creation Modal
  * Modal for creating a new package order with tier selection
+ *
+ * Sprint 26: Enhanced with real API integration
  */
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { X, Clock, RefreshCw, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui';
+import { orderApi } from '@/lib/api/orders';
 import type { Package } from '@/types/business/features/package';
 
 interface OrderModalProps {
@@ -30,6 +33,7 @@ export function OrderModal({
   >(initialTier);
   const [requirements, setRequirements] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('tr-TR', {
@@ -49,22 +53,25 @@ export function OrderModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
 
     try {
       setLoading(true);
 
-      // TODO: Create order via API
-      // const order = await orderApi.createOrder({
-      //   packageId: pkg.id,
-      //   tierId: currentTier.id,
-      //   requirements,
-      // });
+      // Create order via API
+      const order = await orderApi.createPackageOrder({
+        packageId: pkg.id,
+        tier: selectedTier,
+        requirements: requirements || undefined,
+      });
 
-      // For now, navigate to checkout
-      router.push(`/checkout?package=${pkg.id}&tier=${selectedTier}`);
-    } catch (error) {
-      console.error('Failed to create order:', error);
-      alert('Sipariş oluşturulamadı. Lütfen tekrar deneyin.');
+      // Navigate to checkout with order ID
+      router.push(`/checkout/${order.id}`);
+    } catch (err) {
+      console.error('Failed to create order:', err);
+      const errorMessage =
+        err instanceof Error ? err.message : 'Sipariş oluşturulamadı';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -88,6 +95,13 @@ export function OrderModal({
           <h2 className="text-2xl font-bold text-gray-900">Sipariş Oluştur</h2>
           <p className="mt-1 text-sm text-gray-600">{pkg.title}</p>
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3">
+            <p className="text-sm text-red-800">{error}</p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Tier Selection */}

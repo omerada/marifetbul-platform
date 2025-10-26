@@ -38,6 +38,8 @@ Modern, ölçeklenebilir ve güvenli freelance platformu. Spring Boot backend + 
 - ✅ **Mesajlaşma**: Real-time mesajlaşma sistemi
 - ✅ **Ödeme Sistemi**: Stripe entegrasyonu ile güvenli ödemeler
 - ✅ **Review & Rating**: İki yönlü değerlendirme sistemi
+- ✅ **Media Upload**: Cloudinary ile görsel yükleme ve optimizasyon
+- ✅ **Analytics Dashboard**: Paket ve kullanıcı istatistikleri
 - ✅ **Blog Sistemi**: SEO-friendly blog platformu
 - ✅ **Destek Sistemi**: Ticket-based support management
 
@@ -250,7 +252,19 @@ cp .env.local.example .env.local
 # Gerekli değişkenleri düzenleyin:
 NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Cloudinary (Image Upload - Required)
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=marifetbul_packages
+
+# Stripe (Payment - Optional for development)
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...
 ```
+
+> 📚 **Cloudinary Kurulumu:** [CLOUDINARY_SETUP_GUIDE.md](./docs/CLOUDINARY_SETUP_GUIDE.md) - Detaylı kurulum rehberi
 
 **Dependencies ve Server:**
 

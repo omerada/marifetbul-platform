@@ -14,6 +14,8 @@ export { default as InteractionComponents } from './InteractionButtons';
 // Media components
 export { ImageCarousel } from './ImageCarousel';
 export { default as ImageCarouselComponent } from './ImageCarousel';
+export { ImageUpload } from './ImageUpload';
+export type { UploadedImage } from './ImageUpload';
 
 // Performance components
 export * from './performance';

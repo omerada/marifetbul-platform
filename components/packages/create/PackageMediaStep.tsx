@@ -5,10 +5,11 @@
  */
 
 import { useFormContext } from 'react-hook-form';
-import { Upload, X, Info } from 'lucide-react';
-import Image from 'next/image';
+import { Info } from 'lucide-react';
 import { Input } from '@/components/ui';
+import { ImageUpload } from '@/components/shared/ImageUpload';
 import type { CreatePackageFormData } from '@/lib/validation/package';
+import type { UploadedImage } from '@/components/shared/ImageUpload';
 
 export function PackageMediaStep() {
   const {
@@ -20,12 +21,21 @@ export function PackageMediaStep() {
 
   const images = watch('images') || [];
 
-  const handleImageRemove = (index: number) => {
-    setValue(
-      'images',
-      images.filter((_, i) => i !== index)
-    );
+  const handleImagesChange = (uploadedImages: UploadedImage[]) => {
+    // Extract URLs from uploaded images
+    const imageUrls = uploadedImages.map((img) => img.url);
+    setValue('images', imageUrls, { shouldValidate: true });
   };
+
+  // Convert string URLs to UploadedImage format for ImageUpload component
+  const uploadedImages: UploadedImage[] = images.map((url, index) => ({
+    id: `image-${index}`,
+    url,
+    thumbnailUrl: url,
+    publicId: '',
+    fileName: `image-${index}`,
+    size: 0,
+  }));
 
   return (
     <div className="space-y-6">
@@ -42,40 +52,15 @@ export function PackageMediaStep() {
           Paket Görselleri <span className="text-red-500">*</span>
         </label>
 
-        <div className="mb-4 grid grid-cols-2 gap-4 md:grid-cols-4">
-          {images.map((url, index) => (
-            <div
-              key={index}
-              className="relative aspect-square overflow-hidden rounded-lg border-2 border-gray-200"
-            >
-              <Image
-                src={url}
-                alt={`Package image ${index + 1}`}
-                fill
-                className="object-cover"
-              />
-              <button
-                type="button"
-                onClick={() => handleImageRemove(index)}
-                className="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          ))}
-        </div>
-
-        {images.length < 8 && (
-          <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
-            <Upload className="mx-auto h-12 w-12 text-gray-400" />
-            <p className="mt-2 text-sm text-gray-600">
-              Görsel yüklemek için tıklayın veya sürükleyin
-            </p>
-            <p className="text-xs text-gray-500">
-              {images.length} / 8 görsel yüklendi
-            </p>
-          </div>
-        )}
+        <ImageUpload
+          maxImages={8}
+          maxFileSize={5 * 1024 * 1024}
+          value={uploadedImages}
+          onChange={handleImagesChange}
+          uploadPreset="marifetbul_packages"
+          folder="marifetbul/packages"
+          showPreview={true}
+        />
 
         {errors.images && (
           <p className="mt-1 text-sm text-red-600">{errors.images.message}</p>
