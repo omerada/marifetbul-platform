@@ -1,0 +1,180 @@
+import { useEffect, useState, useCallback } from 'react';
+import useSWR from 'swr';
+import { toast } from 'sonner';
+import {
+  getRecentNotifications,
+  getUnreadCount,
+  markAsRead,
+  markAllAsRead,
+} from '@/lib/api/notification';
+import { getWebSocketClient } from '@/lib/infrastructure/websocket/client';
+import type {
+  Notification,
+  WebSocketNotificationPayload,
+} from '@/types/core/notification';
+
+/**
+ * Custom hook for notifications with real-time WebSocket updates
+ *
+ * Features:
+ * - Fetches recent unread notifications
+ * - Real-time updates via WebSocket
+ * - Unread count tracking
+ * - Mark as read functionality
+ * - Toast notifications for new events
+ *
+ * @example
+ * ```tsx
+ * const { notifications, unreadCount, markNotificationAsRead, refetch } = useNotifications();
+ * ```
+ */
+export function useNotifications() {
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [recentNotifications, setRecentNotifications] = useState<
+    Notification[]
+  >([]);
+
+  // Fetch recent notifications (latest 5)
+  const { data: notifications, mutate } = useSWR<Notification[]>(
+    '/api/notifications/recent',
+    () => getRecentNotifications(5),
+    {
+      refreshInterval: 30000, // Refresh every 30 seconds
+      revalidateOnFocus: true,
+    }
+  );
+
+  // Fetch unread count
+  const { data: count, mutate: mutateCount } = useSWR<number>(
+    '/api/notifications/unread-count',
+    getUnreadCount,
+    {
+      refreshInterval: 30000,
+      revalidateOnFocus: true,
+    }
+  );
+
+  // Update state when data changes
+  useEffect(() => {
+    if (notifications) {
+      setRecentNotifications(notifications);
+    }
+  }, [notifications]);
+
+  useEffect(() => {
+    if (count !== undefined) {
+      setUnreadCount(count);
+    }
+  }, [count]);
+
+  // WebSocket listener for real-time notifications
+  useEffect(() => {
+    const ws = getWebSocketClient();
+
+    if (!ws) {
+      console.warn('WebSocket client not available');
+      return;
+    }
+
+    const handleNotification = (payload: WebSocketNotificationPayload) => {
+      console.log('Received notification:', payload);
+
+      // Update recent notifications list
+      mutate();
+
+      // Increment unread count
+      setUnreadCount((prev) => prev + 1);
+      mutateCount();
+
+      // Show toast notification
+      toast.success(payload.title, {
+        description: payload.content,
+        action: payload.actionUrl
+          ? {
+              label: 'Görüntüle',
+              onClick: () => {
+                if (payload.actionUrl) {
+                  window.location.href = payload.actionUrl;
+                }
+              },
+            }
+          : undefined,
+        duration: 5000,
+      });
+    };
+
+    // Subscribe to notification events
+    const unsubscribe = ws.on('NOTIFICATION_RECEIVED', handleNotification);
+
+    // Cleanup
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [mutate, mutateCount]);
+
+  // Mark notification as read
+  const markNotificationAsRead = useCallback(
+    async (notificationId: string) => {
+      try {
+        await markAsRead(notificationId);
+
+        // Update local state optimistically
+        setRecentNotifications((prev) =>
+          prev.map((n) =>
+            n.id === notificationId ? { ...n, isRead: true } : n
+          )
+        );
+
+        // Decrement unread count
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+
+        // Revalidate data
+        mutate();
+        mutateCount();
+      } catch (error) {
+        console.error('Failed to mark notification as read:', error);
+        toast.error('Bildirim okundu olarak işaretlenemedi');
+      }
+    },
+    [mutate, mutateCount]
+  );
+
+  // Mark all notifications as read
+  const markAllNotificationsAsRead = useCallback(async () => {
+    try {
+      const updatedCount = await markAllAsRead();
+
+      // Update local state
+      setRecentNotifications((prev) =>
+        prev.map((n) => ({ ...n, isRead: true }))
+      );
+      setUnreadCount(0);
+
+      // Revalidate data
+      mutate();
+      mutateCount();
+
+      toast.success(`${updatedCount} bildirim okundu olarak işaretlendi`);
+    } catch (error) {
+      console.error('Failed to mark all as read:', error);
+      toast.error('Bildirimler işaretlenemedi');
+    }
+  }, [mutate, mutateCount]);
+
+  // Manual refresh
+  const refetch = useCallback(() => {
+    mutate();
+    mutateCount();
+  }, [mutate, mutateCount]);
+
+  return {
+    notifications: recentNotifications,
+    unreadCount,
+    isLoading: !notifications && !count,
+    markAsRead: markNotificationAsRead,
+    markAllAsRead: markAllNotificationsAsRead,
+    refetch,
+  };
+}

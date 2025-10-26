@@ -9,7 +9,7 @@
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
-import type { ApiResponse } from '@/types/api';
+import type { ApiResponse } from '@/types/shared/api';
 
 /**
  * Backend DTO Types (matching Java DTOs)

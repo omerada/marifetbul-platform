@@ -33,21 +33,18 @@ export function PackageTierPricingStep() {
   const basicTier = watch('basicTier');
 
   // Feature arrays for each tier - TypeScript has issues with nested field arrays
-  // @ts-expect-error - useFieldArray typing limitation with nested paths
   const basicFeatures = useFieldArray({
-    control,
+    control: control as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     name: 'basicTier.features',
   });
 
-  // @ts-expect-error - useFieldArray typing limitation with nested paths
   const standardFeatures = useFieldArray({
-    control,
+    control: control as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     name: 'standardTier.features',
   });
 
-  // @ts-expect-error - useFieldArray typing limitation with nested paths
   const premiumFeatures = useFieldArray({
-    control,
+    control: control as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     name: 'premiumTier.features',
   });
 

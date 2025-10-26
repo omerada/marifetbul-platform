@@ -17,6 +17,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { UniversalSearch } from '@/components/domains/search';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { useUnreadCount } from '@/hooks';
+import { NotificationDropdown } from './header/NotificationDropdown';
 
 export function Header() {
   const router = useRouter();
@@ -104,6 +105,9 @@ export function Header() {
           <div className="hidden items-center space-x-3 md:flex">
             {isAuthenticated ? (
               <>
+                {/* Notifications */}
+                <NotificationDropdown />
+
                 {/* Messages */}
                 <Link
                   href="/messages"

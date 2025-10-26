@@ -339,7 +339,7 @@ export default function AdminReviewModerationPage() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleReject(review.id)}
+                        onClick={() => handleRejectClick(review)}
                         disabled={actionLoading === review.id}
                         className="gap-2"
                       >

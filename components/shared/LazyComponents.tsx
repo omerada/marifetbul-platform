@@ -308,8 +308,10 @@ export const optimizeBundle = () => {
 };
 
 // Generic lazy component for any component path
-export const createComponentLazy = (componentPath: string) =>
-  lazy(() => import(componentPath));
+// Note: Dynamic imports are not supported in Turbopack builds
+// Use static imports instead
+// export const createComponentLazy = (componentPath: string) =>
+//   lazy(() => import(componentPath));
 
 // ================================
 // INITIALIZATION
@@ -335,7 +337,7 @@ const LazyComponentsUtils = {
   getCachedComponent,
   preloadCriticalComponents,
   optimizeBundle,
-  createComponentLazy,
+  // createComponentLazy, // Disabled: dynamic imports not supported in Turbopack
 
   // Pre-configured components
   LazyPerformanceMonitor,

@@ -44,6 +44,8 @@ export { useReputation } from './business/useReputation';
 export { useFollow } from './business/useFollow';
 export { useFollowersList } from './business/useFollowersList';
 export { useFollowingList } from './business/useFollowingList';
+export { useNotifications } from './business/useNotifications';
+export { useNotificationPreferences } from './business/useNotificationPreferences';
 export { useJobProposals } from './business/useJobProposals';
 export type {
   JobProposalSummary,

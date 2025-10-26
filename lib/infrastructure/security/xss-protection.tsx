@@ -351,7 +351,7 @@ export function encodeJavaScript(str: string): string {
  */
 export function SafeHtml({
   html,
-  config = 'default',
+  config = 'BASIC',
   className,
   as: Component = 'div',
 }: {

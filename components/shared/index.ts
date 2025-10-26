@@ -13,6 +13,11 @@ export { FollowStats } from './FollowStats';
 export { FollowersModal } from './FollowersModal';
 export { FollowingModal } from './FollowingModal';
 
+// Notification components
+export { NotificationItem } from './NotificationItem';
+export { NotificationBadge } from './NotificationBadge';
+export { NotificationFilter } from './NotificationFilter';
+
 // Interaction components
 export { InteractionButtons } from './InteractionButtons';
 export { default as InteractionComponents } from './InteractionButtons';
@@ -53,7 +58,7 @@ export {
   getCachedComponent,
   preloadCriticalComponents,
   optimizeBundle,
-  createComponentLazy,
+  // createComponentLazy, // Disabled: dynamic imports not supported in Turbopack
 
   // Pre-configured components
   LazyPerformanceMonitor,
