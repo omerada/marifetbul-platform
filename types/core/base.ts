@@ -3,10 +3,15 @@ export interface User {
   id: string;
   userId?: string; // Optional for ConversationParticipant compatibility
   email: string;
+  username?: string; // User's unique username
   firstName?: string; // Made optional for admin compatibility
   lastName?: string; // Made optional for admin compatibility
+  fullName?: string; // Full name (computed on backend)
   name?: string; // Computed field from firstName + lastName or custom name
   avatar?: string;
+  avatarUrl?: string; // Backend uses avatarUrl
+  profilePictureUrl?: string; // Alias for compatibility
+  title?: string; // User's professional title
   userType: 'freelancer' | 'employer' | 'admin';
   role?:
     | 'user'
@@ -44,6 +49,20 @@ export interface User {
     lastName: string;
     avatar?: string;
   };
+  // Follow statistics (added for follow feature)
+  followerCount?: number;
+  followingCount?: number;
+  isFollowedByCurrentUser?: boolean;
+}
+
+/**
+ * Follow status response from backend
+ */
+export interface FollowStatusResponse {
+  isFollowing: boolean;
+  followerCount: number;
+  followingCount: number;
+  isMutualFollow: boolean;
 }
 
 export interface Freelancer extends User {

@@ -41,6 +41,9 @@ export * from './business/useAdminReviews';
 export { useSellerReviews } from './business/useSellerReviews';
 export { useReviewNotifications } from './business/useReviewNotifications';
 export { useReputation } from './business/useReputation';
+export { useFollow } from './business/useFollow';
+export { useFollowersList } from './business/useFollowersList';
+export { useFollowingList } from './business/useFollowingList';
 export { useJobProposals } from './business/useJobProposals';
 export type {
   JobProposalSummary,

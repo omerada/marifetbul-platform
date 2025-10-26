@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { Freelancer } from '@/types';
 import { Card } from '@/components/ui/Card';
@@ -9,6 +9,13 @@ import { Badge } from '@/components/ui/Badge';
 import { PortfolioGallery } from '@/components/shared/features';
 import { MessageButton } from '@/components/domains/messaging';
 import { ReviewList } from '@/components/shared/ReviewList';
+import {
+  FollowButton,
+  FollowStats,
+  FollowersModal,
+  FollowingModal,
+} from '@/components/shared';
+import { useFollow } from '@/hooks';
 import { useSellerReviews } from '@/hooks';
 import {
   MapPin,
@@ -36,6 +43,13 @@ export function ProfileView({
   onHire,
 }: ProfileViewProps) {
   const profileCompleteness = calculateProfileCompleteness(freelancer);
+  const [showFollowersModal, setShowFollowersModal] = useState(false);
+  const [showFollowingModal, setShowFollowingModal] = useState(false);
+
+  // Follow hook
+  const { followerCount, followingCount } = useFollow({
+    userId: freelancer.id,
+  });
 
   // Fetch seller reviews and stats
   const {
@@ -57,7 +71,7 @@ export function ProfileView({
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" data-testid="profile-view">
       {/* Hero Section */}
       <div className="border-b bg-white">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -155,6 +169,19 @@ export function ProfileView({
                       </div>
                     </div>
                   )}
+
+                  {/* Follow Stats */}
+                  <div className="mt-4">
+                    <FollowStats
+                      followerCount={freelancer.followerCount || followerCount}
+                      followingCount={
+                        freelancer.followingCount || followingCount
+                      }
+                      onFollowersClick={() => setShowFollowersModal(true)}
+                      onFollowingClick={() => setShowFollowingModal(true)}
+                      variant="compact"
+                    />
+                  </div>
                 </div>
 
                 {/* Action Buttons */}
@@ -171,6 +198,12 @@ export function ProfileView({
                     </>
                   ) : (
                     <>
+                      <FollowButton
+                        userId={freelancer.id}
+                        username={freelancer.username}
+                        variant="primary"
+                        size="md"
+                      />
                       <MessageButton
                         recipientId={freelancer.id}
                         recipientName={`${freelancer.firstName} ${freelancer.lastName}`}
@@ -191,6 +224,20 @@ export function ProfileView({
           </div>
         </div>
       </div>
+
+      {/* Follow Modals */}
+      <FollowersModal
+        userId={freelancer.id}
+        username={freelancer.username}
+        isOpen={showFollowersModal}
+        onClose={() => setShowFollowersModal(false)}
+      />
+      <FollowingModal
+        userId={freelancer.id}
+        username={freelancer.username}
+        isOpen={showFollowingModal}
+        onClose={() => setShowFollowingModal(false)}
+      />
 
       {/* Content */}
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">

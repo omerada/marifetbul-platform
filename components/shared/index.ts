@@ -7,6 +7,12 @@
 // Article components
 export { ArticleCard } from './ArticleCard';
 
+// Follow system components
+export { FollowButton } from './FollowButton';
+export { FollowStats } from './FollowStats';
+export { FollowersModal } from './FollowersModal';
+export { FollowingModal } from './FollowingModal';
+
 // Interaction components
 export { InteractionButtons } from './InteractionButtons';
 export { default as InteractionComponents } from './InteractionButtons';
