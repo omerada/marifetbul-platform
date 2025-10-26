@@ -14,7 +14,7 @@
 import { useWalletStore } from '@/stores/walletStore';
 import { useEffect, useMemo } from 'react';
 import { formatCurrency } from '@/types/business/features/wallet';
-import type { BalanceResponse } from '@/types/business/features/wallet';
+import type { BalanceResponse } from '@/lib/api/validators';
 
 // ================================================
 // HOOK INTERFACE
@@ -25,11 +25,11 @@ export interface UseBalanceReturn {
   balance: BalanceResponse | null;
 
   // Formatted balance strings (with TL symbol)
-  formattedBalance: string;
+  formattedAvailableBalance: string;
   formattedPendingBalance: string;
-  formattedAvailableForPayout: string;
+  formattedTotalBalance: string;
   formattedTotalEarnings: string;
-  formattedTotalPayouts: string;
+  formattedPendingPayouts: string;
 
   // Loading & error states
   isLoading: boolean;
@@ -54,12 +54,12 @@ export interface UseBalanceReturn {
  *
  * @example
  * ```tsx
- * const { formattedBalance, formattedPendingBalance, isLoading, refresh } = useBalance();
+ * const { formattedAvailableBalance, formattedPendingBalance, isLoading, refresh } = useBalance();
  *
  * return (
  *   <Card>
  *     <h3>Kullanılabilir Bakiye</h3>
- *     <p className="text-3xl font-bold">{formattedBalance}</p>
+ *     <p className="text-3xl font-bold">{formattedAvailableBalance}</p>
  *     <p className="text-sm text-gray-500">
  *       Bekleyen: {formattedPendingBalance}
  *     </p>
@@ -107,20 +107,20 @@ export const useBalance = (
   const formattedValues = useMemo(() => {
     if (!balance) {
       return {
-        formattedBalance: '0,00 TL',
+        formattedAvailableBalance: '0,00 TL',
         formattedPendingBalance: '0,00 TL',
-        formattedAvailableForPayout: '0,00 TL',
+        formattedTotalBalance: '0,00 TL',
         formattedTotalEarnings: '0,00 TL',
-        formattedTotalPayouts: '0,00 TL',
+        formattedPendingPayouts: '0,00 TL',
       };
     }
 
     return {
-      formattedBalance: formatCurrency(balance.balance),
+      formattedAvailableBalance: formatCurrency(balance.availableBalance),
       formattedPendingBalance: formatCurrency(balance.pendingBalance),
-      formattedAvailableForPayout: formatCurrency(balance.availableForPayout),
+      formattedTotalBalance: formatCurrency(balance.totalBalance),
       formattedTotalEarnings: formatCurrency(balance.totalEarnings),
-      formattedTotalPayouts: formatCurrency(balance.totalPayouts),
+      formattedPendingPayouts: formatCurrency(balance.pendingPayouts),
     };
   }, [balance]);
 

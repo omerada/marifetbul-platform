@@ -13,8 +13,8 @@
 
 import { useWalletStore } from '@/stores/walletStore';
 import { useEffect, useState, useCallback } from 'react';
+import type { Transaction } from '@/lib/api/validators';
 import type {
-  Transaction,
   TransactionFilters,
   TransactionExportOptions,
 } from '@/types/business/features/wallet';

@@ -28,6 +28,9 @@ export { default as ImageCarouselComponent } from './ImageCarousel';
 export { ImageUpload } from './ImageUpload';
 export type { UploadedImage } from './ImageUpload';
 
+// Payment & Wallet components
+export { PaymentModal } from './PaymentModal';
+
 // Performance components
 export * from './performance';
 

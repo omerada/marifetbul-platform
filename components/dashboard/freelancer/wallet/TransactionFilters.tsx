@@ -13,10 +13,7 @@
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Filter, X } from 'lucide-react';
-import {
-  TransactionType,
-  type TransactionFilters as Filters,
-} from '@/types/business/features/wallet';
+import type { TransactionFilters as Filters } from '@/types/business/features/wallet';
 
 // ================================================
 // TYPES
@@ -88,31 +85,28 @@ export const TransactionFilters: React.FC<TransactionFiltersProps> = ({
                 onChange={(e) =>
                   onFiltersChange({
                     ...filters,
-                    type: e.target.value as TransactionType,
+                    type:
+                      (e.target.value as
+                        | ''
+                        | 'CREDIT'
+                        | 'DEBIT'
+                        | 'ESCROW_HOLD'
+                        | 'ESCROW_RELEASE'
+                        | 'PAYOUT'
+                        | 'REFUND'
+                        | 'FEE') || undefined,
                   })
                 }
                 className="focus:ring-primary w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none"
               >
                 <option value="">Tümü</option>
-                <option value={TransactionType.PAYMENT_RECEIVED}>
-                  Ödeme Alındı
-                </option>
-                <option value={TransactionType.PAYMENT_RELEASED}>
-                  Ödeme Serbest Bırakıldı
-                </option>
-                <option value={TransactionType.PAYMENT_HELD}>
-                  Ödeme Beklemede
-                </option>
-                <option value={TransactionType.PAYOUT_REQUESTED}>
-                  Para Çekme Talebi
-                </option>
-                <option value={TransactionType.PAYOUT_COMPLETED}>
-                  Para Çekme Tamamlandı
-                </option>
-                <option value={TransactionType.REFUND_RECEIVED}>
-                  İade Alındı
-                </option>
-                <option value={TransactionType.FEE}>Komisyon</option>
+                <option value="CREDIT">Ödeme Alındı</option>
+                <option value="ESCROW_RELEASE">Ödeme Serbest Bırakıldı</option>
+                <option value="ESCROW_HOLD">Ödeme Beklemede</option>
+                <option value="PAYOUT">Para Çekme</option>
+                <option value="REFUND">İade</option>
+                <option value="FEE">Komisyon</option>
+                <option value="DEBIT">Ödeme Gönderildi</option>
               </select>
             </div>
 

@@ -11,6 +11,7 @@
 
 'use client';
 
+import { useState } from 'react';
 import { useBalance } from '@/hooks/business/wallet';
 import { RefreshCw, Wallet, Clock, TrendingUp, DollarSign } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -21,6 +22,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/Tooltip';
+import { PayoutRequestModal } from './PayoutRequestModal';
 
 // ================================================
 // TYPES
@@ -60,14 +62,19 @@ export const WalletBalanceCard: React.FC<WalletBalanceCardProps> = ({
   onRefresh,
   className = '',
 }) => {
+  // ==================== STATE ====================
+
+  const [isPayoutModalOpen, setIsPayoutModalOpen] = useState(false);
+
   // ==================== HOOKS ====================
 
   const {
     balance,
-    formattedBalance,
+    formattedAvailableBalance,
     formattedPendingBalance,
-    formattedAvailableForPayout,
+    formattedTotalBalance,
     formattedTotalEarnings,
+    formattedPendingPayouts,
     isLoading,
     error,
     refresh,
@@ -153,7 +160,7 @@ export const WalletBalanceCard: React.FC<WalletBalanceCardProps> = ({
                     Kullanılabilir Bakiye
                   </p>
                   <p className="text-primary text-4xl font-bold">
-                    {formattedBalance}
+                    {formattedAvailableBalance}
                   </p>
                 </div>
               </TooltipTrigger>
@@ -202,18 +209,17 @@ export const WalletBalanceCard: React.FC<WalletBalanceCardProps> = ({
                   <div className="mb-2 flex items-center gap-2 text-green-700">
                     <DollarSign className="h-4 w-4" />
                     <p className="text-xs font-medium tracking-wide uppercase">
-                      Çekilebilir Tutar
+                      Toplam Bakiye
                     </p>
                   </div>
                   <p className="text-2xl font-bold text-green-900">
-                    {formattedAvailableForPayout}
+                    {formattedTotalBalance}
                   </p>
                 </div>
               </TooltipTrigger>
               <TooltipContent>
                 <p className="max-w-xs text-sm">
-                  Şu anda para çekme talebinde bulunabileceğiniz maksimum tutar.
-                  Minimum çekim limitleri geçerlidir.
+                  Kullanılabilir ve bekleyen bakiyenizin toplamı.
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -221,7 +227,7 @@ export const WalletBalanceCard: React.FC<WalletBalanceCardProps> = ({
         </div>
 
         {/* Total Earnings Summary */}
-        <div className="border-t pt-4">
+        <div className="space-y-3 border-t pt-4">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -242,8 +248,59 @@ export const WalletBalanceCard: React.FC<WalletBalanceCardProps> = ({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+
+          {/* Pending Payouts Info */}
+          {balance && balance.pendingPayouts > 0 && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex cursor-help items-center justify-between text-amber-600">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4" />
+                      <span className="text-sm font-medium">
+                        Bekleyen Çekim
+                      </span>
+                    </div>
+                    <span className="text-base font-semibold">
+                      {formattedPendingPayouts}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="max-w-xs text-sm">
+                    İşlemde olan para çekme taleplerinin toplam tutarı.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
+
+        {/* Payout Button */}
+        <div className="border-t pt-4">
+          <button
+            onClick={() => setIsPayoutModalOpen(true)}
+            disabled={!balance || balance.availableBalance < 100}
+            className="w-full rounded-lg bg-green-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
+          >
+            {balance && balance.availableBalance < 100
+              ? 'Minimum çekim tutarı: 100 TL'
+              : 'Para Çek'}
+          </button>
         </div>
       </CardContent>
+
+      {/* Payout Modal */}
+      {balance && (
+        <PayoutRequestModal
+          isOpen={isPayoutModalOpen}
+          onClose={() => setIsPayoutModalOpen(false)}
+          availableBalance={balance.availableBalance}
+          onSuccess={() => {
+            refresh();
+          }}
+        />
+      )}
     </Card>
   );
 };

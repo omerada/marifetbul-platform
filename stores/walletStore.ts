@@ -1,21 +1,55 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { apiClient } from '@/lib/api';
-import { WALLET_ENDPOINTS } from '@/lib/api/endpoints';
+import { walletApi, payoutApi } from '@/lib/api';
+import type {
+  Wallet,
+  BalanceResponse,
+  Transaction,
+  Payout,
+} from '@/lib/api/validators';
 import {
-  PayoutStatus,
-  type Transaction,
-  type Payout,
   type PayoutRequest,
   type TransactionFilters,
   type TransactionExportOptions,
   type WalletUIState,
-  type WalletStore,
-  type WalletResponse,
-  type BalanceResponse,
   type PayoutEligibilityResponse,
   type PayoutLimitsResponse,
 } from '@/types/business/features/wallet';
+
+// ================================================
+// STORE STATE INTERFACE
+// ================================================
+
+interface WalletStore {
+  wallet: Wallet | null;
+  balance: BalanceResponse | null;
+  transactions: Transaction[];
+  payouts: Payout[];
+  eligibility: PayoutEligibilityResponse | null;
+  limits: PayoutLimitsResponse | null;
+  ui: WalletUIState;
+
+  // Actions
+  fetchWallet: () => Promise<void>;
+  fetchBalance: () => Promise<void>;
+  fetchTransactions: (
+    filters?: TransactionFilters,
+    page?: number
+  ) => Promise<void>;
+  fetchPayouts: (page?: number) => Promise<void>;
+  fetchEligibility: () => Promise<void>;
+  fetchLimits: () => Promise<void>;
+  requestPayout: (data: PayoutRequest) => Promise<Payout>;
+  cancelPayout: (payoutId: string) => Promise<void>;
+  exportTransactions: (options: TransactionExportOptions) => Promise<Blob>;
+
+  // UI Actions
+  setPayoutModalOpen: (open: boolean) => void;
+  setSelectedTransaction: (transaction: Transaction | null) => void;
+  setSelectedPayout: (payout: Payout | null) => void;
+  clearError: () => void;
+  reset: () => void;
+}
 
 // ================================================
 // INITIAL STATE
@@ -57,16 +91,19 @@ export const useWalletStore = create<WalletStore>()(
         }));
 
         try {
-          const data = await apiClient.get<{
-            wallet: WalletResponse;
-            balance: BalanceResponse;
-            recentTransactions?: Transaction[];
-          }>(WALLET_ENDPOINTS.GET_WALLET);
+          // Fetch wallet, balance, and recent transactions in parallel
+          const [walletData, balanceData, transactionsData] = await Promise.all(
+            [
+              walletApi.getWallet(),
+              walletApi.getBalance(),
+              walletApi.getTransactions(0, 5), // Get 5 most recent transactions
+            ]
+          );
 
           set({
-            wallet: data.wallet,
-            balance: data.balance,
-            transactions: data.recentTransactions || [],
+            wallet: walletData,
+            balance: balanceData,
+            transactions: transactionsData,
             ui: { ...get().ui, isLoadingWallet: false },
           });
         } catch (error) {
@@ -86,10 +123,8 @@ export const useWalletStore = create<WalletStore>()(
 
       fetchBalance: async () => {
         try {
-          const data = await apiClient.get<BalanceResponse>(
-            WALLET_ENDPOINTS.GET_BALANCE
-          );
-          set({ balance: data });
+          const balanceData = await walletApi.getBalance();
+          set({ balance: balanceData });
         } catch (error) {
           console.error('Failed to fetch balance:', error);
           throw error;
@@ -104,24 +139,11 @@ export const useWalletStore = create<WalletStore>()(
         }));
 
         try {
-          const params = new URLSearchParams();
-          params.append('page', page.toString());
-          params.append('size', '20');
-
-          if (filters?.type) params.append('type', filters.type);
-          if (filters?.startDate) params.append('startDate', filters.startDate);
-          if (filters?.endDate) params.append('endDate', filters.endDate);
-          if (filters?.minAmount)
-            params.append('minAmount', filters.minAmount.toString());
-          if (filters?.maxAmount)
-            params.append('maxAmount', filters.maxAmount.toString());
-
-          const data = await apiClient.get<{
-            content: Transaction[];
-          }>(`${WALLET_ENDPOINTS.GET_TRANSACTIONS}?${params.toString()}`);
+          // Note: filters parameter not used - backend endpoint doesn't support filtering yet
+          const data = await walletApi.getTransactions(page, 20);
 
           set({
-            transactions: data.content,
+            transactions: data,
             ui: { ...get().ui, isLoadingTransactions: false },
           });
         } catch (error) {
@@ -147,12 +169,10 @@ export const useWalletStore = create<WalletStore>()(
         }));
 
         try {
-          const data = await apiClient.get<{ content: Payout[] }>(
-            `${WALLET_ENDPOINTS.GET_PAYOUT_HISTORY}?page=${page}&size=10`
-          );
+          const data = await payoutApi.getPayoutHistory(page, 10);
 
           set({
-            payouts: data.content,
+            payouts: data,
             ui: { ...get().ui, isLoadingPayouts: false },
           });
         } catch (error) {
@@ -172,9 +192,7 @@ export const useWalletStore = create<WalletStore>()(
 
       fetchEligibility: async () => {
         try {
-          const data = await apiClient.get<PayoutEligibilityResponse>(
-            WALLET_ENDPOINTS.GET_ELIGIBILITY
-          );
+          const data = await payoutApi.checkPayoutEligibility();
           set({ eligibility: data });
         } catch (error) {
           console.error('Failed to fetch eligibility:', error);
@@ -184,10 +202,16 @@ export const useWalletStore = create<WalletStore>()(
 
       fetchLimits: async () => {
         try {
-          const data = await apiClient.get<PayoutLimitsResponse>(
-            WALLET_ENDPOINTS.GET_LIMITS
-          );
-          set({ limits: data });
+          // Backend'de limits endpoint'i yok, mock data kullanıyoruz
+          const mockLimits: PayoutLimitsResponse = {
+            minimumAmount: 100,
+            maximumAmount: 50000,
+            dailyLimit: 10000,
+            monthlyLimit: 100000,
+            remainingDailyLimit: 10000,
+            remainingMonthlyLimit: 100000,
+          };
+          set({ limits: mockLimits });
         } catch (error) {
           console.error('Failed to fetch limits:', error);
           throw error;
@@ -200,12 +224,16 @@ export const useWalletStore = create<WalletStore>()(
         }));
 
         try {
-          const responseData = await apiClient.post<{ payout: Payout }>(
-            WALLET_ENDPOINTS.CREATE_PAYOUT,
-            data
-          );
+          const responseData = await payoutApi.createPayout({
+            amount: data.amount,
+            method: data.method as 'BANK_TRANSFER' | 'PAYPAL' | 'STRIPE',
+            // TODO: Backend expects bankAccountId but we have bankAccountInfo
+            // For now, use undefined - this needs bank account management feature
+            bankAccountId: undefined,
+            paypalEmail: undefined,
+          });
 
-          const newPayout = responseData.payout;
+          const newPayout = responseData;
 
           // Add to payouts list
           set((state) => ({
@@ -238,12 +266,12 @@ export const useWalletStore = create<WalletStore>()(
 
       cancelPayout: async (payoutId: string) => {
         try {
-          await apiClient.post(WALLET_ENDPOINTS.CANCEL_PAYOUT(payoutId));
+          await payoutApi.cancelPayout(payoutId);
 
           // Update payout status in list
           set((state) => ({
             payouts: state.payouts.map((p) =>
-              p.id === payoutId ? { ...p, status: PayoutStatus.CANCELLED } : p
+              p.id === payoutId ? { ...p, status: 'CANCELLED' as const } : p
             ),
           }));
 
@@ -267,35 +295,10 @@ export const useWalletStore = create<WalletStore>()(
         options: TransactionExportOptions
       ): Promise<Blob> => {
         try {
-          // Build query string from options
-          const params = new URLSearchParams();
-          if (options.format) params.append('format', options.format);
-          if (options.dateRange?.startDate)
-            params.append('startDate', options.dateRange.startDate);
-          if (options.dateRange?.endDate)
-            params.append('endDate', options.dateRange.endDate);
-          if (options.filters?.type)
-            params.append('type', options.filters.type);
-
-          const queryString = params.toString();
-          const endpoint = `${WALLET_ENDPOINTS.EXPORT_TRANSACTIONS}${queryString ? `?${queryString}` : ''}`;
-
-          // Use fetch directly for blob response
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`,
-            {
-              credentials: 'include',
-              headers: {
-                Accept: 'text/csv,application/pdf',
-              },
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error('Export failed');
-          }
-
-          return await response.blob();
+          const format = (options.format || 'CSV').toLowerCase() as
+            | 'csv'
+            | 'pdf';
+          return await walletApi.exportTransactions(format);
         } catch (error) {
           console.error('Failed to export transactions:', error);
           // Fallback to client-side CSV generation

@@ -4,36 +4,24 @@
 // Created: October 25, 2025
 // Sprint: Wallet & Payout System Integration
 
+// Import backend-aligned types at top
+import type {
+  Transaction as BackendTransaction,
+  Payout as BackendPayout,
+} from '@/lib/api/validators';
+
 // ================================================
-// BASE ENUMS
+// BASE TYPES (Backend-aligned)
 // ================================================
 
-export enum TransactionType {
-  PAYMENT_RECEIVED = 'PAYMENT_RECEIVED',
-  PAYMENT_RELEASED = 'PAYMENT_RELEASED',
-  PAYMENT_HELD = 'PAYMENT_HELD',
-  PAYOUT_REQUESTED = 'PAYOUT_REQUESTED',
-  PAYOUT_COMPLETED = 'PAYOUT_COMPLETED',
-  PAYOUT_FAILED = 'PAYOUT_FAILED',
-  PAYOUT_CANCELLED = 'PAYOUT_CANCELLED',
-  REFUND_RECEIVED = 'REFUND_RECEIVED',
-  REFUND_ISSUED = 'REFUND_ISSUED',
-  ADJUSTMENT = 'ADJUSTMENT',
-  FEE = 'FEE',
-}
+// Transaction type from backend
+export type TransactionType = BackendTransaction['type'];
 
-export enum PayoutStatus {
-  PENDING = 'PENDING',
-  PROCESSING = 'PROCESSING',
-  COMPLETED = 'COMPLETED',
-  FAILED = 'FAILED',
-  CANCELLED = 'CANCELLED',
-}
+// Payout status from backend
+export type PayoutStatus = BackendPayout['status'];
 
-export enum PayoutMethod {
-  BANK_TRANSFER = 'BANK_TRANSFER',
-  STRIPE_PAYOUT = 'STRIPE_PAYOUT',
-}
+// Payout method from backend
+export type PayoutMethod = BackendPayout['method'];
 
 export enum WalletStatus {
   ACTIVE = 'ACTIVE',
@@ -316,8 +304,8 @@ export interface WalletUIState {
   isLoadingTransactions: boolean;
   isLoadingPayouts: boolean;
   isSubmittingPayout: boolean;
-  selectedTransaction: Transaction | null;
-  selectedPayout: Payout | null;
+  selectedTransaction: BackendTransaction | null;
+  selectedPayout: BackendPayout | null;
   payoutModalOpen: boolean;
   transactionDetailModalOpen: boolean;
   error: string | null;

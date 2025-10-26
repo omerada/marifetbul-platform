@@ -26,3 +26,17 @@ export type {
   AdminDashboardBackendDto,
   PlatformSnapshotDto,
 } from './admin-dashboard';
+
+// Export Wallet API
+export { walletApi } from './wallet';
+export type { Wallet, BalanceResponse, Transaction } from './validators';
+
+// Export Payment API
+export { paymentApi } from './payment';
+export type { Payment, PaymentIntent } from './validators';
+export type { CreatePaymentRequest, RefundRequest } from './payment';
+
+// Export Payout API
+export { payoutApi } from './payout';
+export type { Payout, PayoutEligibility } from './validators';
+export type { CreatePayoutRequest, RejectPayoutRequest } from './payout';

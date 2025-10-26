@@ -17,27 +17,16 @@ import {
   Clock,
   AlertCircle,
   CreditCard,
-  RefreshCw,
   DollarSign,
 } from 'lucide-react';
-import {
-  TransactionType,
-  formatCurrency,
-} from '@/types/business/features/wallet';
+import { formatCurrency } from '@/types/business/features/wallet';
+import type { Transaction } from '@/lib/api/validators';
 
 // ================================================
 // TYPES
 // ================================================
 
-interface Transaction {
-  id: string;
-  type: TransactionType;
-  amount: number;
-  description: string;
-  createdAt: string;
-  balanceAfter: number;
-  referenceId?: string;
-}
+type TransactionType = Transaction['type'];
 
 export interface TransactionListProps {
   transactions: Transaction[];
@@ -50,22 +39,18 @@ export interface TransactionListProps {
 
 function getTransactionIcon(type: TransactionType) {
   switch (type) {
-    case TransactionType.PAYMENT_RECEIVED:
-    case TransactionType.PAYMENT_RELEASED:
-    case TransactionType.REFUND_RECEIVED:
+    case 'CREDIT':
+    case 'ESCROW_RELEASE':
+    case 'REFUND':
       return <ArrowDownCircle className="h-5 w-5 text-green-600" />;
-    case TransactionType.PAYOUT_REQUESTED:
-    case TransactionType.PAYOUT_COMPLETED:
+    case 'PAYOUT':
       return <ArrowUpCircle className="h-5 w-5 text-blue-600" />;
-    case TransactionType.PAYMENT_HELD:
+    case 'ESCROW_HOLD':
       return <Clock className="h-5 w-5 text-amber-600" />;
-    case TransactionType.PAYOUT_FAILED:
-    case TransactionType.PAYOUT_CANCELLED:
+    case 'DEBIT':
       return <AlertCircle className="h-5 w-5 text-red-600" />;
-    case TransactionType.FEE:
+    case 'FEE':
       return <CreditCard className="h-5 w-5 text-gray-600" />;
-    case TransactionType.ADJUSTMENT:
-      return <RefreshCw className="h-5 w-5 text-purple-600" />;
     default:
       return <DollarSign className="h-5 w-5 text-gray-600" />;
   }
@@ -73,17 +58,13 @@ function getTransactionIcon(type: TransactionType) {
 
 function getTransactionLabel(type: TransactionType): string {
   const labels: Record<TransactionType, string> = {
-    [TransactionType.PAYMENT_RECEIVED]: 'Ödeme Alındı',
-    [TransactionType.PAYMENT_RELEASED]: 'Ödeme Serbest Bırakıldı',
-    [TransactionType.PAYMENT_HELD]: 'Ödeme Beklemede',
-    [TransactionType.PAYOUT_REQUESTED]: 'Para Çekme Talebi',
-    [TransactionType.PAYOUT_COMPLETED]: 'Para Çekme Tamamlandı',
-    [TransactionType.PAYOUT_FAILED]: 'Para Çekme Başarısız',
-    [TransactionType.PAYOUT_CANCELLED]: 'Para Çekme İptal',
-    [TransactionType.REFUND_RECEIVED]: 'İade Alındı',
-    [TransactionType.REFUND_ISSUED]: 'İade Yapıldı',
-    [TransactionType.ADJUSTMENT]: 'Düzeltme',
-    [TransactionType.FEE]: 'Komisyon',
+    CREDIT: 'Ödeme Alındı',
+    DEBIT: 'Ödeme Gönderildi',
+    ESCROW_HOLD: 'Ödeme Beklemede',
+    ESCROW_RELEASE: 'Ödeme Serbest Bırakıldı',
+    PAYOUT: 'Para Çekme',
+    REFUND: 'İade',
+    FEE: 'Komisyon',
   };
   return labels[type] || type;
 }
@@ -145,9 +126,9 @@ export const TransactionList: React.FC<TransactionListProps> = ({
         <div className="divide-y divide-gray-100">
           {transactions.map((transaction) => {
             const isCredit =
-              transaction.type === TransactionType.PAYMENT_RECEIVED ||
-              transaction.type === TransactionType.PAYMENT_RELEASED ||
-              transaction.type === TransactionType.REFUND_RECEIVED;
+              transaction.type === 'CREDIT' ||
+              transaction.type === 'ESCROW_RELEASE' ||
+              transaction.type === 'REFUND';
 
             return (
               <div

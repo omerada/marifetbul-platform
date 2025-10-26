@@ -506,6 +506,183 @@ export const BlogPostsResponseSchema = createPaginatedResponseSchema(
 export type BlogPostsResponse = z.infer<typeof BlogPostsResponseSchema>;
 
 // ============================================================================
+// Wallet & Payment Schemas
+// ============================================================================
+
+/**
+ * Wallet status schema
+ */
+export const WalletStatusSchema = z.enum(['ACTIVE', 'SUSPENDED', 'FROZEN']);
+
+/**
+ * Wallet schema
+ */
+export const WalletSchema = z.object({
+  id: z.string().uuid(),
+  userId: z.string().uuid(),
+  balance: z.number().min(0),
+  pendingBalance: z.number().min(0),
+  totalBalance: z.number().min(0),
+  status: WalletStatusSchema,
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
+export type Wallet = z.infer<typeof WalletSchema>;
+
+/**
+ * Balance response schema
+ */
+export const BalanceResponseSchema = z.object({
+  availableBalance: z.number().min(0),
+  pendingBalance: z.number().min(0),
+  totalBalance: z.number().min(0),
+  totalEarnings: z.number().min(0),
+  pendingPayouts: z.number().min(0),
+});
+
+export type BalanceResponse = z.infer<typeof BalanceResponseSchema>;
+
+/**
+ * Transaction type schema
+ */
+export const TransactionTypeSchema = z.enum([
+  'CREDIT',
+  'DEBIT',
+  'ESCROW_HOLD',
+  'ESCROW_RELEASE',
+  'PAYOUT',
+  'REFUND',
+  'FEE',
+]);
+
+/**
+ * Transaction schema
+ */
+export const TransactionSchema = z.object({
+  id: z.string().uuid(),
+  walletId: z.string().uuid(),
+  paymentId: z.string().uuid().optional(),
+  type: TransactionTypeSchema,
+  amount: z.number(),
+  balanceBefore: z.number(),
+  balanceAfter: z.number(),
+  description: z.string(),
+  referenceId: z.string().optional(),
+  createdAt: z.string().datetime(),
+});
+
+export type Transaction = z.infer<typeof TransactionSchema>;
+
+/**
+ * Payment status schema
+ */
+export const PaymentStatusSchema = z.enum([
+  'PENDING',
+  'SUCCEEDED',
+  'FAILED',
+  'REFUNDED',
+  'PARTIALLY_REFUNDED',
+]);
+
+/**
+ * Payment schema
+ */
+export const PaymentSchema = z.object({
+  id: z.string().uuid(),
+  orderId: z.string().uuid(),
+  payerId: z.string().uuid(),
+  payeeId: z.string().uuid(),
+  amount: z.number().min(0),
+  currency: z.string().default('TRY'),
+  platformFee: z.number().min(0),
+  netAmount: z.number().min(0),
+  status: PaymentStatusSchema,
+  paymentMethod: z.string(),
+  stripePaymentIntentId: z.string().optional(),
+  stripeChargeId: z.string().optional(),
+  description: z.string().optional(),
+  failureReason: z.string().optional(),
+  refundedAmount: z.number().min(0).optional(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
+export type Payment = z.infer<typeof PaymentSchema>;
+
+/**
+ * Payment intent schema
+ */
+export const PaymentIntentSchema = z.object({
+  id: z.string(),
+  clientSecret: z.string(),
+  amount: z.number().min(0),
+  currency: z.string().default('TRY'),
+  status: z.enum([
+    'REQUIRES_PAYMENT_METHOD',
+    'REQUIRES_CONFIRMATION',
+    'REQUIRES_ACTION',
+    'PROCESSING',
+    'SUCCEEDED',
+    'CANCELED',
+  ]),
+});
+
+export type PaymentIntent = z.infer<typeof PaymentIntentSchema>;
+
+/**
+ * Payout status schema
+ */
+export const PayoutStatusSchema = z.enum([
+  'PENDING',
+  'PROCESSING',
+  'COMPLETED',
+  'FAILED',
+  'CANCELLED',
+]);
+
+/**
+ * Payout method schema
+ */
+export const PayoutMethodSchema = z.enum(['BANK_TRANSFER', 'PAYPAL', 'STRIPE']);
+
+/**
+ * Payout schema
+ */
+export const PayoutSchema = z.object({
+  id: z.string().uuid(),
+  userId: z.string().uuid(),
+  amount: z.number().min(0),
+  currency: z.string().default('TRY'),
+  status: PayoutStatusSchema,
+  method: PayoutMethodSchema,
+  bankAccountId: z.string().optional(),
+  paypalEmail: z.string().email().optional(),
+  processingFee: z.number().min(0),
+  netAmount: z.number().min(0),
+  failureReason: z.string().optional(),
+  processedAt: z.string().datetime().optional(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
+export type Payout = z.infer<typeof PayoutSchema>;
+
+/**
+ * Payout eligibility schema
+ */
+export const PayoutEligibilitySchema = z.object({
+  eligible: z.boolean(),
+  minimumAmount: z.number().min(0),
+  maximumAmount: z.number().min(0),
+  availableBalance: z.number().min(0),
+  pendingPayouts: z.number().min(0),
+  reason: z.string().optional(),
+});
+
+export type PayoutEligibility = z.infer<typeof PayoutEligibilitySchema>;
+
+// ============================================================================
 // Validation Helper
 // ============================================================================
 
