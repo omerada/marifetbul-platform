@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
@@ -36,7 +36,7 @@ interface Freelancer {
   available: boolean;
 }
 
-export default function SubcategoryDetailPage() {
+function SubcategoryDetailContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const categorySlug = params.categoryId as string;
@@ -506,5 +506,19 @@ export default function SubcategoryDetailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SubcategoryDetailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+        </div>
+      }
+    >
+      <SubcategoryDetailContent />
+    </Suspense>
   );
 }

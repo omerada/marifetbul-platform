@@ -19,7 +19,6 @@ import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import { FollowButton } from './FollowButton';
 import { Input } from '@/components/ui/Input';
 import { Search, X, Users } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import type { User } from '@/types/core/base';
 

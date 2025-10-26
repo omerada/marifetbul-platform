@@ -1,11 +1,14 @@
 /**
- * XSS Protection Utilities
+ * XSS Protection Utilities - Client-Side Only
  *
- * Provides input sanitization and output encoding to prevent XSS attacks.
- * Uses DOMPurify for HTML sanitization and provides safe render helpers.
+ * Provides client-side input sanitization to prevent XSS attacks.
+ * Uses DOMPurify for HTML sanitization (browser-only).
+ *
+ * IMPORTANT: This module only works on the client-side.
+ * Server-side content should be sanitized by the backend.
  *
  * Features:
- * - HTML sanitization (DOMPurify)
+ * - Client-side HTML sanitization (DOMPurify)
  * - Safe render helpers for React
  * - URL validation and sanitization
  * - Attribute encoding
@@ -15,17 +18,19 @@
  * ```tsx
  * import { sanitizeHtml, SafeHtml } from '@/lib/infrastructure/security/xss-protection';
  *
- * // Sanitize HTML
+ * // Sanitize HTML (client-side only)
  * const clean = sanitizeHtml(userInput);
  *
- * // Safe render in React
+ * // Safe render in React (use dynamic import for SSR)
  * <SafeHtml html={userContent} />
  * ```
  */
 
-import React from 'react';
-import DOMPurify from 'isomorphic-dompurify';
-import type { Config } from 'isomorphic-dompurify';
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
+import type { Config } from 'dompurify';
 import { Logger } from '../monitoring/logger';
 
 const logger = new Logger({ level: 'info' });
@@ -343,11 +348,16 @@ export function encodeJavaScript(str: string): string {
 }
 
 // ============================================================================
-// REACT SAFE RENDER
+// REACT SAFE RENDER (CLIENT-SIDE ONLY)
 // ============================================================================
 
 /**
- * Safe HTML render component for React
+ * Safe HTML render component for React - Client-Side Only
+ *
+ * IMPORTANT: This component only works on the client-side.
+ * For SSR pages, use dynamic import:
+ *
+ * const SafeHtml = dynamic(() => import('./xss-protection').then(m => m.SafeHtml), { ssr: false });
  */
 export function SafeHtml({
   html,
@@ -360,7 +370,14 @@ export function SafeHtml({
   className?: string;
   as?: React.ElementType;
 }) {
-  const cleanHtml = sanitizeHtml(html, config);
+  const [cleanHtml, setCleanHtml] = useState('');
+
+  useEffect(() => {
+    // Client-side only sanitization
+    if (typeof window !== 'undefined') {
+      setCleanHtml(sanitizeHtml(html, config));
+    }
+  }, [html, config]);
 
   return (
     <Component

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { AppLayout } from '@/components/layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { SafeBlogContent } from '@/components/blog/SafeBlogContent';
 import {
   ChevronRight,
   Calendar,
@@ -17,7 +18,6 @@ import {
   Heart,
 } from 'lucide-react';
 import { type BlogPost } from '@/lib/api/blog';
-import { SafeHtml } from '@/lib/infrastructure/security/xss-protection';
 
 // Dynamic rendering
 export const dynamicParams = true;
@@ -246,9 +246,8 @@ export default async function BlogDetailPage({
 
                   {/* Article Body */}
                   <CardContent className="p-8">
-                    <SafeHtml
+                    <SafeBlogContent
                       html={post.content}
-                      config="RICH"
                       className="prose prose-lg prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 max-w-none"
                     />
 

@@ -19,8 +19,9 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
-export default function CheckoutCancelPage() {
+function CheckoutCancelContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId');
@@ -141,5 +142,27 @@ export default function CheckoutCancelPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutCancelPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 py-12">
+          <div className="container mx-auto px-4">
+            <div className="mx-auto max-w-2xl text-center">
+              <div className="animate-pulse">
+                <div className="mx-auto mb-4 h-20 w-20 rounded-full bg-gray-200"></div>
+                <div className="mb-2 h-8 rounded bg-gray-200"></div>
+                <div className="h-4 rounded bg-gray-200"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <CheckoutCancelContent />
+    </Suspense>
   );
 }

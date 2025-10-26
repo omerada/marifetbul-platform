@@ -1,19 +1,5 @@
 import { test, expect } from '@playwright/test';
-import {
-  generateTestUser,
-  login,
-  logout,
-  register,
-  clearSession,
-  assertToastMessage,
-  assertErrorMessage,
-} from '../utils/helpers';
-import {
-  TEST_USERS,
-  ERROR_MESSAGES,
-  SUCCESS_MESSAGES,
-  SELECTORS,
-} from '../fixtures/test-data';
+import { generateTestUser, clearSession } from '../utils/helpers';
 
 test.describe('Authentication Flow', () => {
   test.beforeEach(async ({ page }) => {
@@ -116,13 +102,6 @@ test.describe('Authentication Flow', () => {
       await page.click('button[type="submit"]');
 
       // Should show validation errors for required fields
-      const emailError = page.locator(
-        'input[name="email"] ~ .error-message, input[name="email"] + .error-message'
-      );
-      const passwordError = page.locator(
-        'input[name="password"] ~ .error-message, input[name="password"] + .error-message'
-      );
-
       // At least one error should be visible
       const errorCount = await page
         .locator('.error-message, [role="alert"]')
@@ -361,6 +340,117 @@ test.describe('Authentication Flow', () => {
       // Page should either show success or stay on same page
       expect(page.url()).toMatch(/forgot-password/);
     });
+
+    test('should show error for invalid or missing token', async ({ page }) => {
+      // Navigate to reset password page without token
+      await page.goto('/reset-password');
+
+      // Should show invalid link error
+      const errorElement = page.locator(
+        'text=/geçersiz.*bağlantı/i, text=/invalid.*link/i'
+      );
+      await expect(errorElement).toBeVisible({ timeout: 5000 });
+
+      // Should show button to request new reset
+      const requestButton = page.locator(
+        'text=/şifre sıfırlama talebi/i, text=/request.*reset/i'
+      );
+      await expect(requestButton).toBeVisible();
+    });
+
+    test('should complete password reset with valid token', async ({
+      page,
+    }) => {
+      // Step 1: Request password reset
+      await page.goto('/forgot-password');
+      await page.fill('input[name="email"]', 'test@example.com');
+
+      // Mock API response for forgot password
+      await page.route('**/api/v1/auth/forgot-password', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true }),
+        });
+      });
+
+      await page.click('button[type="submit"]');
+      await page.waitForTimeout(1000);
+
+      // Step 2: Navigate to reset page with mock token
+      const mockToken = 'mock-reset-token-12345';
+
+      // Mock API response for reset password
+      await page.route('**/api/v1/auth/reset-password', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true }),
+        });
+      });
+
+      await page.goto(`/reset-password?token=${mockToken}`);
+
+      // Step 3: Fill new password
+      await page.fill('input[name="password"]', 'NewTestPassword123!');
+      await page.fill('input[name="confirmPassword"]', 'NewTestPassword123!');
+
+      // Step 4: Submit form
+      await page.click('button[type="submit"]');
+
+      // Step 5: Verify success message
+      const successElement = page.locator(
+        'text=/şifre.*başarıyla.*değiştirildi/i, text=/password.*successfully.*changed/i'
+      );
+      await expect(successElement).toBeVisible({ timeout: 5000 });
+
+      // Step 6: Should redirect to login (or show login button)
+      await page.waitForTimeout(1000);
+      const loginButton = page.locator(
+        'button:has-text("Giriş Yap"), a[href="/login"]'
+      );
+      await expect(loginButton).toBeVisible();
+    });
+
+    test('should show error for password mismatch in reset form', async ({
+      page,
+    }) => {
+      const mockToken = 'mock-reset-token-12345';
+      await page.goto(`/reset-password?token=${mockToken}`);
+
+      // Fill password and different confirm password
+      await page.fill('input[name="password"]', 'NewTestPassword123!');
+      await page.fill('input[name="confirmPassword"]', 'DifferentPassword123!');
+
+      // Submit form
+      await page.click('button[type="submit"]');
+
+      // Should show validation error
+      const errorElement = page.locator(
+        'text=/şifreler.*eşleşmiyor/i, text=/passwords.*not.*match/i'
+      );
+      await expect(errorElement).toBeVisible({ timeout: 5000 });
+    });
+
+    test('should show error for weak password in reset form', async ({
+      page,
+    }) => {
+      const mockToken = 'mock-reset-token-12345';
+      await page.goto(`/reset-password?token=${mockToken}`);
+
+      // Fill weak password
+      await page.fill('input[name="password"]', '123');
+      await page.fill('input[name="confirmPassword"]', '123');
+
+      // Submit form
+      await page.click('button[type="submit"]');
+
+      // Should show validation error
+      const errorElement = page.locator(
+        'text=/şifre.*en az.*8.*karakter/i, text=/password.*at least.*8.*character/i'
+      );
+      await expect(errorElement).toBeVisible({ timeout: 5000 });
+    });
   });
 
   test.describe('Session Management', () => {
@@ -400,6 +490,102 @@ test.describe('Authentication Flow', () => {
 
       // Should redirect to login
       await page.waitForURL(/\/login/, { timeout: 5000 });
+      expect(page.url()).toContain('login');
+    });
+
+    test('should handle token refresh on API request', async ({ page }) => {
+      // Login first
+      await page.goto('/login');
+      await page.fill('input[name="email"]', 'test@example.com');
+      await page.fill('input[name="password"]', 'Test@1234Pass!');
+
+      // Mock login response with short-lived token
+      await page.route('**/api/v1/auth/login', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            accessToken: 'mock-access-token',
+            refreshToken: 'mock-refresh-token',
+            expiresIn: 2, // 2 seconds
+          }),
+        });
+      });
+
+      await page.click('button[type="submit"]');
+      await page.waitForURL(/\/(dashboard|marketplace)/, { timeout: 10000 });
+
+      // Wait for token to "expire"
+      await page.waitForTimeout(3000);
+
+      // Mock token refresh response
+      await page.route('**/api/v1/auth/refresh', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            accessToken: 'new-mock-access-token',
+            refreshToken: 'new-mock-refresh-token',
+            expiresIn: 3600,
+          }),
+        });
+      });
+
+      // Make an authenticated request (should trigger token refresh)
+      await page.goto('/dashboard/settings');
+      await page.waitForLoadState('networkidle');
+
+      // Wait a bit for refresh to be called
+      await page.waitForTimeout(1000);
+
+      // Note: In real implementation, check if refresh was called
+      // For now, just verify we can still navigate
+      const userMenu = page.locator(
+        '[data-testid="user-menu-trigger"], button:has-text("Profil")'
+      );
+      await expect(userMenu).toBeVisible({ timeout: 5000 });
+    });
+
+    test('should logout and clear session when token refresh fails', async ({
+      page,
+    }) => {
+      // Login first
+      await page.goto('/login');
+      await page.fill('input[name="email"]', 'test@example.com');
+      await page.fill('input[name="password"]', 'Test@1234Pass!');
+
+      await page.route('**/api/v1/auth/login', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            accessToken: 'mock-access-token',
+            refreshToken: 'invalid-refresh-token',
+            expiresIn: 2,
+          }),
+        });
+      });
+
+      await page.click('button[type="submit"]');
+      await page.waitForURL(/\/(dashboard|marketplace)/, { timeout: 10000 });
+
+      // Mock token refresh failure
+      await page.route('**/api/v1/auth/refresh', async (route) => {
+        await route.fulfill({
+          status: 401,
+          contentType: 'application/json',
+          body: JSON.stringify({ error: 'Invalid refresh token' }),
+        });
+      });
+
+      // Wait for token to "expire"
+      await page.waitForTimeout(3000);
+
+      // Try to make an authenticated request
+      await page.goto('/dashboard/settings');
+
+      // Should be redirected to login due to refresh failure
+      await page.waitForURL(/\/login/, { timeout: 10000 });
       expect(page.url()).toContain('login');
     });
   });

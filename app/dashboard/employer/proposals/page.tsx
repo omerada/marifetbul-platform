@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { ProposalCard } from '@/components/domains/jobs/ProposalCard';
@@ -27,7 +27,7 @@ type ProposalWithViewStatus = Proposal & { isViewed?: boolean };
 type SortOption = 'date' | 'budget-low' | 'budget-high' | 'rating';
 type FilterStatus = 'all' | 'pending' | 'accepted' | 'rejected';
 
-export default function EmployerProposalsPage() {
+function EmployerProposalsContent() {
   const searchParams = useSearchParams();
   const jobId = searchParams.get('jobId');
 
@@ -464,5 +464,13 @@ export default function EmployerProposalsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function EmployerProposalsPage() {
+  return (
+    <Suspense fallback={<Loading size="lg" text="Teklifler yükleniyor..." />}>
+      <EmployerProposalsContent />
+    </Suspense>
   );
 }

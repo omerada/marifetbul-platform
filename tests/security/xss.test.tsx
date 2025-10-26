@@ -8,7 +8,7 @@
 import { describe, it, expect } from '@jest/globals';
 import { render, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import DOMPurify from 'isomorphic-dompurify';
+import DOMPurify from 'dompurify';
 import { SafeHtml } from '@/lib/infrastructure/security/xss-protection';
 
 describe('XSS Prevention - DOMPurify Sanitization', () => {
@@ -273,9 +273,11 @@ describe('SafeHtml Component', () => {
 
   describe('Edge Cases', () => {
     it('should handle null/undefined HTML', () => {
-      const { container: container1 } = render(<SafeHtml html={null as any} />);
+      const { container: container1 } = render(
+        <SafeHtml html={null as unknown as string} />
+      );
       const { container: container2 } = render(
-        <SafeHtml html={undefined as any} />
+        <SafeHtml html={undefined as unknown as string} />
       );
 
       expect(container1.innerHTML).toBe('<div></div>');
