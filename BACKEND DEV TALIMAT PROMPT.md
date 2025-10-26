@@ -1,22 +1,86 @@
-Sen bir üst düzey yazılım mimarı ve Spring Boot + Fullstack (React/Next.js) uzmanısın.
-marifetbul-backend projesi ile web-app yapısını baştan sona incele.
-Amaç: mock yapıların tamamen silinip, frontend ve backend sisteminin tam entegre production-ready, clean, maintainable hale getirmek.
-
-Görevlerin:
-
-Mevcut backend ve web-app’i analiz et.
-Gereksiz, duplicate, mock veya test amaçlı kalmış tüm kodları, servisleri, componentleri tespit et ve temizle.
-Kod yapısını, konfigürasyonları, paketleme ve bağımlılıkları modern Spring Boot standartlarına göre yeniden düzenle.
-Sonuçta çalışan, optimize, ölçeklenebilir, sürdürülebilir bir backend ve web-app haline getir yapıyı.
-
-Hedef: temiz, production-ready, deployment’a hazır backend-frontend yapısı. #codebasee
-
-Sen bir üst düzey yazılım mimarı ve Spring Boot uzmanısın.
-
-Görevin: Mevcut web app ve (marifetbul-backend) geliştirmesini yaptığımız backend projemizi detaylı bir şekilde incelemeni ve analiz etmeni istiyorum. Web app'in ihtiyaçlarına eksiksiz yanıt verecek şekilde backend ve web-app geliştirmesi production-ready durumda yapılmış mı? Production-ready durumda mı yapılar kullanıma hazır mı? Adım adım baştan sona incele ve analiz et hatalı kısımları tespit et.
-
-Web app yapısında hala varsa gereksiz, duplicate olan ve mock yapı, TODO kullanan, clean,maintable olmayan yapılar, kodlar varsa bunları tespit et production-ready clean, maintable frontend-backend geliştirme planı oluşturup buna göre eski yapıları silip, temiz bir yapıya sahip olacak şekilde bir geliştirme-güncelleme işlemi yapalım. #codebase
-
 Merhaba,
+Sen çok deneyimli ve kıdemli bir full stack developersın. Görevin MarifetBul projesini frontend ve backend olmak üzere detaylı bir şekilde incelemek ve analiz etmek. Bunu yapmaktaki amacın tüm sistemi inceleyip geliştirmesi yapılmamış, eksik kalmış olan yapıları, ekranları, rollerin iş akışlarını, sistemleri tespit etmek, duplicate yapıları tespit etmek, kullanıcı ekranları akışlarının tamamen production-ready bir şekilde backend ve frontend olarak geliştirmesi tamamlanmış mı bunları tespit etmek ve eksik olan duplicate olan yapıları tespit edip sprint oluşturmak daha sonra bunu clean, maintable ve production-ready çözümler ile geliştirme işlemini tamamlamak. #codebase
 
-Senden şunu istiyorum her modülü işlevi bir sprint haline getirip tüm projede frontend ve backendde mevcut yapı analizinin yapılıp daha sonra tüm yapının iş akışları, işlevsellik özellikleri sorunsuz ve production-ready olacak şekilde kullanıcı deneyimi yüksek olacak şekilde geliştirme işlemi sprint dökümantasyonu oluşturmanı sonrasında bunu geliştirmeni istiyorum. Öncelikle örneğin review sisteminden başlayabiliriz. Tüm uygulama boyutunda tüm ekranlarda, panellerde işlevselliği, kullanımı ve akışları olarak inceleme, geliştirme ve tamamlamak üzere #codebase
+🎯 Görev Tanımı: MarifetBul Projesi – Teknik İnceleme ve Geliştirme Planı
+
+Amaç:
+MarifetBul projesinin frontend ve backend bileşenlerini derinlemesine inceleyip, mevcut sistemin mimarisini ve geliştirme durumunu analiz etmek.
+Hedef; projenin tamamlanmamış, eksik, hatalı veya tekrarlayan (duplicate) yapılarını tespit ederek, üretim (production) ortamına hazır, temiz, sürdürülebilir (maintainable) bir hale getirmektir.
+
+🔍 İnceleme Kapsamı
+
+Genel Mimari Analiz
+
+Backend ve frontend yapılarını, teknolojik stack’leri, bağımlılık yönetimini, API tasarımını, veritabanı modellerini ve servis katmanlarını detaylı şekilde incele.
+
+Katmanlı mimari (layered architecture), kod standartları ve modüler yapı uygunluğunu değerlendir.
+
+Backend İncelemesi
+
+Servislerin, repository’lerin, controller’ların ve DTO/Entity modellerinin tutarlılığını kontrol et.
+
+API endpointlerinin iş akışları, hata yönetimi, validasyon ve güvenlik politikalarını incele.
+
+Gereksiz veya tekrarlayan (duplicate) kod bloklarını, servisleri veya entity’leri tespit et.
+
+Eksik iş akışlarını veya tamamlanmamış business logic alanlarını belirle.
+
+Frontend İncelemesi
+
+Tüm kullanıcı rolleri (admin, user, expert vb.) için ekran akışlarını ve bileşen yapısını analiz et.
+
+Kullanıcı deneyimi (UX) ve bileşen mantığında eksik veya tutarsız yapıları tespit et.
+
+API entegrasyonlarının backend ile senkron çalışıp çalışmadığını kontrol et.
+
+Duplicate component veya tekrar eden state management yapılarının varlığını belirle.
+
+Roller ve İş Akışları
+
+Kullanıcı rollerinin (örneğin: kullanıcı, danışman, admin vb.) sistemdeki yetki sınırlarını ve akışlarını değerlendir.
+
+Eksik tanımlanmış veya tamamlanmamış rol akışlarını belirle.
+
+Eksik / Hatalı Geliştirmeler
+
+Henüz tamamlanmamış, test edilmemiş veya production-ready olmayan özellikleri listele.
+
+Performans, güvenlik, veri bütünlüğü ve ölçeklenebilirlik açısından zayıf noktaları tespit et.
+
+Sprint Planlama Hazırlığı
+
+Tespit edilen eksik ve hatalı alanlara göre sprint backlog oluştur.
+
+Her sprint için öncelikli geliştirme, refactor ve cleanup görevlerini tanımla.
+
+⚙️ Hedef Sonuçlar
+
+Tüm sistemin tamamlanmışlık ve üretime hazır (production-ready) durum raporu
+
+Eksik, tekrarlayan, hatalı veya tamamlanmamış modüllerin detaylı listesi
+
+Refactor ve geliştirme önerileriyle birlikte sprint planı
+
+Projenin clean code, maintainable ve scalable hale getirilmesi
+
+🧠 AI Agent Talimatı
+
+Görev:
+MarifetBul projesini hem frontend hem backend olarak detaylı şekilde analiz et.
+Eksik, hatalı veya tamamlanmamış yapıları, duplicate ekran ve kodları, eksik iş akışlarını ve production’a hazır olmayan alanları tespit et. Her zaman sadece bir alana odaklan tüm sisteme odaklanma yapı içerisinde yapabileceğin bir sistem olur, akışlar olur bunu tespit et ve bunu tam anlamıyla sprint haline getirip geliştirmesini yapalım sonra farklı bir yapıya geçeriz.
+
+Amaç:
+Tüm sistemi clean, maintainable ve production-ready hale getirmek için yapılması gerekenleri belirle ve sprint planı oluştur.
+
+Odak Noktaları:
+Eksik veya tamamlanmamış ekranlar, API’ler ve roller
+Duplicate veya gereksiz kod/yapılar
+Eksik iş akışları (frontend & backend)
+Production-ready olmayan bölümler
+
+Çıktı:
+Eksik / hatalı / duplicate yapı listesi
+Geliştirme ve refactor önerileri
+Sprint backlog (önceliklendirilmiş görev listesi)
+
+#codebase
