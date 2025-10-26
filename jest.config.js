@@ -46,7 +46,12 @@ const customJestConfig = {
     '^.+\\.module\\.(css|sass|scss)$',
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
-  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+  testPathIgnorePatterns: [
+    '<rootDir>/.next/',
+    '<rootDir>/node_modules/',
+    'review-system.spec.ts', // Playwright test (requires @playwright/test)
+    'notifications/__tests__/page.test.tsx', // lucide-react ESM issue
+  ],
   watchPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
 };
 

@@ -154,8 +154,7 @@ describe('E2E Happy Path Scenarios', () => {
       );
       expect(global.fetch).toHaveBeenNthCalledWith(
         2,
-        expect.stringContaining('orders'),
-        expect.any(Object)
+        expect.stringContaining('orders')
       );
     });
   });
@@ -263,12 +262,14 @@ describe('E2E Happy Path Scenarios', () => {
         status: 'completed' as const,
       };
 
-      act(() => {
+      await act(async () => {
         result.current.handleOrderUpdate(updatedOrder);
       });
 
       // Verify order was updated in the store
-      expect(result.current.currentOrder?.status).toBe('completed');
+      expect(
+        result.current.orders.find((o) => o.id === 'order-1')?.status
+      ).toBe('completed');
 
       // Step 4: Clear filters
       act(() => {

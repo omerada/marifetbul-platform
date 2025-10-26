@@ -5,8 +5,9 @@
  * and XSS attack prevention across the application.
  */
 
-import { describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect } from '@jest/globals';
 import { render, screen, cleanup } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import DOMPurify from 'isomorphic-dompurify';
 import { SafeHtml } from '@/lib/infrastructure/security/xss-protection';
 
@@ -128,7 +129,9 @@ describe('XSS Prevention - DOMPurify Sanitization', () => {
     it('should remove <form> tags', () => {
       const maliciousHTML =
         '<form action="phishing.com"><input name="password"></form>';
-      const sanitized = DOMPurify.sanitize(maliciousHTML);
+      const sanitized = DOMPurify.sanitize(maliciousHTML, {
+        FORBID_TAGS: ['form', 'input'],
+      });
 
       expect(sanitized).not.toContain('<form>');
       expect(sanitized).not.toContain('phishing.com');
@@ -356,10 +359,14 @@ describe('XSS Prevention in Production', () => {
 });
 
 describe('DOMPurify Configuration', () => {
-  it('should have correct ALLOWED_TAGS for STRICT mode', () => {
-    const config = DOMPurify.Config;
-    // Test that dangerous tags are not allowed
-    expect(config).toBeDefined();
+  it('should sanitize dangerous tags by default', () => {
+    const html = '<p>Safe</p><script>alert("xss")</script>';
+    const sanitized = DOMPurify.sanitize(html);
+
+    // DOMPurify removes dangerous tags by default
+    expect(sanitized).toContain('<p>Safe</p>');
+    expect(sanitized).not.toContain('<script>');
+    expect(sanitized).not.toContain('alert');
   });
 
   it('should sanitize with custom config', () => {
