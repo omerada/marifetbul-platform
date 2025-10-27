@@ -20,6 +20,7 @@ import {
   type PrivacySettings,
   type UpdatePrivacySettingsRequest,
 } from '@/lib/api/privacy-settings';
+import { logger } from '@/lib/shared/utils/logger';
 
 export default function PrivacySettingsPage() {
   const [settings, setSettings] = useState<PrivacySettings | null>(null);
@@ -40,7 +41,7 @@ export default function PrivacySettingsPage() {
       setError(null);
     } catch (err) {
       setError('Gizlilik ayarları yüklenemedi');
-      console.error(err);
+      logger.error('Failed to load privacy settings', { error: err });
     } finally {
       setLoading(false);
     }
@@ -66,7 +67,7 @@ export default function PrivacySettingsPage() {
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError('Ayarlar kaydedilemedi');
-      console.error(err);
+      logger.error('Failed to save privacy settings', { error: err });
     } finally {
       setSaving(false);
     }
@@ -89,7 +90,7 @@ export default function PrivacySettingsPage() {
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError('Ayarlar sıfırlanamadı');
-      console.error(err);
+      logger.error('Failed to reset privacy settings', { error: err });
     } finally {
       setSaving(false);
     }
@@ -114,7 +115,7 @@ export default function PrivacySettingsPage() {
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError('Preset uygulanamadı');
-      console.error(err);
+      logger.error('Failed to apply privacy preset', { preset, error: err });
     } finally {
       setSaving(false);
     }

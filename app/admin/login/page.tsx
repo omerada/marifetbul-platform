@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { useToast } from '@/hooks';
+import { logger } from '@/lib/shared/utils/logger';
 import { Shield, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 export default function AdminLoginPage() {
@@ -35,8 +36,8 @@ export default function AdminLoginPage() {
       // LocalStorage'daki auth state'ini de temizle (eski session'ları temizlemek için)
       localStorage.removeItem('auth-storage');
 
-      console.log(
-        '[Admin Login] Cleared old cookies and localStorage to prevent redirect loop'
+      logger.debug(
+        'Admin login: Cleared old cookies and localStorage to prevent redirect loop'
       );
     }
   }, []); // Sadece component mount olduğunda çalışır
@@ -44,41 +45,34 @@ export default function AdminLoginPage() {
   // Login sonrası yönlendirme kontrolü
   useEffect(() => {
     if (isAuthenticated && user) {
-      console.log(
-        '[Admin Login] User authenticated, checking role:',
-        user.role
-      );
+      logger.debug('Admin login: User authenticated', {
+        role: user.role,
+      });
 
       if (user.role?.toUpperCase() === 'ADMIN') {
-        console.log(
-          '[Admin Login] Admin role confirmed, redirecting to admin panel'
-        );
+        logger.debug('Admin login: Admin role confirmed, redirecting');
         // Loading state'ini kapat
         setIsLoading(false);
 
         // Set user role cookie for middleware
         if (typeof window !== 'undefined') {
           document.cookie = `marifetbul-user-role=${user.role}; path=/; SameSite=Lax; max-age=2592000`; // 30 days
-          console.log('[Admin Login] User role cookie set');
-
-          // Debug: Check all cookies
-          console.log('[Admin Login] All cookies:', document.cookie);
+          logger.debug('Admin login: User role cookie set');
 
           // Check if backend token cookie exists
           const hasBackendToken = document.cookie.includes('marifetbul_token');
-          console.log(
-            '[Admin Login] Backend token cookie exists:',
-            hasBackendToken
-          );
+          logger.debug('Admin login: Backend token cookie status', {
+            hasBackendToken,
+          });
         }
 
         // Hard redirect için window.location kullan - middleware ve client-side routing sorunlarını çözer
         setTimeout(() => {
-          console.log('[Admin Login] Executing hard redirect to /admin');
+          logger.debug('Admin login: Executing hard redirect to /admin');
           window.location.href = '/admin';
         }, 500); // Increased timeout to ensure cookies are set
       } else {
-        console.log('[Admin Login] User is not admin, showing error');
+        logger.warn('Admin login: User is not admin', { role: user.role });
         setIsLoading(false);
         setError(
           'Admin yetkisine sahip değilsiniz. Lütfen admin hesabı ile giriş yapın.'
@@ -99,20 +93,20 @@ export default function AdminLoginPage() {
     setError('');
 
     try {
-      console.log('[Admin Login] Starting login process');
+      logger.debug('Admin login: Starting login process');
       await login({
         email: credentials.email,
         password: credentials.password,
       });
 
-      console.log(
-        '[Admin Login] Login successful, waiting for useEffect to handle redirect'
+      logger.debug(
+        'Admin login: Login successful, waiting for useEffect to handle redirect'
       );
       // Login başarılı, state güncellendi
       // useEffect otomatik olarak isLoading'i kapatacak ve yönlendirme yapacak
       toast.success('Admin paneline başarıyla giriş yapıldı');
     } catch (err) {
-      console.error('[Admin Login] Login failed:', err);
+      logger.error('Admin login failed', { error: err });
       const errorMessage =
         err instanceof Error ? err.message : 'Giriş yapılırken bir hata oluştu';
       setError(errorMessage);

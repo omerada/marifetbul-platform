@@ -3,6 +3,7 @@
  * PAYMENT TEST PAGE - Stripe Integration Test
  * ================================================
  * Development page for testing payment modal
+ * Only accessible in development environment
  *
  * @author MarifetBul Development Team
  * @version 1.0.0
@@ -10,15 +11,42 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PaymentModal } from '@/components/shared/PaymentModal';
-import { CreditCard } from 'lucide-react';
+import { CreditCard, AlertTriangle } from 'lucide-react';
+import { logger } from '@/lib/shared/utils/logger';
+import { useRouter } from 'next/navigation';
 
 export default function PaymentTestPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
+
+  // Redirect to home in production
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production') {
+      logger.warn('Attempted to access test page in production');
+      router.push('/');
+    }
+  }, [router]);
+
+  // Don't render anything in production
+  if (process.env.NODE_ENV === 'production') {
+    return null;
+  }
 
   return (
     <div className="container mx-auto min-h-screen px-4 py-12">
+      {/* Development Warning Banner */}
+      <div className="mx-auto mb-6 max-w-2xl rounded-lg border-2 border-yellow-500 bg-yellow-50 p-4">
+        <div className="flex items-center gap-3">
+          <AlertTriangle className="h-5 w-5 text-yellow-600" />
+          <p className="font-semibold text-yellow-900">Development Mode Only</p>
+        </div>
+        <p className="mt-2 text-sm text-yellow-800">
+          This test page is only accessible in development environment.
+        </p>
+      </div>
+
       <div className="mx-auto max-w-2xl">
         {/* Header */}
         <div className="mb-8 text-center">
@@ -87,11 +115,11 @@ export default function PaymentTestPage() {
         amount={500}
         description="Logo Tasarımı - Test Siparişi"
         onSuccess={(paymentId) => {
-          console.log('Payment successful:', paymentId);
+          logger.info('Test payment successful', { paymentId });
           alert(`Payment successful! ID: ${paymentId}`);
         }}
         onError={(error) => {
-          console.error('Payment error:', error);
+          logger.error('Test payment error', { error });
           alert(`Payment error: ${error}`);
         }}
       />

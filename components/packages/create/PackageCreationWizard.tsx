@@ -39,6 +39,7 @@ import {
   type CreatePackageFormData,
 } from '@/lib/validation/package';
 import type { CreatePackageRequest } from '@/types/business/features/package';
+import { logger } from '@/lib/shared/utils/logger';
 
 // Import step components (to be created)
 import { PackageBasicInfoStep } from './PackageBasicInfoStep';
@@ -255,7 +256,7 @@ export function PackageCreationWizard({
       // Redirect to packages list
       router.push('/dashboard/freelancer/packages?success=true');
     } catch (error) {
-      console.error('Package creation error:', error);
+      logger.error('Package creation error', { error, packageId });
       setSubmitError(
         error instanceof Error
           ? error.message
@@ -292,7 +293,7 @@ export function PackageCreationWizard({
       await packageApi.createPackage(requestData);
       router.push('/dashboard/freelancer/packages?draft=true');
     } catch (error) {
-      console.error('Draft save error:', error);
+      logger.error('Draft save error', { error });
       setSubmitError('Taslak kaydedilirken hata oluştu');
     } finally {
       setIsSubmitting(false);

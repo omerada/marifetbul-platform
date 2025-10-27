@@ -15,6 +15,7 @@ import { MessageCircle, Loader2, AlertCircle } from 'lucide-react';
 import { CommentThreadView } from './CommentThreadView';
 import { CommentForm } from './CommentForm';
 import { blogApi } from '@/lib/api/blog';
+import { logger } from '@/lib/shared/utils/logger';
 import type { BlogComment } from '@/lib/api/blog';
 
 // ================================================
@@ -106,7 +107,7 @@ export function CommentList({
       const data = Array.isArray(response) ? response : response.content || [];
       setComments(data);
     } catch (err) {
-      console.error('Failed to fetch comments:', err);
+      logger.error('Failed to fetch comments', { postId, error: err });
       setError('Yorumlar yüklenemedi.');
     } finally {
       setIsLoading(false);
@@ -129,21 +130,21 @@ export function CommentList({
     }, 1000);
   };
 
-  const handleEdit = (commentId: number) => {
+  const handleEdit = (_commentId: number) => {
     // Edit is handled inline in CommentCard
-    console.log('Edit comment:', commentId);
+    // No-op: editing is managed within CommentCard component
   };
 
-  const handleDelete = async (commentId: number) => {
+  const handleDelete = async (_commentId: number) => {
     // Delete is handled in CommentCard, this is just for legacy support
-    console.log('Delete comment:', commentId);
+    // No-op: deletion is managed within CommentCard component
   };
 
-  const handleReport = (commentId: number) => {
+  const handleReport = (_commentId: number) => {
     // Production Ready: Implement report dialog/modal
     // Should open a modal with report reasons and submit to backend
     // Expected flow: Modal -> useCommentReports hook -> API call
-    console.log('Report comment:', commentId);
+    // TODO: Implement report modal when comment reporting feature is ready
   };
 
   // ================================================

@@ -162,9 +162,7 @@ export const useOrderStore = create<OrderStore>()(
             ? `/api/orders?${queryString}`
             : '/api/orders';
 
-          if (process.env.NODE_ENV === 'development') {
-            console.log('[Orders Store] Loading orders:', { url, filters });
-          }
+          logger.debug('Orders Store: Loading orders', { url, filters });
 
           // Authorization token will be sent via httpOnly cookie automatically
           const headers: HeadersInit = {
@@ -186,9 +184,9 @@ export const useOrderStore = create<OrderStore>()(
 
           const data: OrdersResponse = await response.json();
 
-          if (process.env.NODE_ENV === 'development') {
-            console.log('[Orders Store] Orders loaded:', data);
-          }
+          logger.debug('Orders Store: Orders loaded', {
+            count: data.data?.length,
+          });
 
           set((state) => {
             state.orders = data.data || [];
@@ -196,9 +194,7 @@ export const useOrderStore = create<OrderStore>()(
             state.isLoadingOrders = false;
           });
         } catch (error) {
-          if (process.env.NODE_ENV === 'development') {
-            console.error('[Orders Store] Load orders error:', error);
-          }
+          logger.error('Orders Store: Load orders error', { error });
           set((state) => {
             // Set empty data instead of keeping old data on error
             state.orders = [];

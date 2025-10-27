@@ -13,6 +13,7 @@
 
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { AUTH_ENDPOINTS } from '@/lib/api/endpoints';
+import { logger } from '@/lib/shared/utils/logger';
 import type {
   ApiResponse,
   AuthResponse,
@@ -283,7 +284,7 @@ class AuthService {
    * Can be used to redirect to login or refresh token
    */
   async handleAuthError(error: unknown): Promise<void> {
-    console.error('[AuthService] Authentication error:', error);
+    logger.error('Authentication error', { error });
 
     // Clear cache
     this.clearAuthCache();
@@ -293,7 +294,7 @@ class AuthService {
       await this.refreshToken();
     } catch (refreshError) {
       // If refresh fails, user needs to login again
-      console.error('[AuthService] Token refresh failed:', refreshError);
+      logger.error('Token refresh failed', { error: refreshError });
 
       // Redirect to login (if running in browser)
       if (typeof window !== 'undefined') {

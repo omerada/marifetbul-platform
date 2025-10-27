@@ -20,6 +20,7 @@ import {
   type PaymentMethod,
   type AddPaymentMethodRequest,
 } from '@/lib/api/payment-methods';
+import { logger } from '@/lib/shared/utils/logger';
 
 export default function PaymentMethodsPage() {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
@@ -39,7 +40,7 @@ export default function PaymentMethodsPage() {
       setError(null);
     } catch (err) {
       setError('Ödeme yöntemleri yüklenemedi');
-      console.error(err);
+      logger.error('Failed to load payment methods', { error: err });
     } finally {
       setLoading(false);
     }
@@ -50,7 +51,8 @@ export default function PaymentMethodsPage() {
       await setDefaultPaymentMethod(id);
       await loadPaymentMethods();
     } catch (err) {
-      console.error('Failed to set default:', err);
+      logger.error('Failed to set default payment method', { id, error: err });
+      setError('Varsayılan ödeme yöntemi ayarlanamadı');
     }
   };
 
@@ -62,7 +64,8 @@ export default function PaymentMethodsPage() {
       await deletePaymentMethod(id);
       await loadPaymentMethods();
     } catch (err) {
-      console.error('Failed to delete:', err);
+      logger.error('Failed to delete payment method', { id, error: err });
+      setError('Ödeme yöntemi silinemedi');
     }
   };
 

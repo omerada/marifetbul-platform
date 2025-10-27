@@ -21,6 +21,7 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import Link from 'next/link';
+import { logger } from '@/lib/shared/utils/logger';
 import type {
   MessageTemplate,
   CreateTemplateRequest,
@@ -126,7 +127,7 @@ export default function TemplatesPage() {
         category: 'CUSTOM',
       });
     } catch (err) {
-      console.error('Failed to create template:', err);
+      logger.error('Failed to create template', { error: err });
     }
   };
 
@@ -143,7 +144,10 @@ export default function TemplatesPage() {
       setIsEditModalOpen(false);
       setSelectedTemplate(null);
     } catch (err) {
-      console.error('Failed to update template:', err);
+      logger.error('Failed to update template', {
+        templateId: selectedTemplate.id,
+        error: err,
+      });
     }
   };
 
@@ -155,7 +159,10 @@ export default function TemplatesPage() {
       setIsDeleteModalOpen(false);
       setSelectedTemplate(null);
     } catch (err) {
-      console.error('Failed to delete template:', err);
+      logger.error('Failed to delete template', {
+        templateId: selectedTemplate.id,
+        error: err,
+      });
     }
   };
 
