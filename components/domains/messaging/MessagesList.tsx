@@ -1,18 +1,21 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
-import { MessageSquare, Search, Archive, Inbox } from 'lucide-react';
+import { MessageSquare, Archive, Inbox } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { Conversation } from '@/types/business/features/messaging';
 import { ConversationItem } from './ConversationItem';
+import { ConversationListHeader } from './ConversationListHeader';
 import {
   ConfirmArchiveModal,
   ConfirmUnarchiveModal,
   ConfirmDeleteModal,
 } from './ConversationConfirmModals';
 import type { ConversationFilter } from '@/hooks/business/messaging/useMessages';
+import { useWebSocket } from '@/hooks/infrastructure/websocket/useWebSocket';
+import { useMessagingStore } from '@/lib/core/store/domains/messaging/MessagingStore';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface MessagesListProps {
   conversations?: Conversation[];
@@ -44,6 +47,25 @@ export function MessagesList({
     conversationId: null,
     isLoading: false,
   });
+
+  // WebSocket connection for real-time updates
+  const { isConnected } = useWebSocket({
+    autoConnect: true,
+    enableStoreIntegration: true,
+  });
+
+  // Get total unread count from store
+  const totalUnreadCount = useMessagingStore((state) => state.totalUnreadCount);
+
+  // Log WebSocket connection status
+  useEffect(() => {
+    if (isConnected) {
+      logger.info(
+        'MessagesList',
+        'WebSocket connected - real-time updates enabled'
+      );
+    }
+  }, [isConnected]);
 
   // Memoized filtered conversations
   const filteredConversations = useMemo(() => {
@@ -171,28 +193,15 @@ export function MessagesList({
         isLoading={modalState.isLoading}
       />
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Mesajlar</h1>
-          {conversations.length > 0 && (
-            <div className="text-sm text-gray-600">
-              {conversations.filter((c) => c.unreadCount > 0).length} okunmamış
-            </div>
-          )}
-        </div>
-
-        {/* Search */}
-        {conversations.length > 0 && (
-          <div className="relative">
-            <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
-            <Input
-              type="text"
-              placeholder="Konuşmalarda ara..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        )}
+        {/* Header with connection status and unread count */}
+        <ConversationListHeader
+          totalConversations={conversations.length}
+          unreadCount={totalUnreadCount}
+          isConnected={isConnected}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          showSearch={conversations.length > 0}
+        />
 
         {/* Conversations List */}
         {filteredConversations.length === 0 ? (

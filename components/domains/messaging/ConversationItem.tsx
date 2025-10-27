@@ -1,6 +1,6 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/Card';
 import {
@@ -10,6 +10,7 @@ import {
   Briefcase,
   Box,
   User,
+  Circle,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
@@ -18,6 +19,7 @@ import type {
   ContextType,
 } from '@/types/business/features/messaging';
 import { ConversationContextMenu } from './ConversationContextMenu';
+import { useMessagingStore } from '@/lib/core/store/domains/messaging/MessagingStore';
 
 /**
  * Get icon component for context type
@@ -67,6 +69,11 @@ interface ConversationItemProps {
 /**
  * Optimized conversation list item component.
  * Memoized to prevent unnecessary re-renders.
+ * Features real-time updates via WebSocket:
+ * - Online/offline status badge
+ * - Typing indicator
+ * - Unread count updates
+ * - Last message preview updates
  */
 export const ConversationItem = memo(function ConversationItem({
   conversation,
@@ -80,6 +87,24 @@ export const ConversationItem = memo(function ConversationItem({
   const ContextIcon = getContextIcon(conversation.contextType);
   const contextColor = getContextColor(conversation.contextType);
 
+  // Real-time updates from store
+  const onlineUsers = useMessagingStore((state) => state.onlineUsers);
+  const typingUsers = useMessagingStore(
+    (state) => state.typingUsers[conversation.id] || []
+  );
+
+  // Check if other participant is online
+  const isOnline = useMemo(
+    () => onlineUsers.includes(otherParticipant?.id || ''),
+    [onlineUsers, otherParticipant?.id]
+  );
+
+  // Check if other participant is typing
+  const isTyping = useMemo(
+    () => typingUsers.some((userId) => userId === otherParticipant?.id),
+    [typingUsers, otherParticipant?.id]
+  );
+
   return (
     <Card
       className={`cursor-pointer p-4 transition-all hover:shadow-md ${
@@ -91,7 +116,7 @@ export const ConversationItem = memo(function ConversationItem({
     >
       <div className="flex items-start gap-4">
         {/* Avatar */}
-        <div className="flex-shrink-0">
+        <div className="relative flex-shrink-0">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200">
             {otherParticipant?.avatar ? (
               <Image
@@ -105,6 +130,12 @@ export const ConversationItem = memo(function ConversationItem({
               <User className="h-6 w-6 text-gray-600" />
             )}
           </div>
+          {/* Online Status Badge */}
+          {isOnline && (
+            <div className="absolute right-0 bottom-0 flex h-3.5 w-3.5 items-center justify-center rounded-full border-2 border-white bg-green-500">
+              <Circle className="h-2 w-2 fill-current text-green-500" />
+            </div>
+          )}
         </div>
 
         {/* Content */}
@@ -155,10 +186,22 @@ export const ConversationItem = memo(function ConversationItem({
           )}
 
           {/* Last Message Preview */}
-          {conversation.lastMessage && (
+          {conversation.lastMessage && !isTyping && (
             <p className="line-clamp-2 text-sm text-gray-600">
               {conversation.lastMessage.content}
             </p>
+          )}
+
+          {/* Typing Indicator */}
+          {isTyping && (
+            <div className="flex items-center gap-2 text-sm text-blue-600">
+              <span className="font-medium">yazıyor</span>
+              <span className="flex gap-1">
+                <span className="inline-block h-1 w-1 animate-bounce rounded-full bg-blue-600 [animation-delay:-0.3s]"></span>
+                <span className="inline-block h-1 w-1 animate-bounce rounded-full bg-blue-600 [animation-delay:-0.15s]"></span>
+                <span className="inline-block h-1 w-1 animate-bounce rounded-full bg-blue-600"></span>
+              </span>
+            </div>
           )}
 
           {/* Unread Badge */}

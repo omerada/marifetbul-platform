@@ -1,8 +1,11 @@
 /**
- * React Hook for WebSocket Connection
+ * ================================================
+ * UNIFIED WEBSOCKET HOOK - Production Ready
+ * ================================================
+ * React Hook for WebSocket Connection with Store Integration
  *
  * Provides easy WebSocket integration for React components.
- * Handles connection lifecycle, subscriptions, and cleanup.
+ * Handles connection lifecycle, subscriptions, cleanup, and automatic store updates.
  *
  * Features:
  * - Auto-connect on mount
@@ -10,8 +13,12 @@
  * - Connection state tracking
  * - Type-safe subscriptions
  * - Error handling
+ * - Automatic store integration (messaging, notifications)
+ * - Reconnection support
  *
- * @sprint Sprint 5 - Real-time Messaging
+ * @version 2.0.0
+ * @sprint Sprint 1 - Real-time Messaging
+ * @author MarifetBul Development Team
  */
 
 'use client';
@@ -25,7 +32,14 @@ import {
   type SubscriptionCallback,
 } from '@/lib/infrastructure/websocket/WebSocketService';
 import { logger } from '@/lib/shared/utils/logger';
-import { useAuth } from '@/hooks/shared/useAuth';
+import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useMessagingStore } from '@/lib/core/store/domains/messaging/MessagingStore';
+import { useNotificationStore } from '@/lib/core/store/notification';
+import type { Message as MessageType } from '@/types/message';
+import type { Message as BusinessMessage } from '@/types/business/features/messaging';
+import type { Notification } from '@/types/core/notification';
+import type { NotificationType as BusinessNotificationType } from '@/types/business/features/notifications';
+import type { WebSocketMessage } from '@/types/shared/utils/api';
 
 // ==================== TYPES ====================
 
@@ -34,6 +48,8 @@ export interface UseWebSocketOptions {
   autoConnect?: boolean;
   /** Auto-disconnect on unmount (default: true) */
   autoDisconnect?: boolean;
+  /** Enable automatic store updates (default: true) - TODO: Story 1.2 */
+  enableStoreIntegration?: boolean;
   /** Custom WebSocket config */
   config?: Partial<WebSocketConfig>;
   /** Callback on connect */
@@ -91,13 +107,16 @@ export function useWebSocket(
   const {
     autoConnect = true,
     autoDisconnect = true,
+    enableStoreIntegration = true,
     config = {},
     onConnect,
     onDisconnect,
     onError,
   } = options;
 
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuthStore();
+  const messagingStore = useMessagingStore();
+  const notificationStore = useNotificationStore();
   const [state, setState] = useState<WebSocketState>(
     WebSocketState.DISCONNECTED
   );
@@ -106,6 +125,214 @@ export function useWebSocket(
     null
   );
   const isInitialized = useRef(false);
+
+  // ==================== MESSAGE HANDLER ====================
+
+  /**
+   * Handle incoming WebSocket messages and route to appropriate stores
+   */
+  const handleMessage = useCallback(
+    (message: unknown) => {
+      if (!enableStoreIntegration) return;
+
+      try {
+        // Cast to WebSocketMessage format
+        const wsMessage = message as WebSocketMessage;
+        const messageType = wsMessage.type;
+
+        logger.debug('useWebSocket', 'Handling message', {
+          type: messageType,
+          payload: wsMessage,
+        });
+
+        switch (messageType) {
+          case 'MESSAGE':
+            // New message received - convert to business message format
+            if (wsMessage.data) {
+              const rawMsg = wsMessage.data as MessageType;
+              const businessMsg: BusinessMessage = {
+                id: rawMsg.id,
+                conversationId: rawMsg.conversationId,
+                senderId: rawMsg.senderId,
+                receiverId: rawMsg.recipientId,
+                content: rawMsg.content,
+                type: rawMsg.type.toLowerCase() as BusinessMessage['type'],
+                isRead: rawMsg.isRead,
+                isEdited: rawMsg.isEdited,
+                sentAt: rawMsg.createdAt,
+                createdAt: rawMsg.createdAt,
+                timestamp: rawMsg.createdAt,
+                readAt: rawMsg.readAt,
+                editedAt: rawMsg.editedAt,
+                replyTo: rawMsg.replyTo,
+                attachments: rawMsg.attachments?.map((att) => ({
+                  id: att.id,
+                  name: att.fileName,
+                  url: att.fileUrl,
+                  size: att.fileSize,
+                  type: att.mimeType,
+                  uploadedAt: att.uploadedAt,
+                })),
+              };
+              messagingStore.addMessage(businessMsg);
+              logger.info('useWebSocket', 'Message added to store', {
+                messageId: businessMsg.id,
+                conversationId: businessMsg.conversationId,
+              });
+            }
+            break;
+
+          case 'TYPING':
+          case 'TYPING_START':
+            // Typing indicator
+            if (wsMessage.data) {
+              const typing = wsMessage.data as {
+                userId: string;
+                conversationId: string;
+              };
+              messagingStore.updateTypingStatus(
+                typing.userId,
+                typing.conversationId,
+                true
+              );
+              logger.debug('useWebSocket', 'Typing status updated', typing);
+            }
+            break;
+
+          case 'TYPING_STOP':
+            // Stop typing indicator
+            if (wsMessage.data) {
+              const typing = wsMessage.data as {
+                userId: string;
+                conversationId: string;
+              };
+              messagingStore.updateTypingStatus(
+                typing.userId,
+                typing.conversationId,
+                false
+              );
+              logger.debug('useWebSocket', 'Typing status stopped', typing);
+            }
+            break;
+
+          case 'USER_STATUS':
+          case 'PRESENCE':
+          case 'USER_ONLINE':
+          case 'USER_OFFLINE':
+            // User online/offline status
+            if (wsMessage.data) {
+              const presence = wsMessage.data as {
+                userId: string;
+                status?: string;
+              };
+              const isOnline =
+                messageType === 'USER_ONLINE' || presence.status === 'ONLINE';
+              messagingStore.updateUserStatus(presence.userId, isOnline);
+              logger.debug('useWebSocket', 'User status updated', {
+                userId: presence.userId,
+                isOnline,
+              });
+            }
+            break;
+
+          case 'NOTIFICATION':
+            // System notification - convert to EnhancedNotification format
+            if (wsMessage.data) {
+              const notification = wsMessage.data as Notification;
+              // Convert core Notification to EnhancedNotification format
+              // Map backend NotificationType to frontend NotificationType
+              const notificationTypeMap: Record<
+                string,
+                BusinessNotificationType
+              > = {
+                MESSAGE: 'message_received',
+                JOB: 'job_application',
+                PROPOSAL: 'job_application',
+                ORDER: 'job_accepted',
+                PAYMENT: 'payment_received',
+                REVIEW: 'review_received',
+                FOLLOW: 'system_update',
+                SYSTEM: 'system_update',
+              };
+              const enhancedNotification = {
+                id: notification.id,
+                userId: notification.userId,
+                type: notificationTypeMap[notification.type] || 'system_update',
+                title: notification.title,
+                message: notification.content,
+                isRead: notification.isRead,
+                createdAt: notification.createdAt,
+                readAt: notification.readAt,
+                actionUrl: notification.actionUrl,
+                priority: notification.priority.toLowerCase() as
+                  | 'low'
+                  | 'medium'
+                  | 'high'
+                  | 'urgent',
+                data: {
+                  relatedEntityType: notification.relatedEntityType,
+                  relatedEntityId: notification.relatedEntityId,
+                },
+              };
+              notificationStore.handleRealtimeNotification(
+                enhancedNotification
+              );
+              logger.info('useWebSocket', 'Notification received', {
+                id: notification.id,
+                type: notification.type,
+              });
+            }
+            break;
+
+          case 'ORDER_UPDATE':
+            // Order status update - could trigger notification
+            logger.info(
+              'useWebSocket',
+              'Order update received',
+              wsMessage.data
+            );
+            // TODO: Story 2.x - Add order store integration
+            break;
+
+          case 'MESSAGE_READ':
+          case 'MESSAGES_READ':
+            // Message read receipt
+            if (wsMessage.data) {
+              const readData = wsMessage.data as {
+                messageId?: string;
+                messageIds?: string[];
+                readAt?: string;
+              };
+              const messageIds =
+                readData.messageIds ||
+                (readData.messageId ? [readData.messageId] : []);
+              messageIds.forEach((messageId) => {
+                messagingStore.updateMessage(messageId, {
+                  isRead: true,
+                  readAt: readData.readAt || new Date().toISOString(),
+                });
+              });
+              logger.debug('useWebSocket', 'Messages marked as read', {
+                count: messageIds.length,
+              });
+            }
+            break;
+
+          default:
+            logger.warn('useWebSocket', 'Unknown message type', {
+              type: messageType,
+              message: wsMessage,
+            });
+        }
+      } catch (err) {
+        logger.error('useWebSocket', 'Error handling message', {
+          error: err,
+          message,
+        });
+      }
+    },
+    [enableStoreIntegration, messagingStore, notificationStore]
+  );
 
   // ==================== CONNECTION ====================
 
@@ -116,6 +343,11 @@ export function useWebSocket(
 
     if (!token) {
       logger.warn('useWebSocket', 'No token available, cannot connect');
+      return;
+    }
+
+    if (!isAuthenticated || !user) {
+      logger.warn('useWebSocket', 'User not authenticated');
       return;
     }
 
@@ -142,6 +374,56 @@ export function useWebSocket(
             logger.info('useWebSocket', 'WebSocket connected');
             setState(WebSocketState.CONNECTED);
             setError(null);
+
+            // Subscribe to default topics for automatic store updates
+            if (enableStoreIntegration && serviceRef.current && user) {
+              try {
+                // Subscribe to personal message queue
+                serviceRef.current.subscribe(
+                  `/user/queue/messages`,
+                  handleMessage
+                );
+                logger.info(
+                  'useWebSocket',
+                  'Subscribed to personal message queue'
+                );
+
+                // Subscribe to personal order updates
+                serviceRef.current.subscribe(
+                  `/user/queue/orders`,
+                  handleMessage
+                );
+                logger.info(
+                  'useWebSocket',
+                  'Subscribed to order updates queue'
+                );
+
+                // Subscribe to notifications
+                serviceRef.current.subscribe(
+                  `/user/queue/notifications`,
+                  handleMessage
+                );
+                logger.info(
+                  'useWebSocket',
+                  'Subscribed to notifications queue'
+                );
+
+                // Subscribe to typing indicators for active conversations
+                serviceRef.current.subscribe(`/topic/typing`, handleMessage);
+                logger.info('useWebSocket', 'Subscribed to typing indicators');
+
+                // Subscribe to user presence updates
+                serviceRef.current.subscribe(`/topic/presence`, handleMessage);
+                logger.info('useWebSocket', 'Subscribed to user presence');
+              } catch (err) {
+                logger.error(
+                  'useWebSocket',
+                  'Failed to subscribe to default topics',
+                  { error: err }
+                );
+              }
+            }
+
             onConnect?.();
           },
           onDisconnect: () => {
@@ -173,7 +455,16 @@ export function useWebSocket(
       setError(error);
       setState(WebSocketState.ERROR);
     }
-  }, [user?.id, config, onConnect, onDisconnect, onError]);
+  }, [
+    user,
+    isAuthenticated,
+    config,
+    onConnect,
+    onDisconnect,
+    onError,
+    enableStoreIntegration,
+    handleMessage,
+  ]);
 
   const disconnect = useCallback(() => {
     if (serviceRef.current) {
@@ -217,10 +508,10 @@ export function useWebSocket(
 
   // Auto-connect on mount
   useEffect(() => {
-    if (autoConnect && user && !isInitialized.current) {
+    if (autoConnect && isAuthenticated && user && !isInitialized.current) {
       connect();
     }
-  }, [autoConnect, user, connect]);
+  }, [autoConnect, isAuthenticated, user, connect]);
 
   // Auto-disconnect on unmount
   useEffect(() => {
