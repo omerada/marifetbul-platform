@@ -23,6 +23,13 @@ export type PayoutStatus = BackendPayout['status'];
 // Payout method from backend
 export type PayoutMethod = BackendPayout['method'];
 
+// Payout Method Enum (for easy usage)
+export enum PayoutMethodEnum {
+  BANK_TRANSFER = 'BANK_TRANSFER',
+  STRIPE_PAYOUT = 'STRIPE_PAYOUT',
+  WALLET_TRANSFER = 'WALLET_TRANSFER',
+}
+
 export enum WalletStatus {
   ACTIVE = 'ACTIVE',
   SUSPENDED = 'SUSPENDED',
@@ -106,7 +113,9 @@ export interface BankAccountInfo {
 export interface PayoutRequest {
   amount: number;
   method: PayoutMethod;
-  bankAccountInfo?: BankAccountInfo;
+  bankAccountId?: string; // Payment method ID for bank transfer
+  bankAccountInfo?: BankAccountInfo; // Legacy: direct bank info
+  paypalEmail?: string;
   notes?: string;
 }
 

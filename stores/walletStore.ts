@@ -227,10 +227,8 @@ export const useWalletStore = create<WalletStore>()(
           const responseData = await payoutApi.createPayout({
             amount: data.amount,
             method: data.method as 'BANK_TRANSFER' | 'PAYPAL' | 'STRIPE',
-            // TODO: Backend expects bankAccountId but we have bankAccountInfo
-            // For now, use undefined - this needs bank account management feature
-            bankAccountId: undefined,
-            paypalEmail: undefined,
+            bankAccountId: data.bankAccountId,
+            paypalEmail: data.paypalEmail,
           });
 
           const newPayout = responseData;

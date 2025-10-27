@@ -40,3 +40,12 @@ export type { CreatePaymentRequest, RefundRequest } from './payment';
 export { payoutApi } from './payout';
 export type { Payout, PayoutEligibility } from './validators';
 export type { CreatePayoutRequest, RejectPayoutRequest } from './payout';
+
+// Export Payment Method API
+export { paymentMethodApi } from './payment-method';
+export type {
+  PaymentMethod,
+  AddPaymentMethodRequest,
+  UpdatePaymentMethodRequest,
+  PaymentMethodType,
+} from './payment-method';
