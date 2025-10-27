@@ -15,7 +15,7 @@ import {
   EarningsChart,
   RecentTransactionsWidget,
 } from '@/components/dashboard/freelancer/wallet';
-import { DollarSign, TrendingUp, ArrowRight } from 'lucide-react';
+import { DollarSign, TrendingUp, ArrowRight, Building2 } from 'lucide-react';
 import Link from 'next/link';
 
 // ================================================
@@ -49,6 +49,13 @@ export default function WalletPage() {
 
           {/* Quick Actions */}
           <div className="hidden items-center gap-3 md:flex">
+            <Link
+              href="/dashboard/freelancer/wallet/bank-accounts"
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            >
+              <Building2 className="h-4 w-4" />
+              Banka Hesaplarım
+            </Link>
             <Link
               href="/dashboard/freelancer/wallet/transactions"
               className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
@@ -85,7 +92,13 @@ export default function WalletPage() {
       </div>
 
       {/* Mobile Quick Actions */}
-      <div className="mt-6 grid grid-cols-2 gap-3 md:hidden">
+      <div className="mt-6 grid grid-cols-3 gap-3 md:hidden">
+        <Link
+          href="/dashboard/freelancer/wallet/bank-accounts"
+          className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+        >
+          Banka Hesapları
+        </Link>
         <Link
           href="/dashboard/freelancer/wallet/transactions"
           className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"

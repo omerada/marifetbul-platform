@@ -26,3 +26,11 @@ export type { TransactionListProps } from './TransactionList';
 
 export { RequestPayoutModal } from './RequestPayoutModal';
 export type { RequestPayoutModalProps } from './RequestPayoutModal';
+
+// New improved payout modal with bank account selection
+export { ImprovedRequestPayoutModal } from './ImprovedRequestPayoutModal';
+export type { ImprovedRequestPayoutModalProps } from './ImprovedRequestPayoutModal';
+
+// Bank account management
+export { AddBankAccountModal } from './AddBankAccountModal';
+export type { AddBankAccountModalProps } from './AddBankAccountModal';

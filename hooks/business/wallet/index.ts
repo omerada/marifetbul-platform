@@ -20,3 +20,10 @@ export type { UseTransactionsReturn } from './useTransactions';
 
 export { usePayouts } from './usePayouts';
 export type { UsePayoutsReturn } from './usePayouts';
+
+// Payment methods hook
+export { usePaymentMethods, useBankAccounts } from './usePaymentMethods';
+export type {
+  UsePaymentMethodsReturn,
+  UseBankAccountsReturn,
+} from './usePaymentMethods';

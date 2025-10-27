@@ -23,7 +23,7 @@ import {
 import Link from 'next/link';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { AddBankAccountModal } from '@/components/dashboard/freelancer/wallet/AddBankAccountModal';
+import { AddBankAccountModal } from '@/components/dashboard/freelancer/wallet';
 import { maskIBAN } from '@/lib/api/payment-method';
 
 // ================================================

@@ -26,7 +26,7 @@ interface UsePaymentMethodsOptions {
   filterType?: 'CREDIT_CARD' | 'DEBIT_CARD' | 'BANK_TRANSFER';
 }
 
-interface UsePaymentMethodsReturn {
+export interface UsePaymentMethodsReturn {
   // State
   paymentMethods: PaymentMethod[];
   bankAccounts: PaymentMethod[];
@@ -45,6 +45,9 @@ interface UsePaymentMethodsReturn {
   setAsDefault: (id: string) => Promise<void>;
   refresh: () => Promise<void>;
 }
+
+// Alias for bank accounts hook
+export type UseBankAccountsReturn = UsePaymentMethodsReturn;
 
 // ============================================================================
 // HOOK

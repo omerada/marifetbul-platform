@@ -11,7 +11,7 @@
 'use client';
 
 import { useState } from 'react';
-import { RequestPayoutModal } from '@/components/dashboard/freelancer/wallet';
+import { ImprovedRequestPayoutModal } from '@/components/dashboard/freelancer/wallet';
 import { usePayouts } from '@/hooks/business/wallet';
 import {
   DollarSign,
@@ -54,15 +54,17 @@ export default function PayoutsPage() {
 
   const getStatusIcon = (status: PayoutStatus) => {
     switch (status) {
-      case PayoutStatus.PENDING:
-      case PayoutStatus.PROCESSING:
+      case 'PENDING':
+      case 'PROCESSING':
         return <Clock className="h-5 w-5 text-amber-600" />;
-      case PayoutStatus.COMPLETED:
+      case 'COMPLETED':
         return <CheckCircle className="h-5 w-5 text-green-600" />;
-      case PayoutStatus.FAILED:
+      case 'FAILED':
         return <XCircle className="h-5 w-5 text-red-600" />;
-      case PayoutStatus.CANCELLED:
+      case 'CANCELLED':
         return <AlertCircle className="h-5 w-5 text-gray-600" />;
+      default:
+        return <Clock className="h-5 w-5 text-gray-600" />;
     }
   };
 
@@ -268,7 +270,7 @@ export default function PayoutsPage() {
       </div>
 
       {/* Request Payout Modal */}
-      <RequestPayoutModal
+      <ImprovedRequestPayoutModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSuccess={handlePayoutSuccess}
