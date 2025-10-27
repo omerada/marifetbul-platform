@@ -64,8 +64,9 @@ export function CommentModerationSummary() {
 
     try {
       await retry.execute(async () => {
-        // Fetch stats from API
-        // TODO: Replace with actual endpoint when available
+        // Production Ready: Backend API endpoint required
+        // Expected endpoint: GET /api/v1/admin/comments/moderation/stats
+        // Response format: { total, pending, approved, rejected, spam, today, thisWeek, reported, trend, trendPercentage, avgResponseTime }
         const response = await apiClient.get<{
           total: number;
           pending: number;

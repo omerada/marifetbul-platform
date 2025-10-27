@@ -510,7 +510,16 @@ export default function AdminReviewModerationPage() {
               />
 
               {/* Moderation Info */}
-              {/* TODO: Add moderatorNote to Review interface */}
+              {selectedReview.moderatorNote && (
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <h4 className="mb-2 font-medium text-gray-900">
+                    Moderatör Notu
+                  </h4>
+                  <p className="text-sm text-gray-700">
+                    {selectedReview.moderatorNote}
+                  </p>
+                </div>
+              )}
 
               {/* Flag Info */}
               {selectedReview.flaggedCount &&

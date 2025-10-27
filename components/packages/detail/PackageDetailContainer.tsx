@@ -38,11 +38,13 @@ export function PackageDetailContainer() {
       const packageData = await packageApi.getMyPackage(packageId);
       setPkg(packageData);
 
-      // TODO: Fetch analytics from backend
+      // Analytics: Backend API endpoint required
+      // Expected endpoint: GET /api/v1/packages/{packageId}/analytics
+      // Response format: { viewsToday, ordersToday, totalOrders, revenue, rating, reviewCount }
       // const analyticsData = await packageApi.getPackageAnalytics(packageId);
       // setAnalytics(analyticsData);
 
-      // Mock analytics for now
+      // Mock analytics for now (replace with actual API call)
       setAnalytics({
         viewsToday: Math.floor(Math.random() * 50),
         ordersToday: Math.floor(Math.random() * 5),

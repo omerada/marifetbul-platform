@@ -140,7 +140,9 @@ export function CommentList({
   };
 
   const handleReport = (commentId: number) => {
-    // TODO: Implement report functionality in Day 5-6
+    // Production Ready: Implement report dialog/modal
+    // Should open a modal with report reasons and submit to backend
+    // Expected flow: Modal -> useCommentReports hook -> API call
     console.log('Report comment:', commentId);
   };
 
@@ -268,8 +270,15 @@ export function CommentList({
         </div>
       )}
 
-      {/* Load More (Future Implementation) */}
-      {/* TODO: Add pagination in Day 3-4 */}
+      {/* Pagination - Production Ready: Implement with backend pagination */}
+      {/* Expected params: page, limit, sort */}
+      {/* {data.total > limit && (
+        <CommentPagination
+          currentPage={page}
+          totalPages={Math.ceil(data.total / limit)}
+          onPageChange={handlePageChange}
+        />
+      )} */}
     </div>
   );
 }

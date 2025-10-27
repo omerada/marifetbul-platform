@@ -125,6 +125,7 @@ export interface Review {
   verifiedPurchase?: boolean; // Alias for backwards compatibility
   flaggedCount: number;
   adminNotes?: string;
+  moderatorNote?: string; // Admin moderation note
   createdAt: string;
   updatedAt: string;
   respondedAt?: string;

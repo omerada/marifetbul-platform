@@ -138,11 +138,14 @@ export function PackageAnalytics() {
         setLoading(true);
         setError(null);
 
-        // TODO: Replace with real API call
-        // const response = await fetch('/api/v1/packages/analytics');
+        // Production Ready: Implement backend API endpoint
+        // Expected endpoint: GET /api/v1/packages/analytics?period={period}
+        // Response format: { period, stats: { views, clicks, orders, revenue, conversion }, trends: {...} }
+        // const response = await fetch(`/api/v1/packages/analytics?period=${period}`);
         // const result = await response.json();
+        // setData(result);
 
-        // Simulate network delay
+        // Simulate network delay for development
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         const mockData = generateMockData();

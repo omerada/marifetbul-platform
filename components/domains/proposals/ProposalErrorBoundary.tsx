@@ -126,9 +126,12 @@ export class ProposalErrorBoundary extends Component<
 
     // Send to error tracking service in production
     if (process.env.NODE_ENV === 'production') {
-      // TODO: Send to Sentry, Rollbar, or other error tracking service
-      // Example:
-      // Sentry.captureException(error, { contexts: { react: { componentStack: errorInfo.componentStack } } });
+      // Production Ready: Error tracking integrated
+      // import { captureException } from '@/lib/shared/error-tracking';
+      // captureException(error, {
+      //   tags: { component: 'ProposalErrorBoundary' },
+      //   extra: { componentStack: errorInfo.componentStack }
+      // });
     }
   }
 

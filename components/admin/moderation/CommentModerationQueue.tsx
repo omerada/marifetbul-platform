@@ -309,11 +309,11 @@ export function CommentModerationQueue() {
               onReject={async () => {
                 await moderation.rejectComment(comment.id);
               }}
-              onSpam={async () => {
+              onMarkAsSpam={async () => {
                 await moderation.markAsSpam(comment.id);
               }}
               onViewPost={() => {
-                // TODO: Navigate to post
+                // Navigate to blog post in new tab
                 window.open(`/blog/${comment.postId}`, '_blank');
               }}
             />

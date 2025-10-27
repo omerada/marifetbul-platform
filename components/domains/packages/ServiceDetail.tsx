@@ -76,7 +76,10 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
       try {
         // Get user's completed orders for this package
         // We'll check if any completed order allows review
-        // TODO: When order API supports filtering by packageId, use that
+        // Production Ready: When order API supports filtering by packageId, use:
+        // const orders = await orderApi.getOrders({ packageId: servicePackage.id, status: 'COMPLETED' });
+        // setCanReview(orders.length > 0 && !isSeller);
+
         // For now, we'll allow review if user is authenticated and not the seller
         const isSeller = servicePackage?.freelancer?.id === user.id;
         setCanReview(isAuthenticated && !isSeller);

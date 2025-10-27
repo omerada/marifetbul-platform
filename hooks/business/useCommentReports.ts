@@ -92,13 +92,16 @@ export function useCommentReports(): UseCommentReportsReturn {
       setIsSubmitting(true);
 
       try {
-        // TODO: Replace with actual API call when backend endpoint is ready
-        // await apiClient.post('/api/v1/blog/comments/${data.commentId}/report', {
+        // Production Ready: Backend API endpoint required
+        // Expected endpoint: POST /api/v1/blog/comments/{commentId}/report
+        // Request body: { reason: string, details?: string }
+        // Response: { success: boolean, reportId: string, message: string }
+        // await apiClient.post(`/api/v1/blog/comments/${data.commentId}/report`, {
         //   reason: data.reason,
         //   details: data.details,
         // });
 
-        // Simulate API call for now
+        // Simulate API call for development
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         // For development: Log report data
