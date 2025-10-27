@@ -15,7 +15,6 @@
 import { useEffect, useState } from 'react';
 import { Star, MessageSquare, TrendingUp, Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
   Select,
@@ -23,13 +22,6 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/components/ui/Select';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/Dialog';
-import { Textarea } from '@/components/ui/Textarea';
 import { useReviewStore } from '@/hooks/business/useReviewStore';
 import { RatingSummary, RatingStars } from '@/components/shared/RatingStars';
 import {
@@ -37,6 +29,7 @@ import {
   RatingBreakdown,
 } from '@/components/shared/RatingDistribution';
 import { ReviewCard } from '@/components/shared/ReviewCard';
+import { SellerResponseModal } from '@/components/domains/reviews';
 import UnifiedSkeleton from '@/components/ui/UnifiedLoadingSystem';
 import { Pagination } from '@/components/ui/Pagination';
 import type { Review } from '@/types/business/review';
@@ -50,9 +43,6 @@ export default function FreelancerReviewsPage() {
     loading,
     error,
     fetchSellerReviews,
-    addSellerResponse,
-    updateSellerResponse,
-    deleteSellerResponse,
     clearError,
   } = useReviewStore();
 
@@ -65,8 +55,6 @@ export default function FreelancerReviewsPage() {
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [showResponseDialog, setShowResponseDialog] = useState(false);
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
-  const [responseText, setResponseText] = useState('');
-  const [responseLoading, setResponseLoading] = useState(false);
 
   // Load seller reviews
   useEffect(() => {
@@ -99,59 +87,7 @@ export default function FreelancerReviewsPage() {
   // Handle respond to review
   const handleRespond = (review: Review) => {
     setSelectedReview(review);
-    setResponseText(review.sellerResponse?.responseText || '');
     setShowResponseDialog(true);
-  };
-
-  // Handle save response
-  const handleSaveResponse = async () => {
-    if (!selectedReview || !responseText.trim()) return;
-
-    setResponseLoading(true);
-    try {
-      if (selectedReview.sellerResponse) {
-        // Update existing response
-        await updateSellerResponse(selectedReview.id, {
-          responseText: responseText.trim(),
-        });
-      } else {
-        // Add new response
-        await addSellerResponse(selectedReview.id, {
-          responseText: responseText.trim(),
-        });
-      }
-      setShowResponseDialog(false);
-      setSelectedReview(null);
-      setResponseText('');
-      loadReviews();
-    } catch (err) {
-      console.error('Error saving response:', err);
-    } finally {
-      setResponseLoading(false);
-    }
-  };
-
-  // Handle delete response
-  const handleDeleteResponse = async () => {
-    if (!selectedReview?.sellerResponse) return;
-
-    const confirmed = window.confirm(
-      'Yanıtınızı silmek istediğinizden emin misiniz?'
-    );
-    if (!confirmed) return;
-
-    setResponseLoading(true);
-    try {
-      await deleteSellerResponse(selectedReview.id);
-      setShowResponseDialog(false);
-      setSelectedReview(null);
-      setResponseText('');
-      loadReviews();
-    } catch (err) {
-      console.error('Error deleting response:', err);
-    } finally {
-      setResponseLoading(false);
-    }
   };
 
   // Calculate response rate
@@ -422,90 +358,18 @@ export default function FreelancerReviewsPage() {
           </div>
         )}
 
-      {/* Response Dialog */}
-      <Dialog open={showResponseDialog} onOpenChange={setShowResponseDialog}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>
-              {selectedReview?.sellerResponse ? 'Yanıtı Düzenle' : 'Yanıt Ver'}
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            {/* Review Preview */}
-            {selectedReview && (
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                <div className="mb-2 flex items-center gap-2">
-                  <RatingStars
-                    value={selectedReview.overallRating}
-                    readonly
-                    size="sm"
-                  />
-                  <span className="text-sm font-medium">
-                    {selectedReview.reviewerName}
-                  </span>
-                </div>
-                <p className="line-clamp-3 text-sm text-gray-700">
-                  {selectedReview.reviewText}
-                </p>
-              </div>
-            )}
-
-            {/* Response Input */}
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Yanıtınız
-              </label>
-              <Textarea
-                value={responseText}
-                onChange={(e) => setResponseText(e.target.value)}
-                placeholder="Müşterinize nazik ve profesyonel bir yanıt yazın..."
-                rows={6}
-                maxLength={500}
-                className="resize-none"
-              />
-              <div className="mt-2 flex items-center justify-between">
-                <p className="text-xs text-gray-500">
-                  Minimum 10, maksimum 500 karakter
-                </p>
-                <Badge
-                  variant={responseText.length >= 10 ? 'default' : 'outline'}
-                >
-                  {responseText.length}/500
-                </Badge>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex gap-3">
-              <Button
-                onClick={handleSaveResponse}
-                disabled={responseLoading || responseText.trim().length < 10}
-                className="flex-1"
-              >
-                {responseLoading ? 'Kaydediliyor...' : 'Yanıtı Kaydet'}
-              </Button>
-              {selectedReview?.sellerResponse && (
-                <Button
-                  variant="outline"
-                  onClick={handleDeleteResponse}
-                  disabled={responseLoading}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  Sil
-                </Button>
-              )}
-              <Button
-                variant="outline"
-                onClick={() => setShowResponseDialog(false)}
-                disabled={responseLoading}
-              >
-                İptal
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Seller Response Modal */}
+      {selectedReview && (
+        <SellerResponseModal
+          open={showResponseDialog}
+          onOpenChange={setShowResponseDialog}
+          review={selectedReview}
+          onSuccess={(_updatedReview) => {
+            // Trigger a re-fetch to update the list
+            loadReviews();
+          }}
+        />
+      )}
     </div>
   );
 }

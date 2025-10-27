@@ -53,9 +53,35 @@ export enum FlagReason {
   OTHER = 'OTHER',
 }
 
+/**
+ * Moderation action type
+ */
+export enum ModerationAction {
+  APPROVE = 'APPROVE',
+  REJECT = 'REJECT',
+  FLAG = 'FLAG',
+  UNFLAG = 'UNFLAG',
+  DELETE = 'DELETE',
+}
+
 // ========================================
 // Core Review Types
 // ========================================
+
+/**
+ * Moderation log entry
+ */
+export interface ModerationLog {
+  id: string;
+  reviewId: string;
+  moderatorId: string;
+  moderatorName: string;
+  action: ModerationAction;
+  reason?: string;
+  previousStatus?: ReviewStatus;
+  newStatus: ReviewStatus;
+  createdAt: string;
+}
 
 /**
  * Seller response to a review
@@ -107,6 +133,7 @@ export interface Review {
   canRespond?: boolean;
   canEdit?: boolean;
   canDelete?: boolean;
+  moderationHistory?: ModerationLog[];
 }
 
 /**

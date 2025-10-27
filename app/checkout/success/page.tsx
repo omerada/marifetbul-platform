@@ -23,15 +23,20 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { ORDER_ENDPOINTS } from '@/lib/api/endpoints';
+import { ReviewPromptCard } from '@/components/shared/ReviewPromptCard';
 
 interface OrderDetails {
   id: string;
   orderNumber: string;
   status: string;
   totalAmount: number;
+  packageId: string;
   packageTitle: string;
+  sellerId: string;
   sellerName: string;
+  sellerAvatar?: string;
   estimatedDelivery: string;
+  completedAt?: string;
 }
 
 function CheckoutSuccessContent() {
@@ -43,6 +48,7 @@ function CheckoutSuccessContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showReviewPrompt, setShowReviewPrompt] = useState(true);
 
   // Load order details
   useEffect(() => {
@@ -312,6 +318,21 @@ function CheckoutSuccessContent() {
               Sipariş onay e-postası e-posta adresinize gönderildi
             </p>
           </div>
+
+          {/* Review Prompt Card */}
+          {showReviewPrompt && orderDetails.status === 'COMPLETED' && (
+            <div className="mt-6">
+              <ReviewPromptCard
+                orderId={orderDetails.id}
+                packageId={orderDetails.packageId}
+                packageTitle={orderDetails.packageTitle}
+                sellerName={orderDetails.sellerName}
+                sellerAvatar={orderDetails.sellerAvatar}
+                completedAt={orderDetails.completedAt}
+                onDismiss={() => setShowReviewPrompt(false)}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

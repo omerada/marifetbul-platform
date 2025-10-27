@@ -31,6 +31,10 @@ export type { UploadedImage } from './ImageUpload';
 // Payment & Wallet components
 export { PaymentModal } from './PaymentModal';
 
+// Review components
+export { ReviewPromptCard } from './ReviewPromptCard';
+export type { ReviewPromptCardProps } from './ReviewPromptCard';
+
 // Performance components
 export * from './performance';
 

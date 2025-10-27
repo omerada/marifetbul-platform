@@ -16,18 +16,12 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import {
-  ThumbsUp,
-  ThumbsDown,
-  Flag,
-  CheckCircle,
-  MoreVertical,
-  MessageSquare,
-} from 'lucide-react';
+import { Flag, CheckCircle, MoreVertical, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
+import { useToast } from '@/hooks';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,6 +29,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu';
 import { RatingStars } from './RatingStars';
+import {
+  SellerResponseForm,
+  ReviewVoting,
+  ReviewFlagModal,
+} from '@/components/domains/reviews';
 import type { Review } from '@/types/business/review';
 import { VoteType } from '@/types/business/review';
 
@@ -48,6 +47,7 @@ interface ReviewCardProps {
   onReply?: (reviewId: string) => void;
   showPackageInfo?: boolean;
   showActions?: boolean;
+  showVoting?: boolean;
   className?: string;
 }
 
@@ -61,60 +61,12 @@ export function ReviewCard({
   onReply,
   showPackageInfo = false,
   showActions = true,
+  showVoting = true,
   className,
 }: ReviewCardProps) {
-  const [isVoting, setIsVoting] = useState(false);
   const [localReview, setLocalReview] = useState(review);
-
-  const handleVote = async (voteType: VoteType) => {
-    if (!onVote || isVoting) return;
-
-    setIsVoting(true);
-    try {
-      // If user clicks same vote, remove it
-      if (localReview.userVote === voteType && onRemoveVote) {
-        await onRemoveVote(review.id);
-        setLocalReview({
-          ...localReview,
-          userVote: undefined,
-          helpfulCount:
-            voteType === VoteType.HELPFUL
-              ? localReview.helpfulCount - 1
-              : localReview.helpfulCount,
-          notHelpfulCount:
-            voteType === VoteType.NOT_HELPFUL
-              ? localReview.notHelpfulCount - 1
-              : localReview.notHelpfulCount,
-        });
-      } else {
-        await onVote(review.id, voteType);
-        // Optimistic update
-        const prevVote = localReview.userVote;
-        setLocalReview({
-          ...localReview,
-          userVote: voteType,
-          helpfulCount:
-            voteType === VoteType.HELPFUL
-              ? localReview.helpfulCount +
-                (prevVote === VoteType.HELPFUL ? 0 : 1)
-              : prevVote === VoteType.HELPFUL
-                ? localReview.helpfulCount - 1
-                : localReview.helpfulCount,
-          notHelpfulCount:
-            voteType === VoteType.NOT_HELPFUL
-              ? localReview.notHelpfulCount +
-                (prevVote === VoteType.NOT_HELPFUL ? 0 : 1)
-              : prevVote === VoteType.NOT_HELPFUL
-                ? localReview.notHelpfulCount - 1
-                : localReview.notHelpfulCount,
-        });
-      }
-    } catch (error) {
-      console.error('Failed to vote:', error);
-    } finally {
-      setIsVoting(false);
-    }
-  };
+  const [showFlagModal, setShowFlagModal] = useState(false);
+  const { success } = useToast();
 
   const timeAgo = formatDistanceToNow(new Date(localReview.createdAt), {
     addSuffix: true,
@@ -180,7 +132,7 @@ export function ReviewCard({
                 </DropdownMenuItem>
               )}
               {onFlag && (
-                <DropdownMenuItem onClick={() => onFlag(localReview.id)}>
+                <DropdownMenuItem onClick={() => setShowFlagModal(true)}>
                   <Flag className="mr-2 h-4 w-4" />
                   Şikayet Et
                 </DropdownMenuItem>
@@ -299,57 +251,66 @@ export function ReviewCard({
         </div>
       )}
 
-      {/* Footer - Voting */}
-      {showActions && (onVote || onRemoveVote) && (
-        <div className="mt-4 flex items-center justify-between border-t border-gray-200 pt-4">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleVote(VoteType.HELPFUL)}
-              disabled={isVoting}
-              className={cn(
-                'gap-2',
-                localReview.userVote === VoteType.HELPFUL && 'text-green-600'
-              )}
-            >
-              <ThumbsUp
-                className={cn(
-                  'h-4 w-4',
-                  localReview.userVote === VoteType.HELPFUL && 'fill-current'
-                )}
-              />
-              <span>Faydalı ({localReview.helpfulCount})</span>
-            </Button>
+      {/* Footer - Voting and Status */}
+      {showVoting && onVote && onRemoveVote && (
+        <div className="mt-4 flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-700">
+          <ReviewVoting
+            reviewId={localReview.id}
+            helpfulCount={localReview.helpfulCount}
+            notHelpfulCount={localReview.notHelpfulCount}
+            userVote={localReview.userVote}
+            onVote={onVote}
+            onRemoveVote={onRemoveVote}
+          />
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleVote(VoteType.NOT_HELPFUL)}
-              disabled={isVoting}
-              className={cn(
-                'gap-2',
-                localReview.userVote === VoteType.NOT_HELPFUL && 'text-red-600'
-              )}
-            >
-              <ThumbsDown
-                className={cn(
-                  'h-4 w-4',
-                  localReview.userVote === VoteType.NOT_HELPFUL &&
-                    'fill-current'
-                )}
-              />
-              <span>Faydalı Değil ({localReview.notHelpfulCount})</span>
-            </Button>
+          {/* Status Badges */}
+          <div className="flex items-center gap-2">
+            {localReview.status === 'PENDING' && (
+              <Badge variant="secondary">Onay Bekliyor</Badge>
+            )}
+            {localReview.status === 'FLAGGED' && (
+              <Badge variant="destructive">Şikayetli</Badge>
+            )}
           </div>
-
-          {localReview.status === 'PENDING' && (
-            <Badge variant="secondary">Onay Bekliyor</Badge>
-          )}
-          {localReview.status === 'FLAGGED' && (
-            <Badge variant="destructive">Şikayetli</Badge>
-          )}
         </div>
+      )}
+
+      {/* Seller Response */}
+      {localReview.canRespond && (
+        <div className="mt-4">
+          <SellerResponseForm
+            review={localReview}
+            onSuccess={(updatedReview) => {
+              setLocalReview(updatedReview);
+            }}
+          />
+        </div>
+      )}
+
+      {/* Display Existing Seller Response (if user can't respond but response exists) */}
+      {!localReview.canRespond &&
+        localReview.sellerResponse &&
+        localReview.sellerResponse.responseText && (
+          <div className="mt-4">
+            <SellerResponseForm review={localReview} />
+          </div>
+        )}
+
+      {/* Flag Review Modal */}
+      {onFlag && (
+        <ReviewFlagModal
+          open={showFlagModal}
+          onOpenChange={setShowFlagModal}
+          reviewId={localReview.id}
+          reviewerName={localReview.reviewerName}
+          onSuccess={() => {
+            // Notify user about successful flag
+            success(
+              'Başarılı',
+              'Yorumunuz bildirildi. İnceleme sürecimiz başlatıldı.'
+            );
+          }}
+        />
       )}
     </div>
   );
