@@ -5,21 +5,22 @@
  * End-to-end tests for the complete review system
  *
  * Test Coverage:
- * - User review creation flow
- * - Freelancer review management
+ * - User review creation flow (Story 4.1 - CRUD Tests)
+ * - Review edit and validation
+ * - Freelancer review dashboard
+ * - Seller response functionality (Story 4.3)
  * - Employer review management
- * - Admin moderation workflow
- * - Review voting and flagging
- * - Seller response functionality
+ * - Admin moderation workflow (Story 4.4)
+ * - Review voting and flagging (Story 4.2)
  * - Notification system
  * - Order completion review reminder
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
- * @since Review System Sprint - Production Ready
+ * @version 2.0.0
+ * @since Review System Sprint 4 - Testing Phase
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 // ================================
 // TEST SETUP
@@ -38,87 +39,195 @@ test.describe('Review System - Complete E2E Tests', () => {
       await login(page, 'buyer');
 
       // 2. Navigate to completed orders
-      await page.goto('/dashboard/orders?status=completed');
+      await page.goto('/dashboard/employer/orders?status=COMPLETED');
+      await page.waitForLoadState('networkidle');
 
-      // 3. Click first completed order
-      await page.click('[data-testid="order-card"]:first-child');
+      // 3. Click first completed order to view details
+      const firstOrder = page.locator('[data-testid="order-card"]').first();
+      await expect(firstOrder).toBeVisible({ timeout: 10000 });
+      await firstOrder.click();
 
-      // 4. Click "Review Yaz" button
-      await page.click('button:has-text("Değerlendirme Yaz")');
+      // 4. Wait for order details page
+      await page.waitForURL(/\/dashboard\/employer\/orders\/[^\/]+$/);
 
-      // 5. Wait for review modal/form
+      // 5. Click "Değerlendirme Yaz" button
+      await page.click('a[href*="/review"]:has-text("Değerlendirme Yaz")');
+
+      // 6. Wait for review form page
+      await page.waitForURL(/\/dashboard\/employer\/orders\/[^\/]+\/review$/);
       await page.waitForSelector('[data-testid="review-form"]');
 
-      // 6. Fill 4 category ratings (Communication, Quality, Speed, Professionalism)
-      await page.click('[data-category="communication"] [data-rating="5"]');
-      await page.click('[data-category="quality"] [data-rating="5"]');
-      await page.click('[data-category="speed"] [data-rating="4"]');
-      await page.click('[data-category="professionalism"] [data-rating="5"]');
+      // 7. Fill 4 category ratings (Communication, Quality, Speed, Professionalism)
+      // Click on the star rating buttons for each category
+      await page.click(
+        '[data-testid="rating-communication"] button[aria-label="5 yıldız"]'
+      );
+      await page.click(
+        '[data-testid="rating-quality"] button[aria-label="5 yıldız"]'
+      );
+      await page.click(
+        '[data-testid="rating-speed"] button[aria-label="4 yıldız"]'
+      );
+      await page.click(
+        '[data-testid="rating-professionalism"] button[aria-label="5 yıldız"]'
+      );
 
-      // 7. Add review text (minimum 10 characters)
+      // 8. Add review text (minimum 50 characters)
       const reviewText =
-        'Excellent work! Very professional and delivered on time. Highly recommended for future projects.';
-      await page.fill('textarea[name="reviewText"]', reviewText);
+        'Excellent work! Very professional and delivered on time. Highly recommended for future projects. The freelancer was responsive to all feedback and made revisions quickly.';
+      await page.fill('textarea[name="comment"]', reviewText);
 
-      // 8. Submit review
-      await page.click('button[type="submit"]:has-text("Gönder")');
+      // 9. Verify character counter shows valid range
+      const charCounter = page.locator('[data-testid="char-counter"]');
+      await expect(charCounter).toContainText(`${reviewText.length}/1000`);
 
-      // 9. Verify success message
+      // 10. Submit review
+      await page.click(
+        'button[type="submit"]:has-text("Değerlendirme Gönder")'
+      );
+
+      // 11. Wait for API response
+      await page.waitForResponse(
+        (response: { url: () => string; status: () => number }) =>
+          response.url().includes('/api/v1/reviews') &&
+          response.status() === 201
+      );
+
+      // 12. Verify success message
       await expect(
         page.locator('text=Değerlendirmeniz başarıyla gönderildi')
-      ).toBeVisible();
+      ).toBeVisible({ timeout: 5000 });
 
-      // 10. Verify review appears in list
-      await page.goto('/dashboard/reviews/given');
-      await expect(page.locator(`text=${reviewText}`)).toBeVisible();
+      // 13. Verify redirect to orders page
+      await page.waitForURL(/\/dashboard\/employer\/orders/);
+
+      // 14. Navigate to reviews list and verify review appears
+      await page.goto('/dashboard/employer/reviews');
+      await page.waitForLoadState('networkidle');
+      await expect(
+        page.locator(`text=${reviewText.substring(0, 50)}`)
+      ).toBeVisible();
     });
 
     test('should not allow duplicate reviews', async ({ page }) => {
       // 1. Login as buyer
       await login(page, 'buyer');
 
-      // 2. Navigate to order with existing review
-      await page.goto('/dashboard/orders?status=completed');
-      await page.click(
-        '[data-testid="order-card"]:has([data-review-exists="true"]):first-child'
+      // 2. Navigate to completed orders
+      await page.goto('/dashboard/employer/orders?status=COMPLETED');
+      await page.waitForLoadState('networkidle');
+
+      // 3. Find an order that already has a review
+      const orderWithReview = page
+        .locator('[data-testid="order-card"]')
+        .filter({
+          has: page.locator('[data-testid="review-badge"]'),
+        })
+        .first();
+
+      // 4. If no reviewed order exists, skip this test
+      const reviewedOrderCount = await orderWithReview.count();
+      if (reviewedOrderCount === 0) {
+        test.skip();
+      }
+
+      // 5. Click on the reviewed order
+      await orderWithReview.click();
+      await page.waitForURL(/\/dashboard\/employer\/orders\/[^\/]+$/);
+
+      // 6. Verify "Değerlendirme Yaz" button is NOT present
+      const reviewButton = page.locator(
+        'a[href*="/review"]:has-text("Değerlendirme Yaz")'
       );
+      const isVisible = await reviewButton.isVisible().catch(() => false);
+      expect(isVisible).toBe(false);
 
-      // 3. Verify "Review Yaz" button is disabled/hidden
-      const reviewButton = page.locator('button:has-text("Değerlendirme Yaz")');
-      await expect(reviewButton).toBeHidden();
+      // 7. Verify "Değerlendirme Yapıldı" or similar message is shown
+      await expect(
+        page.locator('text=/Değerlendirme (yapıldı|mevcut)/i')
+      ).toBeVisible();
 
-      // 4. Verify message "Already reviewed"
-      await expect(page.locator('text=Değerlendirme yapıldı')).toBeVisible();
+      // 8. Try to navigate directly to review page (should redirect or show error)
+      const currentUrl = page.url();
+      const orderId = currentUrl.split('/').pop();
+      await page.goto(`/dashboard/employer/orders/${orderId}/review`);
+
+      // 9. Should redirect back to order detail or show error message
+      await expect(async () => {
+        const url = page.url();
+        const hasError = await page
+          .locator('text=/Zaten.*değerlendirme/i')
+          .isVisible();
+        expect(url.includes('/review') === false || hasError).toBeTruthy();
+      }).toPass({ timeout: 5000 });
     });
 
     test('should allow review edit within 30 days', async ({ page }) => {
       // 1. Login as buyer
       await login(page, 'buyer');
 
-      // 2. Navigate to reviews page
-      await page.goto('/dashboard/reviews/given');
+      // 2. Navigate to employer reviews page
+      await page.goto('/dashboard/employer/reviews');
+      await page.waitForLoadState('networkidle');
 
-      // 3. Find review created within 30 days
-      await page.click(
-        '[data-testid="review-item"]:has([data-editable="true"]):first-child [data-action="edit"]'
-      );
+      // 3. Find a recent review (created within 30 days) with edit button
+      const editableReview = page
+        .locator('[data-testid="review-item"]')
+        .filter({
+          has: page.locator(
+            '[data-testid="edit-review-button"]:not([disabled])'
+          ),
+        })
+        .first();
 
-      // 4. Wait for edit form
+      // 4. Check if editable review exists, if not skip
+      const editableCount = await editableReview.count();
+      if (editableCount === 0) {
+        test.skip();
+        return;
+      }
+
+      // 5. Click edit button
+      await editableReview
+        .locator('[data-testid="edit-review-button"]')
+        .click();
+
+      // 6. Wait for edit form/modal
       await page.waitForSelector('[data-testid="review-edit-form"]');
 
-      // 5. Modify review content
+      // 7. Modify review text
       const updatedText =
-        'Updated review text with additional feedback about the project completion.';
-      await page.fill('textarea[name="reviewText"]', updatedText);
+        'Updated review text with additional feedback about the project completion and overall experience working with this freelancer.';
+      await page.fill('textarea[name="comment"]', '');
+      await page.fill('textarea[name="comment"]', updatedText);
 
-      // 6. Submit changes
+      // 8. Update some ratings
+      await page.click(
+        '[data-testid="rating-quality"] button[aria-label="5 yıldız"]'
+      );
+      await page.click(
+        '[data-testid="rating-communication"] button[aria-label="5 yıldız"]'
+      );
+
+      // 9. Submit changes
       await page.click('button[type="submit"]:has-text("Güncelle")');
 
-      // 7. Verify updates are saved
+      // 10. Wait for API response
+      await page.waitForResponse(
+        (response: { url: () => string; status: () => number }) =>
+          response.url().includes('/api/v1/reviews') &&
+          (response.status() === 200 || response.status() === 204)
+      );
+
+      // 11. Verify success message
       await expect(
-        page.locator('text=Değerlendirme güncellendi')
+        page.locator('text=/Değerlendirme.*güncellendi/i')
+      ).toBeVisible({ timeout: 5000 });
+
+      // 12. Verify updated text appears in the list
+      await expect(
+        page.locator(`text=${updatedText.substring(0, 50)}`)
       ).toBeVisible();
-      await expect(page.locator(`text=${updatedText}`)).toBeVisible();
     });
 
     test('should not allow review edit after 30 days', async ({ page }) => {
@@ -126,20 +235,39 @@ test.describe('Review System - Complete E2E Tests', () => {
       await login(page, 'buyer');
 
       // 2. Navigate to reviews page
-      await page.goto('/dashboard/reviews/given');
+      await page.goto('/dashboard/employer/reviews');
+      await page.waitForLoadState('networkidle');
 
-      // 3. Find review older than 30 days
-      const oldReview = page.locator(
-        '[data-testid="review-item"]:has([data-editable="false"]):first-child'
+      // 3. Find review older than 30 days (edit button should be disabled)
+      const oldReview = page
+        .locator('[data-testid="review-item"]')
+        .filter({
+          has: page.locator('[data-testid="edit-review-button"][disabled]'),
+        })
+        .first();
+
+      // 4. Check if old review exists
+      const oldReviewCount = await oldReview.count();
+      if (oldReviewCount === 0) {
+        test.skip();
+        return;
+      }
+
+      // 5. Verify edit button is disabled
+      const editButton = oldReview.locator(
+        '[data-testid="edit-review-button"]'
       );
-
-      // 4. Verify edit button is disabled
-      const editButton = oldReview.locator('[data-action="edit"]');
       await expect(editButton).toBeDisabled();
 
-      // 5. Verify tooltip shows "Edit window expired"
+      // 6. Hover on button to see tooltip
       await editButton.hover();
-      await expect(page.locator('text=Düzenleme süresi doldu')).toBeVisible();
+
+      // 7. Verify tooltip shows expiration message
+      await expect(
+        page.locator(
+          'text=/Düzenleme süresi.*doldu/i, [role="tooltip"]:has-text(/Düzenleme süresi/i)'
+        )
+      ).toBeVisible({ timeout: 3000 });
     });
 
     test('should validate minimum review text length', async ({ page }) => {
@@ -147,29 +275,54 @@ test.describe('Review System - Complete E2E Tests', () => {
       await login(page, 'buyer');
 
       // 2. Navigate to completed order
-      await page.goto('/dashboard/orders?status=completed');
-      await page.click('[data-testid="order-card"]:first-child');
+      await page.goto('/dashboard/employer/orders?status=COMPLETED');
+      await page.waitForLoadState('networkidle');
 
-      // 3. Open review form
-      await page.click('button:has-text("Değerlendirme Yaz")');
+      // 3. Click on first completed order
+      const firstOrder = page.locator('[data-testid="order-card"]').first();
+      await firstOrder.click();
+      await page.waitForURL(/\/dashboard\/employer\/orders\/[^\/]+$/);
+
+      // 4. Navigate to review page
+      await page.click('a[href*="/review"]:has-text("Değerlendirme Yaz")');
+      await page.waitForURL(/\/dashboard\/employer\/orders\/[^\/]+\/review$/);
       await page.waitForSelector('[data-testid="review-form"]');
 
-      // 4. Fill ratings
-      await page.click('[data-category="communication"] [data-rating="5"]');
-      await page.click('[data-category="quality"] [data-rating="5"]');
-      await page.click('[data-category="speed"] [data-rating="5"]');
-      await page.click('[data-category="professionalism"] [data-rating="5"]');
+      // 5. Fill ratings (required)
+      await page.click(
+        '[data-testid="rating-communication"] button[aria-label="5 yıldız"]'
+      );
+      await page.click(
+        '[data-testid="rating-quality"] button[aria-label="5 yıldız"]'
+      );
+      await page.click(
+        '[data-testid="rating-speed"] button[aria-label="5 yıldız"]'
+      );
+      await page.click(
+        '[data-testid="rating-professionalism"] button[aria-label="5 yıldız"]'
+      );
 
-      // 5. Enter review text with less than 10 characters
-      await page.fill('textarea[name="reviewText"]', 'Short');
+      // 6. Enter review text with less than 50 characters
+      const shortText = 'Short text'; // 10 characters - less than 50 minimum
+      await page.fill('textarea[name="comment"]', shortText);
 
-      // 6. Attempt to submit
-      await page.click('button[type="submit"]:has-text("Gönder")');
+      // 7. Verify character counter shows warning
+      const charCounter = page.locator('[data-testid="char-counter"]');
+      await expect(charCounter).toContainText(`${shortText.length}/1000`);
 
-      // 7. Verify validation error message
+      // 8. Attempt to submit
+      await page.click(
+        'button[type="submit"]:has-text("Değerlendirme Gönder")'
+      );
+
+      // 9. Verify validation error message appears
       await expect(
-        page.locator('text=En az 10 karakter gerekli')
-      ).toBeVisible();
+        page.locator('text=/En az 50 karakter|minimum.*50/i')
+      ).toBeVisible({ timeout: 3000 });
+
+      // 10. Verify submit button is disabled or form not submitted
+      const currentUrl = page.url();
+      expect(currentUrl).toContain('/review'); // Still on review page
     });
   });
 
@@ -241,59 +394,281 @@ test.describe('Review System - Complete E2E Tests', () => {
       const firstDate = await page
         .locator('[data-testid="review-item"]:first-child [data-date]')
         .getAttribute('data-date');
-      const secondDate = await page
-        .locator('[data-testid="review-item"]:nth-child(2) [data-date]')
-        .getAttribute('data-date');
       expect(new Date(firstDate!)).toBeInstanceOf(Date);
     });
   });
 
   // ================================
-  // SELLER RESPONSE
+  // SELLER RESPONSE (Story 4.3)
   // ================================
 
-  test.describe('US-1.3: Seller Response', () => {
+  test.describe('US-1.3: Seller Response Tests', () => {
     test('should allow seller to respond to review', async ({ page }) => {
-      // TODO: Implement test
-      // 1. Login as freelancer
-      // 2. Navigate to reviews page
+      // 1. Login as freelancer/seller
+      await login(page, 'seller');
+
+      // 2. Navigate to freelancer reviews page
+      await page.goto('/dashboard/freelancer/reviews');
+      await page.waitForLoadState('networkidle');
+
       // 3. Find review without response
+      const reviewWithoutResponse = page
+        .locator('[data-testid="review-item"]')
+        .filter({
+          hasNot: page.locator('[data-testid="seller-response"]'),
+        })
+        .first();
+
+      // Check if review exists
+      const reviewCount = await reviewWithoutResponse.count();
+      if (reviewCount === 0) {
+        test.skip(); // No reviews without response
+        return;
+      }
+
       // 4. Click "Yanıtla" button
-      // 5. Enter response (10-500 characters)
-      // 6. Submit response
-      // 7. Verify response appears on review
-      // 8. Verify buyer receives notification
+      await reviewWithoutResponse
+        .locator('[data-testid="respond-button"]')
+        .click();
+
+      // 5. Wait for response modal/form
+      await page.waitForSelector('[data-testid="seller-response-modal"]');
+
+      // 6. Enter response text (10-500 characters)
+      const responseText =
+        'Thank you for your valuable feedback! I really appreciate your kind words and look forward to working with you again in the future.';
+      await page.fill('textarea[name="responseText"]', responseText);
+
+      // 7. Verify character counter
+      const charCounter = page.locator('[data-testid="response-char-counter"]');
+      await expect(charCounter).toContainText(`${responseText.length}/500`);
+
+      // 8. Submit response
+      await page.click('button[type="submit"]:has-text("Gönder")');
+
+      // 9. Wait for API response
+      await page.waitForResponse(
+        (response: { url: () => string; status: () => number }) =>
+          response.url().includes('/api/v1/reviews') &&
+          response.url().includes('/response') &&
+          (response.status() === 200 || response.status() === 201)
+      );
+
+      // 10. Verify success message
+      await expect(page.locator('text=/Yanıt.*gönderildi/i')).toBeVisible({
+        timeout: 5000,
+      });
+
+      // 11. Verify response appears on review
+      await expect(
+        page.locator(
+          `[data-testid="seller-response"]:has-text("${responseText.substring(0, 30)}")`
+        )
+      ).toBeVisible();
     });
 
     test('should allow seller to edit response', async ({ page }) => {
-      // TODO: Implement test
-      // 1. Login as freelancer
+      // 1. Login as seller
+      await login(page, 'seller');
+
       // 2. Navigate to reviews page
+      await page.goto('/dashboard/freelancer/reviews');
+      await page.waitForLoadState('networkidle');
+
       // 3. Find review with existing response
+      const reviewWithResponse = page
+        .locator('[data-testid="review-item"]')
+        .filter({
+          has: page.locator('[data-testid="seller-response"]'),
+        })
+        .first();
+
+      const hasResponse = await reviewWithResponse.count();
+      if (hasResponse === 0) {
+        test.skip(); // No reviews with response to edit
+        return;
+      }
+
       // 4. Click "Düzenle" button
-      // 5. Modify response text
-      // 6. Submit changes
-      // 7. Verify updated response displayed
+      await reviewWithResponse
+        .locator('[data-testid="edit-response-button"]')
+        .click();
+
+      // 5. Wait for edit modal
+      await page.waitForSelector('[data-testid="seller-response-modal"]');
+
+      // 6. Modify response text
+      const updatedText =
+        'Updated response: Thank you again for your feedback! I have taken your suggestions into account and will continue to improve my services.';
+      await page.fill('textarea[name="responseText"]', ''); // Clear first
+      await page.fill('textarea[name="responseText"]', updatedText);
+
+      // 7. Submit changes
+      await page.click('button[type="submit"]:has-text("Güncelle")');
+
+      // 8. Wait for API update
+      await page.waitForResponse(
+        (response: { url: () => string; status: () => number }) =>
+          response.url().includes('/api/v1/reviews') &&
+          response.url().includes('/response') &&
+          (response.status() === 200 || response.status() === 204)
+      );
+
+      // 9. Verify success message
+      await expect(page.locator('text=/Yanıt.*güncellendi/i')).toBeVisible({
+        timeout: 5000,
+      });
+
+      // 10. Verify updated response displayed
+      await expect(
+        page.locator(
+          `[data-testid="seller-response"]:has-text("${updatedText.substring(0, 30)}")`
+        )
+      ).toBeVisible();
     });
 
     test('should allow seller to delete response', async ({ page }) => {
-      // TODO: Implement test
-      // 1. Login as freelancer
+      // 1. Login as seller
+      await login(page, 'seller');
+
       // 2. Navigate to reviews page
+      await page.goto('/dashboard/freelancer/reviews');
+      await page.waitForLoadState('networkidle');
+
       // 3. Find review with response
+      const reviewWithResponse = page
+        .locator('[data-testid="review-item"]')
+        .filter({
+          has: page.locator('[data-testid="seller-response"]'),
+        })
+        .first();
+
+      const hasResponse = await reviewWithResponse.count();
+      if (hasResponse === 0) {
+        test.skip(); // No reviews with response to delete
+        return;
+      }
+
       // 4. Click "Sil" button
-      // 5. Confirm deletion
-      // 6. Verify response removed
+      await reviewWithResponse
+        .locator('[data-testid="delete-response-button"]')
+        .click();
+
+      // 5. Verify confirmation dialog
+      await page.waitForSelector('[data-testid="confirm-delete-modal"]');
+      await expect(
+        page.locator('text=/silmek istediğinizden emin misiniz/i')
+      ).toBeVisible();
+
+      // 6. Confirm deletion
+      await page.click('button:has-text("Evet, Sil")');
+
+      // 7. Wait for API delete
+      await page.waitForResponse(
+        (response: { url: () => string; status: () => number }) =>
+          response.url().includes('/api/v1/reviews') &&
+          response.url().includes('/response') &&
+          (response.status() === 200 || response.status() === 204)
+      );
+
+      // 8. Verify success message
+      await expect(page.locator('text=/Yanıt.*silindi/i')).toBeVisible({
+        timeout: 5000,
+      });
+
+      // 9. Verify response removed from review
+      await expect(
+        reviewWithResponse.locator('[data-testid="seller-response"]')
+      ).not.toBeVisible();
+
+      // 10. Verify "Yanıtla" button is now available
+      await expect(
+        reviewWithResponse.locator('[data-testid="respond-button"]')
+      ).toBeVisible();
     });
 
     test('should validate response character limits', async ({ page }) => {
-      // TODO: Implement test
-      // 1. Login as freelancer
-      // 2. Open response dialog
-      // 3. Enter less than 10 characters
-      // 4. Verify submit button disabled
-      // 5. Enter more than 500 characters
-      // 6. Verify character counter shows limit
+      // 1. Login as seller
+      await login(page, 'seller');
+
+      // 2. Navigate to reviews page
+      await page.goto('/dashboard/freelancer/reviews');
+      await page.waitForLoadState('networkidle');
+
+      // 3. Find review without response
+      const reviewWithoutResponse = page
+        .locator('[data-testid="review-item"]')
+        .filter({
+          hasNot: page.locator('[data-testid="seller-response"]'),
+        })
+        .first();
+
+      const reviewCount = await reviewWithoutResponse.count();
+      if (reviewCount === 0) {
+        test.skip();
+        return;
+      }
+
+      // 4. Open response modal
+      await reviewWithoutResponse
+        .locator('[data-testid="respond-button"]')
+        .click();
+      await page.waitForSelector('[data-testid="seller-response-modal"]');
+
+      // 5. Test minimum length (10 characters)
+      const shortText = 'Short'; // 5 characters - less than minimum
+      await page.fill('textarea[name="responseText"]', shortText);
+
+      // 6. Verify character counter shows warning
+      const charCounter = page.locator('[data-testid="response-char-counter"]');
+      await expect(charCounter).toContainText(`${shortText.length}/500`);
+
+      // 7. Verify submit button is disabled
+      const submitButton = page.locator(
+        'button[type="submit"]:has-text("Gönder")'
+      );
+      await expect(submitButton).toBeDisabled();
+
+      // 8. Enter valid text (10-500 characters)
+      const validText = 'Thank you for your feedback!'; // Valid length
+      await page.fill('textarea[name="responseText"]', validText);
+
+      // 9. Verify submit button is enabled
+      await expect(submitButton).toBeEnabled();
+
+      // 10. Test maximum length (500 characters)
+      const longText = 'A'.repeat(501); // 501 characters - exceeds maximum
+      await page.fill('textarea[name="responseText"]', longText);
+
+      // 11. Verify character counter shows limit exceeded
+      await expect(charCounter).toContainText('500/500'); // Should be truncated or show error
+
+      // 12. Verify submit button behavior
+      const isDisabledForLongText = await submitButton.isDisabled();
+      expect(isDisabledForLongText).toBe(true);
+    });
+
+    test('should prevent non-seller from responding', async ({ page }) => {
+      // 1. Login as buyer (not seller)
+      await login(page, 'buyer');
+
+      // 2. Navigate to marketplace and view a package
+      await page.goto('/marketplace');
+      await page.waitForLoadState('networkidle');
+      await page.locator('[data-testid="package-card"]').first().click();
+      await page.waitForURL(/\/marketplace\/packages\/[^\/]+$/);
+
+      // 3. Scroll to reviews
+      const reviewsSection = page.locator('[data-testid="reviews-section"]');
+      await reviewsSection.scrollIntoViewIfNeeded();
+
+      // 4. Find a review (not own review)
+      const review = page.locator('[data-testid="review-item"]').first();
+
+      // 5. Verify "Respond" button is NOT visible for non-sellers
+      const respondButton = review.locator('[data-testid="respond-button"]');
+      const isVisible = await respondButton.isVisible().catch(() => false);
+      expect(isVisible).toBe(false);
     });
   });
 
@@ -302,8 +677,8 @@ test.describe('Review System - Complete E2E Tests', () => {
   // ================================
 
   test.describe('US-1.4: Employer Review Management', () => {
-    test('should display all written reviews', async ({ page }) => {
-      // TODO: Implement test
+    test.skip('should display all written reviews', async () => {
+      // TODO: Implement test in Story 4.1
       // 1. Login as employer
       // 2. Navigate to /dashboard/employer/reviews
       // 3. Verify list of written reviews
@@ -311,8 +686,8 @@ test.describe('Review System - Complete E2E Tests', () => {
       // 5. Verify seller responses displayed
     });
 
-    test('should show edit time remaining indicator', async ({ page }) => {
-      // TODO: Implement test
+    test.skip('should show edit time remaining indicator', async () => {
+      // TODO: Implement test in Story 4.1
       // 1. Login as employer
       // 2. Navigate to reviews page
       // 3. Find recent review
@@ -320,8 +695,8 @@ test.describe('Review System - Complete E2E Tests', () => {
       // 5. Verify countdown is accurate
     });
 
-    test('should allow review deletion', async ({ page }) => {
-      // TODO: Implement test
+    test.skip('should allow review deletion', async () => {
+      // TODO: Implement test in Story 4.1
       // 1. Login as employer
       // 2. Navigate to reviews page
       // 3. Click delete button
@@ -335,9 +710,9 @@ test.describe('Review System - Complete E2E Tests', () => {
   // PACKAGE REVIEW INTEGRATION
   // ================================
 
-  test.describe('US-2.1: Package Reviews Display', () => {
-    test('should display reviews on package detail page', async ({ page }) => {
-      // TODO: Implement test
+  test.describe('US-2.1: Package Reviews Display & Voting (Story 4.2)', () => {
+    test.skip('should display reviews on package detail page', async () => {
+      // TODO: Implement test in future sprint
       // 1. Navigate to package detail page
       // 2. Scroll to reviews section
       // 3. Verify average rating displayed
@@ -346,20 +721,123 @@ test.describe('Review System - Complete E2E Tests', () => {
       // 6. Verify verified purchase badges
     });
 
-    test('should allow helpful voting', async ({ page }) => {
-      // TODO: Implement test
-      // 1. Login as user
-      // 2. Navigate to package reviews
-      // 3. Click "Helpful" button on review
-      // 4. Verify helpful count increased
-      // 5. Verify button state changed to "voted"
-      // 6. Verify cannot vote again
+    test('should allow helpful voting on reviews', async ({ page }) => {
+      // 1. Navigate to marketplace and select a package
+      await page.goto('/marketplace');
+      await page.waitForLoadState('networkidle');
+
+      // 2. Click on first package
+      const firstPackage = page.locator('[data-testid="package-card"]').first();
+      await expect(firstPackage).toBeVisible({ timeout: 10000 });
+      await firstPackage.click();
+
+      // 3. Wait for package detail page
+      await page.waitForURL(/\/marketplace\/packages\/[^\/]+$/);
+
+      // 4. Scroll to reviews section
+      const reviewsSection = page.locator('[data-testid="reviews-section"]');
+      await reviewsSection.scrollIntoViewIfNeeded();
+
+      // 5. Find first review with voting buttons
+      const firstReview = page.locator('[data-testid="review-item"]').first();
+      await expect(firstReview).toBeVisible();
+
+      // 6. Get initial helpful count
+      const helpfulButton = firstReview.locator(
+        '[data-testid="helpful-button"]'
+      );
+      const initialCountText = await helpfulButton.textContent();
+      const initialCount = parseInt(initialCountText?.match(/\d+/)?.[0] || '0');
+
+      // 7. Login as user to vote
+      await page.goto('/login');
+      await login(page, 'buyer');
+
+      // 8. Navigate back to package
+      await page.goto(page.url().split('/login')[0]);
+      await reviewsSection.scrollIntoViewIfNeeded();
+
+      // 9. Click "Helpful" button
+      await firstReview.locator('[data-testid="helpful-button"]').click();
+
+      // 10. Wait for API response
+      await page.waitForResponse(
+        (response: { url: () => string; status: () => number }) =>
+          response.url().includes('/api/v1/reviews') &&
+          response.url().includes('/vote') &&
+          response.status() === 200
+      );
+
+      // 11. Verify helpful count increased
+      await expect(async () => {
+        const newCountText = await helpfulButton.textContent();
+        const newCount = parseInt(newCountText?.match(/\d+/)?.[0] || '0');
+        expect(newCount).toBe(initialCount + 1);
+      }).toPass({ timeout: 5000 });
+
+      // 12. Verify button state changed (should be highlighted/active)
+      await expect(helpfulButton).toHaveClass(/active|voted|selected/);
+
+      // 13. Try to vote again (should not allow)
+      await helpfulButton.click();
+
+      // 14. Verify count didn't change
+      const finalCountText = await helpfulButton.textContent();
+      const finalCount = parseInt(finalCountText?.match(/\d+/)?.[0] || '0');
+      expect(finalCount).toBe(initialCount + 1);
     });
 
-    test('should filter reviews by verified purchases only', async ({
-      page,
-    }) => {
-      // TODO: Implement test
+    test('should allow vote toggling (remove vote)', async ({ page }) => {
+      // 1. Login and navigate to package
+      await login(page, 'buyer');
+      await page.goto('/marketplace');
+      await page.waitForLoadState('networkidle');
+
+      // 2. Click on a package
+      await page.locator('[data-testid="package-card"]').first().click();
+      await page.waitForURL(/\/marketplace\/packages\/[^\/]+$/);
+
+      // 3. Scroll to reviews
+      const reviewsSection = page.locator('[data-testid="reviews-section"]');
+      await reviewsSection.scrollIntoViewIfNeeded();
+
+      // 4. Find a review and vote
+      const review = page.locator('[data-testid="review-item"]').first();
+      const helpfulButton = review.locator('[data-testid="helpful-button"]');
+
+      const initialCountText = await helpfulButton.textContent();
+      const initialCount = parseInt(initialCountText?.match(/\d+/)?.[0] || '0');
+
+      // 5. Click to vote
+      await helpfulButton.click();
+      await page.waitForTimeout(500);
+
+      // 6. Verify vote registered
+      let currentCountText = await helpfulButton.textContent();
+      let currentCount = parseInt(currentCountText?.match(/\d+/)?.[0] || '0');
+
+      // If already voted, count stays same; if new vote, count increases
+      const isNewVote = currentCount > initialCount;
+
+      // 7. Click again to toggle/remove vote
+      await helpfulButton.click();
+      await page.waitForTimeout(500);
+
+      // 8. Verify vote removed (count decreased or stays same)
+      currentCountText = await helpfulButton.textContent();
+      currentCount = parseInt(currentCountText?.match(/\d+/)?.[0] || '0');
+
+      if (isNewVote) {
+        expect(currentCount).toBe(initialCount); // Vote removed, back to original
+      }
+
+      // 9. Verify button state changed back to inactive
+      const buttonClasses = await helpfulButton.getAttribute('class');
+      expect(buttonClasses).not.toContain('active');
+    });
+
+    test.skip('should filter reviews by verified purchases only', async () => {
+      // TODO: Implement test in future sprint
       // 1. Navigate to package reviews
       // 2. Click "Verified Only" filter
       // 3. Verify only verified reviews displayed
@@ -368,74 +846,318 @@ test.describe('Review System - Complete E2E Tests', () => {
   });
 
   // ================================
-  // ADMIN MODERATION
+  // ADMIN MODERATION (Story 4.4)
   // ================================
 
-  test.describe('US-3.1 & US-3.2: Admin Moderation', () => {
+  test.describe('US-3.1 & US-3.2: Admin Moderation Tests', () => {
     test('should display pending reviews for moderation', async ({ page }) => {
-      // TODO: Implement test
       // 1. Login as admin
-      // 2. Navigate to /admin/moderation/reviews
-      // 3. Click "Pending" tab
-      // 4. Verify pending reviews list
-      // 5. Verify review details visible
+      await login(page, 'admin');
+
+      // 2. Navigate to admin moderation reviews page
+      await page.goto('/admin/moderation/reviews');
+      await page.waitForLoadState('networkidle');
+
+      // 3. Verify page loaded
+      await expect(
+        page.locator('h1, h2').filter({ hasText: /moderasyon|review/i })
+      ).toBeVisible();
+
+      // 4. Click "Pending" tab/filter
+      const pendingTab = page.locator(
+        '[data-testid="status-filter-PENDING"], button:has-text("Bekleyen")'
+      );
+      if (await pendingTab.isVisible()) {
+        await pendingTab.click();
+        await page.waitForTimeout(500);
+      }
+
+      // 5. Verify pending reviews list is visible
+      const reviewsList = page.locator(
+        '[data-testid="moderation-reviews-list"]'
+      );
+      await expect(reviewsList).toBeVisible();
+
+      // 6. Verify stats cards are displayed
+      await expect(
+        page.locator('[data-testid="total-reviews-stat"]')
+      ).toBeVisible();
+      await expect(
+        page.locator('[data-testid="pending-reviews-stat"]')
+      ).toBeVisible();
+      await expect(
+        page.locator('[data-testid="flagged-reviews-stat"]')
+      ).toBeVisible();
+
+      // 7. If there are pending reviews, verify details are visible
+      const firstReview = page.locator('[data-testid="review-item"]').first();
+      const hasReviews = await firstReview.isVisible().catch(() => false);
+
+      if (hasReviews) {
+        await expect(firstReview).toContainText(/\d+/); // Has rating
+        await expect(
+          firstReview.locator('[data-testid="review-status"]')
+        ).toBeVisible();
+      }
     });
 
     test('should allow admin to approve review', async ({ page }) => {
-      // TODO: Implement test
       // 1. Login as admin
+      await login(page, 'admin');
+
       // 2. Navigate to pending reviews
-      // 3. Select review
-      // 4. Click "Approve" button
-      // 5. Verify review status changed to APPROVED
-      // 6. Verify reviewer receives notification
+      await page.goto('/admin/moderation/reviews?status=PENDING');
+      await page.waitForLoadState('networkidle');
+
+      // 3. Find first pending review
+      const firstReview = page.locator('[data-testid="review-item"]').first();
+      const hasReviews = await firstReview.isVisible().catch(() => false);
+
+      if (!hasReviews) {
+        test.skip(); // No pending reviews to approve
+        return;
+      }
+
+      // 4. Select the review (checkbox)
+      const checkbox = firstReview.locator('input[type="checkbox"]');
+      await checkbox.check();
+
+      // 5. Click "Approve" button
+      await page.click(
+        '[data-testid="approve-button"], button:has-text("Onayla")'
+      );
+
+      // 6. Wait for confirmation modal (if exists)
+      const confirmModal = page.locator(
+        '[data-testid="confirm-approve-modal"]'
+      );
+      const hasModal = await confirmModal.isVisible().catch(() => false);
+
+      if (hasModal) {
+        await page.click('button:has-text("Evet"), button:has-text("Onayla")');
+      }
+
+      // 7. Wait for API response
+      await page.waitForResponse(
+        (response: { url: () => string; status: () => number }) =>
+          response.url().includes('/api/v1/admin/reviews') &&
+          response.url().includes('/moderate') &&
+          response.status() === 200
+      );
+
+      // 8. Verify success message
+      await expect(page.locator('text=/onaylandı|başarıyla/i')).toBeVisible({
+        timeout: 5000,
+      });
+
+      // 9. Verify review removed from pending list or status changed
+      await page.waitForTimeout(500);
+      const stillPending = await firstReview
+        .locator('[data-status="PENDING"]')
+        .isVisible()
+        .catch(() => false);
+      expect(stillPending).toBe(false);
     });
 
     test('should allow admin to reject review with reason', async ({
       page,
     }) => {
-      // TODO: Implement test
       // 1. Login as admin
+      await login(page, 'admin');
+
       // 2. Navigate to pending reviews
-      // 3. Select review
-      // 4. Click "Reject" button
-      // 5. Enter rejection reason
-      // 6. Confirm rejection
-      // 7. Verify review status changed to REJECTED
-      // 8. Verify reviewer receives notification with reason
+      await page.goto('/admin/moderation/reviews?status=PENDING');
+      await page.waitForLoadState('networkidle');
+
+      // 3. Find first pending review
+      const firstReview = page.locator('[data-testid="review-item"]').first();
+      const hasReviews = await firstReview.isVisible().catch(() => false);
+
+      if (!hasReviews) {
+        test.skip();
+        return;
+      }
+
+      // 4. Select review
+      await firstReview.locator('input[type="checkbox"]').check();
+
+      // 5. Click "Reject" button
+      await page.click(
+        '[data-testid="reject-button"], button:has-text("Reddet")'
+      );
+
+      // 6. Wait for rejection modal
+      await page.waitForSelector('[data-testid="reject-review-modal"]');
+
+      // 7. Enter rejection reason
+      const rejectionReason =
+        'This review violates our community guidelines regarding appropriate language and content.';
+      await page.fill('textarea[name="rejectionReason"]', rejectionReason);
+
+      // 8. Check "Send email notification" if available
+      const emailCheckbox = page.locator(
+        'input[name="sendEmail"][type="checkbox"]'
+      );
+      if (await emailCheckbox.isVisible()) {
+        await emailCheckbox.check();
+      }
+
+      // 9. Confirm rejection
+      await page.click('button[type="submit"]:has-text("Reddet")');
+
+      // 10. Wait for API response
+      await page.waitForResponse(
+        (response: { url: () => string; status: () => number }) =>
+          response.url().includes('/api/v1/admin/reviews') &&
+          response.url().includes('/moderate') &&
+          response.status() === 200
+      );
+
+      // 11. Verify success message
+      await expect(page.locator('text=/reddedildi|başarıyla/i')).toBeVisible({
+        timeout: 5000,
+      });
     });
 
     test('should display flagged reviews', async ({ page }) => {
-      // TODO: Implement test
       // 1. Login as admin
+      await login(page, 'admin');
+
       // 2. Navigate to moderation page
+      await page.goto('/admin/moderation/reviews');
+      await page.waitForLoadState('networkidle');
+
       // 3. Click "Flagged" tab
+      const flaggedTab = page.locator(
+        '[data-testid="flagged-filter"], button:has-text("Şikayet")'
+      );
+      await flaggedTab.click();
+      await page.waitForTimeout(500);
+
       // 4. Verify flagged reviews list
-      // 5. Verify flag reasons displayed
-      // 6. Verify flag count shown
+      const reviewsList = page.locator(
+        '[data-testid="moderation-reviews-list"]'
+      );
+      await expect(reviewsList).toBeVisible();
+
+      // 5. If flagged reviews exist, verify details
+      const firstFlaggedReview = page
+        .locator('[data-testid="review-item"]')
+        .filter({
+          has: page.locator(
+            '[data-flagged="true"], [data-testid="flag-badge"]'
+          ),
+        })
+        .first();
+
+      const hasFlaggedReviews = await firstFlaggedReview
+        .isVisible()
+        .catch(() => false);
+
+      if (hasFlaggedReviews) {
+        // 6. Verify flag count shown
+        await expect(
+          firstFlaggedReview.locator('[data-testid="flag-count"]')
+        ).toBeVisible();
+
+        // 7. Click to view flag details
+        await firstFlaggedReview.click();
+
+        // 8. Verify flag reasons displayed in detail view
+        const detailModal = page.locator('[data-testid="review-detail-modal"]');
+        if (await detailModal.isVisible()) {
+          await expect(
+            detailModal.locator('[data-testid="flag-reasons"]')
+          ).toBeVisible();
+        }
+      }
     });
 
-    test('should allow admin to resolve flagged review', async ({ page }) => {
-      // TODO: Implement test
+    test('should support bulk actions for reviews', async ({ page }) => {
       // 1. Login as admin
-      // 2. Navigate to flagged reviews
-      // 3. Select flagged review
-      // 4. Click "Resolve" button
-      // 5. Enter resolution notes
-      // 6. Confirm resolution
-      // 7. Verify flag cleared
+      await login(page, 'admin');
+
+      // 2. Navigate to moderation page
+      await page.goto('/admin/moderation/reviews?status=PENDING');
+      await page.waitForLoadState('networkidle');
+
+      // 3. Select multiple reviews
+      const reviews = page.locator('[data-testid="review-item"]');
+      const reviewCount = await reviews.count();
+
+      if (reviewCount < 2) {
+        test.skip(); // Need at least 2 reviews for bulk action
+        return;
+      }
+
+      // 4. Check first 2 reviews
+      await reviews.nth(0).locator('input[type="checkbox"]').check();
+      await reviews.nth(1).locator('input[type="checkbox"]').check();
+
+      // 5. Verify bulk action buttons are enabled
+      const bulkApproveButton = page.locator(
+        '[data-testid="bulk-approve-button"]'
+      );
+      await expect(bulkApproveButton).toBeEnabled();
+
+      // 6. Verify selection count is displayed
+      const selectionCount = page.locator('[data-testid="selection-count"]');
+      await expect(selectionCount).toContainText('2');
     });
 
-    test('should display review statistics widget', async ({ page }) => {
-      // TODO: Implement test
+    test('should filter reviews by status', async ({ page }) => {
       // 1. Login as admin
-      // 2. Navigate to admin dashboard
-      // 3. Verify review stats widget displayed
-      // 4. Verify total reviews count
-      // 5. Verify pending count
-      // 6. Verify flagged count
-      // 7. Verify average rating
-      // 8. Verify trend indicators
+      await login(page, 'admin');
+
+      // 2. Navigate to moderation page
+      await page.goto('/admin/moderation/reviews');
+      await page.waitForLoadState('networkidle');
+
+      // 3. Test different status filters
+      const statuses = ['PENDING', 'APPROVED', 'REJECTED'];
+
+      for (const status of statuses) {
+        // Click status filter
+        const filterButton = page.locator(
+          `[data-testid="status-filter-${status}"]`
+        );
+
+        if (await filterButton.isVisible()) {
+          await filterButton.click();
+          await page.waitForTimeout(500);
+
+          // Verify URL or page state changed
+          const currentUrl = page.url();
+          expect(currentUrl).toContain(`status=${status}`);
+        }
+      }
+    });
+
+    test('should display moderation statistics', async ({ page }) => {
+      // 1. Login as admin
+      await login(page, 'admin');
+
+      // 2. Navigate to admin moderation page
+      await page.goto('/admin/moderation/reviews');
+      await page.waitForLoadState('networkidle');
+
+      // 3. Verify stats cards are displayed
+      const statsCards = [
+        { testId: 'total-reviews-stat', label: /toplam|total/i },
+        { testId: 'pending-reviews-stat', label: /bekleyen|pending/i },
+        { testId: 'flagged-reviews-stat', label: /şikayet|flagged/i },
+        { testId: 'approved-reviews-stat', label: /onaylanan|approved/i },
+        { testId: 'rejected-reviews-stat', label: /reddedilen|rejected/i },
+      ];
+
+      for (const stat of statsCards) {
+        const statCard = page.locator(`[data-testid="${stat.testId}"]`);
+
+        if (await statCard.isVisible()) {
+          // Verify stat has a number
+          await expect(statCard).toContainText(/\d+/);
+        }
+      }
     });
   });
 
@@ -443,28 +1165,207 @@ test.describe('Review System - Complete E2E Tests', () => {
   // REVIEW FLAGGING
   // ================================
 
-  test.describe('Review Flagging System', () => {
+  test.describe('Review Flagging System (Story 4.2)', () => {
     test('should allow user to flag inappropriate review', async ({ page }) => {
-      // TODO: Implement test
       // 1. Login as user
-      // 2. Navigate to package reviews
-      // 3. Click "Flag" button on review
-      // 4. Select flag reason
-      // 5. Submit flag
-      // 6. Verify success message
-      // 7. Verify admin receives notification
+      await login(page, 'buyer');
+
+      // 2. Navigate to marketplace and select package
+      await page.goto('/marketplace');
+      await page.waitForLoadState('networkidle');
+      await page.locator('[data-testid="package-card"]').first().click();
+      await page.waitForURL(/\/marketplace\/packages\/[^\/]+$/);
+
+      // 3. Scroll to reviews section
+      const reviewsSection = page.locator('[data-testid="reviews-section"]');
+      await reviewsSection.scrollIntoViewIfNeeded();
+
+      // 4. Find a review from another user (not own review)
+      const reviewItem = page.locator('[data-testid="review-item"]').first();
+      await expect(reviewItem).toBeVisible();
+
+      // 5. Click on review options menu (three dots)
+      const optionsButton = reviewItem.locator(
+        '[data-testid="review-options-button"]'
+      );
+      await optionsButton.click();
+
+      // 6. Click "Flag" button in dropdown
+      await page.click('[data-testid="flag-review-button"]');
+
+      // 7. Wait for flag modal
+      await page.waitForSelector('[data-testid="flag-review-modal"]');
+
+      // 8. Select flag reason (SPAM)
+      await page.click('[data-testid="flag-reason-SPAM"]');
+
+      // 9. Add optional comment
+      await page.fill(
+        'textarea[name="flagComment"]',
+        'This review appears to be spam and not genuine feedback.'
+      );
+
+      // 10. Submit flag
+      await page.click('button[type="submit"]:has-text("Gönder")');
+
+      // 11. Wait for API response
+      await page.waitForResponse(
+        (response: { url: () => string; status: () => number }) =>
+          response.url().includes('/api/v1/reviews') &&
+          response.url().includes('/flag') &&
+          (response.status() === 200 || response.status() === 201)
+      );
+
+      // 12. Verify success message
+      await expect(
+        page.locator(
+          'text=/Şikayet.*gönderildi/i, [role="alert"]:has-text("başarı")'
+        )
+      ).toBeVisible({ timeout: 5000 });
+
+      // 13. Verify modal closed
+      await expect(
+        page.locator('[data-testid="flag-review-modal"]')
+      ).not.toBeVisible();
     });
 
-    test('should prevent self-flagging', async ({ page }) => {
-      // TODO: Implement test
-      // 1. Login as user
-      // 2. Navigate to own review
-      // 3. Verify flag button disabled/hidden
-      // 4. Verify tooltip shows "Cannot flag own review"
+    test('should test all 5 flag reasons', async ({ page }) => {
+      // Test all flag reason types
+      const flagReasons = [
+        { id: 'SPAM', label: 'Spam' },
+        { id: 'INAPPROPRIATE', label: 'Uygunsuz İçerik' },
+        { id: 'FAKE', label: 'Sahte Değerlendirme' },
+        { id: 'OFFENSIVE', label: 'Saldırgan/Hakaret' },
+        { id: 'OTHER', label: 'Diğer' },
+      ];
+
+      await login(page, 'buyer');
+      await page.goto('/marketplace');
+      await page.waitForLoadState('networkidle');
+
+      for (const reason of flagReasons) {
+        // 1. Navigate to a package
+        await page.locator('[data-testid="package-card"]').first().click();
+        await page.waitForURL(/\/marketplace\/packages\/[^\/]+$/);
+
+        // 2. Open flag modal
+        const reviewsSection = page.locator('[data-testid="reviews-section"]');
+        await reviewsSection.scrollIntoViewIfNeeded();
+
+        const reviewItem = page.locator('[data-testid="review-item"]').nth(1); // Use different review each time
+        await reviewItem
+          .locator('[data-testid="review-options-button"]')
+          .click();
+        await page.click('[data-testid="flag-review-button"]');
+        await page.waitForSelector('[data-testid="flag-review-modal"]');
+
+        // 3. Verify flag reason option exists
+        const reasonButton = page.locator(
+          `[data-testid="flag-reason-${reason.id}"]`
+        );
+        await expect(reasonButton).toBeVisible();
+
+        // 4. Select the reason
+        await reasonButton.click();
+
+        // 5. If OTHER, verify comment is required
+        if (reason.id === 'OTHER') {
+          const commentField = page.locator('textarea[name="flagComment"]');
+          await expect(commentField).toBeVisible();
+          await expect(commentField).toHaveAttribute('required', '');
+        }
+
+        // 6. Close modal
+        await page.click('[data-testid="flag-modal-close"]');
+        await page.goBack(); // Go back to marketplace
+      }
     });
 
-    test('should auto-flag review at 3 reports', async ({ page }) => {
-      // TODO: Implement test
+    test('should prevent duplicate flags from same user', async ({ page }) => {
+      // 1. Login as user
+      await login(page, 'buyer');
+
+      // 2. Navigate to package and flag a review
+      await page.goto('/marketplace');
+      await page.waitForLoadState('networkidle');
+      await page.locator('[data-testid="package-card"]').first().click();
+      await page.waitForURL(/\/marketplace\/packages\/[^\/]+$/);
+
+      const reviewsSection = page.locator('[data-testid="reviews-section"]');
+      await reviewsSection.scrollIntoViewIfNeeded();
+
+      const reviewItem = page.locator('[data-testid="review-item"]').first();
+
+      // 3. Try to flag the review
+      await reviewItem.locator('[data-testid="review-options-button"]').click();
+
+      // 4. Check if "Flag" button is available or shows "Already Flagged"
+      const flagButton = page.locator('[data-testid="flag-review-button"]');
+
+      if (await flagButton.isVisible()) {
+        // First time flagging
+        await flagButton.click();
+        await page.waitForSelector('[data-testid="flag-review-modal"]');
+        await page.click('[data-testid="flag-reason-SPAM"]');
+        await page.click('button[type="submit"]:has-text("Gönder")');
+
+        // Wait for success
+        await page.waitForTimeout(1000);
+
+        // 5. Try to flag again
+        await reviewItem
+          .locator('[data-testid="review-options-button"]')
+          .click();
+      }
+
+      // 6. Verify flag button is disabled or shows "Already Flagged"
+      const flagButtonState = page.locator(
+        '[data-testid="flag-review-button"]'
+      );
+      const isDisabled = await flagButtonState.isDisabled().catch(() => false);
+      const hasAlreadyFlaggedText = await page
+        .locator('text=/Zaten.*şikayet/i')
+        .isVisible()
+        .catch(() => false);
+
+      expect(isDisabled || hasAlreadyFlaggedText).toBeTruthy();
+    });
+
+    test('should prevent self-flagging own review', async ({ page }) => {
+      // 1. Login as user
+      await login(page, 'buyer');
+
+      // 2. Navigate to own reviews page
+      await page.goto('/dashboard/employer/reviews');
+      await page.waitForLoadState('networkidle');
+
+      // 3. Find own review
+      const ownReview = page.locator('[data-testid="review-item"]').first();
+
+      // Check if review exists
+      const reviewExists = await ownReview.isVisible().catch(() => false);
+      if (!reviewExists) {
+        test.skip(); // No reviews to test
+        return;
+      }
+
+      // 4. Check if options button exists
+      const optionsButton = ownReview.locator(
+        '[data-testid="review-options-button"]'
+      );
+      const hasOptions = await optionsButton.isVisible().catch(() => false);
+
+      if (hasOptions) {
+        await optionsButton.click();
+
+        // 5. Verify "Flag" button is not present for own reviews
+        const flagButton = page.locator('[data-testid="flag-review-button"]');
+        await expect(flagButton).not.toBeVisible();
+      }
+    });
+
+    test.skip('should auto-flag review at 3 reports', async () => {
+      // TODO: Implement test in future sprint - requires multiple user simulation
       // 1. Simulate 3 different users flagging same review
       // 2. Verify review status changes to FLAGGED
       // 3. Verify admin receives notification
@@ -477,10 +1378,8 @@ test.describe('Review System - Complete E2E Tests', () => {
   // ================================
 
   test.describe('US-4.1: Order Completion Review Reminder', () => {
-    test('should trigger review reminder on order completion', async ({
-      page,
-    }) => {
-      // TODO: Implement test
+    test.skip('should trigger review reminder on order completion', async () => {
+      // TODO: Implement test in future sprint
       // 1. Complete an order as buyer
       // 2. Verify notification appears
       // 3. Verify "Write Review" CTA present
@@ -488,7 +1387,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       // 5. Verify review modal opens with order details
     });
 
-    test('should send 7-day reminder notification', async ({ page }) => {
+    test.skip('should send 7-day reminder notification', async () => {
       // TODO: Implement test (requires date manipulation)
       // 1. Complete order
       // 2. Fast-forward 7 days (mock time)
@@ -497,7 +1396,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       // 5. Verify notification content correct
     });
 
-    test('should send final reminder at 23 days', async ({ page }) => {
+    test.skip('should send final reminder at 23 days', async () => {
       // TODO: Implement test (requires date manipulation)
       // 1. Complete order
       // 2. Fast-forward 23 days (mock time)
@@ -506,7 +1405,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       // 5. Verify urgency message present
     });
 
-    test('should stop reminders after review submitted', async ({ page }) => {
+    test.skip('should stop reminders after review submitted', async () => {
       // TODO: Implement test
       // 1. Complete order
       // 2. Submit review
@@ -515,7 +1414,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       // 5. Verify no reminder sent
     });
 
-    test('should enforce 30-day review deadline', async ({ page }) => {
+    test.skip('should enforce 30-day review deadline', async () => {
       // TODO: Implement test (requires date manipulation)
       // 1. Complete order
       // 2. Fast-forward 31 days
@@ -530,7 +1429,7 @@ test.describe('Review System - Complete E2E Tests', () => {
   // ================================
 
   test.describe('US-5.1: Review Notifications', () => {
-    test('should notify seller of new review', async ({ page }) => {
+    test.skip('should notify seller of new review', async () => {
       // TODO: Implement test
       // 1. Login as buyer, create review
       // 2. Logout, login as seller
@@ -541,7 +1440,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       // 7. Verify navigates to review
     });
 
-    test('should notify buyer of seller response', async ({ page }) => {
+    test.skip('should notify buyer of seller response', async () => {
       // TODO: Implement test
       // 1. Login as seller, respond to review
       // 2. Logout, login as buyer
@@ -549,7 +1448,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       // 4. Verify response content in notification
     });
 
-    test('should notify reviewer of helpful votes', async ({ page }) => {
+    test.skip('should notify reviewer of helpful votes', async () => {
       // TODO: Implement test
       // 1. Login as user, vote review helpful
       // 2. Logout, login as reviewer
@@ -557,7 +1456,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       // 4. Verify helpful count in notification
     });
 
-    test('should notify reviewer of approval', async ({ page }) => {
+    test.skip('should notify reviewer of approval', async () => {
       // TODO: Implement test
       // 1. Login as admin, approve review
       // 2. Logout, login as reviewer
@@ -565,10 +1464,8 @@ test.describe('Review System - Complete E2E Tests', () => {
       // 4. Verify review now visible
     });
 
-    test('should notify reviewer of rejection with reason', async ({
-      page,
-    }) => {
-      // TODO: Implement test
+    test.skip('should notify reviewer of rejection with reason', async () => {
+      // TODO: Implement test in future sprint
       // 1. Login as admin, reject review
       // 2. Enter rejection reason
       // 3. Logout, login as reviewer
@@ -576,7 +1473,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       // 5. Verify reason displayed
     });
 
-    test('should notify admins of flagged review', async ({ page }) => {
+    test.skip('should notify admins of flagged review', async () => {
       // TODO: Implement test
       // 1. Login as user, flag review
       // 2. Logout, login as admin
@@ -591,23 +1488,21 @@ test.describe('Review System - Complete E2E Tests', () => {
   // ================================
 
   test.describe('Performance & Load Tests', () => {
-    test('should load package reviews page within 2 seconds', async ({
-      page,
-    }) => {
-      // TODO: Implement test
+    test.skip('should load package reviews page within 2 seconds', async () => {
+      // TODO: Implement test in future sprint
       // 1. Navigate to package with 100+ reviews
       // 2. Measure page load time
       // 3. Verify load time < 2000ms
     });
 
-    test('should handle pagination efficiently', async ({ page }) => {
+    test.skip('should handle pagination efficiently', async () => {
       // TODO: Implement test
       // 1. Navigate to reviews list
       // 2. Click through 10 pages
       // 3. Verify each page loads < 500ms
     });
 
-    test('should cache rating statistics', async ({ page }) => {
+    test.skip('should cache rating statistics', async () => {
       // TODO: Implement test
       // 1. Load package page
       // 2. Verify stats cached (check network)
@@ -621,7 +1516,7 @@ test.describe('Review System - Complete E2E Tests', () => {
   // ================================
 
   test.describe('Accessibility', () => {
-    test('should be keyboard navigable', async ({ page }) => {
+    test.skip('should be keyboard navigable', async () => {
       // TODO: Implement test
       // 1. Navigate to review form
       // 2. Use only keyboard (Tab, Enter, Space)
@@ -629,14 +1524,14 @@ test.describe('Review System - Complete E2E Tests', () => {
       // 4. Verify focus indicators visible
     });
 
-    test('should have proper ARIA labels', async ({ page }) => {
+    test.skip('should have proper ARIA labels', async () => {
       // TODO: Implement test
       // 1. Run axe accessibility scan
       // 2. Verify no critical issues
       // 3. Verify all interactive elements labeled
     });
 
-    test('should work with screen readers', async ({ page }) => {
+    test.skip('should work with screen readers', async () => {
       // TODO: Implement test
       // 1. Enable screen reader simulation
       // 2. Navigate through review form
@@ -649,7 +1544,7 @@ test.describe('Review System - Complete E2E Tests', () => {
   // ================================
 
   test.describe('Mobile Responsiveness', () => {
-    test('should display review form correctly on mobile', async ({ page }) => {
+    test.skip('should display review form correctly on mobile', async () => {
       // TODO: Implement test
       // 1. Set viewport to mobile size (375x667)
       // 2. Open review form
@@ -658,7 +1553,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       // 5. Verify touch-friendly button sizes
     });
 
-    test('should handle touch gestures for star rating', async ({ page }) => {
+    test.skip('should handle touch gestures for star rating', async () => {
       // TODO: Implement test
       // 1. Set viewport to mobile
       // 2. Open review form
@@ -676,7 +1571,7 @@ test.describe('Review System - Complete E2E Tests', () => {
 /**
  * Login helper for different user roles
  */
-async function login(page: any, role: 'buyer' | 'seller' | 'admin' = 'buyer') {
+async function login(page: Page, role: 'buyer' | 'seller' | 'admin' = 'buyer') {
   const credentials = {
     buyer: {
       email: 'buyer@test.com',
@@ -704,7 +1599,8 @@ async function login(page: any, role: 'buyer' | 'seller' | 'admin' = 'buyer') {
 /**
  * Create test order helper
  */
-async function createTestOrder(page: any) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function createTestOrder(page: Page) {
   await page.goto('/marketplace');
 
   // Select first package
@@ -733,7 +1629,8 @@ async function createTestOrder(page: any) {
 /**
  * Complete order helper (seller accepts delivery)
  */
-async function completeOrder(page: any, orderId: string) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function completeOrder(page: Page, orderId: string) {
   // Navigate to order
   await page.goto(`/dashboard/orders/${orderId}`);
 
@@ -761,7 +1658,8 @@ async function completeOrder(page: any, orderId: string) {
 /**
  * Wait for notification helper
  */
-async function waitForNotification(page: any, title: string) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function waitForNotification(page: Page, title: string) {
   const notificationSelector = `[data-testid="notification"]:has-text("${title}")`;
   await page.waitForSelector(notificationSelector, { timeout: 10000 });
 }
@@ -769,6 +1667,7 @@ async function waitForNotification(page: any, title: string) {
 /**
  * Verify analytics event (mock implementation)
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function verifyAnalyticsEvent(
   eventName: string,
   properties: Record<string, unknown>
