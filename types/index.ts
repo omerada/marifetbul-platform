@@ -26,6 +26,9 @@ export * from './business/features/marketplace';
 // Messaging types
 export * from './business/features/messaging';
 
+// Real-time Messaging types (Sprint 5)
+export * from './message';
+
 // Wallet & Payout types
 export * from './business/features/wallet';
 

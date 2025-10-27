@@ -34,3 +34,11 @@ export type { ImprovedRequestPayoutModalProps } from './ImprovedRequestPayoutMod
 // Bank account management
 export { AddBankAccountModal } from './AddBankAccountModal';
 export type { AddBankAccountModalProps } from './AddBankAccountModal';
+
+export { BankAccountManagement } from './BankAccountManagement';
+
+export { PayoutRequestModal } from './PayoutRequestModal';
+export type { PayoutRequestModalProps } from './PayoutRequestModal';
+
+export { TransactionFiltersPanel } from './TransactionFiltersPanel';
+export type { TransactionFilters as TransactionFilterValues } from './TransactionFiltersPanel';

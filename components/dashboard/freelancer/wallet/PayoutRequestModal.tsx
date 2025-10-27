@@ -13,9 +13,8 @@
 
 import { useState, useEffect } from 'react';
 import { X, DollarSign, AlertCircle, CheckCircle, Info } from 'lucide-react';
-import { payoutApi } from '@/lib/api';
+import walletApi from '@/lib/api/wallet';
 import type { PayoutEligibility } from '@/lib/api/validators';
-import { formatCurrency } from '@/types/business/features/wallet';
 
 // ================================================
 // TYPES
@@ -69,7 +68,7 @@ export const PayoutRequestModal: React.FC<PayoutRequestModalProps> = ({
   // ==================== STATE ====================
 
   const [amount, setAmount] = useState('');
-  const [method, setMethod] = useState<'BANK_TRANSFER' | 'STRIPE'>(
+  const [method, setMethod] = useState<'BANK_TRANSFER' | 'STRIPE_PAYOUT'>(
     'BANK_TRANSFER'
   );
   const [isLoading, setIsLoading] = useState(false);
@@ -98,10 +97,19 @@ export const PayoutRequestModal: React.FC<PayoutRequestModalProps> = ({
 
   // ==================== HANDLERS ====================
 
+  const formatCurrency = (amount: number): string => {
+    return new Intl.NumberFormat('tr-TR', {
+      style: 'currency',
+      currency: 'TRY',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
+
   const checkEligibility = async () => {
     try {
       setIsCheckingEligibility(true);
-      const result = await payoutApi.checkPayoutEligibility();
+      const result = await walletApi.checkPayoutEligibility();
       setEligibility(result);
 
       if (!result.eligible && result.reason) {
@@ -156,7 +164,7 @@ export const PayoutRequestModal: React.FC<PayoutRequestModalProps> = ({
       setIsLoading(true);
       setError(null);
 
-      const payout = await payoutApi.createPayout({
+      const payout = await walletApi.requestPayout({
         amount: parseFloat(amount),
         method,
       });
@@ -358,13 +366,15 @@ export const PayoutRequestModal: React.FC<PayoutRequestModalProps> = ({
                 <select
                   value={method}
                   onChange={(e) =>
-                    setMethod(e.target.value as 'BANK_TRANSFER' | 'STRIPE')
+                    setMethod(
+                      e.target.value as 'BANK_TRANSFER' | 'STRIPE_PAYOUT'
+                    )
                   }
                   disabled={isLoading || !eligibility?.eligible}
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100"
                 >
                   <option value="BANK_TRANSFER">Banka Havalesi (EFT)</option>
-                  <option value="STRIPE">Stripe (Hızlı Transfer)</option>
+                  <option value="STRIPE_PAYOUT">Stripe (Hızlı Transfer)</option>
                 </select>
               </div>
 

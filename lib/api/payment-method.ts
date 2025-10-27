@@ -31,11 +31,11 @@ export interface PaymentMethod {
   cardExpiryYear?: number;
   bankName?: string;
   accountLastFour?: string;
-  accountHolderName?: string;
-  iban?: string;
   isDefault: boolean;
   isVerified: boolean;
+  isExpired?: boolean;
   nickname?: string;
+  gateway?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -75,11 +75,11 @@ const PaymentMethodSchema = z.object({
   cardExpiryYear: z.number().optional(),
   bankName: z.string().optional(),
   accountLastFour: z.string().optional(),
-  accountHolderName: z.string().optional(),
-  iban: z.string().optional(),
   isDefault: z.boolean(),
   isVerified: z.boolean(),
+  isExpired: z.boolean().optional(),
   nickname: z.string().optional(),
+  gateway: z.string().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -184,7 +184,7 @@ export async function deletePaymentMethod(
 
 /**
  * Set payment method as default
- * PUT /api/v1/payment-methods/{id}/default
+ * POST /api/v1/payment-methods/{id}/set-default
  *
  * @param {string} paymentMethodId - Payment method UUID
  * @returns {Promise<PaymentMethod>} Updated payment method
@@ -192,8 +192,9 @@ export async function deletePaymentMethod(
 export async function setPaymentMethodAsDefault(
   paymentMethodId: string
 ): Promise<PaymentMethod> {
-  const response = await apiClient.put<PaymentMethod>(
-    `/payment-methods/${paymentMethodId}/default`
+  const response = await apiClient.post<PaymentMethod>(
+    `/payment-methods/${paymentMethodId}/set-default`,
+    {}
   );
   return PaymentMethodSchema.parse(response);
 }
@@ -241,6 +242,138 @@ export async function addBankAccount(data: {
 // ============================================================================
 
 /**
+ * Luhn Algorithm for credit card validation
+ * https://en.wikipedia.org/wiki/Luhn_algorithm
+ */
+export function validateCreditCard(cardNumber: string): boolean {
+  const cleanNumber = cardNumber.replace(/\D/g, '');
+
+  if (cleanNumber.length < 13 || cleanNumber.length > 19) {
+    return false;
+  }
+
+  let sum = 0;
+  let isEven = false;
+
+  for (let i = cleanNumber.length - 1; i >= 0; i--) {
+    let digit = parseInt(cleanNumber.charAt(i), 10);
+
+    if (isEven) {
+      digit *= 2;
+      if (digit > 9) {
+        digit -= 9;
+      }
+    }
+
+    sum += digit;
+    isEven = !isEven;
+  }
+
+  return sum % 10 === 0;
+}
+
+/**
+ * Detect card brand from card number
+ */
+export function detectCardBrand(cardNumber: string): string | null {
+  const cleanNumber = cardNumber.replace(/\D/g, '');
+
+  // Visa: starts with 4
+  if (/^4/.test(cleanNumber)) {
+    return 'Visa';
+  }
+
+  // Mastercard: starts with 51-55 or 2221-2720
+  if (
+    /^5[1-5]/.test(cleanNumber) ||
+    /^222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720/.test(cleanNumber)
+  ) {
+    return 'Mastercard';
+  }
+
+  // American Express: starts with 34 or 37
+  if (/^3[47]/.test(cleanNumber)) {
+    return 'American Express';
+  }
+
+  // Discover: starts with 6011, 622126-622925, 644-649, 65
+  if (
+    /^6(?:011|5[0-9]{2}|4[4-9][0-9]|22(?:12[6-9]|1[3-9][0-9]|[2-8][0-9]{2}|9[01][0-9]|92[0-5]))/.test(
+      cleanNumber
+    )
+  ) {
+    return 'Discover';
+  }
+
+  // Troy (Turkey): starts with 9792
+  if (/^9792/.test(cleanNumber)) {
+    return 'Troy';
+  }
+
+  return null;
+}
+
+/**
+ * Format card number for display
+ */
+export function formatCardNumber(cardNumber: string): string {
+  const cleanNumber = cardNumber.replace(/\D/g, '');
+  const groups = cleanNumber.match(/.{1,4}/g) || [];
+  return groups.join(' ');
+}
+
+/**
+ * Mask card number for display
+ */
+export function maskCardNumber(cardNumber: string): string {
+  const cleanNumber = cardNumber.replace(/\D/g, '');
+  if (cleanNumber.length < 4) return '****';
+  const lastFour = cleanNumber.slice(-4);
+  return `**** **** **** ${lastFour}`;
+}
+
+/**
+ * Validate card expiry date
+ */
+export function validateCardExpiry(month: number, year: number): boolean {
+  if (month < 1 || month > 12) {
+    return false;
+  }
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+
+  // Convert 2-digit year to 4-digit
+  const fullYear = year < 100 ? 2000 + year : year;
+
+  if (fullYear < currentYear) {
+    return false;
+  }
+
+  if (fullYear === currentYear && month < currentMonth) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Validate CVV
+ */
+export function validateCVV(cvv: string, cardType?: string): boolean {
+  const cleanCVV = cvv.replace(/\D/g, '');
+
+  // American Express uses 4-digit CVV
+  if (cardType === 'American Express') {
+    return cleanCVV.length === 4;
+  }
+
+  // Most cards use 3-digit CVV
+  return cleanCVV.length === 3;
+}
+
+/**
  * Validate Turkish IBAN
  */
 export function validateIBAN(iban: string): boolean {
@@ -285,7 +418,15 @@ export const paymentMethodApi = {
   getDefaultBankAccount,
   addBankAccount,
 
-  // Validation helpers
+  // Card validation helpers
+  validateCreditCard,
+  detectCardBrand,
+  formatCardNumber,
+  maskCardNumber,
+  validateCardExpiry,
+  validateCVV,
+
+  // IBAN validation helpers
   validateIBAN,
   formatIBAN,
   maskIBAN,

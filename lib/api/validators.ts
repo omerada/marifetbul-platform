@@ -656,17 +656,25 @@ export const PayoutSchema = z.object({
   currency: z.string().default('TRY'),
   status: PayoutStatusSchema,
   method: PayoutMethodSchema,
-  bankAccountId: z.string().optional(),
-  paypalEmail: z.string().email().optional(),
-  processingFee: z.number().min(0),
-  netAmount: z.number().min(0),
+  stripePayoutId: z.string().optional(),
+  description: z.string(),
   failureReason: z.string().optional(),
-  processedAt: z.string().datetime().optional(),
+  requestedAt: z.string().datetime(),
+  completedAt: z.string().datetime().optional(),
   createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
 });
 
 export type Payout = z.infer<typeof PayoutSchema>;
+
+/**
+ * Payout limits schema
+ */
+export const PayoutLimitsSchema = z.object({
+  minimum: z.number().min(0),
+  maximum: z.number().min(0),
+});
+
+export type PayoutLimits = z.infer<typeof PayoutLimitsSchema>;
 
 /**
  * Payout eligibility schema

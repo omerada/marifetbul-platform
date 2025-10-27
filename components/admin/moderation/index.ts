@@ -5,6 +5,12 @@
  * Export all moderation-related components
  */
 
+// Sprint 2 - Review Moderation Components
+export { default as PendingReviewsList } from './PendingReviewsList';
+export { default as ReviewModerationCard } from './ReviewModerationCard';
+export { default as ModerationStats } from './ModerationStats';
+
+// Comment Moderation Components
 export { CommentModerationQueue } from './CommentModerationQueue';
 export { CommentModerationCard } from './CommentModerationCard';
 export { CommentModerationNotes } from './CommentModerationNotes';

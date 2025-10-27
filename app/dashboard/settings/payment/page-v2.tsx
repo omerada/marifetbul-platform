@@ -1,3 +1,14 @@
+/**
+ * ================================================
+ * PAYMENT METHODS MANAGEMENT PAGE (V2)
+ * ================================================
+ * Modern payment methods management with real API
+ * Uses Sprint 3 payment-method.ts API client
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0 - Sprint 3
+ */
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,6 +20,7 @@ import {
   Star,
   AlertCircle,
   CheckCircle,
+  X,
 } from 'lucide-react';
 import {
   paymentMethodApi,
@@ -18,7 +30,10 @@ import {
 } from '@/lib/api/payment-method';
 import { logger } from '@/lib/shared/utils/logger';
 
-// Helper function to get payment method type display name
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
 function getPaymentMethodTypeName(type: PaymentMethodType): string {
   const typeNames = {
     [PaymentMethodType.CREDIT_CARD]: 'Kredi Kartı',
@@ -28,12 +43,11 @@ function getPaymentMethodTypeName(type: PaymentMethodType): string {
   return typeNames[type] || type;
 }
 
-// Helper function to check if card is expired
-function isCardExpired(method: PaymentMethod): boolean {
-  return method.isExpired || false;
-}
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
 
-export default function PaymentMethodsPage() {
+export default function PaymentMethodsPageV2() {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -46,9 +60,10 @@ export default function PaymentMethodsPage() {
   const loadPaymentMethods = async () => {
     try {
       setLoading(true);
+      setError(null);
       const data = await paymentMethodApi.getPaymentMethods();
       setPaymentMethods(data);
-      setError(null);
+      logger.info('Payment methods loaded', { count: data.length });
     } catch (err) {
       setError('Ödeme yöntemleri yüklenemedi');
       logger.error('Failed to load payment methods', { error: err });
@@ -61,6 +76,7 @@ export default function PaymentMethodsPage() {
     try {
       await paymentMethodApi.setPaymentMethodAsDefault(id);
       await loadPaymentMethods();
+      logger.info('Default payment method set', { id });
     } catch (err) {
       logger.error('Failed to set default payment method', { id, error: err });
       setError('Varsayılan ödeme yöntemi ayarlanamadı');
@@ -72,13 +88,18 @@ export default function PaymentMethodsPage() {
       return;
 
     try {
-      await deletePaymentMethod(id);
+      await paymentMethodApi.deletePaymentMethod(id);
       await loadPaymentMethods();
+      logger.info('Payment method deleted', { id });
     } catch (err) {
       logger.error('Failed to delete payment method', { id, error: err });
       setError('Ödeme yöntemi silinemedi');
     }
   };
+
+  // ================================================
+  // LOADING STATE
+  // ================================================
 
   if (loading) {
     return (
@@ -87,6 +108,10 @@ export default function PaymentMethodsPage() {
       </div>
     );
   }
+
+  // ================================================
+  // MAIN RENDER
+  // ================================================
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
@@ -104,7 +129,13 @@ export default function PaymentMethodsPage() {
       {error && (
         <div className="mb-6 flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
           <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-600" />
-          <p className="text-red-800">{error}</p>
+          <p className="flex-1 text-red-800">{error}</p>
+          <button
+            onClick={() => setError(null)}
+            className="text-red-600 hover:text-red-700"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
       )}
 
@@ -155,6 +186,10 @@ export default function PaymentMethodsPage() {
   );
 }
 
+// ============================================================================
+// PAYMENT METHOD CARD COMPONENT
+// ============================================================================
+
 interface PaymentMethodCardProps {
   method: PaymentMethod;
   onSetDefault: (id: string) => void;
@@ -166,10 +201,10 @@ function PaymentMethodCard({
   onSetDefault,
   onDelete,
 }: PaymentMethodCardProps) {
-  const isCard = method.type === 'CREDIT_CARD' || method.type === 'DEBIT_CARD';
-  const isBank = method.type === 'BANK_TRANSFER';
-  const expired =
-    isCard && isCardExpired(method.expiryMonth, method.expiryYear);
+  const isCard =
+    method.type === PaymentMethodType.CREDIT_CARD ||
+    method.type === PaymentMethodType.DEBIT_CARD;
+  const isBank = method.type === PaymentMethodType.BANK_TRANSFER;
 
   return (
     <div
@@ -196,7 +231,7 @@ function PaymentMethodCard({
 
           {/* Details */}
           <div className="flex-1">
-            <div className="mb-1 flex items-center gap-2">
+            <div className="mb-2 flex items-center gap-2">
               <h3 className="font-semibold text-gray-900">
                 {method.nickname || getPaymentMethodTypeName(method.type)}
               </h3>
@@ -207,58 +242,36 @@ function PaymentMethodCard({
                 </span>
               )}
               {method.isVerified && (
-                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span title="Doğrulanmış">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                </span>
               )}
             </div>
 
+            {/* Masked Identifier */}
+            <p className="mb-1 text-sm text-gray-600">
+              {method.maskedIdentifier}
+            </p>
+
             {/* Card Details */}
-            {isCard && (
-              <>
-                <p className="mb-1 text-sm text-gray-600">
-                  {method.brand && `${method.brand} • `}
-                  •••• {method.lastFour}
-                </p>
-                {method.expiryMonth && method.expiryYear && (
-                  <p
-                    className={`text-sm ${
-                      expired ? 'text-red-600' : 'text-gray-500'
-                    }`}
-                  >
-                    Son kullanma: {method.expiryMonth}/{method.expiryYear}
-                    {expired && ' (Süresi dolmuş)'}
-                  </p>
-                )}
-                {method.cardHolderName && (
-                  <p className="text-sm text-gray-500">
-                    {method.cardHolderName}
-                  </p>
-                )}
-              </>
+            {isCard && method.cardExpiryMonth && method.cardExpiryYear && (
+              <p
+                className={`text-sm ${
+                  method.isExpired ? 'text-red-600' : 'text-gray-500'
+                }`}
+              >
+                Son kullanma: {method.cardExpiryMonth}/{method.cardExpiryYear}
+                {method.isExpired && ' (Süresi dolmuş)'}
+              </p>
             )}
 
             {/* Bank Details */}
-            {isBank && (
-              <>
-                {method.bankName && (
-                  <p className="mb-1 text-sm text-gray-600">
-                    {method.bankName}
-                  </p>
-                )}
-                {method.iban && (
-                  <p className="font-mono text-sm text-gray-500">
-                    {method.iban.replace(/(.{4})/g, '$1 ').trim()}
-                  </p>
-                )}
-                {method.accountHolderName && (
-                  <p className="text-sm text-gray-500">
-                    {method.accountHolderName}
-                  </p>
-                )}
-              </>
+            {isBank && method.bankName && (
+              <p className="text-sm text-gray-500">{method.bankName}</p>
             )}
 
             {/* Expired Warning */}
-            {expired && (
+            {method.isExpired && (
               <div className="mt-2 inline-flex items-center gap-1 rounded bg-red-100 px-2 py-1 text-xs text-red-700">
                 <AlertCircle className="h-3 w-3" />
                 Kartın süresi dolmuş, lütfen güncelleyin
@@ -291,6 +304,10 @@ function PaymentMethodCard({
   );
 }
 
+// ============================================================================
+// ADD PAYMENT METHOD MODAL
+// ============================================================================
+
 interface AddPaymentMethodModalProps {
   onClose: () => void;
   onSuccess: () => void;
@@ -313,26 +330,63 @@ function AddPaymentMethodModal({
 
     try {
       const request: AddPaymentMethodRequest = {
-        type: type === 'card' ? 'CREDIT_CARD' : 'BANK_TRANSFER',
+        type:
+          type === 'card'
+            ? PaymentMethodType.CREDIT_CARD
+            : PaymentMethodType.BANK_TRANSFER,
         nickname: (formData.get('nickname') as string) || undefined,
       };
 
       if (type === 'card') {
-        request.lastFour = formData.get('lastFour') as string;
-        request.brand = formData.get('brand') as string;
-        request.expiryMonth = parseInt(formData.get('expiryMonth') as string);
-        request.expiryYear = parseInt(formData.get('expiryYear') as string);
+        const cardNumber = formData.get('cardNumber') as string;
+        const cleanNumber = cardNumber.replace(/\D/g, '');
+
+        // Validate card
+        if (!paymentMethodApi.validateCreditCard(cleanNumber)) {
+          throw new Error('Geçersiz kart numarası');
+        }
+
+        request.cardLastFour = cleanNumber.slice(-4);
+        request.cardBrand =
+          paymentMethodApi.detectCardBrand(cleanNumber) || undefined;
+        request.cardExpiryMonth = parseInt(
+          formData.get('expiryMonth') as string
+        );
+        request.cardExpiryYear = parseInt(formData.get('expiryYear') as string);
         request.cardHolderName = formData.get('cardHolderName') as string;
+
+        // Validate expiry
+        if (
+          !paymentMethodApi.validateCardExpiry(
+            request.cardExpiryMonth!,
+            request.cardExpiryYear!
+          )
+        ) {
+          throw new Error('Kart süresi geçersiz veya dolmuş');
+        }
       } else {
+        const iban = (formData.get('iban') as string)
+          .replace(/\s/g, '')
+          .toUpperCase();
+
+        // Validate IBAN
+        if (!paymentMethodApi.validateIBAN(iban)) {
+          throw new Error('Geçersiz IBAN');
+        }
+
         request.bankName = formData.get('bankName') as string;
-        request.iban = formData.get('iban') as string;
+        request.iban = iban;
         request.accountHolderName = formData.get('accountHolderName') as string;
       }
 
-      await addPaymentMethod(request);
+      await paymentMethodApi.addPaymentMethod(request);
+      logger.info('Payment method added', { type: request.type });
       onSuccess();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ödeme yöntemi eklenemedi');
+      const errorMessage =
+        err instanceof Error ? err.message : 'Ödeme yöntemi eklenemedi';
+      setError(errorMessage);
+      logger.error('Failed to add payment method', { error: err });
     } finally {
       setLoading(false);
     }
@@ -342,13 +396,23 @@ function AddPaymentMethodModal({
     <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
       <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg bg-white">
         <div className="p-6">
-          <h2 className="mb-4 text-2xl font-bold text-gray-900">
-            Ödeme Yöntemi Ekle
-          </h2>
+          {/* Header */}
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Ödeme Yöntemi Ekle
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-6 w-6" />
+            </button>
+          </div>
 
           {/* Type Tabs */}
           <div className="mb-6 flex gap-2">
             <button
+              type="button"
               onClick={() => setType('card')}
               className={`flex-1 rounded-lg px-4 py-2 font-medium transition-colors ${
                 type === 'card'
@@ -359,6 +423,7 @@ function AddPaymentMethodModal({
               Kart
             </button>
             <button
+              type="button"
               onClick={() => setType('bank')}
               className={`flex-1 rounded-lg px-4 py-2 font-medium transition-colors ${
                 type === 'bank'
@@ -370,12 +435,14 @@ function AddPaymentMethodModal({
             </button>
           </div>
 
+          {/* Error Message */}
           {error && (
             <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
               {error}
             </div>
           )}
 
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Nickname */}
             <div>
@@ -385,45 +452,30 @@ function AddPaymentMethodModal({
               <input
                 type="text"
                 name="nickname"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                maxLength={50}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 placeholder="Örn: İş kartım"
               />
             </div>
 
             {type === 'card' ? (
               <>
-                {/* Card Brand */}
+                {/* Card Number */}
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Kart Markası <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="brand"
-                    required
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Seçiniz</option>
-                    <option value="VISA">Visa</option>
-                    <option value="MASTERCARD">Mastercard</option>
-                    <option value="AMEX">American Express</option>
-                    <option value="OTHER">Diğer</option>
-                  </select>
-                </div>
-
-                {/* Last Four */}
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Son 4 Rakam <span className="text-red-500">*</span>
+                    Kart Numarası <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
-                    name="lastFour"
+                    name="cardNumber"
                     required
-                    pattern="\d{4}"
-                    maxLength={4}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
-                    placeholder="1234"
+                    maxLength={19}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    placeholder="1234 5678 9012 3456"
                   />
+                  <p className="mt-1 text-xs text-gray-500">
+                    Luhn algoritması ile doğrulanacak
+                  </p>
                 </div>
 
                 {/* Expiry */}
@@ -435,7 +487,7 @@ function AddPaymentMethodModal({
                     <select
                       name="expiryMonth"
                       required
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     >
                       <option value="">Ay</option>
                       {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
@@ -452,7 +504,7 @@ function AddPaymentMethodModal({
                     <select
                       name="expiryYear"
                       required
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     >
                       <option value="">Yıl</option>
                       {Array.from(
@@ -476,7 +528,8 @@ function AddPaymentMethodModal({
                     type="text"
                     name="cardHolderName"
                     required
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                    maxLength={100}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     placeholder="Kartın üzerindeki isim"
                   />
                 </div>
@@ -492,7 +545,8 @@ function AddPaymentMethodModal({
                     type="text"
                     name="bankName"
                     required
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                    maxLength={100}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     placeholder="Örn: Ziraat Bankası"
                   />
                 </div>
@@ -506,12 +560,12 @@ function AddPaymentMethodModal({
                     type="text"
                     name="iban"
                     required
-                    pattern="^[A-Z]{2}\d{2}[A-Z0-9]+$"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 font-mono focus:border-transparent focus:ring-2 focus:ring-blue-500"
-                    placeholder="TR330006100519786457841326"
+                    maxLength={34}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 font-mono uppercase focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    placeholder="TR33 0006 1005 1978 6457 8413 26"
                   />
                   <p className="mt-1 text-xs text-gray-500">
-                    Boşluksuz ve büyük harflerle giriniz
+                    TR ile başlamalı, toplam 26 karakter
                   </p>
                 </div>
 
@@ -524,7 +578,8 @@ function AddPaymentMethodModal({
                     type="text"
                     name="accountHolderName"
                     required
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                    maxLength={100}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     placeholder="Ad Soyad"
                   />
                 </div>
