@@ -61,7 +61,10 @@ export const useReviewStore = create<ReviewStore>()(
             });
           }
 
-          const response = await fetch(`/api/v1/reviews?${queryParams}`);
+          // Updated: Public endpoint for querying reviews by seller
+          const response = await fetch(
+            `/api/v1/reviews/public/seller/${userId}?${queryParams}`
+          );
 
           if (!response.ok) {
             throw new Error('Reviews fetch edilemedi');
@@ -91,7 +94,8 @@ export const useReviewStore = create<ReviewStore>()(
         set({ isLoading: true, error: null });
 
         try {
-          const response = await fetch('/api/v1/reviews', {
+          // Updated: New authenticated review management endpoint
+          const response = await fetch('/api/v1/reviews/manage', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -135,13 +139,17 @@ export const useReviewStore = create<ReviewStore>()(
         set({ isLoading: true, error: null });
 
         try {
-          const response = await fetch(`/api/v1/reviews/${reviewId}/reply`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ content }),
-          });
+          // Updated: New seller response endpoint
+          const response = await fetch(
+            `/api/v1/reviews/response/${reviewId}/respond`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ content }),
+            }
+          );
 
           if (!response.ok) {
             throw new Error('Reply gönderilemedi');
@@ -178,13 +186,17 @@ export const useReviewStore = create<ReviewStore>()(
         set({ isLoading: true, error: null });
 
         try {
-          const response = await fetch(`/api/v1/reviews/${reviewId}/report`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ reason, description }),
-          });
+          // Updated: New flag endpoint
+          const response = await fetch(
+            `/api/v1/reviews/manage/${reviewId}/flag`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ reason, description }),
+            }
+          );
 
           if (!response.ok) {
             throw new Error('Şikayet gönderilemedi');
@@ -207,9 +219,13 @@ export const useReviewStore = create<ReviewStore>()(
 
       markHelpful: async (reviewId: string) => {
         try {
-          const response = await fetch(`/api/v1/reviews/${reviewId}/helpful`, {
-            method: 'POST',
-          });
+          // Updated: New helpful voting endpoint
+          const response = await fetch(
+            `/api/v1/reviews/manage/${reviewId}/helpful`,
+            {
+              method: 'POST',
+            }
+          );
 
           if (!response.ok) {
             throw new Error('İşlem gerçekleştirilemedi');

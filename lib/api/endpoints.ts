@@ -286,32 +286,110 @@ export const NOTIFICATION_ENDPOINTS = {
 // ================================================
 
 export const REVIEW_ENDPOINTS = {
-  // Review CRUD
-  CREATE: '/reviews',
-  GET_BY_ID: (reviewId: string) => `/reviews/${reviewId}`,
-  UPDATE: (reviewId: string) => `/reviews/${reviewId}`,
-  DELETE: (reviewId: string) => `/reviews/${reviewId}`,
+  // ================================================
+  // AUTHENTICATED USER REVIEW MANAGEMENT
+  // Path: /api/v1/reviews/manage
+  // Authorization: isAuthenticated()
+  // ================================================
 
-  // Package Reviews
-  BY_PACKAGE: (packageId: string) => `/packages/${packageId}/reviews`,
+  // Review CRUD
+  CREATE: '/reviews/manage',
+  UPDATE: (reviewId: string) => `/reviews/manage/${reviewId}`,
+  DELETE: (reviewId: string) => `/reviews/manage/${reviewId}`,
+  GET_DETAIL: (reviewId: string) => `/reviews/manage/${reviewId}`,
+
+  // My Reviews
+  MY_REVIEWS: '/reviews/manage/my-reviews',
+
+  // Review Eligibility
+  CAN_REVIEW: (orderId: string) => `/reviews/manage/can-review/${orderId}`,
+
+  // Review Voting
+  VOTE_HELPFUL: (reviewId: string) => `/reviews/manage/${reviewId}/helpful`,
+  VOTE_NOT_HELPFUL: (reviewId: string) =>
+    `/reviews/manage/${reviewId}/not-helpful`,
+
+  // Review Flagging
+  FLAG_REVIEW: (reviewId: string) => `/reviews/manage/${reviewId}/flag`,
+
+  // ================================================
+  // PUBLIC REVIEW QUERIES
+  // Path: /api/v1/reviews/public
+  // Authorization: None (public access)
+  // ================================================
 
   // Seller Reviews
-  BY_SELLER: (sellerId: string) => `/users/${sellerId}/reviews/seller`,
-  SELLER_STATS: (sellerId: string) => `/users/${sellerId}/reviews/seller/stats`,
+  BY_SELLER: (sellerId: string) => `/reviews/public/seller/${sellerId}`,
+  SELLER_STATS: (sellerId: string) =>
+    `/reviews/public/seller/${sellerId}/stats`,
 
-  // Buyer Reviews
-  BY_BUYER: (buyerId: string) => `/users/${buyerId}/reviews/buyer`,
-  BUYER_STATS: (buyerId: string) => `/users/${buyerId}/reviews/buyer/stats`,
+  // Package Reviews
+  BY_PACKAGE: (packageId: string) => `/reviews/public/package/${packageId}`,
+  BY_PACKAGE_VERIFIED: (packageId: string) =>
+    `/reviews/public/package/${packageId}/verified`,
 
-  // Order Review
-  BY_ORDER: (orderId: string) => `/orders/${orderId}/review`,
-  CAN_REVIEW: (orderId: string) => `/orders/${orderId}/can-review`,
+  // Single Review
+  GET_BY_ID: (reviewId: string) => `/reviews/public/${reviewId}`,
 
-  // Admin
+  // Discovery
+  RECENT: '/reviews/public/recent',
+  MOST_HELPFUL: '/reviews/public/helpful',
+  TOP_SELLERS: '/reviews/public/top-sellers',
+
+  // ================================================
+  // SELLER RESPONSE MANAGEMENT
+  // Path: /api/v1/reviews/response
+  // Authorization: hasRole('FREELANCER')
+  // ================================================
+
+  // Seller's Reviews List
+  MY_SELLER_REVIEWS: '/reviews/response',
+  MY_SELLER_STATS: '/reviews/response/stats',
+
+  // Response CRUD
+  GET_REVIEW_FOR_RESPONSE: (reviewId: string) =>
+    `/reviews/response/${reviewId}`,
+  ADD_RESPONSE: (reviewId: string) => `/reviews/response/${reviewId}/respond`,
+  UPDATE_RESPONSE: (reviewId: string) => `/reviews/response/${reviewId}`,
+  DELETE_RESPONSE: (reviewId: string) => `/reviews/response/${reviewId}`,
+
+  // ================================================
+  // REVIEW IMAGE MANAGEMENT
+  // Path: /api/v1/reviews/images/{reviewId}
+  // Authorization: isAuthenticated() - Owner verification via service
+  // ================================================
+
+  // Image CRUD
+  UPLOAD_IMAGE: (reviewId: string) => `/reviews/images/${reviewId}`,
+  GET_IMAGES: (reviewId: string) => `/reviews/images/${reviewId}`,
+  DELETE_IMAGE: (reviewId: string, imageId: string) =>
+    `/reviews/images/${reviewId}/${imageId}`,
+  DELETE_ALL_IMAGES: (reviewId: string) => `/reviews/images/${reviewId}`,
+
+  // ================================================
+  // ADMIN REVIEW MODERATION
+  // Path: /api/v1/admin/reviews
+  // Authorization: hasRole('ADMIN')
+  // ================================================
+
+  // Review Lists
+  ADMIN_ALL: '/admin/reviews',
   ADMIN_PENDING: '/admin/reviews/pending',
   ADMIN_FLAGGED: '/admin/reviews/flagged',
+  ADMIN_FOR_MODERATION: '/admin/reviews/moderation',
+
+  // Review Detail
+  ADMIN_GET_DETAIL: (reviewId: string) => `/admin/reviews/${reviewId}`,
+
+  // Review Actions
   ADMIN_APPROVE: (reviewId: string) => `/admin/reviews/${reviewId}/approve`,
   ADMIN_REJECT: (reviewId: string) => `/admin/reviews/${reviewId}/reject`,
+  ADMIN_RESOLVE_FLAG: (reviewId: string) =>
+    `/admin/reviews/${reviewId}/resolve`,
+  ADMIN_DELETE: (reviewId: string) => `/admin/reviews/${reviewId}`,
+
+  // Statistics
+  ADMIN_STATS: '/admin/reviews/stats',
 } as const;
 
 // ================================================
