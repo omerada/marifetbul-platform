@@ -29,7 +29,7 @@ function getPaymentMethodTypeName(type: PaymentMethodType): string {
 }
 
 // Helper function to check if card is expired
-function isCardExpired(method: PaymentMethod): boolean {
+function _isCardExpired(method: PaymentMethod): boolean {
   return method.isExpired || false;
 }
 
@@ -72,7 +72,7 @@ export default function PaymentMethodsPage() {
       return;
 
     try {
-      await deletePaymentMethod(id);
+      await paymentMethodApi.deletePaymentMethod(id);
       await loadPaymentMethods();
     } catch (err) {
       logger.error('Failed to delete payment method', { id, error: err });
@@ -166,10 +166,11 @@ function PaymentMethodCard({
   onSetDefault,
   onDelete,
 }: PaymentMethodCardProps) {
-  const isCard = method.type === 'CREDIT_CARD' || method.type === 'DEBIT_CARD';
-  const isBank = method.type === 'BANK_TRANSFER';
-  const expired =
-    isCard && isCardExpired(method.expiryMonth, method.expiryYear);
+  const isCard = method.type === PaymentMethodType.CREDIT_CARD || method.type === PaymentMethodType.DEBIT_CARD;
+  const isBank = method.type === PaymentMethodType.BANK_TRANSFER;
+  
+  // Card is expired if we have expiry info and it's in the past
+  const expired = isCard && method.isExpired;
 
   return (
     <div
@@ -215,22 +216,17 @@ function PaymentMethodCard({
             {isCard && (
               <>
                 <p className="mb-1 text-sm text-gray-600">
-                  {method.brand && `${method.brand} • `}
-                  •••• {method.lastFour}
+                  {method.cardBrand && `${method.cardBrand} • `}
+                  •••• {method.cardLastFour}
                 </p>
-                {method.expiryMonth && method.expiryYear && (
+                {method.cardExpiryMonth && method.cardExpiryYear && (
                   <p
                     className={`text-sm ${
                       expired ? 'text-red-600' : 'text-gray-500'
                     }`}
                   >
-                    Son kullanma: {method.expiryMonth}/{method.expiryYear}
+                    Son kullanma: {method.cardExpiryMonth}/{method.cardExpiryYear}
                     {expired && ' (Süresi dolmuş)'}
-                  </p>
-                )}
-                {method.cardHolderName && (
-                  <p className="text-sm text-gray-500">
-                    {method.cardHolderName}
                   </p>
                 )}
               </>
@@ -244,14 +240,9 @@ function PaymentMethodCard({
                     {method.bankName}
                   </p>
                 )}
-                {method.iban && (
+                {method.accountLastFour && (
                   <p className="font-mono text-sm text-gray-500">
-                    {method.iban.replace(/(.{4})/g, '$1 ').trim()}
-                  </p>
-                )}
-                {method.accountHolderName && (
-                  <p className="text-sm text-gray-500">
-                    {method.accountHolderName}
+                    •••• {method.accountLastFour}
                   </p>
                 )}
               </>
@@ -313,15 +304,15 @@ function AddPaymentMethodModal({
 
     try {
       const request: AddPaymentMethodRequest = {
-        type: type === 'card' ? 'CREDIT_CARD' : 'BANK_TRANSFER',
+        type: type === 'card' ? PaymentMethodType.CREDIT_CARD : PaymentMethodType.BANK_TRANSFER,
         nickname: (formData.get('nickname') as string) || undefined,
       };
 
       if (type === 'card') {
-        request.lastFour = formData.get('lastFour') as string;
-        request.brand = formData.get('brand') as string;
-        request.expiryMonth = parseInt(formData.get('expiryMonth') as string);
-        request.expiryYear = parseInt(formData.get('expiryYear') as string);
+        request.cardLastFour = formData.get('lastFour') as string;
+        request.cardBrand = formData.get('brand') as string;
+        request.cardExpiryMonth = parseInt(formData.get('expiryMonth') as string);
+        request.cardExpiryYear = parseInt(formData.get('expiryYear') as string);
         request.cardHolderName = formData.get('cardHolderName') as string;
       } else {
         request.bankName = formData.get('bankName') as string;
@@ -329,7 +320,7 @@ function AddPaymentMethodModal({
         request.accountHolderName = formData.get('accountHolderName') as string;
       }
 
-      await addPaymentMethod(request);
+      await paymentMethodApi.addPaymentMethod(request);
       onSuccess();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ödeme yöntemi eklenemedi');

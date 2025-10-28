@@ -207,7 +207,7 @@ export default function BankAccountsPage() {
                               IBAN:
                             </span>
                             <span className="font-mono font-medium text-gray-900">
-                              {maskIBAN(account.iban || '')}
+                              {maskIBAN(account.maskedIdentifier || account.accountLastFour || '')}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
@@ -215,7 +215,7 @@ export default function BankAccountsPage() {
                               Hesap Sahibi:
                             </span>
                             <span className="font-medium text-gray-900">
-                              {account.accountHolderName}
+                              {account.nickname || 'Hesap Sahibi'}
                             </span>
                           </div>
                         </div>

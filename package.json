@@ -29,8 +29,8 @@
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
     "@stomp/stompjs": "^7.2.1",
-    "@stripe/react-stripe-js": "^5.2.0",
-    "@stripe/stripe-js": "^8.1.0",
+    "@stripe/react-stripe-js": "^5.3.0",
+    "@stripe/stripe-js": "^8.2.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "dompurify": "^3.3.0",
