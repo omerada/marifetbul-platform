@@ -16,6 +16,7 @@ import {
   MessageCircle,
   Database,
   Lock,
+  DollarSign,
 } from 'lucide-react';
 import type { NavigationItem } from '../types/sidebarTypes';
 
@@ -76,6 +77,34 @@ export const NAVIGATION_ITEMS: Omit<NavigationItem, 'current'>[] = [
     ],
   },
   {
+    name: 'Para Çekme Yönetimi',
+    href: '/admin/payouts',
+    icon: DollarSign,
+    badge: null,
+    subItems: [
+      {
+        name: 'Bekleyen Talepler',
+        href: '/admin/payouts?status=pending',
+        current: false,
+      },
+      {
+        name: 'Onaylanan Ödemeler',
+        href: '/admin/payouts?status=approved',
+        current: false,
+      },
+      {
+        name: 'Tamamlanan Ödemeler',
+        href: '/admin/payouts?status=completed',
+        current: false,
+      },
+      {
+        name: 'Reddedilen Talepler',
+        href: '/admin/payouts?status=failed',
+        current: false,
+      },
+    ],
+  },
+  {
     name: 'İçerik Denetimi',
     href: '/admin/moderation',
     icon: Shield,
@@ -86,6 +115,11 @@ export const NAVIGATION_ITEMS: Omit<NavigationItem, 'current'>[] = [
         href: '/admin/moderation',
         current: false,
         badge: 7,
+      },
+      {
+        name: 'Review Moderasyonu',
+        href: '/admin/moderation/reviews',
+        current: false,
       },
       {
         name: 'Raporlanan İçerik',

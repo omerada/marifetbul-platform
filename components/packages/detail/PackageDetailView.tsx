@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import type { Package } from '@/types/business/features/package';
 import { Button } from '@/components/ui';
+import { ReviewList } from '@/components/shared/ReviewList';
+import { usePackageReviewsHook } from '@/hooks';
 
 interface PackageDetailViewProps {
   package: Package;
@@ -39,6 +41,25 @@ export function PackageDetailView({
   const [selectedTier, setSelectedTier] = useState<
     'BASIC' | 'STANDARD' | 'PREMIUM'
   >('BASIC');
+
+  // Fetch package reviews
+  const {
+    reviews,
+    stats,
+    loading: reviewsLoading,
+    error: reviewsError,
+    currentPage,
+    totalPages,
+    totalElements,
+    pageSize,
+    fetchReviews,
+    filterByRating,
+    sortReviews,
+  } = usePackageReviewsHook({
+    packageId: pkg.id,
+    autoFetch: true,
+    pageSize: 10,
+  });
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('tr-TR', {
@@ -381,6 +402,36 @@ export function PackageDetailView({
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="mt-12">
+        <h2 className="mb-6 text-2xl font-bold text-gray-900">
+          Değerlendirmeler
+        </h2>
+        <ReviewList
+          reviews={reviews}
+          stats={stats}
+          loading={reviewsLoading}
+          error={reviewsError}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          _pageSize={pageSize}
+          totalElements={totalElements}
+          onPageChange={(page) => fetchReviews(page - 1)}
+          onFilterChange={(filters) => {
+            if (filters.minRating) {
+              filterByRating(filters.minRating);
+            }
+          }}
+          onSortChange={(sortBy, sortDirection) =>
+            sortReviews(sortBy, sortDirection)
+          }
+          showStats={true}
+          showFilters={true}
+          showPackageInfo={false}
+          showActions={false}
+        />
       </div>
     </div>
   );

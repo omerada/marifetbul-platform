@@ -23,6 +23,8 @@ import type { Package } from '@/types/business/features/package';
 import { Button } from '@/components/ui';
 import { favoritesApi } from '@/lib/api/favorites';
 import { OrderModal } from './OrderModal';
+import { ReviewList } from '@/components/shared/ReviewList';
+import { usePackageReviewsHook } from '@/hooks';
 
 interface PublicPackageDetailProps {
   package: Package;
@@ -37,6 +39,25 @@ export function PublicPackageDetail({
   const [isFavorited, setIsFavorited] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+
+  // Fetch package reviews
+  const {
+    reviews,
+    stats,
+    loading: reviewsLoading,
+    error: reviewsError,
+    currentPage,
+    totalPages,
+    totalElements,
+    pageSize,
+    fetchReviews,
+    filterByRating,
+    sortReviews,
+  } = usePackageReviewsHook({
+    packageId: pkg.id,
+    autoFetch: true,
+    pageSize: 10,
+  });
 
   // Check if package is favorited on mount
   useEffect(() => {
@@ -465,6 +486,33 @@ export function PublicPackageDetail({
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="mt-12">
+        <ReviewList
+          reviews={reviews}
+          stats={stats}
+          loading={reviewsLoading}
+          error={reviewsError}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          _pageSize={pageSize}
+          totalElements={totalElements}
+          onPageChange={(page) => fetchReviews(page - 1)}
+          onFilterChange={(filters) => {
+            if (filters.minRating) {
+              filterByRating(filters.minRating);
+            }
+          }}
+          onSortChange={(sortBy, sortDirection) =>
+            sortReviews(sortBy, sortDirection)
+          }
+          showStats={true}
+          showFilters={true}
+          showPackageInfo={false}
+          showActions={false}
+        />
       </div>
 
       {/* Order Modal */}

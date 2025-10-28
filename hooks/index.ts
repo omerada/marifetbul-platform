@@ -41,6 +41,7 @@ export * from './business/useReviewStore';
 export * from './business/useReviewEligibility';
 export * from './business/useAdminReviews';
 export { useSellerReviews } from './business/useSellerReviews';
+export { usePackageReviewsHook } from './business/usePackageReviewsHook';
 export { useReviewNotifications } from './business/useReviewNotifications';
 export { useReputation } from './business/useReputation';
 export { useFollow } from './business/useFollow';

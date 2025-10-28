@@ -12,10 +12,10 @@ import {
   FileText,
   Users,
   Settings,
-  Eye,
   Edit,
   BookOpen,
   BarChart3,
+  Wallet,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -61,15 +61,15 @@ export function QuickActions({ user }: QuickActionsProps) {
             </div>
           </Link>
 
-          <Link href="/profile/edit" className="group">
+          <Link href="/wallet" className="group">
             <div className="flex flex-col items-center rounded-lg border border-gray-200 p-4 transition-all hover:border-green-300 hover:bg-green-50">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100 transition-colors group-hover:bg-green-200">
-                <Edit className="h-6 w-6 text-green-600" />
+                <Wallet className="h-6 w-6 text-green-600" />
               </div>
               <span className="mt-2 text-sm font-medium text-gray-900">
-                Profil Düzenle
+                Cüzdan
               </span>
-              <span className="text-xs text-gray-500">Bilgileri güncelle</span>
+              <span className="text-xs text-gray-500">Bakiye & Para Çekme</span>
             </div>
           </Link>
 
@@ -85,15 +85,15 @@ export function QuickActions({ user }: QuickActionsProps) {
             </div>
           </button>
 
-          <Link href="/dashboard/freelancer/analytics" className="group">
+          <Link href="/profile/edit" className="group">
             <div className="flex flex-col items-center rounded-lg border border-gray-200 p-4 transition-all hover:border-orange-300 hover:bg-orange-50">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100 transition-colors group-hover:bg-orange-200">
-                <Eye className="h-6 w-6 text-orange-600" />
+                <Edit className="h-6 w-6 text-orange-600" />
               </div>
               <span className="mt-2 text-sm font-medium text-gray-900">
-                Profilim
+                Profil Düzenle
               </span>
-              <span className="text-xs text-gray-500">Profili görüntüle</span>
+              <span className="text-xs text-gray-500">Bilgileri güncelle</span>
             </div>
           </Link>
         </div>
