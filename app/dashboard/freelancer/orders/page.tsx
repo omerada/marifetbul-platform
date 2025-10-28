@@ -15,6 +15,9 @@ import {
   User,
 } from 'lucide-react';
 import type { Order } from '@/types/business/features/orders';
+import { useWebSocket } from '@/hooks';
+import { toast } from 'sonner';
+import { OrderListSkeleton, StatsCardSkeleton } from '@/components/shared/LoadingSkeleton';
 
 export default function FreelancerOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -23,6 +26,12 @@ export default function FreelancerOrdersPage() {
   const [deliverModalOpen, setDeliverModalOpen] = useState(false);
   const [disputeModalOpen, setDisputeModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+
+  // WebSocket for real-time order list updates
+  const { subscribe, unsubscribe, isConnected } = useWebSocket({
+    autoConnect: true,
+    enableStoreIntegration: true,
+  });
 
   const loadOrders = async () => {
     try {
@@ -45,6 +54,43 @@ export default function FreelancerOrdersPage() {
       setIsLoading(false);
     }
   };
+
+  // Subscribe to user's order updates
+  useEffect(() => {
+    if (!isConnected) return;
+
+    const destination = '/user/queue/orders';
+    const _subscriptionId = subscribe(destination, (msg: unknown) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const message = msg as any;
+      const update = message.body;
+
+      if (
+        update.type === 'ORDER_STATUS_CHANGED' ||
+        update.type === 'NEW_ORDER'
+      ) {
+        // Refresh order list
+        loadOrders();
+
+        // Show notification
+        const notificationTexts: Record<string, string> = {
+          NEW_ORDER: 'Yeni sipariş aldınız!',
+          ORDER_STATUS_CHANGED: 'Sipariş durumu güncellendi',
+        };
+
+        toast.success(notificationTexts[update.type] || 'Sipariş güncellendi', {
+          description: update.data.orderNumber
+            ? `Sipariş #${update.data.orderNumber}`
+            : undefined,
+          duration: 5000,
+        });
+      }
+    });
+
+    return () => {
+      unsubscribe(destination);
+    };
+  }, [isConnected, subscribe, unsubscribe]);
 
   useEffect(() => {
     loadOrders();
@@ -100,8 +146,26 @@ export default function FreelancerOrdersPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center p-4">
-        <Loading size="lg" text="Siparişler yükleniyor..." />
+      <div className="space-y-6 p-4 lg:p-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Siparişlerim</h1>
+            <p className="mt-1 text-gray-600">
+              Aktif ve geçmiş siparişlerinizi görüntüleyin
+            </p>
+          </div>
+        </div>
+
+        {/* Stats Skeleton */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <StatsCardSkeleton />
+          <StatsCardSkeleton />
+          <StatsCardSkeleton />
+        </div>
+
+        {/* Order List Skeleton */}
+        <OrderListSkeleton count={5} />
       </div>
     );
   }

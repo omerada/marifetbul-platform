@@ -207,7 +207,11 @@ export default function BankAccountsPage() {
                               IBAN:
                             </span>
                             <span className="font-mono font-medium text-gray-900">
-                              {maskIBAN(account.maskedIdentifier || account.accountLastFour || '')}
+                              {maskIBAN(
+                                account.maskedIdentifier ||
+                                  account.accountLastFour ||
+                                  ''
+                              )}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">

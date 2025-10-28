@@ -166,9 +166,11 @@ function PaymentMethodCard({
   onSetDefault,
   onDelete,
 }: PaymentMethodCardProps) {
-  const isCard = method.type === PaymentMethodType.CREDIT_CARD || method.type === PaymentMethodType.DEBIT_CARD;
+  const isCard =
+    method.type === PaymentMethodType.CREDIT_CARD ||
+    method.type === PaymentMethodType.DEBIT_CARD;
   const isBank = method.type === PaymentMethodType.BANK_TRANSFER;
-  
+
   // Card is expired if we have expiry info and it's in the past
   const expired = isCard && method.isExpired;
 
@@ -225,7 +227,8 @@ function PaymentMethodCard({
                       expired ? 'text-red-600' : 'text-gray-500'
                     }`}
                   >
-                    Son kullanma: {method.cardExpiryMonth}/{method.cardExpiryYear}
+                    Son kullanma: {method.cardExpiryMonth}/
+                    {method.cardExpiryYear}
                     {expired && ' (Süresi dolmuş)'}
                   </p>
                 )}
@@ -304,14 +307,19 @@ function AddPaymentMethodModal({
 
     try {
       const request: AddPaymentMethodRequest = {
-        type: type === 'card' ? PaymentMethodType.CREDIT_CARD : PaymentMethodType.BANK_TRANSFER,
+        type:
+          type === 'card'
+            ? PaymentMethodType.CREDIT_CARD
+            : PaymentMethodType.BANK_TRANSFER,
         nickname: (formData.get('nickname') as string) || undefined,
       };
 
       if (type === 'card') {
         request.cardLastFour = formData.get('lastFour') as string;
         request.cardBrand = formData.get('brand') as string;
-        request.cardExpiryMonth = parseInt(formData.get('expiryMonth') as string);
+        request.cardExpiryMonth = parseInt(
+          formData.get('expiryMonth') as string
+        );
         request.cardExpiryYear = parseInt(formData.get('expiryYear') as string);
         request.cardHolderName = formData.get('cardHolderName') as string;
       } else {

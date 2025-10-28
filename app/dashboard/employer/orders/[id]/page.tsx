@@ -27,6 +27,9 @@ import {
 } from 'lucide-react';
 import type { Order } from '@/types/business/features/orders';
 import Link from 'next/link';
+import { useWebSocket } from '@/hooks';
+import { toast } from 'sonner';
+import { OrderDetailSkeleton } from '@/components/shared/LoadingSkeleton';
 
 export default function EmployerOrderDetailPage() {
   const params = useParams();
@@ -39,6 +42,12 @@ export default function EmployerOrderDetailPage() {
   const [approveModalOpen, setApproveModalOpen] = useState(false);
   const [revisionModalOpen, setRevisionModalOpen] = useState(false);
   const [disputeModalOpen, setDisputeModalOpen] = useState(false);
+
+  // WebSocket for real-time order updates
+  const { subscribe, unsubscribe, isConnected } = useWebSocket({
+    autoConnect: true,
+    enableStoreIntegration: true,
+  });
 
   const loadOrder = React.useCallback(async () => {
     if (!orderId) return;
@@ -66,6 +75,46 @@ export default function EmployerOrderDetailPage() {
       setIsLoading(false);
     }
   }, [orderId]);
+
+  // Subscribe to order updates via WebSocket
+  useEffect(() => {
+    if (!orderId || !isConnected) return;
+
+    const destination = `/topic/orders/${orderId}`;
+    const _subscriptionId = subscribe(destination, (msg: unknown) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const message = msg as any;
+      const update = message.body;
+
+      if (update.type === 'ORDER_STATUS_CHANGED') {
+        // Update order with new data
+        setOrder((prev) => (prev ? { ...prev, ...update.data } : null));
+
+        // Show notification
+        const statusTexts: Record<string, string> = {
+          delivered: 'Sipariş teslim edildi',
+          completed: 'Sipariş tamamlandı',
+          cancelled: 'Sipariş iptal edildi',
+          disputed: 'Sipariş itiraz edildi',
+        };
+
+        toast.success(
+          statusTexts[update.data.status] || 'Sipariş durumu güncellendi',
+          {
+            description: `Sipariş #${update.data.orderNumber}`,
+            duration: 5000,
+          }
+        );
+      } else if (update.type === 'ORDER_UPDATED') {
+        // Reload full order data
+        loadOrder();
+      }
+    });
+
+    return () => {
+      unsubscribe(destination);
+    };
+  }, [orderId, isConnected, subscribe, unsubscribe, loadOrder]);
 
   useEffect(() => {
     loadOrder();
@@ -148,11 +197,7 @@ export default function EmployerOrderDetailPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loading size="lg" />
-      </div>
-    );
+    return <OrderDetailSkeleton />;
   }
 
   if (error || !order) {
