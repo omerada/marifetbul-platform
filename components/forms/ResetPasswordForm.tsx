@@ -56,8 +56,9 @@ export function ResetPasswordForm() {
           'Şifre sıfırlama başarısız. Bağlantı geçersiz veya süresi dolmuş olabilir.'
         );
       }
-    } catch {
-      setError('Bir hata oluştu. Lütfen tekrar deneyin.');
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      setError(error.message || 'Bir hata oluştu. Lütfen tekrar deneyin.');
     } finally {
       setIsLoading(false);
     }

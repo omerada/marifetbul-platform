@@ -478,21 +478,123 @@ export const SEARCH_ENDPOINTS = {
 // ================================================
 
 export const DASHBOARD_ENDPOINTS = {
-  // Overview
+  // ================================================
+  // ADMIN DASHBOARD
+  // Path: /api/v1/dashboard/admin
+  // Authorization: hasRole('ADMIN')
+  // ================================================
+
+  // Admin Dashboard
+  ADMIN_DASHBOARD: '/dashboard/admin',
+  ADMIN_DASHBOARD_BY_DAYS: (days: number) => `/dashboard/admin/days/${days}`,
+  ADMIN_DASHBOARD_REALTIME: '/dashboard/admin/realtime',
+  ADMIN_SNAPSHOT: '/dashboard/admin/snapshot',
+
+  // Admin User Views
+  ADMIN_VIEW_SELLER: (sellerId: string) =>
+    `/dashboard/admin/seller/${sellerId}`,
+  ADMIN_VIEW_BUYER: (buyerId: string) => `/dashboard/admin/buyer/${buyerId}`,
+
+  // Admin Actions
+  ADMIN_REFRESH_ALL: '/dashboard/admin/refresh-all',
+
+  // ================================================
+  // SELLER/FREELANCER DASHBOARD
+  // Path: /api/v1/dashboard/seller
+  // Authorization: hasRole('FREELANCER')
+  // ================================================
+
+  // Seller Dashboard
+  SELLER_DASHBOARD: '/dashboard/seller/me',
+  SELLER_DASHBOARD_BY_DAYS: (days: number) =>
+    `/dashboard/seller/me/days/${days}`,
+  SELLER_DASHBOARD_COMPARISON: '/dashboard/seller/me/comparison',
+  SELLER_SNAPSHOT: '/dashboard/seller/me/snapshot',
+  SELLER_REFRESH: '/dashboard/seller/me/refresh',
+
+  // ================================================
+  // BUYER/EMPLOYER DASHBOARD
+  // Path: /api/v1/dashboard/buyer
+  // Authorization: hasRole('EMPLOYER')
+  // ================================================
+
+  // Buyer Dashboard
+  BUYER_DASHBOARD: '/dashboard/buyer/me',
+  BUYER_DASHBOARD_BY_DAYS: (days: number) => `/dashboard/buyer/me/days/${days}`,
+  BUYER_DASHBOARD_RECOMMENDATIONS: '/dashboard/buyer/me/recommendations',
+  BUYER_SNAPSHOT: '/dashboard/buyer/me/snapshot',
+  BUYER_REFRESH: '/dashboard/buyer/me/refresh',
+
+  // ================================================
+  // ACTIVITY TIMELINE
+  // Path: /api/v1/dashboard/freelancer|employer
+  // Authorization: role-specific
+  // ================================================
+
+  // Activity Feeds
+  FREELANCER_ACTIVITIES: '/dashboard/freelancer/activities',
+  EMPLOYER_ACTIVITIES: '/dashboard/employer/activities',
+
+  // ================================================
+  // WALLET ANALYTICS (FREELANCER)
+  // Path: /api/v1/dashboard/analytics
+  // Authorization: hasRole('FREELANCER')
+  // Added in Story 1.3 - Wallet Analytics Dashboard
+  // ================================================
+
+  // Wallet Analytics
+  EARNINGS_TREND: '/dashboard/analytics/earnings-trend',
+  REVENUE_BREAKDOWN: '/dashboard/analytics/revenue-breakdown',
+  TRANSACTION_SUMMARY: '/dashboard/analytics/transaction-summary',
+
+  // ================================================
+  // LEGACY ENDPOINTS (Deprecated - Keep for backward compatibility)
+  // TODO: Remove after frontend migration to role-specific endpoints
+  // ================================================
+
+  /**
+   * @deprecated Use SELLER_DASHBOARD or BUYER_DASHBOARD instead
+   */
   GET_OVERVIEW: '/dashboard/overview',
 
-  // Stats
+  /**
+   * @deprecated Use role-specific dashboard endpoints
+   */
   GET_STATS: '/dashboard/stats',
+
+  /**
+   * @deprecated Use EARNINGS_TREND endpoint instead
+   */
   GET_EARNINGS: '/dashboard/earnings',
+
+  /**
+   * @deprecated Use role-specific dashboard data
+   */
   GET_ORDERS_STATS: '/dashboard/orders/stats',
+
+  /**
+   * @deprecated Use role-specific dashboard data
+   */
   GET_PACKAGES_STATS: '/dashboard/packages/stats',
 
-  // Activity
+  /**
+   * @deprecated Use FREELANCER_ACTIVITIES or EMPLOYER_ACTIVITIES
+   */
   GET_RECENT_ACTIVITY: '/dashboard/activity/recent',
+
+  /**
+   * @deprecated Use notification endpoints instead
+   */
   GET_NOTIFICATIONS: '/dashboard/notifications',
 
-  // Analytics
+  /**
+   * @deprecated Use EARNINGS_TREND or REVENUE_BREAKDOWN
+   */
   GET_PERFORMANCE: '/dashboard/analytics/performance',
+
+  /**
+   * @deprecated Use REVENUE_BREAKDOWN endpoint instead
+   */
   GET_REVENUE: '/dashboard/analytics/revenue',
 } as const;
 

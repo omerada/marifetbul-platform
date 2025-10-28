@@ -2,6 +2,12 @@ import { create } from 'zustand';
 import { FreelancerDashboard, EmployerDashboard } from '@/types';
 import { useAuthStore } from './domains/auth/authStore';
 import { logger } from '@/lib/shared/utils/logger';
+import { sellerDashboardApi } from '@/lib/api/seller-dashboard';
+import { buyerDashboardApi } from '@/lib/api/buyer-dashboard';
+import {
+  transformSellerDashboardV2,
+  transformBuyerDashboardV2,
+} from '@/lib/api/transformers/dashboard';
 
 // Enhanced error type for better error handling
 export interface DashboardError {
@@ -70,59 +76,30 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
         isRetry,
       });
 
-      const url = `/api/dashboard/${userType}?days=${days}`;
-      const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        // Handle specific HTTP errors
-        if (response.status === 401) {
-          throw new Error('Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.');
-        } else if (response.status === 403) {
-          throw new Error('Bu sayfaya erişim yetkiniz yok.');
-        } else if (response.status === 404) {
-          throw new Error('Dashboard servisi bulunamadı.');
-        } else if (response.status >= 500) {
-          throw new Error('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
-        }
-      }
-
-      const data = await response.json();
-
-      if (data.success && data.data) {
-        logger.debug('[Dashboard Store] Dashboard loaded successfully');
-
-        set({
-          dashboardData: data.data,
-          isLoading: false,
-          isRefreshing: false,
-          lastRefresh: new Date(),
-          error: null,
-          retryCount: 0, // Reset retry count on success
-        });
+      // Use appropriate API client based on user type
+      let dashboardData: FreelancerDashboard | EmployerDashboard;
+      if (userType === 'freelancer') {
+        const backendData =
+          await sellerDashboardApi.getSellerDashboardByDays(days);
+        dashboardData = transformSellerDashboardV2(backendData);
+      } else if (userType === 'employer') {
+        const backendData =
+          await buyerDashboardApi.getBuyerDashboardByDays(days);
+        dashboardData = transformBuyerDashboardV2(backendData);
       } else {
-        const errorMessage =
-          data.error || data.message || 'Dashboard verisi yüklenemedi';
-
-        logger.error('[Dashboard Store] Dashboard fetch failed', {
-          error: errorMessage,
-        });
-
-        set({
-          error: {
-            message: errorMessage,
-            code: data.code,
-            details: data.details,
-            timestamp: new Date(),
-          },
-          isLoading: false,
-          isRefreshing: false,
-        });
+        throw new Error(`Unsupported user type: ${userType}`);
       }
+
+      logger.debug('[Dashboard Store] Dashboard loaded successfully');
+
+      set({
+        dashboardData,
+        isLoading: false,
+        isRefreshing: false,
+        lastRefresh: new Date(),
+        error: null,
+        retryCount: 0, // Reset retry count on success
+      });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Bilinmeyen bir hata oluştu';

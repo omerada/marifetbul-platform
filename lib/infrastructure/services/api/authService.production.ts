@@ -34,13 +34,11 @@ export interface ForgotPasswordRequest {
 export interface ResetPasswordRequest {
   token: string;
   newPassword: string;
-  passwordConfirmation: string;
 }
 
 export interface ChangePasswordRequest {
   currentPassword: string;
   newPassword: string;
-  passwordConfirmation: string;
 }
 
 export interface VerifyEmailRequest {

@@ -11,6 +11,10 @@ import type {
   Proposal,
 } from '@/types';
 
+// Import new backend DTO types from API clients
+import type { SellerDashboardBackendDto } from '@/lib/api/seller-dashboard';
+import type { BuyerDashboardBackendDto } from '@/lib/api/buyer-dashboard';
+
 // ============================================================================
 // Backend DTO Types (Based on Java backend responses)
 // ============================================================================
@@ -496,6 +500,211 @@ export function safeTransformBuyerDashboard(
   } catch (error) {
     console.error(
       '[Dashboard Transform] Error transforming buyer dashboard:',
+      error
+    );
+    return null;
+  }
+}
+
+// ============================================================================
+// NEW TRANSFORMERS FOR V2 BACKEND DTO (Sprint 2 - Dashboard Integration)
+// ============================================================================
+
+/**
+ * Transform NEW SellerDashboardBackendDto (from seller-dashboard.ts API) to FreelancerDashboard
+ * This is for the refactored backend endpoints with comprehensive metrics
+ */
+export function transformSellerDashboardV2(
+  dto: SellerDashboardBackendDto
+): FreelancerDashboard {
+  const earnings = dto.earningsMetrics || {};
+  const packages = dto.packageMetrics || {};
+  const orders = dto.orderMetrics || {};
+  const customers = dto.customerMetrics || {};
+
+  const successRate = orders.completionRate || 0;
+  const responseTime = orders.averageDeliveryTime || 2.5;
+
+  return {
+    overview: {
+      totalEarnings: earnings.totalEarnings || 0,
+      completedJobs: orders.completedOrders || 0,
+      activeJobs: orders.activeOrders || 0,
+      profileViews: packages.totalViews || 0,
+      successRate: Math.round(successRate * 10) / 10,
+      responseTime: Math.round(responseTime * 10) / 10,
+    },
+    stats: {
+      totalEarnings: earnings.totalEarnings || 0,
+      currentMonthEarnings: earnings.netEarnings || 0,
+      activeOrders: orders.activeOrders || 0,
+      completedJobs: orders.completedOrders || 0,
+      rating: packages.averageRating || 0,
+      profileViews: packages.totalViews || 0,
+      responseRate: orders.onTimeDeliveryRate || 0,
+    },
+    quickStats: {
+      messagesWaiting: 0, // Not in new DTO, needs separate endpoint
+      pendingProposals: 0, // Not in new DTO
+      reviewsPending: customers.totalReviews || 0,
+    },
+    recentJobs: [],
+    recentOrders: [], // These would come from separate endpoints
+    recentProposals: [],
+    earnings: {},
+    analytics: {
+      earnings: {
+        total: earnings.totalEarnings || 0,
+        thisMonth: earnings.netEarnings || 0,
+        lastMonth: earnings.totalEarnings - earnings.netEarnings,
+        trend:
+          (earnings.earningsGrowthRate || 0) > 0
+            ? ('up' as const)
+            : (earnings.earningsGrowthRate || 0) < 0
+              ? ('down' as const)
+              : ('stable' as const),
+      },
+      jobs: {
+        completed: orders.completedOrders || 0,
+        active: orders.activeOrders || 0,
+        successRate: Math.round(successRate * 10) / 10,
+      },
+      profile: {
+        views: packages.totalViews || 0,
+        rating: packages.averageRating || 0,
+        responseTime: Math.round(responseTime * 10) / 10,
+      },
+    },
+    recommendations: [],
+    notifications: [],
+    chartData: {
+      earnings: (dto.trends?.dailyEarnings || []).map((point) => ({
+        date: point.date,
+        amount: point.value,
+      })),
+      packages: (packages.topPackages || []).map((pkg) => ({
+        packageId: pkg.packageId,
+        packageName: pkg.title,
+        sales: pkg.orders,
+        revenue: pkg.revenue,
+        views: pkg.views,
+        conversionRate: pkg.views > 0 ? (pkg.orders / pkg.views) * 100 : 0,
+      })),
+      clients: {
+        totalClients: customers.totalBuyers || 0,
+        newClients: 0, // Not in new DTO
+        repeatClients: customers.repeatBuyers || 0,
+        averageSatisfaction: customers.customerSatisfactionScore || 0,
+        repeatRate: customers.repeatBuyerRate || 0,
+        topClients: [], // Would come from separate endpoint
+      },
+    },
+  };
+}
+
+/**
+ * Transform NEW BuyerDashboardBackendDto (from buyer-dashboard.ts API) to EmployerDashboard
+ */
+export function transformBuyerDashboardV2(
+  dto: BuyerDashboardBackendDto
+): EmployerDashboard {
+  const spending = dto.spendingMetrics || {};
+  const orders = dto.orderMetrics || {};
+  const sellers = dto.sellerMetrics || {};
+
+  const avgTimeToHire = orders.averageDeliveryTime || 5;
+  const freelancerRetention = sellers.repeatSellerRate || 0;
+
+  return {
+    overview: {
+      totalSpent: spending.totalSpent || 0,
+      jobsPosted: orders.totalOrders || 0,
+      activeJobs: orders.activeOrders || 0,
+      completedJobs: orders.completedOrders || 0,
+      avgTimeToHire,
+      freelancerRetention,
+    },
+    stats: {
+      activeJobs: orders.activeOrders || 0,
+      totalSpent: spending.totalSpent || 0,
+      savedFreelancers: 0, // Not in new DTO
+      completedJobs: orders.completedOrders || 0,
+    },
+    activeJobs: [], // These would come from separate endpoints
+    recentJobs: [],
+    spending: {},
+    analytics: {
+      spending: {
+        total: spending.totalSpent || 0,
+        thisMonth: spending.totalSpent / 12, // Approximation
+        lastMonth: 0,
+        trend:
+          (spending.spendingGrowthRate || 0) > 0
+            ? ('up' as const)
+            : (spending.spendingGrowthRate || 0) < 0
+              ? ('down' as const)
+              : ('stable' as const),
+      },
+      jobs: {
+        posted: orders.totalOrders || 0,
+        completed: orders.completedOrders || 0,
+        activeHires: orders.activeOrders || 0,
+      },
+      hiring: {
+        avgTimeToHire,
+        freelancerRetention,
+        satisfaction: sellers.averageSellerRating || 0,
+      },
+    },
+    recommendations: [], // Recommendations have different structure, separate endpoint needed
+    notifications: [],
+  };
+}
+
+/**
+ * Safe transformation for new Seller Dashboard V2
+ */
+export function safeTransformSellerDashboardV2(
+  data: unknown
+): FreelancerDashboard | null {
+  try {
+    if (!data || typeof data !== 'object') {
+      console.error(
+        '[Dashboard Transform V2] Invalid seller dashboard data:',
+        data
+      );
+      return null;
+    }
+
+    return transformSellerDashboardV2(data as SellerDashboardBackendDto);
+  } catch (error) {
+    console.error(
+      '[Dashboard Transform V2] Error transforming seller dashboard:',
+      error
+    );
+    return null;
+  }
+}
+
+/**
+ * Safe transformation for new Buyer Dashboard V2
+ */
+export function safeTransformBuyerDashboardV2(
+  data: unknown
+): EmployerDashboard | null {
+  try {
+    if (!data || typeof data !== 'object') {
+      console.error(
+        '[Dashboard Transform V2] Invalid buyer dashboard data:',
+        data
+      );
+      return null;
+    }
+
+    return transformBuyerDashboardV2(data as BuyerDashboardBackendDto);
+  } catch (error) {
+    console.error(
+      '[Dashboard Transform V2] Error transforming buyer dashboard:',
       error
     );
     return null;

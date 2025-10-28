@@ -77,7 +77,7 @@ export async function getEarningsTrend(
   endDate: string
 ): Promise<EarningsTrendResponse> {
   const response = await apiClient.get<ApiResponse<EarningsTrendResponse>>(
-    `/api/v1/dashboard/analytics/earnings-trend?startDate=${startDate}&endDate=${endDate}`
+    `/dashboard/analytics/earnings-trend?startDate=${startDate}&endDate=${endDate}`
   );
 
   return response.data;
@@ -96,7 +96,7 @@ export async function getRevenueBreakdown(
   endDate: string
 ): Promise<RevenueBreakdownResponse> {
   const response = await apiClient.get<ApiResponse<RevenueBreakdownResponse>>(
-    `/api/v1/dashboard/analytics/revenue-breakdown?startDate=${startDate}&endDate=${endDate}`
+    `/dashboard/analytics/revenue-breakdown?startDate=${startDate}&endDate=${endDate}`
   );
 
   return response.data;
@@ -115,7 +115,7 @@ export async function getTransactionSummary(
   endDate: string
 ): Promise<TransactionSummaryResponse> {
   const response = await apiClient.get<ApiResponse<TransactionSummaryResponse>>(
-    `/api/v1/dashboard/analytics/transaction-summary?startDate=${startDate}&endDate=${endDate}`
+    `/dashboard/analytics/transaction-summary?startDate=${startDate}&endDate=${endDate}`
   );
 
   return response.data;

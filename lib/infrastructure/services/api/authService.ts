@@ -152,7 +152,7 @@ export class AuthService {
   static async requestPasswordReset(email: string): Promise<boolean> {
     try {
       const response = await apiClient.post<ApiResponse<void>>(
-        '/auth/password/reset-request',
+        '/auth/forgot-password',
         {
           email,
         }
@@ -177,7 +177,7 @@ export class AuthService {
   ): Promise<boolean> {
     try {
       const response = await apiClient.post<ApiResponse<void>>(
-        '/auth/password/reset',
+        '/auth/reset-password',
         {
           token,
           newPassword,

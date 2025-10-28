@@ -27,6 +27,33 @@ export type {
   PlatformSnapshotDto,
 } from './admin-dashboard';
 
+// Export Seller Dashboard API
+export { sellerDashboardApi } from './seller-dashboard';
+export type {
+  SellerDashboardBackendDto,
+  SellerSnapshotDto,
+  ActivityDto,
+} from './seller-dashboard';
+
+// Export Buyer Dashboard API
+export { buyerDashboardApi } from './buyer-dashboard';
+export type {
+  BuyerDashboardBackendDto,
+  BuyerSnapshotDto,
+} from './buyer-dashboard';
+
+// Export Dashboard Analytics API
+export {
+  getEarningsTrend,
+  getRevenueBreakdown,
+  getTransactionSummary,
+} from './dashboard-analytics-api';
+export type {
+  EarningsTrendResponse,
+  RevenueBreakdownResponse,
+  TransactionSummaryResponse,
+} from './dashboard-analytics-api';
+
 // Export Wallet API
 export { walletApi } from './wallet';
 export type { Wallet, BalanceResponse, Transaction } from './validators';
