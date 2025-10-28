@@ -149,6 +149,116 @@ export const TEST_BLOG_POSTS = {
   },
 } as const;
 
+/**
+ * TEST PAYOUTS - Story 1.2
+ */
+export const TEST_PAYOUTS = {
+  pending: {
+    id: 'payout-001',
+    userId: TEST_USERS.freelancer.username,
+    amount: 1500.0,
+    method: 'BANK_TRANSFER',
+    status: 'PENDING',
+    bankAccount: {
+      accountHolder: 'Test Freelancer',
+      iban: 'TR330006100519786457841326',
+      bankName: 'Test Bank',
+    },
+  },
+  approved: {
+    id: 'payout-002',
+    userId: TEST_USERS.freelancer.username,
+    amount: 2000.0,
+    method: 'BANK_TRANSFER',
+    status: 'APPROVED',
+    approvedBy: TEST_USERS.admin.email,
+    approvedAt: new Date().toISOString(),
+  },
+  rejected: {
+    id: 'payout-003',
+    userId: TEST_USERS.freelancer.username,
+    amount: 500.0,
+    method: 'BANK_TRANSFER',
+    status: 'REJECTED',
+    rejectedBy: TEST_USERS.admin.email,
+    rejectedAt: new Date().toISOString(),
+    rejectionReason: 'Insufficient balance verification',
+  },
+} as const;
+
+/**
+ * TEST ANALYTICS DATA - Story 1.3
+ */
+export const TEST_ANALYTICS = {
+  earnings: {
+    period: 7,
+    data: [
+      {
+        date: '2024-01-15',
+        earnings: 1200,
+        orderCount: 3,
+        averageOrderValue: 400,
+      },
+      {
+        date: '2024-01-16',
+        earnings: 800,
+        orderCount: 2,
+        averageOrderValue: 400,
+      },
+      {
+        date: '2024-01-17',
+        earnings: 1500,
+        orderCount: 4,
+        averageOrderValue: 375,
+      },
+    ],
+    totalEarnings: 3500,
+    totalOrders: 9,
+    averageOrderValue: 388.89,
+    growthPercentage: 15.5,
+  },
+  revenue: {
+    items: [
+      {
+        category: 'Grafik Tasarım',
+        amount: 5000,
+        orderCount: 12,
+        percentage: 45,
+      },
+      {
+        category: 'Web Geliştirme',
+        amount: 3500,
+        orderCount: 5,
+        percentage: 31.8,
+      },
+      { category: 'Yazılım', amount: 2500, orderCount: 8, percentage: 22.7 },
+    ],
+    totalRevenue: 11000,
+  },
+  transactions: {
+    totalIncome: 15000,
+    totalExpenses: 3500,
+    netBalance: 11500,
+    incomeBreakdown: {
+      orders: 12000,
+      bonuses: 2000,
+      refunds: 1000,
+    },
+    expenseBreakdown: {
+      orders: 0,
+      payouts: 2500,
+      fees: 1000,
+      refunds: 0,
+    },
+    walletBalances: {
+      availableBalance: 8000,
+      pendingBalance: 2500,
+      escrowBalance: 1000,
+    },
+    previousPeriodGrowth: 12.5,
+  },
+} as const;
+
 // Helper to get random user
 export function getRandomUser() {
   const users = Object.values(TEST_USERS);

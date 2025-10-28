@@ -9,3 +9,10 @@ export { PackageAnalytics } from './PackageAnalytics';
 export { RevenueChart } from './RevenueChart';
 export { PackagePerformance } from './PackagePerformance';
 export { ClientStatistics } from './ClientStatistics';
+
+// Analytics Components (Story 1.3)
+export {
+  EarningsChart,
+  RevenueBreakdown,
+  TransactionSummary,
+} from './analytics';

@@ -48,6 +48,9 @@ export interface AdminPayoutTableProps {
   onFail: (payoutId: string, reason: string) => void;
   onCancel: (payoutId: string) => void;
   onViewUserWallet: (userId: string) => void;
+  selectedIds?: Set<string>;
+  onToggleSelection?: (payoutId: string) => void;
+  onToggleSelectAll?: () => void;
 }
 
 // ================================================
@@ -66,6 +69,9 @@ export const AdminPayoutTable: React.FC<AdminPayoutTableProps> = ({
   onFail,
   onCancel,
   onViewUserWallet,
+  selectedIds = new Set(),
+  onToggleSelection,
+  onToggleSelectAll,
 }) => {
   const [actionDropdownOpen, setActionDropdownOpen] = useState<string | null>(
     null
@@ -139,6 +145,18 @@ export const AdminPayoutTable: React.FC<AdminPayoutTableProps> = ({
         <table className="w-full">
           <thead className="border-b border-gray-200 bg-gray-50">
             <tr>
+              {onToggleSelectAll && (
+                <th className="w-12 px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={
+                      selectedIds.size === payouts.length && payouts.length > 0
+                    }
+                    onChange={onToggleSelectAll}
+                    className="h-4 w-4 cursor-pointer rounded border-gray-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500"
+                  />
+                </th>
+              )}
               <th className="px-4 py-3 text-left text-xs font-medium tracking-wide text-gray-700 uppercase">
                 Kullanıcı
               </th>
@@ -168,6 +186,19 @@ export const AdminPayoutTable: React.FC<AdminPayoutTableProps> = ({
                 key={payout.id}
                 className="transition-colors hover:bg-gray-50"
               >
+                {/* Checkbox */}
+                {onToggleSelection && (
+                  <td className="w-12 px-4 py-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(payout.id)}
+                      onChange={() => onToggleSelection(payout.id)}
+                      className="h-4 w-4 cursor-pointer rounded border-gray-300 text-indigo-600 focus:ring-2 focus:ring-indigo-500"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </td>
+                )}
+
                 {/* User */}
                 <td className="px-4 py-4">
                   <div className="flex items-center gap-3">

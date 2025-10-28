@@ -18,7 +18,8 @@ import {
   AdminPayoutFilters,
   AdminPayoutDetailModal,
   AdminUserWalletModal,
-} from '@/components/domains/admin';
+  BulkPayoutActions,
+} from '@/components/admin/payouts';
 import {
   payoutAdminApi,
   type PayoutFilters,
@@ -45,6 +46,11 @@ export default function AdminPayoutsPage() {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+
+  // Bulk selection
+  const [selectedPayoutIds, setSelectedPayoutIds] = useState<Set<string>>(
+    new Set()
+  );
 
   // Stats
   const [stats, setStats] = useState({
@@ -163,6 +169,74 @@ export default function AdminPayoutsPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // ==================== BULK OPERATIONS ====================
+
+  const handleBulkApprove = async (payoutIds: string[]) => {
+    // Process each payout sequentially
+    const results = await Promise.allSettled(
+      payoutIds.map((id) => payoutAdminApi.processPayout(id))
+    );
+
+    const successCount = results.filter((r) => r.status === 'fulfilled').length;
+    const failCount = results.filter((r) => r.status === 'rejected').length;
+
+    if (successCount > 0) {
+      fetchPayouts();
+      fetchStats();
+    }
+
+    if (failCount > 0) {
+      throw new Error(`${failCount} ödeme onaylanamadı`);
+    }
+  };
+
+  const handleBulkReject = async (payoutIds: string[], reason: string) => {
+    // Process each payout sequentially
+    const results = await Promise.allSettled(
+      payoutIds.map((id) => payoutAdminApi.failPayout(id, reason))
+    );
+
+    const successCount = results.filter((r) => r.status === 'fulfilled').length;
+    const failCount = results.filter((r) => r.status === 'rejected').length;
+
+    if (successCount > 0) {
+      fetchPayouts();
+      fetchStats();
+    }
+
+    if (failCount > 0) {
+      throw new Error(`${failCount} ödeme reddedilemedi`);
+    }
+  };
+
+  const handleToggleSelection = (payoutId: string) => {
+    setSelectedPayoutIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(payoutId)) {
+        newSet.delete(payoutId);
+      } else {
+        newSet.add(payoutId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleToggleSelectAll = () => {
+    if (selectedPayoutIds.size === payouts.length) {
+      setSelectedPayoutIds(new Set());
+    } else {
+      setSelectedPayoutIds(new Set(payouts.map((p) => p.id)));
+    }
+  };
+
+  const handleClearSelection = () => {
+    setSelectedPayoutIds(new Set());
+  };
+
+  const getSelectedPayouts = () => {
+    return payouts.filter((p) => selectedPayoutIds.has(p.id));
+  };
+
   // ==================== RENDER ====================
 
   return (
@@ -258,6 +332,15 @@ export default function AdminPayoutsPage() {
           }}
         />
 
+        {/* Bulk Actions */}
+        <BulkPayoutActions
+          selectedPayouts={getSelectedPayouts()}
+          onBulkApprove={handleBulkApprove}
+          onBulkReject={handleBulkReject}
+          onClearSelection={handleClearSelection}
+          allPayouts={payouts}
+        />
+
         {/* Table */}
         <AdminPayoutTable
           payouts={payouts}
@@ -271,6 +354,9 @@ export default function AdminPayoutsPage() {
           onFail={handleFail}
           onCancel={handleCancel}
           onViewUserWallet={handleViewUserWallet}
+          selectedIds={selectedPayoutIds}
+          onToggleSelection={handleToggleSelection}
+          onToggleSelectAll={handleToggleSelectAll}
         />
       </div>
 

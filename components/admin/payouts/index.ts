@@ -23,3 +23,9 @@ export type { AdminPayoutDetailModalProps } from './AdminPayoutDetailModal';
 
 export { AdminUserWalletModal } from './AdminUserWalletModal';
 export type { AdminUserWalletModalProps } from './AdminUserWalletModal';
+
+export { PayoutApprovalModal } from './PayoutApprovalModal';
+export type { PayoutApprovalModalProps } from './PayoutApprovalModal';
+
+export { BulkPayoutActions } from './BulkPayoutActions';
+export type { BulkPayoutActionsProps } from './BulkPayoutActions';
