@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { logger } from './lib/shared/utils/logger';
 
 // ============================================================================
 // SECURITY HEADERS
@@ -130,7 +131,7 @@ export function middleware(request: NextRequest) {
 
   // Debug: Log all requests in development
   if (process.env.NODE_ENV === 'development') {
-    console.log('[Middleware] Request:', {
+    logger.debug('[Middleware] Request', {
       pathname,
       hasToken: !!token,
       userRole: userRole || 'none',
@@ -173,7 +174,7 @@ export function middleware(request: NextRequest) {
 
   // Admin route protection
   if (isAdminRoute) {
-    console.log('[Middleware] Admin route check:', {
+    logger.debug('[Middleware] Admin route check', {
       pathname,
       hasToken: !!token,
       tokenValue: token ? 'exists' : 'missing',
@@ -185,25 +186,25 @@ export function middleware(request: NextRequest) {
     });
 
     if (!token) {
-      console.log('[Middleware] No token found, redirecting to admin login');
+      logger.info('[Middleware] No token found, redirecting to admin login');
       const adminLoginUrl = new URL(adminLoginRoute, request.url);
       adminLoginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(adminLoginUrl);
     }
 
     if (userRole?.toUpperCase() !== 'ADMIN') {
-      console.log('[Middleware] User is not admin, redirecting to dashboard');
+      logger.info('[Middleware] User is not admin, redirecting to dashboard');
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
-    console.log('[Middleware] Admin access granted');
+    logger.debug('[Middleware] Admin access granted');
     const response = NextResponse.next();
     return addSecurityHeaders(response);
   }
 
   // If accessing admin login page with admin token, redirect to admin dashboard
   if (isAdminLoginPage && token && userRole?.toUpperCase() === 'ADMIN') {
-    console.log(
+    logger.info(
       '[Middleware] Admin already logged in, redirecting to admin panel'
     );
     return NextResponse.redirect(new URL('/admin', request.url));
@@ -216,7 +217,7 @@ export function middleware(request: NextRequest) {
 
     // If there's a role cookie but no token, clear it to prevent loops
     if (userRole && !token) {
-      console.log(
+      logger.info(
         '[Middleware] Clearing role cookie on login page (no token found)'
       );
       response.cookies.delete('marifetbul-user-role');
