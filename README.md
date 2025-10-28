@@ -262,9 +262,18 @@ NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=marifetbul_packages
 # Stripe (Payment - Optional for development)
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
 STRIPE_SECRET_KEY=sk_test_...
+
+# Firebase Push Notifications (Optional)
+NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+NEXT_PUBLIC_FIREBASE_VAPID_KEY=your-vapid-key
 ```
 
 > 📚 **Cloudinary Kurulumu:** [CLOUDINARY_SETUP_GUIDE.md](./docs/CLOUDINARY_SETUP_GUIDE.md) - Detaylı kurulum rehberi
+>
+> 🔔 **Push Notification Kurulumu:** [PUSH_NOTIFICATIONS_SETUP.md](./docs/PUSH_NOTIFICATIONS_SETUP.md) - Firebase FCM kurulum rehberi
 
 **Dependencies ve Server:**
 
