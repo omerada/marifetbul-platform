@@ -85,7 +85,8 @@ export { useHapticFeedback } from './shared/ui/useHapticFeedback';
 export { usePullToRefresh } from './shared/ui/usePullToRefresh';
 
 // INTEGRATION HOOKS - External services and APIs
-export { useWebSocket } from './infrastructure/integrations/useWebSocket';
+// useWebSocket moved to infrastructure/websocket
+export { useWebSocket, useStompWebSocket } from './infrastructure/websocket';
 export { usePushNotifications } from './infrastructure/integrations/usePushNotifications';
 export { useSocialShare } from './infrastructure/integrations/useSocialShare';
 export { useSEO } from './infrastructure/integrations/useSEO';
