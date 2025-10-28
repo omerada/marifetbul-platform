@@ -1635,6 +1635,30 @@ export interface FreelancerDashboard {
   analytics: FreelancerAnalytics;
   recommendations: Recommendation[];
   notifications: EnhancedNotification[];
+  chartData?: {
+    earnings: Array<{ date: string; amount: number; orderCount?: number }>;
+    packages: Array<{
+      packageId: string;
+      packageName: string;
+      sales: number;
+      revenue: number;
+      views: number;
+      conversionRate: number;
+    }>;
+    clients: {
+      totalClients: number;
+      newClients: number;
+      repeatClients: number;
+      averageSatisfaction: number;
+      repeatRate: number;
+      topClients: Array<{
+        id: string;
+        name: string;
+        orders: number;
+        totalSpent: number;
+      }>;
+    };
+  };
 }
 
 export interface EmployerDashboard {
@@ -1658,6 +1682,14 @@ export interface EmployerDashboard {
   analytics: EmployerAnalytics;
   recommendations: Recommendation[];
   notifications: EnhancedNotification[];
+  chartData?: {
+    spending: Array<{ date: string; amount: number; jobCount?: number }>;
+    hiring: {
+      avgTimeToHire: number;
+      freelancerRetention: number;
+      satisfaction: number;
+    };
+  };
 }
 
 // Location search response types

@@ -3,10 +3,15 @@
  *
  * Runtime validation schemas using Zod for type-safe API responses.
  * Ensures responses match expected structure and provides detailed validation errors.
+ *
+ * NOTE: Order-related schemas moved to validators/order.ts for backend alignment.
  */
 
 import { z } from 'zod';
 import { ValidationError } from './errors';
+
+// Re-export order validators (backend-aligned)
+export * from './validators/order';
 
 // ============================================================================
 // Base Schemas
@@ -18,7 +23,8 @@ import { ValidationError } from './errors';
 export const UserRoleSchema = z.enum(['FREELANCER', 'EMPLOYER', 'ADMIN']);
 
 /**
- * Order status schema
+ * DEPRECATED: Use validators/order.ts for order-related schemas
+ * Order status schema - kept for backward compatibility
  */
 export const OrderStatusSchema = z.enum([
   'PENDING',
@@ -32,7 +38,8 @@ export const OrderStatusSchema = z.enum([
 ]);
 
 /**
- * Package tier schema
+ * DEPRECATED: Use validators/order.ts for order-related schemas
+ * Package tier schema - kept for backward compatibility
  */
 export const PackageTierSchema = z.enum(['BASIC', 'STANDARD', 'PREMIUM']);
 
@@ -174,11 +181,14 @@ export const PackagesResponseSchema =
 export type PackagesResponse = z.infer<typeof PackagesResponseSchema>;
 
 // ============================================================================
-// Order Schemas
+// Order Schemas (DEPRECATED - Use validators/order.ts)
 // ============================================================================
 
 /**
- * Order item schema
+ * DEPRECATED: Use validators/order.ts for backend-aligned order schemas
+ * This schema is kept for backward compatibility only.
+ *
+ * @deprecated Import from 'validators/order.ts' instead
  */
 export const OrderItemSchema = z.object({
   packageId: z.number(),
@@ -190,7 +200,10 @@ export const OrderItemSchema = z.object({
 });
 
 /**
- * Order schema
+ * DEPRECATED: Use validators/order.ts for backend-aligned order schemas
+ * This schema does NOT match the backend OrderResponse.java structure.
+ *
+ * @deprecated Import OrderSchema from 'validators/order.ts' instead
  */
 export const OrderSchema = z.object({
   id: z.number(),
@@ -218,7 +231,8 @@ export const OrderSchema = z.object({
 export type Order = z.infer<typeof OrderSchema>;
 
 /**
- * Paginated orders response
+ * DEPRECATED: Use validators/order.ts for backend-aligned order schemas
+ * @deprecated Import from 'validators/order.ts' instead
  */
 export const OrdersResponseSchema = createPaginatedResponseSchema(OrderSchema);
 export type OrdersResponse = z.infer<typeof OrdersResponseSchema>;

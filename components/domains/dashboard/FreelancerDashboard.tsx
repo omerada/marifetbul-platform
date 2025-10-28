@@ -12,6 +12,11 @@ import { Badge } from '@/components/ui/Badge';
 import { ActivityTimeline } from './ActivityTimeline';
 import { QuickActions } from './QuickActions';
 import { StatsCard } from './StatsCard';
+import {
+  RevenueChart,
+  PackagePerformance,
+  ClientStatistics,
+} from '@/components/dashboard';
 import { SkeletonDashboard as DashboardSkeleton } from '@/components/ui/UnifiedSkeleton';
 import { ErrorState } from '@/components/shared/utilities';
 import { logger } from '@/lib/shared/utils/logger';
@@ -39,7 +44,7 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
   // Real-time messaging and order tracking
   const { loadConversations } = useMessagingStore();
   const { loadOrders } = useOrderStore();
-  const { isConnected, isConnecting } = useWebSocket();
+  const { isConnected } = useWebSocket();
 
   React.useEffect(() => {
     // Load initial data
@@ -84,7 +89,7 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
   if (error) {
     return (
       <ErrorState
-        message={error}
+        message={error.message}
         onRetry={refreshDashboard}
         title="Dashboard Yüklenemedi"
       />
@@ -120,12 +125,7 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
       {/* Connection Status - Compact */}
       <div className="mb-6 lg:mb-8">
         <div className="flex items-center gap-2">
-          {isConnecting ? (
-            <Badge variant="secondary" className="flex items-center gap-1">
-              <div className="h-2 w-2 animate-pulse rounded-full bg-yellow-500" />
-              Bağlanıyor...
-            </Badge>
-          ) : isConnected ? (
+          {isConnected ? (
             <Badge variant="success" className="flex items-center gap-1">
               <Wifi className="h-3 w-3" />
               Çevrimiçi
@@ -247,6 +247,32 @@ export function FreelancerDashboard({ userId }: FreelancerDashboardProps) {
             },
           ]}
         />
+
+        {/* Charts Section */}
+        {data.chartData && (
+          <div className="space-y-6">
+            {/* Revenue Chart */}
+            {data.chartData.earnings && data.chartData.earnings.length > 0 && (
+              <RevenueChart data={data.chartData.earnings} days={30} />
+            )}
+
+            {/* Package Performance & Client Statistics */}
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              {data.chartData.packages &&
+                data.chartData.packages.length > 0 && (
+                  <PackagePerformance
+                    data={data.chartData.packages}
+                    maxItems={5}
+                  />
+                )}
+
+              {data.chartData.clients &&
+                data.chartData.clients.totalClients > 0 && (
+                  <ClientStatistics data={data.chartData.clients} />
+                )}
+            </div>
+          </div>
+        )}
 
         {/* Recent Activity */}
         <Card>

@@ -16,7 +16,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     // ENHANCED TYPE CHECKING
     "exactOptionalPropertyTypes": false, // Too strict for current codebase

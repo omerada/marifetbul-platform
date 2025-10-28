@@ -29,14 +29,14 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { orderApi } from '@/lib/api/orders';
-import type { OrderResponse } from '@/types/backend-aligned';
+import type { Order } from '@/lib/api/validators/order';
 
 export default function OrderConfirmationPage() {
   const params = useParams();
   const router = useRouter();
   const orderId = params.orderId as string;
 
-  const [order, setOrder] = useState<OrderResponse | null>(null);
+  const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -130,31 +130,35 @@ export default function OrderConfirmationPage() {
               <div className="flex justify-between border-b border-gray-200 pb-3">
                 <span className="text-gray-600">Paket</span>
                 <span className="font-medium text-gray-900">
-                  {order.packageTitle || 'Özel Sipariş'}
+                  {order.packageDetails?.packageTitle ||
+                    order.customDescription ||
+                    'Özel Sipariş'}
                 </span>
               </div>
               <div className="flex justify-between border-b border-gray-200 pb-3">
                 <span className="text-gray-600">Satıcı</span>
                 <span className="font-medium text-gray-900">
-                  {order.sellerName}
+                  {order.seller?.fullName || order.seller?.username || 'Satıcı'}
                 </span>
               </div>
               <div className="flex justify-between border-b border-gray-200 pb-3">
                 <span className="text-gray-600">Tutar</span>
                 <span className="font-medium text-gray-900">
-                  {formatPrice(order.totalAmount)}
+                  {formatPrice(order.financials.total)}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-gray-200 pb-3">
-                <span className="text-gray-600">Teslim Tarihi</span>
-                <span className="font-medium text-gray-900">
-                  {formatDate(order.deadline)}
-                </span>
-              </div>
+              {order.deadline && (
+                <div className="flex justify-between border-b border-gray-200 pb-3">
+                  <span className="text-gray-600">Teslim Tarihi</span>
+                  <span className="font-medium text-gray-900">
+                    {formatDate(order.deadline)}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span className="text-gray-600">Sipariş Tarihi</span>
                 <span className="font-medium text-gray-900">
-                  {formatDate(order.orderedAt)}
+                  {formatDate(order.createdAt)}
                 </span>
               </div>
             </div>

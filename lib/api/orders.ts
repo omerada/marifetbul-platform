@@ -6,28 +6,34 @@
  *
  * Features:
  * - Order creation (package/custom)
- * - Order retrieval
+ * - Order retrieval with validation
  * - Order status management
  * - Order history
  * - Order events timeline
  *
  * @author MarifetBul Development Team
- * @version 2.0.0 - Sprint 3: API Layer Unification
+ * @version 3.0.0 - Sprint 3: Backend-Aligned Types
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
-import { validateResponse, OrderSchema } from './validators';
-import type { Order } from './validators';
 import {
-  OrderResponse,
-  OrderSummaryResponse,
-  OrderStatistics,
-  OrderEvent,
-  OrderType,
-  OrderStatus,
-  OrderCancellationReason,
-  PageResponse,
-} from '@/types/backend-aligned';
+  validateOrder,
+  validatePagedOrders,
+  validateCreatePackageOrderRequest,
+  validateCreateCustomOrderRequest,
+  type Order,
+  type OrderStatus,
+  type OrderType,
+  type CreatePackageOrderRequest,
+  type CreateCustomOrderRequest,
+  type SubmitDeliveryRequest,
+  type RequestRevisionRequest,
+  type CancelOrderRequest,
+  type OrderListFilters,
+  type OrderStatistics,
+  type PagedOrdersResponse,
+} from './validators/order';
+import type { OrderTimelineEvent } from '@/types/business/features/order';
 
 // ================================================
 // API ENDPOINTS
@@ -58,49 +64,6 @@ const ENDPOINTS = {
 } as const;
 
 // ================================================
-// REQUEST TYPES
-// ================================================
-
-export interface CreatePackageOrderRequest {
-  packageId: string;
-  tier: 'BASIC' | 'STANDARD' | 'PREMIUM';
-  requirements?: string;
-  notes?: string;
-}
-
-export interface CreateCustomOrderRequest {
-  sellerId: string;
-  title: string;
-  description: string;
-  amount: number;
-  requirements?: string;
-  deadline: string; // ISO 8601
-}
-
-export interface SubmitDeliveryRequest {
-  deliveryNote: string;
-  attachments?: string[];
-}
-
-export interface RequestRevisionRequest {
-  revisionNote: string;
-}
-
-export interface CancelOrderRequest {
-  reason: OrderCancellationReason;
-  note?: string;
-}
-
-export interface OrderListFilters {
-  status?: OrderStatus[];
-  type?: OrderType[];
-  page?: number;
-  size?: number;
-  sortBy?: 'createdAt' | 'deadline' | 'totalAmount';
-  sortDir?: 'asc' | 'desc';
-}
-
-// ================================================
 // API FUNCTIONS
 // ================================================
 
@@ -112,11 +75,16 @@ export interface OrderListFilters {
 export async function createPackageOrder(
   request: CreatePackageOrderRequest
 ): Promise<Order> {
-  const response = await apiClient.post<OrderResponse>(
+  // Validate request
+  validateCreatePackageOrderRequest(request);
+
+  const response = await apiClient.post<Order>(
     ENDPOINTS.CREATE_PACKAGE_ORDER,
     request
   );
-  return validateResponse(OrderSchema, response, 'Order');
+
+  // Validate response
+  return validateOrder(response);
 }
 
 /**
@@ -127,11 +95,16 @@ export async function createPackageOrder(
 export async function createCustomOrder(
   request: CreateCustomOrderRequest
 ): Promise<Order> {
-  const response = await apiClient.post<OrderResponse>(
+  // Validate request
+  validateCreateCustomOrderRequest(request);
+
+  const response = await apiClient.post<Order>(
     ENDPOINTS.CREATE_CUSTOM_ORDER,
     request
   );
-  return validateResponse(OrderSchema, response, 'Order');
+
+  // Validate response
+  return validateOrder(response);
 }
 
 /**
@@ -139,8 +112,9 @@ export async function createCustomOrder(
  * @throws {NotFoundError} Order not found
  * @throws {AuthenticationError} Not authenticated
  */
-export async function getOrder(orderId: string): Promise<OrderResponse> {
-  return apiClient.get<OrderResponse>(ENDPOINTS.GET_ORDER(orderId));
+export async function getOrder(orderId: string): Promise<Order> {
+  const response = await apiClient.get<Order>(ENDPOINTS.GET_ORDER(orderId));
+  return validateOrder(response);
 }
 
 /**
@@ -148,30 +122,12 @@ export async function getOrder(orderId: string): Promise<OrderResponse> {
  */
 export async function getMyOrders(
   filters?: OrderListFilters
-): Promise<PageResponse<OrderSummaryResponse>> {
-  const params = new URLSearchParams();
-
-  if (filters?.status) {
-    filters.status.forEach((s) => params.append('status', s));
-  }
-  if (filters?.type) {
-    filters.type.forEach((t) => params.append('type', t));
-  }
-  if (filters?.page !== undefined) {
-    params.append('page', filters.page.toString());
-  }
-  if (filters?.size !== undefined) {
-    params.append('size', filters.size.toString());
-  }
-  if (filters?.sortBy) {
-    params.append('sortBy', filters.sortBy);
-  }
-  if (filters?.sortDir) {
-    params.append('sortDir', filters.sortDir);
-  }
-
+): Promise<PagedOrdersResponse> {
+  const params = buildOrderFilterParams(filters);
   const url = `${ENDPOINTS.GET_MY_ORDERS}?${params.toString()}`;
-  return apiClient.get<PageResponse<OrderSummaryResponse>>(url);
+
+  const response = await apiClient.get<PagedOrdersResponse>(url);
+  return validatePagedOrders(response);
 }
 
 /**
@@ -179,21 +135,12 @@ export async function getMyOrders(
  */
 export async function getBuyerOrders(
   filters?: OrderListFilters
-): Promise<PageResponse<OrderSummaryResponse>> {
-  const params = new URLSearchParams();
-
-  if (filters?.status) {
-    filters.status.forEach((s) => params.append('status', s));
-  }
-  if (filters?.page !== undefined) {
-    params.append('page', filters.page.toString());
-  }
-  if (filters?.size !== undefined) {
-    params.append('size', filters.size.toString());
-  }
-
+): Promise<PagedOrdersResponse> {
+  const params = buildOrderFilterParams(filters);
   const url = `${ENDPOINTS.GET_BUYER_ORDERS}?${params.toString()}`;
-  return apiClient.get<PageResponse<OrderSummaryResponse>>(url);
+
+  const response = await apiClient.get<PagedOrdersResponse>(url);
+  return validatePagedOrders(response);
 }
 
 /**
@@ -201,21 +148,12 @@ export async function getBuyerOrders(
  */
 export async function getSellerOrders(
   filters?: OrderListFilters
-): Promise<PageResponse<OrderSummaryResponse>> {
-  const params = new URLSearchParams();
-
-  if (filters?.status) {
-    filters.status.forEach((s) => params.append('status', s));
-  }
-  if (filters?.page !== undefined) {
-    params.append('page', filters.page.toString());
-  }
-  if (filters?.size !== undefined) {
-    params.append('size', filters.size.toString());
-  }
-
+): Promise<PagedOrdersResponse> {
+  const params = buildOrderFilterParams(filters);
   const url = `${ENDPOINTS.GET_SELLER_ORDERS}?${params.toString()}`;
-  return apiClient.get<PageResponse<OrderSummaryResponse>>(url);
+
+  const response = await apiClient.get<PagedOrdersResponse>(url);
+  return validatePagedOrders(response);
 }
 
 /**
@@ -224,24 +162,34 @@ export async function getSellerOrders(
 export async function confirmPayment(
   orderId: string,
   paymentId: string
-): Promise<OrderResponse> {
-  return apiClient.post<OrderResponse>(ENDPOINTS.CONFIRM_PAYMENT(orderId), {
-    paymentId,
-  });
+): Promise<Order> {
+  const response = await apiClient.post<Order>(
+    ENDPOINTS.CONFIRM_PAYMENT(orderId),
+    { paymentId }
+  );
+  return validateOrder(response);
 }
 
 /**
  * Accept an order (seller)
  */
-export async function acceptOrder(orderId: string): Promise<OrderResponse> {
-  return apiClient.post<OrderResponse>(ENDPOINTS.ACCEPT_ORDER(orderId), {});
+export async function acceptOrder(orderId: string): Promise<Order> {
+  const response = await apiClient.post<Order>(
+    ENDPOINTS.ACCEPT_ORDER(orderId),
+    {}
+  );
+  return validateOrder(response);
 }
 
 /**
  * Start working on an order (seller)
  */
-export async function startOrder(orderId: string): Promise<OrderResponse> {
-  return apiClient.post<OrderResponse>(ENDPOINTS.START_ORDER(orderId), {});
+export async function startOrder(orderId: string): Promise<Order> {
+  const response = await apiClient.post<Order>(
+    ENDPOINTS.START_ORDER(orderId),
+    {}
+  );
+  return validateOrder(response);
 }
 
 /**
@@ -250,18 +198,23 @@ export async function startOrder(orderId: string): Promise<OrderResponse> {
 export async function submitDelivery(
   orderId: string,
   request: SubmitDeliveryRequest
-): Promise<OrderResponse> {
-  return apiClient.post<OrderResponse>(
+): Promise<Order> {
+  const response = await apiClient.post<Order>(
     ENDPOINTS.SUBMIT_DELIVERY(orderId),
     request
   );
+  return validateOrder(response);
 }
 
 /**
  * Approve delivery (buyer)
  */
-export async function approveDelivery(orderId: string): Promise<OrderResponse> {
-  return apiClient.post<OrderResponse>(ENDPOINTS.APPROVE_DELIVERY(orderId), {});
+export async function approveDelivery(orderId: string): Promise<Order> {
+  const response = await apiClient.post<Order>(
+    ENDPOINTS.APPROVE_DELIVERY(orderId),
+    {}
+  );
+  return validateOrder(response);
 }
 
 /**
@@ -270,18 +223,23 @@ export async function approveDelivery(orderId: string): Promise<OrderResponse> {
 export async function requestRevision(
   orderId: string,
   request: RequestRevisionRequest
-): Promise<OrderResponse> {
-  return apiClient.post<OrderResponse>(
+): Promise<Order> {
+  const response = await apiClient.post<Order>(
     ENDPOINTS.REQUEST_REVISION(orderId),
     request
   );
+  return validateOrder(response);
 }
 
 /**
  * Complete an order
  */
-export async function completeOrder(orderId: string): Promise<OrderResponse> {
-  return apiClient.post<OrderResponse>(ENDPOINTS.COMPLETE_ORDER(orderId), {});
+export async function completeOrder(orderId: string): Promise<Order> {
+  const response = await apiClient.post<Order>(
+    ENDPOINTS.COMPLETE_ORDER(orderId),
+    {}
+  );
+  return validateOrder(response);
 }
 
 /**
@@ -290,11 +248,12 @@ export async function completeOrder(orderId: string): Promise<OrderResponse> {
 export async function cancelOrder(
   orderId: string,
   request: CancelOrderRequest
-): Promise<OrderResponse> {
-  return apiClient.post<OrderResponse>(
+): Promise<Order> {
+  const response = await apiClient.post<Order>(
     ENDPOINTS.CANCEL_ORDER(orderId),
     request
   );
+  return validateOrder(response);
 }
 
 /**
@@ -307,8 +266,10 @@ export async function getOrderStatistics(): Promise<OrderStatistics> {
 /**
  * Get order events timeline
  */
-export async function getOrderEvents(orderId: string): Promise<OrderEvent[]> {
-  return apiClient.get<OrderEvent[]>(ENDPOINTS.GET_EVENTS(orderId));
+export async function getOrderEvents(
+  orderId: string
+): Promise<OrderTimelineEvent[]> {
+  return apiClient.get<OrderTimelineEvent[]>(ENDPOINTS.GET_EVENTS(orderId));
 }
 
 // ================================================
@@ -316,16 +277,46 @@ export async function getOrderEvents(orderId: string): Promise<OrderEvent[]> {
 // ================================================
 
 /**
+ * Build URLSearchParams from order filters
+ */
+function buildOrderFilterParams(filters?: OrderListFilters): URLSearchParams {
+  const params = new URLSearchParams();
+
+  if (!filters) return params;
+
+  if (filters.status) {
+    filters.status.forEach((s) => params.append('status', s));
+  }
+  if (filters.type) {
+    filters.type.forEach((t) => params.append('type', t));
+  }
+  if (filters.page !== undefined) {
+    params.append('page', filters.page.toString());
+  }
+  if (filters.size !== undefined) {
+    params.append('size', filters.size.toString());
+  }
+  if (filters.sortBy) {
+    params.append('sortBy', filters.sortBy);
+  }
+  if (filters.sortDir) {
+    params.append('sortDir', filters.sortDir);
+  }
+
+  return params;
+}
+
+/**
  * Check if order can be cancelled
  */
-export function canCancelOrder(order: OrderResponse): boolean {
+export function canCancelOrder(order: Order): boolean {
   return order.canCancel ?? false;
 }
 
 /**
  * Check if order can be completed
  */
-export function canCompleteOrder(order: OrderResponse): boolean {
+export function canCompleteOrder(order: Order): boolean {
   return order.canComplete ?? false;
 }
 
@@ -334,15 +325,15 @@ export function canCompleteOrder(order: OrderResponse): boolean {
  */
 export function getOrderStatusColor(status: OrderStatus): string {
   const colorMap: Record<OrderStatus, string> = {
-    PENDING: 'bg-yellow-100 text-yellow-800',
-    ACCEPTED: 'bg-blue-100 text-blue-800',
+    PENDING_PAYMENT: 'bg-yellow-100 text-yellow-800',
+    PAID: 'bg-blue-100 text-blue-800',
     IN_PROGRESS: 'bg-purple-100 text-purple-800',
     DELIVERED: 'bg-indigo-100 text-indigo-800',
-    APPROVED: 'bg-green-100 text-green-800',
-    REVISION_REQUESTED: 'bg-orange-100 text-orange-800',
     COMPLETED: 'bg-green-100 text-green-800',
-    CANCELLED: 'bg-red-100 text-red-800',
+    CANCELED: 'bg-red-100 text-red-800',
+    REFUNDED: 'bg-orange-100 text-orange-800',
     DISPUTED: 'bg-red-100 text-red-800',
+    IN_REVIEW: 'bg-yellow-100 text-yellow-800',
   };
 
   return colorMap[status] || 'bg-gray-100 text-gray-800';
@@ -353,15 +344,15 @@ export function getOrderStatusColor(status: OrderStatus): string {
  */
 export function getOrderStatusLabel(status: OrderStatus): string {
   const labelMap: Record<OrderStatus, string> = {
-    PENDING: 'Beklemede',
-    ACCEPTED: 'Kabul Edildi',
+    PENDING_PAYMENT: 'Ödeme Bekleniyor',
+    PAID: 'Ödendi',
     IN_PROGRESS: 'Devam Ediyor',
     DELIVERED: 'Teslim Edildi',
-    APPROVED: 'Onaylandı',
-    REVISION_REQUESTED: 'Revizyon İstendi',
     COMPLETED: 'Tamamlandı',
-    CANCELLED: 'İptal Edildi',
+    CANCELED: 'İptal Edildi',
+    REFUNDED: 'İade Edildi',
     DISPUTED: 'İhtilafta',
+    IN_REVIEW: 'İnceleniyor',
   };
 
   return labelMap[status] || status;
@@ -372,8 +363,8 @@ export function getOrderStatusLabel(status: OrderStatus): string {
  */
 export function getOrderTypeLabel(type: OrderType): string {
   const labelMap: Record<OrderType, string> = {
-    JOB_PROPOSAL: 'İş Teklifi',
     PACKAGE_ORDER: 'Paket Siparişi',
+    JOB_ORDER: 'İş Siparişi',
     CUSTOM_ORDER: 'Özel Sipariş',
   };
 

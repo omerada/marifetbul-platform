@@ -100,6 +100,17 @@ export {
 export { default as FileUpload } from './FileUpload';
 export { Toast, ToastContainer } from './Toast';
 
+// Dialog Components
+export {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from './Dialog';
+
 // Animation Components
 export {
   AnimatedContainer,

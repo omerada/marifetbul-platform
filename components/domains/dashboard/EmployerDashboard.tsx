@@ -46,7 +46,7 @@ export function EmployerDashboard({}: EmployerDashboardProps) {
   if (error) {
     return (
       <ErrorState
-        message={error}
+        message={error.message}
         onRetry={refreshDashboard}
         title="Dashboard Yüklenemedi"
       />
