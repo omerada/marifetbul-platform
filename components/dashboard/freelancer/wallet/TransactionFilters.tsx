@@ -13,7 +13,10 @@
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Filter, X } from 'lucide-react';
-import type { TransactionFilters as Filters } from '@/types/business/features/wallet';
+import type {
+  TransactionFilters as Filters,
+  TransactionType,
+} from '@/types/business/features/wallet';
 
 // ================================================
 // TYPES
@@ -85,16 +88,7 @@ export const TransactionFilters: React.FC<TransactionFiltersProps> = ({
                 onChange={(e) =>
                   onFiltersChange({
                     ...filters,
-                    type:
-                      (e.target.value as
-                        | ''
-                        | 'CREDIT'
-                        | 'DEBIT'
-                        | 'ESCROW_HOLD'
-                        | 'ESCROW_RELEASE'
-                        | 'PAYOUT'
-                        | 'REFUND'
-                        | 'FEE') || undefined,
+                    type: (e.target.value as TransactionType) || undefined,
                   })
                 }
                 className="focus:ring-primary w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:outline-none"

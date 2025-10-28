@@ -4,26 +4,38 @@
 // Created: October 25, 2025
 // Sprint: Wallet & Payout System Integration
 
-// Import backend-aligned types at top
-import type {
-  Transaction as BackendTransaction,
-  Payout as BackendPayout,
-} from '@/lib/api/validators';
-
 // ================================================
 // BASE TYPES (Backend-aligned)
 // ================================================
 
-// Transaction type from backend
-export type TransactionType = BackendTransaction['type'];
+// Transaction Type Enum
+export enum TransactionType {
+  CREDIT = 'CREDIT',
+  DEBIT = 'DEBIT',
+  ESCROW_HOLD = 'ESCROW_HOLD',
+  ESCROW_RELEASE = 'ESCROW_RELEASE',
+  PAYOUT = 'PAYOUT',
+  REFUND = 'REFUND',
+  FEE = 'FEE',
+}
 
-// Payout status from backend
-export type PayoutStatus = BackendPayout['status'];
+// Payout Status Enum
+export enum PayoutStatus {
+  PENDING = 'PENDING',
+  PROCESSING = 'PROCESSING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED',
+}
 
-// Payout method from backend
-export type PayoutMethod = BackendPayout['method'];
+// Payout Method Enum
+export enum PayoutMethod {
+  BANK_TRANSFER = 'BANK_TRANSFER',
+  PAYPAL = 'PAYPAL',
+  STRIPE = 'STRIPE',
+}
 
-// Payout Method Enum (for easy usage)
+// Legacy Payout Method Enum (for backward compatibility)
 export enum PayoutMethodEnum {
   BANK_TRANSFER = 'BANK_TRANSFER',
   STRIPE_PAYOUT = 'STRIPE_PAYOUT',
@@ -313,8 +325,8 @@ export interface WalletUIState {
   isLoadingTransactions: boolean;
   isLoadingPayouts: boolean;
   isSubmittingPayout: boolean;
-  selectedTransaction: BackendTransaction | null;
-  selectedPayout: BackendPayout | null;
+  selectedTransaction: Transaction | null;
+  selectedPayout: Payout | null;
   payoutModalOpen: boolean;
   transactionDetailModalOpen: boolean;
   error: string | null;
@@ -460,70 +472,46 @@ export const TRANSACTION_TYPE_INFO: Record<
   TransactionType,
   TransactionTypeInfo
 > = {
-  [TransactionType.PAYMENT_RECEIVED]: {
-    label: 'Ödeme Alındı',
+  [TransactionType.CREDIT]: {
+    label: 'Gelen Ödeme',
     icon: '↗️',
     color: 'green',
-    description: 'Sipariş ödemesi alındı',
+    description: 'Hesaba para girişi',
   },
-  [TransactionType.PAYMENT_RELEASED]: {
-    label: 'Escrow Serbest',
-    icon: '↗️',
-    color: 'green',
-    description: 'Tutulan ödeme serbest bırakıldı',
+  [TransactionType.DEBIT]: {
+    label: 'Giden Ödeme',
+    icon: '↘️',
+    color: 'red',
+    description: 'Hesaptan para çıkışı',
   },
-  [TransactionType.PAYMENT_HELD]: {
+  [TransactionType.ESCROW_HOLD]: {
     label: 'Ödeme Tutuldu',
     icon: '⏸️',
     color: 'yellow',
     description: "Ödeme escrow'da tutuluyor",
   },
-  [TransactionType.PAYOUT_REQUESTED]: {
-    label: 'Para Çekme',
-    icon: '↘️',
-    color: 'red',
-    description: 'Para çekme talebi oluşturuldu',
-  },
-  [TransactionType.PAYOUT_COMPLETED]: {
-    label: 'Para Çekme Tamamlandı',
+  [TransactionType.ESCROW_RELEASE]: {
+    label: 'Escrow Serbest',
     icon: '✅',
-    color: 'blue',
-    description: 'Para çekme işlemi tamamlandı',
-  },
-  [TransactionType.PAYOUT_FAILED]: {
-    label: 'Para Çekme Başarısız',
-    icon: '❌',
-    color: 'red',
-    description: 'Para çekme işlemi başarısız oldu',
-  },
-  [TransactionType.PAYOUT_CANCELLED]: {
-    label: 'Para Çekme İptal',
-    icon: '🚫',
-    color: 'gray',
-    description: 'Para çekme talebi iptal edildi',
-  },
-  [TransactionType.REFUND_RECEIVED]: {
-    label: 'İade Alındı',
-    icon: '↗️',
     color: 'green',
-    description: 'İade ödemesi alındı',
+    description: 'Tutulan ödeme serbest bırakıldı',
   },
-  [TransactionType.REFUND_ISSUED]: {
-    label: 'İade Yapıldı',
-    icon: '↘️',
-    color: 'red',
-    description: 'İade ödemesi yapıldı',
-  },
-  [TransactionType.ADJUSTMENT]: {
-    label: 'Düzeltme',
-    icon: '⚖️',
+  [TransactionType.PAYOUT]: {
+    label: 'Para Çekme',
+    icon: '💸',
     color: 'blue',
-    description: 'Bakiye düzeltmesi',
+    description: 'Para çekme işlemi',
+  },
+  [TransactionType.REFUND]: {
+    label: 'İade',
+    icon: '↩️',
+    color: 'orange',
+    description: 'İade ödemesi',
   },
   [TransactionType.FEE]: {
     label: 'Komisyon',
     icon: '💰',
-    color: 'orange',
+    color: 'purple',
     description: 'Platform komisyonu',
   },
 };
@@ -564,18 +552,18 @@ export type TurkishBank = (typeof TURKISH_BANKS)[number];
 
 export function isPositiveTransaction(type: TransactionType): boolean {
   return [
-    TransactionType.PAYMENT_RECEIVED,
-    TransactionType.PAYMENT_RELEASED,
-    TransactionType.REFUND_RECEIVED,
-    TransactionType.PAYOUT_CANCELLED,
+    TransactionType.CREDIT,
+    TransactionType.ESCROW_RELEASE,
+    TransactionType.REFUND,
   ].includes(type);
 }
 
 export function isNegativeTransaction(type: TransactionType): boolean {
   return [
-    TransactionType.PAYOUT_REQUESTED,
-    TransactionType.REFUND_ISSUED,
+    TransactionType.DEBIT,
+    TransactionType.PAYOUT,
     TransactionType.FEE,
+    TransactionType.ESCROW_HOLD,
   ].includes(type);
 }
 

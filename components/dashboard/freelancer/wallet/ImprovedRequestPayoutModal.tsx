@@ -22,7 +22,7 @@ import {
 import { usePayouts } from '@/hooks/business/wallet';
 import { useBankAccounts } from '@/hooks/business/wallet/usePaymentMethods';
 import {
-  PayoutMethodEnum,
+  PayoutMethod,
   formatCurrency,
   type PayoutRequest,
 } from '@/types/business/features/wallet';
@@ -115,7 +115,7 @@ export const ImprovedRequestPayoutModal: React.FC<
     try {
       const request: PayoutRequest = {
         amount: parseFloat(amount),
-        method: PayoutMethodEnum.BANK_TRANSFER,
+        method: PayoutMethod.BANK_TRANSFER,
         bankAccountId: selectedBankAccountId!,
         notes: notes.trim() || undefined,
       };
@@ -312,9 +312,7 @@ export const ImprovedRequestPayoutModal: React.FC<
                                 {account.bankName}
                               </p>
                               <p className="text-muted-foreground font-mono text-sm">
-                                ****{' '}
-                                {account.accountLastFour ||
-                                  account.iban?.slice(-4)}
+                                {account.maskedIdentifier || `**** ${account.accountLastFour || ''}`}
                               </p>
                             </div>
                           </div>

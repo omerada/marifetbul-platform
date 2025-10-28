@@ -206,11 +206,11 @@ function BankAccountCard({
             </div>
 
             <p className="mb-1 font-mono text-sm text-gray-600">
-              {account.iban
-                ? paymentMethodApi.formatIBAN(account.iban)
-                : account.maskedIdentifier}
+              {account.maskedIdentifier || account.accountLastFour || 'N/A'}
             </p>
-            <p className="text-sm text-gray-500">{account.accountHolderName}</p>
+            <p className="text-sm text-gray-500">
+              {account.nickname || account.bankName || 'Hesap Sahibi'}
+            </p>
           </div>
         </div>
 

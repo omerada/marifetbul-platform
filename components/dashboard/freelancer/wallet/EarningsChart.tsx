@@ -59,7 +59,7 @@ const PERIOD_CONFIG = {
 function groupTransactionsByPeriod(
   transactions: Array<{
     createdAt: string;
-    type: TransactionType;
+    type: string; // Accept any transaction type string
     amount: number;
   }>,
   period: ChartPeriod
@@ -85,9 +85,9 @@ function groupTransactionsByPeriod(
       return (
         txDate >= startDate &&
         txDate <= endDate &&
-        (t.type === TransactionType.PAYMENT_RECEIVED ||
-          t.type === TransactionType.PAYMENT_RELEASED ||
-          t.type === TransactionType.REFUND_RECEIVED) &&
+        (t.type === TransactionType.CREDIT ||
+          t.type === TransactionType.ESCROW_RELEASE ||
+          t.type === TransactionType.REFUND) &&
         t.amount > 0
       );
     });

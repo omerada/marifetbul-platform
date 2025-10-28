@@ -17,7 +17,6 @@ import {
   ArrowDownCircle,
   ArrowUpCircle,
   Clock,
-  RefreshCw,
   CreditCard,
   AlertCircle,
   DollarSign,
@@ -59,28 +58,20 @@ export interface RecentTransactionsWidgetProps {
 
 function getTransactionIcon(type: TransactionType) {
   switch (type) {
-    case TransactionType.PAYMENT_RECEIVED:
-    case TransactionType.PAYMENT_RELEASED:
-    case TransactionType.REFUND_RECEIVED:
+    case TransactionType.CREDIT:
+    case TransactionType.ESCROW_RELEASE:
+    case TransactionType.REFUND:
       return <ArrowDownCircle className="h-5 w-5 text-green-600" />;
 
-    case TransactionType.PAYOUT_REQUESTED:
-    case TransactionType.PAYOUT_COMPLETED:
-    case TransactionType.REFUND_ISSUED:
+    case TransactionType.DEBIT:
+    case TransactionType.PAYOUT:
       return <ArrowUpCircle className="h-5 w-5 text-blue-600" />;
 
-    case TransactionType.PAYMENT_HELD:
+    case TransactionType.ESCROW_HOLD:
       return <Clock className="h-5 w-5 text-amber-600" />;
-
-    case TransactionType.PAYOUT_FAILED:
-    case TransactionType.PAYOUT_CANCELLED:
-      return <AlertCircle className="h-5 w-5 text-red-600" />;
 
     case TransactionType.FEE:
       return <CreditCard className="h-5 w-5 text-gray-600" />;
-
-    case TransactionType.ADJUSTMENT:
-      return <RefreshCw className="h-5 w-5 text-purple-600" />;
 
     default:
       return <DollarSign className="h-5 w-5 text-gray-600" />;
@@ -89,16 +80,12 @@ function getTransactionIcon(type: TransactionType) {
 
 function getTransactionLabel(type: TransactionType): string {
   const labels: Record<TransactionType, string> = {
-    [TransactionType.PAYMENT_RECEIVED]: 'Ödeme Alındı',
-    [TransactionType.PAYMENT_RELEASED]: 'Ödeme Serbest Bırakıldı',
-    [TransactionType.PAYMENT_HELD]: 'Ödeme Beklemede',
-    [TransactionType.PAYOUT_REQUESTED]: 'Para Çekme Talebi',
-    [TransactionType.PAYOUT_COMPLETED]: 'Para Çekme Tamamlandı',
-    [TransactionType.PAYOUT_FAILED]: 'Para Çekme Başarısız',
-    [TransactionType.PAYOUT_CANCELLED]: 'Para Çekme İptal',
-    [TransactionType.REFUND_RECEIVED]: 'İade Alındı',
-    [TransactionType.REFUND_ISSUED]: 'İade Yapıldı',
-    [TransactionType.ADJUSTMENT]: 'Düzeltme',
+    [TransactionType.CREDIT]: 'Gelen Ödeme',
+    [TransactionType.DEBIT]: 'Giden Ödeme',
+    [TransactionType.ESCROW_HOLD]: 'Ödeme Tutuldu',
+    [TransactionType.ESCROW_RELEASE]: 'Ödeme Serbest',
+    [TransactionType.PAYOUT]: 'Para Çekme',
+    [TransactionType.REFUND]: 'İade',
     [TransactionType.FEE]: 'Komisyon',
   };
   return labels[type] || type;
@@ -194,9 +181,9 @@ export const RecentTransactionsWidget: React.FC<
           <div className="space-y-1">
             {recentTransactions.map((transaction) => {
               const isCredit =
-                transaction.type === TransactionType.PAYMENT_RECEIVED ||
-                transaction.type === TransactionType.PAYMENT_RELEASED ||
-                transaction.type === TransactionType.REFUND_RECEIVED;
+                transaction.type === TransactionType.CREDIT ||
+                transaction.type === TransactionType.ESCROW_RELEASE ||
+                transaction.type === TransactionType.REFUND;
 
               return (
                 <div
@@ -205,13 +192,13 @@ export const RecentTransactionsWidget: React.FC<
                 >
                   {/* Icon */}
                   <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 transition-all group-hover:bg-white group-hover:shadow-sm">
-                    {getTransactionIcon(transaction.type)}
+                    {getTransactionIcon(transaction.type as TransactionType)}
                   </div>
 
                   {/* Details */}
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-gray-900">
-                      {getTransactionLabel(transaction.type)}
+                      {getTransactionLabel(transaction.type as TransactionType)}
                     </p>
                     <div className="mt-0.5 flex items-center gap-2">
                       <p className="text-muted-foreground text-xs">
