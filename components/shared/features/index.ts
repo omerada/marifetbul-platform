@@ -6,12 +6,15 @@ export { ProfileView } from '../../domains/profile/ProfileView';
 export { EmployerProfile } from '../../domains/profile/EmployerProfile';
 export { ProfileEditForm } from '../../domains/profile/ProfileEditForm';
 export { PortfolioGallery } from '../../domains/profile/PortfolioGallery';
-export { EmployerDashboard as DashboardOverview } from '../../domains/dashboard/EmployerDashboard';
+
+// Dashboard Overview - now using UnifiedDashboard
+export { UnifiedDashboard as DashboardOverview } from '../../domains/dashboard/UnifiedDashboard';
+
 export { JobDetail as JobSummary } from '../../domains/jobs/JobDetail';
 export { PackageDetail as PackageSummary } from '../../domains/packages/PackageDetail';
 
-// Dashboard components
+// Dashboard components - export actual components, not from removed files
 export { DashboardStats } from '../../domains/dashboard/DashboardStats';
-export { EmployerDashboard as QuickActions } from '../../domains/dashboard/EmployerDashboard';
-export { EmployerDashboard as ActivityTimeline } from '../../domains/dashboard/EmployerDashboard';
-export { EmployerDashboard as DashboardCharts } from '../../domains/dashboard/EmployerDashboard';
+export { QuickActions } from '../../domains/dashboard/QuickActions';
+export { ActivityTimeline } from '../../domains/dashboard/ActivityTimeline';
+export { DashboardCharts } from '../../domains/dashboard/DashboardCharts';
