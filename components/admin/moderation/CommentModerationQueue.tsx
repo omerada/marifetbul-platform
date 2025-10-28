@@ -25,7 +25,7 @@ import {
 import { useCommentModeration } from '@/hooks/business/useCommentModeration';
 import { useAutoRefresh } from '@/hooks/business/useAutoRefresh';
 import { CommentModerationCard } from './CommentModerationCard';
-import { CommentPagination } from '@/components/blog/CommentPagination';
+import { Pagination } from '@/components/ui/Pagination';
 import { CommentBulkActions } from './CommentBulkActions';
 import { CommentFilterBar } from './CommentFilterBar';
 import { CommentSearchBar } from './CommentSearchBar';
@@ -323,14 +323,17 @@ export function CommentModerationQueue() {
 
       {/* Pagination */}
       {data.total > moderation.pageSize && (
-        <CommentPagination
+        <Pagination
           currentPage={moderation.page}
           totalPages={moderation.totalPages}
-          totalItems={data.total}
-          itemsPerPage={moderation.pageSize}
+          total={data.total}
+          pageSize={moderation.pageSize}
           onPageChange={moderation.setPage}
-          onItemsPerPageChange={moderation.setPageSize}
-          loading={moderation.loading}
+          onPageSizeChange={moderation.setPageSize}
+          showSizeChanger={true}
+          showTotal={true}
+          disabled={moderation.loading}
+          size="md"
         />
       )}
     </div>

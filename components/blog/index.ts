@@ -10,12 +10,10 @@ export { CommentCard } from './CommentCard';
 export { CommentList } from './CommentList';
 export { CommentEditForm } from './CommentEditForm';
 export { CommentReportModal } from './CommentReportModal';
-export { CommentPagination } from './CommentPagination';
 export { CommentReplyForm } from './CommentReplyForm';
 export { CommentThreadView } from './CommentThreadView';
 
 export type { CommentReportModalProps } from './CommentReportModal';
-export type { CommentPaginationProps } from './CommentPagination';
 
 // Types
 export type { CommentFormProps } from './CommentForm';

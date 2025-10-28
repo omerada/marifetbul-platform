@@ -6,7 +6,7 @@ import { useMarketplace } from '@/hooks';
 import { useResponsive } from '@/hooks';
 import { MarketplaceFilters } from './MarketplaceFilters';
 import { MarketplaceList } from './MarketplaceList';
-import { MarketplacePagination } from './MarketplacePagination';
+import { Pagination } from '@/components/ui/Pagination';
 import { MobileMarketplace } from './MobileMarketplace';
 import { ErrorState } from '@/components/shared/utilities';
 import { Card } from '@/components/ui/Card';
@@ -439,16 +439,21 @@ export function MarketplacePage() {
             {/* Sayfalama */}
             {currentPagination.totalPages > 1 && (
               <div className="mt-8">
-                <MarketplacePagination
-                  mode={mode}
-                  pagination={currentPagination}
-                  onPageChange={() => {
+                <Pagination
+                  currentPage={currentPagination.page}
+                  totalPages={currentPagination.totalPages}
+                  total={currentPagination.total}
+                  pageSize={currentPagination.limit}
+                  onPageChange={(_page) => {
+                    // Trigger refetch with new page
                     if (mode === 'jobs') {
                       applyJobFilters();
                     } else {
                       applyPackageFilters();
                     }
                   }}
+                  showTotal={true}
+                  size="md"
                 />
               </div>
             )}
