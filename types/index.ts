@@ -1,155 +1,59 @@
-// Central export hub for all types
-// Legacy compatibility - keep existing types working
+// ================================================
+// TYPE SYSTEM INDEX - REFACTORED (Sprint 2)
+// ================================================
+// Clean re-exports from domain-specific modules
 
-// Essential legacy exports
+// Core types (User, Freelancer, Employer, ApiResponse, etc.)
+export * from './core/base';
+
+// Shared utilities (Performance, SEO, Location, etc.)
 export * from './shared/performance';
 export * from './shared/seo';
+// Location types exported explicitly to avoid conflicts
+export type {
+  LocationSearchResult,
+  LocationSearchResultLegacy,
+  LocationPrediction,
+  LocationSearchParams,
+  LocationSearchRequest,
+  LocationAutocompleteRequest,
+  GeocodeRequest,
+  ReverseGeocodeRequest,
+  Coordinates,
+  MapBounds,
+} from './shared/location';
 
-// Core base types
-export * from './core/base';
-export type { LocationData } from './core/base';
+// Analytics types
+export * from './analytics/dashboard';
+export * from './analytics';
+
+// Business features
+export * from './business/features/analytics';
+export * from './business/features/marketplace';
+export * from './business/features/messaging';
+export * from './business/features/wallet';
+export * from './business/features/search';
+
+// Message types (Sprint 5)
+export * from './message';
 
 // Import core types for internal usage
-import type { User, Freelancer } from './core/base';
+import type { User, Freelancer, PaginationMeta } from './core/base';
 import type {
   Job,
   ServicePackage,
   Proposal,
 } from './business/features/marketplace';
+import type {
+  LocationSearchResult,
+  LocationPrediction,
+} from './shared/location';
 
-// Analytics types - consolidated
-export * from './business/features/analytics';
+// ================================================
+// INLINE TYPE DEFINITIONS (TO BE MIGRATED)
+// ================================================
 
-// Marketplace types (Job, ServicePackage, etc.)
-export * from './business/features/marketplace';
-
-// Messaging types
-export * from './business/features/messaging';
-
-// Real-time Messaging types (Sprint 5)
-export * from './message';
-
-// Wallet & Payout types
-export * from './business/features/wallet';
-
-// Common utility types
-
-export interface AdvancedSearchRequest {
-  query: string;
-  category?: string;
-  location?: string;
-  pageSize?: number;
-  skills?: string[];
-  budget?: { min: number; max: number };
-  rating?: number;
-  availability?: string;
-  remoteOk?: boolean;
-  deliveryTime?: number;
-  experienceLevel?: string;
-  sortBy?: string;
-  page?: number;
-  filters?: {
-    category?: string;
-    priceRange?: {
-      min: number;
-      max: number;
-    };
-    location?: string;
-    skills?: string[];
-    rating?: number;
-  };
-  sort?: 'relevance' | 'price_asc' | 'price_desc' | 'rating' | 'recent';
-  limit?: number;
-}
-
-export interface AdvancedSearchResponse {
-  jobs: Job[];
-  freelancers: User[];
-  packages: ServicePackage[];
-  total: number;
-  facets: SearchFacets;
-  pagination: PaginationMeta;
-  // Store compatibility
-  success?: boolean;
-  data?: {
-    results: Job[] | User[] | ServicePackage[];
-    pagination: PaginationMeta;
-    facets: SearchFacets;
-    searchId: string;
-  };
-  error?: string;
-}
-
-export interface SearchSuggestionsResponse {
-  queries: string[];
-  categories: string[];
-  skills: string[];
-  locations: string[];
-  // Store compatibility
-  success?: boolean;
-  data?: {
-    suggestions: string[];
-  };
-  error?: string;
-}
-
-export interface SavedSearch {
-  id: string;
-  name: string;
-  query: string;
-  filters: AdvancedSearchRequest['filters'];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface SearchFacets {
-  categories: Array<{
-    name: string;
-    count: number;
-  }>;
-  skills: Array<{
-    name: string;
-    count: number;
-  }>;
-  locations: Array<{
-    name: string;
-    count: number;
-  }>;
-  priceRanges: Array<{
-    range: string;
-    min: number;
-    max: number;
-    count: number;
-  }>;
-  ratings: Array<{
-    rating: number;
-    count: number;
-  }>;
-}
-
-export interface PaginationMeta {
-  page: number;
-  limit: number; // Required for store compatibility
-  total: number;
-  totalPages: number;
-  hasNext?: boolean;
-  hasPrev?: boolean;
-  pageSize?: number; // Store compatibility alias for limit
-}
-
-export interface ApiResponse<T = unknown> {
-  data: T;
-  status: number;
-  statusText: string;
-  headers: Record<string, string>;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: PaginationMeta;
-}
-
-// Search and filter types
+// Job and Package Filters (to be moved to business/features/)
 export interface JobFilters {
   category?: string;
   subcategory?: string; // Subcategory filter
@@ -255,75 +159,8 @@ export interface FileAttachment {
 // Alias for ChatWindow compatibility
 export type MessageAttachment = FileAttachment;
 
-// Location types - now imported from core/base
-// Removed duplicate LocationData interface to use the one from core/base
-
-export interface LocationSearchResult {
-  id: string;
-  name: string;
-  address: string;
-  city: string;
-  state: string;
-  country: string;
-  lat: number;
-  lng: number;
-  distance?: number;
-}
-
-export interface LocationSearchParams {
-  query: string;
-  radius?: number;
-  center?: Coordinates;
-  limit?: number;
-}
-
-// Extended Coordinates interface for compatibility with both lat/lng and latitude/longitude
-export interface Coordinates {
-  lat: number;
-  lng: number;
-  latitude: number;
-  longitude: number;
-}
-
-export interface MapBounds {
-  northeast: Coordinates;
-  southwest: Coordinates;
-  north: number;
-  south: number;
-  east: number;
-  west: number;
-}
-
-// Location request interfaces - Store compatibility
-export interface LocationSearchRequest {
-  query: string;
-  limit?: number;
-  country?: string;
-  coordinates?: Coordinates; // Store compatibility
-  radius?: number; // Store compatibility
-  bounds?: MapBounds; // Store compatibility
-  types?: LocationType[];
-  language?: string;
-}
-
-export interface LocationAutocompleteRequest {
-  input: string;
-  limit?: number;
-  country?: string;
-  coordinates?: Coordinates; // Store compatibility
-  radius?: number; // Store compatibility
-  types?: LocationType[];
-  language?: string; // Store compatibility
-}
-
-export interface GeocodeRequest {
-  address?: string;
-  coordinates?: Coordinates; // Store compatibility
-  language?: string;
-  placeId?: string; // Store compatibility
-}
-
-export type LocationType = 'city' | 'district' | 'neighborhood' | 'address';
+// Location types moved to shared/location.ts (imported at top)
+// LocationSearchResult, Coordinates, MapBounds, LocationSearchParams, etc.
 
 // Payment types
 export interface PaymentCard {
@@ -1715,39 +1552,8 @@ export interface GeocodeResponse {
   error?: string;
 }
 
-// Location search types - Secondary definition for compatibility
-export interface LocationSearchRequestOld {
-  query: string;
-  types?: string[];
-  country?: string;
-  language?: string;
-  limit?: number;
-}
-
-// Location result types
-export interface LocationSearchResult {
-  id: string;
-  name: string;
-  formattedAddress: string;
-  types: string[];
-  geometry: {
-    location: Coordinates;
-    bounds?: MapBounds;
-  };
-  placeId: string;
-}
-
-export interface LocationPrediction {
-  id: string;
-  description: string;
-  types: string[];
-  mainText: string;
-  secondaryText: string;
-  placeId: string;
-  distance_meters?: number;
-}
-
-export {}; // Export marker for module
+// Location types moved to shared/location.ts (already imported)
+// Removed duplicate LocationSearchResult, LocationPrediction, etc.
 
 // Admin Types
 export interface AdminDashboardStore {

@@ -10,3 +10,5 @@ export * from './social';
 export * from './unified';
 export * from './utils';
 export * from './enhanced-types';
+export * from './location';
+// api.ts exports are already in utils.ts

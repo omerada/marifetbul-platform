@@ -16,6 +16,8 @@ const customJestConfig = {
     '^@/lib/(.*)$': '<rootDir>/lib/$1',
     '^@/types/(.*)$': '<rootDir>/types/$1',
     '^@/hooks/(.*)$': '<rootDir>/hooks/$1',
+    // Mock lucide-react to avoid ESM issues
+    '^lucide-react$': '<rootDir>/__mocks__/lucide-react.js',
   },
   testMatch: [
     '**/__tests__/**/*.(ts|tsx|js|jsx)',
@@ -51,6 +53,7 @@ const customJestConfig = {
     '<rootDir>/node_modules/',
     'review-system.spec.ts', // Playwright test (requires @playwright/test)
     'notifications/__tests__/page.test.tsx', // lucide-react ESM issue
+    'DashboardErrorBoundary.test.tsx', // lucide-react ESM issue - see docs/LUCIDE_REACT_ESM_ISSUE.md
   ],
   watchPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
 };

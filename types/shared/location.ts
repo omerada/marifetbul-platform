@@ -1,0 +1,128 @@
+/**
+ * Location and Map Types
+ * @module types/shared/location
+ * @description Location search, geocoding, and map-related types
+ */
+
+/**
+ * Geographic coordinates
+ */
+export interface Coordinates {
+  lat: number;
+  lng: number;
+}
+
+/**
+ * Map bounding box
+ */
+export interface MapBounds {
+  northeast: Coordinates;
+  southwest: Coordinates;
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+}
+
+/**
+ * Location search parameters
+ */
+export interface LocationSearchParams {
+  query: string;
+  limit?: number;
+  types?: string[];
+  bounds?: MapBounds;
+  location?: Coordinates;
+  radius?: number;
+}
+
+/**
+ * Location search result (Google Places API format)
+ * @description This is the canonical version using Google Places structure
+ */
+export interface LocationSearchResult {
+  id: string;
+  name: string;
+  formattedAddress: string;
+  types: string[];
+  geometry: {
+    location: Coordinates;
+    bounds?: MapBounds;
+  };
+  placeId: string;
+}
+
+/**
+ * Legacy location search result format
+ * @deprecated Use LocationSearchResult instead
+ */
+export interface LocationSearchResultLegacy {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  lat: number;
+  lng: number;
+  distance?: number;
+}
+
+/**
+ * Location autocomplete prediction
+ */
+export interface LocationPrediction {
+  id: string;
+  description: string;
+  types: string[];
+  mainText: string;
+  secondaryText: string;
+  placeId: string;
+  distance_meters?: number;
+}
+
+/**
+ * Location search request
+ */
+export interface LocationSearchRequest {
+  query: string;
+  limit?: number;
+  types?: ('city' | 'region' | 'country')[];
+  language?: string;
+}
+
+/**
+ * Location autocomplete request
+ */
+export interface LocationAutocompleteRequest {
+  input: string;
+  limit?: number;
+  types?: string[];
+  location?: Coordinates;
+  radius?: number;
+  language?: string;
+}
+
+/**
+ * Geocode request (address to coordinates)
+ */
+export interface GeocodeRequest {
+  address: string;
+  language?: string;
+}
+
+/**
+ * Reverse geocode request (coordinates to address)
+ */
+export interface ReverseGeocodeRequest {
+  coordinates: Coordinates;
+  language?: string;
+}
+
+/**
+ * Geocode response
+ */
+export interface GeocodeResponse {
+  results: LocationSearchResult[];
+  status: 'OK' | 'ZERO_RESULTS' | 'INVALID_REQUEST' | 'ERROR';
+}

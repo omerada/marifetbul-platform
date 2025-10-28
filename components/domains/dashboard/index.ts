@@ -13,6 +13,20 @@ export { MobileDashboard } from './UnifiedDashboard';
 export { DashboardSidebar } from './DashboardSidebar';
 export { DashboardHeader } from './DashboardHeader';
 
+// Loading States (Sprint 1 - Epic 1.3)
+export {
+  DashboardSkeleton,
+  DashboardSkeletonCompact,
+  StatsCardSkeleton,
+} from './DashboardSkeleton';
+
+// Error Handling (Sprint 1 - Epic 1.3)
+export {
+  DashboardErrorBoundary,
+  withDashboardErrorBoundary,
+  DashboardErrorCompact,
+} from './DashboardErrorBoundary';
+
 // Dashboard Features
 export { DashboardStats } from './DashboardStats';
 export { DashboardCharts } from './DashboardCharts';
