@@ -27,6 +27,9 @@ export { ContentAppealSystem } from './moderation/ContentAppealSystem';
 export { default as ModerationAnalytics } from './moderation/ModerationAnalytics';
 export { default as ModerationDashboard } from './moderation/ModerationDashboard';
 
+// Review & Comment Moderation
+export * from './moderation/review-moderation-exports';
+
 // System & Settings Components
 export { default as AdminSettings } from './system/AdminSettings';
 export { default as SystemSettings } from './system/SystemSettings';
@@ -36,3 +39,6 @@ export { default as AdminLogs } from './system/AdminLogs';
 
 // Support Components
 export { default as AdminSupportTickets } from './support/AdminSupportTickets';
+
+// Payout Management Components
+export * from './payouts';

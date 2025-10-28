@@ -18,7 +18,7 @@ import {
   AdminPayoutFilters,
   AdminPayoutDetailModal,
   AdminUserWalletModal,
-} from '@/components/admin/payouts';
+} from '@/components/domains/admin';
 import {
   payoutAdminApi,
   type PayoutFilters,

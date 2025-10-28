@@ -97,8 +97,8 @@ export function UserTable({ className }: UserTableProps) {
         await handleVerify(userId);
         break;
       case 'view':
-        // View user details - Navigate to user profile or admin detail page
-        window.location.href = `/admin/users/${userId}`;
+        // View user details - Navigate to user edit page
+        window.location.href = `/admin/users/${userId}/edit`;
         break;
       case 'email':
         // Email user - Open mail client or show email dialog

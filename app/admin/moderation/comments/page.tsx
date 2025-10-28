@@ -12,7 +12,7 @@
 
 import { MessageSquare } from 'lucide-react';
 import { UnifiedErrorBoundary } from '@/components/ui/UnifiedErrorBoundary';
-import { CommentModerationQueue } from '@/components/admin/moderation';
+import { CommentModerationQueue } from '@/components/domains/admin';
 
 export default function AdminCommentModerationPage() {
   return (

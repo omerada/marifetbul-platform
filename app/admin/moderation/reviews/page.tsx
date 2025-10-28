@@ -18,7 +18,7 @@ import {
   PendingReviewsList,
   ReviewModerationCard,
   ModerationStats,
-} from '@/components/admin/moderation';
+} from '@/components/domains/admin';
 import { logger } from '@/lib/shared/utils/logger';
 
 type TabType = 'all' | 'pending' | 'flagged';
