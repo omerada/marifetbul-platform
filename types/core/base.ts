@@ -118,6 +118,7 @@ export interface PortfolioItem {
   url?: string;
   skills: string[];
   completedAt: string;
+  viewCount?: number; // Analytics: view tracking
   // Additional compatibility fields
   imageUrl?: string; // Alias for first image
   image?: string; // Alias for first image

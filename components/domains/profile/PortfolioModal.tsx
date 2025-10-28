@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,6 +11,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { useToast } from '@/hooks';
+import { usePortfolioStore } from '@/stores/portfolioStore';
 import {
   X,
   Plus,
@@ -34,12 +35,12 @@ type PortfolioFormData = z.infer<typeof portfolioSchema>;
 interface PortfolioModalProps {
   item: PortfolioItem | null;
   onClose: () => void;
-  onSave: (data: Omit<PortfolioItem, 'id'>) => Promise<void>;
 }
 
-export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
-  const { error, success } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export function PortfolioModal({ item, onClose }: PortfolioModalProps) {
+  const { error: showError, success } = useToast();
+  const { createPortfolio, updatePortfolio, uploadImage, ui } =
+    usePortfolioStore();
   const [skills, setSkills] = useState<string[]>(item?.skills || []);
   const [newSkill, setNewSkill] = useState('');
   const [images, setImages] = useState<string[]>(item?.images || []);
@@ -47,14 +48,33 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
     Array<{
       file: File;
       preview: string;
-      portfolioId?: string;
-      imageId?: string;
     }>
   >([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
     {}
   );
   const [isDragging, setIsDragging] = useState(false);
+  const [draggedImageIndex, setDraggedImageIndex] = useState<number | null>(
+    null
+  );
+  const [draggedExistingIndex, setDraggedExistingIndex] = useState<
+    number | null
+  >(null);
+
+  // Unsaved changes warning
+  const [isDirty, setIsDirty] = useState(false);
+
+  useEffect(() => {
+    if (isDirty) {
+      const handler = (e: BeforeUnloadEvent) => {
+        e.preventDefault();
+        e.returnValue =
+          'Kaydedilmemiş değişiklikler var. Çıkmak istediğinize emin misiniz?';
+      };
+      window.addEventListener('beforeunload', handler);
+      return () => window.removeEventListener('beforeunload', handler);
+    }
+  }, [isDirty]);
 
   const {
     register,
@@ -72,42 +92,68 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
   });
 
   const onSubmit = async (data: PortfolioFormData) => {
-    setIsSubmitting(true);
     try {
-      // Combine backend images (URLs) with uploaded file previews
-      const allImageUrls = [
-        ...images,
-        ...uploadedImages.map((img) => img.preview),
-      ];
+      let portfolioId: string;
 
-      const portfolioData: Omit<PortfolioItem, 'id'> = {
-        title: data.title,
-        description: data.description,
-        imageUrl: allImageUrls[0] || '',
-        url: data.url || undefined,
-        skills,
-        images: allImageUrls,
-        completedAt: new Date(data.completedAt).toISOString(),
-        tags: skills, // Use skills as tags for compatibility
-        createdAt: new Date().toISOString(),
-      };
+      // Create or update portfolio
+      if (item) {
+        // Update existing
+        await updatePortfolio(item.id, {
+          title: data.title,
+          description: data.description,
+          url: data.url || undefined,
+          skills,
+          completedAt: new Date(data.completedAt).toISOString(),
+        });
+        portfolioId = item.id;
+        success('Başarılı', 'Portfolyo güncellendi!');
+      } else {
+        // Create new
+        const newPortfolio = await createPortfolio({
+          title: data.title,
+          description: data.description,
+          url: data.url || undefined,
+          skills,
+          completedAt: new Date(data.completedAt).toISOString(),
+        });
+        portfolioId = newPortfolio.id;
+        success('Başarılı', 'Portfolyo oluşturuldu!');
+      }
 
-      await onSave(portfolioData);
+      // Upload new images
+      if (uploadedImages.length > 0) {
+        for (let i = 0; i < uploadedImages.length; i++) {
+          const { file } = uploadedImages[i];
+          try {
+            setUploadProgress((prev) => ({
+              ...prev,
+              [file.name]: 0,
+            }));
 
-      // Upload images after portfolio is created
-      // Note: This will be handled by the parent component (PortfolioGallery)
-      // which will call portfolio API to upload images
+            await uploadImage(portfolioId, file, i === 0); // First image is primary
 
-      success('Başarılı', 'Portfolyo öğesi kaydedildi!');
+            setUploadProgress((prev) => ({
+              ...prev,
+              [file.name]: 100,
+            }));
+          } catch (err) {
+            logger.error(
+              'Image upload failed',
+              err instanceof Error ? err : new Error(String(err))
+            );
+            showError('Uyarı', `${file.name} yüklenemedi`);
+          }
+        }
+      }
+
+      setIsDirty(false);
       onClose();
     } catch (err) {
       logger.error(
         'Portfolio save error',
         err instanceof Error ? err : new Error(String(err))
       );
-      error('Hata', 'Kaydetme sırasında bir hata oluştu');
-    } finally {
-      setIsSubmitting(false);
+      showError('Hata', 'Kaydetme sırasında bir hata oluştu');
     }
   };
 
@@ -139,14 +185,14 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
 
       const totalImages = images.length + uploadedImages.length;
       if (totalImages + files.length > maxFiles) {
-        error('Hata', `Maksimum ${maxFiles} görsel ekleyebilirsiniz`);
+        showError('Hata', `Maksimum ${maxFiles} görsel ekleyebilirsiniz`);
         return;
       }
 
       Array.from(files).forEach((file) => {
         // Validate file type
         if (!allowedTypes.includes(file.type)) {
-          error(
+          showError(
             'Hata',
             `Geçersiz dosya tipi: ${file.name}. Sadece JPG, PNG, WebP desteklenir.`
           );
@@ -155,7 +201,7 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
 
         // Validate file size
         if (file.size > maxSize) {
-          error('Hata', `Dosya çok büyük: ${file.name}. Maksimum 5MB`);
+          showError('Hata', `Dosya çok büyük: ${file.name}. Maksimum 5MB`);
           return;
         }
 
@@ -169,11 +215,12 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
               preview: reader.result as string,
             },
           ]);
+          setIsDirty(true);
         };
         reader.readAsDataURL(file);
       });
     },
-    [images.length, uploadedImages.length, error]
+    [images.length, uploadedImages.length, showError]
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -201,6 +248,53 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
 
   const removeImage = (imageToRemove: string) => {
     setImages(images.filter((image) => image !== imageToRemove));
+    setIsDirty(true);
+  };
+
+  // Image reordering handlers
+  const handleImageDragStart = (index: number) => {
+    setDraggedImageIndex(index);
+  };
+
+  const handleImageDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedImageIndex === null || draggedImageIndex === index) return;
+
+    const newImages = [...uploadedImages];
+    const draggedItem = newImages[draggedImageIndex];
+    newImages.splice(draggedImageIndex, 1);
+    newImages.splice(index, 0, draggedItem);
+
+    setUploadedImages(newImages);
+    setDraggedImageIndex(index);
+    setIsDirty(true);
+  };
+
+  const handleImageDragEnd = () => {
+    setDraggedImageIndex(null);
+  };
+
+  // Existing image reordering handlers
+  const handleExistingImageDragStart = (index: number) => {
+    setDraggedExistingIndex(index);
+  };
+
+  const handleExistingImageDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedExistingIndex === null || draggedExistingIndex === index) return;
+
+    const newImages = [...images];
+    const draggedItem = newImages[draggedExistingIndex];
+    newImages.splice(draggedExistingIndex, 1);
+    newImages.splice(index, 0, draggedItem);
+
+    setImages(newImages);
+    setDraggedExistingIndex(index);
+    setIsDirty(true);
+  };
+
+  const handleExistingImageDragEnd = () => {
+    setDraggedExistingIndex(null);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent, action: () => void) => {
@@ -374,32 +468,62 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
                   <p className="mb-2 text-sm font-medium text-gray-700">
                     Yüklenecek Görseller ({uploadedImages.length})
                   </p>
-                  <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+                  <p className="mb-3 text-xs text-gray-500">
+                    💡 Görselleri sürükleyerek sırasını değiştirebilirsiniz. İlk
+                    görsel kapak resmi olacaktır.
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                     {uploadedImages.map((image, index) => (
-                      <div key={index} className="group relative">
+                      <div
+                        key={index}
+                        draggable
+                        onDragStart={() => handleImageDragStart(index)}
+                        onDragOver={(e) => handleImageDragOver(e, index)}
+                        onDragEnd={handleImageDragEnd}
+                        className={`group relative cursor-move transition-all ${
+                          draggedImageIndex === index
+                            ? 'scale-95 opacity-50'
+                            : 'hover:scale-105'
+                        }`}
+                      >
+                        {/* Primary badge for first image */}
+                        {index === 0 && (
+                          <div className="absolute top-2 left-2 z-10 rounded-full bg-blue-600 px-2 py-1 text-xs font-semibold text-white">
+                            Kapak
+                          </div>
+                        )}
+
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={image.preview}
                           alt={`Upload preview ${index + 1}`}
-                          className="h-24 w-full rounded-md object-cover"
+                          className="h-32 w-full rounded-md object-cover"
                         />
+
+                        {/* Remove button */}
                         <button
                           type="button"
                           onClick={() => removeUploadedImage(index)}
-                          className="absolute top-1 right-1 rounded-full bg-red-600 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-700"
+                          className="absolute top-2 right-2 rounded-full bg-red-600 p-1.5 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-700"
                         >
                           <X className="h-3 w-3" />
                         </button>
-                        {uploadProgress[image.file.name] && (
-                          <div className="bg-opacity-50 absolute inset-0 flex items-center justify-center rounded-md bg-black">
-                            <div className="text-center">
-                              <Loader2 className="mx-auto h-6 w-6 animate-spin text-white" />
-                              <p className="mt-1 text-xs text-white">
-                                {uploadProgress[image.file.name]}%
-                              </p>
+
+                        {/* Upload progress */}
+                        {uploadProgress[image.file.name] !== undefined &&
+                          uploadProgress[image.file.name] < 100 && (
+                            <div className="bg-opacity-50 absolute inset-0 flex items-center justify-center rounded-md bg-black">
+                              <div className="text-center">
+                                <Loader2 className="mx-auto h-6 w-6 animate-spin text-white" />
+                                <p className="mt-1 text-xs text-white">
+                                  {uploadProgress[image.file.name]}%
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
+
+                        {/* Drag indicator */}
+                        <div className="absolute inset-0 flex items-center justify-center rounded-md bg-blue-600 opacity-0 transition-opacity group-hover:opacity-10"></div>
                       </div>
                     ))}
                   </div>
@@ -412,27 +536,55 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
                   <p className="mb-2 text-sm font-medium text-gray-700">
                     Mevcut Görseller ({images.length})
                   </p>
-                  <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+                  <p className="mb-3 text-xs text-gray-500">
+                    💡 Görselleri sürükleyerek sırasını değiştirebilirsiniz.
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                     {images.map((image, index) => (
-                      <div key={index} className="group relative">
+                      <div
+                        key={index}
+                        draggable
+                        onDragStart={() => handleExistingImageDragStart(index)}
+                        onDragOver={(e) =>
+                          handleExistingImageDragOver(e, index)
+                        }
+                        onDragEnd={handleExistingImageDragEnd}
+                        className={`group relative cursor-move transition-all ${
+                          draggedExistingIndex === index
+                            ? 'scale-95 opacity-50'
+                            : 'hover:scale-105'
+                        }`}
+                      >
+                        {/* Primary badge for first image */}
+                        {index === 0 && (
+                          <div className="absolute top-2 left-2 z-10 rounded-full bg-green-600 px-2 py-1 text-xs font-semibold text-white">
+                            Kapak
+                          </div>
+                        )}
+
                         <Image
                           src={image}
                           alt={`Proje görseli ${index + 1}`}
-                          width={96}
-                          height={96}
-                          className="h-24 w-full rounded-md object-cover"
+                          width={128}
+                          height={128}
+                          className="h-32 w-full rounded-md object-cover"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src =
                               '/images/placeholder.png';
                           }}
                         />
+
+                        {/* Remove button */}
                         <button
                           type="button"
                           onClick={() => removeImage(image)}
-                          className="absolute top-1 right-1 rounded-full bg-red-600 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-700"
+                          className="absolute top-2 right-2 rounded-full bg-red-600 p-1.5 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-700"
                         >
                           <X className="h-3 w-3" />
                         </button>
+
+                        {/* Drag indicator */}
+                        <div className="absolute inset-0 flex items-center justify-center rounded-md bg-green-600 opacity-0 transition-opacity group-hover:opacity-10"></div>
                       </div>
                     ))}
                   </div>
@@ -446,18 +598,18 @@ export function PortfolioModal({ item, onClose, onSave }: PortfolioModalProps) {
                 type="button"
                 variant="outline"
                 onClick={onClose}
-                disabled={isSubmitting}
+                disabled={ui.isSubmitting}
               >
                 İptal
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={ui.isSubmitting}
                 className="min-w-[120px]"
               >
-                {isSubmitting ? (
+                {ui.isSubmitting ? (
                   <div className="flex items-center">
-                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Kaydediliyor...
                   </div>
                 ) : item ? (

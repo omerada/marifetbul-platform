@@ -1,6 +1,27 @@
-import { PortfolioItem } from '@/types';
+/**
+ * ================================================
+ * PORTFOLIO API CLIENT
+ * ================================================
+ * Sprint 1 - Story 1.1: Portfolio API Client Setup
+ *
+ * Handles all portfolio-related API operations with:
+ * - Modern API client integration
+ * - Proper error handling
+ * - TypeScript type safety
+ * - Image upload via Cloudinary
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0 - Refactored with apiClient
+ */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+import { apiClient } from '@/lib/infrastructure/api/client';
+import { PortfolioItem } from '@/types';
+import { logger } from '@/lib/shared/utils/logger';
+import { getBackendApiUrl } from '../config/api';
+
+// ================================================
+// TYPE DEFINITIONS
+// ================================================
 
 export interface CreatePortfolioRequest {
   title: string;
@@ -51,216 +72,254 @@ export interface PortfolioResponse {
   updatedAt: string;
 }
 
+// ================================================
+// API FUNCTIONS
+// ================================================
+
 /**
  * Create a new portfolio item
+ * @throws {ApiError} If creation fails
  */
 export async function createPortfolio(
   data: CreatePortfolioRequest
 ): Promise<PortfolioResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/portfolios`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // Send httpOnly cookies
-    body: JSON.stringify(data),
-  });
+  try {
+    logger.info('Creating portfolio item', { title: data.title });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to create portfolio');
+    const response = await apiClient.post<PortfolioResponse>(
+      '/api/v1/portfolios',
+      data
+    );
+
+    logger.info('Portfolio item created successfully', { id: response.id });
+    return response;
+  } catch (error) {
+    logger.error('Failed to create portfolio', error);
+    throw error;
   }
-
-  const result = await response.json();
-  return result.data;
 }
 
 /**
  * Update an existing portfolio item
+ * @throws {ApiError} If update fails
  */
 export async function updatePortfolio(
   portfolioId: string,
   data: UpdatePortfolioRequest
 ): Promise<PortfolioResponse> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1/portfolios/${portfolioId}`,
-    {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(data),
-    }
-  );
+  try {
+    logger.info('Updating portfolio item', { portfolioId, data });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to update portfolio');
+    const response = await apiClient.put<PortfolioResponse>(
+      `/api/v1/portfolios/${portfolioId}`,
+      data
+    );
+
+    logger.info('Portfolio item updated successfully', { id: portfolioId });
+    return response;
+  } catch (error) {
+    logger.error('Failed to update portfolio', error);
+    throw error;
   }
-
-  const result = await response.json();
-  return result.data;
 }
 
 /**
  * Delete a portfolio item
+ * @throws {ApiError} If deletion fails
  */
 export async function deletePortfolio(portfolioId: string): Promise<void> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1/portfolios/${portfolioId}`,
-    {
-      method: 'DELETE',
-      credentials: 'include',
-    }
-  );
+  try {
+    logger.info('Deleting portfolio item', { portfolioId });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to delete portfolio');
+    await apiClient.delete(`/api/v1/portfolios/${portfolioId}`);
+
+    logger.info('Portfolio item deleted successfully', { id: portfolioId });
+  } catch (error) {
+    logger.error('Failed to delete portfolio', error);
+    throw error;
   }
 }
 
 /**
  * Get portfolio item by ID
+ * @throws {ApiError} If fetch fails
  */
 export async function getPortfolio(
   portfolioId: string
 ): Promise<PortfolioResponse> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1/portfolios/${portfolioId}`,
-    {
-      cache: 'no-cache',
-    }
-  );
+  try {
+    logger.debug('Fetching portfolio item', { portfolioId });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to fetch portfolio');
+    const response = await apiClient.get<PortfolioResponse>(
+      `/api/v1/portfolios/${portfolioId}`
+    );
+
+    return response;
+  } catch (error) {
+    logger.error('Failed to fetch portfolio', error);
+    throw error;
   }
-
-  const result = await response.json();
-  return result.data;
 }
 
 /**
- * Get user's portfolio items
+ * Get user's portfolio items (paginated)
+ * @throws {ApiError} If fetch fails
  */
 export async function getUserPortfolio(
   userId: string,
   page: number = 0,
   size: number = 20
 ): Promise<{ content: PortfolioResponse[]; totalElements: number }> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1/portfolios/user/${userId}?page=${page}&size=${size}`,
-    {
-      cache: 'no-cache',
-      credentials: 'include',
-    }
-  );
+  try {
+    logger.debug('Fetching user portfolio', { userId, page, size });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to fetch portfolio');
+    const response = await apiClient.get<{
+      content: PortfolioResponse[];
+      totalElements: number;
+    }>(`/api/v1/portfolios/user/${userId}`, {
+      page: String(page),
+      size: String(size),
+    });
+
+    logger.debug('User portfolio fetched', {
+      userId,
+      count: response.content.length,
+      total: response.totalElements,
+    });
+
+    return response;
+  } catch (error) {
+    logger.error('Failed to fetch user portfolio', error);
+    throw error;
   }
-
-  const result = await response.json();
-  return result.data;
 }
 
 /**
  * Get my portfolio items (authenticated user)
+ * @throws {ApiError} If fetch fails or user not authenticated
  */
 export async function getMyPortfolio(): Promise<PortfolioResponse[]> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1/portfolios/my-portfolio`,
-    {
-      cache: 'no-cache',
-      credentials: 'include',
-    }
-  );
+  try {
+    logger.debug('Fetching my portfolio');
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to fetch portfolio');
+    const response = await apiClient.get<PortfolioResponse[]>(
+      '/api/v1/portfolios/my-portfolio'
+    );
+
+    logger.debug('My portfolio fetched', { count: response.length });
+    return response;
+  } catch (error) {
+    logger.error('Failed to fetch my portfolio', error);
+    throw error;
   }
-
-  const result = await response.json();
-  return result.data;
 }
 
 /**
  * Reorder portfolio items
+ * @throws {ApiError} If reordering fails
  */
 export async function reorderPortfolio(portfolioIds: string[]): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/portfolios/reorder`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify(portfolioIds),
-  });
+  try {
+    logger.info('Reordering portfolio items', { count: portfolioIds.length });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to reorder portfolio');
+    await apiClient.put('/api/v1/portfolios/reorder', portfolioIds);
+
+    logger.info('Portfolio items reordered successfully');
+  } catch (error) {
+    logger.error('Failed to reorder portfolio', error);
+    throw error;
   }
 }
 
+// ================================================
+// IMAGE UPLOAD FUNCTIONS
+// ================================================
+
 /**
  * Upload image to portfolio
+ * Note: Uses FormData for multipart upload (special handling required)
+ * @throws {ApiError} If upload fails
  */
 export async function uploadPortfolioImage(
   portfolioId: string,
   file: File,
   isPrimary: boolean = false
 ): Promise<PortfolioImageResponse> {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('isPrimary', isPrimary.toString());
+  try {
+    logger.info('Uploading portfolio image', {
+      portfolioId,
+      fileName: file.name,
+      isPrimary,
+    });
 
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1/portfolios/${portfolioId}/images`,
-    {
-      method: 'POST',
-      credentials: 'include',
-      body: formData,
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('isPrimary', isPrimary.toString());
+
+    // Note: For multipart/form-data, we need to use fetch directly
+    // as apiClient doesn't support FormData yet
+    const backendUrl = getBackendApiUrl();
+    const response = await fetch(
+      `${backendUrl}/portfolios/${portfolioId}/images`,
+      {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+        // Don't set Content-Type header - browser will set it with boundary
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      logger.error('Portfolio image upload failed', {
+        status: response.status,
+        error: errorData,
+      });
+      throw new Error(errorData.message || 'Failed to upload image');
     }
-  );
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to upload image');
+    const result = await response.json();
+    const imageData = result.data;
+
+    logger.info('Portfolio image uploaded successfully', {
+      imageId: imageData.id,
+    });
+    return imageData;
+  } catch (error) {
+    logger.error('Failed to upload portfolio image', error);
+    throw error;
   }
-
-  const result = await response.json();
-  return result.data;
 }
 
 /**
  * Delete portfolio image
+ * @throws {ApiError} If deletion fails
  */
 export async function deletePortfolioImage(
   portfolioId: string,
   imageId: string
 ): Promise<void> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1/portfolios/${portfolioId}/images/${imageId}`,
-    {
-      method: 'DELETE',
-      credentials: 'include',
-    }
-  );
+  try {
+    logger.info('Deleting portfolio image', { portfolioId, imageId });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to delete image');
+    await apiClient.delete(
+      `/api/v1/portfolios/${portfolioId}/images/${imageId}`
+    );
+
+    logger.info('Portfolio image deleted successfully', { imageId });
+  } catch (error) {
+    logger.error('Failed to delete portfolio image', error);
+    throw error;
   }
 }
 
+// ================================================
+// UTILITY FUNCTIONS
+// ================================================
+
 /**
  * Convert PortfolioResponse to PortfolioItem type
+ * Ensures compatibility with existing components
  */
 export function convertToPortfolioItem(
   response: PortfolioResponse
@@ -273,6 +332,7 @@ export function convertToPortfolioItem(
     url: response.url,
     skills: response.skills || [],
     completedAt: response.completedAt,
+    viewCount: response.viewCount, // Analytics: view count tracking
     imageUrl: response.images[0]?.imageUrl,
     image: response.images[0]?.imageUrl,
     tags: response.skills,
