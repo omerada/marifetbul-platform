@@ -27,11 +27,13 @@ import {
   DialogFooter,
 } from '@/components/ui/Dialog';
 import { Button, Textarea, Label } from '@/components/ui';
-import { orderApi } from '@/lib/api/orders';
-import type {
-  Order,
-  OrderCancellationReason,
-} from '@/lib/api/validators/order';
+import {
+  orderApi,
+  enrichOrder,
+  unwrapOrderResponse,
+  type OrderWithComputed,
+} from '@/lib/api/orders';
+import type { OrderCancellationReason } from '@/types/backend-aligned';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -45,11 +47,11 @@ export interface CancelOrderModalProps {
   /** Callback to close the modal */
   onClose: () => void;
   /** The order to cancel */
-  order: Order;
+  order: OrderWithComputed;
   /** User role (buyer or seller) */
   userRole: 'buyer' | 'seller';
   /** Callback after successful cancellation */
-  onSuccess?: (updatedOrder: Order) => void;
+  onSuccess?: (updatedOrder: OrderWithComputed) => void;
 }
 
 // ================================================
@@ -134,10 +136,13 @@ export function CancelOrderModal({
     try {
       setIsLoading(true);
 
-      const updatedOrder = await orderApi.cancelOrder(order.id, {
+      const response = await orderApi.cancelOrder(order.id, {
         reason: reason as OrderCancellationReason,
         note: note.trim() || undefined,
       });
+
+      const data = unwrapOrderResponse(response);
+      const updatedOrder = enrichOrder(data);
 
       toast.success('Sipariş iptal edildi!', {
         description: canGetRefund

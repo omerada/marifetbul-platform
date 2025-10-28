@@ -46,27 +46,49 @@ export interface PageResponse<T> {
 // ORDER TYPES (OrderResponse.java)
 // ================================================
 
-export type OrderType = 'JOB_PROPOSAL' | 'PACKAGE_ORDER' | 'CUSTOM_ORDER';
+export type OrderType = 'PACKAGE_ORDER' | 'JOB_ORDER' | 'CUSTOM_ORDER';
 
+/**
+ * Order Status (matches OrderStatus.java enum)
+ * Backend: com.marifetbul.api.domain.order.entity.OrderStatus
+ */
 export type OrderStatus =
-  | 'PENDING'
-  | 'ACCEPTED'
+  | 'PENDING_PAYMENT'
+  | 'PAID'
   | 'IN_PROGRESS'
+  | 'IN_REVIEW'
   | 'DELIVERED'
-  | 'APPROVED'
-  | 'REVISION_REQUESTED'
   | 'COMPLETED'
-  | 'CANCELLED'
+  | 'CANCELED'
+  | 'REFUNDED'
   | 'DISPUTED';
 
 export type OrderCancellationReason =
   | 'BUYER_REQUEST'
-  | 'SELLER_REQUEST'
+  | 'SELLER_UNAVAILABLE'
+  | 'REQUIREMENTS_NOT_MET'
+  | 'PAYMENT_ISSUE'
   | 'MUTUAL_AGREEMENT'
-  | 'PAYMENT_FAILED'
-  | 'VIOLATION'
-  | 'NO_RESPONSE'
+  | 'FRAUD_SUSPECTED'
+  | 'TERMS_VIOLATION'
   | 'OTHER';
+
+export type PackageTier = 'BASIC' | 'STANDARD' | 'PREMIUM';
+
+export type OrderPaymentStatus =
+  | 'PENDING'
+  | 'PROCESSING'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'REFUNDED'
+  | 'PARTIALLY_REFUNDED';
+
+export type DeliveryStatus =
+  | 'NOT_STARTED'
+  | 'IN_PROGRESS'
+  | 'SUBMITTED'
+  | 'REVISION_REQUESTED'
+  | 'APPROVED';
 
 /**
  * Order Response (matches OrderResponse.java)
@@ -146,6 +168,11 @@ export interface OrderSummaryResponse {
   currency: string;
   buyerName: string;
   sellerName: string;
+  // Optional fields for package orders
+  packageId?: string;
+  packageTitle?: string;
+  jobId?: string;
+  jobTitle?: string;
   deadline: string;
   createdAt: string;
 }
@@ -177,6 +204,23 @@ export interface OrderEvent {
   metadata?: Record<string, unknown>;
   createdAt: string;
 }
+
+// Re-export helper types and functions
+export type { OrderWithComputed } from './order-helpers';
+export {
+  enrichOrder,
+  unwrapOrderResponse,
+  computePackageDetails,
+  computeDeliveryDetails,
+  computeRevisionDetails,
+  computeFinancialDetails,
+  getOrderStatusLabel,
+  getOrderStatusColor,
+  canRequestRevision,
+  canSubmitDelivery,
+  canApproveDelivery,
+  hasComputedProperties,
+} from './order-helpers';
 
 // ================================================
 // PROPOSAL TYPES (ProposalResponse.java)

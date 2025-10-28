@@ -33,8 +33,12 @@ import {
   AlertCircle,
   Package,
 } from 'lucide-react';
-import { orderApi } from '@/lib/api/orders';
-import type { Order } from '@/lib/api/validators/order';
+import {
+  orderApi,
+  enrichOrder,
+  unwrapOrderResponse,
+  type OrderWithComputed,
+} from '@/lib/api/orders';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -45,8 +49,8 @@ import { cn } from '@/lib/utils';
 export interface AcceptOrderModalProps {
   isOpen: boolean;
   onClose: () => void;
-  order: Order;
-  onSuccess?: (order: Order) => void;
+  order: OrderWithComputed;
+  onSuccess?: (order: OrderWithComputed) => void;
 }
 
 // ================================================
@@ -74,7 +78,9 @@ export function AcceptOrderModal({
 
     try {
       setIsLoading(true);
-      const updatedOrder = await orderApi.acceptOrder(order.id);
+      const response = await orderApi.acceptOrder(order.id);
+      const data = unwrapOrderResponse(response);
+      const updatedOrder = enrichOrder(data);
 
       toast.success('Sipariş kabul edildi!', {
         description: 'Artık işe başlayabilirsiniz.',
@@ -190,7 +196,7 @@ export function AcceptOrderModal({
                 </span>
                 <span className="text-lg font-bold text-green-800">
                   {formatCurrency(
-                    order.financials.sellerEarnings,
+                    order.financials.sellerEarnings || 0,
                     order.financials.currency
                   )}
                 </span>

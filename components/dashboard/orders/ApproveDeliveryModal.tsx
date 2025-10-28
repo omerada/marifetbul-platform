@@ -27,8 +27,12 @@ import {
   DialogFooter,
 } from '@/components/ui/Dialog';
 import { Button, Textarea, Label } from '@/components/ui';
-import { orderApi } from '@/lib/api/orders';
-import type { Order } from '@/lib/api/validators/order';
+import {
+  orderApi,
+  enrichOrder,
+  unwrapOrderResponse,
+  type OrderWithComputed,
+} from '@/lib/api/orders';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -42,9 +46,9 @@ export interface ApproveDeliveryModalProps {
   /** Callback to close the modal */
   onClose: () => void;
   /** The order to approve */
-  order: Order;
+  order: OrderWithComputed;
   /** Callback after successful approval */
-  onSuccess?: (updatedOrder: Order) => void;
+  onSuccess?: (updatedOrder: OrderWithComputed) => void;
 }
 
 // ================================================
@@ -71,7 +75,9 @@ export function ApproveDeliveryModal({
       setIsLoading(true);
 
       // Approve delivery
-      const updatedOrder = await orderApi.approveDelivery(order.id);
+      const response = await orderApi.approveDelivery(order.id);
+      const data = unwrapOrderResponse(response);
+      const updatedOrder = enrichOrder(data);
 
       // TODO: Submit rating and review to rating API
       // await ratingApi.createRating({
@@ -234,38 +240,40 @@ export function ApproveDeliveryModal({
                   Teslim Edilen Dosyalar ({order.delivery.attachments.length})
                 </Label>
                 <div className="space-y-2">
-                  {order.delivery.attachments.map((fileUrl, index) => {
-                    const fileName =
-                      fileUrl.split('/').pop() || `Dosya ${index + 1}`;
-                    return (
-                      <div
-                        key={index}
-                        className="bg-muted/50 flex items-center justify-between rounded-lg border p-3"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded">
-                            <span className="text-primary text-xs font-medium">
-                              {fileName.split('.').pop()?.toUpperCase()}
-                            </span>
+                  {order.delivery?.attachments?.map(
+                    (fileUrl: string, index: number) => {
+                      const fileName =
+                        fileUrl.split('/').pop() || `Dosya ${index + 1}`;
+                      return (
+                        <div
+                          key={index}
+                          className="bg-muted/50 flex items-center justify-between rounded-lg border p-3"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded">
+                              <span className="text-primary text-xs font-medium">
+                                {fileName.split('.').pop()?.toUpperCase()}
+                              </span>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">{fileName}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-sm font-medium">{fileName}</p>
-                          </div>
+                          <Button variant="ghost" size="sm">
+                            <a
+                              href={fileUrl}
+                              download={fileName}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm"
+                            >
+                              İndir
+                            </a>
+                          </Button>
                         </div>
-                        <Button variant="ghost" size="sm">
-                          <a
-                            href={fileUrl}
-                            download={fileName}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm"
-                          >
-                            İndir
-                          </a>
-                        </Button>
-                      </div>
-                    );
-                  })}
+                      );
+                    }
+                  )}
                 </div>
               </div>
             )}

@@ -18,7 +18,7 @@
  * export default withAuth(MyPage);
  *
  * // Protect with role check
- * export default withRole(AdminPage, ['admin']);
+ * export default withRole(AdminPage, ['ADMIN']);
  * ```
  */
 
@@ -27,28 +27,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { redirect } from 'next/navigation';
 import { Logger } from '../monitoring/logger';
-import { getBackendApiUrl } from '@/lib/config/api';
+import { UserRole, getUserFromRequest, hasRole } from './auth-utils';
 
 const logger = new Logger({ level: 'info' });
 
 // ============================================================================
-// TYPES
+// TYPES (Re-exported from auth-utils for convenience)
 // ============================================================================
 
-/**
- * User roles
- */
-export type UserRole = 'admin' | 'employer' | 'freelancer' | 'user';
+export type { UserRole, UserContext } from './auth-utils';
 
-/**
- * User context (from token/session)
- */
-export interface UserContext {
-  id: string;
-  email: string;
-  role: UserRole;
-  name?: string;
-}
+// Re-export utilities for backward compatibility
+export { getUserFromRequest, hasRole, isAuthenticated } from './auth-utils';
 
 /**
  * Auth guard options
@@ -79,78 +69,6 @@ type NextRouteHandler = (
   request: NextRequest,
   context?: unknown
 ) => Promise<Response> | Response;
-
-// ============================================================================
-// USER EXTRACTION
-// ============================================================================
-
-/**
- * Extract user context from request
- * Uses JWT token validation against backend API
- */
-export async function getUserFromRequest(
-  request: NextRequest
-): Promise<UserContext | null> {
-  try {
-    // Get token from httpOnly cookie
-    const token = request.cookies.get('marifetbul_token')?.value;
-    if (!token) {
-      return null;
-    }
-
-    // Validate token with backend API
-    const backendUrl = getBackendApiUrl();
-    const response = await fetch(`${backendUrl}/auth/validate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: `marifetbul_token=${token}`,
-      },
-      credentials: 'include',
-      cache: 'no-store',
-    });
-
-    if (!response.ok) {
-      logger.warn('Token validation failed', {
-        status: response.status,
-        url: request.url,
-      });
-      return null;
-    }
-
-    const data = await response.json();
-
-    // Extract user info from validated response
-    return {
-      id: data.user?.id || data.userId,
-      email: data.user?.email || data.email,
-      role: (data.user?.role || data.role || 'user') as UserRole,
-      name: data.user?.name || data.name,
-    };
-  } catch (error) {
-    logger.error(
-      'Failed to extract user from request',
-      error instanceof Error ? error : new Error(String(error)),
-      { url: request.url }
-    );
-    return null;
-  }
-}
-
-/**
- * Check if user has required role
- */
-export function hasRole(user: UserContext | null, roles: UserRole[]): boolean {
-  if (!user) return false;
-  return roles.includes(user.role);
-}
-
-/**
- * Check if user is authenticated
- */
-export function isAuthenticated(user: UserContext | null): boolean {
-  return user !== null;
-}
 
 // ============================================================================
 // API ROUTE GUARDS
@@ -311,7 +229,7 @@ export function requireAdmin(
   handler: NextRouteHandler,
   options: AuthGuardOptions = {}
 ): NextRouteHandler {
-  return requireRole(handler, 'admin', options);
+  return requireRole(handler, 'ADMIN', options);
 }
 
 /**
@@ -321,7 +239,7 @@ export function requireEmployer(
   handler: NextRouteHandler,
   options: AuthGuardOptions = {}
 ): NextRouteHandler {
-  return requireRole(handler, ['employer', 'admin'], options);
+  return requireRole(handler, ['EMPLOYER', 'ADMIN'], options);
 }
 
 /**
@@ -331,7 +249,7 @@ export function requireFreelancer(
   handler: NextRouteHandler,
   options: AuthGuardOptions = {}
 ): NextRouteHandler {
-  return requireRole(handler, ['freelancer', 'admin'], options);
+  return requireRole(handler, ['FREELANCER', 'ADMIN'], options);
 }
 
 // ============================================================================
@@ -438,7 +356,7 @@ export function withAdminRole<P extends object>(
   Component: React.ComponentType<P>,
   options: AuthGuardOptions = {}
 ): React.ComponentType<P> {
-  return withRole(Component, 'admin', {
+  return withRole(Component, 'ADMIN', {
     redirectTo: '/admin/login',
     unauthorizedRedirect: '/dashboard',
     ...options,

@@ -28,15 +28,19 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { Button } from '@/components/ui';
-import { orderApi } from '@/lib/api/orders';
-import type { Order } from '@/lib/api/validators/order';
+import {
+  orderApi,
+  enrichOrder,
+  unwrapOrderResponse,
+  type OrderWithComputed,
+} from '@/lib/api/orders';
 
 export default function OrderConfirmationPage() {
   const params = useParams();
   const router = useRouter();
   const orderId = params.orderId as string;
 
-  const [order, setOrder] = useState<Order | null>(null);
+  const [order, setOrder] = useState<OrderWithComputed | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,8 +49,9 @@ export default function OrderConfirmationPage() {
     const loadOrder = async () => {
       try {
         setLoading(true);
-        const data = await orderApi.getOrder(orderId);
-        setOrder(data);
+        const response = await orderApi.getOrder(orderId);
+        const data = unwrapOrderResponse(response);
+        setOrder(enrichOrder(data));
       } catch (err) {
         console.error('Failed to load order:', err);
         setError('Sipariş bilgileri yüklenemedi');

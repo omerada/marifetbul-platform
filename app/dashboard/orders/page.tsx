@@ -30,8 +30,13 @@ import {
   OrderCardSkeleton,
   type OrderStats,
 } from '@/components/dashboard/orders';
-import { orderApi } from '@/lib/api/orders';
-import type { OrderSummary, OrderStatus } from '@/lib/api/validators/order';
+import { orderApi, unwrapOrderResponse } from '@/lib/api/orders';
+import type {
+  OrderSummaryResponse,
+  OrderStatus,
+  OrderStatistics,
+  PageResponse,
+} from '@/types/backend-aligned';
 import { useWebSocket } from '@/hooks';
 
 // ================================================
@@ -54,7 +59,7 @@ export default function OrderListPage({ userRole }: OrderListPageProps) {
   // STATE
   // ================================================
 
-  const [orders, setOrders] = useState<OrderSummary[]>([]);
+  const [orders, setOrders] = useState<OrderSummaryResponse[]>([]);
   const [stats, setStats] = useState<OrderStats | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -87,10 +92,11 @@ export default function OrderListPage({ userRole }: OrderListPageProps) {
           ? await orderApi.getBuyerOrders()
           : await orderApi.getSellerOrders();
 
-      // Extract orders from paged response
-      const fetchedOrders = Array.isArray(response)
-        ? response
-        : response.content || [];
+      // Unwrap and extract orders from paged response
+      const unwrapped = unwrapOrderResponse(
+        response
+      ) as PageResponse<OrderSummaryResponse>;
+      const fetchedOrders = unwrapped.content || [];
 
       setOrders(fetchedOrders);
     } catch (err) {
@@ -103,14 +109,15 @@ export default function OrderListPage({ userRole }: OrderListPageProps) {
 
   const loadStats = useCallback(async () => {
     try {
-      const statistics = await orderApi.getOrderStatistics();
+      const response = await orderApi.getOrderStatistics();
+      const statistics = unwrapOrderResponse(response) as OrderStatistics;
 
       // Calculate counts from statistics
       const statsData: OrderStats = {
         total: statistics.totalOrders || 0,
         active: statistics.activeOrders || 0,
         completed: statistics.completedOrders || 0,
-        cancelled: statistics.canceledOrders || 0,
+        cancelled: statistics.cancelledOrders || 0,
       };
 
       setStats(statsData);
@@ -183,9 +190,7 @@ export default function OrderListPage({ userRole }: OrderListPageProps) {
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         const orderNumber = (order.orderNumber || order.id).toLowerCase();
-        const packageTitle = (
-          order.packageDetails?.packageTitle || ''
-        ).toLowerCase();
+        const packageTitle = (order.packageTitle || '').toLowerCase();
 
         return orderNumber.includes(query) || packageTitle.includes(query);
       }
@@ -203,9 +208,9 @@ export default function OrderListPage({ userRole }: OrderListPageProps) {
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
           );
         case 'amount_high':
-          return b.financials.total - a.financials.total;
+          return b.totalAmount - a.totalAmount;
         case 'amount_low':
-          return a.financials.total - b.financials.total;
+          return a.totalAmount - b.totalAmount;
         default:
           return 0;
       }

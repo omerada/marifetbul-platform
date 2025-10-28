@@ -8,3 +8,4 @@ export {
 } from './OrderReviewButton';
 export { OrderTimeline } from './OrderTimeline';
 export { EscrowStatus } from './EscrowStatus';
+export { DeliveryManager } from './DeliveryManager';

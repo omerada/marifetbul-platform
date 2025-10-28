@@ -36,7 +36,8 @@ import {
   OrderMessagingPanel,
 } from '@/components/dashboard/orders';
 import { orderApi } from '@/lib/api/orders';
-import type { Order } from '@/lib/api/validators/order';
+import type { OrderResponse } from '@/types/backend-aligned';
+import { enrichOrder, type OrderWithComputed } from '@/types/backend-aligned';
 import { useWebSocket } from '@/hooks';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -72,7 +73,7 @@ export default function OrderDetailPage() {
   const router = useRouter();
   const orderId = params?.id as string;
 
-  const [order, setOrder] = useState<Order | null>(null);
+  const [order, setOrder] = useState<OrderWithComputed | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<'buyer' | 'seller'>('buyer');
@@ -88,8 +89,11 @@ export default function OrderDetailPage() {
       setIsLoading(true);
       setError(null);
 
-      const data = await orderApi.getOrder(orderId);
-      setOrder(data);
+      const response = await orderApi.getOrder(orderId);
+      // Extract data from ApiResponse wrapper
+      const data = 'data' in response ? response.data : response;
+      // Enrich order with computed properties for backward compatibility
+      setOrder(enrichOrder(data));
 
       // TODO: Get actual user ID from auth context
       // For now, determine role from URL or assume buyer
@@ -124,12 +128,13 @@ export default function OrderDetailPage() {
           }
 
           const msgBody = (message as { body: string }).body;
-          const updatedOrder = JSON.parse(msgBody) as Order;
+          const updatedOrder = JSON.parse(msgBody) as OrderResponse;
 
           // Only update if it's our order
           if (updatedOrder.id === orderId) {
             const previousStatus = order?.status;
-            setOrder(updatedOrder);
+            // Enrich updated order before setting state
+            setOrder(enrichOrder(updatedOrder));
 
             // Show notification based on update type
             if (previousStatus && updatedOrder.status !== previousStatus) {
@@ -150,8 +155,13 @@ export default function OrderDetailPage() {
   }, [socket, orderId, order?.status]);
 
   // Handle action completion
-  const handleActionComplete = (updatedOrder: Order) => {
-    setOrder(updatedOrder);
+  const handleActionComplete = (updatedOrder: OrderResponse) => {
+    // Extract data from ApiResponse if needed
+    const data =
+      'data' in updatedOrder
+        ? (updatedOrder as unknown as { data: OrderResponse }).data
+        : updatedOrder;
+    setOrder(enrichOrder(data));
   };
 
   // Loading state
@@ -421,12 +431,12 @@ export default function OrderDetailPage() {
                   )}
                 </span>
               </div>
-              {order.financials.tax > 0 && (
+              {order.financials.tax && order.financials.tax > 0 && (
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">KDV</span>
                   <span className="font-medium text-gray-900">
                     {formatCurrency(
-                      order.financials.tax,
+                      order.financials.tax || 0,
                       order.financials.currency
                     )}
                   </span>
@@ -455,7 +465,7 @@ export default function OrderDetailPage() {
                   </span>
                 </div>
               </div>
-              {userRole === 'seller' && (
+              {userRole === 'seller' && order.financials.sellerEarnings && (
                 <div className="mt-4 rounded-lg bg-green-50 p-3">
                   <div className="flex justify-between">
                     <span className="text-sm font-medium text-green-800">
@@ -463,7 +473,7 @@ export default function OrderDetailPage() {
                     </span>
                     <span className="font-semibold text-green-800">
                       {formatCurrency(
-                        order.financials.sellerEarnings,
+                        order.financials.sellerEarnings || 0,
                         order.financials.currency
                       )}
                     </span>
@@ -498,12 +508,6 @@ export default function OrderDetailPage() {
                   <p className="text-gray-900">
                     {order.seller.fullName || order.seller.username}
                   </p>
-                  {order.seller.rating && (
-                    <p className="text-sm text-gray-600">
-                      ⭐ {order.seller.rating.toFixed(1)} (
-                      {order.seller.completedOrders} sipariş)
-                    </p>
-                  )}
                 </div>
               )}
             </div>

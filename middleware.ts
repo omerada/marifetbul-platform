@@ -1,5 +1,15 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { logger } from './lib/shared/utils/logger';
+import {
+  isProtectedRoute,
+  isAdminRoute,
+  isAdminLoginPage,
+  isAuthRoute,
+  isPublicRoute,
+  isProfileViewRoute,
+  getLoginRedirectUrl,
+  AUTH_COOKIES,
+} from './lib/infrastructure/security/auth-utils';
 
 // ============================================================================
 // SECURITY HEADERS
@@ -77,119 +87,46 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
 }
 
 // ============================================================================
-// ROUTE DEFINITIONS
+// ROUTE DEFINITIONS (Now imported from auth-utils)
 // ============================================================================
 
-// Define protected routes
-const protectedRoutes = [
-  '/dashboard',
-  '/profile/edit', // Sadece profil düzenleme korumalı
-  '/messages',
-  '/my-jobs',
-  '/my-packages',
-  '/proposals',
-  '/orders',
-  '/freelancers',
-  '/projects',
-];
-
-// Define admin routes (require admin authentication)
-const adminRoutes = ['/admin'];
-
-// Define admin login route (separate from regular auth)
-const adminLoginRoute = '/admin/login';
-
-// Define auth routes (should redirect to dashboard if already authenticated)
-const authRoutes = ['/login', '/register'];
-
-// Define public routes (accessible to everyone)
-const publicRoutes = [
-  '/',
-  '/marketplace',
-  '/about',
-  '/contact',
-  '/terms',
-  '/privacy',
-  '/blog',
-  '/help',
-  '/support',
-  '/legal',
-  '/info',
-  '/search',
-];
-
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Get the token from httpOnly cookies (set by backend)
-  // Backend sets cookie name as "marifetbul_token" (httpOnly, secure)
-  const token = request.cookies.get('marifetbul_token')?.value;
+  // Get the token from httpOnly cookies
+  const token = request.cookies.get(AUTH_COOKIES.token)?.value;
+  const userRole = request.cookies.get(AUTH_COOKIES.role)?.value;
 
-  // User role might be stored in a separate non-httpOnly cookie for middleware access
-  // Or we can verify role via API call (but that adds latency)
-  const userRole = request.cookies.get('marifetbul-user-role')?.value;
-
-  // Debug: Log all requests in development
+  // Debug logging in development
   if (process.env.NODE_ENV === 'development') {
     logger.debug('[Middleware] Request', {
       pathname,
       hasToken: !!token,
       userRole: userRole || 'none',
-      allCookies: request.cookies
-        .getAll()
-        .map((c) => ({ name: c.name, hasValue: !!c.value })),
     });
   }
 
   // Allow public profile viewing: /profile/[id] but not /profile/edit
-  const isProfileView =
-    pathname.startsWith('/profile/') && !pathname.includes('/edit');
-
-  // Check if the current route is protected
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
-
-  // Check if the current route is an admin route (excluding login)
-  const isAdminRoute =
-    adminRoutes.some((route) => pathname.startsWith(route)) &&
-    pathname !== adminLoginRoute;
-
-  // Check if accessing admin login page
-  const isAdminLoginPage = pathname === adminLoginRoute;
-
-  // Check if the current route is an auth route
-  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
-
-  // Check if the current route is public
-  const isPublicRoute = publicRoutes.some(
-    (route) => pathname === route || pathname.startsWith(route)
-  );
-
-  // Allow public profile viewing without authentication
-  if (isProfileView) {
+  if (isProfileViewRoute(pathname)) {
     const response = NextResponse.next();
     return addSecurityHeaders(response);
   }
 
   // Admin route protection
-  if (isAdminRoute) {
+  if (isAdminRoute(pathname)) {
     logger.debug('[Middleware] Admin route check', {
       pathname,
       hasToken: !!token,
-      tokenValue: token ? 'exists' : 'missing',
       userRole,
-      cookies: {
-        marifetbul_token: token ? 'SET' : 'NOT SET',
-        'marifetbul-user-role': userRole || 'NOT SET',
-      },
     });
 
     if (!token) {
       logger.info('[Middleware] No token found, redirecting to admin login');
-      const adminLoginUrl = new URL(adminLoginRoute, request.url);
-      adminLoginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(adminLoginUrl);
+      const loginUrl = new URL(
+        getLoginRedirectUrl(pathname, true),
+        request.url
+      );
+      return NextResponse.redirect(loginUrl);
     }
 
     if (userRole?.toUpperCase() !== 'ADMIN') {
@@ -203,7 +140,11 @@ export function middleware(request: NextRequest) {
   }
 
   // If accessing admin login page with admin token, redirect to admin dashboard
-  if (isAdminLoginPage && token && userRole?.toUpperCase() === 'ADMIN') {
+  if (
+    isAdminLoginPage(pathname) &&
+    token &&
+    userRole?.toUpperCase() === 'ADMIN'
+  ) {
     logger.info(
       '[Middleware] Admin already logged in, redirecting to admin panel'
     );
@@ -211,35 +152,33 @@ export function middleware(request: NextRequest) {
   }
 
   // If accessing admin login page without token, allow access
-  // Clear any role cookie to prevent redirect loops
-  if (isAdminLoginPage) {
+  if (isAdminLoginPage(pathname)) {
     const response = NextResponse.next();
 
-    // If there's a role cookie but no token, clear it to prevent loops
+    // Clear any role cookie if no token to prevent loops
     if (userRole && !token) {
       logger.info(
         '[Middleware] Clearing role cookie on login page (no token found)'
       );
-      response.cookies.delete('marifetbul-user-role');
+      response.cookies.delete(AUTH_COOKIES.role);
     }
 
     return addSecurityHeaders(response);
   }
 
   // If accessing protected route without token, redirect to login
-  if (isProtectedRoute && !token) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
+  if (isProtectedRoute(pathname) && !token) {
+    const loginUrl = new URL(getLoginRedirectUrl(pathname), request.url);
     return NextResponse.redirect(loginUrl);
   }
 
   // If accessing auth routes with valid token, redirect to dashboard
-  if (isAuthRoute && token) {
+  if (isAuthRoute(pathname) && token) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   // Allow access to public routes
-  if (isPublicRoute) {
+  if (isPublicRoute(pathname)) {
     const response = NextResponse.next();
     return addSecurityHeaders(response);
   }
