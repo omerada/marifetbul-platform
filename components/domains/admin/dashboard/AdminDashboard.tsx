@@ -23,6 +23,7 @@ import {
   RecentActivityCard,
   SystemHealthCard,
   PendingTasksCard,
+  DisputeStatsCard,
 } from './admin-dashboard/components';
 
 /**
@@ -81,10 +82,13 @@ export function AdminDashboard() {
             <RecentActivityCard />
           </div>
 
-          {/* Column 3: System Health & Pending Tasks */}
+          {/* Column 3: System Health, Disputes & Pending Tasks */}
           <div className="space-y-6">
             {/* System Health Widget */}
             <SystemHealthCard systemHealth={systemHealth} />
+
+            {/* Dispute Stats */}
+            <DisputeStatsCard />
 
             {/* Pending Tasks */}
             <PendingTasksCard />

@@ -36,6 +36,7 @@ import { DeliverySubmissionModal } from './DeliverySubmissionModal';
 import { ApproveDeliveryModal } from './ApproveDeliveryModal';
 import { RequestRevisionModal } from './RequestRevisionModal';
 import { CancelOrderModal } from './CancelOrderModal';
+import { DisputeModal } from '@/components/domains/orders/DisputeModal';
 
 // ================================================
 // TYPES
@@ -73,6 +74,7 @@ export function OrderActions({
   const [showApproveModal, setShowApproveModal] = useState(false);
   const [showRevisionModal, setShowRevisionModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showDisputeModal, setShowDisputeModal] = useState(false);
 
   // ================================================
   // ACTION HANDLERS
@@ -208,17 +210,17 @@ export function OrderActions({
 
     // Dispute
     if (
-      ['IN_PROGRESS', 'DELIVERED'].includes(order.status) &&
-      !order.canCancel
+      ['IN_PROGRESS', 'IN_REVIEW', 'DELIVERED', 'COMPLETED'].includes(
+        order.status
+      ) &&
+      order.status !== 'DISPUTED' &&
+      order.status !== 'CANCELED' &&
+      order.status !== 'REFUNDED'
     ) {
       actions.push({
         label: 'İhtilaf Aç',
         icon: <AlertTriangle className="h-4 w-4" />,
-        onClick: () => {
-          toast.info('İhtilaf Sistemi', {
-            description: 'İhtilaf sistemi yakında aktif olacak.',
-          });
-        },
+        onClick: () => setShowDisputeModal(true),
         variant: 'outline',
       });
     }
@@ -315,6 +317,32 @@ export function OrderActions({
           onSuccess={(updatedOrder) => {
             onActionComplete?.(updatedOrder);
             setShowCancelModal(false);
+          }}
+        />
+      )}
+
+      {showDisputeModal && (
+        <DisputeModal
+          isOpen={showDisputeModal}
+          onClose={() => setShowDisputeModal(false)}
+          orderId={order.id}
+          orderNumber={order.orderNumber}
+          onSuccess={() => {
+            setShowDisputeModal(false);
+
+            // Optimistic update - immediately update UI
+            if (onActionComplete) {
+              const optimisticOrder = {
+                ...order,
+                status: 'DISPUTED',
+              };
+              onActionComplete(optimisticOrder as typeof order);
+            }
+
+            toast.success('İhtilaf başarıyla oluşturuldu', {
+              description:
+                'Müşteri destek ekibimiz en kısa sürede inceleyecektir.',
+            });
           }}
         />
       )}

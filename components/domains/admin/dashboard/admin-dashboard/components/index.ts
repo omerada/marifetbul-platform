@@ -15,3 +15,4 @@ export { RecentActivityCard } from './RecentActivityCard';
 export { SecurityAlertsCard } from './SecurityAlertsCard';
 export { SystemHealthCard } from './SystemHealthCard';
 export { PendingTasksCard } from './PendingTasksCard';
+export { DisputeStatsCard } from './DisputeStatsCard';

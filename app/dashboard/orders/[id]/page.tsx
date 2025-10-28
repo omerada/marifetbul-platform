@@ -21,6 +21,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Button, Loading } from '@/components/ui';
+import { Badge } from '@/components/ui/Badge';
 import {
   ChevronLeft,
   Package,
@@ -113,6 +114,48 @@ export default function OrderDetailPage() {
     loadOrder();
   }, [loadOrder]);
 
+  // Handle dispute events from WebSocket
+  const handleDisputeEvent = useCallback(
+    (payload: {
+      type: string;
+      orderId: string;
+      orderNumber: string;
+      reason?: string;
+      reasonLabel?: string;
+      resolutionType?: string;
+      status: string;
+    }) => {
+      if (payload.type === 'DISPUTE_CREATED') {
+        toast.warning('İhtilaf Açıldı', {
+          description: `Sipariş #${payload.orderNumber} için ihtilaf açıldı: ${payload.reasonLabel || payload.reason}`,
+          duration: 5000,
+        });
+
+        // Update order status to DISPUTED
+        if (order) {
+          setOrder({
+            ...order,
+            status: 'DISPUTED',
+          });
+        }
+      } else if (payload.type === 'DISPUTE_RESOLVED') {
+        toast.success('İhtilaf Çözüldü', {
+          description: `Sipariş #${payload.orderNumber} için ihtilaf çözüldü. Sipariş durumu: ${payload.status}`,
+          duration: 5000,
+        });
+
+        // Update order with new status
+        if (order) {
+          setOrder({
+            ...order,
+            status: payload.status as typeof order.status,
+          });
+        }
+      }
+    },
+    [order]
+  );
+
   // Real-time WebSocket updates
   useEffect(() => {
     if (!socket.isConnected || !orderId) return;
@@ -128,8 +171,19 @@ export default function OrderDetailPage() {
           }
 
           const msgBody = (message as { body: string }).body;
-          const updatedOrder = JSON.parse(msgBody) as OrderResponse;
+          const payload = JSON.parse(msgBody);
 
+          // Check if this is a dispute event
+          if (
+            payload.type === 'DISPUTE_CREATED' ||
+            payload.type === 'DISPUTE_RESOLVED'
+          ) {
+            handleDisputeEvent(payload);
+            return;
+          }
+
+          // Handle regular order updates
+          const updatedOrder = payload as OrderResponse;
           // Only update if it's our order
           if (updatedOrder.id === orderId) {
             const previousStatus = order?.status;
@@ -152,7 +206,7 @@ export default function OrderDetailPage() {
     return () => {
       socket.unsubscribe(subscriptionId);
     };
-  }, [socket, orderId, order?.status]);
+  }, [socket, orderId, order?.status, handleDisputeEvent]);
 
   // Handle action completion
   const handleActionComplete = (updatedOrder: OrderResponse) => {
@@ -211,9 +265,17 @@ export default function OrderDetailPage() {
             <h1 className="mb-2 text-3xl font-bold text-gray-900">
               Sipariş #{order.orderNumber}
             </h1>
-            <p className="text-gray-600">
-              {orderApi.getOrderStatusLabel(order.status)}
-            </p>
+            <div className="flex items-center gap-3">
+              <p className="text-gray-600">
+                {orderApi.getOrderStatusLabel(order.status)}
+              </p>
+              {order.status === 'DISPUTED' && (
+                <Badge variant="warning" size="md">
+                  <AlertCircle className="mr-1 h-3 w-3" />
+                  İHTİLAF VAR
+                </Badge>
+              )}
+            </div>
           </div>
         </div>
       </div>
