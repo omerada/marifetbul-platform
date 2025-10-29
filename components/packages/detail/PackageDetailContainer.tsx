@@ -35,8 +35,8 @@ export function PackageDetailContainer() {
       setLoading(true);
       setError(null);
 
-      const packageData = await packageApi.getMyPackage(packageId);
-      setPkg(packageData);
+      const packageData = await packageApi.getPackageById(packageId);
+      setPkg(packageData as any);
 
       // Analytics: Backend API endpoint required
       // Expected endpoint: GET /api/v1/packages/{packageId}/analytics

@@ -14,10 +14,16 @@ export { CommentBulkActions } from './reviews/CommentBulkActions';
 export { CommentFilterBar } from './reviews/CommentFilterBar';
 export { CommentSearchBar } from './reviews/CommentSearchBar';
 export { CommentModerationNotes } from './reviews/CommentModerationNotes';
-export { default as LoadingSkeletons } from './reviews/LoadingSkeletons';
+export {
+  CommentCardSkeleton as ModerationCommentCardSkeleton,
+  StatsCardSkeleton as ModerationStatsCardSkeleton,
+  ModerationQueueSkeleton,
+  DashboardWidgetSkeleton as ModerationDashboardWidgetSkeleton,
+  RecentCommentsSkeleton as ModerationRecentCommentsSkeleton,
+} from './reviews/LoadingSkeletons';
 
 // Comment Dashboard Widgets
-export { CommentModerationSummary } from '../dashboard/comments/CommentModerationSummary';
+export { CommentModerationSummary } from '@/components/admin/dashboard/CommentModerationSummary';
 export { CommentModerationStats } from '../dashboard/comments/CommentModerationStats';
 export { PendingCommentsWidget } from '../dashboard/comments/PendingCommentsWidget';
 export { RecentCommentsPreview } from '../dashboard/comments/RecentCommentsPreview';

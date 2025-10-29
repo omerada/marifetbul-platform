@@ -61,6 +61,19 @@ export type {
 } from './business/useAutoRefresh';
 export { useRetry } from './business/useRetry';
 export type { UseRetryOptions, UseRetryResult } from './business/useRetry';
+export { useSubcategoryState } from './business/useSubcategoryState';
+export type { Freelancer } from './business/useSubcategoryState';
+export { useOrderState } from './business/useOrderState';
+export type {
+  OrderStateData,
+  OrderStateActions,
+  UseOrderStateOptions,
+} from './business/useOrderState';
+export { useReviewDashboardState } from './business/useReviewDashboardState';
+export type {
+  ReviewDashboardStateData,
+  ReviewDashboardStateActions,
+} from './business/useReviewDashboardState';
 
 // DATA HOOKS - Analytics, search, and data management
 export { useAnalytics } from './infrastructure/data/useAnalytics';

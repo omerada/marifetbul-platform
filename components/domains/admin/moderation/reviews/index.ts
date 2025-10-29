@@ -18,11 +18,11 @@ export { CommentBulkActions } from './CommentBulkActions';
 export { CommentFilterBar } from './CommentFilterBar';
 export { CommentSearchBar } from './CommentSearchBar';
 export {
-  CommentCardSkeleton,
-  StatsCardSkeleton,
+  CommentCardSkeleton as ModerationCommentCardSkeleton,
+  StatsCardSkeleton as ModerationStatsCardSkeleton,
   ModerationQueueSkeleton,
-  DashboardWidgetSkeleton,
-  RecentCommentsSkeleton,
+  DashboardWidgetSkeleton as ModerationDashboardWidgetSkeleton,
+  RecentCommentsSkeleton as ModerationRecentCommentsSkeleton,
 } from './LoadingSkeletons';
 
 export type { CommentModerationCardProps } from './CommentModerationCard';

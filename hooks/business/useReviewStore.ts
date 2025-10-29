@@ -12,7 +12,9 @@
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { toast } from 'sonner';
 import { reviewApi } from '@/lib/api/review';
+import { getErrorMessage, logError } from '@/lib/shared/errors';
 import type {
   Review,
   CreateReviewRequest,
@@ -152,13 +154,15 @@ export const useReviewStore = create<ReviewState>()(
             loading: false,
           });
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'fetchReviews', params });
+
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Failed to fetch reviews',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage);
         }
       },
 
@@ -173,13 +177,15 @@ export const useReviewStore = create<ReviewState>()(
             loading: false,
           });
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'fetchPackageReviews', params });
+
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Failed to fetch package reviews',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage);
         }
       },
 
@@ -194,13 +200,15 @@ export const useReviewStore = create<ReviewState>()(
             loading: false,
           });
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'fetchSellerReviews', params });
+
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Failed to fetch seller reviews',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage);
         }
       },
 
@@ -213,11 +221,15 @@ export const useReviewStore = create<ReviewState>()(
             loading: false,
           });
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'fetchReviewById', reviewId });
+
           set({
-            error:
-              error instanceof Error ? error.message : 'Failed to fetch review',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage);
         }
       },
 
@@ -229,15 +241,19 @@ export const useReviewStore = create<ReviewState>()(
             reviews: [review, ...state.reviews],
             loading: false,
           }));
+
+          toast.success('Değerlendirmeniz başarıyla oluşturuldu');
           return review;
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'createReview', data });
+
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Failed to create review',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage || 'Değerlendirme oluşturulamadı');
           throw error;
         }
       },
@@ -256,15 +272,19 @@ export const useReviewStore = create<ReviewState>()(
                 : state.currentReview,
             loading: false,
           }));
+
+          toast.success('Değerlendirmeniz güncellendi');
           return updatedReview;
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'updateReview', reviewId, data });
+
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Failed to update review',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage || 'Değerlendirme güncellenemedi');
           throw error;
         }
       },
@@ -279,14 +299,18 @@ export const useReviewStore = create<ReviewState>()(
               state.currentReview?.id === reviewId ? null : state.currentReview,
             loading: false,
           }));
+
+          toast.success('Değerlendirme silindi');
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'deleteReview', reviewId });
+
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Failed to delete review',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage || 'Değerlendirme silinemedi');
           throw error;
         }
       },
@@ -309,13 +333,19 @@ export const useReviewStore = create<ReviewState>()(
                 : state.currentReview,
             loading: false,
           }));
+
+          toast.success('Yanıtınız eklendi');
           return updatedReview;
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'addResponse', reviewId, data });
+
           set({
-            error:
-              error instanceof Error ? error.message : 'Failed to add response',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage || 'Yanıt eklenemedi');
           throw error;
         }
       },
@@ -334,15 +364,19 @@ export const useReviewStore = create<ReviewState>()(
                 : state.currentReview,
             loading: false,
           }));
+
+          toast.success('Yanıtınız güncellendi');
           return updatedReview;
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'updateResponse', reviewId, data });
+
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Failed to update response',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage || 'Yanıt güncellenemedi');
           throw error;
         }
       },
@@ -361,15 +395,19 @@ export const useReviewStore = create<ReviewState>()(
                 : state.currentReview,
             loading: false,
           }));
+
+          toast.success('Yanıt silindi');
           return updatedReview;
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'deleteResponse', reviewId });
+
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Failed to delete response',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage || 'Yanıt silinemedi');
           throw error;
         }
       },
@@ -390,10 +428,14 @@ export const useReviewStore = create<ReviewState>()(
                 ? updatedReview
                 : state.currentReview,
           }));
+
+          toast.success('Oyunuz kaydedildi');
         } catch (error) {
-          set({
-            error: error instanceof Error ? error.message : 'Failed to vote',
-          });
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'voteReview', reviewId, voteType });
+
+          set({ error: errorMessage });
+          toast.error(errorMessage || 'Oy kullanılamadı');
           throw error;
         }
       },
@@ -410,11 +452,14 @@ export const useReviewStore = create<ReviewState>()(
                 ? updatedReview
                 : state.currentReview,
           }));
+
+          toast.success('Oyunuz kaldırıldı');
         } catch (error) {
-          set({
-            error:
-              error instanceof Error ? error.message : 'Failed to remove vote',
-          });
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'removeVote', reviewId });
+
+          set({ error: errorMessage });
+          toast.error(errorMessage || 'Oy kaldırılamadı');
           throw error;
         }
       },
@@ -426,12 +471,13 @@ export const useReviewStore = create<ReviewState>()(
       flagReview: async (reviewId, data) => {
         try {
           await reviewApi.flag(reviewId, data);
-          // Optionally update UI to show flagged state
+          toast.success('Değerlendirme bildirildi');
         } catch (error) {
-          set({
-            error:
-              error instanceof Error ? error.message : 'Failed to flag review',
-          });
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'flagReview', reviewId, data });
+
+          set({ error: errorMessage });
+          toast.error(errorMessage || 'Bildirim gönderilemedi');
           throw error;
         }
       },
@@ -464,13 +510,23 @@ export const useReviewStore = create<ReviewState>()(
               uploadingImage: false,
             };
           });
+
+          toast.success('Görsel yüklendi');
           return image;
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, {
+            action: 'uploadImage',
+            reviewId,
+            fileName: file.name,
+          });
+
           set({
-            error:
-              error instanceof Error ? error.message : 'Failed to upload image',
+            error: errorMessage,
             uploadingImage: false,
           });
+
+          toast.error(errorMessage || 'Görsel yüklenemedi');
           throw error;
         }
       },
@@ -504,11 +560,14 @@ export const useReviewStore = create<ReviewState>()(
               currentReview: updatedCurrentReview,
             };
           });
+
+          toast.success('Görsel silindi');
         } catch (error) {
-          set({
-            error:
-              error instanceof Error ? error.message : 'Failed to delete image',
-          });
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'deleteImage', reviewId, imageId });
+
+          set({ error: errorMessage });
+          toast.error(errorMessage || 'Görsel silinemedi');
           throw error;
         }
       },
@@ -527,13 +586,15 @@ export const useReviewStore = create<ReviewState>()(
             loading: false,
           });
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'fetchReviewsForModeration', params });
+
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Failed to fetch reviews for moderation',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage);
         }
       },
 
@@ -547,14 +608,18 @@ export const useReviewStore = create<ReviewState>()(
             ),
             loading: false,
           }));
+
+          toast.success('Değerlendirme moderasyonu tamamlandı');
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'moderateReview', reviewId, data });
+
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Failed to moderate review',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage || 'Moderasyon işlemi başarısız');
           throw error;
         }
       },
@@ -569,13 +634,15 @@ export const useReviewStore = create<ReviewState>()(
             loading: false,
           });
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'fetchFlaggedReviews', params });
+
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Failed to fetch flagged reviews',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage);
         }
       },
 
@@ -604,13 +671,15 @@ export const useReviewStore = create<ReviewState>()(
             loading: false,
           });
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'fetchUserReviews', params });
+
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Failed to fetch user reviews',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage);
         }
       },
 
@@ -628,13 +697,19 @@ export const useReviewStore = create<ReviewState>()(
                 : state.currentReview,
             loading: false,
           }));
+
+          toast.success('Yanıt eklendi');
           return updatedReview;
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'addSellerResponse', reviewId, data });
+
           set({
-            error:
-              error instanceof Error ? error.message : 'Failed to add response',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage || 'Yanıt eklenemedi');
           throw error;
         }
       },
@@ -653,15 +728,19 @@ export const useReviewStore = create<ReviewState>()(
                 : state.currentReview,
             loading: false,
           }));
+
+          toast.success('Yanıt güncellendi');
           return updatedReview;
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'updateSellerResponse', reviewId, data });
+
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Failed to update response',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage || 'Yanıt güncellenemedi');
           throw error;
         }
       },
@@ -680,15 +759,19 @@ export const useReviewStore = create<ReviewState>()(
                 : state.currentReview,
             loading: false,
           }));
+
+          toast.success('Yanıt silindi');
           return updatedReview;
         } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          logError(error, { action: 'deleteSellerResponse', reviewId });
+
           set({
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Failed to delete response',
+            error: errorMessage,
             loading: false,
           });
+
+          toast.error(errorMessage || 'Yanıt silinemedi');
           throw error;
         }
       },

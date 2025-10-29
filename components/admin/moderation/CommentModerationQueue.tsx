@@ -309,7 +309,7 @@ export function CommentModerationQueue() {
               onReject={async () => {
                 await moderation.rejectComment(comment.id);
               }}
-              onMarkAsSpam={async () => {
+              onSpam={async () => {
                 await moderation.markAsSpam(comment.id);
               }}
               onViewPost={() => {

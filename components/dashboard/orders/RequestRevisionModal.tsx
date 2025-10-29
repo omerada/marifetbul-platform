@@ -70,8 +70,9 @@ export function RequestRevisionModal({
   // COMPUTED VALUES
   // ================================================
 
-  const remainingRevisions = order.revisions?.revisionsRemaining || 0;
-  const revisionLimit = order.revisions?.revisionLimit || 0;
+  const orderAny = order as any;
+  const remainingRevisions = orderAny.revisions?.revisionsRemaining || 0;
+  const revisionLimit = orderAny.revisions?.revisionLimit || 0;
   const isValid = feedback.trim().length >= MIN_FEEDBACK_LENGTH;
   const characterCount = feedback.trim().length;
 
@@ -98,7 +99,7 @@ export function RequestRevisionModal({
         description: 'Satıcı geri bildiriminizi değerlendirecek.',
       });
 
-      onSuccess?.(updatedOrder);
+      onSuccess?.(updatedOrder as unknown as Order);
       onClose();
     } catch (error) {
       toast.error('Hata', {
@@ -146,8 +147,8 @@ export function RequestRevisionModal({
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Paket:</span>
                 <span className="font-medium">
-                  {order.packageDetails?.packageTitle ||
-                    order.customDescription ||
+                  {orderAny.packageDetails?.packageTitle ||
+                    orderAny.customDescription ||
                     'Özel Sipariş'}
                 </span>
               </div>
@@ -168,14 +169,14 @@ export function RequestRevisionModal({
           </div>
 
           {/* Delivery Note (if exists) */}
-          {order.delivery?.deliveryNote && (
+          {orderAny.delivery?.deliveryNote && (
             <div>
               <Label className="mb-2 block text-sm font-medium">
                 Satıcı Teslim Notu
               </Label>
               <div className="bg-muted/50 rounded-lg border p-4">
                 <p className="text-sm whitespace-pre-wrap">
-                  {order.delivery.deliveryNote}
+                  {orderAny.delivery.deliveryNote}
                 </p>
               </div>
             </div>

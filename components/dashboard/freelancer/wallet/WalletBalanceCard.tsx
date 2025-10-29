@@ -295,7 +295,6 @@ export const WalletBalanceCard: React.FC<WalletBalanceCardProps> = ({
         <PayoutRequestModal
           isOpen={isPayoutModalOpen}
           onClose={() => setIsPayoutModalOpen(false)}
-          availableBalance={balance.availableBalance}
           onSuccess={() => {
             refresh();
           }}

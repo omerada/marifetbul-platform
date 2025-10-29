@@ -12,7 +12,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Star, MessageSquare, TrendingUp, Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
@@ -22,7 +22,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/components/ui/Select';
-import { useReviewStore } from '@/hooks/business/useReviewStore';
+import { useReviewStore, useReviewDashboardState } from '@/hooks';
 import { RatingSummary, RatingStars } from '@/components/shared/RatingStars';
 import {
   RatingDistribution,
@@ -48,19 +48,20 @@ export default function FreelancerReviewsPage() {
 
   const { getCurrentUserId } = useAuthStore();
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState('CREATED_AT');
-  const [sortDirection] = useState<'ASC' | 'DESC'>('DESC');
-  const [minRating, setMinRating] = useState<number | undefined>();
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
-  const [showResponseDialog, setShowResponseDialog] = useState(false);
-  const [selectedReview, setSelectedReview] = useState<Review | null>(null);
+  // Use custom hook for local state management
+  const { state, actions } = useReviewDashboardState();
 
   // Load seller reviews
   useEffect(() => {
     loadReviews();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, sortBy, sortDirection, minRating, verifiedOnly]);
+  }, [
+    state.currentPage,
+    state.sortBy,
+    state.sortDirection,
+    state.minRating,
+    state.verifiedOnly,
+  ]);
 
   const loadReviews = () => {
     const sellerId = getCurrentUserId();
@@ -70,24 +71,23 @@ export default function FreelancerReviewsPage() {
     }
     fetchSellerReviews({
       sellerId,
-      page: currentPage - 1,
+      page: state.currentPage - 1,
       pageSize: 10,
-      sortBy: sortBy as 'CREATED_AT' | 'RATING' | 'HELPFUL_COUNT',
-      sortDirection,
-      minRating,
-      verifiedOnly,
+      sortBy: state.sortBy as 'CREATED_AT' | 'RATING' | 'HELPFUL_COUNT',
+      sortDirection: state.sortDirection,
+      minRating: state.minRating,
+      verifiedOnly: state.verifiedOnly,
     });
   };
 
   // Handle page change
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    actions.setCurrentPage(page);
   };
 
   // Handle respond to review
   const handleRespond = (review: Review) => {
-    setSelectedReview(review);
-    setShowResponseDialog(true);
+    actions.openResponseDialog(review);
   };
 
   // Calculate response rate
@@ -204,8 +204,8 @@ export default function FreelancerReviewsPage() {
               <RatingDistribution
                 stats={stats}
                 onFilterByRating={(rating) => {
-                  setMinRating(rating);
-                  setCurrentPage(1);
+                  actions.setMinRating(rating);
+                  actions.setCurrentPage(1);
                 }}
               />
             </CardContent>
@@ -232,7 +232,7 @@ export default function FreelancerReviewsPage() {
             </div>
 
             <div className="min-w-[200px] flex-1">
-              <Select value={sortBy} onValueChange={setSortBy}>
+              <Select value={state.sortBy} onValueChange={actions.setSortBy}>
                 <SelectTrigger placeholder="Sıralama" />
                 <SelectContent>
                   <SelectItem value="CREATED_AT">En Yeni</SelectItem>
@@ -244,10 +244,12 @@ export default function FreelancerReviewsPage() {
 
             <div className="min-w-[200px] flex-1">
               <Select
-                value={minRating?.toString() || 'all'}
+                value={state.minRating?.toString() || 'all'}
                 onValueChange={(value) => {
-                  setMinRating(value === 'all' ? undefined : parseInt(value));
-                  setCurrentPage(1);
+                  actions.setMinRating(
+                    value === 'all' ? undefined : parseInt(value)
+                  );
+                  actions.setCurrentPage(1);
                 }}
               >
                 <SelectTrigger placeholder="Minimum Puan" />
@@ -263,22 +265,22 @@ export default function FreelancerReviewsPage() {
             </div>
 
             <Button
-              variant={verifiedOnly ? 'primary' : 'outline'}
+              variant={state.verifiedOnly ? 'primary' : 'outline'}
               onClick={() => {
-                setVerifiedOnly(!verifiedOnly);
-                setCurrentPage(1);
+                actions.setVerifiedOnly(!state.verifiedOnly);
+                actions.setCurrentPage(1);
               }}
             >
-              {verifiedOnly ? 'Tüm Değerlendirmeler' : 'Sadece Doğrulanmış'}
+              {state.verifiedOnly
+                ? 'Tüm Değerlendirmeler'
+                : 'Sadece Doğrulanmış'}
             </Button>
 
-            {(minRating || verifiedOnly) && (
+            {(state.minRating || state.verifiedOnly) && (
               <Button
                 variant="ghost"
                 onClick={() => {
-                  setMinRating(undefined);
-                  setVerifiedOnly(false);
-                  setCurrentPage(1);
+                  actions.resetFilters();
                 }}
               >
                 Filtreleri Temizle
@@ -351,7 +353,7 @@ export default function FreelancerReviewsPage() {
         pagination.totalPages > 1 && (
           <div className="mt-8 flex justify-center">
             <Pagination
-              currentPage={currentPage}
+              currentPage={state.currentPage}
               totalPages={pagination.totalPages}
               onPageChange={handlePageChange}
             />
@@ -359,11 +361,13 @@ export default function FreelancerReviewsPage() {
         )}
 
       {/* Seller Response Modal */}
-      {selectedReview && (
+      {state.selectedReview && (
         <SellerResponseModal
-          open={showResponseDialog}
-          onOpenChange={setShowResponseDialog}
-          review={selectedReview}
+          open={state.showResponseDialog}
+          onOpenChange={(open) => {
+            if (!open) actions.closeResponseDialog();
+          }}
+          review={state.selectedReview}
           onSuccess={(_updatedReview) => {
             // Trigger a re-fetch to update the list
             loadReviews();

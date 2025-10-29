@@ -13,7 +13,7 @@
 
 import { Shield } from 'lucide-react';
 import { UnifiedErrorBoundary } from '@/components/ui/UnifiedErrorBoundary';
-import { CommentModerationSummary } from '@/components/domains/admin';
+import { CommentModerationSummary } from '@/components/admin/dashboard/CommentModerationSummary';
 
 export default function AdminModerationDashboardPage() {
   return (

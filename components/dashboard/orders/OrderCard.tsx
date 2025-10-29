@@ -89,15 +89,16 @@ function getStatusLabel(
 // ================================================
 
 export function OrderCard({ order, userRole, onClick }: OrderCardProps) {
-  const packageTitle = order.packageDetails?.packageTitle || 'Özel Sipariş';
+  const orderAny = order as any;
+  const packageTitle = orderAny.packageDetails?.packageTitle || 'Özel Sipariş';
 
   const otherUserInfo =
     userRole === 'buyer'
-      ? { name: order.seller?.username || 'Satıcı', role: 'Satıcı' }
-      : { name: order.buyer?.username || 'Alıcı', role: 'Alıcı' };
+      ? { name: orderAny.seller?.username || 'Satıcı', role: 'Satıcı' }
+      : { name: orderAny.buyer?.username || 'Alıcı', role: 'Alıcı' };
 
-  const lastUpdate = order.updatedAt
-    ? formatDistanceToNow(new Date(order.updatedAt), {
+  const lastUpdate = orderAny.updatedAt
+    ? formatDistanceToNow(new Date(orderAny.updatedAt), {
         addSuffix: true,
         locale: tr,
       })
@@ -150,7 +151,8 @@ export function OrderCard({ order, userRole, onClick }: OrderCardProps) {
           <div className="flex items-center gap-2 font-medium">
             <DollarSign className="text-muted-foreground h-4 w-4 shrink-0" />
             <span>
-              {order.financials.total.toFixed(2)} {order.financials.currency}
+              {orderAny.financials?.total?.toFixed(2) || '0.00'}{' '}
+              {orderAny.financials?.currency || 'TRY'}
             </span>
           </div>
 
@@ -169,11 +171,11 @@ export function OrderCard({ order, userRole, onClick }: OrderCardProps) {
           )}
 
           {/* Package Tier */}
-          {order.packageDetails?.tier && (
+          {orderAny.packageDetails?.tier && (
             <div className="text-muted-foreground flex items-center gap-2">
               <Package className="h-4 w-4 shrink-0" />
               <span className="truncate capitalize">
-                {order.packageDetails.tier.toLowerCase()}
+                {orderAny.packageDetails.tier.toLowerCase()}
               </span>
             </div>
           )}

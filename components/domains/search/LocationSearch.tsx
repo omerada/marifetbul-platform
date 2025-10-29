@@ -82,7 +82,7 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({
     if (!currentLocation) return;
 
     const searchParams: LocationSearchParams = {
-      center: currentLocation,
+      location: currentLocation,
       radius: filters.radius,
       query: searchQuery.trim() || '',
       limit: 20,
@@ -232,8 +232,7 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({
           >
             <MapPin className="h-4 w-4" />
             <span className="text-sm">
-              {currentLocation.latitude.toFixed(3)},{' '}
-              {currentLocation.longitude.toFixed(3)}
+              {currentLocation.lat.toFixed(3)}, {currentLocation.lng.toFixed(3)}
             </span>
           </Button>
         ) : (

@@ -89,7 +89,7 @@ export function OrderActions({
       toast.success('İş başlatıldı!', {
         description: 'Başarılar dileriz.',
       });
-      onActionComplete?.(updatedOrder);
+      onActionComplete?.(updatedOrder as unknown as Order);
     } catch (error) {
       toast.error('Hata', {
         description:
@@ -108,7 +108,7 @@ export function OrderActions({
       toast.success('Sipariş tamamlandı!', {
         description: 'Ödeme serbest bırakıldı.',
       });
-      onActionComplete?.(updatedOrder);
+      onActionComplete?.(updatedOrder as unknown as Order);
     } catch (error) {
       toast.error('Hata', {
         description:
@@ -139,7 +139,10 @@ export function OrderActions({
       }
 
       // Start Working (IN_PROGRESS)
-      if (order.status === 'IN_PROGRESS' && !order.delivery?.submittedAt) {
+      if (
+        order.status === 'IN_PROGRESS' &&
+        !(order as any).delivery?.submittedAt
+      ) {
         actions.push({
           label: 'İşe Başla',
           icon: <PlayCircle className="h-4 w-4" />,
@@ -150,7 +153,7 @@ export function OrderActions({
       }
 
       // Submit Delivery
-      if (order.canSubmitDelivery) {
+      if ((order as any).canSubmitDelivery) {
         actions.push({
           label: 'Teslim Et',
           icon: <Package className="h-4 w-4" />,
@@ -163,7 +166,7 @@ export function OrderActions({
     // Buyer Actions
     if (userRole === 'buyer') {
       // Approve Delivery
-      if (order.canApproveDelivery) {
+      if ((order as any).canApproveDelivery) {
         actions.push({
           label: 'Teslimatı Onayla',
           icon: <CheckCircle className="h-4 w-4" />,
@@ -173,8 +176,8 @@ export function OrderActions({
       }
 
       // Request Revision
-      if (order.canRequestRevision && order.status === 'DELIVERED') {
-        const revisionsLeft = order.revisions?.revisionsRemaining ?? 0;
+      if ((order as any).canRequestRevision && order.status === 'DELIVERED') {
+        const revisionsLeft = (order as any).revisions?.revisionsRemaining ?? 0;
         actions.push({
           label: `Revizyon İste (${revisionsLeft} kaldı)`,
           icon: <RefreshCw className="h-4 w-4" />,
@@ -264,7 +267,7 @@ export function OrderActions({
         <AcceptOrderModal
           isOpen={showAcceptModal}
           onClose={() => setShowAcceptModal(false)}
-          order={order}
+          order={order as any}
           onSuccess={(updatedOrder) => {
             onActionComplete?.(updatedOrder);
             setShowAcceptModal(false);
@@ -276,7 +279,7 @@ export function OrderActions({
         <DeliverySubmissionModal
           isOpen={showDeliveryModal}
           onClose={() => setShowDeliveryModal(false)}
-          order={order}
+          order={order as any}
           onSuccess={(updatedOrder) => {
             onActionComplete?.(updatedOrder);
             setShowDeliveryModal(false);
@@ -288,7 +291,7 @@ export function OrderActions({
         <ApproveDeliveryModal
           isOpen={showApproveModal}
           onClose={() => setShowApproveModal(false)}
-          order={order}
+          order={order as any}
           onSuccess={(updatedOrder) => {
             onActionComplete?.(updatedOrder);
             setShowApproveModal(false);
@@ -300,7 +303,7 @@ export function OrderActions({
         <RequestRevisionModal
           isOpen={showRevisionModal}
           onClose={() => setShowRevisionModal(false)}
-          order={order}
+          order={order as any}
           onSuccess={(updatedOrder) => {
             onActionComplete?.(updatedOrder);
             setShowRevisionModal(false);
@@ -312,7 +315,7 @@ export function OrderActions({
         <CancelOrderModal
           isOpen={showCancelModal}
           onClose={() => setShowCancelModal(false)}
-          order={order}
+          order={order as any}
           userRole={userRole}
           onSuccess={(updatedOrder) => {
             onActionComplete?.(updatedOrder);
@@ -329,17 +332,15 @@ export function OrderActions({
           orderNumber={order.orderNumber}
           onSuccess={() => {
             setShowDisputeModal(false);
-
-            // Optimistic update - immediately update UI
+            // Refresh order data
             if (onActionComplete) {
               const optimisticOrder = {
                 ...order,
-                status: 'DISPUTED',
+                status: 'DISPUTED' as any,
               };
               onActionComplete(optimisticOrder as typeof order);
             }
-
-            toast.success('İhtilaf başarıyla oluşturuldu', {
+            toast.success('İtiraz başarıyla oluşturuldu', {
               description:
                 'Müşteri destek ekibimiz en kısa sürede inceleyecektir.',
             });

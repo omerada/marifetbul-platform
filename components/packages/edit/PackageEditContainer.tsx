@@ -28,8 +28,8 @@ export function PackageEditContainer() {
       setLoading(true);
       setError(null);
 
-      const packageData = await packageApi.getMyPackage(packageId);
-      setPkg(packageData);
+      const packageData = await packageApi.getPackageById(packageId);
+      setPkg(packageData as any);
     } catch (err) {
       setError('Paket yüklenirken bir hata oluştu');
       console.error('Failed to fetch package:', err);

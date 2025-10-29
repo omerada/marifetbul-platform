@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, Suspense } from 'react';
+import { useMemo, useEffect, Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
@@ -19,22 +19,7 @@ import {
 } from 'lucide-react';
 import { MARKETPLACE_CATEGORIES } from '@/lib/domains/marketplace/categories-data';
 import { notFound } from 'next/navigation';
-
-interface Freelancer {
-  id: string;
-  name: string;
-  title: string;
-  rating: number;
-  reviewCount: number;
-  completedJobs: number;
-  hourlyRate: number;
-  location: string;
-  avatar: string;
-  skills: string[];
-  services: string[];
-  description: string;
-  available: boolean;
-}
+import { useSubcategoryState } from '@/hooks/business/useSubcategoryState';
 
 function SubcategoryDetailContent() {
   const params = useParams();
@@ -44,22 +29,6 @@ function SubcategoryDetailContent() {
 
   const selectedServiceFromUrl = searchParams.get('service');
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('rating');
-  const [selectedService, setSelectedService] = useState<string | null>(null);
-  const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-
-  useEffect(() => {
-    if (selectedServiceFromUrl) {
-      setSelectedService(selectedServiceFromUrl);
-    }
-  }, [selectedServiceFromUrl]);
-
   const { category, subcategory } = useMemo(() => {
     const cat = MARKETPLACE_CATEGORIES.find((c) => c.slug === categorySlug);
     if (!cat) return { category: null, subcategory: null };
@@ -68,72 +37,22 @@ function SubcategoryDetailContent() {
     return { category: cat, subcategory: subcat };
   }, [categorySlug, subcategorySlug]);
 
+  // Use custom hook for state management (10 useState → 1 useReducer)
+  const { state, actions } = useSubcategoryState({
+    categoryId: typeof category?.id === 'number' ? category.id : 0,
+    subcategoryId: typeof subcategory?.id === 'number' ? subcategory.id : 0,
+    initialService: selectedServiceFromUrl,
+  });
+
+  // Sync URL service parameter with state
   useEffect(() => {
-    const fetchFreelancers = async () => {
-      if (!category || !subcategory) return;
-
-      try {
-        setLoading(true);
-        setError(null);
-
-        const params = new URLSearchParams({
-          categoryId: category.id.toString(),
-          subcategoryId: subcategory.id.toString(),
-          page: page.toString(),
-          limit: '20',
-          sortBy,
-        });
-
-        if (searchTerm.trim()) {
-          params.append('search', searchTerm);
-        }
-
-        if (selectedService) {
-          params.append('service', selectedService);
-        }
-
-        if (selectedFilter === 'available') {
-          params.append('available', 'true');
-        } else if (selectedFilter === 'top-rated') {
-          params.append('minRating', '4.8');
-        }
-
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/marketplace/freelancers?${params}`,
-          {
-            cache: 'no-cache',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error('Freelancer listesi yüklenirken bir hata oluştu');
-        }
-
-        const data = await response.json();
-        setFreelancers(data.data.items || []);
-        setTotalPages(data.data.totalPages || 1);
-      } catch (err) {
-        console.error('Freelancers fetch error:', err);
-        setError(err instanceof Error ? err.message : 'Bir hata oluştu');
-        setFreelancers([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFreelancers();
-  }, [
-    category,
-    subcategory,
-    page,
-    sortBy,
-    searchTerm,
-    selectedService,
-    selectedFilter,
-  ]);
+    if (
+      selectedServiceFromUrl &&
+      selectedServiceFromUrl !== state.selectedService
+    ) {
+      actions.setSelectedService(selectedServiceFromUrl);
+    }
+  }, [selectedServiceFromUrl, state.selectedService, actions]);
 
   if (!category || !subcategory) {
     notFound();
@@ -141,7 +60,7 @@ function SubcategoryDetailContent() {
 
   // Clear service filter
   const clearServiceFilter = () => {
-    setSelectedService(null);
+    actions.clearServiceFilter();
     // Update URL without service parameter
     const url = new URL(window.location.href);
     url.searchParams.delete('service');
@@ -178,11 +97,11 @@ function SubcategoryDetailContent() {
           <p className="mb-4 text-gray-600">{subcategory.description}</p>
 
           {/* Selected Service Badge */}
-          {selectedService && (
+          {state.selectedService && (
             <div className="mb-4 inline-flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-sm">
               <CheckCircle2 className="h-4 w-4 text-blue-600" />
               <span className="font-medium text-blue-900">
-                Hizmet: {selectedService}
+                Hizmet: {state.selectedService}
               </span>
               <button
                 onClick={clearServiceFilter}
@@ -201,8 +120,8 @@ function SubcategoryDetailContent() {
               <Input
                 type="text"
                 placeholder="Hizmet ara..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={state.searchTerm}
+                onChange={(e) => actions.setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -211,8 +130,8 @@ function SubcategoryDetailContent() {
               <div className="flex items-center gap-2">
                 <Filter className="h-4 w-4 text-gray-500" />
                 <select
-                  value={selectedFilter}
-                  onChange={(e) => setSelectedFilter(e.target.value)}
+                  value={state.selectedFilter}
+                  onChange={(e) => actions.setSelectedFilter(e.target.value)}
                   className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 >
                   <option value="all">Tüm Hizmetler</option>
@@ -225,8 +144,8 @@ function SubcategoryDetailContent() {
               <div className="flex items-center gap-2">
                 <SortAsc className="h-4 w-4 text-gray-500" />
                 <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
+                  value={state.sortBy}
+                  onChange={(e) => actions.setSortBy(e.target.value)}
                   className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 >
                   <option value="rating">Puana Göre</option>
@@ -247,16 +166,16 @@ function SubcategoryDetailContent() {
             <div>
               <p className="text-gray-600">
                 <span className="font-semibold text-gray-900">
-                  {freelancers.length}
+                  {state.freelancers.length}
                 </span>{' '}
                 hizmet bulundu
-                {selectedService && (
+                {state.selectedService && (
                   <span className="ml-1 text-blue-600">
-                    &quot;{selectedService}&quot; için
+                    &quot;{state.selectedService}&quot; için
                   </span>
                 )}
               </p>
-              {selectedService && freelancers.length === 0 && (
+              {state.selectedService && state.freelancers.length === 0 && (
                 <p className="mt-2 text-sm text-gray-500">
                   Bu hizmet türü için sonuç bulunamadı. Filtreyi kaldırmayı
                   deneyin.
@@ -274,12 +193,12 @@ function SubcategoryDetailContent() {
             </Link>
           </div>
 
-          {loading ? (
+          {state.loading ? (
             <Card className="p-12 text-center">
               <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
               <p className="text-gray-600">Uzmanlar yükleniyor...</p>
             </Card>
-          ) : error ? (
+          ) : state.error ? (
             <Card className="p-12 text-center">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
                 <X className="h-8 w-8 text-red-500" />
@@ -287,28 +206,28 @@ function SubcategoryDetailContent() {
               <h3 className="mb-2 text-lg font-semibold text-gray-900">
                 Bir Hata Oluştu
               </h3>
-              <p className="mb-6 text-gray-600">{error}</p>
+              <p className="mb-6 text-gray-600">{state.error}</p>
               <Button onClick={() => window.location.reload()}>
                 Tekrar Dene
               </Button>
             </Card>
-          ) : freelancers.length === 0 ? (
+          ) : state.freelancers.length === 0 ? (
             <Card className="p-12 text-center">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-50">
                 <Search className="h-8 w-8 text-blue-500" />
               </div>
               <h3 className="mb-2 text-lg font-semibold text-gray-900">
-                {selectedService
+                {state.selectedService
                   ? 'Bu hizmet türü için uzmanlar arıyoruz'
                   : 'Uygun hizmet bulunamadı'}
               </h3>
               <p className="mb-6 text-gray-600">
-                {selectedService
+                {state.selectedService
                   ? 'Şu anda bu hizmet türü için uygun uzman bulunmuyor. Sürekli yeni hizmetler ekliyoruz veya iş ilanı vererek uzmanların size ulaşmasını sağlayabilirsiniz.'
                   : 'Arama kriterlerinize uygun hizmet bulunmuyor. Filtreleri değiştirmeyi deneyin veya iş ilanı vererek ihtiyacınız olan hizmeti talep edin.'}
               </p>
               <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-                {selectedService && (
+                {state.selectedService && (
                   <Button variant="outline" onClick={clearServiceFilter}>
                     <Filter className="mr-2 h-4 w-4" />
                     Hizmet Filtresini Kaldır
@@ -317,7 +236,9 @@ function SubcategoryDetailContent() {
                 <Link
                   href={`/marketplace/jobs/create?category=${categorySlug}&subcategory=${subcategorySlug}`}
                 >
-                  <Button variant={selectedService ? 'primary' : 'outline'}>
+                  <Button
+                    variant={state.selectedService ? 'primary' : 'outline'}
+                  >
                     İş İlanı Ver
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -326,7 +247,7 @@ function SubcategoryDetailContent() {
             </Card>
           ) : (
             <div className="grid gap-4">
-              {freelancers.map((freelancer) => (
+              {state.freelancers.map((freelancer) => (
                 <Card
                   key={freelancer.id}
                   className="group overflow-hidden border-gray-200 transition-all duration-300 hover:border-blue-200 hover:bg-blue-50/30"
@@ -423,16 +344,16 @@ function SubcategoryDetailContent() {
                         </div>
 
                         {/* Selected Service Badge */}
-                        {selectedService &&
+                        {state.selectedService &&
                           freelancer.services.some((s) =>
                             s
                               .toLowerCase()
-                              .includes(selectedService.toLowerCase())
+                              .includes(state.selectedService!.toLowerCase())
                           ) && (
                             <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-green-50 px-3 py-1.5 text-sm ring-1 ring-green-600/20">
                               <CheckCircle2 className="h-4 w-4 text-green-600" />
                               <span className="font-medium text-green-700">
-                                {selectedService} hizmeti
+                                {state.selectedService} hizmeti
                               </span>
                             </div>
                           )}
@@ -482,22 +403,22 @@ function SubcategoryDetailContent() {
           )}
 
           {/* Pagination */}
-          {freelancers.length > 0 && totalPages > 1 && (
+          {state.freelancers.length > 0 && state.totalPages > 1 && (
             <div className="mt-8 flex justify-center gap-2">
               <Button
                 variant="outline"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1 || loading}
+                onClick={actions.previousPage}
+                disabled={state.page === 1 || state.loading}
               >
                 Önceki
               </Button>
               <span className="flex items-center px-4 text-gray-700">
-                Sayfa {page} / {totalPages}
+                Sayfa {state.page} / {state.totalPages}
               </span>
               <Button
                 variant="outline"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages || loading}
+                onClick={actions.nextPage}
+                disabled={state.page === state.totalPages || state.loading}
               >
                 Sonraki
               </Button>

@@ -66,18 +66,20 @@ export function PackageListContainer() {
         params.search = searchQuery;
       }
 
-      const response = await packageApi.getMyPackages(params);
-      setPackages(response.content);
-      setTotalPages(response.totalPages);
+      const response = await packageApi.getUserPackages(page, 20, sortBy);
+      setPackages(response.data);
+      setTotalPages(response.pagination?.totalPages || 1);
 
-      // Fetch stats
-      const statsData = await packageApi.getMyStats();
+      // Stats - using placeholder values until backend provides endpoint
       setStats({
-        totalPackages: statsData.totalPackages,
-        activePackages: statsData.activePackages,
-        totalViews: statsData.totalViews,
-        totalOrders: statsData.totalOrders,
-        averageRating: statsData.averageRating || 0,
+        totalPackages: response.pagination?.totalItems || 0,
+        activePackages:
+          response.data?.filter(
+            (p: (typeof response.data)[0]) => p.status === 'ACTIVE'
+          ).length || 0,
+        totalViews: 0,
+        totalOrders: 0,
+        averageRating: 0,
       });
     } catch (err) {
       setError('Paketler yüklenirken bir hata oluştu');

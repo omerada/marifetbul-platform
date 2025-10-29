@@ -732,15 +732,12 @@ export default function EmployerOrderDetailPage() {
           onSuccess={handleModalSuccess}
         />
       )}
-      {disputeModalOpen && (
+      {disputeModalOpen && order && (
         <DisputeModal
           isOpen={disputeModalOpen}
           onClose={() => setDisputeModalOpen(false)}
           orderId={order.id}
-          orderTitle={
-            order.customOrderDetails?.title || `Sipariş #${order.orderNumber}`
-          }
-          userRole="buyer"
+          orderNumber={order.orderNumber}
           onSuccess={handleModalSuccess}
         />
       )}

@@ -16,6 +16,8 @@
  * @version 1.0.0
  */
 
+'use client';
+
 import { formatCurrency } from '@/lib/shared/formatters';
 
 import { useEffect, useState, Suspense } from 'react';

@@ -19,7 +19,7 @@
 
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Package2 } from 'lucide-react';
@@ -28,16 +28,8 @@ import {
   OrderListFilters,
   OrderCard,
   OrderCardSkeleton,
-  type OrderStats,
 } from '@/components/dashboard/orders';
-import { orderApi, unwrapOrderResponse } from '@/lib/api/orders';
-import type {
-  OrderSummaryResponse,
-  OrderStatus,
-  OrderStatistics,
-  PageResponse,
-} from '@/types/backend-aligned';
-import { useWebSocket } from '@/hooks';
+import { useWebSocket, useOrderState } from '@/hooks';
 
 // ================================================
 // TYPES
@@ -56,81 +48,16 @@ export default function OrderListPage({ userRole }: OrderListPageProps) {
   const router = useRouter();
 
   // ================================================
-  // STATE
+  // STATE - Using custom hook
   // ================================================
 
-  const [orders, setOrders] = useState<OrderSummaryResponse[]>([]);
-  const [stats, setStats] = useState<OrderStats | undefined>();
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Filters
-  const [selectedStatus, setSelectedStatus] = useState<OrderStatus | 'all'>(
-    'all'
-  );
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('latest');
+  const { state, actions } = useOrderState({ userRole, autoLoad: true });
 
   // WebSocket
   const { subscribe, unsubscribe, isConnected } = useWebSocket({
     autoConnect: true,
     enableStoreIntegration: true,
   });
-
-  // ================================================
-  // DATA FETCHING
-  // ================================================
-
-  const loadOrders = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      // Fetch orders based on role
-      const response =
-        userRole === 'buyer'
-          ? await orderApi.getBuyerOrders()
-          : await orderApi.getSellerOrders();
-
-      // Unwrap and extract orders from paged response
-      const unwrapped = unwrapOrderResponse(
-        response
-      ) as PageResponse<OrderSummaryResponse>;
-      const fetchedOrders = unwrapped.content || [];
-
-      setOrders(fetchedOrders);
-    } catch (err) {
-      console.error('Failed to load orders:', err);
-      setError(err instanceof Error ? err.message : 'Siparişler yüklenemedi');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [userRole]);
-
-  const loadStats = useCallback(async () => {
-    try {
-      const response = await orderApi.getOrderStatistics();
-      const statistics = unwrapOrderResponse(response) as OrderStatistics;
-
-      // Calculate counts from statistics
-      const statsData: OrderStats = {
-        total: statistics.totalOrders || 0,
-        active: statistics.activeOrders || 0,
-        completed: statistics.completedOrders || 0,
-        cancelled: statistics.cancelledOrders || 0,
-      };
-
-      setStats(statsData);
-    } catch (err) {
-      console.error('Failed to load stats:', err);
-      // Stats are optional, don't show error
-    }
-  }, []);
-
-  useEffect(() => {
-    loadOrders();
-    loadStats();
-  }, [loadOrders, loadStats]);
 
   // ================================================
   // WEBSOCKET SUBSCRIPTION
@@ -151,8 +78,8 @@ export default function OrderListPage({ userRole }: OrderListPageProps) {
         update.type === 'ORDER_ACCEPTED'
       ) {
         // Refresh order list
-        loadOrders();
-        loadStats();
+        actions.loadOrders();
+        actions.loadStats();
 
         // Show notification
         const notificationTexts: Record<string, string> = {
@@ -173,22 +100,25 @@ export default function OrderListPage({ userRole }: OrderListPageProps) {
     return () => {
       unsubscribe(destination);
     };
-  }, [isConnected, subscribe, unsubscribe, loadOrders, loadStats]);
+  }, [isConnected, subscribe, unsubscribe, actions]);
 
   // ================================================
   // FILTERING & SORTING
   // ================================================
 
-  const filteredOrders = orders
+  const filteredOrders = state.orders
     .filter((order) => {
       // Status filter
-      if (selectedStatus !== 'all' && order.status !== selectedStatus) {
+      if (
+        state.selectedStatus !== 'all' &&
+        order.status !== state.selectedStatus
+      ) {
         return false;
       }
 
       // Search filter
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
+      if (state.searchQuery) {
+        const query = state.searchQuery.toLowerCase();
         const orderNumber = (order.orderNumber || order.id).toLowerCase();
         const packageTitle = (order.packageTitle || '').toLowerCase();
 
@@ -198,7 +128,7 @@ export default function OrderListPage({ userRole }: OrderListPageProps) {
       return true;
     })
     .sort((a, b) => {
-      switch (sortBy) {
+      switch (state.sortBy) {
         case 'latest':
           return (
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -225,9 +155,7 @@ export default function OrderListPage({ userRole }: OrderListPageProps) {
   };
 
   const handleClearFilters = () => {
-    setSelectedStatus('all');
-    setSearchQuery('');
-    setSortBy('latest');
+    actions.clearFilters();
   };
 
   // ================================================
@@ -249,21 +177,21 @@ export default function OrderListPage({ userRole }: OrderListPageProps) {
       {/* Filters */}
       <div className="mb-6">
         <OrderListFilters
-          selectedStatus={selectedStatus}
-          onStatusChange={setSelectedStatus}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-          stats={stats}
-          isLoading={isLoading}
+          selectedStatus={state.selectedStatus}
+          onStatusChange={actions.setSelectedStatus}
+          searchQuery={state.searchQuery}
+          onSearchChange={actions.setSearchQuery}
+          sortBy={state.sortBy}
+          onSortChange={actions.setSortBy}
+          stats={state.stats}
+          isLoading={state.isLoading}
         />
       </div>
 
       {/* Content */}
       <div className="space-y-6">
         {/* Loading State */}
-        {isLoading && (
+        {state.isLoading && (
           <div className="grid grid-cols-1 gap-4">
             {[...Array(3)].map((_, i) => (
               <OrderCardSkeleton key={i} />
@@ -272,15 +200,15 @@ export default function OrderListPage({ userRole }: OrderListPageProps) {
         )}
 
         {/* Error State */}
-        {!isLoading && error && (
+        {!state.isLoading && state.error && (
           <div className="py-12 text-center">
-            <p className="text-destructive mb-4">{error}</p>
-            <Button onClick={loadOrders}>Tekrar Dene</Button>
+            <p className="text-destructive mb-4">{state.error}</p>
+            <Button onClick={actions.loadOrders}>Tekrar Dene</Button>
           </div>
         )}
 
         {/* Empty State - No Orders */}
-        {!isLoading && !error && orders.length === 0 && (
+        {!state.isLoading && !state.error && state.orders.length === 0 && (
           <div className="py-16 text-center">
             <Package2 className="text-muted-foreground mx-auto mb-4 h-16 w-16" />
             <h3 className="mb-2 text-lg font-semibold">Henüz sipariş yok</h3>
@@ -298,9 +226,9 @@ export default function OrderListPage({ userRole }: OrderListPageProps) {
         )}
 
         {/* Empty State - No Results */}
-        {!isLoading &&
-          !error &&
-          orders.length > 0 &&
+        {!state.isLoading &&
+          !state.error &&
+          state.orders.length > 0 &&
           filteredOrders.length === 0 && (
             <div className="py-16 text-center">
               <Package2 className="text-muted-foreground mx-auto mb-4 h-16 w-16" />
@@ -315,7 +243,7 @@ export default function OrderListPage({ userRole }: OrderListPageProps) {
           )}
 
         {/* Order List */}
-        {!isLoading && !error && filteredOrders.length > 0 && (
+        {!state.isLoading && !state.error && filteredOrders.length > 0 && (
           <div className="grid grid-cols-1 gap-4">
             {filteredOrders.map((order) => (
               <OrderCard
@@ -329,11 +257,11 @@ export default function OrderListPage({ userRole }: OrderListPageProps) {
         )}
 
         {/* Results Count */}
-        {!isLoading && !error && filteredOrders.length > 0 && (
+        {!state.isLoading && !state.error && filteredOrders.length > 0 && (
           <div className="text-muted-foreground text-center text-sm">
             {filteredOrders.length} sipariş gösteriliyor
-            {orders.length !== filteredOrders.length &&
-              ` (${orders.length} toplam)`}
+            {state.orders.length !== filteredOrders.length &&
+              ` (${state.orders.length} toplam)`}
           </div>
         )}
       </div>

@@ -8,7 +8,7 @@
 export { PendingCommentsWidget } from './PendingCommentsWidget';
 export { CommentModerationStats } from './CommentModerationStats';
 export { RecentCommentsPreview } from './RecentCommentsPreview';
-export { CommentModerationSummary } from './CommentModerationSummary';
+export { CommentModerationSummary } from '@/components/admin/dashboard/CommentModerationSummary';
 
 export type {
   PendingCommentsSummary,

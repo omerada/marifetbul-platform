@@ -141,6 +141,7 @@ export function DeliverySubmissionModal({
 
       // Submit delivery
       const request: SubmitDeliveryRequest = {
+        deliverables: deliveryNote.trim(),
         deliveryNote: deliveryNote.trim(),
         attachments: fileUrls.length > 0 ? fileUrls : undefined,
       };
@@ -151,7 +152,7 @@ export function DeliverySubmissionModal({
         description: 'Müşteri teslimatınızı inceleyecek.',
       });
 
-      onSuccess?.(updatedOrder);
+      onSuccess?.(updatedOrder as unknown as Order);
       onClose();
     } catch (error) {
       toast.error('Hata', {
@@ -202,7 +203,7 @@ export function DeliverySubmissionModal({
               <div>
                 <p className="text-sm text-gray-600">Alıcı</p>
                 <p className="font-medium text-gray-900">
-                  {order.buyer?.fullName || order.buyer?.username}
+                  Alıcı #{order.buyerId}
                 </p>
               </div>
             </div>

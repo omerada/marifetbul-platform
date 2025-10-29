@@ -23,7 +23,10 @@ import {
 import type { Order } from '@/types/business/features/orders';
 import { useWebSocket } from '@/hooks';
 import { toast } from 'sonner';
-import { OrderListSkeleton, StatsCardSkeleton } from '@/components/shared/LoadingSkeleton';
+import {
+  OrderListSkeleton,
+  StatsCardSkeleton,
+} from '@/components/shared/LoadingSkeleton';
 
 export default function EmployerOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -430,20 +433,15 @@ export default function EmployerOrdersPage() {
         />
       )}
 
-      {/* Dispute Modal */}
-      {selectedOrder && (
+      {selectedOrder && disputeModalOpen && (
         <DisputeModal
-          orderId={selectedOrder.id}
-          orderTitle={
-            selectedOrder.customOrderDetails?.title ||
-            `Sipariş #${selectedOrder.orderNumber}`
-          }
-          userRole="buyer"
           isOpen={disputeModalOpen}
           onClose={() => {
             setDisputeModalOpen(false);
             setSelectedOrder(null);
           }}
+          orderId={selectedOrder.id}
+          orderNumber={selectedOrder.orderNumber}
           onSuccess={handleModalSuccess}
         />
       )}

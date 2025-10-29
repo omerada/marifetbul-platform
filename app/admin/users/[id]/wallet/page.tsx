@@ -45,9 +45,7 @@ export default function AdminUserWalletPage({ params }: Props) {
         ]);
         setWallet(walletData);
         // Map transactions to compatible format
-        setTransactions(
-          transactionsData.content as Array<Record<string, unknown>>
-        );
+        setTransactions(transactionsData.content as any);
       } catch (err) {
         console.error('Failed to fetch user wallet:', err);
         setError('Kullanıcı cüzdan bilgileri yüklenemedi');
