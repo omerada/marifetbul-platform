@@ -805,14 +805,25 @@ test.describe('Review System - Complete E2E Tests', () => {
   // ================================
 
   test.describe('US-2.1: Package Reviews Display & Voting (Story 4.2)', () => {
+    /**
+     * FUTURE TEST: Package Review Display Integration
+     * Sprint: Future sprint (requires full package detail page implementation)
+     *
+     * Test Coverage Plan:
+     * 1. Navigate to package detail page
+     * 2. Scroll to reviews section
+     * 3. Verify average rating displayed
+     * 4. Verify rating distribution chart
+     * 5. Verify review list with pagination
+     * 6. Verify verified purchase badges
+     *
+     * Prerequisites:
+     * - Package detail page fully implemented
+     * - Review display component integrated
+     * - Rating aggregation service ready
+     */
     test.skip('should display reviews on package detail page', async () => {
-      // TODO: Implement test in future sprint
-      // 1. Navigate to package detail page
-      // 2. Scroll to reviews section
-      // 3. Verify average rating displayed
-      // 4. Verify rating distribution chart
-      // 5. Verify review list with pagination
-      // 6. Verify verified purchase badges
+      // Implementation pending - see test plan above
     });
 
     test('should allow helpful voting on reviews', async ({ page }) => {
@@ -930,12 +941,23 @@ test.describe('Review System - Complete E2E Tests', () => {
       expect(buttonClasses).not.toContain('active');
     });
 
+    /**
+     * FUTURE TEST: Verified Purchase Filter
+     * Sprint: Future sprint (requires verified purchase badge implementation)
+     *
+     * Test Coverage Plan:
+     * 1. Navigate to package reviews
+     * 2. Click "Verified Only" filter
+     * 3. Verify only verified reviews displayed
+     * 4. Verify all have verified badge
+     *
+     * Prerequisites:
+     * - Verified purchase badge system implemented
+     * - Filter component integrated
+     * - Backend API support for verified filter
+     */
     test.skip('should filter reviews by verified purchases only', async () => {
-      // TODO: Implement test in future sprint
-      // 1. Navigate to package reviews
-      // 2. Click "Verified Only" filter
-      // 3. Verify only verified reviews displayed
-      // 4. Verify all have verified badge
+      // Implementation pending - see test plan above
     });
   });
 
@@ -1458,12 +1480,23 @@ test.describe('Review System - Complete E2E Tests', () => {
       }
     });
 
+    /**
+     * FUTURE TEST: Auto-flag Review System
+     * Sprint: Future sprint (requires multi-user simulation)
+     *
+     * Test Coverage Plan:
+     * 1. Simulate 3 different users flagging same review
+     * 2. Verify review status changes to FLAGGED
+     * 3. Verify admin receives notification
+     * 4. Verify review appears in flagged tab
+     *
+     * Prerequisites:
+     * - Multi-user session management in E2E tests
+     * - Flag threshold system implemented
+     * - Admin notification system ready
+     */
     test.skip('should auto-flag review at 3 reports', async () => {
-      // TODO: Implement test in future sprint - requires multiple user simulation
-      // 1. Simulate 3 different users flagging same review
-      // 2. Verify review status changes to FLAGGED
-      // 3. Verify admin receives notification
-      // 4. Verify review appears in flagged tab
+      // Implementation pending - see test plan above
     });
   });
 
@@ -1472,49 +1505,99 @@ test.describe('Review System - Complete E2E Tests', () => {
   // ================================
 
   test.describe('US-4.1: Order Completion Review Reminder', () => {
+    /**
+     * FUTURE TEST: Order Completion Review Reminder
+     * Sprint: Future sprint (requires order flow completion)
+     *
+     * Test Coverage Plan:
+     * 1. Complete an order as buyer
+     * 2. Verify notification appears
+     * 3. Verify "Write Review" CTA present
+     * 4. Click CTA
+     * 5. Verify review modal opens with order details
+     *
+     * Prerequisites:
+     * - Order completion flow fully implemented
+     * - Real-time notification system ready
+     */
     test.skip('should trigger review reminder on order completion', async () => {
-      // TODO: Implement test in future sprint
-      // 1. Complete an order as buyer
-      // 2. Verify notification appears
-      // 3. Verify "Write Review" CTA present
-      // 4. Click CTA
-      // 5. Verify review modal opens with order details
+      // Implementation pending - see test plan above
     });
 
+    /**
+     * FUTURE TEST: 7-Day Reminder Notification
+     * Sprint: Future sprint (requires date/time manipulation)
+     *
+     * Test Coverage Plan:
+     * 1. Complete order
+     * 2. Fast-forward 7 days (mock time)
+     * 3. Run scheduled job
+     * 4. Verify reminder notification sent
+     * 5. Verify notification content correct
+     *
+     * Prerequisites:
+     * - Time mocking utilities in E2E framework
+     * - Scheduled job trigger mechanism
+     */
     test.skip('should send 7-day reminder notification', async () => {
-      // TODO: Implement test (requires date manipulation)
-      // 1. Complete order
-      // 2. Fast-forward 7 days (mock time)
-      // 3. Run scheduled job
-      // 4. Verify reminder notification sent
-      // 5. Verify notification content correct
+      // Implementation pending - see test plan above
     });
 
+    /**
+     * FUTURE TEST: Final Reminder at 23 Days
+     * Sprint: Future sprint (requires date/time manipulation)
+     *
+     * Test Coverage Plan:
+     * 1. Complete order
+     * 2. Fast-forward 23 days (mock time)
+     * 3. Run scheduled job
+     * 4. Verify final reminder sent
+     * 5. Verify urgency message present
+     *
+     * Prerequisites:
+     * - Time mocking utilities
+     * - Scheduled job execution
+     */
     test.skip('should send final reminder at 23 days', async () => {
-      // TODO: Implement test (requires date manipulation)
-      // 1. Complete order
-      // 2. Fast-forward 23 days (mock time)
-      // 3. Run scheduled job
-      // 4. Verify final reminder sent
-      // 5. Verify urgency message present
+      // Implementation pending - see test plan above
     });
 
+    /**
+     * FUTURE TEST: Stop Reminders After Review
+     * Sprint: Future sprint
+     *
+     * Test Coverage Plan:
+     * 1. Complete order
+     * 2. Submit review
+     * 3. Fast-forward 7 days
+     * 4. Run scheduled job
+     * 5. Verify no reminder sent
+     *
+     * Prerequisites:
+     * - Review submission triggers reminder cancellation
+     * - Notification history tracking
+     */
     test.skip('should stop reminders after review submitted', async () => {
-      // TODO: Implement test
-      // 1. Complete order
-      // 2. Submit review
-      // 3. Fast-forward 7 days
-      // 4. Run scheduled job
-      // 5. Verify no reminder sent
+      // Implementation pending - see test plan above
     });
 
+    /**
+     * FUTURE TEST: 30-Day Review Deadline
+     * Sprint: Future sprint (requires date/time manipulation)
+     *
+     * Test Coverage Plan:
+     * 1. Complete order
+     * 2. Fast-forward 31 days
+     * 3. Attempt to write review
+     * 4. Verify error message "Review period expired"
+     * 5. Verify review form disabled
+     *
+     * Prerequisites:
+     * - Time-based review eligibility validation
+     * - Expired review state UI
+     */
     test.skip('should enforce 30-day review deadline', async () => {
-      // TODO: Implement test (requires date manipulation)
-      // 1. Complete order
-      // 2. Fast-forward 31 days
-      // 3. Attempt to write review
-      // 4. Verify error message "Review period expired"
-      // 5. Verify review form disabled
+      // Implementation pending - see test plan above
     });
   });
 
@@ -1704,13 +1787,23 @@ test.describe('Review System - Complete E2E Tests', () => {
       }
     });
 
+    /**
+     * FUTURE TEST: Reviewer Rejection Notification
+     * Sprint: Future sprint
+     *
+     * Test Coverage Plan:
+     * 1. Login as admin, reject review
+     * 2. Enter rejection reason
+     * 3. Logout, login as reviewer
+     * 4. Verify rejection notification
+     * 5. Verify reason displayed
+     *
+     * Prerequisites:
+     * - Review rejection with reason system implemented
+     * - Notification content includes rejection details
+     */
     test.skip('should notify reviewer of rejection with reason', async () => {
-      // TODO: Implement test in future sprint
-      // 1. Login as admin, reject review
-      // 2. Enter rejection reason
-      // 3. Logout, login as reviewer
-      // 4. Verify rejection notification
-      // 5. Verify reason displayed
+      // Implementation pending - see test plan above
     });
 
     test('should notify admins of flagged review', async ({ page }) => {
@@ -1765,11 +1858,22 @@ test.describe('Review System - Complete E2E Tests', () => {
   // ================================
 
   test.describe('Performance & Load Tests', () => {
+    /**
+     * FUTURE TEST: Package Reviews Page Load Performance
+     * Sprint: Future sprint
+     *
+     * Test Coverage Plan:
+     * 1. Navigate to package with 100+ reviews
+     * 2. Measure page load time
+     * 3. Verify load time < 2000ms
+     *
+     * Prerequisites:
+     * - Performance measurement utilities
+     * - Test data with sufficient review volume
+     * - Baseline performance metrics established
+     */
     test.skip('should load package reviews page within 2 seconds', async () => {
-      // TODO: Implement test in future sprint
-      // 1. Navigate to package with 100+ reviews
-      // 2. Measure page load time
-      // 3. Verify load time < 2000ms
+      // Implementation pending - see test plan above
     });
 
     test('should handle pagination efficiently', async ({ page }) => {
@@ -1915,11 +2019,22 @@ test.describe('Review System - Complete E2E Tests', () => {
       expect(starAriaLabel).toBeTruthy();
     });
 
+    /**
+     * FUTURE TEST: Screen Reader Compatibility
+     * Sprint: Future sprint (requires screen reader simulation)
+     *
+     * Test Coverage Plan:
+     * 1. Enable screen reader simulation
+     * 2. Navigate through review form
+     * 3. Verify all content announced correctly
+     *
+     * Prerequisites:
+     * - Screen reader simulation library integration
+     * - ARIA attributes fully implemented
+     * - Accessibility audit tools configured
+     */
     test.skip('should work with screen readers', async () => {
-      // TODO: Implement test - requires screen reader simulation
-      // 1. Enable screen reader simulation
-      // 2. Navigate through review form
-      // 3. Verify all content announced correctly
+      // Implementation pending - see test plan above
     });
   });
 
@@ -1928,18 +2043,41 @@ test.describe('Review System - Complete E2E Tests', () => {
   // ================================
 
   test.describe('Mobile Responsiveness', () => {
+    /**
+     * FUTURE TEST: Mobile Review Form Display
+     * Sprint: Future sprint
+     *
+     * Test Coverage Plan:
+     * 1. Set viewport to mobile size (375x667)
+     * 2. Open review form
+     * 3. Verify all elements visible
+     * 4. Verify no horizontal scroll
+     * 5. Verify touch-friendly button sizes
+     *
+     * Prerequisites:
+     * - Mobile-responsive review form implementation
+     * - Touch-optimized UI components
+     */
     test.skip('should display review form correctly on mobile', async () => {
-      // TODO: Implement test
-      // 1. Set viewport to mobile size (375x667)
-      // 2. Open review form
-      // 3. Verify all elements visible
-      // 4. Verify no horizontal scroll
-      // 5. Verify touch-friendly button sizes
+      // Implementation pending - see test plan above
     });
 
+    /**
+     * FUTURE TEST: Touch Gestures for Star Rating
+     * Sprint: Future sprint
+     *
+     * Test Coverage Plan:
+     * 1. Set viewport to mobile
+     * 2. Test touch interactions on star rating
+     * 3. Verify swipe gestures work
+     * 4. Verify tap accuracy
+     *
+     * Prerequisites:
+     * - Touch event handling in rating component
+     * - Mobile gesture library integration
+     */
     test.skip('should handle touch gestures for star rating', async () => {
-      // TODO: Implement test
-      // 1. Set viewport to mobile
+      // Implementation pending - see test plan above
       // 2. Open review form
       // 3. Touch star rating
       // 4. Verify rating updates

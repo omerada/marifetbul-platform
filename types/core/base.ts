@@ -1,4 +1,6 @@
 // Core base types for the entire application
+import type { Coordinates } from '../shared/location';
+
 export interface User {
   id: string;
   userId?: string; // Optional for ConversationParticipant compatibility
@@ -132,12 +134,7 @@ export interface PortfolioItem {
   isArchived?: boolean;
 }
 
-// Location types
-export interface Coordinates {
-  latitude: number;
-  longitude: number;
-}
-
+// Location types - Use shared location types
 export interface LocationData {
   id: string;
   name: string;

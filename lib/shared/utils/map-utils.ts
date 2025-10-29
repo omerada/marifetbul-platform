@@ -83,14 +83,10 @@ export class MapUtils {
 
     return {
       northeast: {
-        latitude: maxLat,
-        longitude: maxLng,
         lat: maxLat,
         lng: maxLng,
       },
       southwest: {
-        latitude: minLat,
-        longitude: minLng,
         lat: minLat,
         lng: minLng,
       },

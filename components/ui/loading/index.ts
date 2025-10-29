@@ -35,7 +35,6 @@ export {
   SkeletonButton,
   SkeletonImage,
   SkeletonCard,
-  SkeletonDashboard,
   SkeletonJobDetail,
   SkeletonPage,
   SkeletonGrid,

@@ -139,13 +139,11 @@ export const adminUsersApi = {
   /**
    * Ban user (admin only)
    * POST /api/v1/admin/users/:userId/ban
-   * Note: Backend may use different endpoint, adjust if needed
    */
   async banUser(
     userId: string,
     data: BanUserRequest
   ): Promise<ApiResponse<AdminUserResponse>> {
-    // TODO: Verify actual backend endpoint for ban
     return apiClient.post<ApiResponse<AdminUserResponse>>(
       `/api/v1/admin/users/${userId}/ban`,
       data
@@ -155,10 +153,8 @@ export const adminUsersApi = {
   /**
    * Unban user (admin only)
    * POST /api/v1/admin/users/:userId/unban
-   * Note: Backend may use activate endpoint, adjust if needed
    */
   async unbanUser(userId: string): Promise<ApiResponse<AdminUserResponse>> {
-    // TODO: Verify actual backend endpoint for unban
     return apiClient.post<ApiResponse<AdminUserResponse>>(
       `/api/v1/admin/users/${userId}/unban`
     );

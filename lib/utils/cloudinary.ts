@@ -142,6 +142,12 @@ export async function uploadImage(file: File): Promise<UploadResult> {
  * Delete an image from Cloudinary
  * Requires API key and secret (server-side only)
  */
+/**
+ * Delete an image from Cloudinary via server-side API
+ *
+ * @param publicId - Cloudinary public ID
+ * @returns Promise<boolean> - Success status
+ */
 export async function deleteImage(publicId: string): Promise<boolean> {
   try {
     if (!publicId) {
@@ -149,13 +155,31 @@ export async function deleteImage(publicId: string): Promise<boolean> {
       return false;
     }
 
-    // Note: Image deletion requires server-side API
-    // For now, we'll just log it and return success
-    // In production, create an API route: /api/cloudinary/delete
-    logger.info('Image deletion requested', { publicId });
+    logger.info('Deleting image via server-side API', { publicId });
 
-    // TODO: Implement server-side deletion API
-    // For now, images will remain in Cloudinary (can be cleaned up manually)
+    const API_BASE_URL =
+      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+    const response = await fetch(
+      `${API_BASE_URL}/api/v1/storage/files?storageKey=${encodeURIComponent(publicId)}`,
+      {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      logger.error('Server returned error for image deletion', {
+        status: response.status,
+        publicId,
+      });
+      return false;
+    }
+
+    const result = await response.json();
+    logger.info('Image deleted successfully', { publicId, result });
     return true;
   } catch (error) {
     logger.error('Error deleting image', { error, publicId });

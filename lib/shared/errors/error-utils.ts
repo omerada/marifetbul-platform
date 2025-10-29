@@ -340,10 +340,76 @@ export function logError(
     details: normalized.details,
   });
 
-  // TODO: Send to external logging service (e.g., Sentry, LogRocket)
-  // if (severity === ErrorSeverity.HIGH || severity === ErrorSeverity.CRITICAL) {
-  //   sentryLogError(normalized, context);
-  // }
+  // Send to external logging service (Sentry, LogRocket)
+  if (severity === ErrorSeverity.HIGH || severity === ErrorSeverity.CRITICAL) {
+    logToExternalService(normalized, context);
+  }
+}
+
+/**
+ * Log error to external service (Sentry, LogRocket, etc.)
+ */
+function logToExternalService(
+  error: AppError,
+  context?: Record<string, unknown>
+): void {
+  // Sentry integration
+  if (typeof window !== 'undefined') {
+    const windowWithSentry = window as typeof window & {
+      Sentry?: {
+        captureException: (
+          error: Error,
+          options?: Record<string, unknown>
+        ) => void;
+      };
+      LogRocket?: {
+        captureException: (
+          error: Error,
+          options?: Record<string, unknown>
+        ) => void;
+      };
+    };
+
+    // Convert AppError to Error for external services
+    const errorObj = new Error(error.message);
+    errorObj.name = error.code || 'AppError';
+    if ('stack' in error && typeof error.stack === 'string') {
+      errorObj.stack = error.stack;
+    }
+
+    if (windowWithSentry.Sentry) {
+      windowWithSentry.Sentry.captureException(errorObj, {
+        level: 'error',
+        tags: {
+          errorCode: error.code,
+          statusCode: error.statusCode?.toString(),
+        },
+        extra: {
+          ...context,
+          timestamp: error.timestamp,
+        },
+      });
+    }
+
+    // LogRocket integration (optional)
+    if (windowWithSentry.LogRocket) {
+      windowWithSentry.LogRocket.captureException(errorObj, {
+        tags: {
+          errorCode: error.code,
+        },
+        extra: context,
+      });
+    }
+  }
+
+  // Fallback to console in development
+  if (process.env.NODE_ENV === 'development') {
+    console.error('[External Logging]', {
+      error: error.message,
+      code: error.code,
+      context,
+    });
+  }
 }
 
 /**

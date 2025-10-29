@@ -62,8 +62,6 @@ export const MapView: React.FC<MapViewProps> = ({
 }) => {
   const [mapCenter, setMapCenter] = useState<Coordinates>(
     center || {
-      latitude: 39.9334,
-      longitude: 32.8597,
       lat: 39.9334,
       lng: 32.8597,
     }
@@ -141,8 +139,6 @@ export const MapView: React.FC<MapViewProps> = ({
       setMapZoom(newZoom);
     } else {
       setMapCenter({
-        latitude: 39.9334,
-        longitude: 32.8597,
         lat: 39.9334,
         lng: 32.8597,
       });
@@ -257,15 +253,13 @@ export const MapView: React.FC<MapViewProps> = ({
 
               // Approximate coordinates conversion — real map library will handle projection accurately.
               const lat =
-                mapCenter.latitude +
+                mapCenter.lat +
                 (0.5 - y / rect.height) * 0.01 * Math.pow(2, 15 - mapZoom);
               const lng =
-                mapCenter.longitude +
+                mapCenter.lng +
                 (x / rect.width - 0.5) * 0.01 * Math.pow(2, 15 - mapZoom);
 
               handleMapClick({
-                latitude: lat,
-                longitude: lng,
                 lat: lat,
                 lng: lng,
               });
@@ -276,10 +270,10 @@ export const MapView: React.FC<MapViewProps> = ({
         {/* Markers (real map library will render via its API) */}
         {markers.map((marker) => {
           const offsetX =
-            ((marker.coordinates.longitude - mapCenter.longitude) * 500) /
+            ((marker.coordinates.lng - mapCenter.lng) * 500) /
             Math.pow(2, 15 - mapZoom);
           const offsetY =
-            (-(marker.coordinates.latitude - mapCenter.latitude) * 500) /
+            (-(marker.coordinates.lat - mapCenter.lat) * 500) /
             Math.pow(2, 15 - mapZoom);
 
           return (
@@ -306,8 +300,8 @@ export const MapView: React.FC<MapViewProps> = ({
           <div
             className="absolute z-10 -translate-x-1/2 -translate-y-1/2 transform"
             style={{
-              left: `calc(50% + ${((userLocation.longitude - mapCenter.longitude) * 500) / Math.pow(2, 15 - mapZoom)}px)`,
-              top: `calc(50% - ${((userLocation.latitude - mapCenter.latitude) * 500) / Math.pow(2, 15 - mapZoom)}px)`,
+              left: `calc(50% + ${((userLocation.lng - mapCenter.lng) * 500) / Math.pow(2, 15 - mapZoom)}px)`,
+              top: `calc(50% - ${((userLocation.lat - mapCenter.lat) * 500) / Math.pow(2, 15 - mapZoom)}px)`,
             }}
           >
             <div className="relative">
@@ -402,8 +396,7 @@ export const MapView: React.FC<MapViewProps> = ({
       <div className="bg-opacity-90 absolute bottom-4 left-4 z-20 rounded-lg bg-white p-2 text-xs text-gray-600">
         <div>Zoom: {mapZoom}</div>
         <div>
-          Center: {mapCenter.latitude.toFixed(4)},{' '}
-          {mapCenter.longitude.toFixed(4)}
+          Center: {mapCenter.lat.toFixed(4)}, {mapCenter.lng.toFixed(4)}
         </div>
         {markers.length > 0 && <div>Markers: {markers.length}</div>}
       </div>
@@ -426,8 +419,8 @@ export const MapView: React.FC<MapViewProps> = ({
                   </p>
                 )}
                 <p className="mt-1 text-xs text-gray-500">
-                  {selectedMarker.coordinates.latitude.toFixed(4)},{' '}
-                  {selectedMarker.coordinates.longitude.toFixed(4)}
+                  {selectedMarker.coordinates.lat.toFixed(4)},{' '}
+                  {selectedMarker.coordinates.lng.toFixed(4)}
                 </p>
               </div>
               <Button

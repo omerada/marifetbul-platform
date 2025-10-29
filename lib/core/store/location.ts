@@ -100,8 +100,6 @@ export const useLocationStore = create<LocationStore>()(
           );
 
           const coordinates: Coordinates = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
@@ -114,7 +112,7 @@ export const useLocationStore = create<LocationStore>()(
           });
 
           // Optionally geocode to get location details
-          await get().geocode({ coordinates });
+          await get().geocode({ address: 'current' });
         } catch (error) {
           let errorMessage = 'Konum bilgisi alınamadı';
           let permissionStatus: 'granted' | 'denied' | 'prompt' | 'unknown' =

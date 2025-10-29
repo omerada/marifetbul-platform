@@ -23,7 +23,8 @@ interface Props {
 export default function AdminUserOrdersPage({ params }: Props) {
   const router = useRouter();
   const [userId, setUserId] = useState<string>('');
-  const [orders, setOrders] = useState<OrderSummaryResponse[]>([]);
+  const [buyerOrders, setBuyerOrders] = useState<OrderSummaryResponse[]>([]);
+  const [sellerOrders, setSellerOrders] = useState<OrderSummaryResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'buyer' | 'seller'>('all');
@@ -39,40 +40,46 @@ export default function AdminUserOrdersPage({ params }: Props) {
       setIsLoading(true);
       setError(null);
       try {
-        // Use type-safe API client
-        // TODO: Create dedicated admin endpoint /api/v1/admin/users/{userId}/orders in backend
-        // For now, using orders endpoint with userId filter
-        const params: Record<string, string> = {
-          userId, // Backend should filter by userId
+        // Use admin endpoint for user orders
+        const response = await apiClient.get<
+          ApiResponse<{
+            buyerOrders: PageResponse<OrderSummaryResponse>;
+            sellerOrders: PageResponse<OrderSummaryResponse>;
+          }>
+        >(`/api/v1/admin/orders/user/${userId}`, {
           page: '0',
           size: '100',
-        };
-
-        // Add role filter if not 'all'
-        if (filter !== 'all') {
-          params.role = filter; // 'buyer' or 'seller'
-        }
-
-        const response = await apiClient.get<
-          ApiResponse<PageResponse<OrderSummaryResponse>>
-        >(`/api/v1/orders`, params);
+        });
 
         if (!response.success || !response.data) {
           throw new Error(response.message || 'Failed to fetch orders');
         }
 
-        setOrders(response.data.content || []);
+        // Combine buyer and seller orders based on filter
+        setBuyerOrders(response.data.buyerOrders.content || []);
+        setSellerOrders(response.data.sellerOrders.content || []);
       } catch (err) {
         console.error('Failed to fetch user orders:', err);
         setError('Kullanıcı siparişleri yüklenemedi');
-        setOrders([]);
+        setBuyerOrders([]);
+        setSellerOrders([]);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchOrders();
-  }, [userId, filter]); // Re-fetch when filter changes
+  }, [userId]); // Fetch all orders on mount
+
+  // Filter orders based on selected role
+  const filteredOrders =
+    filter === 'all'
+      ? [...buyerOrders, ...sellerOrders]
+      : filter === 'buyer'
+        ? buyerOrders
+        : sellerOrders;
+
+  const totalOrders = buyerOrders.length + sellerOrders.length;
 
   const getStatusBadge = (status: string) => {
     const variants: Record<
@@ -172,15 +179,10 @@ export default function AdminUserOrdersPage({ params }: Props) {
     );
   }
 
-  // Filter orders by buyer/seller role
-  // Note: Backend returns orders filtered by userId parameter
-  // Filter state is kept for UI consistency but backend does the heavy lifting
-  const filteredOrders =
-    filter === 'all'
-      ? orders
-      : filter === 'buyer'
-        ? orders // Backend returns buyer orders when role specified
-        : orders; // Backend returns seller orders when role specified
+  // Note: Backend already fetches both buyer and seller orders separately
+  // We just need to filter them on the frontend based on user selection
+  // Since backend endpoint returns buyerOrders and sellerOrders separately,
+  // we need to re-fetch when filter changes to get the correct subset
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8">
@@ -207,21 +209,21 @@ export default function AdminUserOrdersPage({ params }: Props) {
               size="sm"
               onClick={() => setFilter('all')}
             >
-              Tümü ({orders.length})
+              Tümü ({totalOrders})
             </Button>
             <Button
               variant={filter === 'buyer' ? 'primary' : 'outline'}
               size="sm"
               onClick={() => setFilter('buyer')}
             >
-              Alıcı Olarak
+              Alıcı ({buyerOrders.length})
             </Button>
             <Button
               variant={filter === 'seller' ? 'primary' : 'outline'}
               size="sm"
               onClick={() => setFilter('seller')}
             >
-              Satıcı Olarak
+              Satıcı ({sellerOrders.length})
             </Button>
           </div>
         </div>

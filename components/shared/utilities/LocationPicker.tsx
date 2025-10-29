@@ -265,8 +265,8 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
                 <div className="text-center">
                   <MapPin className="mx-auto mb-2 h-8 w-8 text-red-500" />
                   <p className="text-sm text-gray-600">
-                    {selectedLocation.latitude.toFixed(4)},{' '}
-                    {selectedLocation.longitude.toFixed(4)}
+                    {selectedLocation.lat.toFixed(4)},{' '}
+                    {selectedLocation.lng.toFixed(4)}
                   </p>
                   <p className="mt-1 text-xs text-gray-500">
                     {searchQuery || 'Seçilen konum'}

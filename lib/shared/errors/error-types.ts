@@ -13,6 +13,7 @@
  * Base application error interface
  */
 export interface AppError {
+  category: ErrorCategory;
   /** Error code for identification */
   code: string;
   /** User-friendly error message */

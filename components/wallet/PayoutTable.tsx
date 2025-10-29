@@ -57,6 +57,11 @@ export function PayoutTable({
         icon: <Clock className="h-3 w-3" />,
         label: 'Bekliyor',
       },
+      APPROVED: {
+        variant: 'secondary',
+        icon: <CheckCircle2 className="h-3 w-3" />,
+        label: 'Onaylandı',
+      },
       PROCESSING: {
         variant: 'secondary',
         icon: <Loader2 className="h-3 w-3 animate-spin" />,
