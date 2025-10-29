@@ -66,7 +66,8 @@ export function PackageListContainer() {
         params.search = searchQuery;
       }
 
-      const response = await packageApi.getUserPackages(page, 20, sortBy);
+      // getUserPackages accepts (page, limit) - sortBy handled by backend default
+      const response = await packageApi.getUserPackages(page, 20);
       setPackages(response.data);
       setTotalPages(response.pagination?.totalPages || 1);
 

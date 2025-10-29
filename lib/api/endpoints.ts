@@ -724,6 +724,11 @@ export const BLOG_ENDPOINTS = {
   SPAM_COMMENT: (commentId: string | number) =>
     `/blog/admin/comments/${commentId}/spam`,
 
+  // Bulk Comment Actions (Sprint 1 - EPIC 2)
+  BULK_APPROVE_COMMENTS: '/blog/admin/comments/bulk/approve',
+  BULK_REJECT_COMMENTS: '/blog/admin/comments/bulk/reject',
+  BULK_SPAM_COMMENTS: '/blog/admin/comments/bulk/spam',
+
   // Comment Reports (Future)
   REPORT_COMMENT: (commentId: string | number) =>
     `/blog/comments/${commentId}/report`,

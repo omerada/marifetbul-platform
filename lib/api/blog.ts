@@ -22,6 +22,10 @@ import type {
   BlogCategory as ValidatedBlogCategory,
   BlogComment as ValidatedBlogComment,
 } from './validators';
+import type {
+  BulkCommentActionResponse,
+  FailedCommentAction,
+} from '@/types/blog';
 
 // ================================================
 // TYPE DEFINITIONS
@@ -625,6 +629,57 @@ export async function markCommentAsSpam(
 ): Promise<BlogComment> {
   return apiClient.post(BLOG_ENDPOINTS.SPAM_COMMENT(commentId), {});
 }
+
+// ================================================
+// BULK COMMENT MODERATION (Sprint 1 - EPIC 2)
+// ================================================
+
+/**
+ * Bulk approve multiple comments
+ * @param commentIds Array of comment IDs to approve
+ * @returns Response with success/failure details
+ */
+export async function bulkApproveComments(
+  commentIds: number[]
+): Promise<BulkCommentActionResponse> {
+  return apiClient.post(BLOG_ENDPOINTS.BULK_APPROVE_COMMENTS, { commentIds });
+}
+
+/**
+ * Bulk reject multiple comments
+ * @param commentIds Array of comment IDs to reject
+ * @param reason Optional rejection reason
+ * @returns Response with success/failure details
+ */
+export async function bulkRejectComments(
+  commentIds: number[],
+  reason?: string
+): Promise<BulkCommentActionResponse> {
+  return apiClient.post(BLOG_ENDPOINTS.BULK_REJECT_COMMENTS, {
+    commentIds,
+    reason,
+  });
+}
+
+/**
+ * Bulk mark multiple comments as spam
+ * @param commentIds Array of comment IDs to mark as spam
+ * @returns Response with success/failure details
+ */
+export async function bulkMarkAsSpam(
+  commentIds: number[]
+): Promise<BulkCommentActionResponse> {
+  return apiClient.post(BLOG_ENDPOINTS.BULK_SPAM_COMMENTS, { commentIds });
+}
+
+// ================================================
+// TYPE RE-EXPORTS
+// ================================================
+
+export type {
+  BulkCommentActionResponse,
+  FailedCommentAction,
+} from '@/types/blog';
 
 /**
  * Get pending comments (admin only)

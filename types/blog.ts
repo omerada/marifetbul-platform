@@ -1,5 +1,33 @@
 // Blog veri modeli ve tipleri
 
+// ================================================
+// BULK COMMENT ACTIONS (Sprint 1 - EPIC 2)
+// ================================================
+
+export interface BulkCommentActionRequest {
+  commentIds: number[];
+  reason?: string; // For reject/spam actions
+}
+
+export interface BulkCommentActionResponse {
+  totalProcessed: number;
+  successCount: number;
+  failureCount: number;
+  successfulIds: number[];
+  failures: FailedCommentAction[];
+  action: 'APPROVE' | 'REJECT' | 'SPAM';
+}
+
+export interface FailedCommentAction {
+  commentId: number;
+  errorMessage: string;
+  errorCode: string;
+}
+
+// ================================================
+// CORE BLOG TYPES
+// ================================================
+
 export interface BlogCategory {
   id: string;
   name: string;

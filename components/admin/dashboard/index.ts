@@ -1,24 +1,34 @@
 /**
  * ================================================
- * ADMIN DASHBOARD COMPONENTS
+ * ADMIN DASHBOARD COMPONENTS - DEPRECATED
  * ================================================
- * Export all dashboard-related components
+ * @deprecated This directory is deprecated. Use @/components/domains/admin/dashboard/comments instead.
+ * These re-exports are maintained for backward compatibility only.
+ * All new code should import from the canonical location.
+ *
+ * Migration Path:
+ * OLD: import { RecentCommentsPreview } from '@/components/admin/dashboard'
+ * NEW: import { RecentCommentsPreview } from '@/components/domains/admin/dashboard/comments'
  */
 
-export { PendingCommentsWidget } from './PendingCommentsWidget';
-export { CommentModerationStats } from './CommentModerationStats';
-export { RecentCommentsPreview } from './RecentCommentsPreview';
+// Re-export from canonical location (domains/admin/dashboard/comments)
+export {
+  PendingCommentsWidget,
+  CommentModerationStats,
+  RecentCommentsPreview,
+} from '@/components/domains/admin/dashboard/comments';
+
+// CommentModerationSummary stays here (not duplicated)
 export { CommentModerationSummary } from './CommentModerationSummary';
+
+// SearchAnalyticsWidget stays here (not duplicated)
 export { SearchAnalyticsWidget } from './SearchAnalyticsWidget';
 
+// Re-export types
 export type {
   PendingCommentsSummary,
   PendingCommentsWidgetProps,
-} from './PendingCommentsWidget';
-
-export type {
   CommentModerationStatsData,
   CommentModerationStatsProps,
-} from './CommentModerationStats';
-
-export type { RecentCommentsPreviewProps } from './RecentCommentsPreview';
+  RecentCommentsPreviewProps,
+} from '@/components/domains/admin/dashboard/comments';

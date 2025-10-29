@@ -22,6 +22,13 @@ export {
   RecentCommentsSkeleton as ModerationRecentCommentsSkeleton,
 } from './reviews/LoadingSkeletons';
 
+// Sprint 1 - Bulk Action Components (NEW)
+export { BulkActionToolbar, CommentListWithBulkActions } from '.';
+export type {
+  BulkActionToolbarProps,
+  CommentListWithBulkActionsProps,
+} from '.';
+
 // Comment Dashboard Widgets
 export { CommentModerationSummary } from '@/components/admin/dashboard/CommentModerationSummary';
 export { CommentModerationStats } from '../dashboard/comments/CommentModerationStats';
