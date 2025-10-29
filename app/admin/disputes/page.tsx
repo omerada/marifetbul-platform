@@ -10,9 +10,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { getAllDisputes, getDisputeStatistics } from '@/lib/api/disputes';
+import { orderApi } from '@/lib/api/orders';
 import type { DisputeResponse, DisputeStatistics } from '@/types/dispute';
 import DisputeList from '@/components/admin/disputes/DisputeList';
 import DisputeResolutionModal from '@/components/admin/disputes/DisputeResolutionModal';
+import { AdminDisputeDetailModal } from '@/components/admin/disputes/AdminDisputeDetailModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { AlertCircle, Clock, CheckCircle } from 'lucide-react';
 import { useWebSocket } from '@/hooks';
@@ -22,6 +24,8 @@ export default function AdminDisputesPage() {
   const [statistics, setStatistics] = useState<DisputeStatistics | null>(null);
   const [selectedDispute, setSelectedDispute] =
     useState<DisputeResponse | null>(null);
+  const [orderTotalAmount, setOrderTotalAmount] = useState<number>(0);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isResolutionModalOpen, setIsResolutionModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -127,17 +131,25 @@ export default function AdminDisputesPage() {
     const dispute = disputes.find((d) => d.id === disputeId);
     if (dispute) {
       setSelectedDispute(dispute);
-      // TODO: Open dispute detail modal or navigate to detail page
-      toast.info('Geliştirme Aşamasında', {
-        description: 'İtiraz detay sayfası yakında eklenecek.',
-      });
+      setIsDetailModalOpen(true);
     }
   };
 
-  const handleResolveDispute = (disputeId: string) => {
+  const handleResolveDispute = async (disputeId: string) => {
     const dispute = disputes.find((d) => d.id === disputeId);
     if (dispute) {
       setSelectedDispute(dispute);
+
+      // Fetch order total amount
+      try {
+        const orderResponse = await orderApi.getOrderById(dispute.orderId);
+        setOrderTotalAmount(orderResponse.data.totalAmount);
+      } catch (error) {
+        console.error('Failed to fetch order:', error);
+        toast.error('Sipariş bilgileri yüklenemedi');
+        setOrderTotalAmount(0);
+      }
+
       setIsResolutionModalOpen(true);
     }
   };
@@ -229,6 +241,23 @@ export default function AdminDisputesPage() {
         isLoading={isLoading}
       />
 
+      {/* Detail Modal */}
+      {selectedDispute && (
+        <AdminDisputeDetailModal
+          isOpen={isDetailModalOpen}
+          onClose={() => {
+            setIsDetailModalOpen(false);
+            setSelectedDispute(null);
+          }}
+          dispute={selectedDispute}
+          onResolve={(dispute) => {
+            setSelectedDispute(dispute);
+            setIsDetailModalOpen(false);
+            setIsResolutionModalOpen(true);
+          }}
+        />
+      )}
+
       {/* Resolution Modal */}
       {selectedDispute && (
         <DisputeResolutionModal
@@ -236,9 +265,10 @@ export default function AdminDisputesPage() {
           onClose={() => {
             setIsResolutionModalOpen(false);
             setSelectedDispute(null);
+            setOrderTotalAmount(0);
           }}
           dispute={selectedDispute}
-          orderTotalAmount={0} // TODO: Fetch order total from order API
+          orderTotalAmount={orderTotalAmount}
           onSuccess={handleResolutionSuccess}
         />
       )}

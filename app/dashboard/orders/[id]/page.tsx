@@ -30,6 +30,7 @@ import {
   DollarSign,
   FileText,
   AlertCircle,
+  Flag,
 } from 'lucide-react';
 import {
   OrderWorkflowStepper,
@@ -42,6 +43,9 @@ import { enrichOrder, type OrderWithComputed } from '@/types/backend-aligned';
 import { useWebSocket } from '@/hooks';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { getDisputeByOrderId } from '@/lib/api/disputes';
+import type { DisputeResponse } from '@/types/dispute';
+import { DisputeCreationModal } from '@/components/domains/disputes/DisputeCreationModal';
 
 // ================================================
 // HELPER FUNCTIONS
@@ -78,6 +82,8 @@ export default function OrderDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<'buyer' | 'seller'>('buyer');
+  const [dispute, setDispute] = useState<DisputeResponse | null>(null);
+  const [showDisputeModal, setShowDisputeModal] = useState(false);
 
   // WebSocket for real-time updates
   const socket = useWebSocket();
@@ -114,6 +120,25 @@ export default function OrderDetailPage() {
     loadOrder();
   }, [loadOrder]);
 
+  // Load dispute information if order is in disputed status
+  const loadDispute = useCallback(async () => {
+    if (!orderId || !order || order.status !== 'DISPUTED') return;
+
+    try {
+      const disputeData = await getDisputeByOrderId(orderId);
+      setDispute(disputeData);
+    } catch (_err) {
+      // No dispute found is OK - user might be about to create one
+      console.info('No dispute found for order:', orderId);
+    }
+  }, [orderId, order]);
+
+  useEffect(() => {
+    if (order?.status === 'DISPUTED') {
+      loadDispute();
+    }
+  }, [order?.status, loadDispute]);
+
   // Handle dispute events from WebSocket
   const handleDisputeEvent = useCallback(
     (payload: {
@@ -138,6 +163,9 @@ export default function OrderDetailPage() {
             status: 'DISPUTED',
           });
         }
+
+        // Reload dispute information
+        loadDispute();
       } else if (payload.type === 'DISPUTE_RESOLVED') {
         toast.success('İhtilaf Çözüldü', {
           description: `Sipariş #${payload.orderNumber} için ihtilaf çözüldü. Sipariş durumu: ${payload.status}`,
@@ -151,9 +179,12 @@ export default function OrderDetailPage() {
             status: payload.status as typeof order.status,
           });
         }
+
+        // Clear dispute information
+        setDispute(null);
       }
     },
-    [order]
+    [order, loadDispute]
   );
 
   // Real-time WebSocket updates
@@ -218,6 +249,39 @@ export default function OrderDetailPage() {
     setOrder(enrichOrder(data));
   };
 
+  // Check if user can raise a dispute
+  const canRaiseDispute = useCallback(() => {
+    if (!order) return false;
+
+    // Cannot raise dispute if already disputed
+    if (order.status === 'DISPUTED') return false;
+
+    // Can only raise dispute for certain statuses
+    const allowedStatuses = [
+      'IN_PROGRESS',
+      'IN_REVIEW',
+      'DELIVERED',
+      'COMPLETED',
+    ];
+    return allowedStatuses.includes(order.status);
+  }, [order]);
+
+  // Handle dispute button click
+  const handleDisputeClick = () => {
+    setShowDisputeModal(true);
+  };
+
+  // Handle dispute creation success
+  const handleDisputeCreated = () => {
+    toast.success('İtiraz Açıldı', {
+      description:
+        'İtirazınız başarıyla oluşturuldu. Yönetim ekibi inceleyecektir.',
+    });
+    setShowDisputeModal(false);
+    // Reload order to get updated status
+    loadOrder();
+  };
+
   // Loading state
   if (isLoading) {
     return (
@@ -277,6 +341,25 @@ export default function OrderDetailPage() {
               )}
             </div>
           </div>
+
+          {/* Dispute Actions */}
+          <div className="flex items-center gap-3">
+            {order.status === 'DISPUTED' && dispute && (
+              <Button
+                variant="outline"
+                onClick={() => router.push(`/disputes/${dispute.id}`)}
+              >
+                <AlertCircle className="mr-2 h-4 w-4" />
+                İtiraz Detayı
+              </Button>
+            )}
+            {canRaiseDispute() && (
+              <Button variant="destructive" onClick={handleDisputeClick}>
+                <Flag className="mr-2 h-4 w-4" />
+                İtiraz Aç
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -299,6 +382,82 @@ export default function OrderDetailPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Content - 2 columns */}
         <div className="space-y-6 lg:col-span-2">
+          {/* Dispute Information - Show if disputed */}
+          {order.status === 'DISPUTED' && dispute && (
+            <Card className="border-2 border-yellow-300 bg-yellow-50 p-6">
+              <div className="mb-4 flex items-start justify-between">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-200">
+                    <AlertCircle className="h-5 w-5 text-yellow-700" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-yellow-900">
+                      İtiraz Durumu
+                    </h2>
+                    <p className="text-sm text-yellow-700">
+                      Bu sipariş için bir itiraz açılmıştır
+                    </p>
+                  </div>
+                </div>
+                <Badge variant="warning" size="md">
+                  {dispute.status}
+                </Badge>
+              </div>
+
+              <div className="space-y-3 border-t border-yellow-200 pt-4">
+                <div>
+                  <label className="text-sm font-medium text-yellow-800">
+                    İtiraz Nedeni
+                  </label>
+                  <p className="text-yellow-900">
+                    {dispute.reasonDisplayName || dispute.reason}
+                  </p>
+                </div>
+
+                {dispute.description && (
+                  <div>
+                    <label className="text-sm font-medium text-yellow-800">
+                      Açıklama
+                    </label>
+                    <p className="text-sm text-yellow-900">
+                      {dispute.description}
+                    </p>
+                  </div>
+                )}
+
+                <div>
+                  <label className="text-sm font-medium text-yellow-800">
+                    Oluşturulma Tarihi
+                  </label>
+                  <p className="text-sm text-yellow-900">
+                    {formatDate(dispute.createdAt)}
+                  </p>
+                </div>
+
+                {dispute.resolvedAt && (
+                  <div>
+                    <label className="text-sm font-medium text-yellow-800">
+                      Çözüm Tarihi
+                    </label>
+                    <p className="text-sm text-yellow-900">
+                      {formatDate(dispute.resolvedAt)}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => router.push(`/disputes/${dispute.id}`)}
+                  className="w-full"
+                >
+                  İtiraz Detaylarını Görüntüle
+                </Button>
+              </div>
+            </Card>
+          )}
+
           {/* Order Information */}
           <Card className="p-6">
             <h2 className="mb-4 text-lg font-semibold text-gray-900">
@@ -617,6 +776,17 @@ export default function OrderDetailPage() {
           conversationId={order.id} // Using order ID as conversation ID for now
         />
       </div>
+
+      {/* Dispute Creation Modal - Placeholder */}
+      {showDisputeModal && (
+        <DisputeCreationModal
+          orderId={orderId}
+          orderNumber={order.orderNumber}
+          isOpen={showDisputeModal}
+          onClose={() => setShowDisputeModal(false)}
+          onSuccess={handleDisputeCreated}
+        />
+      )}
     </div>
   );
 }
