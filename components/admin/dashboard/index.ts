@@ -24,6 +24,20 @@ export { CommentModerationSummary } from './CommentModerationSummary';
 // SearchAnalyticsWidget stays here (not duplicated)
 export { SearchAnalyticsWidget } from './SearchAnalyticsWidget';
 
+// Sprint 1: Revenue Analytics Components
+export { RevenueBreakdownWidget } from './RevenueBreakdownWidget';
+export { RevenueForecastChart } from './RevenueForecastChart';
+export { RevenueComparisonWidget } from './RevenueComparisonWidget';
+
+// Sprint 1: Category Analytics Components
+export { CategoryAnalyticsWidget } from './CategoryAnalyticsWidget';
+export { CategoryGrowthTrends } from './CategoryGrowthTrends';
+export { CategoryPerformanceSummary } from './CategoryPerformanceSummary';
+
+// Sprint 1: Package Analytics Components
+export { PackagePerformanceWidget } from './PackagePerformanceWidget';
+export { PackageTrendChart } from './PackageTrendChart';
+
 // Re-export types
 export type {
   PendingCommentsSummary,
