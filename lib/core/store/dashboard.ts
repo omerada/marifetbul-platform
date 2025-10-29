@@ -26,6 +26,7 @@ interface DashboardStore {
   lastRefresh: Date | null;
   refreshInterval: NodeJS.Timeout | null;
   retryCount: number; // Track retry attempts
+  maxRetries: number; // Maximum retry attempts before giving up
 
   // Actions
   fetchDashboard: (
@@ -38,6 +39,13 @@ interface DashboardStore {
   clearError: () => void;
   resetDashboard: () => void;
   retry: () => Promise<void>; // Manual retry action
+
+  // Optimistic updates
+  updateDashboardOptimistic: (
+    updater: (
+      data: FreelancerDashboard | EmployerDashboard
+    ) => FreelancerDashboard | EmployerDashboard
+  ) => void;
 }
 
 const useDashboardStore = create<DashboardStore>((set, get) => ({
@@ -49,6 +57,7 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
   lastRefresh: null,
   refreshInterval: null,
   retryCount: 0,
+  maxRetries: 3, // Maximum 3 retry attempts
 
   // Fetch dashboard data
   fetchDashboard: async (
@@ -138,12 +147,30 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
   // Manual retry action
   retry: async () => {
     const { user } = useAuthStore.getState();
-    const { retryCount } = get();
+    const { retryCount, maxRetries } = get();
+
+    if (retryCount >= maxRetries) {
+      logger.warn('[Dashboard Store] Max retry attempts reached', {
+        retryCount,
+        maxRetries,
+      });
+
+      set({
+        error: {
+          message:
+            'Maksimum deneme sayısına ulaşıldı. Lütfen sayfayı yenileyin.',
+          code: 'MAX_RETRIES_EXCEEDED',
+          timestamp: new Date(),
+        },
+      });
+      return;
+    }
 
     if (user?.userType && user.userType !== 'admin') {
       logger.debug('[Dashboard Store] Retry attempt', {
         userType: user.userType,
         attempt: retryCount + 1,
+        maxRetries,
       });
 
       set({ retryCount: retryCount + 1 });
@@ -206,6 +233,30 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
       refreshInterval: null,
       retryCount: 0,
     });
+  },
+
+  // Optimistic update - Story 1.2
+  updateDashboardOptimistic: (updater) => {
+    const { dashboardData } = get();
+
+    if (!dashboardData) {
+      logger.warn(
+        '[Dashboard Store] Cannot perform optimistic update - no data'
+      );
+      return;
+    }
+
+    logger.debug('[Dashboard Store] Performing optimistic update');
+
+    try {
+      const updatedData = updater(dashboardData);
+      set({ dashboardData: updatedData });
+    } catch (error) {
+      logger.error(
+        '[Dashboard Store] Optimistic update failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
+    }
   },
 }));
 

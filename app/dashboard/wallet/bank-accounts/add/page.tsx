@@ -15,7 +15,7 @@ import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronLeft, Building2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { AddBankAccountModal } from '@/components/dashboard/freelancer/wallet';
+import { AddBankAccountModal } from '@/components/domains/wallet';
 
 // ================================================
 // MAIN COMPONENT (wrapped in Suspense)

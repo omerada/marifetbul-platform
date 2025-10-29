@@ -28,7 +28,7 @@ import {
   OrderListFilters,
   OrderCard,
   OrderCardSkeleton,
-} from '@/components/dashboard/orders';
+} from '@/components/domains/orders';
 import { useWebSocket, useOrderState } from '@/hooks';
 
 // ================================================

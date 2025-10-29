@@ -9,11 +9,11 @@
  * @since Story 1.3 - Wallet Analytics
  */
 
+import { EarningsChart } from '@/components/domains/wallet';
 import {
-  EarningsChart,
   RevenueBreakdown,
   TransactionSummary,
-} from '@/components/dashboard/analytics';
+} from '@/components/domains/analytics';
 
 export default function WalletAnalyticsPage() {
   return (

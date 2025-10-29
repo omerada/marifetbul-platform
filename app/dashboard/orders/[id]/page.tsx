@@ -36,7 +36,7 @@ import {
   OrderWorkflowStepper,
   OrderActions,
   OrderMessagingPanel,
-} from '@/components/dashboard/orders';
+} from '@/components/domains/orders';
 import { orderApi } from '@/lib/api/orders';
 import type { OrderResponse } from '@/types/backend-aligned';
 import { enrichOrder, type OrderWithComputed } from '@/types/backend-aligned';

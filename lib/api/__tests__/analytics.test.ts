@@ -62,13 +62,13 @@ describe('Analytics API Service', () => {
     it('should fetch analytics dashboard data successfully', async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => mockAnalyticsData,
+        json: async () => ({ data: mockAnalyticsData }),
       });
 
       const result = await fetchAnalyticsDashboard('week');
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:8080/api/v1/analytics/dashboard?period=week',
+        'http://localhost:8080/api/v1/dashboard/analytics?period=week',
         {
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
@@ -80,13 +80,13 @@ describe('Analytics API Service', () => {
     it('should use default period when not provided', async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => mockAnalyticsData,
+        json: async () => ({ data: mockAnalyticsData }),
       });
 
       await fetchAnalyticsDashboard();
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:8080/api/v1/analytics/dashboard?period=week',
+        'http://localhost:8080/api/v1/dashboard/analytics?period=week',
         expect.any(Object)
       );
     });
@@ -102,13 +102,13 @@ describe('Analytics API Service', () => {
       for (const period of periods) {
         (global.fetch as jest.Mock).mockResolvedValueOnce({
           ok: true,
-          json: async () => mockAnalyticsData,
+          json: async () => ({ data: mockAnalyticsData }),
         });
 
         await fetchAnalyticsDashboard(period);
 
         expect(global.fetch).toHaveBeenCalledWith(
-          `http://localhost:8080/api/v1/analytics/dashboard?period=${period}`,
+          `http://localhost:8080/api/v1/dashboard/analytics?period=${period}`,
           expect.any(Object)
         );
       }

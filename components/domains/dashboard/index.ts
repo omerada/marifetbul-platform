@@ -3,12 +3,22 @@
 // ================================================
 // All dashboard-related components across user types
 // Includes freelancer, employer, and general dashboard functionality
+//
+// Sprint 1 - Story 1.1: Dashboard Consolidation (2025-10-29)
+// - DashboardClient merged into UnifiedDashboard
+// - All dashboard logic consolidated
+// - Backward compatibility maintained through deprecated exports
 
 // Core Dashboard Components (Unified)
 export { default as UnifiedDashboard } from './UnifiedDashboard';
-export { FreelancerDashboard } from './UnifiedDashboard';
-export { EmployerDashboard } from './UnifiedDashboard';
-export { MobileDashboard } from './UnifiedDashboard';
+
+// Backward Compatibility Exports (will be removed in v7.0)
+export {
+  FreelancerDashboard,
+  EmployerDashboard,
+  MobileDashboard,
+  DashboardClient,
+} from './UnifiedDashboard';
 
 export { DashboardSidebar } from './DashboardSidebar';
 export { DashboardHeader } from './DashboardHeader';

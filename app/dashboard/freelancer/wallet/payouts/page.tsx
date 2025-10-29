@@ -11,7 +11,7 @@
 'use client';
 
 import { useState } from 'react';
-import { PayoutRequestModal } from '@/components/dashboard/freelancer/wallet';
+import { PayoutRequestModal } from '@/components/domains/wallet';
 import { usePayouts } from '@/hooks/business/wallet';
 import {
   DollarSign,

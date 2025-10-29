@@ -14,7 +14,7 @@ import {
   WalletBalanceCard,
   EarningsChart,
   RecentTransactionsWidget,
-} from '@/components/dashboard/freelancer/wallet';
+} from '@/components/domains/wallet';
 import { DollarSign, TrendingUp, ArrowRight, Building2 } from 'lucide-react';
 import Link from 'next/link';
 

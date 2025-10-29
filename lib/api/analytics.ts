@@ -57,14 +57,18 @@ export interface AnalyticsDashboardData {
 
 /**
  * Fetch analytics dashboard data
+ *
  * @param period - Time period: day, week, month, or year
  * @returns Analytics dashboard data
+ *
+ * @since Story 2.1 - Updated to use consolidated dashboard endpoint
+ * @endpoint GET /api/v1/dashboard/analytics?period={period}
  */
 export async function fetchAnalyticsDashboard(
   period: AnalyticsPeriod = 'week'
 ): Promise<AnalyticsDashboardData> {
   const response = await fetch(
-    `${API_BASE_URL}/api/v1/analytics/dashboard?period=${period}`,
+    `${API_BASE_URL}/api/v1/dashboard/analytics?period=${period}`,
     {
       credentials: 'include', // Include httpOnly cookies for authentication
       headers: {
@@ -77,7 +81,9 @@ export async function fetchAnalyticsDashboard(
     throw new Error(`Failed to fetch analytics: ${response.statusText}`);
   }
 
-  return response.json();
+  // Extract data from ApiResponse wrapper
+  const apiResponse = await response.json();
+  return apiResponse.data || apiResponse;
 }
 
 /**

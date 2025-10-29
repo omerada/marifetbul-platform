@@ -14,7 +14,7 @@ import { useState } from 'react';
 import {
   TransactionFilters,
   TransactionList,
-} from '@/components/dashboard/freelancer/wallet';
+} from '@/components/domains/wallet';
 import { useTransactions } from '@/hooks/business/wallet';
 import { Receipt, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';

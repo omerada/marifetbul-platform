@@ -546,56 +546,6 @@ export const DASHBOARD_ENDPOINTS = {
   EARNINGS_TREND: '/dashboard/analytics/earnings-trend',
   REVENUE_BREAKDOWN: '/dashboard/analytics/revenue-breakdown',
   TRANSACTION_SUMMARY: '/dashboard/analytics/transaction-summary',
-
-  // ================================================
-  // LEGACY ENDPOINTS (Deprecated - Keep for backward compatibility)
-  // TODO: Remove after frontend migration to role-specific endpoints
-  // ================================================
-
-  /**
-   * @deprecated Use SELLER_DASHBOARD or BUYER_DASHBOARD instead
-   */
-  GET_OVERVIEW: '/dashboard/overview',
-
-  /**
-   * @deprecated Use role-specific dashboard endpoints
-   */
-  GET_STATS: '/dashboard/stats',
-
-  /**
-   * @deprecated Use EARNINGS_TREND endpoint instead
-   */
-  GET_EARNINGS: '/dashboard/earnings',
-
-  /**
-   * @deprecated Use role-specific dashboard data
-   */
-  GET_ORDERS_STATS: '/dashboard/orders/stats',
-
-  /**
-   * @deprecated Use role-specific dashboard data
-   */
-  GET_PACKAGES_STATS: '/dashboard/packages/stats',
-
-  /**
-   * @deprecated Use FREELANCER_ACTIVITIES or EMPLOYER_ACTIVITIES
-   */
-  GET_RECENT_ACTIVITY: '/dashboard/activity/recent',
-
-  /**
-   * @deprecated Use notification endpoints instead
-   */
-  GET_NOTIFICATIONS: '/dashboard/notifications',
-
-  /**
-   * @deprecated Use EARNINGS_TREND or REVENUE_BREAKDOWN
-   */
-  GET_PERFORMANCE: '/dashboard/analytics/performance',
-
-  /**
-   * @deprecated Use REVENUE_BREAKDOWN endpoint instead
-   */
-  GET_REVENUE: '/dashboard/analytics/revenue',
 } as const;
 
 // ================================================
