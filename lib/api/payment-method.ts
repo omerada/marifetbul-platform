@@ -10,6 +10,10 @@
 
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { z } from 'zod';
+import {
+  formatCardNumber as formatCardNumberUtil,
+  formatIBAN as formatIBANUtil,
+} from '@/lib/shared/formatters';
 
 // ============================================================================
 // TYPES & SCHEMAS
@@ -354,21 +358,18 @@ export function detectCardBrand(cardNumber: string): string | null {
 
 /**
  * Format card number for display
+ * @deprecated Use formatCardNumber from @/lib/shared/formatters instead
  */
 export function formatCardNumber(cardNumber: string): string {
-  const cleanNumber = cardNumber.replace(/\D/g, '');
-  const groups = cleanNumber.match(/.{1,4}/g) || [];
-  return groups.join(' ');
+  return formatCardNumberUtil(cardNumber, false);
 }
 
 /**
  * Mask card number for display
+ * @deprecated Use formatCardNumber(cardNumber, true) from @/lib/shared/formatters instead
  */
 export function maskCardNumber(cardNumber: string): string {
-  const cleanNumber = cardNumber.replace(/\D/g, '');
-  if (cleanNumber.length < 4) return '****';
-  const lastFour = cleanNumber.slice(-4);
-  return `**** **** **** ${lastFour}`;
+  return formatCardNumberUtil(cardNumber, true);
 }
 
 /**
@@ -422,20 +423,18 @@ export function validateIBAN(iban: string): boolean {
 
 /**
  * Format IBAN for display
+ * @deprecated Use formatIBAN from @/lib/shared/formatters instead
  */
 export function formatIBAN(iban: string): string {
-  const cleanIBAN = iban.replace(/\s/g, '');
-  return cleanIBAN.replace(/(.{4})/g, '$1 ').trim();
+  return formatIBANUtil(iban, false);
 }
 
 /**
  * Mask IBAN for display
+ * @deprecated Use formatIBAN(iban, true) from @/lib/shared/formatters instead
  */
 export function maskIBAN(iban: string): string {
-  if (!iban || iban.length < 8) return '****';
-  const cleanIBAN = iban.replace(/\s/g, '');
-  const lastFour = cleanIBAN.slice(-4);
-  return `TR** **** **** **** **** **** ${lastFour}`;
+  return formatIBANUtil(iban, true);
 }
 
 // ============================================================================

@@ -4,43 +4,10 @@
  */
 
 import { PaymentCard, BillingAddress } from '@/types';
+import { formatCurrency, formatCardNumber } from '@/lib/shared/formatters';
 
-// Currency formatting
-export const formatCurrency = (
-  amount: number,
-  currency: 'TRY' | 'USD' | 'EUR' = 'TRY'
-): string => {
-  const currencySymbols = {
-    TRY: '₺',
-    USD: '$',
-    EUR: '€',
-  };
-
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency: currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })
-    .format(amount)
-    .replace(currency, currencySymbols[currency]);
-};
-
-// Card number formatting and validation
-export const formatCardNumber = (cardNumber: string): string => {
-  const cleaned = cardNumber.replace(/\D/g, '');
-  const formatted = cleaned.replace(/(\d{4})(?=\d)/g, '$1 ');
-  return formatted.substring(0, 19); // Max 16 digits + 3 spaces
-};
-
-export const maskCardNumber = (cardNumber: string): string => {
-  const cleaned = cardNumber.replace(/\D/g, '');
-  if (cleaned.length < 4) return cardNumber;
-
-  const last4 = cleaned.slice(-4);
-  const masked = '**** **** **** ' + last4;
-  return masked;
-};
+// Re-export formatters for backwards compatibility
+export { formatCurrency, formatCardNumber };
 
 // Card validation
 export const validateCardNumber = (cardNumber: string): boolean => {

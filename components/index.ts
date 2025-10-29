@@ -74,6 +74,15 @@ export {
 } from './shared';
 
 // ================================================
+// WALLET COMPONENTS
+// ================================================
+// Wallet and financial management components
+
+export { WalletDashboard } from './wallet/WalletDashboard';
+export { WalletCard } from './wallet/WalletCard';
+export { TransactionHistory } from './wallet/TransactionHistory';
+
+// ================================================
 // UI COMPONENTS
 // ================================================
 // Base UI components and design system

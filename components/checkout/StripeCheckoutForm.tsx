@@ -19,6 +19,7 @@
 
 import React, { useState } from 'react';
 import { CardElement } from '@stripe/react-stripe-js';
+import { formatCurrency } from '@/lib/shared/formatters';
 import { useRouter } from 'next/navigation';
 import { usePaymentIntent } from '@/hooks/business/payment/usePaymentIntent';
 import { useStripeCheckout } from '@/hooks/business/payment/useStripeCheckout';
@@ -244,7 +245,7 @@ export function StripeCheckoutForm({
               Toplam Tutar
             </span>
             <span className="text-lg font-bold text-indigo-600">
-              ₺{checkoutSession.amount.toFixed(2)}
+              {formatCurrency(checkoutSession.amount, 'TRY')}
             </span>
           </div>
         </div>
@@ -318,7 +319,7 @@ export function StripeCheckoutForm({
                   d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                 />
               </svg>
-              ₺{checkoutSession.amount.toFixed(2)} Öde
+              {formatCurrency(checkoutSession.amount, 'TRY')} Öde
             </span>
           )}
         </button>

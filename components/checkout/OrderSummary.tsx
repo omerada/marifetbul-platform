@@ -16,7 +16,7 @@
 
 'use client';
 
-import React from 'react';
+import { formatCurrency } from '@/lib/shared/formatters';
 import Image from 'next/image';
 import type { CheckoutSession } from '@/types/business/features/payments';
 
@@ -136,13 +136,13 @@ export function OrderSummary({
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Paket Fiyatı</span>
             <span className="font-medium text-gray-900">
-              ₺{packageData.price.toFixed(2)}
+              {formatCurrency(packageData.price, 'TRY')}
             </span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Hizmet Bedeli (%15)</span>
             <span className="font-medium text-gray-900">
-              ₺{platformFee.toFixed(2)}
+              {formatCurrency(platformFee, 'TRY')}
             </span>
           </div>
         </div>
@@ -153,7 +153,7 @@ export function OrderSummary({
         <div className="flex items-center justify-between">
           <span className="text-lg font-semibold text-gray-900">Toplam</span>
           <span className="text-2xl font-bold text-indigo-600">
-            ₺{total.toFixed(2)}
+            {formatCurrency(total, 'TRY')}
           </span>
         </div>
       </div>

@@ -9,15 +9,17 @@ const createJestConfig = nextJest({
 
 // Add any custom config to be passed to Jest
 const customJestConfig = {
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jsdom',
   moduleNameMapper: {
+    // Mock lucide-react to avoid ESM issues
+    '^lucide-react$': '<rootDir>/__mocks__/lucide-react.tsx',
+    // Path aliases
     '^@/(.*)$': '<rootDir>/$1',
     '^@/components/(.*)$': '<rootDir>/components/$1',
     '^@/lib/(.*)$': '<rootDir>/lib/$1',
     '^@/types/(.*)$': '<rootDir>/types/$1',
     '^@/hooks/(.*)$': '<rootDir>/hooks/$1',
-    // Mock lucide-react to avoid ESM issues
-    '^lucide-react$': '<rootDir>/__mocks__/lucide-react.js',
   },
   testMatch: [
     '**/__tests__/**/*.(ts|tsx|js|jsx)',
@@ -44,7 +46,8 @@ const customJestConfig = {
   },
   coverageReporters: ['text', 'lcov', 'html'],
   transformIgnorePatterns: [
-    'node_modules/(?!(lucide-react|@lucide)/)',
+    // Don't transform anything in node_modules (including lucide-react since it's mocked)
+    'node_modules/',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],

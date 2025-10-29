@@ -16,7 +16,7 @@
  * @version 1.0.0
  */
 
-'use client';
+import { formatCurrency } from '@/lib/shared/formatters';
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -182,7 +182,7 @@ function CheckoutSuccessContent() {
                   Toplam Ödenen
                 </span>
                 <span className="text-2xl font-bold text-indigo-600">
-                  ₺{orderDetails.totalAmount.toFixed(2)}
+                  {formatCurrency(orderDetails.totalAmount, 'TRY')}
                 </span>
               </div>
             </div>
