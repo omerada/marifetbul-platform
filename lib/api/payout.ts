@@ -24,9 +24,8 @@ import {
 
 export interface CreatePayoutRequest {
   amount: number;
-  method: 'BANK_TRANSFER' | 'PAYPAL' | 'STRIPE';
-  bankAccountId?: string;
-  paypalEmail?: string;
+  paymentMethodId: string; // Updated to match backend
+  description?: string; // Added description field
 }
 
 export interface RejectPayoutRequest {
@@ -115,6 +114,7 @@ export async function getPendingPayouts(): Promise<Payout[]> {
  * POST /api/v1/payouts/{id}/cancel
  *
  * @param {string} payoutId - Payout UUID
+ * @param {string} reason - Optional cancellation reason
  * @returns {Promise<Payout>} Cancelled payout
  *
  * @throws {AuthenticationError} Not authenticated
@@ -122,8 +122,15 @@ export async function getPendingPayouts(): Promise<Payout[]> {
  * @throws {NotFoundError} Payout not found
  * @throws {ValidationError} Payout cannot be cancelled (already processed)
  */
-export async function cancelPayout(payoutId: string): Promise<Payout> {
-  const response = await apiClient.post<Payout>(`/payouts/${payoutId}/cancel`);
+export async function cancelPayout(
+  payoutId: string,
+  reason?: string
+): Promise<Payout> {
+  const params = reason ? `?reason=${encodeURIComponent(reason)}` : '';
+  const response = await apiClient.post<Payout>(
+    `/payouts/${payoutId}/cancel${params}`,
+    {}
+  );
   return validateResponse(PayoutSchema, response, 'Payout');
 }
 
@@ -173,8 +180,8 @@ export async function getPayoutLimits(): Promise<{
 // ============================================================================
 
 /**
- * Get pending payouts for admin review
- * GET /api/v1/admin/payouts/pending
+ * Get all pending payouts for admin review
+ * GET /api/v1/payouts/admin/pending
  *
  * @param {number} page - Page number (0-indexed)
  * @param {number} size - Page size
@@ -186,10 +193,10 @@ export async function getPayoutLimits(): Promise<{
  */
 export async function getPendingPayoutsAdmin(
   page: number = 0,
-  size: number = 20
+  size: number = 50
 ): Promise<Payout[]> {
   const response = await apiClient.get<Payout[]>(
-    `/admin/payouts/pending?page=${page}&size=${size}`
+    `/payouts/admin/pending?page=${page}&size=${size}`
   );
 
   return response.map((payout) =>
@@ -198,29 +205,11 @@ export async function getPendingPayoutsAdmin(
 }
 
 /**
- * Process payout (Admin only)
- * POST /api/v1/admin/payouts/{id}/process
- *
- * @param {string} payoutId - Payout UUID
- * @returns {Promise<Payout>} Processed payout
- *
- * @throws {AuthenticationError} Not authenticated
- * @throws {AuthorizationError} Not authorized (admin only)
- * @throws {NotFoundError} Payout not found
- * @throws {ValidationError} Payout cannot be processed
- */
-export async function processPayout(payoutId: string): Promise<Payout> {
-  const response = await apiClient.post<Payout>(
-    `/admin/payouts/${payoutId}/process`
-  );
-  return validateResponse(PayoutSchema, response, 'Payout');
-}
-
-/**
  * Approve payout (Admin only)
- * POST /api/v1/admin/payouts/{id}/approve
+ * POST /api/v1/payouts/{id}/approve
  *
  * @param {string} payoutId - Payout UUID
+ * @param {string} notes - Optional admin notes
  * @returns {Promise<Payout>} Approved payout
  *
  * @throws {AuthenticationError} Not authenticated
@@ -228,9 +217,14 @@ export async function processPayout(payoutId: string): Promise<Payout> {
  * @throws {NotFoundError} Payout not found
  * @throws {ValidationError} Payout cannot be approved
  */
-export async function approvePayout(payoutId: string): Promise<Payout> {
+export async function approvePayout(
+  payoutId: string,
+  notes?: string
+): Promise<Payout> {
+  const params = notes ? `?notes=${encodeURIComponent(notes)}` : '';
   const response = await apiClient.post<Payout>(
-    `/admin/payouts/${payoutId}/approve`
+    `/payouts/${payoutId}/approve${params}`,
+    {}
   );
   return validateResponse(PayoutSchema, response, 'Payout');
 }
@@ -267,7 +261,7 @@ export async function rejectPayout(
  * Check if payout can be cancelled
  */
 export function canCancelPayout(payout: Payout): boolean {
-  return payout.status === 'PENDING';
+  return payout.status === 'PENDING' || payout.status === 'APPROVED';
 }
 
 /**
@@ -283,12 +277,13 @@ export function canApprovePayout(payout: Payout): boolean {
 export function getPayoutStatusColor(status: Payout['status']): string {
   const colors: Record<Payout['status'], string> = {
     PENDING: 'yellow',
+    APPROVED: 'blue',
     PROCESSING: 'blue',
     COMPLETED: 'green',
     FAILED: 'red',
     CANCELLED: 'gray',
   };
-  return colors[status];
+  return colors[status] || 'gray';
 }
 
 /**
@@ -297,12 +292,13 @@ export function getPayoutStatusColor(status: Payout['status']): string {
 export function getPayoutStatusLabel(status: Payout['status']): string {
   const labels: Record<Payout['status'], string> = {
     PENDING: 'Bekliyor',
+    APPROVED: 'Onaylandı',
     PROCESSING: 'İşleniyor',
     COMPLETED: 'Tamamlandı',
     FAILED: 'Başarısız',
     CANCELLED: 'İptal Edildi',
   };
-  return labels[status];
+  return labels[status] || status;
 }
 
 /**
@@ -349,7 +345,6 @@ export const payoutApi = {
 
   // Admin Operations
   getPendingPayoutsAdmin,
-  processPayout,
   approvePayout,
   rejectPayout,
 

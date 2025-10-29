@@ -64,6 +64,11 @@ export interface UpdatePaymentMethodRequest {
   isDefault?: boolean;
 }
 
+export interface AttachStripePaymentMethodRequest {
+  stripePaymentMethodId: string;
+  nickname?: string;
+}
+
 // Schema for validation
 const PaymentMethodSchema = z.object({
   id: z.string().uuid(),
@@ -197,6 +202,40 @@ export async function setPaymentMethodAsDefault(
     {}
   );
   return PaymentMethodSchema.parse(response);
+}
+
+// ============================================================================
+// STRIPE INTEGRATION
+// ============================================================================
+
+/**
+ * Attach Stripe payment method
+ * POST /api/v1/payment-methods/stripe/attach
+ *
+ * @param {AttachStripePaymentMethodRequest} data - Stripe payment method data
+ * @returns {Promise<PaymentMethod>} Created payment method
+ */
+export async function attachStripePaymentMethod(
+  data: AttachStripePaymentMethodRequest
+): Promise<PaymentMethod> {
+  const response = await apiClient.post<PaymentMethod>(
+    '/payment-methods/stripe/attach',
+    data
+  );
+  return PaymentMethodSchema.parse(response);
+}
+
+/**
+ * Detach Stripe payment method
+ * DELETE /api/v1/payment-methods/stripe/{id}
+ *
+ * @param {string} paymentMethodId - Payment method UUID
+ * @returns {Promise<void>}
+ */
+export async function detachStripePaymentMethod(
+  paymentMethodId: string
+): Promise<void> {
+  await apiClient.delete(`/payment-methods/stripe/${paymentMethodId}`);
 }
 
 // ============================================================================

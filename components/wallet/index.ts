@@ -7,3 +7,5 @@ export { WalletCard } from './WalletCard';
 export { QuickStatsGrid } from './QuickStatsGrid';
 export { TransactionTable } from './TransactionTable';
 export { PayoutTable } from './PayoutTable';
+export { PayoutRequestForm } from './PayoutRequestForm';
+export { PayoutHistoryTable } from './PayoutHistoryTable';

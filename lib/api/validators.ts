@@ -649,6 +649,7 @@ export type PaymentIntent = z.infer<typeof PaymentIntentSchema>;
  */
 export const PayoutStatusSchema = z.enum([
   'PENDING',
+  'APPROVED',
   'PROCESSING',
   'COMPLETED',
   'FAILED',
@@ -670,12 +671,19 @@ export const PayoutSchema = z.object({
   currency: z.string().default('TRY'),
   status: PayoutStatusSchema,
   method: PayoutMethodSchema,
+  paymentMethodId: z.string().uuid().optional(),
+  paymentMethodDetails: z.string().optional(),
   stripePayoutId: z.string().optional(),
-  description: z.string(),
+  stripeTransferId: z.string().optional(),
+  description: z.string().optional(),
   failureReason: z.string().optional(),
+  adminNotes: z.string().optional(),
   requestedAt: z.string().datetime(),
+  processedAt: z.string().datetime().optional(),
+  processedBy: z.string().uuid().optional(),
   completedAt: z.string().datetime().optional(),
   createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime().optional(),
 });
 
 export type Payout = z.infer<typeof PayoutSchema>;

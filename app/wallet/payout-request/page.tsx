@@ -7,18 +7,17 @@
  * Route: /wallet/payout-request
  *
  * @author MarifetBul Development Team
- * @version 1.0.0 - Sprint: Wallet & Payout Complete
+ * @version 1.0.0 - Sprint 14: Payment & Payout System
  */
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui';
-import { PayoutRequestModal } from '@/components/dashboard/freelancer/wallet/PayoutRequestModal';
+import { PayoutRequestForm, PayoutHistoryTable } from '@/components/wallet';
 import { useBalance, useWalletActions } from '@/stores/walletStore';
-import { toast } from 'sonner';
+import { useEffect } from 'react';
 
 /**
  * Payout Request Page Component
@@ -27,50 +26,14 @@ export default function PayoutRequestPage() {
   const router = useRouter();
   const balance = useBalance();
   const { fetchBalance } = useWalletActions();
-  const [isLoading, setIsLoading] = useState(true);
 
   // Fetch balance on mount
   useEffect(() => {
-    const loadBalance = async () => {
-      try {
-        await fetchBalance();
-      } catch (error) {
-        console.error('Failed to fetch balance:', error);
-        toast.error('Bakiye bilgisi yüklenemedi');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadBalance();
+    fetchBalance();
   }, [fetchBalance]);
 
-  // Handle success
-  const handleSuccess = (_payoutId: string) => {
-    toast.success('Para çekme talebiniz oluşturuldu!');
-    // Redirect to payouts page after a short delay
-    setTimeout(() => {
-      router.push('/wallet/payouts');
-    }, 1500);
-  };
-
-  // Handle error
-  const handleError = (error: string) => {
-    toast.error(error);
-  };
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="flex min-h-[400px] items-center justify-center">
-          <Loader2 className="text-primary h-8 w-8 animate-spin" />
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto max-w-2xl p-6">
+    <div className="container mx-auto max-w-5xl p-6">
       {/* Header */}
       <div className="mb-8">
         <Button
@@ -82,20 +45,30 @@ export default function PayoutRequestPage() {
           Cüzdana Dön
         </Button>
 
-        <h1 className="text-3xl font-bold">Para Çekme Talebi</h1>
+        <h1 className="text-3xl font-bold">Para Çekme</h1>
         <p className="text-muted-foreground mt-1">
-          Bakiyenizi banka hesabınıza aktarın
+          Bakiyenizi banka hesabınıza aktarın ve geçmiş işlemlerinizi
+          görüntüleyin
         </p>
       </div>
 
-      {/* Modal as page content */}
-      <PayoutRequestModal
-        isOpen={true}
-        onClose={() => router.push('/wallet')}
-        availableBalance={balance?.availableBalance || 0}
-        onSuccess={handleSuccess}
-        onError={handleError}
-      />
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Payout Request Form */}
+        <div>
+          <PayoutRequestForm
+            availableBalance={balance?.availableBalance || 0}
+            onSuccess={() => {
+              fetchBalance();
+            }}
+          />
+        </div>
+
+        {/* Payout History */}
+        <div className="lg:col-span-2">
+          <h2 className="mb-4 text-xl font-semibold">Para Çekme Geçmişi</h2>
+          <PayoutHistoryTable />
+        </div>
+      </div>
     </div>
   );
 }
