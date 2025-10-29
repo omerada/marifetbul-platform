@@ -18,13 +18,27 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { ServicePackage } from '@/types';
 import { cn } from '@/lib/utils';
+import { trackClick } from '@/lib/api/search-analytics';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface PackageCardProps {
   package: ServicePackage;
   layout: 'grid' | 'list';
+  /**
+   * Search analytics context
+   * Provide if this card is displayed in search results
+   */
+  searchContext?: {
+    searchId: string;
+    position: number;
+  };
 }
 
-export function PackageCard({ package: pkg, layout }: PackageCardProps) {
+export function PackageCard({
+  package: pkg,
+  layout,
+  searchContext,
+}: PackageCardProps) {
   // Helper function to get image source
   const getImageSrc = (
     image: string | { id: string; name: string; url: string; type: string }
@@ -35,6 +49,17 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
 
   const { isFavoritePackage, togglePackageFavorite } = useMarketplace();
   const isFavorite = isFavoritePackage();
+
+  // Handle package card click for search analytics
+  const handlePackageClick = () => {
+    if (searchContext) {
+      trackClick(searchContext.searchId, pkg.id, searchContext.position).catch(
+        (err) => {
+          logger.debug('Failed to track click', err);
+        }
+      );
+    }
+  };
 
   const formatDeliveryTime = () => {
     if (pkg.deliveryTime === 1) return '1 gün';
@@ -85,6 +110,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
 
                   <Link
                     href={`/marketplace/packages/${pkg.slug || pkg.id}`}
+                    onClick={handlePackageClick}
                     className="line-clamp-2 block text-xl font-bold text-gray-900 transition-colors hover:text-blue-600"
                   >
                     {pkg.title}
@@ -188,6 +214,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
               <div className="flex gap-2 sm:w-full sm:flex-col sm:space-y-2">
                 <Link
                   href={`/marketplace/packages/${pkg.slug || pkg.id}`}
+                  onClick={handlePackageClick}
                   className="flex-1 sm:block"
                 >
                   <Button
@@ -200,6 +227,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
                 </Link>
                 <Link
                   href={`/marketplace/packages/${pkg.slug || pkg.id}`}
+                  onClick={handlePackageClick}
                   className="flex-1 sm:block"
                 >
                   <Button
@@ -287,6 +315,7 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
 
         <Link
           href={`/marketplace/packages/${pkg.slug || pkg.id}`}
+          onClick={handlePackageClick}
           className="line-clamp-2 text-lg leading-tight font-bold text-gray-900 transition-colors hover:text-blue-600"
         >
           {pkg.title}
@@ -375,7 +404,10 @@ export function PackageCard({ package: pkg, layout }: PackageCardProps) {
           </div>
 
           <div className="space-x-2">
-            <Link href={`/marketplace/packages/${pkg.slug || pkg.id}`}>
+            <Link
+              href={`/marketplace/packages/${pkg.slug || pkg.id}`}
+              onClick={handlePackageClick}
+            >
               <Button
                 size="sm"
                 className="bg-blue-600 shadow-md hover:bg-blue-700"

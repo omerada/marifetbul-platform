@@ -18,6 +18,8 @@ import {
   Clock,
   Star,
 } from 'lucide-react';
+import { trackSearch } from '@/lib/api/search-analytics';
+import { logger } from '@/lib/shared/utils/logger';
 
 type SearchTab = 'all' | 'services' | 'jobs' | 'freelancers';
 
@@ -48,6 +50,21 @@ function SearchContent() {
     setSearchQuery(newQuery);
     if (searchType && searchType !== 'all') {
       setActiveTab(searchType as SearchTab);
+    }
+
+    // Track search analytics
+    if (newQuery.trim()) {
+      trackSearch({
+        query: newQuery,
+        resultCount:
+          searchResults[activeTab as keyof typeof searchResults] || 0,
+        filters: {
+          type: searchType || activeTab,
+          sortBy,
+        },
+      }).catch((err) => {
+        logger.debug('Failed to track search', err);
+      });
     }
   };
 

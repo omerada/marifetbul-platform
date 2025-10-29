@@ -9,6 +9,7 @@ export { PendingCommentsWidget } from './PendingCommentsWidget';
 export { CommentModerationStats } from './CommentModerationStats';
 export { RecentCommentsPreview } from './RecentCommentsPreview';
 export { CommentModerationSummary } from './CommentModerationSummary';
+export { SearchAnalyticsWidget } from './SearchAnalyticsWidget';
 
 export type {
   PendingCommentsSummary,

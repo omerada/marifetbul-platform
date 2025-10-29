@@ -25,6 +25,7 @@ import {
   PendingTasksCard,
   DisputeStatsCard,
 } from './admin-dashboard/components';
+import { SearchAnalyticsWidget } from '@/components/admin/dashboard/SearchAnalyticsWidget';
 
 /**
  * AdminDashboard - Main component
@@ -80,6 +81,9 @@ export function AdminDashboard() {
           <div className="space-y-6 lg:col-span-2">
             {/* Recent Activity */}
             <RecentActivityCard />
+
+            {/* Search Analytics Widget */}
+            <SearchAnalyticsWidget days={30} refreshInterval={300000} />
           </div>
 
           {/* Column 3: System Health, Disputes & Pending Tasks */}

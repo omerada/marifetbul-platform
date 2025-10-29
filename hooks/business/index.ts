@@ -545,6 +545,12 @@ export {
   type UseCommentModerationReturn,
   type BulkActionResult,
 } from './useCommentModeration';
+export { useSearchAnalytics } from './useSearchAnalytics';
+export {
+  type UseSearchAnalyticsOptions,
+  type SearchAnalyticsState,
+  type FormattedMetrics,
+} from './useSearchAnalytics';
 
 const BusinessHooks = {
   useUnifiedSearch,

@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { SearchResult, SearchFilters } from '@/types/shared/search';
+import { trackSearch } from '@/lib/api/search-analytics';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface EnhancedSearchSystemProps {
   className?: string;
@@ -106,6 +108,21 @@ export function EnhancedSearchSystem({
     onSearch?.(localQuery, filters.type);
 
     await search(localQuery, searchFilters);
+
+    // Track search analytics
+    trackSearch({
+      query: localQuery,
+      resultCount: results.length,
+      categoryId: filters.category,
+      filters: {
+        type: filters.type || 'all',
+        location: searchFilters.location,
+        sortBy: filters.sortBy,
+      },
+    }).catch((err) => {
+      // Silent fail - analytics shouldn't break user experience
+      logger.debug('Failed to track search', err);
+    });
 
     // Notify parent component
     if (onResults) {

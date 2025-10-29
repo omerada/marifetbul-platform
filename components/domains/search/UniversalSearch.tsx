@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/Input';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 import { logger } from '@/lib/shared/utils/logger';
+import { trackSearch } from '@/lib/api/search-analytics';
 
 interface SearchSuggestion {
   id: string;
@@ -106,6 +107,18 @@ export function UniversalSearch({
       };
 
       setSearchResults(results);
+
+      // Track search analytics
+      trackSearch({
+        query: searchQuery,
+        resultCount:
+          results.services.length +
+          results.jobs.length +
+          results.freelancers.length,
+      }).catch((err) => {
+        // Silent fail - analytics shouldn't break user experience
+        logger.debug('Failed to track search', err);
+      });
     } catch (error) {
       logger.error(
         'Search error',
