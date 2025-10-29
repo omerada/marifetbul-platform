@@ -11,7 +11,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ImprovedRequestPayoutModal } from '@/components/dashboard/freelancer/wallet';
+import { PayoutRequestModal } from '@/components/dashboard/freelancer/wallet';
 import { usePayouts } from '@/hooks/business/wallet';
 import {
   DollarSign,
@@ -270,7 +270,7 @@ export default function PayoutsPage() {
       </div>
 
       {/* Request Payout Modal */}
-      <ImprovedRequestPayoutModal
+      <PayoutRequestModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSuccess={handlePayoutSuccess}

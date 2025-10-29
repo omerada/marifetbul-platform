@@ -5,7 +5,7 @@
  * Central export point for all wallet UI components
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 2.0.0 - Sprint 1: Consolidated payout modals
  */
 
 // Main components
@@ -24,21 +24,15 @@ export type { TransactionFiltersProps } from './TransactionFilters';
 export { TransactionList } from './TransactionList';
 export type { TransactionListProps } from './TransactionList';
 
-export { RequestPayoutModal } from './RequestPayoutModal';
-export type { RequestPayoutModalProps } from './RequestPayoutModal';
-
-// New improved payout modal with bank account selection
-export { ImprovedRequestPayoutModal } from './ImprovedRequestPayoutModal';
-export type { ImprovedRequestPayoutModalProps } from './ImprovedRequestPayoutModal';
+// Unified payout request modal (consolidated from 3 versions)
+export { PayoutRequestModal } from './PayoutRequestModal';
+export type { PayoutRequestModalProps } from './PayoutRequestModal';
 
 // Bank account management
 export { AddBankAccountModal } from './AddBankAccountModal';
 export type { AddBankAccountModalProps } from './AddBankAccountModal';
 
 export { BankAccountManagement } from './BankAccountManagement';
-
-export { PayoutRequestModal } from './PayoutRequestModal';
-export type { PayoutRequestModalProps } from './PayoutRequestModal';
 
 export { TransactionFiltersPanel } from './TransactionFiltersPanel';
 export type { TransactionFilters as TransactionFilterValues } from './TransactionFiltersPanel';
