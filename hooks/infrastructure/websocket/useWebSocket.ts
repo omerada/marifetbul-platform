@@ -58,7 +58,7 @@ export interface UseWebSocketOptions {
   autoConnect?: boolean;
   /** Auto-disconnect on unmount (default: true) */
   autoDisconnect?: boolean;
-  /** Enable automatic store updates (default: true) - TODO: Story 1.2 */
+  /** Enable automatic store updates (default: true) */
   enableStoreIntegration?: boolean;
   /** Custom WebSocket config */
   config?: Partial<WebSocketConfig>;
