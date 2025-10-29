@@ -5,22 +5,14 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Save, Ban, Shield, AlertTriangle } from 'lucide-react';
 import { Button, Card, Input, Label, Badge } from '@/components/ui';
 import { useToast } from '@/hooks';
+import { adminUsersApi } from '@/lib/api/admin-users';
+import type {
+  AdminUserResponse,
+  UpdateUserRequest,
+} from '@/lib/api/admin-users';
 
 interface Props {
   params: Promise<{ id: string }>;
-}
-
-interface UserData {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  username?: string;
-  role: string;
-  status: string;
-  isEmailVerified: boolean;
-  createdAt: string;
-  lastLoginAt?: string;
 }
 
 /**
@@ -31,13 +23,13 @@ export default function AdminUserEditPage({ params }: Props) {
   const router = useRouter();
   const { success, error: showError } = useToast();
   const [userId, setUserId] = useState<string>('');
-  const [user, setUser] = useState<UserData | null>(null);
+  const [user, setUser] = useState<AdminUserResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Form state
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<UpdateUserRequest>({
     firstName: '',
     lastName: '',
     email: '',
@@ -56,11 +48,14 @@ export default function AdminUserEditPage({ params }: Props) {
       setIsLoading(true);
       setError(null);
       try {
-        // TODO: Replace with actual API call
-        const response = await fetch(`/api/v1/admin/users/${userId}`);
-        if (!response.ok) throw new Error('Failed to fetch user');
-        const data = await response.json();
-        const userData = data.data;
+        // Use type-safe API client
+        const response = await adminUsersApi.getUserById(userId);
+
+        if (!response.success || !response.data) {
+          throw new Error(response.message || 'Failed to fetch user');
+        }
+
+        const userData = response.data;
         setUser(userData);
         setFormData({
           firstName: userData.firstName || '',
@@ -87,20 +82,19 @@ export default function AdminUserEditPage({ params }: Props) {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch(`/api/v1/admin/users/${userId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      // Use type-safe API client
+      const response = await adminUsersApi.updateUser(userId, formData);
 
-      if (!response.ok) throw new Error('Failed to update user');
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to update user');
+      }
 
       success('Başarılı', 'Kullanıcı bilgileri güncellendi');
 
       // Refresh user data
-      const updatedData = await response.json();
-      setUser(updatedData.data);
+      if (response.data) {
+        setUser(response.data);
+      }
     } catch (err) {
       console.error('Failed to update user:', err);
       showError('Hata', 'Kullanıcı bilgileri güncellenemedi');
@@ -110,23 +104,27 @@ export default function AdminUserEditPage({ params }: Props) {
   };
 
   const handleSuspend = async () => {
+    const reason = prompt('Askıya alma sebebini giriniz:');
+    if (!reason) return;
+
     if (!confirm('Bu kullanıcıyı askıya almak istediğinizden emin misiniz?')) {
       return;
     }
 
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch(`/api/v1/admin/users/${userId}/suspend`, {
-        method: 'POST',
-      });
+      // Use type-safe API client
+      const response = await adminUsersApi.suspendUser(userId, { reason });
 
-      if (!response.ok) throw new Error('Failed to suspend user');
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to suspend user');
+      }
 
       success('Başarılı', 'Kullanıcı askıya alındı');
 
       // Refresh user data
-      const updatedData = await response.json();
-      setUser(updatedData.data);
+      if (response.data) {
+        setUser(response.data);
+      }
     } catch (err) {
       console.error('Failed to suspend user:', err);
       showError('Hata', 'Kullanıcı askıya alınamadı');
@@ -146,20 +144,22 @@ export default function AdminUserEditPage({ params }: Props) {
     }
 
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch(`/api/v1/admin/users/${userId}/ban`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason }),
+      // Use type-safe API client
+      const response = await adminUsersApi.banUser(userId, {
+        reason,
+        permanent: true,
       });
 
-      if (!response.ok) throw new Error('Failed to ban user');
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to ban user');
+      }
 
       success('Başarılı', 'Kullanıcı engellendi');
 
       // Refresh user data
-      const updatedData = await response.json();
-      setUser(updatedData.data);
+      if (response.data) {
+        setUser(response.data);
+      }
     } catch (err) {
       console.error('Failed to ban user:', err);
       showError('Hata', 'Kullanıcı engellenemedi');
@@ -176,18 +176,19 @@ export default function AdminUserEditPage({ params }: Props) {
     }
 
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch(`/api/v1/admin/users/${userId}/unban`, {
-        method: 'POST',
-      });
+      // Use type-safe API client
+      const response = await adminUsersApi.unbanUser(userId);
 
-      if (!response.ok) throw new Error('Failed to unban user');
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to unban user');
+      }
 
       success('Başarılı', 'Kullanıcının engeli kaldırıldı');
 
       // Refresh user data
-      const updatedData = await response.json();
-      setUser(updatedData.data);
+      if (response.data) {
+        setUser(response.data);
+      }
     } catch (err) {
       console.error('Failed to unban user:', err);
       showError('Hata', 'Kullanıcının engeli kaldırılamadı');
@@ -314,7 +315,6 @@ export default function AdminUserEditPage({ params }: Props) {
                 />
               </div>
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="email">E-posta</Label>
               <Input
@@ -324,11 +324,10 @@ export default function AdminUserEditPage({ params }: Props) {
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 placeholder="E-posta"
               />
-              {user.isEmailVerified && (
+              {user.emailVerified && (
                 <p className="text-xs text-green-600">✓ E-posta doğrulandı</p>
               )}
-            </div>
-
+            </div>{' '}
             <div className="space-y-2">
               <Label htmlFor="username">Kullanıcı Adı</Label>
               <Input
@@ -338,7 +337,6 @@ export default function AdminUserEditPage({ params }: Props) {
                 placeholder="Kullanıcı adı"
               />
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="role">Rol</Label>
               <select
@@ -353,7 +351,6 @@ export default function AdminUserEditPage({ params }: Props) {
                 <option value="USER">Kullanıcı</option>
               </select>
             </div>
-
             <div className="flex justify-end gap-3 pt-4">
               <Button
                 variant="outline"

@@ -33,6 +33,8 @@ import {
   unwrapOrderResponse,
   type OrderWithComputed,
 } from '@/lib/api/orders';
+import { reviewApi } from '@/lib/api/review';
+import { ReviewType } from '@/types/business/review';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -74,17 +76,36 @@ export function ApproveDeliveryModal({
     try {
       setIsLoading(true);
 
-      // Approve delivery
+      // Approve delivery first
       const response = await orderApi.approveDelivery(order.id);
       const data = unwrapOrderResponse(response);
       const updatedOrder = enrichOrder(data);
 
-      // TODO: Submit rating and review to rating API
-      // await ratingApi.createRating({
-      //   orderId: order.id,
-      //   rating,
-      //   review: review.trim(),
-      // });
+      // Submit rating and review if provided
+      if (rating > 0) {
+        try {
+          await reviewApi.create({
+            orderId: order.id,
+            packageId: order.packageId,
+            type: ReviewType.ORDER,
+            overallRating: rating,
+            communicationRating: rating, // Use same rating for all categories
+            qualityRating: rating,
+            deliveryRating: rating,
+            reviewText: review.trim() || 'Teslimat onaylandı.',
+          });
+        } catch (reviewError) {
+          console.error('Failed to submit review:', reviewError);
+          // Don't fail the approval if review fails
+          toast.warning(
+            'Teslimat onaylandı ancak değerlendirme gönderilemedi',
+            {
+              description:
+                'Değerlendirmenizi daha sonra profil sayfasından yapabilirsiniz.',
+            }
+          );
+        }
+      }
 
       toast.success('Teslimat onaylandı!', {
         description:

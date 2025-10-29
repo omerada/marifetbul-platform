@@ -65,9 +65,8 @@ export function PublicPackageDetail({
       try {
         const response = await favoritesApi.checkPackageFavorite(pkg.id);
         setIsFavorited(response.isFavorited);
-      } catch (error) {
-        // User might not be logged in, ignore error
-        console.log('Not checking favorite status:', error);
+      } catch {
+        // User might not be logged in, ignore error silently
       }
     };
 

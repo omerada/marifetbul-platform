@@ -40,7 +40,7 @@ import {
 import { orderApi } from '@/lib/api/orders';
 import type { OrderResponse } from '@/types/backend-aligned';
 import { enrichOrder, type OrderWithComputed } from '@/types/backend-aligned';
-import { useWebSocket } from '@/hooks';
+import { useWebSocket, useAuth } from '@/hooks';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { getDisputeByOrderId } from '@/lib/api/disputes';
@@ -85,6 +85,9 @@ export default function OrderDetailPage() {
   const [dispute, setDispute] = useState<DisputeResponse | null>(null);
   const [showDisputeModal, setShowDisputeModal] = useState(false);
 
+  // Get authenticated user
+  const { user } = useAuth();
+
   // WebSocket for real-time updates
   const socket = useWebSocket();
 
@@ -102,10 +105,15 @@ export default function OrderDetailPage() {
       // Enrich order with computed properties for backward compatibility
       setOrder(enrichOrder(data));
 
-      // TODO: Get actual user ID from auth context
-      // For now, determine role from URL or assume buyer
-      const isSeller = window.location.pathname.includes('/freelancer/');
-      setUserRole(isSeller ? 'seller' : 'buyer');
+      // Determine user role based on authenticated user ID
+      if (user) {
+        const isSeller = data.sellerId === user.id;
+        setUserRole(isSeller ? 'seller' : 'buyer');
+      } else {
+        // Fallback: determine role from URL path
+        const isSeller = window.location.pathname.includes('/freelancer/');
+        setUserRole(isSeller ? 'seller' : 'buyer');
+      }
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Sipariş yüklenemedi';
@@ -114,7 +122,7 @@ export default function OrderDetailPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [orderId]);
+  }, [orderId, user]);
 
   useEffect(() => {
     loadOrder();
@@ -771,7 +779,7 @@ export default function OrderDetailPage() {
         <h2 className="mb-4 text-xl font-semibold text-gray-900">Mesajlaşma</h2>
         <OrderMessagingPanel
           order={order}
-          currentUserId="current-user-id" // TODO: Get from auth context
+          currentUserId={user?.id || 'guest'}
           userRole={userRole}
           conversationId={order.id} // Using order ID as conversation ID for now
         />

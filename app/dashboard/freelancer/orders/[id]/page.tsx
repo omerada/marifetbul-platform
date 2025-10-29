@@ -6,10 +6,10 @@ import { Card } from '@/components/ui/Card';
 import { Button, Loading } from '@/components/ui';
 import {
   DeliverOrderModal,
-  DisputeModal,
   OrderTimeline,
   EscrowStatus,
 } from '@/components/domains/orders';
+import { DisputeCreationModal } from '@/components/domains/disputes';
 import { MessageButton } from '@/components/domains/messaging';
 import {
   Package,
@@ -745,14 +745,11 @@ export default function FreelancerOrderDetailPage() {
         />
       )}
       {disputeModalOpen && (
-        <DisputeModal
+        <DisputeCreationModal
           isOpen={disputeModalOpen}
           onClose={() => setDisputeModalOpen(false)}
           orderId={order.id}
-          orderTitle={
-            order.customOrderDetails?.title || `Sipariş #${order.orderNumber}`
-          }
-          userRole="seller"
+          orderNumber={order.orderNumber}
           onSuccess={handleModalSuccess}
         />
       )}

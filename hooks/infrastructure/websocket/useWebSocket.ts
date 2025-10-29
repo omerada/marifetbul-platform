@@ -35,13 +35,23 @@ import { logger } from '@/lib/shared/utils/logger';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { useMessagingStore } from '@/lib/core/store/domains/messaging/MessagingStore';
 import { useNotificationStore } from '@/lib/core/store/notification';
+import { useOrderStore } from '@/lib/core/store/orders';
 import type { Message as MessageType } from '@/types/message';
 import type { Message as BusinessMessage } from '@/types/business/features/messaging';
 import type { Notification } from '@/types/core/notification';
 import type { NotificationType as BusinessNotificationType } from '@/types/business/features/notifications';
 import type { WebSocketMessage } from '@/types/shared/utils/api';
+import type { Order, OrderTimeline } from '@/types';
 
 // ==================== TYPES ====================
+
+// WebSocket Order Update payload
+interface OrderUpdatePayload {
+  orderId?: string;
+  status?: string;
+  order?: Order;
+  timeline?: OrderTimeline;
+}
 
 export interface UseWebSocketOptions {
   /** Auto-connect on mount (default: true) */
@@ -117,6 +127,7 @@ export function useWebSocket(
   const { user, isAuthenticated } = useAuthStore();
   const messagingStore = useMessagingStore();
   const notificationStore = useNotificationStore();
+  const orderStore = useOrderStore();
   const [state, setState] = useState<WebSocketState>(
     WebSocketState.DISCONNECTED
   );
@@ -291,7 +302,42 @@ export function useWebSocket(
               'Order update received',
               wsMessage.data
             );
-            // TODO: Story 2.x - Add order store integration
+
+            // Integrate with order store
+            if (wsMessage.data && enableStoreIntegration) {
+              const orderData = wsMessage.data as OrderUpdatePayload;
+
+              // Update order in store
+              if (orderData.orderId && orderData.status) {
+                orderStore.handleStatusChange(
+                  orderData.orderId,
+                  orderData.status
+                );
+                logger.debug('useWebSocket', 'Order status updated in store', {
+                  orderId: orderData.orderId,
+                  status: orderData.status,
+                });
+              }
+
+              // If full order object is provided, update the order
+              if (orderData.order) {
+                orderStore.handleOrderUpdate(orderData.order);
+                logger.debug('useWebSocket', 'Full order updated in store', {
+                  orderId: orderData.order.id,
+                });
+              }
+
+              // Add timeline entry if provided
+              if (orderData.timeline && orderData.orderId) {
+                orderStore.handleTimelineUpdate(
+                  orderData.orderId,
+                  orderData.timeline
+                );
+                logger.debug('useWebSocket', 'Order timeline updated', {
+                  orderId: orderData.orderId,
+                });
+              }
+            }
             break;
 
           case 'MESSAGE_READ':
@@ -331,7 +377,7 @@ export function useWebSocket(
         });
       }
     },
-    [enableStoreIntegration, messagingStore, notificationStore]
+    [enableStoreIntegration, messagingStore, notificationStore, orderStore]
   );
 
   // ==================== CONNECTION ====================

@@ -22,9 +22,12 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Send, Paperclip, X, FileText } from 'lucide-react';
 import { Button, Textarea, Loading } from '@/components/ui';
 import { Card } from '@/components/ui/Card';
+import { useToast } from '@/hooks';
 import type { Order } from '@/lib/api/validators/order';
 import { useWebSocket } from '@/hooks';
 import { fileUploadService } from '@/lib/services/file-upload.service';
+import { getOrCreateConversation, getMessages } from '@/lib/api/messaging';
+import type { Message as ApiMessage } from '@/types/message';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -51,6 +54,33 @@ interface Message {
   }>;
   contextType?: 'ORDER';
   contextId?: string;
+}
+
+// ================================================
+// HELPER FUNCTIONS
+// ================================================
+
+/**
+ * Map API message to component message format
+ */
+function mapApiMessage(apiMsg: ApiMessage): Message {
+  return {
+    id: apiMsg.id,
+    conversationId: apiMsg.conversationId,
+    senderId: apiMsg.senderId,
+    senderName: apiMsg.senderName,
+    content: apiMsg.content,
+    timestamp: apiMsg.createdAt, // Map createdAt to timestamp
+    type: apiMsg.type.toLowerCase() as 'text' | 'image' | 'file',
+    isRead: apiMsg.isRead,
+    attachments: apiMsg.attachments?.map((att) => ({
+      id: att.id,
+      name: att.fileName,
+      url: att.fileUrl,
+      type: att.mimeType, // Use mimeType
+      size: att.fileSize,
+    })),
+  };
 }
 
 export interface OrderMessagingPanelProps {
@@ -81,7 +111,7 @@ export function OrderMessagingPanel({
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const [conversationId, _setConversationId] = useState<string | undefined>(
+  const [conversationId, setConversationId] = useState<string | undefined>(
     initialConversationId
   );
   const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
@@ -93,12 +123,13 @@ export function OrderMessagingPanel({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const socket = useWebSocket();
+  const { error: showErrorToast } = useToast();
 
   // Other user info
   const otherUser =
     userRole === 'buyer'
-      ? { id: order.sellerId, name: order.seller?.username || 'Satıcı' }
-      : { id: order.buyerId, name: order.buyer?.username || 'Alıcı' };
+      ? { id: order.sellerId, name: order.sellerName || 'Satıcı' }
+      : { id: order.buyerId, name: order.buyerName || 'Alıcı' };
 
   // ================================================
   // AUTO-SCROLL
@@ -123,24 +154,21 @@ export function OrderMessagingPanel({
       try {
         setIsLoading(true);
 
-        // TODO: Replace with actual API call
-        const response = await fetch(
-          `/api/messages?conversationId=${conversationId}&page=1&pageSize=50`
-        );
-
-        if (!response.ok) throw new Error('Failed to load messages');
-
-        const data = await response.json();
-        setMessages(data.messages || []);
+        // Fetch messages from API with pagination
+        const response = await getMessages(conversationId, 0, 50);
+        // Map API messages to component format
+        const mappedMessages = response.content.map(mapApiMessage);
+        setMessages(mappedMessages);
       } catch (error) {
         console.error('Failed to load messages:', error);
+        showErrorToast('Mesajlar yüklenemedi');
       } finally {
         setIsLoading(false);
       }
     };
 
     loadMessages();
-  }, [conversationId]);
+  }, [conversationId, showErrorToast]);
 
   // ================================================
   // WEBSOCKET SUBSCRIPTIONS
@@ -222,14 +250,26 @@ export function OrderMessagingPanel({
 
   const sendMessage = async () => {
     if (!message.trim() && attachments.length === 0) return;
-    if (!conversationId) {
-      // TODO: Create conversation first
-      console.error('No conversation ID');
-      return;
-    }
 
     try {
       setIsSending(true);
+
+      // Create or get conversation if not exists
+      let activeConversationId = conversationId;
+      if (!activeConversationId) {
+        try {
+          const conversation = await getOrCreateConversation(otherUser.id);
+          activeConversationId = conversation.id;
+          setConversationId(conversation.id);
+        } catch (error) {
+          console.error('Failed to create conversation:', error);
+          showErrorToast(
+            'Konuşma başlatılamadı',
+            'Lütfen tekrar deneyin veya sayfayı yenileyin.'
+          );
+          return;
+        }
+      }
 
       // Upload attachments first if any
       let attachmentUrls: Array<{
@@ -247,7 +287,7 @@ export function OrderMessagingPanel({
             folder: `orders/${order.id}/messages`,
             metadata: {
               orderId: order.id,
-              conversationId,
+              conversationId: activeConversationId,
               type: 'message',
             },
           });
@@ -270,7 +310,7 @@ export function OrderMessagingPanel({
       // Send message via WebSocket
       const chatMessage = {
         id: `msg-${Date.now()}`,
-        conversationId,
+        conversationId: activeConversationId,
         senderId: currentUserId,
         senderName: 'Me', // Will be set by backend
         content: message.trim(),
@@ -363,7 +403,7 @@ export function OrderMessagingPanel({
             </p>
           </div>
           <div className="text-muted-foreground text-xs">
-            {order.packageDetails?.packageTitle || 'Özel Sipariş'}
+            {order.packageTitle || order.jobTitle || 'Özel Sipariş'}
           </div>
         </div>
       </div>

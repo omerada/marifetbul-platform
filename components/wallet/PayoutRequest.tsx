@@ -22,6 +22,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   DollarSign,
   AlertCircle,
@@ -577,6 +578,8 @@ export function PayoutRequest({
   error,
   className,
 }: PayoutRequestProps) {
+  const router = useRouter();
+
   // Form state
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState<PayoutMethod>(
@@ -790,8 +793,13 @@ export function PayoutRequest({
                 selectedAccountId={bankAccountId}
                 onAccountChange={setBankAccountId}
                 onAddNew={() => {
-                  // Navigate to add bank account page
-                  console.log('Add new bank account');
+                  // Navigate to add bank account page with return URL
+                  const returnUrl = encodeURIComponent(
+                    window.location.pathname
+                  );
+                  router.push(
+                    `/dashboard/wallet/bank-accounts/add?returnUrl=${returnUrl}`
+                  );
                 }}
                 disabled={isSubmitting || !eligibility?.canRequestPayout}
                 errors={validationErrors}

@@ -24,7 +24,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui';
-import { Button } from '@/components/ui';
+import { Button, Textarea, Label } from '@/components/ui';
 import { Checkbox } from '@/components/ui';
 import {
   CheckCircle,
@@ -65,6 +65,9 @@ export function AcceptOrderModal({
 }: AcceptOrderModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showDeclineDialog, setShowDeclineDialog] = useState(false);
+  const [declineReason, setDeclineReason] = useState('');
+  const [isDeclineLoading, setIsDeclineLoading] = useState(false);
 
   // ================================================
   // HANDLERS
@@ -99,11 +102,44 @@ export function AcceptOrderModal({
   };
 
   const handleDecline = () => {
-    // TODO: Implement decline/cancel flow
-    toast.info('İptal İşlemi', {
-      description: 'Sipariş iptal özelliği yakında eklenecek.',
-    });
-    onClose();
+    setShowDeclineDialog(true);
+  };
+
+  const handleConfirmDecline = async () => {
+    if (!declineReason.trim()) {
+      toast.error('Red nedeni girmelisiniz');
+      return;
+    }
+
+    try {
+      setIsDeclineLoading(true);
+      const response = await orderApi.cancelOrder(order.id, {
+        reason: declineReason.trim(),
+        note: 'Satıcı tarafından reddedildi',
+      });
+      const data = unwrapOrderResponse(response);
+      const updatedOrder = enrichOrder(data);
+
+      toast.success('Sipariş reddedildi', {
+        description: 'Alıcı bilgilendirilecek.',
+      });
+
+      onSuccess?.(updatedOrder);
+      onClose();
+      setShowDeclineDialog(false);
+    } catch (error) {
+      toast.error('Hata', {
+        description:
+          error instanceof Error ? error.message : 'Sipariş reddedilemedi.',
+      });
+    } finally {
+      setIsDeclineLoading(false);
+    }
+  };
+
+  const handleCancelDecline = () => {
+    setShowDeclineDialog(false);
+    setDeclineReason('');
   };
 
   // ================================================
@@ -319,6 +355,67 @@ export function AcceptOrderModal({
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      {/* Decline Confirmation Dialog */}
+      {showDeclineDialog && (
+        <Dialog open={showDeclineDialog} onOpenChange={setShowDeclineDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-destructive">
+                Siparişi Reddet
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4">
+              <p className="text-sm text-gray-600">
+                Bu siparişi reddetmek istediğinizden emin misiniz? Alıcı
+                bilgilendirilecek ve sipariş iptal edilecektir.
+              </p>
+
+              <div className="space-y-2">
+                <Label htmlFor="decline-reason">Red Nedeni *</Label>
+                <Textarea
+                  id="decline-reason"
+                  value={declineReason}
+                  onChange={(e) => setDeclineReason(e.target.value)}
+                  placeholder="Lütfen siparişi neden reddettiğinizi açıklayın..."
+                  rows={4}
+                  disabled={isDeclineLoading}
+                  className="resize-none"
+                />
+                <p className="text-xs text-gray-500">
+                  Bu açıklama alıcıya iletilecektir.
+                </p>
+              </div>
+            </div>
+
+            <DialogFooter className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={handleCancelDecline}
+                disabled={isDeclineLoading}
+              >
+                Vazgeç
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleConfirmDecline}
+                disabled={!declineReason.trim() || isDeclineLoading}
+                className="min-w-32"
+              >
+                {isDeclineLoading ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    Reddediliyor...
+                  </>
+                ) : (
+                  'Siparişi Reddet'
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </Dialog>
   );
 }

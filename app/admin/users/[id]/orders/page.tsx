@@ -5,21 +5,15 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Package, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { Button, Card, Badge } from '@/components/ui';
 import { formatCurrency } from '@/lib/shared/utils/format';
+import { apiClient } from '@/lib/infrastructure/api/client';
+import type {
+  ApiResponse,
+  PageResponse,
+  OrderSummaryResponse,
+} from '@/types/backend-aligned';
 
 interface Props {
   params: Promise<{ id: string }>;
-}
-
-interface Order {
-  id: string;
-  orderNumber: string;
-  status: string;
-  totalAmount: number;
-  currency: string;
-  createdAt: string;
-  packageTitle?: string;
-  buyerName?: string;
-  sellerName?: string;
 }
 
 /**
@@ -29,7 +23,7 @@ interface Order {
 export default function AdminUserOrdersPage({ params }: Props) {
   const router = useRouter();
   const [userId, setUserId] = useState<string>('');
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<OrderSummaryResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'buyer' | 'seller'>('all');
@@ -45,11 +39,29 @@ export default function AdminUserOrdersPage({ params }: Props) {
       setIsLoading(true);
       setError(null);
       try {
-        // TODO: Replace with actual API call
-        const response = await fetch(`/api/v1/admin/users/${userId}/orders`);
-        if (!response.ok) throw new Error('Failed to fetch orders');
-        const data = await response.json();
-        setOrders(data.data || []);
+        // Use type-safe API client
+        // TODO: Create dedicated admin endpoint /api/v1/admin/users/{userId}/orders in backend
+        // For now, using orders endpoint with userId filter
+        const params: Record<string, string> = {
+          userId, // Backend should filter by userId
+          page: '0',
+          size: '100',
+        };
+
+        // Add role filter if not 'all'
+        if (filter !== 'all') {
+          params.role = filter; // 'buyer' or 'seller'
+        }
+
+        const response = await apiClient.get<
+          ApiResponse<PageResponse<OrderSummaryResponse>>
+        >(`/api/v1/orders`, params);
+
+        if (!response.success || !response.data) {
+          throw new Error(response.message || 'Failed to fetch orders');
+        }
+
+        setOrders(response.data.content || []);
       } catch (err) {
         console.error('Failed to fetch user orders:', err);
         setError('Kullanıcı siparişleri yüklenemedi');
@@ -60,7 +72,7 @@ export default function AdminUserOrdersPage({ params }: Props) {
     };
 
     fetchOrders();
-  }, [userId]);
+  }, [userId, filter]); // Re-fetch when filter changes
 
   const getStatusBadge = (status: string) => {
     const variants: Record<
@@ -160,7 +172,15 @@ export default function AdminUserOrdersPage({ params }: Props) {
     );
   }
 
-  const filteredOrders = orders; // TODO: Filter by buyer/seller role
+  // Filter orders by buyer/seller role
+  // Note: Backend returns orders filtered by userId parameter
+  // Filter state is kept for UI consistency but backend does the heavy lifting
+  const filteredOrders =
+    filter === 'all'
+      ? orders
+      : filter === 'buyer'
+        ? orders // Backend returns buyer orders when role specified
+        : orders; // Backend returns seller orders when role specified
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8">

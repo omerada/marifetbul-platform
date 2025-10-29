@@ -18,7 +18,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -28,13 +28,14 @@ import {
   DialogDescription,
 } from '@/components/ui/Dialog';
 import { Button, Textarea, Label } from '@/components/ui';
-import { AlertCircle, RefreshCw, Upload, X } from 'lucide-react';
+import { AlertCircle, RefreshCw, Upload, X, FileText } from 'lucide-react';
 import {
   orderApi,
   enrichOrder,
   unwrapOrderResponse,
   type OrderWithComputed,
 } from '@/lib/api/orders';
+import { fileUploadService } from '@/lib/services/file-upload.service';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { z } from 'zod';
@@ -85,10 +86,12 @@ export function RevisionRequestModal({
   const [isLoading, setIsLoading] = useState(false);
   const [reason, setReason] = useState('');
   const [details, setDetails] = useState('');
-  const [attachments, setAttachments] = useState<string[]>([]);
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
   const [errors, setErrors] = useState<
     Partial<Record<keyof RevisionRequestInput, string>>
   >({});
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Calculate remaining revisions
   const revisionsRemaining = order.revisions
@@ -147,9 +150,34 @@ export function RevisionRequestModal({
     try {
       setIsLoading(true);
 
+      // Upload attachments first if any
+      let attachmentUrls: string[] = [];
+      if (attachments.length > 0) {
+        setIsUploading(true);
+        try {
+          const results = await fileUploadService.uploadFiles(attachments, {
+            folder: `orders/${order.id}/revisions`,
+            metadata: {
+              orderId: order.id,
+              type: 'revision',
+            },
+          });
+
+          attachmentUrls = results.map((result) => result.fileUrl);
+        } catch (uploadError) {
+          console.error('File upload failed:', uploadError);
+          toast.warning('Dosya yükleme başarısız', {
+            description:
+              'Dosyalar yüklenemedi ancak revizyon talebi gönderilecek.',
+          });
+        } finally {
+          setIsUploading(false);
+        }
+      }
+
       const response = await orderApi.requestRevision(order.id, {
         revisionNote: reason + (details.trim() ? `\n\n${details.trim()}` : ''),
-        attachments: attachments.length > 0 ? attachments : undefined,
+        attachments: attachmentUrls.length > 0 ? attachmentUrls : undefined,
       });
 
       const data = unwrapOrderResponse(response);
@@ -184,10 +212,39 @@ export function RevisionRequestModal({
   };
 
   const handleAddAttachment = () => {
-    // TODO: Implement file upload
-    toast.info('Dosya Yükleme', {
-      description: 'Dosya yükleme özelliği yakında eklenecek.',
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+
+    // Validate file size (max 10MB per file)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const validFiles = files.filter((file) => {
+      if (file.size > maxSize) {
+        toast.error(`${file.name} çok büyük`, {
+          description: 'Dosya boyutu en fazla 10MB olabilir.',
+        });
+        return false;
+      }
+      return true;
     });
+
+    // Add valid files (max 5 files total)
+    setAttachments((prev) => {
+      const newFiles = [...prev, ...validFiles].slice(0, 5);
+      if (newFiles.length > 5) {
+        toast.warning('Maksimum dosya sayısı', {
+          description: 'En fazla 5 dosya ekleyebilirsiniz.',
+        });
+      }
+      return newFiles.slice(0, 5);
+    });
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const handleRemoveAttachment = (index: number) => {
@@ -311,20 +368,34 @@ export function RevisionRequestModal({
           {/* Attachments */}
           <div className="space-y-2">
             <Label>Ekler (Opsiyonel)</Label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept="image/*,.pdf,.doc,.docx,.txt"
+              onChange={handleFileChange}
+              className="hidden"
+            />
             <div className="space-y-2">
               {attachments.map((attachment, index) => (
                 <div
                   key={index}
                   className="flex items-center justify-between rounded-md border bg-gray-50 p-3"
                 >
-                  <span className="truncate text-sm text-gray-700">
-                    {attachment}
-                  </span>
+                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                    <FileText className="h-4 w-4 flex-shrink-0 text-gray-500" />
+                    <span className="truncate text-sm text-gray-700">
+                      {attachment.name}
+                    </span>
+                    <span className="flex-shrink-0 text-xs text-gray-500">
+                      ({(attachment.size / 1024).toFixed(1)} KB)
+                    </span>
+                  </div>
                   <button
                     type="button"
                     onClick={() => handleRemoveAttachment(index)}
                     disabled={isLoading}
-                    className="ml-2 text-red-500 hover:text-red-700"
+                    className="ml-2 flex-shrink-0 text-red-500 hover:text-red-700"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -337,13 +408,16 @@ export function RevisionRequestModal({
                   variant="outline"
                   size="sm"
                   onClick={handleAddAttachment}
-                  disabled={isLoading}
+                  disabled={isLoading || isUploading}
                   className="w-full"
                 >
                   <Upload className="mr-2 h-4 w-4" />
-                  Dosya Ekle
+                  {isUploading ? 'Yükleniyor...' : 'Dosya Ekle (Max 5, 10MB)'}
                 </Button>
               )}
+              <p className="text-xs text-gray-500">
+                Desteklenen formatlar: Resim, PDF, Word, Metin dosyaları
+              </p>
             </div>
             {errors.attachments && (
               <p className="text-sm text-red-500">{errors.attachments}</p>

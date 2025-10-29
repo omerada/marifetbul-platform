@@ -14,6 +14,7 @@ import React, { useState, useEffect } from 'react';
 import { MessageCircle, Loader2, AlertCircle } from 'lucide-react';
 import { CommentThreadView } from './CommentThreadView';
 import { CommentForm } from './CommentForm';
+import { ReportCommentModal } from './ReportCommentModal';
 import { blogApi } from '@/lib/api/blog';
 import { logger } from '@/lib/shared/utils/logger';
 import type { BlogComment } from '@/lib/api/blog';
@@ -50,6 +51,10 @@ export function CommentList({
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [showForm, setShowForm] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [reportingCommentId, setReportingCommentId] = useState<number | null>(
+    null
+  );
 
   // ================================================
   // COMPUTED
@@ -140,11 +145,9 @@ export function CommentList({
     // No-op: deletion is managed within CommentCard component
   };
 
-  const handleReport = (_commentId: number) => {
-    // Production Ready: Implement report dialog/modal
-    // Should open a modal with report reasons and submit to backend
-    // Expected flow: Modal -> useCommentReports hook -> API call
-    // TODO: Implement report modal when comment reporting feature is ready
+  const handleReport = (commentId: number) => {
+    setReportingCommentId(commentId);
+    setReportModalOpen(true);
   };
 
   // ================================================
@@ -280,6 +283,24 @@ export function CommentList({
           onPageChange={handlePageChange}
         />
       )} */}
+
+      {/* Report Comment Modal */}
+      {reportingCommentId && (
+        <ReportCommentModal
+          commentId={reportingCommentId}
+          isOpen={reportModalOpen}
+          onClose={() => {
+            setReportModalOpen(false);
+            setReportingCommentId(null);
+          }}
+          onReportSubmitted={() => {
+            // Optionally refresh comments or show a message
+            logger.info('Comment reported successfully', {
+              commentId: reportingCommentId,
+            });
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import { Button, Loading } from '@/components/ui';
-import { DeliverOrderModal, DisputeModal } from '@/components/domains/orders';
+import { DeliverOrderModal } from '@/components/domains/orders';
+import { DisputeCreationModal } from '@/components/domains/disputes';
 import { MessageButton } from '@/components/domains/messaging';
 import {
   Package,
@@ -17,7 +18,10 @@ import {
 import type { Order } from '@/types/business/features/orders';
 import { useWebSocket } from '@/hooks';
 import { toast } from 'sonner';
-import { OrderListSkeleton, StatsCardSkeleton } from '@/components/shared/LoadingSkeleton';
+import {
+  OrderListSkeleton,
+  StatsCardSkeleton,
+} from '@/components/shared/LoadingSkeleton';
 
 export default function FreelancerOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -369,13 +373,9 @@ export default function FreelancerOrdersPage() {
 
       {/* Dispute Modal */}
       {selectedOrder && (
-        <DisputeModal
+        <DisputeCreationModal
           orderId={selectedOrder.id}
-          orderTitle={
-            selectedOrder.customOrderDetails?.title ||
-            `Sipariş #${selectedOrder.orderNumber}`
-          }
-          userRole="seller"
+          orderNumber={selectedOrder.orderNumber}
           isOpen={disputeModalOpen}
           onClose={() => {
             setDisputeModalOpen(false);

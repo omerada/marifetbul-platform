@@ -1,7 +1,7 @@
 /**
  * Wallet Components
  * Reusable components for wallet functionality
- * 
+ *
  * @version 2.0.0 - Sprint 1: Removed duplicate PayoutRequestForm
  */
 

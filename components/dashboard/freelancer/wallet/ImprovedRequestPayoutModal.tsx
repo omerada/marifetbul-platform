@@ -1,19 +1,11 @@
 /**
  * ================================================
- * PAYOUT REQUEST MODAL
+ * IMPROVED REQUEST PAYOUT MODAL
  * ================================================
- * Unified payout request modal with bank account selection
- *
- * Features:
- * - Visual bank account selection with cards
- * - Auto-select default bank account
- * - Eligibility checking and validation
- * - Maximum amount quick button
- * - Processing time display per bank
- * - Comprehensive error handling
+ * New payout request modal with bank account selection
  *
  * @author MarifetBul Development Team
- * @version 3.0.0 - Sprint 1: Consolidated from 3 versions
+ * @version 2.0.0
  */
 
 'use client';
@@ -41,7 +33,7 @@ import Link from 'next/link';
 // TYPES
 // ================================================
 
-export interface PayoutRequestModalProps {
+export interface ImprovedRequestPayoutModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
@@ -51,11 +43,9 @@ export interface PayoutRequestModalProps {
 // COMPONENT
 // ================================================
 
-export const PayoutRequestModal: React.FC<PayoutRequestModalProps> = ({
-  isOpen,
-  onClose,
-  onSuccess,
-}) => {
+export const ImprovedRequestPayoutModal: React.FC<
+  ImprovedRequestPayoutModalProps
+> = ({ isOpen, onClose, onSuccess }) => {
   // ==================== HOOKS ====================
 
   const {
@@ -421,4 +411,4 @@ export const PayoutRequestModal: React.FC<PayoutRequestModalProps> = ({
   );
 };
 
-export default PayoutRequestModal;
+export default ImprovedRequestPayoutModal;

@@ -1,13 +1,13 @@
 /**
  * Conversation Page - Real-time Messaging
- * 
+ *
  * Full-featured messaging interface with:
  * - Real-time message delivery via WebSocket
  * - Typing indicators
  * - Message history with infinite scroll
  * - File attachments
  * - Message status (sent/delivered/read)
- * 
+ *
  * @sprint Sprint 5 - Real-time Messaging
  */
 
@@ -22,6 +22,7 @@ import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/hooks/shared/useAuth';
+import { useToast } from '@/hooks';
 import { logger } from '@/lib/shared/utils/logger';
 import {
   getConversationById,
@@ -50,6 +51,7 @@ export default function ConversationPage() {
   const params = useParams();
   const router = useRouter();
   const { user, isAuthenticated } = useAuth();
+  const { error: showErrorToast } = useToast();
   const conversationId = params?.id as string;
 
   // State
@@ -66,7 +68,12 @@ export default function ConversationPage() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // WebSocket connection
-  const { isConnected, subscribe, unsubscribe, send: wsSend } = useStompWebSocket({
+  const {
+    isConnected,
+    subscribe,
+    unsubscribe,
+    send: wsSend,
+  } = useStompWebSocket({
     autoConnect: true,
     onConnect: () => {
       logger.info('ConversationPage', 'WebSocket connected');
@@ -135,7 +142,9 @@ export default function ConversationPage() {
             // Mark as read if not from current user
             if (event.message.senderId !== user.id) {
               markConversationAsRead(conversationId).catch((err) =>
-                logger.error('ConversationPage', 'Failed to mark as read', { error: err })
+                logger.error('ConversationPage', 'Failed to mark as read', {
+                  error: err,
+                })
               );
             }
           } else if (event.type === 'MESSAGE_UPDATE') {
@@ -143,7 +152,9 @@ export default function ConversationPage() {
               prev.map((m) => (m.id === event.message.id ? event.message : m))
             );
           } else if (event.type === 'MESSAGE_DELETE') {
-            setMessages((prev) => prev.filter((m) => m.id !== event.message.id));
+            setMessages((prev) =>
+              prev.filter((m) => m.id !== event.message.id)
+            );
           }
         }
       }
@@ -259,22 +270,35 @@ export default function ConversationPage() {
       });
 
       // Replace optimistic message with real one
-      setMessages((prev) =>
-        prev.map((m) => (m.id === tempId ? message : m))
-      );
+      setMessages((prev) => prev.map((m) => (m.id === tempId ? message : m)));
 
-      logger.info('ConversationPage', 'Message sent', { messageId: message.id });
+      logger.info('ConversationPage', 'Message sent', {
+        messageId: message.id,
+      });
     } catch (error) {
       logger.error('ConversationPage', 'Failed to send message', { error });
 
       // Remove optimistic message on error
       setMessages((prev) => prev.filter((m) => !m.id.startsWith('temp-')));
 
-      // TODO: Show error toast
+      // Show error toast
+      showErrorToast(
+        'Mesaj gönderilemedi',
+        'Lütfen tekrar deneyin veya internet bağlantınızı kontrol edin.'
+      );
     } finally {
       setSending(false);
     }
-  }, [inputText, isSending, conversationId, conversation, user, isConnected, wsSend]);
+  }, [
+    inputText,
+    isSending,
+    conversationId,
+    conversation,
+    user,
+    isConnected,
+    wsSend,
+    showErrorToast,
+  ]);
 
   // Handle Enter key
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -290,7 +314,9 @@ export default function ConversationPage() {
 
     switch (message.status) {
       case MessageStatus.SENDING:
-        return <div className="h-3 w-3 animate-spin rounded-full border-2 border-gray-300 border-t-blue-500" />;
+        return (
+          <div className="h-3 w-3 animate-spin rounded-full border-2 border-gray-300 border-t-blue-500" />
+        );
       case MessageStatus.SENT:
         return <Check className="h-4 w-4 text-gray-400" />;
       case MessageStatus.DELIVERED:
@@ -328,7 +354,9 @@ export default function ConversationPage() {
       <AppLayout showFooter={false}>
         <div className="flex min-h-screen items-center justify-center">
           <Card className="p-8 text-center">
-            <h2 className="text-xl font-bold text-gray-900">Konuşma Bulunamadı</h2>
+            <h2 className="text-xl font-bold text-gray-900">
+              Konuşma Bulunamadı
+            </h2>
             <p className="mt-2 text-gray-600">
               Bu konuşmaya erişim yetkiniz yok veya konuşma mevcut değil.
             </p>
@@ -359,7 +387,7 @@ export default function ConversationPage() {
                 <div className="relative">
                   <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500" />
                   {conversation.participantOnline && (
-                    <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
+                    <div className="absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
                   )}
                 </div>
 
@@ -371,8 +399,8 @@ export default function ConversationPage() {
                     {conversation.participantOnline
                       ? 'Çevrimiçi'
                       : conversation.lastSeenAt
-                      ? `Son görülme: ${formatTime(conversation.lastSeenAt)}`
-                      : 'Çevrimdışı'}
+                        ? `Son görülme: ${formatTime(conversation.lastSeenAt)}`
+                        : 'Çevrimdışı'}
                   </p>
                 </div>
               </div>
@@ -420,7 +448,7 @@ export default function ConversationPage() {
             {isTyping && typingUser && (
               <div className="flex justify-start">
                 <div className="max-w-[70%] rounded-2xl bg-gray-200 px-4 py-2">
-                  <p className="text-sm italic text-gray-600">
+                  <p className="text-sm text-gray-600 italic">
                     {typingUser} yazıyor...
                   </p>
                 </div>
@@ -463,7 +491,8 @@ export default function ConversationPage() {
           {/* Connection status */}
           {!isConnected && (
             <div className="mt-2 text-center text-xs text-amber-600">
-              ⚠️ Bağlantı kuruluyor... Gerçek zamanlı mesajlar gecikmeli gelebilir.
+              ⚠️ Bağlantı kuruluyor... Gerçek zamanlı mesajlar gecikmeli
+              gelebilir.
             </div>
           )}
         </div>
