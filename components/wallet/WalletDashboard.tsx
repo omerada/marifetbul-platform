@@ -447,7 +447,8 @@ export function WalletDashboard({
       label: 'Para Çek',
       icon: <Send className="h-5 w-5" />,
       onClick: () =>
-        onRequestPayout?.() || router.push('/wallet/payout-request'),
+        onRequestPayout?.() ||
+        router.push('/dashboard/freelancer/wallet/payouts'),
       variant: 'primary',
       disabled: !balance || balance.availableBalance <= 0,
     },
@@ -455,13 +456,16 @@ export function WalletDashboard({
       label: 'İşlem Geçmişi',
       icon: <TrendingUp className="h-5 w-5" />,
       onClick: () =>
-        onViewTransactions?.() || router.push('/wallet/transactions'),
+        onViewTransactions?.() ||
+        router.push('/dashboard/freelancer/wallet/transactions'),
       variant: 'outline',
     },
     {
       label: 'Çekim Geçmişi',
       icon: <Download className="h-5 w-5" />,
-      onClick: () => onViewPayouts?.() || router.push('/wallet/payouts'),
+      onClick: () =>
+        onViewPayouts?.() ||
+        router.push('/dashboard/freelancer/wallet/payouts'),
       variant: 'outline',
     },
     {
