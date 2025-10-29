@@ -26,6 +26,30 @@ interface FreelancerStats {
   responseRate: number;
   onTimeDelivery: number;
   repeatClients: number;
+  // Backend DTO fields
+  revenueMetrics?: {
+    totalRevenue: number;
+    netEarnings: number;
+    totalOrders: number;
+    averageOrderValue: number;
+    availableBalance: number;
+    pendingBalance: number;
+  };
+  packagePerformance?: {
+    totalPackages: number;
+    activePackages: number;
+    totalViews: number;
+    totalOrders: number;
+    conversionRate: number;
+  };
+  performanceMetrics?: {
+    averageRating: number;
+    totalReviews: number;
+    completionRate: number;
+    onTimeDeliveryRate: number;
+    responseRate: number;
+    repeatCustomerRate: number;
+  };
 }
 
 interface EmployerStats {
@@ -37,6 +61,17 @@ interface EmployerStats {
   avgProjectValue: number;
   successRate: number;
   savedFreelancers: number;
+  // Backend DTO fields
+  orderSummary?: {
+    totalOrders: number;
+    completedOrders: number;
+    inProgressOrders: number;
+    totalSpent: number;
+    averageOrderValue: number;
+  };
+  favorites?: {
+    totalFavorites: number;
+  };
 }
 
 export function DashboardStats({ user }: DashboardStatsProps) {
@@ -53,8 +88,8 @@ export function DashboardStats({ user }: DashboardStatsProps) {
         // Real API call to get dashboard stats
         const endpoint =
           user.userType === 'freelancer'
-            ? '/api/v1/dashboard/freelancer/stats'
-            : '/api/v1/dashboard/employer/stats';
+            ? '/api/v1/dashboard/seller/me'
+            : '/api/v1/dashboard/buyer/me';
 
         const response = await fetch(endpoint, {
           method: 'GET',
@@ -99,6 +134,30 @@ export function DashboardStats({ user }: DashboardStatsProps) {
 
   if (user.userType === 'freelancer') {
     const freelancerStats = stats as FreelancerStats;
+    const revenue = freelancerStats.revenueMetrics || {
+      totalRevenue: freelancerStats.totalEarnings || 0,
+      netEarnings: freelancerStats.totalEarnings || 0,
+      totalOrders: freelancerStats.completedJobs || 0,
+      averageOrderValue: 0,
+      availableBalance: 0,
+      pendingBalance: 0,
+    };
+    const performance = freelancerStats.performanceMetrics || {
+      averageRating: freelancerStats.rating || 0,
+      totalReviews: freelancerStats.completedJobs || 0,
+      completionRate: 0,
+      onTimeDeliveryRate: freelancerStats.onTimeDelivery || 0,
+      responseRate: freelancerStats.responseRate || 0,
+      repeatCustomerRate: freelancerStats.repeatClients || 0,
+    };
+    const packages = freelancerStats.packagePerformance || {
+      totalPackages: 0,
+      activePackages: freelancerStats.activeProjects || 0,
+      totalViews: freelancerStats.profileViews || 0,
+      totalOrders: freelancerStats.completedJobs || 0,
+      conversionRate: 0,
+    };
+
     return (
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card className="p-6 transition-shadow hover:shadow-md">
@@ -106,9 +165,11 @@ export function DashboardStats({ user }: DashboardStatsProps) {
             <div>
               <p className="text-sm font-medium text-gray-600">Toplam Kazanç</p>
               <p className="text-2xl font-bold text-gray-900">
-                ₺{freelancerStats.totalEarnings.toLocaleString('tr-TR')}
+                ₺{(revenue.netEarnings || 0).toLocaleString('tr-TR')}
               </p>
-              <p className="mt-1 text-xs text-green-600">+12% bu ay</p>
+              <p className="mt-1 text-xs text-green-600">
+                {revenue.totalOrders || 0} sipariş
+              </p>
             </div>
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100">
               <DollarSign className="h-6 w-6 text-green-600" />
@@ -120,12 +181,14 @@ export function DashboardStats({ user }: DashboardStatsProps) {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
-                Aktif Projeler
+                Aktif Paketler
               </p>
               <p className="text-2xl font-bold text-gray-900">
-                {freelancerStats.activeProjects}
+                {packages.activePackages || 0}
               </p>
-              <p className="mt-1 text-xs text-blue-600">2 yeni proje</p>
+              <p className="mt-1 text-xs text-blue-600">
+                {packages.totalPackages || 0} toplam
+              </p>
             </div>
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
               <Briefcase className="h-6 w-6 text-blue-600" />
@@ -138,10 +201,10 @@ export function DashboardStats({ user }: DashboardStatsProps) {
             <div>
               <p className="text-sm font-medium text-gray-600">Ortalama Puan</p>
               <p className="text-2xl font-bold text-gray-900">
-                {freelancerStats.rating}
+                {(performance.averageRating || 0).toFixed(1)}
               </p>
               <p className="mt-1 text-xs text-yellow-600">
-                {freelancerStats.completedJobs} değerlendirme
+                {performance.totalReviews || 0} değerlendirme
               </p>
             </div>
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-yellow-100">
@@ -157,9 +220,14 @@ export function DashboardStats({ user }: DashboardStatsProps) {
                 Profil Görüntüleme
               </p>
               <p className="text-2xl font-bold text-gray-900">
-                {freelancerStats.profileViews}
+                {packages.totalViews || 0}
               </p>
-              <p className="mt-1 text-xs text-purple-600">+8% bu hafta</p>
+              <p className="mt-1 text-xs text-purple-600">
+                {packages.conversionRate
+                  ? `${(packages.conversionRate * 100).toFixed(1)}%`
+                  : '0%'}{' '}
+                dönüşüm
+              </p>
             </div>
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100">
               <Eye className="h-6 w-6 text-purple-600" />
@@ -171,6 +239,17 @@ export function DashboardStats({ user }: DashboardStatsProps) {
   }
 
   const employerStats = stats as EmployerStats;
+  const orders = employerStats.orderSummary || {
+    totalOrders: employerStats.totalJobs || 0,
+    completedOrders: 0,
+    inProgressOrders: employerStats.activeJobs || 0,
+    totalSpent: employerStats.totalSpent || 0,
+    averageOrderValue: employerStats.avgProjectValue || 0,
+  };
+  const favorites = employerStats.favorites || {
+    totalFavorites: employerStats.savedFreelancers || 0,
+  };
+
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
       <Card className="p-6 transition-shadow hover:shadow-md">
@@ -178,9 +257,11 @@ export function DashboardStats({ user }: DashboardStatsProps) {
           <div>
             <p className="text-sm font-medium text-gray-600">Toplam Harcama</p>
             <p className="text-2xl font-bold text-gray-900">
-              ₺{employerStats.totalSpent.toLocaleString('tr-TR')}
+              ₺{(orders.totalSpent || 0).toLocaleString('tr-TR')}
             </p>
-            <p className="mt-1 text-xs text-green-600">15 proje</p>
+            <p className="mt-1 text-xs text-green-600">
+              {orders.totalOrders || 0} proje
+            </p>
           </div>
           <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100">
             <DollarSign className="h-6 w-6 text-green-600" />
@@ -192,13 +273,13 @@ export function DashboardStats({ user }: DashboardStatsProps) {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">
-              Aktif İş İlanları
+              Aktif Siparişler
             </p>
             <p className="text-2xl font-bold text-gray-900">
-              {employerStats.activeJobs}
+              {orders.inProgressOrders || 0}
             </p>
             <p className="mt-1 text-xs text-blue-600">
-              {employerStats.receivedProposals} teklif
+              {orders.completedOrders || 0} tamamlandı
             </p>
           </div>
           <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
@@ -210,13 +291,13 @@ export function DashboardStats({ user }: DashboardStatsProps) {
       <Card className="p-6 transition-shadow hover:shadow-md">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600">İşe Alınan</p>
+            <p className="text-sm font-medium text-gray-600">
+              Kayıtlı Freelancer
+            </p>
             <p className="text-2xl font-bold text-gray-900">
-              {employerStats.hiredFreelancers}
+              {favorites.totalFavorites || 0}
             </p>
-            <p className="mt-1 text-xs text-yellow-600">
-              {employerStats.successRate}% başarı
-            </p>
+            <p className="mt-1 text-xs text-yellow-600">Favorilerinizde</p>
           </div>
           <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-yellow-100">
             <Users className="h-6 w-6 text-yellow-600" />
@@ -231,9 +312,9 @@ export function DashboardStats({ user }: DashboardStatsProps) {
               Ort. Proje Değeri
             </p>
             <p className="text-2xl font-bold text-gray-900">
-              ₺{employerStats.avgProjectValue.toLocaleString('tr-TR')}
+              ₺{(orders.averageOrderValue || 0).toLocaleString('tr-TR')}
             </p>
-            <p className="mt-1 text-xs text-purple-600">+5% artış</p>
+            <p className="mt-1 text-xs text-purple-600">Ortalama</p>
           </div>
           <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100">
             <BarChart3 className="h-6 w-6 text-purple-600" />

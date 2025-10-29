@@ -3,6 +3,12 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui';
+import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { DashboardStats } from '@/components/domains/dashboard/DashboardStats';
+import { DashboardCharts } from '@/components/domains/dashboard/DashboardCharts';
+import { QuickActions } from '@/components/domains/dashboard/QuickActions';
+import { ActivityTimeline } from '@/components/domains/dashboard/ActivityTimeline';
+import { DashboardSkeleton } from '@/components/domains/dashboard/DashboardSkeleton';
 import {
   Calendar,
   Bell,
@@ -17,17 +23,19 @@ type DashboardView = 'overview' | 'freelancer' | 'employer';
 export function DashboardClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [user] = useState({
-    firstName: 'User',
-    userType: 'freelancer' as const,
-  });
+  const { user, isLoading } = useAuthStore();
 
   // Smart routing based on user type and URL params
   const viewParam = searchParams.get('view') as DashboardView;
   const [currentView, setCurrentView] = useState<DashboardView>(() => {
     if (viewParam) return viewParam;
-    return user?.userType === 'freelancer' ? 'freelancer' : 'employer';
+    return user?.role === 'freelancer' ? 'freelancer' : 'employer';
   });
+
+  // Show loading state
+  if (isLoading || !user) {
+    return <DashboardSkeleton />;
+  }
 
   // Update URL when view changes
   const handleViewChange = (view: DashboardView) => {
@@ -78,7 +86,7 @@ export function DashboardClient() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Welcome, {user.firstName}! 👋
+                Hoş Geldin, {user?.fullName || user?.email}! 👋
               </h1>
               <p className="mt-1 text-gray-600">{getViewDescription()}</p>
             </div>
@@ -151,9 +159,7 @@ export function DashboardClient() {
       <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {/* Universal Stats Cards */}
         <div className="mb-8 transition-all duration-300 ease-in-out">
-          <div className="p-8 text-center text-gray-600">
-            Dashboard Stats Component
-          </div>
+          <DashboardStats user={user} />
         </div>
 
         {/* Main Content Grid */}
@@ -161,25 +167,19 @@ export function DashboardClient() {
           {/* Left Column - Charts and Analytics */}
           <div className="space-y-8 lg:col-span-2">
             <div className="transition-all duration-300 ease-in-out">
-              <div className="p-8 text-center text-gray-600">
-                Dashboard Charts Component
-              </div>
+              <DashboardCharts user={user} />
             </div>
 
             {/* Context-Aware Quick Actions */}
             <div className="transition-all duration-300 ease-in-out">
-              <div className="p-8 text-center text-gray-600">
-                Quick Actions Component
-              </div>
+              <QuickActions user={user} />
             </div>
           </div>
 
           {/* Right Column - Activity and Recommendations */}
           <div className="space-y-8">
             <div className="transition-all duration-300 ease-in-out">
-              <div className="p-8 text-center text-gray-600">
-                Activity Timeline Component
-              </div>
+              <ActivityTimeline user={user} />
             </div>
 
             {/* Cross-Promotion Recommendations */}

@@ -503,6 +503,7 @@ export {
   useProfileValidation,
 } from './useProfile';
 export { useDashboard, useDashboardRefresh } from './useDashboard';
+export { useDashboardStats } from './dashboard/useDashboardStats';
 export { useProposal } from './useProposal';
 export { useProposalEligibility } from './useProposalEligibility';
 export { useFreelancerProposals } from './useFreelancerProposals';
