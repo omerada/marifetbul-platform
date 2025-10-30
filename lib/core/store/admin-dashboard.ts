@@ -56,6 +56,20 @@ export interface AdminDashboardState {
     customerSatisfaction: number;
   } | null;
 
+  // Search metrics (Sprint 1 - Story 1.3.3)
+  searchMetrics: {
+    totalSearches: number;
+    uniqueSearchers: number;
+    zeroResultSearches: number;
+    zeroResultRate: number;
+    clickThroughRate: number;
+    searchToOrderConversionRate: number;
+    conversionRate: number;
+    averageResultCount: number;
+    topKeywords: string[];
+    zeroResultKeywords: string[];
+  } | null;
+
   // System health
   systemHealth: {
     status: 'healthy' | 'warning' | 'critical' | 'unknown';
@@ -135,6 +149,7 @@ export type AdminDashboardStore = AdminDashboardState & AdminDashboardActions;
 const initialState: AdminDashboardState = {
   backendData: null,
   stats: null,
+  searchMetrics: null,
   systemHealth: null,
   trends: null,
   topPackages: null,
@@ -187,6 +202,23 @@ function transformBackendData(
       repeatPurchaseRate: dto.businessMetrics?.repeatPurchaseRate || 0,
       customerSatisfaction: dto.businessMetrics?.customerSatisfactionScore || 0,
     },
+
+    // Search metrics (Sprint 1 - Story 1.3.3)
+    searchMetrics: dto.searchMetrics
+      ? {
+          totalSearches: dto.searchMetrics.totalSearches || 0,
+          uniqueSearchers: dto.searchMetrics.uniqueSearchers || 0,
+          zeroResultSearches: dto.searchMetrics.zeroResultSearches || 0,
+          zeroResultRate: dto.searchMetrics.zeroResultRate || 0,
+          clickThroughRate: dto.searchMetrics.clickThroughRate || 0,
+          searchToOrderConversionRate:
+            dto.searchMetrics.searchToOrderConversionRate || 0,
+          conversionRate: dto.searchMetrics.conversionRate || 0,
+          averageResultCount: dto.searchMetrics.averageResultCount || 0,
+          topKeywords: dto.searchMetrics.topKeywords || [],
+          zeroResultKeywords: dto.searchMetrics.zeroResultKeywords || [],
+        }
+      : null,
 
     systemHealth: {
       status:
@@ -446,6 +478,7 @@ export const useAdminDashboardSelectors = () => {
 
     // Stats
     stats: store.stats,
+    searchMetrics: store.searchMetrics,
     systemHealth: store.systemHealth,
     trends: store.trends,
     topPackages: store.topPackages,
@@ -457,6 +490,13 @@ export const useAdminDashboardSelectors = () => {
     totalRevenue: store.stats?.totalRevenue || 0,
     activeUsers: store.stats?.activeUsers || 0,
     pendingOrders: store.stats?.pendingOrders || 0,
+
+    // Search metrics computed (Sprint 1 - Story 1.3.3)
+    hasSearchData: !!store.searchMetrics,
+    totalSearches: store.searchMetrics?.totalSearches || 0,
+    searchCTR: store.searchMetrics?.clickThroughRate || 0,
+    searchConversionRate: store.searchMetrics?.searchToOrderConversionRate || 0,
+    zeroResultRate: store.searchMetrics?.zeroResultRate || 0,
 
     // Chart data
     hasChartData: !!store.trends,

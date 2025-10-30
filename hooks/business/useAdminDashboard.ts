@@ -107,6 +107,7 @@ export function useAdminDashboard() {
   return {
     // Data selectors
     stats: selectors.stats,
+    searchMetrics: selectors.searchMetrics,
     systemHealth: selectors.systemHealth,
     trends: selectors.trends,
     topPackages: selectors.topPackages,
@@ -119,6 +120,13 @@ export function useAdminDashboard() {
     totalRevenue: selectors.totalRevenue,
     activeUsers: selectors.activeUsers,
     pendingOrders: selectors.pendingOrders,
+
+    // Search metrics computed (Sprint 1 - Story 1.3.3)
+    hasSearchData: selectors.hasSearchData,
+    totalSearches: selectors.totalSearches,
+    searchCTR: selectors.searchCTR,
+    searchConversionRate: selectors.searchConversionRate,
+    zeroResultRate: selectors.zeroResultRate,
 
     // Chart data
     hasChartData: selectors.hasChartData,

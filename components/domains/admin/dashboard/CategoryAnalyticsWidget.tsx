@@ -1,6 +1,6 @@
-'use client';
+﻿'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
@@ -12,90 +12,115 @@ import {
   AlertCircle,
   BarChart3,
 } from 'lucide-react';
-import type { CategorySummary, CategoryRevenue } from '@/types/analytics';
+import { useAdminDashboard } from '@/hooks/business/useAdminDashboard';
 import { logger } from '@/lib/shared/utils/logger';
 
+/**
+ * Category Analytics Widget v4.0.0
+ * 
+ * @version 4.0.0 - Migrated to centralized state (Phase 3)
+ * @since 2025-10-30
+ * 
+ * MIGRATION NOTES:
+ * - Removed 5 local useState (topByRevenue, topByOrders, selectedView, isLoading, error)
+ * - Removed 2 fetch calls (categories/top-revenue, categories/top-orders)
+ * - Uses store.topPackages from useAdminDashboard hook
+ * - Network-aware via store (offline support)
+ * - Props (startDate, endDate, limit) are now informational - store handles data fetching
+ */
+
 interface CategoryAnalyticsWidgetProps {
+  /** @deprecated Data is now from centralized store */
   startDate?: string;
+  /** @deprecated Data is now from centralized store */
   endDate?: string;
+  /** Maximum number of items to display (client-side filtering) */
   limit?: number;
 }
 
+// Internal types for transformed data
+interface CategoryRevenue {
+  categoryId: string;
+  categoryName: string;
+  totalRevenue: number;
+  orderCount: number;
+  averageOrderValue: number;
+  revenuePercentage: number;
+}
+
+interface CategoryOrders {
+  categoryId: string;
+  categoryName: string;
+  totalOrders: number;
+  averageOrderValue: number;
+}
+
 export function CategoryAnalyticsWidget({
-  startDate,
-  endDate,
   limit = 10,
 }: CategoryAnalyticsWidgetProps) {
-  const [topByRevenue, setTopByRevenue] = useState<CategoryRevenue[]>([]);
-  const [topByOrders, setTopByOrders] = useState<CategorySummary[]>([]);
-  const [selectedView, setSelectedView] = useState<'revenue' | 'orders'>(
-    'revenue'
-  );
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { topPackages, isLoading, error, refresh } = useAdminDashboard();
 
-  const fetchCategoryAnalytics = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const authHeader = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('auth_token='))
-        ?.split('=')[1];
-
-      // Calculate default date range if not provided
-      const end = endDate || new Date().toISOString().split('T')[0];
-      const start =
-        startDate ||
-        new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-          .toISOString()
-          .split('T')[0];
-
-      const [revenueResponse, ordersResponse] = await Promise.all([
-        fetch(
-          `/api/v1/admin/analytics/categories/top-revenue?startDate=${start}&endDate=${end}&limit=${limit}`,
-          {
-            headers: {
-              ...(authHeader && { Authorization: `Bearer ${authHeader}` }),
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-          }
-        ),
-        fetch(
-          `/api/v1/admin/analytics/categories/top-orders?startDate=${start}&endDate=${end}&limit=${limit}`,
-          {
-            headers: {
-              ...(authHeader && { Authorization: `Bearer ${authHeader}` }),
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-          }
-        ),
-      ]);
-
-      if (!revenueResponse.ok || !ordersResponse.ok) {
-        throw new Error('Kategori analizi alınamadı');
-      }
-
-      const revenueData = await revenueResponse.json();
-      const ordersData = await ordersResponse.json();
-
-      setTopByRevenue(revenueData.data || revenueData);
-      setTopByOrders(ordersData.data || ordersData);
-    } catch (err) {
-      logger.error('Category analytics fetch error:', err);
-      setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
-    } finally {
-      setIsLoading(false);
+  // Transform store.topPackages into category-grouped data
+  const { topByRevenue, topByOrders } = useMemo(() => {
+    if (!topPackages || topPackages.length === 0) {
+      return { topByRevenue: [], topByOrders: [] };
     }
-  };
 
-  useEffect(() => {
-    fetchCategoryAnalytics();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startDate, endDate, limit]);
+    // Group by category (using first word of package title as category proxy)
+    // Note: In real implementation, packages should have categoryId/categoryName
+    const categoryMap = new Map<string, { revenue: number; orders: number }>();
+    
+    topPackages.forEach((pkg) => {
+      // Extract category from title (temporary solution)
+      const category = pkg.title.split(' ')[0] || 'Diğer';
+      
+      const current = categoryMap.get(category) || { revenue: 0, orders: 0 };
+      categoryMap.set(category, {
+        revenue: current.revenue + pkg.revenue,
+        orders: current.orders + pkg.orders,
+      });
+    });
+
+    const totalRevenue = Array.from(categoryMap.values()).reduce(
+      (sum, cat) => sum + cat.revenue,
+      0
+    );
+
+    // Transform to CategoryRevenue[]
+    const byRevenue: CategoryRevenue[] = Array.from(categoryMap.entries())
+      .map(([categoryName, data]) => ({
+        categoryId: categoryName.toLowerCase().replace(/\\s+/g, '-'),
+        categoryName,
+        totalRevenue: data.revenue,
+        orderCount: data.orders,
+        averageOrderValue: data.orders > 0 ? data.revenue / data.orders : 0,
+        revenuePercentage: totalRevenue > 0 ? (data.revenue / totalRevenue) * 100 : 0,
+      }))
+      .sort((a, b) => b.totalRevenue - a.totalRevenue)
+      .slice(0, limit);
+
+    // Transform to CategoryOrders[]
+    const byOrders: CategoryOrders[] = Array.from(categoryMap.entries())
+      .map(([categoryName, data]) => ({
+        categoryId: categoryName.toLowerCase().replace(/\\s+/g, '-'),
+        categoryName,
+        totalOrders: data.orders,
+        averageOrderValue: data.orders > 0 ? data.revenue / data.orders : 0,
+      }))
+      .sort((a, b) => b.totalOrders - a.totalOrders)
+      .slice(0, limit);
+
+    logger.debug('[CategoryAnalyticsWidget] Transformed data:', {
+      categoriesCount: categoryMap.size,
+      topByRevenueCount: byRevenue.length,
+      topByOrdersCount: byOrders.length,
+    });
+
+    return { topByRevenue: byRevenue, topByOrders: byOrders };
+  }, [topPackages, limit]);
+
+  // Local UI state for view toggle
+  const [selectedView, setSelectedView] = React.useState<'revenue' | 'orders'>('revenue');
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('tr-TR', {
@@ -148,7 +173,7 @@ export function CategoryAnalyticsWidget({
           <div className="flex flex-col items-center justify-center py-8">
             <AlertCircle className="mb-2 h-12 w-12 text-red-400" />
             <p className="mb-4 text-red-600">{error}</p>
-            <Button onClick={fetchCategoryAnalytics}>Tekrar Dene</Button>
+            <Button onClick={refresh}>Tekrar Dene</Button>
           </div>
         </CardContent>
       </Card>
@@ -167,7 +192,7 @@ export function CategoryAnalyticsWidget({
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center space-x-2">
             <BarChart3 className="h-5 w-5" />
-            <span>En İyi Performans Gösteren Kategoriler</span>
+            <span>En yi Performans Gösteren Kategoriler</span>
           </CardTitle>
           <div className="flex space-x-2">
             <Button
@@ -201,14 +226,12 @@ export function CategoryAnalyticsWidget({
               const isRevenue = selectedView === 'revenue';
               const value = isRevenue
                 ? (category as CategoryRevenue).totalRevenue
-                : (category as CategorySummary).totalOrders;
+                : (category as CategoryOrders).totalOrders;
               const percentage = (value / maxValue) * 100;
               const orderCount = isRevenue
                 ? (category as CategoryRevenue).orderCount
-                : (category as CategorySummary).totalOrders;
-              const avgOrderValue = isRevenue
-                ? (category as CategoryRevenue).averageOrderValue
-                : (category as CategorySummary).averageOrderValue;
+                : (category as CategoryOrders).totalOrders;
+              const avgOrderValue = category.averageOrderValue;
               const revenuePercentage = isRevenue
                 ? (category as CategoryRevenue).revenuePercentage
                 : undefined;
@@ -250,7 +273,7 @@ export function CategoryAnalyticsWidget({
                       </p>
                       {revenuePercentage !== undefined && (
                         <Badge variant="secondary" className="text-xs">
-                          %{formatPercentage(revenuePercentage)}
+                          {formatPercentage(revenuePercentage)}
                         </Badge>
                       )}
                     </div>

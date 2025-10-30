@@ -13,7 +13,8 @@
 export { AdminDashboard } from './AdminDashboard';
 export { AdminAnalytics } from './AdminAnalytics';
 export { AdminReports } from './AdminReports';
-export { default as SystemHealthWidget } from './SystemHealthWidget';
+export { SystemHealthWidget } from './SystemHealthWidget';
+export { default as SystemHealthWidgetCompat } from './SystemHealthWidget'; // Backward compatibility
 
 // Comment Moderation Components
 export * from './comments';
