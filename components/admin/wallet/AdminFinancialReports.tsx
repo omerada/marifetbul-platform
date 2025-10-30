@@ -20,7 +20,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
@@ -41,6 +41,7 @@ import {
   FileText,
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
+import { getRevenueBreakdown } from '@/lib/api/admin-analytics';
 
 // ================================================
 // TYPES
@@ -93,27 +94,26 @@ export const AdminFinancialReports: React.FC = () => {
 
   // ==================== DATA LOADING ====================
 
-  const loadFinancialData = async () => {
+  const loadFinancialData = useCallback(async () => {
     setIsLoading(true);
     try {
-      // TODO: Replace with actual API calls
-      // const response = await fetch(`/api/admin/financial-reports?startDate=${startDate}&endDate=${endDate}`);
-      // const data = await response.json();
+      // Real API call to backend analytics
+      const data = await getRevenueBreakdown(startDate, endDate);
 
-      // Mock data for now
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
+      // Transform backend response to component state
       setStats({
-        totalRevenue: 847250.5,
-        totalPayouts: 742100.25,
-        pendingPayouts: 52350.0,
-        completedPayouts: 689750.25,
-        averageTransactionValue: 1255.75,
-        transactionCount: 674,
-        activeWallets: 1243,
-        totalCommission: 105150.25,
+        totalRevenue: data.summary.grossRevenue,
+        totalPayouts: data.summary.sellerEarnings,
+        pendingPayouts: 0, // This would come from a separate payout endpoint
+        completedPayouts: data.summary.sellerEarnings,
+        averageTransactionValue: data.transactions.averageOrderValue,
+        transactionCount: data.transactions.orderCount,
+        activeWallets: data.sellerStats.activeSellers,
+        totalCommission: data.summary.platformFee,
       });
 
+      // TODO: Transform volumeData from daily analytics
+      // For now, keeping mock data for charts
       setVolumeData([
         {
           date: '2025-01-01',
@@ -159,26 +159,44 @@ export const AdminFinancialReports: React.FC = () => {
         },
       ]);
 
+      // Transform payment method data
+      const creditCardAmount = data.paymentMethods.creditCard.amount;
+      const walletAmount = data.paymentMethods.wallet.amount;
+      const totalPaymentAmount = creditCardAmount + walletAmount;
+
       setPayoutMethods([
         {
-          method: 'BANK_TRANSFER',
-          count: 456,
-          amount: 584200,
-          percentage: 78.7,
+          method: 'CREDIT_CARD',
+          count: data.paymentMethods.creditCard.count,
+          amount: creditCardAmount,
+          percentage:
+            totalPaymentAmount > 0
+              ? (creditCardAmount / totalPaymentAmount) * 100
+              : 0,
         },
-        { method: 'IYZICO', count: 218, amount: 157900, percentage: 21.3 },
+        {
+          method: 'WALLET',
+          count: data.paymentMethods.wallet.count,
+          amount: walletAmount,
+          percentage:
+            totalPaymentAmount > 0
+              ? (walletAmount / totalPaymentAmount) * 100
+              : 0,
+        },
       ]);
+
+      toast.success('Finansal veriler yüklendi');
     } catch (error) {
       console.error('Failed to load financial data:', error);
       toast.error('Finansal veriler yüklenemedi');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [startDate, endDate]);
 
   useEffect(() => {
     loadFinancialData();
-  }, [startDate, endDate]);
+  }, [loadFinancialData]);
 
   // ==================== HANDLERS ====================
 
