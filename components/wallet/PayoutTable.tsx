@@ -96,7 +96,6 @@ export function PayoutTable({
   const getMethodLabel = (method: string) => {
     const labels: Record<string, string> = {
       BANK_TRANSFER: 'Banka Transferi',
-      PAYPAL: 'PayPal',
       IYZICO: 'Iyzico',
     };
     return labels[method] || method;

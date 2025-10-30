@@ -38,7 +38,6 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
         return <CreditCard className="h-4 w-4" />;
       case 'bank_transfer':
         return <Building2 className="h-4 w-4" />;
-      case 'paypal':
       case 'digital_wallet':
         return <Wallet className="h-4 w-4" />;
       default:
@@ -122,7 +121,6 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
               <span>
                 {payment.method === 'credit_card' && 'Kredi Kartı'}
                 {payment.method === 'bank_transfer' && 'Havale'}
-                {payment.method === 'paypal' && 'PayPal'}
                 {!payment.method && 'Bilinmiyor'}
               </span>
             </div>

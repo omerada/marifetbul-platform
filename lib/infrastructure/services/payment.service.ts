@@ -7,7 +7,7 @@ export interface CreatePaymentRequest {
   amount: number;
   currency: string;
   type: 'deposit' | 'withdrawal' | 'payment' | 'refund' | 'fee';
-  method: 'credit_card' | 'paypal' | 'bank_transfer' | 'crypto';
+  method: 'credit_card' | 'bank_transfer' | 'crypto';
   entityType?: 'job' | 'package';
   entityId?: string;
   description: string;

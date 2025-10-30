@@ -584,7 +584,7 @@ export interface Payment {
   paymentId?: string; // MSW handler compatibility
   gatewayReference?: string; // MSW handler compatibility
   receiptUrl?: string; // MSW handler compatibility
-  method?: 'credit_card' | 'bank_transfer' | 'paypal'; // Store compatibility
+  method?: 'credit_card' | 'bank_transfer'; // Store compatibility
   escrowStatus?: 'held' | 'released' | 'disputed' | 'pending'; // MSW handler compatibility
   escrowReleaseDate?: string; // MSW handler compatibility
   refundableAmount?: number; // Store compatibility
@@ -651,7 +651,7 @@ export interface CreatePaymentRequest {
   paymentMethodId: string;
   payerId?: string; // MSW handler compatibility
   payeeId?: string; // MSW handler compatibility
-  method?: 'credit_card' | 'bank_transfer' | 'paypal'; // MSW handler compatibility
+  method?: 'credit_card' | 'bank_transfer'; // MSW handler compatibility
 }
 
 export interface CreatePaymentResponse {
@@ -739,7 +739,7 @@ export interface PaymentError {
 
 export interface PaymentMethod {
   id: string;
-  type: 'card' | 'bank' | 'paypal' | 'credit_card'; // Added 'credit_card' for MSW handler compatibility
+  type: 'card' | 'bank' | 'credit_card'; // Added 'credit_card' for MSW handler compatibility
   isDefault: boolean;
   metadata?: Record<string, unknown>; // Made optional for MSW handler compatibility
   createdAt?: string; // MSW handler compatibility

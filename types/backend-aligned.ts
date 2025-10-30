@@ -604,7 +604,6 @@ export type PaymentStatus =
 export type PaymentMethod =
   | 'CREDIT_CARD'
   | 'DEBIT_CARD'
-  | 'PAYPAL'
   | 'IYZICO'
   | 'BANK_TRANSFER';
 

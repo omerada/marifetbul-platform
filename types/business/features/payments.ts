@@ -143,7 +143,7 @@ export interface PaymentTransaction {
 export interface PaymentGateway {
   id: string;
   name: string;
-  type: 'iyzico' | 'paypal' | 'payu' | 'bank';
+  type: 'iyzico' | 'payu' | 'bank';
   isActive: boolean;
   supportedCurrencies: Currency[];
   supportedMethods: PaymentMethod['type'][];

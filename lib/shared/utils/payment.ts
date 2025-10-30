@@ -1,7 +1,7 @@
 // Payment utilities
 export interface PaymentMethod {
   id: string;
-  type: 'credit_card' | 'debit_card' | 'paypal' | 'bank_transfer' | 'crypto';
+  type: 'credit_card' | 'debit_card' | 'bank_transfer' | 'crypto';
   name: string;
   last4?: string;
   expiryMonth?: number;
@@ -67,7 +67,6 @@ export const getPaymentMethodIcon = (type: PaymentMethod['type']): string => {
   const icons = {
     credit_card: '💳',
     debit_card: '💳',
-    paypal: '🅿️',
     bank_transfer: '🏦',
     crypto: '₿',
   };

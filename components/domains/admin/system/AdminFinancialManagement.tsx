@@ -142,12 +142,6 @@ export function AdminFinancialManagement() {
       color: 'bg-green-500',
     },
     {
-      name: 'PayPal',
-      percentage: 8,
-      amount: '₺19,671',
-      color: 'bg-yellow-500',
-    },
-    {
       name: 'Kripto Para',
       percentage: 2,
       amount: '₺4,918',

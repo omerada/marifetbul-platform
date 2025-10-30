@@ -31,7 +31,6 @@ export enum PayoutStatus {
 // Payout Method Enum
 export enum PayoutMethod {
   BANK_TRANSFER = 'BANK_TRANSFER',
-  PAYPAL = 'PAYPAL',
   IYZICO = 'IYZICO',
 }
 
@@ -127,7 +126,6 @@ export interface PayoutRequest {
   method: PayoutMethod;
   bankAccountId?: string; // Payment method ID for bank transfer
   bankAccountInfo?: BankAccountInfo; // Legacy: direct bank info
-  paypalEmail?: string;
   notes?: string;
 }
 

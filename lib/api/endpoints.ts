@@ -695,7 +695,6 @@ export const WEBHOOK_ENDPOINTS = {
 
   // Payment Webhooks
   STRIPE: '/webhooks/stripe',
-  PAYPAL: '/webhooks/paypal',
 } as const;
 
 // ================================================

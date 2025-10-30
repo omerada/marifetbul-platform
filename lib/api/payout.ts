@@ -307,7 +307,6 @@ export function getPayoutStatusLabel(status: Payout['status']): string {
 export function getPayoutMethodLabel(method: Payout['method']): string {
   const labels: Record<Payout['method'], string> = {
     BANK_TRANSFER: 'Banka Transferi',
-    PAYPAL: 'PayPal',
     IYZICO: 'Iyzico',
   };
   return labels[method];

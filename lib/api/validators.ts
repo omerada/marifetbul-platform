@@ -659,7 +659,7 @@ export const PayoutStatusSchema = z.enum([
 /**
  * Payout method schema
  */
-export const PayoutMethodSchema = z.enum(['BANK_TRANSFER', 'PAYPAL', 'IYZICO']);
+export const PayoutMethodSchema = z.enum(['BANK_TRANSFER', 'IYZICO']);
 
 /**
  * Payout schema

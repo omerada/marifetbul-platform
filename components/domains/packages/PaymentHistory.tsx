@@ -54,8 +54,6 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
         return <CreditCard className="h-4 w-4" />;
       case 'bank':
         return <Building2 className="h-4 w-4" />;
-      case 'paypal':
-        return <Wallet className="h-4 w-4" />;
       default:
         return <CreditCard className="h-4 w-4" />;
     }

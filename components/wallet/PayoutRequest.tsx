@@ -9,7 +9,7 @@
  * - Min/max limits display
  * - Eligibility checking
  * - Bank account selection/management
- * - Multiple payment methods (Bank Transfer, PayPal)
+ * - Bank Transfer and Iyzico payment methods
  * - Fee calculation preview
  * - Estimated arrival date
  * - Request tracking
