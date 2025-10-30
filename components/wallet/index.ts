@@ -14,8 +14,6 @@ export { PayoutHistoryTable } from './PayoutHistoryTable';
 // Sprint 1: Enhanced Components
 export { WalletDashboard } from './WalletDashboard';
 export { TransactionHistory } from './TransactionHistory';
-export { PayoutRequest } from './PayoutRequest';
-export { PayoutHistory } from './PayoutHistory';
 
 // Sprint 1, Story 1.2: UI Improvements (5 story points)
 export { TransactionExportModal } from './TransactionExportModal';
