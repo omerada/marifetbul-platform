@@ -97,7 +97,7 @@ export function PayoutTable({
     const labels: Record<string, string> = {
       BANK_TRANSFER: 'Banka Transferi',
       PAYPAL: 'PayPal',
-      STRIPE: 'Stripe',
+      IYZICO: 'Iyzico',
     };
     return labels[method] || method;
   };

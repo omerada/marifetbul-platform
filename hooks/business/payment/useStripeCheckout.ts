@@ -1,61 +1,43 @@
 /**
  * ================================================
- * USE STRIPE CHECKOUT HOOK
+ * USE IYZICO CHECKOUT HOOK
  * ================================================
- * Custom hook for processing Stripe payments with Elements
+ * Custom hook for processing Iyzico payments
  *
  * Features:
- * - Process payment with Stripe Elements
+ * - Process payment with Iyzico Payment Gateway
  * - Handle 3D Secure authentication
  * - Payment confirmation
- * - Error handling for card errors
+ * - Error handling for payment errors
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import type {
-  UseStripeCheckoutReturn,
-  StripePaymentResult,
-  StripePaymentError,
+  UseIyzicoCheckoutReturn,
+  IyzicoPaymentResult,
+  IyzicoPaymentError,
 } from '@/types/business/features/payments';
 
 /**
- * Hook for Stripe checkout processing
+ * Hook for Iyzico checkout processing
  */
-export function useStripeCheckout(): UseStripeCheckoutReturn {
-  const stripe = useStripe();
-  const elements = useElements();
+export function useIyzicoCheckout(): UseIyzicoCheckoutReturn {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   /**
-   * Process payment with Stripe
+   * Process payment with Iyzico
    */
   const processPayment = useCallback(
-    async (clientSecret: string): Promise<StripePaymentResult> => {
-      if (!stripe || !elements) {
-        const errorMessage = 'Stripe yüklenmedi. Lütfen sayfayı yenileyin.';
-        const errorResult: StripePaymentResult = {
-          success: false,
-          error: {
-            type: 'validation_error',
-            message: errorMessage,
-          },
-        };
-        setError(errorMessage);
-        return errorResult;
-      }
-
-      const cardElement = elements.getElement(CardElement);
-
-      if (!cardElement) {
-        const errorMessage = 'Kart bilgileri eksik';
-        const errorResult: StripePaymentResult = {
+    async (token: string): Promise<IyzicoPaymentResult> => {
+      if (!token) {
+        const errorMessage = 'Ödeme tokeni bulunamadı.';
+        const errorResult: IyzicoPaymentResult = {
           success: false,
           error: {
             type: 'validation_error',
@@ -70,21 +52,25 @@ export function useStripeCheckout(): UseStripeCheckoutReturn {
       setError(null);
 
       try {
-        // Confirm card payment
-        const { error: stripeError, paymentIntent } =
-          await stripe.confirmCardPayment(clientSecret, {
-            payment_method: {
-              card: cardElement,
-            },
-          });
+        // Call backend to complete Iyzico payment
+        const response = await fetch('/api/payments/iyzico/complete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token }),
+        });
 
-        if (stripeError) {
-          // Handle Stripe errors
-          const paymentError: StripePaymentError = {
-            type: stripeError.type as StripePaymentError['type'],
-            code: stripeError.code,
-            message: getLocalizedErrorMessage(stripeError),
-            decline_code: stripeError.decline_code,
+        const data = await response.json();
+
+        if (!response.ok) {
+          // Handle API errors
+          const paymentError: IyzicoPaymentError = {
+            type: 'api_error',
+            code: data.errorCode,
+            message: getLocalizedErrorMessage(data),
+            errorCode: data.errorCode,
+            errorMessage: data.errorMessage,
           };
 
           setError(paymentError.message);
@@ -95,21 +81,22 @@ export function useStripeCheckout(): UseStripeCheckoutReturn {
           };
         }
 
-        if (paymentIntent) {
+        if (data.success && data.payment) {
           return {
             success: true,
-            paymentIntent: {
-              id: paymentIntent.id,
-              status: paymentIntent.status,
-              amount: paymentIntent.amount,
-              currency: paymentIntent.currency,
+            payment: {
+              id: data.payment.id,
+              status: data.payment.status,
+              amount: data.payment.amount,
+              currency: data.payment.currency,
+              conversationId: data.payment.conversationId,
             },
           };
         }
 
         // Unexpected case
         const errorMessage = 'Ödeme işlemi tamamlanamadı';
-        const unexpectedError: StripePaymentResult = {
+        const unexpectedError: IyzicoPaymentResult = {
           success: false,
           error: {
             type: 'api_error',
@@ -137,7 +124,7 @@ export function useStripeCheckout(): UseStripeCheckoutReturn {
         setIsProcessing(false);
       }
     },
-    [stripe, elements]
+    []
   );
 
   /**
@@ -156,58 +143,37 @@ export function useStripeCheckout(): UseStripeCheckoutReturn {
 }
 
 /**
- * Get localized error message from Stripe error
+ * Get localized error message from Iyzico error
  */
 function getLocalizedErrorMessage(error: {
-  type?: string;
-  code?: string;
+  errorCode?: string;
+  errorMessage?: string;
   message?: string;
 }): string {
-  // Card errors
-  if (error.type === 'card_error') {
-    if (error.code === 'card_declined') {
-      return 'Kartınız reddedildi. Lütfen farklı bir kart deneyin.';
-    }
-    if (error.code === 'insufficient_funds') {
-      return 'Kartınızda yetersiz bakiye var.';
-    }
-    if (error.code === 'expired_card') {
-      return 'Kartınızın süresi dolmuş.';
-    }
-    if (error.code === 'incorrect_cvc') {
-      return 'CVC kodu hatalı.';
-    }
-    if (error.code === 'incorrect_number') {
-      return 'Kart numarası hatalı.';
-    }
-    if (
-      error.code === 'invalid_expiry_month' ||
-      error.code === 'invalid_expiry_year'
-    ) {
-      return 'Son kullanma tarihi hatalı.';
-    }
-    if (error.code === 'processing_error') {
-      return 'Ödeme işlenirken bir hata oluştu. Lütfen tekrar deneyin.';
-    }
+  // Common Iyzico error codes
+  const errorMessages: Record<string, string> = {
+    '10051': 'Kart numarası geçersiz.',
+    '10005': 'Kartın son kullanma tarihi geçersiz.',
+    '10012': 'Güvenlik kodu (CVV) geçersiz.',
+    '10041': 'Kart limitiniz yetersiz.',
+    '10042': 'Kart limiti aşıldı.',
+    '10047': 'İşleminiz 3D Secure doğrulaması gerektirmektedir.',
+    '10048': '3D Secure doğrulama başarısız.',
+    '10053': 'Kartınız çevrimiçi işlemlere kapalı.',
+    '10084': 'İşleminiz banka tarafından reddedildi.',
+    '10093': 'İşlem tekrar edilemez.',
+  };
+
+  if (error.errorCode && errorMessages[error.errorCode]) {
+    return errorMessages[error.errorCode];
   }
 
-  // Validation errors
-  if (error.type === 'validation_error') {
-    return 'Lütfen tüm bilgileri doğru girdiğinizden emin olun.';
-  }
-
-  // Authentication errors
-  if (error.type === 'authentication_error') {
-    return '3D Secure doğrulama başarısız oldu.';
-  }
-
-  // API errors
-  if (error.type === 'api_error') {
-    return 'Ödeme hizmeti şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.';
-  }
-
-  // Default
-  return error.message || 'Ödeme işlemi sırasında bir hata oluştu';
+  // Return original message or default
+  return (
+    error.errorMessage ||
+    error.message ||
+    'Ödeme işlemi sırasında bir hata oluştu'
+  );
 }
 
-export default useStripeCheckout;
+export default useIyzicoCheckout;

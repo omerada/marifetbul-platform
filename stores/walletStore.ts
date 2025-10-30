@@ -226,7 +226,7 @@ export const useWalletStore = create<WalletStore>()(
         try {
           const responseData = await payoutApi.createPayout({
             amount: data.amount,
-            method: data.method as 'BANK_TRANSFER' | 'PAYPAL' | 'STRIPE',
+            method: data.method as 'BANK_TRANSFER' | 'PAYPAL' | 'IYZICO',
             bankAccountId: data.bankAccountId,
             paypalEmail: data.paypalEmail,
           });

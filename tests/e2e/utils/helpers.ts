@@ -244,25 +244,24 @@ export async function createPackage(
  * Payment helpers
  */
 
-export async function fillStripeTestCard(page: Page): Promise<void> {
-  // Switch to Stripe iframe
-  const stripeFrame = page
-    .frameLocator('iframe[name^="__privateStripeFrame"]')
-    .first();
+export async function fillIyzicoTestCard(page: Page): Promise<void> {
+  // Iyzico test card information
+  // In real implementation, this would interact with Iyzico's payment form
 
-  // Fill card number
-  await stripeFrame
-    .locator('input[name="cardnumber"]')
-    .fill('4242424242424242');
+  // Fill card holder name
+  await page.locator('input[name="cardHolderName"]').fill('Test User');
 
-  // Fill expiry
-  await stripeFrame.locator('input[name="exp-date"]').fill('12/34');
+  // Fill card number (Iyzico test card)
+  await page.locator('input[name="cardNumber"]').fill('5528790000000008');
+
+  // Fill expiry month
+  await page.locator('input[name="expireMonth"]').fill('12');
+
+  // Fill expiry year
+  await page.locator('input[name="expireYear"]').fill('2030');
 
   // Fill CVC
-  await stripeFrame.locator('input[name="cvc"]').fill('123');
-
-  // Fill ZIP
-  await stripeFrame.locator('input[name="postal"]').fill('12345');
+  await page.locator('input[name="cvc"]').fill('123');
 }
 
 /**

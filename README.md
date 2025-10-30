@@ -36,7 +36,7 @@ Modern, ölçeklenebilir ve güvenli freelance platformu. Spring Boot backend + 
 - ✅ **İş İlanları**: Employer'ların proje ilanları oluşturması
 - ✅ **Teklif Sistemi**: Freelancer'ların işlere teklif vermesi
 - ✅ **Mesajlaşma**: Real-time mesajlaşma sistemi
-- ✅ **Ödeme Sistemi**: Stripe entegrasyonu ile güvenli ödemeler
+- ✅ **Ödeme Sistemi**: Iyzico entegrasyonu ile güvenli ödemeler
 - ✅ **Review & Rating**: İki yönlü değerlendirme sistemi
 - ✅ **Media Upload**: Cloudinary ile görsel yükleme ve optimizasyon
 - ✅ **Analytics Dashboard**: Paket ve kullanıcı istatistikleri
@@ -87,7 +87,7 @@ Modern, ölçeklenebilir ve güvenli freelance platformu. Spring Boot backend + 
 ├── JWT (jjwt 0.12.6)         # Token authentication
 ├── MapStruct 1.6.3           # DTO mapping
 ├── Lombok 1.18.36            # Code generation
-├── Stripe SDK                 # Payment processing
+├── Iyzico SDK                 # Payment processing
 ├── SendGrid                   # Email service
 ├── AWS S3                     # File storage
 └── Sentry                     # Error tracking
@@ -259,9 +259,10 @@ CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_API_SECRET=your-api-secret
 NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=marifetbul_packages
 
-# Stripe (Payment - Optional for development)
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_SECRET_KEY=sk_test_...
+# Iyzico (Payment - Required for production)
+NEXT_PUBLIC_IYZICO_API_KEY=your-api-key
+IYZICO_SECRET_KEY=your-secret-key
+IYZICO_BASE_URL=https://sandbox-api.iyzipay.com
 
 # Firebase Push Notifications (Optional)
 NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key

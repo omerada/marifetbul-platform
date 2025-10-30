@@ -32,13 +32,13 @@ export enum PayoutStatus {
 export enum PayoutMethod {
   BANK_TRANSFER = 'BANK_TRANSFER',
   PAYPAL = 'PAYPAL',
-  STRIPE = 'STRIPE',
+  IYZICO = 'IYZICO',
 }
 
 // Legacy Payout Method Enum (for backward compatibility)
 export enum PayoutMethodEnum {
   BANK_TRANSFER = 'BANK_TRANSFER',
-  STRIPE_PAYOUT = 'STRIPE_PAYOUT',
+  IYZICO_PAYOUT = 'IYZICO_PAYOUT',
   WALLET_TRANSFER = 'WALLET_TRANSFER',
 }
 
@@ -139,7 +139,7 @@ export interface Payout {
   method: PayoutMethod;
   status: PayoutStatus;
   bankAccountInfo?: BankAccountInfo;
-  stripePayoutId?: string;
+  iyzicoPayoutId?: string;
   description: string;
   failureReason?: string;
   requestedAt: string;

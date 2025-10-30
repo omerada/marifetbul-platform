@@ -46,9 +46,9 @@ export interface AppConfig {
     cloudinaryUrl?: string;
   };
   payment: {
-    stripePublishableKey: string;
-    stripeSecretKey: string;
-    webhookSecret: string;
+    iyzicoApiKey: string;
+    iyzicoSecretKey: string;
+    iyzicoBaseUrl: string;
   };
   analytics: {
     googleAnalyticsId?: string;
@@ -149,10 +149,10 @@ function createConfig(): AppConfig {
       cloudinaryUrl: process.env.CLOUDINARY_URL,
     },
     payment: {
-      stripePublishableKey:
-        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '',
-      stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
-      webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
+      iyzicoApiKey: process.env.NEXT_PUBLIC_IYZICO_API_KEY || '',
+      iyzicoSecretKey: process.env.IYZICO_SECRET_KEY || '',
+      iyzicoBaseUrl:
+        process.env.IYZICO_BASE_URL || 'https://sandbox-api.iyzipay.com',
     },
     analytics: {
       googleAnalyticsId: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,

@@ -68,8 +68,8 @@ export interface UpdatePaymentMethodRequest {
   isDefault?: boolean;
 }
 
-export interface AttachStripePaymentMethodRequest {
-  stripePaymentMethodId: string;
+export interface AttachIyzicoPaymentMethodRequest {
+  iyzicoPaymentCardKey: string;
   nickname?: string;
 }
 
@@ -209,37 +209,37 @@ export async function setPaymentMethodAsDefault(
 }
 
 // ============================================================================
-// STRIPE INTEGRATION
+// IYZICO INTEGRATION
 // ============================================================================
 
 /**
- * Attach Stripe payment method
- * POST /api/v1/payment-methods/stripe/attach
+ * Attach Iyzico payment method
+ * POST /api/v1/payment-methods/iyzico/attach
  *
- * @param {AttachStripePaymentMethodRequest} data - Stripe payment method data
+ * @param {AttachIyzicoPaymentMethodRequest} data - Iyzico payment method data
  * @returns {Promise<PaymentMethod>} Created payment method
  */
-export async function attachStripePaymentMethod(
-  data: AttachStripePaymentMethodRequest
+export async function attachIyzicoPaymentMethod(
+  data: AttachIyzicoPaymentMethodRequest
 ): Promise<PaymentMethod> {
   const response = await apiClient.post<PaymentMethod>(
-    '/payment-methods/stripe/attach',
+    '/payment-methods/iyzico/attach',
     data
   );
   return PaymentMethodSchema.parse(response);
 }
 
 /**
- * Detach Stripe payment method
- * DELETE /api/v1/payment-methods/stripe/{id}
+ * Detach Iyzico payment method
+ * DELETE /api/v1/payment-methods/iyzico/{id}
  *
  * @param {string} paymentMethodId - Payment method UUID
  * @returns {Promise<void>}
  */
-export async function detachStripePaymentMethod(
+export async function detachIyzicoPaymentMethod(
   paymentMethodId: string
 ): Promise<void> {
-  await apiClient.delete(`/payment-methods/stripe/${paymentMethodId}`);
+  await apiClient.delete(`/payment-methods/iyzico/${paymentMethodId}`);
 }
 
 // ============================================================================

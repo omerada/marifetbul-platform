@@ -279,10 +279,10 @@ function PaymentMethodSelector({
       description: 'EFT ile banka hesabınıza',
     },
     {
-      value: PayoutMethod.STRIPE,
-      label: 'Stripe',
+      value: PayoutMethod.IYZICO,
+      label: 'Iyzico',
       icon: CreditCard,
-      description: 'Stripe hesabınıza',
+      description: 'Iyzico hesabınıza',
     },
   ];
 

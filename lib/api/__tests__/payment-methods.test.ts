@@ -47,7 +47,7 @@ describe('Payment Methods API Service', () => {
     isDefault: true,
     isVerified: true,
     nickname: 'My Business Card',
-    gatewayName: 'STRIPE',
+    gatewayName: 'IYZICO',
     createdAt: '2025-01-01T00:00:00Z',
     updatedAt: '2025-01-01T00:00:00Z',
   };

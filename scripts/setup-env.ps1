@@ -59,9 +59,10 @@ SENDGRID_API_KEY=your-sendgrid-api-key-here
 EMAIL_FROM=noreply@marifetbul.com
 EMAIL_FROM_NAME=MarifetBul
 
-# Payment (Stripe)
-STRIPE_API_KEY=sk_test_your-stripe-key-here
-STRIPE_WEBHOOK_SECRET=whsec_your-webhook-secret-here
+# Payment (Iyzico)
+IYZICO_API_KEY=your-iyzico-api-key-here
+IYZICO_SECRET_KEY=your-iyzico-secret-key-here
+IYZICO_BASE_URL=https://sandbox-api.iyzipay.com
 
 # AWS S3 (Development - LocalStack)
 AWS_S3_BUCKET=marifetbul-dev

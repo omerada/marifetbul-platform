@@ -143,7 +143,7 @@ export interface PaymentTransaction {
 export interface PaymentGateway {
   id: string;
   name: string;
-  type: 'stripe' | 'paypal' | 'iyzico' | 'payu' | 'bank';
+  type: 'iyzico' | 'paypal' | 'payu' | 'bank';
   isActive: boolean;
   supportedCurrencies: Currency[];
   supportedMethods: PaymentMethod['type'][];
@@ -221,38 +221,39 @@ export interface PaymentIntent {
     | 'succeeded'
     | 'cancelled';
   createdAt: string;
-  stripePaymentIntentId?: string;
+  iyzicoPaymentId?: string;
 }
 
 // ================================================
-// STRIPE-SPECIFIC TYPES
+// IYZICO-SPECIFIC TYPES
 // ================================================
 
-export interface StripePaymentIntentRequest {
+export interface IyzicoPaymentRequest {
   orderId: string;
   amount: number;
   currency: Currency;
   metadata?: Record<string, string>;
 }
 
-export interface StripePaymentIntentResponse {
+export interface IyzicoPaymentResponse {
   paymentId: string;
-  clientSecret: string;
+  token: string;
   amount: number;
   currency: Currency;
   status: PaymentIntent['status'];
+  threeDSHtmlContent?: string;
 }
 
-export interface StripeCardElementOptions {
-  hidePostalCode?: boolean;
-  iconStyle?: 'default' | 'solid';
-  style?: {
-    base?: Record<string, string>;
-    invalid?: Record<string, string>;
-  };
+export interface IyzicoCardOptions {
+  locale?: 'tr' | 'en';
+  cardHolderName?: string;
+  cardNumber?: string;
+  expireMonth?: string;
+  expireYear?: string;
+  cvc?: string;
 }
 
-export interface StripePaymentError {
+export interface IyzicoPaymentError {
   type:
     | 'card_error'
     | 'validation_error'
@@ -261,18 +262,20 @@ export interface StripePaymentError {
   code?: string;
   message: string;
   param?: string;
-  decline_code?: string;
+  errorCode?: string;
+  errorMessage?: string;
 }
 
-export interface StripePaymentResult {
+export interface IyzicoPaymentResult {
   success: boolean;
-  paymentIntent?: {
+  payment?: {
     id: string;
     status: string;
     amount: number;
     currency: string;
+    conversationId?: string;
   };
-  error?: StripePaymentError;
+  error?: IyzicoPaymentError;
 }
 
 // ================================================
@@ -283,14 +286,14 @@ export interface UsePaymentIntentReturn {
   createIntent: (
     orderId: string,
     amount: number
-  ) => Promise<StripePaymentIntentResponse>;
+  ) => Promise<IyzicoPaymentResponse>;
   isCreating: boolean;
   error: string | null;
   clearError: () => void;
 }
 
-export interface UseStripeCheckoutReturn {
-  processPayment: (clientSecret: string) => Promise<StripePaymentResult>;
+export interface UseIyzicoCheckoutReturn {
+  processPayment: (token: string) => Promise<IyzicoPaymentResult>;
   isProcessing: boolean;
   error: string | null;
   clearError: () => void;

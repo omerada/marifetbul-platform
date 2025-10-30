@@ -214,7 +214,7 @@ export const SELECTORS = {
 
   // Payment
   checkoutForm: '[data-testid="checkout-form"]',
-  cardElement: 'iframe[name^="__privateStripeFrame"]',
+  cardElement: '[data-testid="iyzico-payment-form"]',
   payButton: '[data-testid="pay-button"]',
 
   // Toast

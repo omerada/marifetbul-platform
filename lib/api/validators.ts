@@ -613,8 +613,8 @@ export const PaymentSchema = z.object({
   netAmount: z.number().min(0),
   status: PaymentStatusSchema,
   paymentMethod: z.string(),
-  stripePaymentIntentId: z.string().optional(),
-  stripeChargeId: z.string().optional(),
+  iyzicoPaymentId: z.string().optional(),
+  iyzicoTransactionId: z.string().optional(),
   description: z.string().optional(),
   failureReason: z.string().optional(),
   refundedAmount: z.number().min(0).optional(),
@@ -659,7 +659,7 @@ export const PayoutStatusSchema = z.enum([
 /**
  * Payout method schema
  */
-export const PayoutMethodSchema = z.enum(['BANK_TRANSFER', 'PAYPAL', 'STRIPE']);
+export const PayoutMethodSchema = z.enum(['BANK_TRANSFER', 'PAYPAL', 'IYZICO']);
 
 /**
  * Payout schema
@@ -673,8 +673,8 @@ export const PayoutSchema = z.object({
   method: PayoutMethodSchema,
   paymentMethodId: z.string().uuid().optional(),
   paymentMethodDetails: z.string().optional(),
-  stripePayoutId: z.string().optional(),
-  stripeTransferId: z.string().optional(),
+  iyzicoPayoutId: z.string().optional(),
+  iyzicoTransferId: z.string().optional(),
   description: z.string().optional(),
   failureReason: z.string().optional(),
   adminNotes: z.string().optional(),

@@ -9,5 +9,5 @@
  */
 
 export { usePaymentIntent } from './usePaymentIntent';
-export { useStripeCheckout } from './useStripeCheckout';
+export { useIyzicoCheckout } from './useStripeCheckout';
 export { useRefund } from './useRefund';
