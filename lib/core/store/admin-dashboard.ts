@@ -20,6 +20,7 @@ import {
   type AdminDashboardBackendDto,
 } from '@/lib/api/admin-dashboard';
 import { logger } from '@/lib/shared/utils/logger';
+import { networkStatus } from '@/lib/shared/utils/networkStatus';
 
 /**
  * Frontend Dashboard State (transformed from backend DTO)
@@ -61,14 +62,13 @@ export interface AdminDashboardState {
     databaseHealthy: boolean;
     elasticsearchHealthy: boolean;
     uptime: number; // seconds
-    uptimeSeconds: number; // deprecated, use uptime
     responseTime: number; // ms
     heapUsagePercent: number;
     activeConnections: number;
     errorRate: number;
     memoryUsage: number; // percentage
-    cpuUsage: number; // percentage
-    diskUsage: number; // percentage
+    cpuUsage: number; // percentage (not available in backend yet)
+    diskUsage: number; // percentage (not available in backend yet)
     lastCheck: string;
   } | null;
 
@@ -114,6 +114,10 @@ export interface AdminDashboardActions {
 
   // Actions
   refreshAllDashboards: () => Promise<boolean>;
+
+  // Auto-refresh management
+  startAutoRefresh: (intervalMs?: number) => void;
+  stopAutoRefresh: () => void;
 
   // State management
   clearError: () => void;
@@ -196,14 +200,13 @@ function transformBackendData(
       databaseHealthy: dto.systemHealth?.databaseHealthy || false,
       elasticsearchHealthy: dto.systemHealth?.elasticsearchHealthy || false,
       uptime: dto.systemHealth?.uptimeSeconds || 0,
-      uptimeSeconds: dto.systemHealth?.uptimeSeconds || 0,
       responseTime: dto.activityMetrics?.averageResponseTime || 0,
       heapUsagePercent: dto.systemHealth?.heapUsagePercent || 0,
       activeConnections: dto.systemHealth?.activeConnections || 0,
       errorRate: dto.activityMetrics?.errorRate || 0,
       memoryUsage: dto.systemHealth?.heapUsagePercent || 0,
-      cpuUsage: 0, // Not available in current backend DTO
-      diskUsage: 0, // Not available in current backend DTO
+      cpuUsage: 0, // Not available in backend DTO yet
+      diskUsage: 0, // Not available in backend DTO yet
       lastCheck: dto.generatedAt || new Date().toISOString(),
     },
 
@@ -220,8 +223,20 @@ function transformBackendData(
 }
 
 /**
- * Admin Dashboard Store
+ * Admin Dashboard Store with Devtools & Immer
+ *
+ * Features:
+ * - Backend API integration
+ * - Automatic retry logic (via apiClient)
+ * - Offline detection and graceful degradation
+ * - Auto-refresh with network-aware pausing
+ * - Type-safe state management
  */
+
+// Auto-refresh interval reference (outside store for cleanup)
+let autoRefreshInterval: NodeJS.Timeout | null = null;
+let networkStatusUnsubscribe: (() => void) | null = null;
+
 export const useAdminDashboardStore = create<AdminDashboardStore>()(
   devtools(
     immer((set, get) => ({
@@ -266,7 +281,7 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
             state.error = errorMessage;
           });
 
-          throw error;
+          // Don't re-throw - let components handle via state
         }
       },
 
@@ -307,7 +322,7 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
             state.error = errorMessage;
           });
 
-          throw error;
+          // Don't re-throw - let components handle via state
         }
       },
 
@@ -349,7 +364,67 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
 
       // Reset to initial state
       reset: () => {
+        // Clean up auto-refresh
+        get().stopAutoRefresh();
         set(initialState);
+      },
+
+      // Start auto-refresh with network awareness
+      startAutoRefresh: (intervalMs = 30000) => {
+        // Clean up existing interval
+        if (autoRefreshInterval) {
+          clearInterval(autoRefreshInterval);
+        }
+
+        logger.info(`🔄 Starting auto-refresh (interval: ${intervalMs}ms)`);
+
+        // Set up network status monitoring
+        networkStatusUnsubscribe = networkStatus.subscribe((status) => {
+          logger.debug(`📡 Network status changed: ${status}`);
+
+          if (status === 'offline') {
+            // Pause auto-refresh when offline
+            logger.warn('⏸️ Pausing auto-refresh - network offline');
+            if (autoRefreshInterval) {
+              clearInterval(autoRefreshInterval);
+              autoRefreshInterval = null;
+            }
+          } else if (status === 'online' && !autoRefreshInterval) {
+            // Resume auto-refresh when back online
+            logger.info('▶️ Resuming auto-refresh - network online');
+            autoRefreshInterval = setInterval(() => {
+              const currentStatus = networkStatus.getStatus();
+              if (currentStatus !== 'offline') {
+                get().fetchDashboard(get().periodDays);
+              }
+            }, intervalMs);
+          }
+        });
+
+        // Start initial interval
+        autoRefreshInterval = setInterval(() => {
+          const currentStatus = networkStatus.getStatus();
+          if (currentStatus !== 'offline') {
+            get().fetchDashboard(get().periodDays);
+          } else {
+            logger.debug('⏭️ Skipping auto-refresh - network offline');
+          }
+        }, intervalMs);
+      },
+
+      // Stop auto-refresh
+      stopAutoRefresh: () => {
+        logger.info('🛑 Stopping auto-refresh');
+
+        if (autoRefreshInterval) {
+          clearInterval(autoRefreshInterval);
+          autoRefreshInterval = null;
+        }
+
+        if (networkStatusUnsubscribe) {
+          networkStatusUnsubscribe();
+          networkStatusUnsubscribe = null;
+        }
       },
     })),
     {
