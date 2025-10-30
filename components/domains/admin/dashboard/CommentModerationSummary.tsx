@@ -24,7 +24,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { useCommentModeration } from '@/hooks/business/useCommentModeration';
-import { DashboardWidgetSkeleton } from '../moderation/LoadingSkeletons';
+import { DashboardWidgetSkeleton } from '../moderation/reviews/LoadingSkeletons';
 
 // ================================================
 // TYPES

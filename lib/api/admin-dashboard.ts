@@ -92,6 +92,8 @@ export interface AdminDashboardBackendDto {
     zeroResultRate: number;
     clickThroughRate: number;
     searchToOrderConversionRate: number;
+    conversionRate?: number; // Added Sprint 1 - backend enhancement
+    averageResultCount?: number; // Added Sprint 1 - backend enhancement
     topKeywords: string[];
     zeroResultKeywords: string[];
     searchesByCategory: Record<string, number>;
@@ -249,6 +251,25 @@ export const adminDashboardApi = {
     );
 
     return response.success && response.data === true;
+  },
+
+  /**
+   * Get dashboard analytics with transformed chart data
+   * @param period - Time period: day, week, month, year
+   * @returns Transformed analytics data for charts
+   */
+  async getAnalytics(
+    period: 'day' | 'week' | 'month' | 'year' = 'week'
+  ): Promise<Record<string, unknown>> {
+    const response = await apiClient.get<ApiResponse<Record<string, unknown>>>(
+      `/dashboard/analytics?period=${period}`
+    );
+
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Analytics verisi alınamadı');
+    }
+
+    return response.data;
   },
 };
 

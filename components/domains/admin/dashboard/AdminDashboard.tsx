@@ -25,7 +25,7 @@ import {
   PendingTasksCard,
   DisputeStatsCard,
 } from './admin-dashboard/components';
-import { SearchAnalyticsWidget } from '@/components/admin/dashboard/SearchAnalyticsWidget';
+import { SearchAnalyticsWidget } from './SearchAnalyticsWidget';
 
 /**
  * AdminDashboard - Main component

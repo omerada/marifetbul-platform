@@ -30,7 +30,7 @@ export type {
 } from '.';
 
 // Comment Dashboard Widgets
-export { CommentModerationSummary } from '@/components/admin/dashboard/CommentModerationSummary';
+export { CommentModerationSummary } from '../dashboard/CommentModerationSummary';
 export { CommentModerationStats } from '../dashboard/comments/CommentModerationStats';
 export { PendingCommentsWidget } from '../dashboard/comments/PendingCommentsWidget';
 export { RecentCommentsPreview } from '../dashboard/comments/RecentCommentsPreview';

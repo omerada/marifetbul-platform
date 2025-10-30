@@ -1,48 +1,12 @@
-/**
- * ================================================
- * ADMIN DASHBOARD COMPONENTS - DEPRECATED
- * ================================================
- * @deprecated This directory is deprecated. Use @/components/domains/admin/dashboard/comments instead.
- * These re-exports are maintained for backward compatibility only.
- * All new code should import from the canonical location.
+﻿/**
+ * ADMIN DASHBOARD - DEPRECATED LOCATION
  *
- * Migration Path:
- * OLD: import { RecentCommentsPreview } from '@/components/admin/dashboard'
- * NEW: import { RecentCommentsPreview } from '@/components/domains/admin/dashboard/comments'
+ * All components moved to: @/components/domains/admin/dashboard
+ * This file provides backward compatibility.
+ *
+ * Sprint 1 - October 30, 2025
+ * - 10 duplicate components removed
+ * - All imports redirected to canonical location
  */
 
-// Re-export from canonical location (domains/admin/dashboard/comments)
-export {
-  PendingCommentsWidget,
-  CommentModerationStats,
-  RecentCommentsPreview,
-} from '@/components/domains/admin/dashboard/comments';
-
-// CommentModerationSummary stays here (not duplicated)
-export { CommentModerationSummary } from './CommentModerationSummary';
-
-// SearchAnalyticsWidget stays here (not duplicated)
-export { SearchAnalyticsWidget } from './SearchAnalyticsWidget';
-
-// Sprint 1: Revenue Analytics Components
-export { RevenueBreakdownWidget } from './RevenueBreakdownWidget';
-export { RevenueForecastChart } from './RevenueForecastChart';
-export { RevenueComparisonWidget } from './RevenueComparisonWidget';
-
-// Sprint 1: Category Analytics Components
-export { CategoryAnalyticsWidget } from './CategoryAnalyticsWidget';
-export { CategoryGrowthTrends } from './CategoryGrowthTrends';
-export { CategoryPerformanceSummary } from './CategoryPerformanceSummary';
-
-// Sprint 1: Package Analytics Components
-export { PackagePerformanceWidget } from './PackagePerformanceWidget';
-export { PackageTrendChart } from './PackageTrendChart';
-
-// Re-export types
-export type {
-  PendingCommentsSummary,
-  PendingCommentsWidgetProps,
-  CommentModerationStatsData,
-  CommentModerationStatsProps,
-  RecentCommentsPreviewProps,
-} from '@/components/domains/admin/dashboard/comments';
+export * from '@/components/domains/admin/dashboard';

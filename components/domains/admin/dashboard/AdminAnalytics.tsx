@@ -20,7 +20,7 @@ import {
   CategoryPerformanceSummary,
   PackagePerformanceWidget,
   PackageTrendChart,
-} from '@/components/admin/dashboard';
+} from '.';
 
 type TabType = 'overview' | 'revenue' | 'categories' | 'packages';
 type PeriodType = 'today' | 'week' | 'month' | 'custom';
