@@ -13,6 +13,7 @@
  * @author MarifetBul Development Team
  * @version 1.0.0 - Story 1: Order Detail Page
  */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 'use client';
 
@@ -31,10 +32,17 @@ import { orderApi } from '@/lib/api/orders';
 import type { Order } from '@/lib/api/validators/order';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import {
+  normalizeOrder,
+  canSubmitDelivery,
+  canApproveDelivery,
+  canRequestRevision,
+  getDeliveryInfo,
+} from '@/lib/utils/order-normalization';
 import { AcceptOrderModal } from './AcceptOrderModal';
 import { DeliverySubmissionModal } from './DeliverySubmissionModal';
-import { ApproveDeliveryModal } from './ApproveDeliveryModal';
-import { RequestRevisionModal } from './RequestRevisionModal';
+import { ApproveDeliveryModal } from './ApproveDeliveryModal.v2';
+import { RequestRevisionModal } from './RequestRevisionModal.v2';
 import { CancelOrderModal } from './CancelOrderModal';
 import { DisputeModal } from '@/components/domains/orders/DisputeModal';
 
@@ -68,6 +76,8 @@ export function OrderActions({
   onActionComplete,
   className,
 }: OrderActionsProps) {
+  // Normalize order for consistent property access
+  const orderData = normalizeOrder(order);
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [showDeliveryModal, setShowDeliveryModal] = useState(false);
@@ -139,10 +149,7 @@ export function OrderActions({
       }
 
       // Start Working (IN_PROGRESS)
-      if (
-        order.status === 'IN_PROGRESS' &&
-        !(order as any).delivery?.submittedAt
-      ) {
+      if (order.status === 'IN_PROGRESS' && !orderData.delivery?.submittedAt) {
         actions.push({
           label: 'İşe Başla',
           icon: <PlayCircle className="h-4 w-4" />,
@@ -153,7 +160,7 @@ export function OrderActions({
       }
 
       // Submit Delivery
-      if ((order as any).canSubmitDelivery) {
+      if (canSubmitDelivery(orderData)) {
         actions.push({
           label: 'Teslim Et',
           icon: <Package className="h-4 w-4" />,
@@ -166,7 +173,7 @@ export function OrderActions({
     // Buyer Actions
     if (userRole === 'buyer') {
       // Approve Delivery
-      if ((order as any).canApproveDelivery) {
+      if (canApproveDelivery(orderData)) {
         actions.push({
           label: 'Teslimatı Onayla',
           icon: <CheckCircle className="h-4 w-4" />,
@@ -176,8 +183,8 @@ export function OrderActions({
       }
 
       // Request Revision
-      if ((order as any).canRequestRevision && order.status === 'DELIVERED') {
-        const revisionsLeft = (order as any).revisions?.revisionsRemaining ?? 0;
+      if (canRequestRevision(orderData) && order.status === 'DELIVERED') {
+        const revisionsLeft = orderData.revisions?.revisionsRemaining ?? 0;
         actions.push({
           label: `Revizyon İste (${revisionsLeft} kaldı)`,
           icon: <RefreshCw className="h-4 w-4" />,
@@ -238,39 +245,47 @@ export function OrderActions({
   }
 
   // ================================================
-  // RENDER
+  // RENDER - Mobile optimized
   // ================================================
 
   return (
     <>
-      <div className={cn('flex flex-wrap gap-3', className)}>
+      <div
+        className={cn(
+          'flex flex-col flex-wrap gap-2 sm:flex-row sm:gap-3',
+          className
+        )}
+      >
         {actions.map((action, index) => (
           <Button
             key={index}
             variant={action.variant}
             onClick={action.onClick}
             disabled={action.disabled || action.loading || !!isLoading}
-            className="flex items-center gap-2"
+            className="flex w-full items-center justify-center gap-2 text-sm sm:w-auto"
+            size="sm"
           >
             {action.loading ? (
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
             ) : (
               action.icon
             )}
-            {action.label}
+            <span className="truncate">{action.label}</span>
           </Button>
         ))}
       </div>
 
-      {/* Modals */}
+      {/* Modals - Using normalized order data */}
       {showAcceptModal && (
         <AcceptOrderModal
           isOpen={showAcceptModal}
           onClose={() => setShowAcceptModal(false)}
           order={order as any}
-          onSuccess={(updatedOrder) => {
-            onActionComplete?.(updatedOrder);
+          onSuccess={() => {
             setShowAcceptModal(false);
+            if (onActionComplete) {
+              onActionComplete(order);
+            }
           }}
         />
       )}
@@ -280,9 +295,11 @@ export function OrderActions({
           isOpen={showDeliveryModal}
           onClose={() => setShowDeliveryModal(false)}
           order={order as any}
-          onSuccess={(updatedOrder) => {
-            onActionComplete?.(updatedOrder);
+          onSuccess={() => {
             setShowDeliveryModal(false);
+            if (onActionComplete) {
+              onActionComplete(order);
+            }
           }}
         />
       )}
@@ -291,10 +308,15 @@ export function OrderActions({
         <ApproveDeliveryModal
           isOpen={showApproveModal}
           onClose={() => setShowApproveModal(false)}
+          orderId={order.id}
           order={order as any}
-          onSuccess={(updatedOrder) => {
-            onActionComplete?.(updatedOrder);
+          deliveryNote={getDeliveryInfo(orderData).notes}
+          attachments={getDeliveryInfo(orderData).files}
+          onSuccess={() => {
             setShowApproveModal(false);
+            if (onActionComplete) {
+              onActionComplete(order);
+            }
           }}
         />
       )}
@@ -303,10 +325,14 @@ export function OrderActions({
         <RequestRevisionModal
           isOpen={showRevisionModal}
           onClose={() => setShowRevisionModal(false)}
+          orderId={order.id}
           order={order as any}
-          onSuccess={(updatedOrder) => {
-            onActionComplete?.(updatedOrder);
+          deliveryNote={getDeliveryInfo(orderData).notes}
+          onSuccess={() => {
             setShowRevisionModal(false);
+            if (onActionComplete) {
+              onActionComplete(order);
+            }
           }}
         />
       )}
@@ -317,9 +343,11 @@ export function OrderActions({
           onClose={() => setShowCancelModal(false)}
           order={order as any}
           userRole={userRole}
-          onSuccess={(updatedOrder) => {
-            onActionComplete?.(updatedOrder);
+          onSuccess={() => {
             setShowCancelModal(false);
+            if (onActionComplete) {
+              onActionComplete(order);
+            }
           }}
         />
       )}
@@ -334,11 +362,11 @@ export function OrderActions({
             setShowDisputeModal(false);
             // Refresh order data
             if (onActionComplete) {
-              const optimisticOrder = {
+              const optimisticOrder: typeof order = {
                 ...order,
-                status: 'DISPUTED' as any,
+                status: 'DISPUTED',
               };
-              onActionComplete(optimisticOrder as typeof order);
+              onActionComplete(optimisticOrder);
             }
             toast.success('İtiraz başarıyla oluşturuldu', {
               description:

@@ -225,59 +225,61 @@ export default function EmployerOrderDetailPage() {
   const isCompleted = order.status === 'completed';
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      {/* Header */}
-      <div className="mb-6">
+    <div className="mx-auto max-w-6xl px-3 py-4 sm:px-4 sm:py-8">
+      {/* Header - Mobile optimized */}
+      <div className="mb-4 sm:mb-6">
         <Link
           href="/dashboard/employer/orders"
-          className="text-primary-600 hover:text-primary-700 mb-4 inline-flex items-center"
+          className="text-primary-600 hover:text-primary-700 mb-3 inline-flex items-center text-sm sm:mb-4"
         >
           <ChevronLeft className="mr-1 h-4 w-4" />
           Siparişlere Dön
         </Link>
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="mb-2 text-3xl font-bold text-gray-900">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0 flex-1">
+            <h1 className="mb-2 truncate text-xl font-bold text-gray-900 sm:text-2xl lg:text-3xl">
               Sipariş #{order.orderNumber}
             </h1>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <span
-                className={`rounded-full border px-3 py-1 text-sm font-medium ${getStatusColor(order.status)}`}
+                className={`rounded-full border px-2.5 py-1 text-xs font-medium sm:px-3 sm:text-sm ${getStatusColor(order.status)}`}
               >
                 {getStatusText(order.status)}
               </span>
-              <span className="text-gray-500">
+              <span className="text-xs text-gray-500 sm:text-sm">
                 {formatDate(order.createdAt)}
               </span>
             </div>
           </div>
-          <div className="text-right">
-            <div className="mb-1 text-sm text-gray-500">Toplam Tutar</div>
-            <div className="text-2xl font-bold text-gray-900">
+          <div className="text-left sm:text-right">
+            <div className="mb-1 text-xs text-gray-500 sm:text-sm">
+              Toplam Tutar
+            </div>
+            <div className="text-xl font-bold text-gray-900 sm:text-2xl">
               {formatCurrency(order.amount, order.currency)}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
         {/* Main Content */}
-        <div className="space-y-6 lg:col-span-2">
-          {/* Seller Info */}
-          <Card className="p-6">
-            <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">
-              <User className="h-5 w-5" />
+        <div className="space-y-4 sm:space-y-6 lg:col-span-2">
+          {/* Seller Info - Mobile optimized */}
+          <Card className="p-4 sm:p-6">
+            <h2 className="mb-3 flex items-center gap-2 text-base font-semibold sm:mb-4 sm:text-lg">
+              <User className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
               Satıcı Bilgileri
             </h2>
-            <div className="flex items-center gap-4">
-              <div className="bg-primary-100 flex h-16 w-16 items-center justify-center rounded-full">
-                <User className="text-primary-600 h-8 w-8" />
+            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <div className="bg-primary-100 flex h-12 w-12 shrink-0 items-center justify-center rounded-full sm:h-16 sm:w-16">
+                <User className="text-primary-600 h-6 w-6 sm:h-8 sm:w-8" />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">
+              <div className="min-w-0 flex-1">
+                <h3 className="truncate text-sm font-semibold text-gray-900 sm:text-base">
                   {order.seller?.name || 'Satıcı'}
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="truncate text-xs text-gray-600 sm:text-sm">
                   {order.seller?.email || 'Email bulunamadı'}
                 </p>
               </div>
@@ -289,14 +291,14 @@ export default function EmployerOrderDetailPage() {
             </div>
           </Card>
 
-          {/* Order Details */}
-          <Card className="p-6">
-            <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">
-              <Package className="h-5 w-5" />
+          {/* Order Details - Mobile optimized */}
+          <Card className="p-4 sm:p-6">
+            <h2 className="mb-3 flex items-center gap-2 text-base font-semibold sm:mb-4 sm:text-lg">
+              <Package className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
               Sipariş Detayları
             </h2>
             {order.customOrderDetails ? (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div>
                   <h3 className="mb-2 font-semibold text-gray-900">
                     {order.customOrderDetails.title}

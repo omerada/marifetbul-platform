@@ -33,6 +33,7 @@ import {
   unwrapOrderResponse,
   type OrderWithComputed,
 } from '@/lib/api/orders';
+import { orderHelpers } from './BaseOrderModal';
 import type { OrderCancellationReason } from '@/types/backend-aligned';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -200,9 +201,7 @@ export function CancelOrderModal({
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Paket:</span>
                 <span className="font-medium">
-                  {order.packageDetails?.packageTitle ||
-                    order.customDescription ||
-                    'Özel Sipariş'}
+                  {orderHelpers.getOrderTitle(order)}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -212,8 +211,10 @@ export function CancelOrderModal({
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Toplam Tutar:</span>
                 <span className="font-medium">
-                  {order.financials.total.toFixed(2)}{' '}
-                  {order.financials.currency}
+                  {orderHelpers.formatCurrency(
+                    orderHelpers.getTotalAmount(order),
+                    orderHelpers.getCurrency(order)
+                  )}
                 </span>
               </div>
             </div>

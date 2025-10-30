@@ -3,6 +3,11 @@
  * Sprint 1 Story 1.3: Consolidated from components/dashboard/orders and components/dashboard/client/orders
  */
 
+// Sprint 1: New action buttons
+export { DeliverOrderButton } from './DeliverOrderButton';
+export { AcceptOrderButton } from './AcceptOrderButton';
+export { RequestRevisionButton } from './RequestRevisionButton';
+
 // Order workflow modals
 export { DeliverOrderModal } from './DeliverOrderModal';
 export { ApproveDeliveryModal } from './ApproveDeliveryModal';

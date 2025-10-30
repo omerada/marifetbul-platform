@@ -69,6 +69,11 @@ export type {
   OrderStateActions,
   UseOrderStateOptions,
 } from './business/useOrderState';
+export { useOrderUpdates } from './business/useOrderUpdates';
+export type {
+  UseOrderUpdatesOptions,
+  UseOrderUpdatesReturn,
+} from './business/useOrderUpdates';
 export { useReviewDashboardState } from './business/useReviewDashboardState';
 export type {
   ReviewDashboardStateData,

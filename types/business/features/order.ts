@@ -325,6 +325,120 @@ export enum OrderEventType {
 }
 
 // ================================================
+// WEBSOCKET ORDER UPDATES
+// ================================================
+
+/**
+ * WebSocket Order Update Message Types
+ * These are sent over WebSocket when order status changes
+ */
+export enum OrderWebSocketEventType {
+  /** Order has been delivered by freelancer */
+  ORDER_DELIVERED = 'ORDER_DELIVERED',
+  /** Order delivery accepted by buyer */
+  ORDER_ACCEPTED = 'ORDER_ACCEPTED',
+  /** Buyer requested revision */
+  ORDER_REVISION_REQUESTED = 'ORDER_REVISION_REQUESTED',
+  /** Order completed successfully */
+  ORDER_COMPLETED = 'ORDER_COMPLETED',
+  /** Order status changed (generic) */
+  ORDER_STATUS_CHANGED = 'ORDER_STATUS_CHANGED',
+  /** Order updated (any field changed) */
+  ORDER_UPDATED = 'ORDER_UPDATED',
+  /** Order canceled */
+  ORDER_CANCELED = 'ORDER_CANCELED',
+  /** New message in order conversation */
+  ORDER_MESSAGE = 'ORDER_MESSAGE',
+}
+
+/**
+ * WebSocket Order Update Payload
+ */
+export interface OrderWebSocketUpdate<T = unknown> {
+  /** Event type */
+  type: OrderWebSocketEventType;
+  /** Order ID */
+  orderId: string;
+  /** Update data */
+  data: T;
+  /** Timestamp of event */
+  timestamp: string;
+  /** Optional message for user */
+  message?: string;
+}
+
+/**
+ * Order Status Changed Event Data
+ */
+export interface OrderStatusChangedData {
+  /** Previous status */
+  previousStatus: OrderStatus;
+  /** New status */
+  newStatus: OrderStatus;
+  /** Full updated order */
+  order: Order;
+  /** Who triggered the change */
+  triggeredBy: {
+    id: string;
+    name: string;
+    role: 'buyer' | 'seller';
+  };
+}
+
+/**
+ * Order Delivered Event Data
+ */
+export interface OrderDeliveredData {
+  /** Delivery note */
+  deliveryNote: string;
+  /** Attachment URLs */
+  attachments: string[];
+  /** Delivery timestamp */
+  deliveredAt: string;
+  /** Freelancer info */
+  deliveredBy: {
+    id: string;
+    name: string;
+  };
+}
+
+/**
+ * Order Accepted Event Data
+ */
+export interface OrderAcceptedData {
+  /** Optional feedback from buyer */
+  feedback?: string;
+  /** Acceptance timestamp */
+  acceptedAt: string;
+  /** Buyer info */
+  acceptedBy: {
+    id: string;
+    name: string;
+  };
+  /** Payment released amount */
+  paymentReleased: number;
+}
+
+/**
+ * Revision Requested Event Data
+ */
+export interface RevisionRequestedData {
+  /** Revision requirements */
+  revisionNote: string;
+  /** Current revision count */
+  revisionCount: number;
+  /** Max revisions allowed */
+  maxRevisions: number;
+  /** Request timestamp */
+  requestedAt: string;
+  /** Buyer info */
+  requestedBy: {
+    id: string;
+    name: string;
+  };
+}
+
+// ================================================
 // ORDER STATISTICS
 // ================================================
 

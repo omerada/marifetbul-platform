@@ -39,6 +39,7 @@ import {
   unwrapOrderResponse,
   type OrderWithComputed,
 } from '@/lib/api/orders';
+import { orderHelpers } from './BaseOrderModal';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -143,26 +144,6 @@ export function AcceptOrderModal({
   };
 
   // ================================================
-  // HELPER FUNCTIONS
-  // ================================================
-
-  const formatCurrency = (amount: number, currency: string = 'TRY') => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency,
-    }).format(amount);
-  };
-
-  const formatDate = (dateStr: string | null | undefined) => {
-    if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleDateString('tr-TR', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    });
-  };
-
-  // ================================================
   // RENDER
   // ================================================
 
@@ -197,9 +178,7 @@ export function AcceptOrderModal({
                   Paket/Hizmet:
                 </span>
                 <span className="max-w-xs text-right font-medium text-gray-900">
-                  {order.packageDetails?.packageTitle ||
-                    order.customDescription ||
-                    'Özel Sipariş'}
+                  {orderHelpers.getOrderTitle(order)}
                 </span>
               </div>
 
@@ -207,7 +186,7 @@ export function AcceptOrderModal({
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Alıcı:</span>
                 <span className="font-medium text-gray-900">
-                  {order.buyer?.fullName || order.buyer?.username || 'Alıcı'}
+                  {orderHelpers.getBuyerName(order)}
                 </span>
               </div>
 
@@ -218,9 +197,9 @@ export function AcceptOrderModal({
                   Tutar:
                 </span>
                 <span className="text-lg font-semibold text-green-600">
-                  {formatCurrency(
-                    order.financials.total,
-                    order.financials.currency
+                  {orderHelpers.formatCurrency(
+                    orderHelpers.getTotalAmount(order),
+                    orderHelpers.getCurrency(order)
                   )}
                 </span>
               </div>
@@ -231,9 +210,9 @@ export function AcceptOrderModal({
                   Sizin Kazancınız:
                 </span>
                 <span className="text-lg font-bold text-green-800">
-                  {formatCurrency(
-                    order.financials.sellerEarnings || 0,
-                    order.financials.currency
+                  {orderHelpers.formatCurrency(
+                    order.financials?.sellerEarnings || 0,
+                    orderHelpers.getCurrency(order)
                   )}
                 </span>
               </div>
@@ -246,7 +225,7 @@ export function AcceptOrderModal({
                     Teslim Tarihi:
                   </span>
                   <span className="font-medium text-gray-900">
-                    {formatDate(order.deadline)}
+                    {orderHelpers.formatDate(order.deadline)}
                   </span>
                 </div>
               )}

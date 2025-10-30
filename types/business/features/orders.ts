@@ -21,11 +21,23 @@ export interface Order {
   packageId?: string;
   jobId?: string;
   customOrderDetails?: CustomOrderDetails;
+  packageDetails?: {
+    packageTitle: string;
+    tier?: 'basic' | 'standard' | 'premium';
+    deliveryDays?: number;
+  };
   status: OrderStatus;
   amount: number;
   currency: Currency;
   paymentStatus: PaymentStatus;
+  financials?: {
+    total: number;
+    currency: Currency;
+    platformFee?: number;
+    sellerEarnings?: number;
+  };
   deliveryDate: string;
+  deadline?: string;
   createdAt: string;
   updatedAt: string;
   completedAt?: string;
@@ -36,6 +48,31 @@ export interface Order {
   milestones: OrderMilestone[];
   communications: OrderCommunication[];
   disputes?: OrderDispute[];
+  // Additional computed/convenience fields
+  packageTitle?: string; // Convenience field for direct access
+  customDescription?: string; // For custom orders
+  totalAmount?: number; // Alternative to financials.total
+  sellerName?: string; // Convenience field
+  buyerName?: string; // Convenience field
+  // Additional capabilities
+  canCancel?: boolean;
+  canSubmitDelivery?: boolean;
+  canApproveDelivery?: boolean;
+  canRequestRevision?: boolean;
+  delivery?: {
+    submittedAt?: string;
+    notes?: string;
+    files?: string[];
+  };
+  revisions?: {
+    revisionsRemaining: number;
+    maxRevisions: number;
+    revisionLimit?: number; // Total allowed
+    history?: Array<{
+      requestedAt: string;
+      notes: string;
+    }>;
+  };
 }
 
 export type OrderStatus =

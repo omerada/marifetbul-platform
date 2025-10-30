@@ -89,46 +89,95 @@ function getStatusLabel(
 // ================================================
 
 export function OrderCard({ order, userRole, onClick }: OrderCardProps) {
-  const orderAny = order as any;
-  const packageTitle = orderAny.packageDetails?.packageTitle || 'Özel Sipariş';
+  // Type-safe property access using type assertions
+  type OrderWithExtras = typeof order & {
+    packageTitle?: string;
+    packageDetails?: { packageTitle?: string; tier?: string };
+    customOrderDetails?: { title?: string };
+    seller?: { username?: string; name?: string };
+    buyer?: { username?: string; name?: string };
+    sellerName?: string;
+    buyerName?: string;
+    financials?: { total?: number; currency?: string };
+    amount?: number;
+    totalAmount?: number;
+    updatedAt?: string;
+    orderedAt?: string;
+  };
+
+  const orderData = order as OrderWithExtras;
+
+  const packageTitle =
+    orderData.packageTitle ||
+    orderData.packageDetails?.packageTitle ||
+    orderData.customOrderDetails?.title ||
+    'Özel Sipariş';
+
+  const sellerName =
+    orderData.sellerName ||
+    orderData.seller?.username ||
+    orderData.seller?.name ||
+    'Satıcı';
+
+  const buyerName =
+    orderData.buyerName ||
+    orderData.buyer?.username ||
+    orderData.buyer?.name ||
+    'Alıcı';
 
   const otherUserInfo =
     userRole === 'buyer'
-      ? { name: orderAny.seller?.username || 'Satıcı', role: 'Satıcı' }
-      : { name: orderAny.buyer?.username || 'Alıcı', role: 'Alıcı' };
+      ? { name: sellerName, role: 'Satıcı' }
+      : { name: buyerName, role: 'Alıcı' };
 
-  const lastUpdate = orderAny.updatedAt
-    ? formatDistanceToNow(new Date(orderAny.updatedAt), {
-        addSuffix: true,
-        locale: tr,
-      })
-    : null;
+  const lastUpdate =
+    orderData.updatedAt || orderData.orderedAt
+      ? formatDistanceToNow(
+          new Date(orderData.updatedAt || orderData.orderedAt!),
+          {
+            addSuffix: true,
+            locale: tr,
+          }
+        )
+      : null;
+
+  // Extract financials safely
+  const totalAmount =
+    orderData.totalAmount ??
+    orderData.financials?.total ??
+    orderData.amount ??
+    0;
+
+  const currency =
+    orderData.currency ?? orderData.financials?.currency ?? 'TRY';
+
+  const tier = orderData.packageDetails?.tier;
 
   return (
     <div
       className={cn(
-        'bg-card rounded-lg border p-6 transition-all',
+        'bg-card rounded-lg border p-4 transition-all sm:p-6',
         'hover:border-primary/20 hover:shadow-md',
         onClick && 'cursor-pointer'
       )}
       onClick={onClick}
     >
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {/* Header */}
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 space-y-1">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+          <div className="min-w-0 flex-1 space-y-1">
             <div className="flex items-center gap-2">
-              <h3 className="line-clamp-1 text-base font-semibold">
+              <h3 className="line-clamp-2 text-sm font-semibold sm:text-base">
                 {packageTitle}
               </h3>
             </div>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-xs sm:text-sm">
               #{order.orderNumber || order.id.slice(0, 8)}
             </p>
           </div>
           <span
             className={cn(
-              'rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap',
+              'self-start rounded-full px-2.5 py-1 text-xs font-medium whitespace-nowrap sm:px-3',
               getStatusColor(order.status)
             )}
           >
@@ -136,23 +185,24 @@ export function OrderCard({ order, userRole, onClick }: OrderCardProps) {
           </span>
         </div>
 
-        {/* Info Grid */}
-        <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
+        {/* Info Grid - Mobile optimized */}
+        <div className="space-y-2 text-sm sm:grid sm:grid-cols-2 sm:gap-3 sm:space-y-0">
           {/* User Info */}
           <div className="text-muted-foreground flex items-center gap-2">
             <User className="h-4 w-4 shrink-0" />
-            <span className="truncate">
+            <span className="truncate text-xs sm:text-sm">
               {otherUserInfo.name}
-              <span className="ml-1 text-xs">({otherUserInfo.role})</span>
+              <span className="ml-1 text-xs opacity-75">
+                ({otherUserInfo.role})
+              </span>
             </span>
           </div>
 
           {/* Amount */}
           <div className="flex items-center gap-2 font-medium">
             <DollarSign className="text-muted-foreground h-4 w-4 shrink-0" />
-            <span>
-              {orderAny.financials?.total?.toFixed(2) || '0.00'}{' '}
-              {orderAny.financials?.currency || 'TRY'}
+            <span className="text-xs sm:text-sm">
+              {totalAmount.toFixed(2)} {currency}
             </span>
           </div>
 
@@ -160,7 +210,7 @@ export function OrderCard({ order, userRole, onClick }: OrderCardProps) {
           {order.deadline && (
             <div className="text-muted-foreground flex items-center gap-2">
               <Calendar className="h-4 w-4 shrink-0" />
-              <span className="truncate">
+              <span className="truncate text-xs sm:text-sm">
                 {new Date(order.deadline).toLocaleDateString('tr-TR', {
                   day: '2-digit',
                   month: 'short',
@@ -171,28 +221,29 @@ export function OrderCard({ order, userRole, onClick }: OrderCardProps) {
           )}
 
           {/* Package Tier */}
-          {orderAny.packageDetails?.tier && (
+          {tier && (
             <div className="text-muted-foreground flex items-center gap-2">
               <Package className="h-4 w-4 shrink-0" />
-              <span className="truncate capitalize">
-                {orderAny.packageDetails.tier.toLowerCase()}
+              <span className="truncate text-xs capitalize sm:text-sm">
+                {tier.toLowerCase()}
               </span>
             </div>
           )}
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between border-t pt-4">
-          <div className="text-muted-foreground flex items-center gap-2 text-xs">
-            <Clock className="h-3.5 w-3.5" />
-            <span>{lastUpdate || 'Bilinmiyor'}</span>
+        {/* Footer - Mobile stacked */}
+        <div className="flex flex-col gap-2 border-t pt-3 sm:flex-row sm:items-center sm:justify-between sm:pt-4">
+          <div className="text-muted-foreground order-2 flex items-center gap-2 text-xs sm:order-1">
+            <Clock className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate">{lastUpdate || 'Bilinmiyor'}</span>
           </div>
 
           <Link
             href={`/dashboard/orders/${order.id}`}
             onClick={(e) => e.stopPropagation()}
+            className="order-1 sm:order-2"
           >
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               Detayları Gör
             </Button>
           </Link>
@@ -207,10 +258,10 @@ export function OrderCard({ order, userRole, onClick }: OrderCardProps) {
  */
 export function OrderCardSkeleton() {
   return (
-    <div className="bg-card animate-pulse rounded-lg border p-6">
-      <div className="space-y-4">
+    <div className="bg-card animate-pulse rounded-lg border p-4 sm:p-6">
+      <div className="space-y-3 sm:space-y-4">
         {/* Header */}
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div className="flex-1 space-y-2">
             <div className="bg-muted h-5 w-3/4 rounded" />
             <div className="bg-muted h-4 w-1/4 rounded" />
@@ -219,7 +270,7 @@ export function OrderCardSkeleton() {
         </div>
 
         {/* Info Grid */}
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="space-y-2 sm:grid sm:grid-cols-2 sm:gap-3 sm:space-y-0">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="flex items-center gap-2">
               <div className="bg-muted h-4 w-4 rounded" />
@@ -229,9 +280,9 @@ export function OrderCardSkeleton() {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between border-t pt-4">
-          <div className="bg-muted h-4 w-24 rounded" />
-          <div className="bg-muted h-9 w-28 rounded" />
+        <div className="flex flex-col gap-2 border-t pt-3 sm:flex-row sm:items-center sm:justify-between sm:pt-4">
+          <div className="bg-muted order-2 h-4 w-24 rounded sm:order-1" />
+          <div className="bg-muted order-1 h-9 w-full rounded sm:order-2 sm:w-28" />
         </div>
       </div>
     </div>

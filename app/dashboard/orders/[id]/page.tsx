@@ -40,7 +40,7 @@ import {
 import { orderApi } from '@/lib/api/orders';
 import type { OrderResponse } from '@/types/backend-aligned';
 import { enrichOrder, type OrderWithComputed } from '@/types/backend-aligned';
-import { useWebSocket, useAuth } from '@/hooks';
+import { useWebSocket, useAuth, useOrderUpdates } from '@/hooks';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { getDisputeByOrderId } from '@/lib/api/disputes';
@@ -90,6 +90,31 @@ export default function OrderDetailPage() {
 
   // WebSocket for real-time updates
   const socket = useWebSocket();
+
+  // Real-time order updates with toast notifications
+  useOrderUpdates({
+    orderId: orderId || '',
+    enableToast: true,
+    onStatusChange: (updatedOrder) => {
+      // Convert Order to OrderResponse by casting (they're compatible)
+      setOrder(enrichOrder(updatedOrder as unknown as OrderResponse));
+    },
+    onDelivered: (_data) => {
+      // Reload order to get full updated data
+      loadOrder();
+    },
+    onAccepted: (_data) => {
+      // Reload order to get full updated data
+      loadOrder();
+    },
+    onRevisionRequested: (_data) => {
+      // Reload order to get full updated data
+      loadOrder();
+    },
+    onCompleted: (updatedOrder) => {
+      setOrder(enrichOrder(updatedOrder as unknown as OrderResponse));
+    },
+  });
 
   // Load order details
   const loadOrder = useCallback(async () => {
