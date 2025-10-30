@@ -436,27 +436,21 @@ export async function getOrderAnalytics(
  * Get today's order analytics
  */
 export async function getTodaysOrderAnalytics(): Promise<OrderAnalyticsDto> {
-  return apiClient.get<OrderAnalyticsDto>(
-    `${API_BASE}/orders/analytics/today`
-  );
+  return apiClient.get<OrderAnalyticsDto>(`${API_BASE}/orders/analytics/today`);
 }
 
 /**
  * Get this week's order analytics
  */
 export async function getThisWeekOrderAnalytics(): Promise<OrderAnalyticsDto> {
-  return apiClient.get<OrderAnalyticsDto>(
-    `${API_BASE}/orders/analytics/week`
-  );
+  return apiClient.get<OrderAnalyticsDto>(`${API_BASE}/orders/analytics/week`);
 }
 
 /**
  * Get this month's order analytics
  */
 export async function getThisMonthOrderAnalytics(): Promise<OrderAnalyticsDto> {
-  return apiClient.get<OrderAnalyticsDto>(
-    `${API_BASE}/orders/analytics/month`
-  );
+  return apiClient.get<OrderAnalyticsDto>(`${API_BASE}/orders/analytics/month`);
 }
 
 // ================================================
