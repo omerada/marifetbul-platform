@@ -22,6 +22,8 @@ export * from './comments';
 // Analytics Widgets
 export { CommentModerationSummary } from './CommentModerationSummary';
 export { SearchAnalyticsWidget } from './SearchAnalyticsWidget';
+export { OrderAnalyticsWidget } from './OrderAnalyticsWidget';
+export { UserGrowthWidget } from './UserGrowthWidget';
 
 // Revenue Analytics Components
 export { RevenueBreakdownWidget } from './RevenueBreakdownWidget';

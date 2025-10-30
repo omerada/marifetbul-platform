@@ -454,6 +454,56 @@ export async function getThisMonthOrderAnalytics(): Promise<OrderAnalyticsDto> {
 }
 
 // ================================================
+// USER GROWTH ANALYTICS
+// ================================================
+
+/**
+ * Get new user registrations count between dates
+ */
+export async function getNewUserRegistrations(
+  startDate: string,
+  endDate: string
+): Promise<number> {
+  return apiClient.get<number>(
+    `${API_BASE}/users/growth/new-registrations?startDate=${startDate}&endDate=${endDate}`
+  );
+}
+
+/**
+ * Get new user registrations for specific date
+ */
+export async function getNewUserRegistrationsForDate(
+  date: string
+): Promise<number> {
+  return apiClient.get<number>(
+    `${API_BASE}/users/growth/new-registrations/date?date=${date}`
+  );
+}
+
+/**
+ * Get daily new user registration trend
+ */
+export async function getDailyNewUserTrend(
+  startDate: string,
+  endDate: string
+): Promise<Record<string, number>> {
+  return apiClient.get<Record<string, number>>(
+    `${API_BASE}/users/growth/daily-trend?startDate=${startDate}&endDate=${endDate}`
+  );
+}
+
+/**
+ * Get monthly new user registration trend
+ */
+export async function getMonthlyNewUserTrend(
+  startDate: string
+): Promise<Record<string, number>> {
+  return apiClient.get<Record<string, number>>(
+    `${API_BASE}/users/growth/monthly-trend?startDate=${startDate}`
+  );
+}
+
+// ================================================
 // HELPER FUNCTIONS
 // ================================================
 
@@ -468,6 +518,56 @@ export function formatCurrency(amount: number): string {
     maximumFractionDigits: 2,
   }).format(amount);
 }
+
+// ==================== Export Functions ====================
+
+/**
+ * Export revenue breakdown to CSV file
+ */
+export async function exportRevenueBreakdownCsv(
+  startDate: string,
+  endDate: string
+): Promise<void> {
+  try {
+    const response = await fetch(
+      `${API_BASE}/revenue/export/csv?startDate=${startDate}&endDate=${endDate}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to export CSV');
+    }
+
+    // Get filename from Content-Disposition header
+    const contentDisposition = response.headers.get('Content-Disposition');
+    const filenameMatch = contentDisposition?.match(/filename="?(.+)"?/i);
+    const filename = filenameMatch
+      ? filenameMatch[1]
+      : `revenue_export_${startDate}_${endDate}.csv`;
+
+    // Download file
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Export failed:', error);
+    throw error;
+  }
+}
+
+// ==================== Utility Functions ====================
 
 /**
  * Format number for display

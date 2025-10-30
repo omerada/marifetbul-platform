@@ -26,6 +26,8 @@ import {
   DisputeStatsCard,
 } from './admin-dashboard/components';
 import { SearchAnalyticsWidget } from './SearchAnalyticsWidget';
+import { OrderAnalyticsWidget } from './OrderAnalyticsWidget';
+import { UserGrowthWidget } from './UserGrowthWidget';
 
 /**
  * AdminDashboard - Main component
@@ -84,12 +86,18 @@ export function AdminDashboard() {
 
             {/* Search Analytics Widget */}
             <SearchAnalyticsWidget days={30} refreshInterval={300000} />
+
+            {/* Order Analytics Widget - NEW */}
+            <OrderAnalyticsWidget />
           </div>
 
           {/* Column 3: System Health, Disputes & Pending Tasks */}
           <div className="space-y-6">
             {/* System Health Widget */}
             <SystemHealthCard systemHealth={systemHealth} />
+
+            {/* User Growth Analytics - NEW */}
+            <UserGrowthWidget />
 
             {/* Dispute Stats */}
             <DisputeStatsCard />

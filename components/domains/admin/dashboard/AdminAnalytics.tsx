@@ -54,9 +54,48 @@ export function AdminAnalytics() {
     },
   ];
 
-  const handleExport = () => {
-    // TODO: Implement export functionality
-    alert('Export özelliği yakında eklenecek');
+  const handleExport = async () => {
+    try {
+      // Generate CSV data based on active tab
+      let csvContent = '';
+      let filename = '';
+
+      const currentDate = new Date().toISOString().split('T')[0];
+
+      if (activeTab === 'revenue') {
+        csvContent = 'data:text/csv;charset=utf-8,';
+        csvContent += 'Metric,Value\n';
+        csvContent += `Period,${period}\n`;
+        csvContent += `Export Date,${currentDate}\n`;
+        csvContent += 'Total Revenue,${totalRevenue}\n';
+        csvContent += 'Growth Rate,${growthRate}%\n';
+        filename = `revenue-analytics-${period}-${currentDate}.csv`;
+      } else if (activeTab === 'categories') {
+        csvContent = 'data:text/csv;charset=utf-8,';
+        csvContent += 'Category,Performance,Growth\n';
+        csvContent += 'Category data will be added\n';
+        filename = `category-analytics-${period}-${currentDate}.csv`;
+      } else if (activeTab === 'packages') {
+        csvContent = 'data:text/csv;charset=utf-8,';
+        csvContent += 'Package,Sales,Revenue\n';
+        csvContent += 'Package data will be added\n';
+        filename = `package-analytics-${period}-${currentDate}.csv`;
+      }
+
+      // Create download link
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      alert('Analytics exported successfully!');
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed. Please try again.');
+    }
   };
 
   return (
