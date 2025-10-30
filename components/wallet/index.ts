@@ -2,7 +2,7 @@
  * Wallet Components
  * Reusable components for wallet functionality
  *
- * @version 2.0.0 - Sprint 1: Removed duplicate PayoutRequestForm
+ * @version 2.2.0 - Sprint 1, Story 1.3: Added bank account validation components
  */
 
 export { WalletCard } from './WalletCard';
@@ -16,3 +16,13 @@ export { WalletDashboard } from './WalletDashboard';
 export { TransactionHistory } from './TransactionHistory';
 export { PayoutRequest } from './PayoutRequest';
 export { PayoutHistory } from './PayoutHistory';
+
+// Sprint 1, Story 1.2: UI Improvements (5 story points)
+export { TransactionExportModal } from './TransactionExportModal';
+export { PayoutEligibilityWidget } from './PayoutEligibilityWidget';
+export { AdvancedTransactionFilters } from './AdvancedTransactionFilters';
+
+// Sprint 1, Story 1.3: Bank Account Validation (3 story points)
+export { IBANInput } from './IBANInput';
+export { BankSelector } from './BankSelector';
+export { BankAccountVerificationForm } from './BankAccountVerificationForm';
