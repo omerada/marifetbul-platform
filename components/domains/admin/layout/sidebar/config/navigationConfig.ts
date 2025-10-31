@@ -148,6 +148,12 @@ export const NAVIGATION_ITEMS: Omit<NavigationItem, 'current'>[] = [
       { name: 'Genel Bakış', href: '/admin/financial', current: false },
       { name: 'Ödemeler', href: '/admin/financial/payments', current: false },
       {
+        name: 'İade Talepleri',
+        href: '/admin/refunds',
+        current: false,
+        badge: 5,
+      },
+      {
         name: 'Para Çekme Talepleri',
         href: '/admin/financial/withdrawals',
         current: false,

@@ -20,6 +20,7 @@ import {
   Home,
   LogOut,
   User,
+  RefreshCcw,
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -65,6 +66,12 @@ export function DashboardSidebar() {
       matchPaths: ['/dashboard/freelancer/orders'],
     },
     {
+      label: 'İade Taleplerim',
+      icon: <RefreshCcw className="h-5 w-5" />,
+      href: '/dashboard/refunds',
+      matchPaths: ['/dashboard/refunds'],
+    },
+    {
       label: 'Teklifler',
       icon: <FileText className="h-5 w-5" />,
       href: '/dashboard/freelancer/proposals',
@@ -108,6 +115,12 @@ export function DashboardSidebar() {
       icon: <Package className="h-5 w-5" />,
       href: '/dashboard/employer/orders',
       matchPaths: ['/dashboard/employer/orders'],
+    },
+    {
+      label: 'İade Taleplerim',
+      icon: <RefreshCcw className="h-5 w-5" />,
+      href: '/dashboard/refunds',
+      matchPaths: ['/dashboard/refunds'],
     },
     {
       label: 'Teklifler',

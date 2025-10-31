@@ -31,12 +31,15 @@ import {
   FileText,
   AlertCircle,
   Flag,
+  RefreshCcw,
 } from 'lucide-react';
 import {
   OrderWorkflowStepper,
   OrderActions,
   OrderMessagingPanel,
 } from '@/components/domains/orders';
+import { RefundRequestForm } from '@/components/domains/orders/RefundRequestForm';
+import { RefundStatusBadge } from '@/components/shared/RefundStatusBadge';
 import { orderApi } from '@/lib/api/orders';
 import type { OrderResponse } from '@/types/backend-aligned';
 import { enrichOrder, type OrderWithComputed } from '@/types/backend-aligned';
@@ -46,6 +49,8 @@ import { toast } from 'sonner';
 import { getDisputeByOrderId } from '@/lib/api/disputes';
 import type { DisputeResponse } from '@/types/dispute';
 import { DisputeCreationModal } from '@/components/domains/disputes/DisputeCreationModal';
+import { getRefundByOrderId } from '@/lib/api/refunds';
+import type { RefundDto } from '@/lib/api/admin/refund-admin-api';
 
 // ================================================
 // HELPER FUNCTIONS
@@ -84,6 +89,8 @@ export default function OrderDetailPage() {
   const [userRole, setUserRole] = useState<'buyer' | 'seller'>('buyer');
   const [dispute, setDispute] = useState<DisputeResponse | null>(null);
   const [showDisputeModal, setShowDisputeModal] = useState(false);
+  const [refund, setRefund] = useState<RefundDto | null>(null);
+  const [showRefundForm, setShowRefundForm] = useState(false);
 
   // Get authenticated user
   const { user } = useAuth();
@@ -171,6 +178,25 @@ export default function OrderDetailPage() {
       loadDispute();
     }
   }, [order?.status, loadDispute]);
+
+  // Load refund information if exists
+  const loadRefund = useCallback(async () => {
+    if (!orderId) return;
+
+    try {
+      const refundData = await getRefundByOrderId(orderId);
+      setRefund(refundData);
+    } catch (_err) {
+      // No refund found is OK
+      setRefund(null);
+    }
+  }, [orderId]);
+
+  useEffect(() => {
+    if (orderId) {
+      loadRefund();
+    }
+  }, [orderId, loadRefund]);
 
   // Handle dispute events from WebSocket
   const handleDisputeEvent = useCallback(
@@ -313,6 +339,41 @@ export default function OrderDetailPage() {
     setShowDisputeModal(false);
     // Reload order to get updated status
     loadOrder();
+  };
+
+  // Check if user can request refund
+  const canRequestRefund = useCallback(() => {
+    if (!order || !user) return false;
+
+    // Only buyer can request refund
+    if (userRole !== 'buyer') return false;
+
+    // Cannot request if already has a refund
+    if (refund) return false;
+
+    // Cannot request if order is not paid
+    if (order.paymentStatus !== 'COMPLETED') return false;
+
+    // Can request refund for certain statuses
+    const allowedStatuses = [
+      'PAID',
+      'IN_PROGRESS',
+      'IN_REVIEW',
+      'DELIVERED',
+      'COMPLETED',
+    ];
+    return allowedStatuses.includes(order.status);
+  }, [order, user, userRole, refund]);
+
+  // Handle refund request success
+  const handleRefundSuccess = () => {
+    toast.success('İade Talebi Oluşturuldu', {
+      description:
+        'İade talebiniz başarıyla oluşturuldu. Yönetim ekibi inceleyecektir.',
+    });
+    setShowRefundForm(false);
+    // Reload refund information
+    loadRefund();
   };
 
   // Loading state
@@ -658,7 +719,78 @@ export default function OrderDetailPage() {
               onActionComplete={handleActionComplete}
               className="flex-col"
             />
+
+            {/* Refund Actions */}
+            {userRole === 'buyer' && (
+              <div className="mt-4 space-y-3 border-t pt-4">
+                {refund ? (
+                  // Show refund status if exists
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">
+                        İade Durumu
+                      </span>
+                      <RefundStatusBadge status={refund.status} size="sm" />
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => router.push('/dashboard/refunds')}
+                      className="w-full"
+                    >
+                      <RefreshCcw className="mr-2 h-4 w-4" />
+                      İade Detaylarını Gör
+                    </Button>
+                  </div>
+                ) : canRequestRefund() ? (
+                  // Show refund request button if eligible
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowRefundForm(true)}
+                    className="w-full"
+                  >
+                    <RefreshCcw className="mr-2 h-4 w-4" />
+                    İade Talebi Oluştur
+                  </Button>
+                ) : null}
+              </div>
+            )}
+
+            {/* Dispute Actions */}
+            {canRaiseDispute() && (
+              <div className="mt-4 border-t pt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDisputeClick}
+                  className="w-full text-yellow-700 hover:bg-yellow-50"
+                >
+                  <Flag className="mr-2 h-4 w-4" />
+                  İtiraz Oluştur
+                </Button>
+              </div>
+            )}
           </Card>
+
+          {/* Refund Request Form Modal */}
+          {showRefundForm && order && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+              <div className="w-full max-w-2xl">
+                <Card className="p-6">
+                  <h2 className="mb-4 text-xl font-semibold text-gray-900">
+                    İade Talebi Oluştur
+                  </h2>
+                  <RefundRequestForm
+                    orderId={order.id}
+                    maxRefundAmount={order.financials.total}
+                    onSuccess={handleRefundSuccess}
+                    onCancel={() => setShowRefundForm(false)}
+                  />
+                </Card>
+              </div>
+            </div>
+          )}
 
           {/* Financial Details */}
           <Card className="p-6">
