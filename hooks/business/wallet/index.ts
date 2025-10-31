@@ -21,6 +21,13 @@ export type { UseTransactionsReturn } from './useTransactions';
 export { usePayouts } from './usePayouts';
 export type { UsePayoutsReturn } from './usePayouts';
 
+// Real-time polling hook
+export { useWalletPolling } from './useWalletPolling';
+export type {
+  UseWalletPollingReturn,
+  UseWalletPollingOptions,
+} from './useWalletPolling';
+
 // Payment methods hook
 export { usePaymentMethods, useBankAccounts } from './usePaymentMethods';
 export type {

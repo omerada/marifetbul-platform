@@ -80,6 +80,26 @@ export type {
   ReviewDashboardStateActions,
 } from './business/useReviewDashboardState';
 
+// Sprint 2: Order hooks
+export { useOrderStats } from './business/orders/useOrderStats';
+export { useOrders } from './business/orders/useOrders';
+export { useOrderNotifications } from './business/useOrderNotifications';
+
+// Admin hooks
+export { useAdminOrders } from './business/admin/useAdminOrders';
+export { useRevenueAnalytics } from './business/admin/useRevenueAnalytics';
+export { usePlatformStatistics } from './business/admin/usePlatformStatistics';
+export {
+  useRevenueComparison,
+  type ComparisonType,
+} from './business/admin/useRevenueComparison';
+export {
+  useRevenueForecast,
+  type ForecastPeriod,
+} from './business/admin/useRevenueForecast';
+export { useRefundAnalytics } from './business/admin/useRefundAnalytics';
+export { useReportBuilder } from './business/admin/useReportBuilder';
+
 // DATA HOOKS - Analytics, search, and data management
 export { useAnalytics } from './infrastructure/data/useAnalytics';
 export {

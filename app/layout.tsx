@@ -5,6 +5,8 @@ import { AuthProvider } from '@/components/providers/AuthProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { ToastProvider } from '@/components/providers/ToastProvider';
 import { MonitoringProvider } from '@/components/providers/MonitoringProvider';
+import { OrderNotificationProvider } from '@/components/providers/OrderNotificationProvider';
+import NotificationsBell from '@/components/shared/NotificationsBell';
 import { SEOHead } from '@/components/shared/seo/SEOHead';
 import { SkipToContent } from '@/components/shared/accessibility';
 import './globals.css';
@@ -95,7 +97,13 @@ export default function RootLayout({
         <MonitoringProvider>
           <ThemeProvider>
             <AuthProvider>
-              <ToastProvider>{children}</ToastProvider>
+              <ToastProvider>
+                <OrderNotificationProvider />
+                <div className="fixed top-4 right-4 z-50">
+                  <NotificationsBell />
+                </div>
+                {children}
+              </ToastProvider>
             </AuthProvider>
           </ThemeProvider>
         </MonitoringProvider>

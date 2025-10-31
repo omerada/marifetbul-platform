@@ -34,6 +34,16 @@ export { OrderListFilters } from './OrderListFilters';
 export { EscrowStatus } from './EscrowStatus';
 export { DeliveryManager } from './DeliveryManager';
 
+// Sprint 2: Order Dashboard Components
+export { OrderStatsWidget } from './OrderStatsWidget';
+export { RecentOrdersList } from './RecentOrdersList';
+export { OrderQuickActions } from './OrderQuickActions';
+export { OrderActivityLog } from './OrderActivityLog';
+export { OrderAttachmentsViewer } from './OrderAttachmentsViewer';
+export { AdvancedOrderFilters } from './AdvancedOrderFilters';
+export type { OrderFilterValues } from './AdvancedOrderFilters';
+export { OrderExportButton } from './OrderExportButton';
+
 // Type exports
 export type { OrderStats } from '@/types/business/features/orders';
 export type { OrderWorkflowStepperProps } from './OrderWorkflowStepper';
