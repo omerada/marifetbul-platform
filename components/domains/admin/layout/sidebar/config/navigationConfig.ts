@@ -60,6 +60,31 @@ export const NAVIGATION_ITEMS: Omit<NavigationItem, 'current'>[] = [
     subItems: [
       { name: 'Genel Görünüm', href: '/admin/analytics', current: false },
       {
+        name: 'Gelir Analitikleri',
+        href: '/admin/analytics/revenue',
+        current: false,
+      },
+      {
+        name: 'Platform İstatistikleri',
+        href: '/admin/analytics/platform',
+        current: false,
+      },
+      {
+        name: 'Karşılaştırma & Tahmin',
+        href: '/admin/analytics/forecast',
+        current: false,
+      },
+      {
+        name: 'İade Analitikleri',
+        href: '/admin/analytics/refunds',
+        current: false,
+      },
+      {
+        name: 'Özel Raporlar',
+        href: '/admin/analytics/reports',
+        current: false,
+      },
+      {
         name: 'Kullanıcı Analizi',
         href: '/admin/analytics/users',
         current: false,
