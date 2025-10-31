@@ -66,7 +66,7 @@ export const packageApi = {
   getPackageById: PackageService.getPackageById,
   getPackageBySlug: PackageService.getPackageBySlug,
   getPackagesByCategory: PackageService.getPackagesByCategory,
-  
+
   // ==================== FEATURED & DISCOVERY ====================
   getFeaturedPackages: PackageService.getFeaturedPackages,
   getVerifiedPackages: PackageService.getVerifiedPackages,
@@ -74,13 +74,15 @@ export const packageApi = {
   getTopRatedPackages: PackageService.getTopRatedPackages,
   getTrendingPackages: PackageService.getTrendingPackages,
   getNewestPackages: PackageService.getNewestPackages,
-  
+
   // ==================== SELLER ENDPOINTS ====================
   createPackage: PackageService.createPackage,
   updatePackage: PackageService.updatePackage,
   deletePackage: PackageService.deletePackage,
   getUserPackages: PackageService.getUserPackages,
-  
+  activatePackage: PackageService.activatePackage,
+  pausePackage: PackageService.pausePackage,
+
   // ==================== STATISTICS ====================
   getPlatformStats: PackageService.getPlatformStats,
 } as const;
@@ -109,6 +111,8 @@ export const deletePackage = packageApi.deletePackage;
 export const getMyPackages = packageApi.getUserPackages; // Alias
 export const getUserPackages = packageApi.getUserPackages;
 export const getPlatformStats = packageApi.getPlatformStats;
+export const activatePackage = packageApi.activatePackage;
+export const pausePackage = packageApi.pausePackage;
 
 // Additional convenience exports
 export const getPackage = getPackageById;

@@ -18,8 +18,16 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 import { Coordinates, MapBounds } from '@/types';
 import { useUnifiedLocation } from '@/hooks';
-import { MapUtils } from '@/lib/shared/utils/map-utils';
+import { MapUtils, MapLocation } from '@/lib/shared/utils/map-utils';
 import { logger } from '@/lib/shared/utils/logger';
+
+// Helper to convert Coordinates to MapLocation
+const toMapLocation = (coords: Coordinates): MapLocation => ({
+  lat: coords.lat,
+  lng: coords.lng,
+  latitude: coords.latitude ?? coords.lat,
+  longitude: coords.longitude ?? coords.lng,
+});
 
 interface MapMarker {
   id: string;
@@ -130,7 +138,9 @@ export const MapView: React.FC<MapViewProps> = ({
         fitToCoordinates(coordinates);
       }
 
-      const center = MapUtils.calculateCenter(coordinates);
+      // Convert Coordinates to MapLocation for MapUtils
+      const mapLocations = coordinates.map(toMapLocation);
+      const center = MapUtils.calculateCenter(mapLocations);
       if (center) {
         setMapCenter(center);
       }
@@ -157,7 +167,13 @@ export const MapView: React.FC<MapViewProps> = ({
       await getCurrentPosition();
       const currentPos = unifiedLocation.currentPosition;
       if (currentPos) {
-        const coordinates = {
+        // Validate coordinates
+        if (!currentPos.latitude || !currentPos.longitude) {
+          logger.error('Invalid current position coordinates');
+          return;
+        }
+
+        const coordinates: Coordinates = {
           lat: currentPos.latitude,
           lng: currentPos.longitude,
           latitude: currentPos.latitude,
@@ -176,7 +192,10 @@ export const MapView: React.FC<MapViewProps> = ({
   useEffect(() => {
     if (markers.length > 0) {
       const coordinates = markers.map((m) => m.coordinates);
-      const bounds = MapUtils.getBounds(coordinates);
+
+      // Convert Coordinates to MapLocation for MapUtils
+      const mapLocations = coordinates.map(toMapLocation);
+      const bounds = MapUtils.getBounds(mapLocations);
       if (setBounds) {
         setBounds(bounds);
       }

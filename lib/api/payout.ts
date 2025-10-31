@@ -24,7 +24,9 @@ import {
 
 export interface CreatePayoutRequest {
   amount: number;
-  paymentMethodId: string; // Updated to match backend
+  paymentMethodId?: string; // Optional payment method ID for bank transfer
+  method?: 'BANK_TRANSFER' | 'IYZICO'; // Payout method (backend-aligned)
+  bankAccountId?: string; // Alternative to paymentMethodId
   description?: string; // Added description field
 }
 

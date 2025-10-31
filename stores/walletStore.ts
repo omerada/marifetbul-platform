@@ -5,8 +5,10 @@ import type {
   Wallet,
   BalanceResponse,
   Transaction,
-  Payout,
 } from '@/lib/api/validators';
+import type { Payout } from '@/types/business/features/wallet';
+import { PayoutStatus } from '@/types/business/features/wallet';
+import { transformPayoutResponses } from '@/lib/transformers/payout.transformer';
 import {
   type PayoutRequest,
   type TransactionFilters,
@@ -171,8 +173,13 @@ export const useWalletStore = create<WalletStore>()(
         try {
           const data = await payoutApi.getPayoutHistory(page, 10);
 
+          // Transform backend payouts to frontend type
+          const transformedPayouts = transformPayoutResponses(
+            data as unknown as Record<string, unknown>[]
+          );
+
           set({
-            payouts: data,
+            payouts: transformedPayouts,
             ui: { ...get().ui, isLoadingPayouts: false },
           });
         } catch (error) {
@@ -230,7 +237,10 @@ export const useWalletStore = create<WalletStore>()(
             bankAccountId: data.bankAccountId,
           });
 
-          const newPayout = responseData;
+          // Transform backend payout to frontend type
+          const newPayout = transformPayoutResponses([
+            responseData as unknown as Record<string, unknown>,
+          ])[0];
 
           // Add to payouts list
           set((state) => ({
@@ -268,7 +278,7 @@ export const useWalletStore = create<WalletStore>()(
           // Update payout status in list
           set((state) => ({
             payouts: state.payouts.map((p) =>
-              p.id === payoutId ? { ...p, status: 'CANCELLED' as const } : p
+              p.id === payoutId ? { ...p, status: PayoutStatus.CANCELLED } : p
             ),
           }));
 
@@ -315,6 +325,7 @@ export const useWalletStore = create<WalletStore>()(
 
       setSelectedTransaction: (transaction: Transaction | null) => {
         set((state) => ({
+          ...state,
           ui: {
             ...state.ui,
             selectedTransaction: transaction,
@@ -325,6 +336,7 @@ export const useWalletStore = create<WalletStore>()(
 
       setSelectedPayout: (payout: Payout | null) => {
         set((state) => ({
+          ...state,
           ui: { ...state.ui, selectedPayout: payout },
         }));
       },

@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui';
 import { categoryApi } from '@/lib/api/categories';
+import { transformCategories } from '@/lib/transformers/category.transformer';
 import type { Category } from '@/types/business/features/marketplace-categories';
 
 interface MarketplaceFiltersProps {
@@ -43,7 +44,7 @@ export function MarketplaceFilters({
     const fetchCategories = async () => {
       try {
         const data = await categoryApi.getAllCategories();
-        setCategories(data);
+        setCategories(transformCategories(data));
       } catch (error) {
         console.error('Failed to fetch categories:', error);
         // Fallback to empty array

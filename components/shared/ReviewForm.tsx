@@ -19,6 +19,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { X, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
+import { transformReviewResponse } from '@/lib/transformers/review.transformer';
 import { Label } from '@/components/ui/Label';
 import { Textarea } from '@/components/ui/Textarea';
 import { Alert } from '@/components/ui/Alert';
@@ -197,13 +198,17 @@ export function ReviewForm({
 
       if (isEditMode) {
         // Update existing review
-        savedReview = await reviewApi.update(
+        const backendReview = await reviewApi.update(
           review.id,
           data as UpdateReviewRequest
         );
+        savedReview = transformReviewResponse(backendReview);
       } else {
         // Create new review
-        savedReview = await reviewApi.create(data as CreateReviewRequest);
+        const backendReview = await reviewApi.create(
+          data as CreateReviewRequest
+        );
+        savedReview = transformReviewResponse(backendReview);
       }
 
       // Upload images if any (only for new reviews or when adding to existing)

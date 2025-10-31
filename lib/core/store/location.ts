@@ -148,16 +148,30 @@ export const useLocationStore = create<LocationStore>()(
           const params = new URLSearchParams();
           if (request.query) params.append('query', request.query);
           if (request.coordinates) {
-            params.append('lat', request.coordinates.latitude.toString());
-            params.append('lng', request.coordinates.longitude.toString());
+            const lat = request.coordinates.latitude ?? request.coordinates.lat;
+            const lng =
+              request.coordinates.longitude ?? request.coordinates.lng;
+            params.append('lat', lat.toString());
+            params.append('lng', lng.toString());
           }
           if (request.radius)
             params.append('radius', request.radius.toString());
           if (request.bounds) {
-            params.append('north', request.bounds.north.toString());
-            params.append('south', request.bounds.south.toString());
-            params.append('east', request.bounds.east.toString());
-            params.append('west', request.bounds.west.toString());
+            // bounds structure: { northeast: {lat, lng}, southwest: {lat, lng} }
+            const neLat =
+              request.bounds.northeast.latitude ?? request.bounds.northeast.lat;
+            const neLng =
+              request.bounds.northeast.longitude ??
+              request.bounds.northeast.lng;
+            const swLat =
+              request.bounds.southwest.latitude ?? request.bounds.southwest.lat;
+            const swLng =
+              request.bounds.southwest.longitude ??
+              request.bounds.southwest.lng;
+            params.append('north', neLat.toString());
+            params.append('south', swLat.toString());
+            params.append('east', neLng.toString());
+            params.append('west', swLng.toString());
           }
           if (request.types) {
             request.types.forEach((type) => params.append('types', type));
@@ -207,8 +221,11 @@ export const useLocationStore = create<LocationStore>()(
           const params = new URLSearchParams();
           params.append('input', request.input);
           if (request.coordinates) {
-            params.append('lat', request.coordinates.latitude.toString());
-            params.append('lng', request.coordinates.longitude.toString());
+            const lat = request.coordinates.latitude ?? request.coordinates.lat;
+            const lng =
+              request.coordinates.longitude ?? request.coordinates.lng;
+            params.append('lat', lat.toString());
+            params.append('lng', lng.toString());
           }
           if (request.radius)
             params.append('radius', request.radius.toString());
@@ -255,8 +272,11 @@ export const useLocationStore = create<LocationStore>()(
           if (request.address) params.append('address', request.address);
           if (request.placeId) params.append('placeId', request.placeId);
           if (request.coordinates) {
-            params.append('lat', request.coordinates.latitude.toString());
-            params.append('lng', request.coordinates.longitude.toString());
+            const lat = request.coordinates.latitude ?? request.coordinates.lat;
+            const lng =
+              request.coordinates.longitude ?? request.coordinates.lng;
+            params.append('lat', lat.toString());
+            params.append('lng', lng.toString());
           }
 
           const response = await fetch(

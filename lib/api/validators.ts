@@ -579,6 +579,7 @@ export const TransactionSchema = z.object({
   paymentId: z.string().uuid().optional(),
   type: TransactionTypeSchema,
   amount: z.number(),
+  currency: z.string().default('TRY'),
   balanceBefore: z.number(),
   balanceAfter: z.number(),
   description: z.string(),

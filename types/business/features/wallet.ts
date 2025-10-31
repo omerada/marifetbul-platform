@@ -4,6 +4,8 @@
 // Created: October 25, 2025
 // Sprint: Wallet & Payout System Integration
 
+import type { Transaction as BackendTransaction } from '@/lib/api/validators';
+
 // ================================================
 // BASE TYPES (Backend-aligned)
 // ================================================
@@ -323,7 +325,7 @@ export interface WalletUIState {
   isLoadingTransactions: boolean;
   isLoadingPayouts: boolean;
   isSubmittingPayout: boolean;
-  selectedTransaction: Transaction | null;
+  selectedTransaction: BackendTransaction | null; // Use backend Transaction type (from validators)
   selectedPayout: Payout | null;
   payoutModalOpen: boolean;
   transactionDetailModalOpen: boolean;

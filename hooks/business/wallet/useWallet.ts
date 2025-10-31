@@ -13,10 +13,7 @@
 
 import { useWalletStore } from '@/stores/walletStore';
 import { useEffect } from 'react';
-import type {
-  WalletResponse,
-  BalanceResponse,
-} from '@/types/business/features/wallet';
+import type { Wallet, BalanceResponse } from '@/lib/api/validators';
 
 // ================================================
 // HOOK INTERFACE
@@ -24,7 +21,7 @@ import type {
 
 export interface UseWalletReturn {
   // State
-  wallet: WalletResponse | null;
+  wallet: Wallet | null;
   balance: BalanceResponse | null;
   isLoadingWallet: boolean;
   isLoadingBalance: boolean;

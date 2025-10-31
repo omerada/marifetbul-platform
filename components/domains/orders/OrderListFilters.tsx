@@ -19,18 +19,12 @@
 import { Search, SortDesc } from 'lucide-react';
 import { Input, Label } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import type { OrderStatus } from '@/lib/api/validators/order';
+import type { OrderStatus } from '@/types/backend-aligned';
+import type { OrderStats } from '@/types/business/features/orders';
 
 // ================================================
 // TYPES
 // ================================================
-
-export interface OrderStats {
-  total: number;
-  active: number;
-  completed: number;
-  cancelled: number;
-}
 
 export interface OrderListFiltersProps {
   /** Current selected status */
@@ -58,14 +52,14 @@ export interface OrderListFiltersProps {
 const STATUS_TABS: Array<{
   value: OrderStatus | 'all';
   label: string;
-  countKey: keyof OrderStats;
+  countKey: keyof OrderStats | 'total';
 }> = [
   { value: 'all', label: 'Tümü', countKey: 'total' },
-  { value: 'PAID', label: 'Bekleyen', countKey: 'active' },
-  { value: 'IN_PROGRESS', label: 'Devam Eden', countKey: 'active' },
-  { value: 'DELIVERED', label: 'Teslim Edilen', countKey: 'active' },
-  { value: 'COMPLETED', label: 'Tamamlanan', countKey: 'completed' },
-  { value: 'CANCELED', label: 'İptal', countKey: 'cancelled' },
+  { value: 'PAID', label: 'Bekleyen', countKey: 'totalOrders' },
+  { value: 'IN_PROGRESS', label: 'Devam Eden', countKey: 'totalOrders' },
+  { value: 'DELIVERED', label: 'Teslim Edilen', countKey: 'totalOrders' },
+  { value: 'COMPLETED', label: 'Tamamlanan', countKey: 'completedOrders' },
+  { value: 'CANCELED', label: 'İptal', countKey: 'cancelledOrders' },
 ];
 
 const SORT_OPTIONS = [
@@ -95,7 +89,10 @@ export function OrderListFilters({
       <div className="border-b">
         <div className="-mb-px flex flex-wrap gap-2">
           {STATUS_TABS.map((tab) => {
-            const count = stats?.[tab.countKey] || 0;
+            const count =
+              tab.countKey === 'total'
+                ? stats?.totalOrders || 0
+                : (stats?.[tab.countKey as keyof OrderStats] as number) || 0;
             const isActive = selectedStatus === tab.value;
 
             return (

@@ -38,8 +38,11 @@ export interface CreateJobOrderRequest {
 export interface CreatePackageOrderRequest {
   packageId: string;
   amount: number;
+  tier?: string;
   customizations?: string;
+  requirements?: string;
   deadline: string;
+  notes?: string;
 }
 
 export interface CreateCustomOrderRequest {

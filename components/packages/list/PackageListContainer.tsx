@@ -20,6 +20,7 @@ import type {
   PackageStatus,
   PackageSortBy,
 } from '@/types/business/features/package';
+import { transformServicePackagesToSummaries } from '@/lib/transformers/package.transformer';
 
 export function PackageListContainer() {
   const [packages, setPackages] = useState<PackageSummary[]>([]);
@@ -68,16 +69,19 @@ export function PackageListContainer() {
 
       // getUserPackages accepts (page, limit) - sortBy handled by backend default
       const response = await packageApi.getUserPackages(page, 20);
-      setPackages(response.data);
+
+      // Transform ServicePackage[] to PackageSummary[]
+      const transformedPackages = transformServicePackagesToSummaries(
+        response.data
+      );
+      setPackages(transformedPackages);
       setTotalPages(response.pagination?.totalPages || 1);
 
-      // Stats - using placeholder values until backend provides endpoint
+      // Stats - using pagination.total instead of totalItems
       setStats({
-        totalPackages: response.pagination?.totalItems || 0,
+        totalPackages: response.pagination?.total || 0,
         activePackages:
-          response.data?.filter(
-            (p: (typeof response.data)[0]) => p.status === 'ACTIVE'
-          ).length || 0,
+          transformedPackages.filter((p) => p.status === 'ACTIVE').length || 0,
         totalViews: 0,
         totalOrders: 0,
         averageRating: 0,

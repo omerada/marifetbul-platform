@@ -15,6 +15,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { followApi } from '@/lib/api/follow';
 import type { User } from '@/types/core/base';
 import type { PaginationMeta } from '@/types';
+import { transformUserResponses } from '@/lib/transformers/user.transformer';
 
 interface UseFollowingListOptions {
   userId: string;
@@ -65,10 +66,13 @@ export function useFollowingList({
 
         const response = await followApi.getFollowing(userId, page, pageSize);
 
+        // Transform backend users to frontend User type
+        const transformedUsers = transformUserResponses(response.data);
+
         if (append) {
-          setFollowing((prev) => [...prev, ...response.data]);
+          setFollowing((prev) => [...prev, ...transformedUsers]);
         } else {
-          setFollowing(response.data);
+          setFollowing(transformedUsers);
         }
 
         setPagination(response.pagination);

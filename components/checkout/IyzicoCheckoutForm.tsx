@@ -20,20 +20,20 @@ import React, { useState } from 'react';
 import { formatCurrency } from '@/lib/shared/formatters';
 import { useRouter } from 'next/navigation';
 import { usePaymentIntent } from '@/hooks/business/payment/usePaymentIntent';
-import { useStripeCheckout } from '@/hooks/business/payment/useStripeCheckout';
+import useIyzicoCheckout from '@/hooks/business/payment/useStripeCheckout';
 import type { CheckoutSession } from '@/types/business/features/payments';
 
-interface StripeCheckoutFormProps {
+interface IyzicoCheckoutFormProps {
   checkoutSession: CheckoutSession;
   onSuccess?: (paymentIntentId: string) => void;
   onError?: (error: string) => void;
 }
 
-export function StripeCheckoutForm({
+export function IyzicoCheckoutForm({
   checkoutSession,
   onSuccess,
   onError,
-}: StripeCheckoutFormProps) {
+}: IyzicoCheckoutFormProps) {
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
   const [cardComplete, setCardComplete] = useState(false);
@@ -54,7 +54,7 @@ export function StripeCheckoutForm({
     isProcessing,
     error: paymentError,
     clearError: clearPaymentError,
-  } = useStripeCheckout();
+  } = useIyzicoCheckout();
 
   // Combined error
   const error = intentError || paymentError;
@@ -241,7 +241,7 @@ export function StripeCheckoutForm({
             <div>
               <p className="mb-1 font-medium">Güvenli Ödeme</p>
               <p className="text-xs">
-                Ödemeniz Stripe tarafından güvenli şekilde işlenir. Kart
+                Ödemeniz Iyzico tarafından güvenli şekilde işlenir. Kart
                 bilgileriniz saklanmaz.
               </p>
             </div>
@@ -315,4 +315,7 @@ export function StripeCheckoutForm({
   );
 }
 
-export default StripeCheckoutForm;
+// Backward compatibility export
+export const StripeCheckoutForm = IyzicoCheckoutForm;
+
+export default IyzicoCheckoutForm;

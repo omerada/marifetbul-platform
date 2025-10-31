@@ -322,4 +322,36 @@ export class PackageService {
 
     return response.data;
   }
+
+  /**
+   * Activate a package (seller endpoint)
+   */
+  static async activatePackage(id: string): Promise<ServicePackage> {
+    const response = await apiClient.post<ApiResponse<ServicePackage>>(
+      `/seller/packages/${id}/activate`,
+      {}
+    );
+
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to activate package');
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Pause a package (seller endpoint)
+   */
+  static async pausePackage(id: string): Promise<ServicePackage> {
+    const response = await apiClient.post<ApiResponse<ServicePackage>>(
+      `/seller/packages/${id}/pause`,
+      {}
+    );
+
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to pause package');
+    }
+
+    return response.data;
+  }
 }

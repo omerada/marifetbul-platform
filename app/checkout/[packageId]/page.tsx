@@ -20,10 +20,10 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { StripeProvider } from '@/components/shared/StripeProvider';
+import IyzicoProvider from '@/components/shared/IyzicoProvider';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { RequirementsForm } from '@/components/checkout/RequirementsForm';
-import { StripeCheckoutForm } from '@/components/checkout/StripeCheckoutForm';
+import { IyzicoCheckoutForm } from '@/components/checkout/IyzicoCheckoutForm';
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { PACKAGE_ENDPOINTS, ORDER_ENDPOINTS } from '@/lib/api/endpoints';
 import type { CheckoutSession } from '@/types/business/features/payments';
@@ -209,9 +209,9 @@ export default function CheckoutPage() {
                   isLoading={isLoading}
                 />
               ) : (
-                <StripeProvider>
-                  <StripeCheckoutForm checkoutSession={checkoutSession} />
-                </StripeProvider>
+                <IyzicoProvider>
+                  <IyzicoCheckoutForm checkoutSession={checkoutSession} />
+                </IyzicoProvider>
               )}
             </div>
           </div>

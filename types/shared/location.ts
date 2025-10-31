@@ -10,6 +10,8 @@
 export interface Coordinates {
   lat: number;
   lng: number;
+  latitude?: number; // Alias for lat
+  longitude?: number; // Alias for lng
 }
 
 /**
@@ -89,6 +91,12 @@ export interface LocationSearchRequest {
   limit?: number;
   types?: ('city' | 'region' | 'country')[];
   language?: string;
+  coordinates?: Coordinates;
+  radius?: number;
+  bounds?: {
+    northeast: Coordinates;
+    southwest: Coordinates;
+  };
 }
 
 /**
@@ -99,6 +107,7 @@ export interface LocationAutocompleteRequest {
   limit?: number;
   types?: string[];
   location?: Coordinates;
+  coordinates?: Coordinates;
   radius?: number;
   language?: string;
 }
@@ -108,6 +117,8 @@ export interface LocationAutocompleteRequest {
  */
 export interface GeocodeRequest {
   address: string;
+  placeId?: string;
+  coordinates?: Coordinates;
   language?: string;
 }
 

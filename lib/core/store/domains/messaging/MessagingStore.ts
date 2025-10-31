@@ -14,6 +14,33 @@ import type {
 } from '@/types';
 
 // ================================================
+// HELPERS
+// ================================================
+
+/**
+ * Transform backend pagination to frontend PaginationMeta
+ * Backend uses 'size', frontend uses 'pageSize'
+ */
+function transformPagination(
+  backendPagination: Record<string, unknown>
+): PaginationMeta {
+  return {
+    page: Number(backendPagination.page || 0),
+    pageSize: Number(
+      backendPagination.size || backendPagination.pageSize || 20
+    ),
+    total: Number(
+      backendPagination.total || backendPagination.totalElements || 0
+    ),
+    totalPages: Number(backendPagination.totalPages || 0),
+    hasNext: Boolean(backendPagination.hasNext),
+    hasPrev: Boolean(
+      backendPagination.hasPrev || backendPagination.hasPrevious
+    ),
+  };
+}
+
+// ================================================
 // DOMAIN: MESSAGING STORE - OPTIMIZED
 // ================================================
 // Consolidates all messaging related functionality
@@ -135,7 +162,9 @@ export const useMessagingStore = create<MessagingState>()(
             participants: [],
             unreadCount: conv.unreadCount || 0,
           })) as Conversation[];
-          state.conversationsPagination = response.pagination;
+          state.conversationsPagination = transformPagination(
+            response.pagination as unknown as Record<string, unknown>
+          );
           state.isLoadingConversations = false;
 
           // Update unread count
@@ -198,7 +227,9 @@ export const useMessagingStore = create<MessagingState>()(
       setMessages: (conversationId, response) =>
         set((state) => {
           state.messages[conversationId] = response.messages;
-          state.messagesPagination[conversationId] = response.pagination;
+          state.messagesPagination[conversationId] = transformPagination(
+            response.pagination as unknown as Record<string, unknown>
+          );
           state.isLoadingMessages = false;
         }),
 
@@ -501,7 +532,6 @@ export const useMessagingStore = create<MessagingState>()(
                 state.conversationsPagination = {
                   page: 0,
                   pageSize: 20,
-                  limit: 20,
                   total: 0,
                   totalPages: 0,
                   hasNext: false,
@@ -519,15 +549,18 @@ export const useMessagingStore = create<MessagingState>()(
 
           set((state) => {
             state.conversations = data.conversations || [];
-            state.conversationsPagination = data.pagination || {
-              page: 0,
-              pageSize: 20,
-              limit: 20,
-              total: 0,
-              totalPages: 0,
-              hasNext: false,
-              hasPrev: false,
-            };
+            state.conversationsPagination = data.pagination
+              ? transformPagination(
+                  data.pagination as unknown as Record<string, unknown>
+                )
+              : {
+                  page: 0,
+                  pageSize: 20,
+                  total: 0,
+                  totalPages: 0,
+                  hasNext: false,
+                  hasPrev: false,
+                };
             state.isLoadingConversations = false;
             state.totalUnreadCount = state.conversations.reduce(
               (sum, conv) => sum + conv.unreadCount,
@@ -576,7 +609,9 @@ export const useMessagingStore = create<MessagingState>()(
 
           set((state) => {
             state.messages[conversationId] = data.messages;
-            state.messagesPagination[conversationId] = data.pagination;
+            state.messagesPagination[conversationId] = transformPagination(
+              data.pagination as unknown as Record<string, unknown>
+            );
             state.isLoadingMessages = false;
           });
         } catch (error) {

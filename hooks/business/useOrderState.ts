@@ -17,7 +17,7 @@ import type {
 } from '@/types/backend-aligned';
 import { orderApi, unwrapOrderResponse } from '@/lib/api/orders';
 import { logError } from '@/lib/shared/errors';
-import type { OrderStats } from '@/components/dashboard/orders';
+import type { OrderStats } from '@/types/business/features/orders';
 
 // ================================================
 // TYPES
@@ -167,10 +167,15 @@ export function useOrderState(options: UseOrderStateOptions): {
 
       // Calculate counts from statistics
       const statsData: OrderStats = {
-        total: statistics.totalOrders || 0,
-        active: statistics.activeOrders || 0,
-        completed: statistics.completedOrders || 0,
-        cancelled: statistics.cancelledOrders || 0,
+        totalOrders: statistics.totalOrders || 0,
+        completedOrders: statistics.completedOrders || 0,
+        cancelledOrders: statistics.cancelledOrders || 0,
+        disputedOrders: 0, // Not available in backend statistics
+        totalRevenue: statistics.totalRevenue || 0,
+        averageOrderValue: statistics.averageOrderValue || 0,
+        completionRate: statistics.completionRate || 0,
+        disputeRate: 0, // Not available in backend statistics
+        averageDeliveryTime: statistics.averageDeliveryTime || 0,
       };
 
       dispatch({ type: 'SET_STATS', payload: statsData });

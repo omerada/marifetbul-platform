@@ -21,9 +21,15 @@ import { apiClient } from '@/lib/infrastructure/api/client';
 import { PAYMENT_ENDPOINTS } from '@/lib/api/endpoints';
 import type {
   UsePaymentIntentReturn,
-  StripePaymentIntentResponse,
-  StripePaymentIntentRequest,
+  IyzicoPaymentResponse,
+  IyzicoPaymentRequest,
 } from '@/types/business/features/payments';
+
+// Type aliases for backward compatibility
+type StripePaymentIntentResponse = IyzicoPaymentResponse;
+type StripePaymentIntentRequest = IyzicoPaymentRequest;
+
+export type { StripePaymentIntentResponse, StripePaymentIntentRequest };
 
 /**
  * Hook for managing payment intents

@@ -15,6 +15,10 @@ import { devtools } from 'zustand/middleware';
 import { toast } from 'sonner';
 import { reviewApi } from '@/lib/api/review';
 import { getErrorMessage, logError } from '@/lib/shared/errors';
+import {
+  transformReviewResponse,
+  transformReviewResponses,
+} from '@/lib/transformers/review.transformer';
 import type {
   Review,
   CreateReviewRequest,
@@ -215,9 +219,10 @@ export const useReviewStore = create<ReviewState>()(
       fetchReviewById: async (reviewId) => {
         set({ loading: true, error: null });
         try {
-          const review = await reviewApi.getById(reviewId);
+          const backendReview = await reviewApi.getById(reviewId);
+          const transformedReview = transformReviewResponse(backendReview);
           set({
-            currentReview: review,
+            currentReview: transformedReview,
             loading: false,
           });
         } catch (error) {
@@ -236,14 +241,16 @@ export const useReviewStore = create<ReviewState>()(
       createReview: async (data) => {
         set({ loading: true, error: null });
         try {
-          const review = await reviewApi.create(data);
+          const backendReview = await reviewApi.create(data);
+          const transformedReview = transformReviewResponse(backendReview);
           set((state) => ({
-            reviews: [review, ...state.reviews],
+            ...state,
+            reviews: [transformedReview, ...state.reviews],
             loading: false,
           }));
 
           toast.success('Değerlendirmeniz başarıyla oluşturuldu');
-          return review;
+          return backendReview;
         } catch (error) {
           const errorMessage = getErrorMessage(error);
           logError(error, { action: 'createReview', data });
@@ -261,20 +268,22 @@ export const useReviewStore = create<ReviewState>()(
       updateReview: async (reviewId, data) => {
         set({ loading: true, error: null });
         try {
-          const updatedReview = await reviewApi.update(reviewId, data);
-          set((state) => ({
+          const backendReview = await reviewApi.update(reviewId, data);
+          const transformedReview = transformReviewResponse(backendReview);
+          set((state: ReviewState) => ({
+            ...state,
             reviews: state.reviews.map((r) =>
-              r.id === reviewId ? updatedReview : r
+              r.id === reviewId ? transformedReview : r
             ),
             currentReview:
               state.currentReview?.id === reviewId
-                ? updatedReview
+                ? transformedReview
                 : state.currentReview,
             loading: false,
           }));
 
           toast.success('Değerlendirmeniz güncellendi');
-          return updatedReview;
+          return backendReview;
         } catch (error) {
           const errorMessage = getErrorMessage(error);
           logError(error, { action: 'updateReview', reviewId, data });

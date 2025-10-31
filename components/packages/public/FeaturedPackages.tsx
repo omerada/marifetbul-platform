@@ -12,6 +12,7 @@ import { packageApi } from '@/lib/api/packages';
 import { PackageCard } from './PackageCard';
 import { Button } from '@/components/ui';
 import type { PackageSummary } from '@/types/business/features/package';
+import { transformServicePackagesToSummaries } from '@/lib/transformers/package.transformer';
 
 interface FeaturedPackagesProps {
   limit?: number;
@@ -29,11 +30,14 @@ export function FeaturedPackages({
   useEffect(() => {
     const fetchFeaturedPackages = async () => {
       try {
-        const response = await packageApi.getFeaturedPackages({
-          page: 0,
-          size: limit,
-        });
-        setPackages(response.content);
+        // getFeaturedPackages accepts (page, limit) - both as numbers
+        const response = await packageApi.getFeaturedPackages(0, limit);
+
+        // Transform ServicePackage[] to PackageSummary[]
+        const transformed = transformServicePackagesToSummaries(
+          response.data || []
+        );
+        setPackages(transformed);
       } catch (error) {
         console.error('Failed to fetch featured packages:', error);
         setPackages([]);

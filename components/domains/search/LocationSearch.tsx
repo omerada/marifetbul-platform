@@ -152,8 +152,14 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({
       const currentLocationData = unifiedLocation.currentPosition;
 
       if (currentLocationData) {
+        // Validate coordinates exist
+        if (!currentLocationData.latitude || !currentLocationData.longitude) {
+          logger.error('Invalid location coordinates');
+          return;
+        }
+
         // Convert Coordinates to expected format
-        const locationData = {
+        const locationData: Coordinates = {
           lat: currentLocationData.latitude,
           lng: currentLocationData.longitude,
           latitude: currentLocationData.latitude,

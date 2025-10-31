@@ -12,6 +12,7 @@ import { packageApi } from '@/lib/api/packages';
 import { PublicPackageDetail } from './PublicPackageDetail';
 import { Button } from '@/components/ui';
 import type { Package } from '@/types/business/features/package';
+import { transformServicePackageToPackage } from '@/lib/transformers/package.transformer';
 
 export function PublicPackageDetailContainer() {
   const params = useParams();
@@ -29,7 +30,14 @@ export function PublicPackageDetailContainer() {
 
       // Fetch package by slug
       const response = await packageApi.getPackageBySlug(packageSlug);
-      setPackageData(response);
+
+      // Transform ServicePackage to Package
+      if (response) {
+        const transformed = transformServicePackageToPackage(response);
+        setPackageData(transformed);
+      } else {
+        setError('Paket bulunamadı.');
+      }
     } catch (err) {
       setError('Paket bulunamadı.');
       console.error('Failed to fetch package:', err);

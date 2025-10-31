@@ -112,11 +112,17 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
         throw new Error('Could not get current position');
       }
 
-      const currentCoordinates = {
-        latitude: position.latitude,
-        longitude: position.longitude,
+      // Ensure we have valid coordinates
+      if (!position.latitude || !position.longitude) {
+        logger.error('Invalid position coordinates');
+        return;
+      }
+
+      const currentCoordinates: Coordinates = {
         lat: position.latitude,
         lng: position.longitude,
+        latitude: position.latitude,
+        longitude: position.longitude,
       };
 
       setSelectedLocation(currentCoordinates);

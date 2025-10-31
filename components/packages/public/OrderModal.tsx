@@ -59,14 +59,18 @@ export function OrderModal({
       setLoading(true);
 
       // Create order via API
-      const order = await orderApi.createPackageOrder({
+      const response = await orderApi.createPackageOrder({
         packageId: pkg.id,
+        amount: currentTier.price,
         tier: selectedTier,
         requirements: requirements || undefined,
+        deadline: new Date(
+          Date.now() + currentTier.deliveryDays * 24 * 60 * 60 * 1000
+        ).toISOString(),
       });
 
       // Navigate to checkout with order ID
-      router.push(`/checkout/${order.id}`);
+      router.push(`/checkout/${response.data.id}`);
     } catch (err) {
       console.error('Failed to create order:', err);
       const errorMessage =

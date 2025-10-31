@@ -10,4 +10,4 @@
 
 export { OrderSummary } from './OrderSummary';
 export { RequirementsForm } from './RequirementsForm';
-export { StripeCheckoutForm } from './StripeCheckoutForm';
+export { IyzicoCheckoutForm, StripeCheckoutForm } from './IyzicoCheckoutForm';

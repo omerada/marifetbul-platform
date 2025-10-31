@@ -23,9 +23,18 @@ export type {
   MapBounds,
 } from './shared/location';
 
-// Analytics types
+// Analytics types - excluding duplicates from dashboard
+export type {
+  RevenueForecast,
+  RevenueComparison,
+  CategorySummary,
+  CategoryPerformance,
+  CategoryRevenue,
+  PackagePerformance,
+  PackageTrend,
+  PackageComparison,
+} from './analytics';
 export * from './analytics/dashboard';
-export * from './analytics';
 
 // Business features
 export * from './business/features/analytics';

@@ -52,7 +52,7 @@ export interface AuthorSummary {
   id: string;
   username: string;
   fullName: string;
-  avatarUrl?: string;
+  avatarUrl?: string | null; // Allow null for validator compatibility
   // Backward compatibility aliases
   name?: string;
   avatar?: string;
@@ -90,11 +90,11 @@ export interface BlogComment {
   content: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'SPAM';
   author: AuthorSummary;
-  parentId?: number;
+  parentId?: number | null; // Allow null for validator compatibility
   replies: BlogComment[];
   createdAt: string;
   updatedAt: string;
-  approvedAt?: string;
+  approvedAt?: string | null; // Allow null
   depth: number;
 }
 

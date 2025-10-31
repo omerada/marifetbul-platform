@@ -35,12 +35,13 @@ export { EscrowStatus } from './EscrowStatus';
 export { DeliveryManager } from './DeliveryManager';
 
 // Type exports
+export type { OrderStats } from '@/types/business/features/orders';
 export type { OrderWorkflowStepperProps } from './OrderWorkflowStepper';
 export type { OrderActionsProps } from './OrderActions';
 export type { AcceptOrderModalProps } from './AcceptOrderModal';
 export type { DeliverySubmissionModalProps } from './DeliverySubmissionModal';
 export type { CancelOrderModalProps } from './CancelOrderModal';
-export type { OrderListFiltersProps, OrderStats } from './OrderListFilters';
+export type { OrderListFiltersProps } from './OrderListFilters';
 export type { OrderCardProps } from './OrderCard';
 export type { OrderMessagingPanelProps } from './OrderMessagingPanel';
 export type { OrderMessageBadgeProps } from './OrderMessageBadge';

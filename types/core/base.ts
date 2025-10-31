@@ -1,6 +1,9 @@
 // Core base types for the entire application
 import type { Coordinates } from '../shared/location';
 
+// Re-export Coordinates for convenience
+export type { Coordinates };
+
 export interface User {
   id: string;
   userId?: string; // Optional for ConversationParticipant compatibility

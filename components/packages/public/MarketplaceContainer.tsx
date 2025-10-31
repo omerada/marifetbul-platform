@@ -7,11 +7,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { packageApi } from '@/lib/api/packages';
-import type { PackageSortBy } from '@/types/business/features/package';
 import { PackageGrid } from './PackageGrid';
 import { MarketplaceFilters } from './MarketplaceFilters';
 import { Button } from '@/components/ui';
 import type { PackageSummary } from '@/types/business/features/package';
+import { transformServicePackagesToSummaries } from '@/lib/transformers/package.transformer';
 
 export function MarketplaceContainer() {
   const [packages, setPackages] = useState<PackageSummary[]>([]);
@@ -56,28 +56,37 @@ export function MarketplaceContainer() {
         params.sortDir = sortBy === 'price_desc' ? 'DESC' : 'ASC';
       }
 
-      const sortByEnum: PackageSortBy =
+      // Map UI sort to API sort parameter
+      const apiSort =
         sortBy === 'rating'
-          ? 'RATING'
+          ? 'rating'
           : sortBy === 'popular'
-            ? 'ORDER_COUNT'
+            ? 'popular'
             : sortBy === 'newest'
-              ? 'CREATED_AT'
+              ? 'newest'
               : sortBy === 'price_asc'
-                ? 'PRICE_ASC'
+                ? 'price_low'
                 : sortBy === 'price_desc'
-                  ? 'PRICE_DESC'
-                  : 'CREATED_AT';
+                  ? 'price_high'
+                  : undefined;
 
-      const response = await packageApi.getActivePackages({
+      // searchPackages now accepts PackageSearchParams object
+      const response = await packageApi.searchPackages({
         page: page - 1,
-        size: 20,
-        sortBy: sortByEnum,
-        sortDir: 'DESC',
+        limit: 20,
+        sort: apiSort,
+        keyword: searchQuery || undefined,
+        category: categoryId || undefined,
+        minPrice: minPrice ? Number(minPrice) : undefined,
+        maxPrice: maxPrice ? Number(maxPrice) : undefined,
       });
 
-      setPackages(response.content);
-      setTotalPages(response.totalPages);
+      // Transform ServicePackage[] to PackageSummary[]
+      const transformed = transformServicePackagesToSummaries(
+        response.data || []
+      );
+      setPackages(transformed);
+      setTotalPages(response.pagination?.totalPages || 1);
     } catch (err) {
       setError('Paketler yüklenirken bir hata oluştu.');
       console.error('Failed to fetch packages:', err);

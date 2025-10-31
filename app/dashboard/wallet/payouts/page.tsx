@@ -32,7 +32,7 @@ import {
   type PayoutStatus,
   PayoutStatus as PayoutStatusEnum,
 } from '@/lib/api/payouts';
-import { Button } from '@/components/ui/UnifiedButton';
+import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Dialog } from '@/components/ui/Dialog';
