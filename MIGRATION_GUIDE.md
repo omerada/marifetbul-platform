@@ -11,24 +11,33 @@ Bu dokuman, silinen duplicate route'lar ve yeni kullanım şekillerini açıklar
 ### 1. Dashboard Routes (`/app/api/dashboard/*`)
 
 #### ❌ Eski (Silindi)
+
 ```typescript
 // Bu route'lar artık kullanılamaz
-/api/dashboard/employer
-/api/dashboard/freelancer
+/api/aabddhors / employer / api / dashboard / freelancer;
 ```
 
 #### ✅ Yeni (Kullanılacak)
+
 ```typescript
 // V1 API endpoints kullanın
-/api/v1/dashboard/employer/activities
-/api/v1/dashboard/freelancer/activities
+/api/1v /
+  dashboard /
+  employer /
+  activities /
+  api /
+  v1 /
+  dashboard /
+  freelancer /
+  activities;
 
 // Dashboard data için
-DASHBOARD_ENDPOINTS.BUYER_DASHBOARD        // Employer için
-DASHBOARD_ENDPOINTS.SELLER_DASHBOARD       // Freelancer için
+DASHBOARD_ENDPOINTS.BUYER_DASHBOARD; // Employer için
+DASHBOARD_ENDPOINTS.SELLER_DASHBOARD; // Freelancer için
 ```
 
 #### 📝 Kod Örneği
+
 ```typescript
 // ❌ ESKİ (Artık çalışmaz)
 const response = await fetch('/api/dashboard/employer');
@@ -47,26 +56,37 @@ const response = await unifiedApiClient.get(
 ### 2. Orders Routes (`/app/api/orders/*`)
 
 #### ❌ Eski (Silindi)
+
 ```typescript
 // Bu route'lar artık kullanılamaz
-/api/orders/[orderId]
-/api/orders/[orderId]/status
-/api/orders/[orderId]/timeline
-/api/orders/statistics
+/api/deorrs /
+  [orderId] /
+  api /
+  orders /
+  [orderId] /
+  status /
+  api /
+  orders /
+  [orderId] /
+  timeline /
+  api /
+  orders /
+  statistics;
 ```
 
 #### ✅ Yeni (Kullanılacak)
+
 ```typescript
 // Backend API'yi direkt kullan
-/api/v1/orders/{orderId}
-/api/v1/orders/{orderId}/timeline
+/api/1v / orders / { orderId } / api / v1 / orders / { orderId } / timeline;
 
 // ORDER_ENDPOINTS kullan
-ORDER_ENDPOINTS.GET(orderId)
-ORDER_ENDPOINTS.GET_TIMELINE(orderId)
+ORDER_ENDPOINTS.GET(orderId);
+ORDER_ENDPOINTS.GET_TIMELINE(orderId);
 ```
 
 #### 📝 Kod Örneği
+
 ```typescript
 // ❌ ESKİ (Artık çalışmaz)
 const response = await fetch(`/api/orders/${orderId}`);
@@ -75,9 +95,7 @@ const response = await fetch(`/api/orders/${orderId}`);
 import { ORDER_ENDPOINTS } from '@/lib/api/endpoints';
 import unifiedApiClient from '@/lib/infrastructure/api/UnifiedApiClient';
 
-const response = await unifiedApiClient.get(
-  ORDER_ENDPOINTS.GET(orderId)
-);
+const response = await unifiedApiClient.get(ORDER_ENDPOINTS.GET(orderId));
 
 // Timeline için
 const timeline = await unifiedApiClient.get(
@@ -92,17 +110,20 @@ const timeline = await unifiedApiClient.get(
 ### Payment Methods Page
 
 #### ❌ Eski Versiyon (Silindi)
+
 ```
 /app/dashboard/settings/payment/page.tsx (v1)
 /app/dashboard/settings/payment/page-v2.tsx
 ```
 
 #### ✅ Yeni Production Versiyon
+
 ```
 /app/dashboard/settings/payment/page.tsx (v2 → production)
 ```
 
 **Değişiklikler:**
+
 - Component adı: `PaymentMethodsPageV2` → `PaymentMethodsPage`
 - Daha modern UI/UX
 - İyileştirilmiş error handling
@@ -113,6 +134,7 @@ const timeline = await unifiedApiClient.get(
 ## 🗑️ SİLİNEN DOSYALAR
 
 ### Mock Files
+
 ```
 ❌ __mocks__/lucide-react.js    (Silindi - .tsx versiyonu kullanılacak)
 ✅ __mocks__/lucide-react.tsx   (Korundu - TSX mock production'da)
@@ -147,18 +169,18 @@ const timeline = await unifiedApiClient.get(
 import { DASHBOARD_ENDPOINTS } from '@/lib/api/endpoints';
 
 // Employer/Buyer Dashboard
-DASHBOARD_ENDPOINTS.BUYER_DASHBOARD          // GET /dashboard/buyer/me
-DASHBOARD_ENDPOINTS.BUYER_DASHBOARD_BY_DAYS(30)  // GET /dashboard/buyer/me/days/30
-DASHBOARD_ENDPOINTS.BUYER_SNAPSHOT           // GET /dashboard/buyer/me/snapshot
+DASHBOARD_ENDPOINTS.BUYER_DASHBOARD; // GET /dashboard/buyer/me
+DASHBOARD_ENDPOINTS.BUYER_DASHBOARD_BY_DAYS(30); // GET /dashboard/buyer/me/days/30
+DASHBOARD_ENDPOINTS.BUYER_SNAPSHOT; // GET /dashboard/buyer/me/snapshot
 
 // Freelancer/Seller Dashboard
-DASHBOARD_ENDPOINTS.SELLER_DASHBOARD         // GET /dashboard/seller/me
-DASHBOARD_ENDPOINTS.SELLER_DASHBOARD_BY_DAYS(30) // GET /dashboard/seller/me/days/30
-DASHBOARD_ENDPOINTS.SELLER_SNAPSHOT          // GET /dashboard/seller/me/snapshot
+DASHBOARD_ENDPOINTS.SELLER_DASHBOARD; // GET /dashboard/seller/me
+DASHBOARD_ENDPOINTS.SELLER_DASHBOARD_BY_DAYS(30); // GET /dashboard/seller/me/days/30
+DASHBOARD_ENDPOINTS.SELLER_SNAPSHOT; // GET /dashboard/seller/me/snapshot
 
 // Activity Timeline
-DASHBOARD_ENDPOINTS.EMPLOYER_ACTIVITIES      // GET /dashboard/employer/activities
-DASHBOARD_ENDPOINTS.FREELANCER_ACTIVITIES    // GET /dashboard/freelancer/activities
+DASHBOARD_ENDPOINTS.EMPLOYER_ACTIVITIES; // GET /dashboard/employer/activities
+DASHBOARD_ENDPOINTS.FREELANCER_ACTIVITIES; // GET /dashboard/freelancer/activities
 ```
 
 ### Order Endpoints
@@ -167,24 +189,24 @@ DASHBOARD_ENDPOINTS.FREELANCER_ACTIVITIES    // GET /dashboard/freelancer/activi
 import { ORDER_ENDPOINTS } from '@/lib/api/endpoints';
 
 // Order CRUD
-ORDER_ENDPOINTS.GET(orderId)                 // GET /orders/{orderId}
-ORDER_ENDPOINTS.UPDATE(orderId)              // PUT /orders/{orderId}
-ORDER_ENDPOINTS.CANCEL(orderId)              // POST /orders/{orderId}/cancel
+ORDER_ENDPOINTS.GET(orderId); // GET /orders/{orderId}
+ORDER_ENDPOINTS.UPDATE(orderId); // PUT /orders/{orderId}
+ORDER_ENDPOINTS.CANCEL(orderId); // POST /orders/{orderId}/cancel
 
 // Order Actions
-ORDER_ENDPOINTS.START(orderId)               // POST /orders/{orderId}/start
-ORDER_ENDPOINTS.DELIVER(orderId)             // POST /orders/{orderId}/deliver
-ORDER_ENDPOINTS.ACCEPT_DELIVERY(orderId)     // POST /orders/{orderId}/accept
-ORDER_ENDPOINTS.REQUEST_REVISION(orderId)    // POST /orders/{orderId}/revision
-ORDER_ENDPOINTS.COMPLETE(orderId)            // POST /orders/{orderId}/complete
+ORDER_ENDPOINTS.START(orderId); // POST /orders/{orderId}/start
+ORDER_ENDPOINTS.DELIVER(orderId); // POST /orders/{orderId}/deliver
+ORDER_ENDPOINTS.ACCEPT_DELIVERY(orderId); // POST /orders/{orderId}/accept
+ORDER_ENDPOINTS.REQUEST_REVISION(orderId); // POST /orders/{orderId}/revision
+ORDER_ENDPOINTS.COMPLETE(orderId); // POST /orders/{orderId}/complete
 
 // Order Timeline
-ORDER_ENDPOINTS.GET_TIMELINE(orderId)        // GET /orders/{orderId}/timeline
+ORDER_ENDPOINTS.GET_TIMELINE(orderId); // GET /orders/{orderId}/timeline
 
 // My Orders
-ORDER_ENDPOINTS.MY_ORDERS                    // GET /orders/me
-ORDER_ENDPOINTS.ACTIVE                       // GET /orders/active
-ORDER_ENDPOINTS.COMPLETED                    // GET /orders/completed
+ORDER_ENDPOINTS.MY_ORDERS; // GET /orders/me
+ORDER_ENDPOINTS.ACTIVE; // GET /orders/active
+ORDER_ENDPOINTS.COMPLETED; // GET /orders/completed
 ```
 
 ---
@@ -194,6 +216,7 @@ ORDER_ENDPOINTS.COMPLETED                    // GET /orders/completed
 ### Frontend Components
 
 1. **Dashboard Components'larını Güncelle**
+
 ```typescript
 // Hooks'larda
 import { DASHBOARD_ENDPOINTS } from '@/lib/api/endpoints';
@@ -207,25 +230,25 @@ const { data, error } = useSWR(
 ```
 
 2. **Order Components'larını Güncelle**
+
 ```typescript
 import { ORDER_ENDPOINTS } from '@/lib/api/endpoints';
 
 const fetchOrder = async (orderId: string) => {
-  const response = await unifiedApiClient.get(
-    ORDER_ENDPOINTS.GET(orderId)
-  );
+  const response = await unifiedApiClient.get(ORDER_ENDPOINTS.GET(orderId));
   return response.data;
 };
 ```
 
 3. **Test'leri Güncelle**
+
 ```typescript
 // Mock endpoint'leri güncelle
 jest.mock('@/lib/api/endpoints', () => ({
   ORDER_ENDPOINTS: {
     GET: (id: string) => `/orders/${id}`,
     // ...
-  }
+  },
 }));
 ```
 
@@ -235,16 +258,16 @@ jest.mock('@/lib/api/endpoints', () => ({
 
 ### API Route Changes
 
-| Eski Route | Yeni Route | Status |
-|------------|------------|--------|
-| `/api/dashboard/employer` | `/api/v1/dashboard/buyer/me` | ❌ Breaking |
+| Eski Route                  | Yeni Route                    | Status      |
+| --------------------------- | ----------------------------- | ----------- |
+| `/api/dashboard/employer`   | `/api/v1/dashboard/buyer/me`  | ❌ Breaking |
 | `/api/dashboard/freelancer` | `/api/v1/dashboard/seller/me` | ❌ Breaking |
-| `/api/orders/{id}` | `/api/v1/orders/{id}` | ❌ Breaking |
+| `/api/orders/{id}`          | `/api/v1/orders/{id}`         | ❌ Breaking |
 
 ### Component Name Changes
 
-| Eski Component | Yeni Component |
-|----------------|----------------|
+| Eski Component         | Yeni Component       |
+| ---------------------- | -------------------- |
 | `PaymentMethodsPageV2` | `PaymentMethodsPage` |
 
 ---
