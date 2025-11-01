@@ -2,7 +2,7 @@
  * ================================================
  * USE PAYMENT INTENT HOOK
  * ================================================
- * Custom hook for creating and managing Stripe payment intents
+ * Custom hook for creating and managing Iyzico payment intents
  *
  * Features:
  * - Create payment intent for order
@@ -25,12 +25,6 @@ import type {
   IyzicoPaymentRequest,
 } from '@/types/business/features/payments';
 
-// Type aliases for backward compatibility
-type StripePaymentIntentResponse = IyzicoPaymentResponse;
-type StripePaymentIntentRequest = IyzicoPaymentRequest;
-
-export type { StripePaymentIntentResponse, StripePaymentIntentRequest };
-
 /**
  * Hook for managing payment intents
  */
@@ -42,15 +36,12 @@ export function usePaymentIntent(): UsePaymentIntentReturn {
    * Create a new payment intent for an order
    */
   const createIntent = useCallback(
-    async (
-      orderId: string,
-      amount: number
-    ): Promise<StripePaymentIntentResponse> => {
+    async (orderId: string, amount: number): Promise<IyzicoPaymentResponse> => {
       setIsCreating(true);
       setError(null);
 
       try {
-        const request: StripePaymentIntentRequest = {
+        const request: IyzicoPaymentRequest = {
           orderId,
           amount,
           currency: 'TRY',
@@ -62,7 +53,7 @@ export function usePaymentIntent(): UsePaymentIntentReturn {
         };
 
         const response = await apiClient.post<{
-          data: StripePaymentIntentResponse;
+          data: IyzicoPaymentResponse;
         }>(PAYMENT_ENDPOINTS.CREATE_INTENT, request);
 
         if (!response.data) {

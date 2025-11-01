@@ -70,9 +70,6 @@ export const IyzicoProvider: React.FC<IyzicoProviderProps> = ({ children }) => {
 
 IyzicoProvider.displayName = 'IyzicoProvider';
 
-// For backward compatibility, export as StripeProvider
-export const StripeProvider = IyzicoProvider;
-
 // ================================================
 // EXPORTS
 // ================================================
@@ -82,7 +79,7 @@ export default IyzicoProvider;
 /**
  * Hook to check if Iyzico is loaded
  */
-export function useStripeLoaded(): boolean {
+export function useIyzicoLoaded(): boolean {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {

@@ -25,8 +25,9 @@ function transformPayoutMethod(method: unknown): PayoutMethod {
     const methodUpper = method.toUpperCase();
     if (methodUpper === 'BANK_TRANSFER') return PayoutMethod.BANK_TRANSFER;
     if (methodUpper === 'IYZICO' || methodUpper === 'IYZICO_PAYOUT') {
-      return PayoutMethod.IYZICO;
+      return PayoutMethod.IYZICO_PAYOUT;
     }
+    if (methodUpper === 'WALLET_TRANSFER') return PayoutMethod.WALLET_TRANSFER;
   }
   // Default fallback
   return PayoutMethod.BANK_TRANSFER;

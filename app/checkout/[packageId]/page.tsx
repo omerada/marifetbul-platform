@@ -8,7 +8,7 @@
  * - Package details & pricing
  * - Order summary
  * - Requirements form
- * - Payment processing with Stripe
+ * - Payment processing with Iyzico
  *
  * Route: /checkout/[packageId]
  *

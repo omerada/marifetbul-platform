@@ -33,10 +33,11 @@ export enum PayoutStatus {
 // Payout Method Enum
 export enum PayoutMethod {
   BANK_TRANSFER = 'BANK_TRANSFER',
-  IYZICO = 'IYZICO',
+  IYZICO_PAYOUT = 'IYZICO_PAYOUT',
+  WALLET_TRANSFER = 'WALLET_TRANSFER',
 }
 
-// Legacy Payout Method Enum (for backward compatibility)
+// Legacy Payout Method Enum (for backward compatibility) - DEPRECATED
 export enum PayoutMethodEnum {
   BANK_TRANSFER = 'BANK_TRANSFER',
   IYZICO_PAYOUT = 'IYZICO_PAYOUT',

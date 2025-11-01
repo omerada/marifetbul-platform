@@ -3,7 +3,7 @@
  * PAYMENT API CLIENT
  * ================================================
  * Handles payment intents, confirmations, and refunds
- * Integrates with Stripe payment processing
+ * Integrates with Iyzico payment processing
  *
  * @author MarifetBul Development Team
  * @version 1.0.0
@@ -63,7 +63,7 @@ export async function createPaymentIntent(
  * Confirm payment intent
  * POST /api/v1/payments/intent/{paymentIntentId}/confirm
  *
- * @param {string} paymentIntentId - Stripe payment intent ID
+ * @param {string} paymentIntentId - Iyzico payment intent ID
  * @returns {Promise<PaymentIntent>} Confirmed payment intent
  *
  * @throws {AuthenticationError} Not authenticated

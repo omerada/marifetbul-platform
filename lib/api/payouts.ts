@@ -30,7 +30,7 @@ export interface PayoutResponse {
   method: PayoutMethod;
   paymentMethodId: string;
   paymentMethodDetails?: string;
-  stripePayoutId?: string;
+  iyzicoPayoutId?: string;
   description?: string;
   failureReason?: string;
   adminNotes?: string;
@@ -53,7 +53,7 @@ export enum PayoutStatus {
 
 export enum PayoutMethod {
   BANK_TRANSFER = 'BANK_TRANSFER',
-  STRIPE_PAYOUT = 'STRIPE_PAYOUT',
+  IYZICO_PAYOUT = 'IYZICO_PAYOUT',
   WALLET_TRANSFER = 'WALLET_TRANSFER',
 }
 

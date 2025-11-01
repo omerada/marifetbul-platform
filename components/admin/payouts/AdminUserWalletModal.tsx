@@ -356,7 +356,9 @@ export const AdminUserWalletModal: React.FC<AdminUserWalletModalProps> = ({
                             <p className="text-sm text-gray-600">
                               {payout.method === 'BANK_TRANSFER'
                                 ? 'Banka'
-                                : 'Stripe'}
+                                : payout.method === 'IYZICO_PAYOUT'
+                                  ? 'Iyzico'
+                                  : 'Cüzdan'}
                             </p>
                           </div>
                         </div>

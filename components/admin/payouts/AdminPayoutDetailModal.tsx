@@ -207,7 +207,9 @@ export const AdminPayoutDetailModal: React.FC<AdminPayoutDetailModalProps> = ({
                       <p className="mt-1 font-medium text-gray-900">
                         {payout.method === 'BANK_TRANSFER'
                           ? 'Banka Transferi'
-                          : 'Stripe'}
+                          : payout.method === 'IYZICO_PAYOUT'
+                            ? 'Iyzico'
+                            : 'Cüzdan Transferi'}
                       </p>
                     </div>
                     <div>

@@ -1,6 +1,6 @@
 /**
  * ================================================
- * PAYMENT TEST PAGE - Stripe Integration Test
+ * PAYMENT TEST PAGE - Iyzico Integration Test
  * ================================================
  * Development page for testing payment modal
  * Only accessible in development environment
@@ -54,14 +54,14 @@ export default function PaymentTestPage() {
             Payment Modal Test
           </h1>
           <p className="text-gray-600">
-            Test Stripe payment integration with test cards
+            Test Iyzico payment integration with test cards
           </p>
         </div>
 
         {/* Test Cards Info */}
         <div className="mb-8 rounded-lg border border-blue-200 bg-blue-50 p-6">
           <h2 className="mb-4 text-lg font-semibold text-blue-900">
-            Stripe Test Cards
+            Iyzico Test Cards
           </h2>
           <div className="space-y-3 text-sm text-blue-800">
             <div className="rounded-lg bg-white p-3">
@@ -99,8 +99,8 @@ export default function PaymentTestPage() {
             <strong>Environment:</strong> {process.env.NODE_ENV}
           </p>
           <p className="mt-1">
-            <strong>Stripe Key:</strong>{' '}
-            {process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+            <strong>Iyzico Key:</strong>{' '}
+            {process.env.NEXT_PUBLIC_IYZICO_API_KEY
               ? '✓ Configured'
               : '✗ Missing'}
           </p>

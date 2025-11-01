@@ -20,7 +20,7 @@ import React, { useState } from 'react';
 import { formatCurrency } from '@/lib/shared/formatters';
 import { useRouter } from 'next/navigation';
 import { usePaymentIntent } from '@/hooks/business/payment/usePaymentIntent';
-import useIyzicoCheckout from '@/hooks/business/payment/useStripeCheckout';
+import { useIyzicoCheckout } from '@/hooks/business/payment/useIyzicoCheckout';
 import type { CheckoutSession } from '@/types/business/features/payments';
 
 interface IyzicoCheckoutFormProps {
@@ -314,8 +314,5 @@ export function IyzicoCheckoutForm({
     </div>
   );
 }
-
-// Backward compatibility export
-export const StripeCheckoutForm = IyzicoCheckoutForm;
 
 export default IyzicoCheckoutForm;

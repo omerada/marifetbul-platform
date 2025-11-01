@@ -693,8 +693,8 @@ export const WEBHOOK_ENDPOINTS = {
   HANDLE: '/webhooks',
   VERIFY: '/webhooks/verify',
 
-  // Payment Webhooks
-  STRIPE: '/webhooks/stripe',
+  // Payment Webhooks (Iyzico)
+  IYZICO: '/webhooks/iyzico',
 } as const;
 
 // ================================================

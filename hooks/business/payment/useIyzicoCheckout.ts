@@ -176,7 +176,4 @@ function getLocalizedErrorMessage(error: {
   );
 }
 
-// Backward compatibility export
-export const useStripeCheckout = useIyzicoCheckout;
-
 export default useIyzicoCheckout;

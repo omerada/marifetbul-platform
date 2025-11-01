@@ -179,9 +179,9 @@ export const BulkPayoutActions: React.FC<BulkPayoutActionsProps> = ({
         Yöntem:
           payout.method === 'BANK_TRANSFER'
             ? 'Banka Havalesi'
-            : payout.method === 'IYZICO'
+            : payout.method === 'IYZICO_PAYOUT'
               ? 'Iyzico'
-              : 'Stripe',
+              : 'Cüzdan Transferi',
         Durum:
           payout.status === 'PENDING'
             ? 'Bekliyor'

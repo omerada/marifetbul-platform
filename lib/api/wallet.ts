@@ -144,7 +144,7 @@ export async function getWalletStats(): Promise<{
  */
 export async function requestPayout(request: {
   amount: number;
-  method: 'BANK_TRANSFER' | 'STRIPE_PAYOUT';
+  method: 'BANK_TRANSFER' | 'IYZICO_PAYOUT';
   bankAccountInfo?: string;
 }): Promise<Payout> {
   const response = await apiClient.post<Payout>('/payouts', request);

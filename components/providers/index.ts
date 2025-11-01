@@ -6,4 +6,4 @@
 export { AuthProvider } from './AuthProvider';
 export { ThemeProvider } from './ThemeProvider';
 export { ToastProvider } from './ToastProvider';
-export { StripeProvider, useStripeLoaded } from './StripeProvider';
+export { IyzicoProvider, useIyzicoLoaded } from './StripeProvider';

@@ -178,7 +178,8 @@ export const PayoutApprovalModal: React.FC<PayoutApprovalModalProps> = ({
                 </p>
                 <p className="mt-1 text-xs text-indigo-700">
                   {payout.method === 'BANK_TRANSFER' && 'Banka Havalesi'}
-                  {payout.method === 'IYZICO' && 'Iyzico'}
+                  {payout.method === 'IYZICO_PAYOUT' && 'Iyzico'}
+                  {payout.method === 'WALLET_TRANSFER' && 'Cüzdan Transferi'}
                 </p>
               </div>
 
