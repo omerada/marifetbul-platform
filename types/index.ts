@@ -60,6 +60,9 @@ export type {
 // Admin Dashboard (Sprint 3.2)
 export * from './business/admin-dashboard';
 
+// Job System (Sprint 1)
+export * from './business/job';
+
 // Disputes (Sprint 4.1)
 export * from './business/dispute';
 

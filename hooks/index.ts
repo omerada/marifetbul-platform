@@ -140,6 +140,13 @@ export {
 } from './shared/ui/useAccessibility';
 export { useHapticFeedback } from './shared/ui/useHapticFeedback';
 export { usePullToRefresh } from './shared/ui/usePullToRefresh';
+export { useBrowserNotifications } from './shared/useBrowserNotifications';
+export type {
+  NotificationPermission,
+  BrowserNotificationOptions,
+  UseBrowserNotificationsOptions,
+  UseBrowserNotificationsReturn,
+} from './shared/useBrowserNotifications';
 
 // INTEGRATION HOOKS - External services and APIs
 // useWebSocket moved to infrastructure/websocket

@@ -546,12 +546,28 @@ export {
   type UseCommentModerationReturn,
   type BulkActionResult,
 } from './useCommentModeration';
+export { useOptimisticModeration } from './useOptimisticModeration';
+export {
+  type OptimisticAction,
+  type OptimisticUpdateResult,
+  type UseOptimisticModerationReturn,
+} from './useOptimisticModeration';
 export { useSearchAnalytics } from './useSearchAnalytics';
 export {
   type UseSearchAnalyticsOptions,
   type SearchAnalyticsState,
   type FormattedMetrics,
 } from './useSearchAnalytics';
+export { useModerationNotifications } from './useModerationNotifications';
+export {
+  type ModerationEventType,
+  type CommentEventPayload,
+  type BulkModerationEventPayload,
+  type ModerationWebSocketMessage,
+  type ModerationEventHandlers,
+  type UseModerationNotificationsOptions,
+  type UseModerationNotificationsReturn,
+} from './useModerationNotifications';
 
 const BusinessHooks = {
   useUnifiedSearch,

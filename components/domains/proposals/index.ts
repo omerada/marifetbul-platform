@@ -3,6 +3,10 @@
 // ================================================
 // All proposal-related components
 
+export { ProposalCard } from './ProposalCard';
+export { FreelancerProposalCardV2 } from './FreelancerProposalCardV2';
+export { AcceptProposalModal } from './AcceptProposalModal';
+export { RejectProposalModal } from './RejectProposalModal';
 export {
   ProposalStatusBadge,
   getStatusColor,

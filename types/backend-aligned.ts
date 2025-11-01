@@ -629,6 +629,32 @@ export interface PaymentResponse {
 }
 
 // ================================================
+// BLOG TYPES (BlogCommentDTO.java, CommentStatus.java)
+// ================================================
+
+export type CommentStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'SPAM';
+
+export interface AuthorSummary {
+  id: string;
+  name: string;
+  email?: string;
+  avatarUrl?: string;
+}
+
+export interface BlogCommentResponse {
+  id: number;
+  content: string;
+  status: CommentStatus;
+  author: AuthorSummary;
+  parentId?: number;
+  replies?: BlogCommentResponse[];
+  createdAt: string;
+  updatedAt: string;
+  approvedAt?: string;
+  depth: number;
+}
+
+// ================================================
 // NOTIFICATION TYPES
 // ================================================
 

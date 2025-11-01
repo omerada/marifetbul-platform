@@ -76,3 +76,16 @@ export type {
   UpdatePaymentMethodRequest,
   PaymentMethodType,
 } from './payment-method';
+
+// Export Job API
+export * from './jobs';
+
+// Export Proposal API (already exists)
+export * from './proposals';
+
+// Export Blog Moderation API
+export * from './blog-moderation';
+
+// Export Moderation Activity API
+export { default as moderationActivityAPI } from './moderation-activity';
+export * from './moderation-activity';

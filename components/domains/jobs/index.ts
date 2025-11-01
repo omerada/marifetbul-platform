@@ -7,6 +7,8 @@
 // Job Components
 export { JobDetail } from './JobDetail';
 export { JobProposalButton } from './JobProposalButton';
+export { JobCard } from './JobCard';
+export { JobFilters } from './JobFilters';
 
 // Proposal Components
 export { ProposalForm } from './ProposalForm';
