@@ -23,27 +23,6 @@ export * from './validators/order';
 export const UserRoleSchema = z.enum(['FREELANCER', 'EMPLOYER', 'ADMIN']);
 
 /**
- * DEPRECATED: Use validators/order.ts for order-related schemas
- * Order status schema - kept for backward compatibility
- */
-export const OrderStatusSchema = z.enum([
-  'PENDING',
-  'AWAITING_REQUIREMENTS',
-  'IN_PROGRESS',
-  'DELIVERED',
-  'REVISION_REQUESTED',
-  'COMPLETED',
-  'CANCELLED',
-  'DISPUTED',
-]);
-
-/**
- * DEPRECATED: Use validators/order.ts for order-related schemas
- * Package tier schema - kept for backward compatibility
- */
-export const PackageTierSchema = z.enum(['BASIC', 'STANDARD', 'PREMIUM']);
-
-/**
  * Pagination metadata schema
  */
 export const PaginationMetaSchema = z.object({
@@ -181,62 +160,6 @@ export const PackagesResponseSchema =
 export type PackagesResponse = z.infer<typeof PackagesResponseSchema>;
 
 // ============================================================================
-// Order Schemas (DEPRECATED - Use validators/order.ts)
-// ============================================================================
-
-/**
- * DEPRECATED: Use validators/order.ts for backend-aligned order schemas
- * This schema is kept for backward compatibility only.
- *
- * @deprecated Import from 'validators/order.ts' instead
- */
-export const OrderItemSchema = z.object({
-  packageId: z.number(),
-  packageTitle: z.string(),
-  tier: PackageTierSchema,
-  price: z.number().min(0),
-  deliveryDays: z.number().int().min(1),
-  revisions: z.number().int().min(0),
-});
-
-/**
- * DEPRECATED: Use validators/order.ts for backend-aligned order schemas
- * This schema does NOT match the backend OrderResponse.java structure.
- *
- * @deprecated Import OrderSchema from 'validators/order.ts' instead
- */
-export const OrderSchema = z.object({
-  id: z.number(),
-  buyerId: z.number(),
-  sellerId: z.number(),
-  packageId: z.number(),
-  tier: PackageTierSchema,
-  status: OrderStatusSchema,
-  price: z.number().min(0),
-  deliveryDate: z.string().datetime(),
-  requirements: z.string().nullable(),
-  deliveryNote: z.string().nullable(),
-  deliveryFiles: z.array(z.string().url()).optional(),
-  revisionCount: z.number().int().min(0),
-  maxRevisions: z.number().int().min(0),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  completedAt: z.string().datetime().nullable(),
-  // Related entities
-  package: PackageSchema.optional(),
-  buyer: UserProfileSchema.optional(),
-  seller: UserProfileSchema.optional(),
-});
-
-export type Order = z.infer<typeof OrderSchema>;
-
-/**
- * DEPRECATED: Use validators/order.ts for backend-aligned order schemas
- * @deprecated Import from 'validators/order.ts' instead
- */
-export const OrdersResponseSchema = createPaginatedResponseSchema(OrderSchema);
-export type OrdersResponse = z.infer<typeof OrdersResponseSchema>;
-
 // ============================================================================
 // Proposal Schemas
 // ============================================================================
@@ -294,7 +217,7 @@ export const ReviewSchema = z.object({
   createdAt: z.string().datetime(),
   // Related entities
   reviewer: UserProfileSchema.optional(),
-  order: OrderSchema.optional(),
+  // Order field removed - use orderId for lookups instead
 });
 
 export type Review = z.infer<typeof ReviewSchema>;

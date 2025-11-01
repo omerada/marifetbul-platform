@@ -39,7 +39,7 @@ export function DashboardSidebar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const isFreelancer = user?.role === 'freelancer';
+  const isFreelancer = user?.role === 'FREELANCER';
 
   // Close mobile menu on route change
   useEffect(() => {

@@ -11,21 +11,23 @@
  * - Route classification
  *
  * @author MarifetBul Development Team
- * @version 1.0.0 - Sprint 1.5: Auth System Cleanup
+ * @version 2.0.0 - Sprint 1.1: Backend-Aligned Type Definitions
  */
 
 import { NextRequest } from 'next/server';
 import { getBackendApiUrl } from '@/lib/config/api';
 import { logger } from '@/lib/shared/utils/logger';
+import type { UserRole } from '@/types/backend-aligned';
 
 // ================================================
 // TYPES
 // ================================================
 
 /**
- * User roles in the system
+ * User roles - imported from backend-aligned.ts (single source of truth)
+ * Backend: com.marifetbul.api.domain.user.entity.UserRole
  */
-export type UserRole = 'ADMIN' | 'EMPLOYER' | 'FREELANCER' | 'USER';
+export type { UserRole } from '@/types/backend-aligned';
 
 /**
  * User context extracted from authentication
@@ -85,6 +87,11 @@ export const ROUTE_CONFIG = {
    * Routes that require admin role
    */
   admin: ['/admin'],
+
+  /**
+   * Routes that require moderator role (or admin)
+   */
+  moderator: ['/moderator'],
 
   /**
    * Authentication pages (redirect if already authenticated)
@@ -266,14 +273,15 @@ export function getUserFromCookies(): Partial<UserContext> | null {
 export function normalizeRole(role: string): UserRole {
   const normalized = role.toUpperCase() as UserRole;
 
-  // Validate against allowed roles
-  if (['ADMIN', 'EMPLOYER', 'FREELANCER', 'USER'].includes(normalized)) {
+  // Validate against allowed roles (backend UserRole enum)
+  if (['ADMIN', 'EMPLOYER', 'FREELANCER', 'MODERATOR'].includes(normalized)) {
     return normalized;
   }
 
-  // Default to USER for unknown roles
-  logger.warn('Unknown role, defaulting to USER', { role });
-  return 'USER';
+  // Default to FREELANCER for unknown roles
+  // (Backend doesn't have 'USER' role, FREELANCER is the default user type)
+  logger.warn('Unknown role, defaulting to FREELANCER', { role });
+  return 'FREELANCER';
 }
 
 /**
@@ -331,6 +339,26 @@ export function isFreelancer(user: UserContext | null): boolean {
   return user?.role === 'FREELANCER';
 }
 
+/**
+ * Check if user is moderator
+ *
+ * @param user - User context
+ * @returns True if user has moderator role
+ */
+export function isModerator(user: UserContext | null): boolean {
+  return user?.role === 'MODERATOR';
+}
+
+/**
+ * Check if user has elevated permissions (Admin or Moderator)
+ *
+ * @param user - User context
+ * @returns True if user is admin or moderator
+ */
+export function hasElevatedPermissions(user: UserContext | null): boolean {
+  return isAdmin(user) || isModerator(user);
+}
+
 // ================================================
 // ROUTE CLASSIFICATION
 // ================================================
@@ -356,6 +384,16 @@ export function isAdminRoute(pathname: string): boolean {
     ROUTE_CONFIG.admin.some((route) => pathname.startsWith(route)) &&
     pathname !== ROUTE_CONFIG.adminLogin
   );
+}
+
+/**
+ * Check if pathname matches a moderator route
+ *
+ * @param pathname - URL pathname
+ * @returns True if route requires moderator role (admins also allowed)
+ */
+export function isModeratorRoute(pathname: string): boolean {
+  return ROUTE_CONFIG.moderator.some((route) => pathname.startsWith(route));
 }
 
 /**

@@ -16,6 +16,12 @@ export { default as AdminAnalytics } from './dashboard/AdminAnalytics';
 export { default as AdminReports } from './dashboard/AdminReports';
 export { default as SystemHealthWidget } from './dashboard/SystemHealthWidget';
 
+// Sprint 3.2: Enhanced Dashboard Components
+export { SystemHealthPanel } from './dashboard/SystemHealthPanel';
+export { BusinessMetricsGrid } from './dashboard/BusinessMetricsGrid';
+export { RecentActivitiesFeed } from './dashboard/RecentActivitiesFeed';
+export { QuickAccessCards } from './dashboard/QuickAccessCards';
+
 // User Management Components
 export { default as UserTable } from './users/UserTable';
 export { default as BulkActions } from './users/BulkActions';

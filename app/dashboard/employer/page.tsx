@@ -6,10 +6,10 @@ import { lazy, Suspense } from 'react';
 export const revalidate = 0;
 export const dynamic = 'force-dynamic';
 
-// Lazy load the component to avoid client-server mismatch
-const EmployerDashboard = lazy(() =>
+// Lazy load the UnifiedDashboard component
+const UnifiedDashboard = lazy(() =>
   import('@/components/domains/dashboard').then((mod) => ({
-    default: mod.EmployerDashboard,
+    default: mod.UnifiedDashboard,
   }))
 );
 
@@ -18,7 +18,7 @@ export default function EmployerDashboardPage() {
     <Suspense
       fallback={<Loading size="lg" text="Loading employer dashboard..." />}
     >
-      <EmployerDashboard />
+      <UnifiedDashboard role="EMPLOYER" />
     </Suspense>
   );
 }

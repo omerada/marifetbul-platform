@@ -13,15 +13,17 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!isLoading && user) {
       switch (user.role) {
-        case 'freelancer':
+        case 'FREELANCER':
           redirect('/dashboard/freelancer');
           break;
-        case 'employer':
+        case 'EMPLOYER':
           redirect('/dashboard/employer');
           break;
-        case 'admin':
-        case 'moderator':
+        case 'ADMIN':
           redirect('/admin');
+          break;
+        case 'MODERATOR':
+          redirect('/moderator'); // MODERATOR kendi sayfasına gider
           break;
         default:
           redirect('/');

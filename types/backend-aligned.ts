@@ -338,12 +338,20 @@ export interface RefreshTokenRequest {
 // USER TYPES (UserResponse.java)
 // ================================================
 
+/**
+ * User Role (matches UserRole.java enum EXACTLY)
+ * Backend: com.marifetbul.api.domain.user.entity.UserRole
+ *
+ * IMPORTANT: This is the SINGLE SOURCE OF TRUTH for user roles
+ * All other files should import from here
+ *
+ * @see marifetbul-backend/src/main/java/com/marifetbul/api/domain/user/entity/UserRole.java
+ */
 export type UserRole =
-  | 'USER'
-  | 'FREELANCER'
-  | 'EMPLOYER'
-  | 'ADMIN'
-  | 'MODERATOR';
+  | 'FREELANCER' // Service provider
+  | 'EMPLOYER' // Service buyer
+  | 'ADMIN' // Full system access
+  | 'MODERATOR'; // Content moderation access
 
 export interface UserResponse {
   id: string; // UUID

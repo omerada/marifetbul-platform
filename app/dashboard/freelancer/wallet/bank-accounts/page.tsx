@@ -24,7 +24,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { AddBankAccountModal } from '@/components/domains/wallet';
-import { maskIBAN } from '@/lib/api/payment-method';
+import { formatIBAN } from '@/lib/shared/formatters';
 
 // ================================================
 // PAGE COMPONENT
@@ -207,10 +207,11 @@ export default function BankAccountsPage() {
                               IBAN:
                             </span>
                             <span className="font-mono font-medium text-gray-900">
-                              {maskIBAN(
+                              {formatIBAN(
                                 account.maskedIdentifier ||
                                   account.accountLastFour ||
-                                  ''
+                                  '',
+                                true // mask=true
                               )}
                             </span>
                           </div>

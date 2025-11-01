@@ -25,6 +25,40 @@ export interface FailedCommentAction {
 }
 
 // ================================================
+// COMMENT MODERATION (Sprint 2.2)
+// ================================================
+
+export interface CommentModerationFilters {
+  status?: 'PENDING' | 'APPROVED' | 'REJECTED' | 'SPAM' | 'FLAGGED';
+  dateFrom?: string;
+  dateTo?: string;
+  userId?: string;
+  postId?: string;
+  search?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface CommentModerationResponse {
+  comments: BlogComment[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface ModerateCommentRequest {
+  action: 'APPROVE' | 'REJECT' | 'SPAM';
+  reason?: string;
+}
+
+export interface BanUserRequest {
+  userId: string;
+  reason: string;
+  duration?: number; // days, undefined = permanent
+}
+
+// ================================================
 // CORE BLOG TYPES
 // ================================================
 
@@ -56,6 +90,11 @@ export interface BlogComment {
   createdAt: string;
   parentId?: string;
   approved?: boolean;
+  status?: 'PENDING' | 'APPROVED' | 'REJECTED' | 'SPAM';
+  flagged?: boolean;
+  flagReason?: string;
+  moderatedBy?: string;
+  moderatedAt?: string;
 }
 
 export interface BlogPost {

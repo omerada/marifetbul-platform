@@ -1,6 +1,13 @@
 // Unified Type System - Enhanced Types Only
 // This file provides enhanced type definitions for new features
 
+// ================================================
+// IMPORT CANONICAL TYPES FROM BACKEND-ALIGNED
+// ================================================
+// UserRole is imported from backend-aligned.ts (single source of truth)
+import type { UserRole as BackendUserRole } from '../backend-aligned';
+export type UserRole = BackendUserRole;
+
 // Enhanced search types
 export interface UnifiedSearchFilters {
   query?: string;
@@ -79,7 +86,7 @@ export * from './social';
 
 // Add new consolidated types to prevent conflicts
 export type Currency = 'TRY' | 'USD' | 'EUR';
-export type UserRole = 'user' | 'admin' | 'moderator' | 'super_admin';
+// UserRole: REMOVED - now imported from backend-aligned.ts (see top of file)
 export type UserType = 'freelancer' | 'employer' | 'admin';
 export type ExperienceLevel = 'beginner' | 'intermediate' | 'expert';
 export type JobStatus = 'open' | 'in_progress' | 'completed' | 'cancelled';

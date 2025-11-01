@@ -12,14 +12,6 @@
 // Core Dashboard Components (Unified)
 export { default as UnifiedDashboard } from './UnifiedDashboard';
 
-// Backward Compatibility Exports (will be removed in v7.0)
-export {
-  FreelancerDashboard,
-  EmployerDashboard,
-  MobileDashboard,
-  DashboardClient,
-} from './UnifiedDashboard';
-
 export { DashboardSidebar } from './DashboardSidebar';
 export { DashboardHeader } from './DashboardHeader';
 

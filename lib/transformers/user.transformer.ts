@@ -99,17 +99,18 @@ function getUserType(
  */
 function mapAccountTypeToRole(
   accountType?: string
-): 'freelancer' | 'employer' | 'admin' | 'user' {
-  if (!accountType) return 'user';
+): 'FREELANCER' | 'EMPLOYER' | 'ADMIN' | 'MODERATOR' | undefined {
+  if (!accountType) return undefined;
 
   const normalized = accountType.toUpperCase();
 
-  if (normalized === 'FREELANCER') return 'freelancer';
-  if (normalized === 'EMPLOYER') return 'employer';
-  if (normalized === 'ADMIN') return 'admin';
-  if (normalized === 'BOTH') return 'freelancer';
+  if (normalized === 'FREELANCER') return 'FREELANCER';
+  if (normalized === 'EMPLOYER') return 'EMPLOYER';
+  if (normalized === 'ADMIN') return 'ADMIN';
+  if (normalized === 'MODERATOR') return 'MODERATOR';
+  if (normalized === 'BOTH') return 'FREELANCER';
 
-  return 'user';
+  return undefined; // Unknown role
 }
 
 /**

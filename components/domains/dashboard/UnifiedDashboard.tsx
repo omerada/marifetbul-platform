@@ -44,7 +44,7 @@ import {
 
 interface UnifiedDashboardProps {
   userId?: string;
-  role?: 'freelancer' | 'employer';
+  role?: 'FREELANCER' | 'EMPLOYER';
 }
 
 type DashboardView = 'overview' | 'freelancer' | 'employer';
@@ -78,11 +78,19 @@ export function UnifiedDashboard({
 
   // Smart routing based on user type and URL params
   const viewParam = searchParams.get('view') as DashboardView;
+
+  // Helper to map backend role to view type
+  const roleToView = (role?: string): DashboardView => {
+    if (role === 'FREELANCER') return 'freelancer';
+    if (role === 'EMPLOYER') return 'employer';
+    return 'freelancer'; // Default fallback
+  };
+
   const [currentView, setCurrentView] = useState<DashboardView>(() => {
     // Priority: URL param > propRole > user role
     if (viewParam) return viewParam;
-    if (propRole) return propRole;
-    return user?.role === 'freelancer' ? 'freelancer' : 'employer';
+    if (propRole) return roleToView(propRole);
+    return roleToView(user?.role);
   });
 
   // Combined loading state
@@ -390,38 +398,3 @@ export function UnifiedDashboard({
 
 // Default export
 export default UnifiedDashboard;
-
-// ================================================
-// BACKWARD COMPATIBILITY EXPORTS
-// ================================================
-// These allow gradual migration from old components
-// All functionality is now in UnifiedDashboard
-
-/**
- * FreelancerDashboard - Wrapper around UnifiedDashboard
- * @deprecated Use UnifiedDashboard directly (will be removed in v7.0)
- */
-export const FreelancerDashboard = (props: { userId?: string }) => (
-  <UnifiedDashboard {...props} role="freelancer" />
-);
-
-/**
- * EmployerDashboard - Wrapper around UnifiedDashboard
- * @deprecated Use UnifiedDashboard directly (will be removed in v7.0)
- */
-export const EmployerDashboard = (props: { userId?: string }) => (
-  <UnifiedDashboard {...props} role="employer" />
-);
-
-/**
- * MobileDashboard - Responsive design is built-in
- * @deprecated Use UnifiedDashboard instead (will be removed in v7.0)
- */
-export const MobileDashboard = UnifiedDashboard;
-
-/**
- * DashboardClient - Merged into UnifiedDashboard
- * @deprecated Use UnifiedDashboard instead (removed in Story 1.1)
- * @removed 2025-10-29
- */
-export const DashboardClient = UnifiedDashboard;

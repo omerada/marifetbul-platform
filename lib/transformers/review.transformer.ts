@@ -32,8 +32,8 @@ export function transformReviewResponse(
     revieweeId: backend.revieweeId.toString(),
     revieweeName: 'User', // Backend doesn't provide reviewee info
     orderId: backend.orderId.toString(),
-    packageId: backend.order?.packageId?.toString(),
-    packageTitle: undefined, // Backend Order doesn't have packageTitle
+    packageId: undefined, // Backend Review doesn't include order details
+    packageTitle: undefined, // Backend Review doesn't include order details
     packageName: undefined,
     serviceName: undefined,
     type: ReviewType.ORDER,

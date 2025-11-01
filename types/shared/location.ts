@@ -55,22 +55,6 @@ export interface LocationSearchResult {
 }
 
 /**
- * Legacy location search result format
- * @deprecated Use LocationSearchResult instead
- */
-export interface LocationSearchResultLegacy {
-  id: string;
-  name: string;
-  address: string;
-  city: string;
-  state: string;
-  country: string;
-  lat: number;
-  lng: number;
-  distance?: number;
-}
-
-/**
  * Location autocomplete prediction
  */
 export interface LocationPrediction {

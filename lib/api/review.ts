@@ -27,21 +27,21 @@
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { validateResponse, ReviewSchema } from './validators';
 import type { Review as ValidatedReview } from './validators';
-import type {
-  Review,
-  ReviewsResponse,
-  CreateReviewRequest,
-  UpdateReviewRequest,
-  SellerResponseRequest,
-  FlagReviewRequest,
-  ModerateReviewRequest,
-  ReviewQueryParams,
-  PackageReviewsQueryParams,
-  SellerReviewsQueryParams,
-  AdminModerationQueryParams,
-  ReviewImage,
+import {
   VoteType,
-  PlatformReviewStats,
+  type Review,
+  type ReviewsResponse,
+  type CreateReviewRequest,
+  type UpdateReviewRequest,
+  type SellerResponseRequest,
+  type FlagReviewRequest,
+  type ModerateReviewRequest,
+  type ReviewQueryParams,
+  type PackageReviewsQueryParams,
+  type SellerReviewsQueryParams,
+  type AdminModerationQueryParams,
+  type ReviewImage,
+  type PlatformReviewStats,
 } from '@/types/business/review';
 
 /**
@@ -256,14 +256,14 @@ export async function voteNotHelpful(reviewId: string): Promise<Review> {
 }
 
 /**
- * Legacy voting function - maps to new helpful/not-helpful endpoints
- * @deprecated Use voteHelpful() or voteNotHelpful() instead
+ * Vote on review (helpful or not helpful)
+ * Convenience method that calls voteHelpful or voteNotHelpful based on voteType
  */
-export async function voteReview(
+export async function vote(
   reviewId: string,
   voteType: VoteType
 ): Promise<Review> {
-  if (voteType === 'HELPFUL') {
+  if (voteType === VoteType.HELPFUL) {
     return voteHelpful(reviewId);
   } else {
     return voteNotHelpful(reviewId);
@@ -499,9 +499,9 @@ export const reviewApi = {
   deleteResponse: deleteSellerResponse,
 
   // Voting (/api/v1/reviews/{reviewId}/helpful|not-helpful)
-  vote: voteReview, // Legacy - use voteHelpful/voteNotHelpful
   voteHelpful,
   voteNotHelpful,
+  vote,
   removeVote, // May not be supported in new architecture
 
   // Flagging (/api/v1/reviews/{reviewId}/flag)
@@ -515,7 +515,7 @@ export const reviewApi = {
 
   // Admin (/api/v1/reviews/admin)
   getForModeration: getReviewsForModeration,
-  moderate: moderateReview, // Legacy - use approve/reject
+  moderate: moderateReview,
   approve: approveReview,
   reject: rejectReview,
   getFlagged: getFlaggedReviews,

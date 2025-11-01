@@ -15,10 +15,10 @@ import { X, Building2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useBankAccounts } from '@/hooks/business/wallet/usePaymentMethods';
 import {
   validateIBAN,
-  formatIBAN,
   PaymentMethodType,
   type AddPaymentMethodRequest,
 } from '@/lib/api/payment-method';
+import { formatIBAN } from '@/lib/utils/iban-validator';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 
 // ================================================

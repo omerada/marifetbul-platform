@@ -37,12 +37,8 @@ export enum PayoutMethod {
   WALLET_TRANSFER = 'WALLET_TRANSFER',
 }
 
-// Legacy Payout Method Enum (for backward compatibility) - DEPRECATED
-export enum PayoutMethodEnum {
-  BANK_TRANSFER = 'BANK_TRANSFER',
-  IYZICO_PAYOUT = 'IYZICO_PAYOUT',
-  WALLET_TRANSFER = 'WALLET_TRANSFER',
-}
+// PayoutMethodEnum - REMOVED (Sprint 1.4: Legacy Cleanup)
+// Use PayoutMethod instead
 
 export enum WalletStatus {
   ACTIVE = 'ACTIVE',

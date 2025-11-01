@@ -233,6 +233,16 @@ export function requireAdmin(
 }
 
 /**
+ * Require moderator role (admins also allowed)
+ */
+export function requireModerator(
+  handler: NextRouteHandler,
+  options: AuthGuardOptions = {}
+): NextRouteHandler {
+  return requireRole(handler, ['MODERATOR', 'ADMIN'], options);
+}
+
+/**
  * Require employer role
  */
 export function requireEmployer(

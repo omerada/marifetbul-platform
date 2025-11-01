@@ -12,7 +12,6 @@ export * from './shared/seo';
 // Location types exported explicitly to avoid conflicts
 export type {
   LocationSearchResult,
-  LocationSearchResultLegacy,
   LocationPrediction,
   LocationSearchParams,
   LocationSearchRequest,
@@ -42,6 +41,16 @@ export * from './business/features/marketplace';
 export * from './business/features/messaging';
 export * from './business/features/wallet';
 export * from './business/features/search';
+
+// Moderation (Sprint 2)
+export * from './business/moderation';
+export * from './business/report';
+
+// Admin Dashboard (Sprint 3.2)
+export * from './business/admin-dashboard';
+
+// Disputes (Sprint 4.1)
+export * from './business/dispute';
 
 // Message types (Sprint 5)
 export * from './message';

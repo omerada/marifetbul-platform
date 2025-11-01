@@ -10,10 +10,6 @@
 
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { z } from 'zod';
-import {
-  formatCardNumber as formatCardNumberUtil,
-  formatIBAN as formatIBANUtil,
-} from '@/lib/shared/formatters';
 
 // ============================================================================
 // TYPES & SCHEMAS
@@ -357,22 +353,6 @@ export function detectCardBrand(cardNumber: string): string | null {
 }
 
 /**
- * Format card number for display
- * @deprecated Use formatCardNumber from @/lib/shared/formatters instead
- */
-export function formatCardNumber(cardNumber: string): string {
-  return formatCardNumberUtil(cardNumber, false);
-}
-
-/**
- * Mask card number for display
- * @deprecated Use formatCardNumber(cardNumber, true) from @/lib/shared/formatters instead
- */
-export function maskCardNumber(cardNumber: string): string {
-  return formatCardNumberUtil(cardNumber, true);
-}
-
-/**
  * Validate card expiry date
  */
 export function validateCardExpiry(month: number, year: number): boolean {
@@ -421,22 +401,6 @@ export function validateIBAN(iban: string): boolean {
   return /^TR\d{2}[A-Z0-9]{22}$/.test(cleanIBAN);
 }
 
-/**
- * Format IBAN for display
- * @deprecated Use formatIBAN from @/lib/shared/formatters instead
- */
-export function formatIBAN(iban: string): string {
-  return formatIBANUtil(iban, false);
-}
-
-/**
- * Mask IBAN for display
- * @deprecated Use formatIBAN(iban, true) from @/lib/shared/formatters instead
- */
-export function maskIBAN(iban: string): string {
-  return formatIBANUtil(iban, true);
-}
-
 // ============================================================================
 // EXPORT API OBJECT
 // ============================================================================
@@ -459,15 +423,11 @@ export const paymentMethodApi = {
   // Card validation helpers
   validateCreditCard,
   detectCardBrand,
-  formatCardNumber,
-  maskCardNumber,
   validateCardExpiry,
   validateCVV,
 
   // IBAN validation helpers
   validateIBAN,
-  formatIBAN,
-  maskIBAN,
 };
 
 export default paymentMethodApi;

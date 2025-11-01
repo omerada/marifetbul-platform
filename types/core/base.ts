@@ -1,8 +1,11 @@
 // Core base types for the entire application
 import type { Coordinates } from '../shared/location';
+import type { UserRole } from '../backend-aligned';
 
 // Re-export Coordinates for convenience
 export type { Coordinates };
+// Re-export UserRole from backend-aligned (single source of truth)
+export type { UserRole };
 
 export interface User {
   id: string;
@@ -18,13 +21,12 @@ export interface User {
   profilePictureUrl?: string; // Alias for compatibility
   title?: string; // User's professional title
   userType: 'freelancer' | 'employer' | 'admin';
-  role?:
-    | 'user'
-    | 'admin'
-    | 'moderator'
-    | 'super_admin'
-    | 'freelancer'
-    | 'employer';
+  /**
+   * User role - BACKEND-ALIGNED
+   * Imported from backend-aligned.ts (single source of truth)
+   * Backend: com.marifetbul.api.domain.user.entity.UserRole
+   */
+  role?: UserRole;
   phone?: string;
   location?: string;
   bio?: string;

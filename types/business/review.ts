@@ -313,6 +313,57 @@ export interface AdminModerationQueryParams {
 }
 
 // ========================================
+// REVIEW MODERATION (Sprint 2.3)
+// ========================================
+
+/**
+ * Flagged review with flag details
+ */
+export interface FlaggedReview extends Review {
+  flagDetails: {
+    count: number;
+    reasons: Array<{
+      reason: FlagReason;
+      count: number;
+      descriptions: string[];
+    }>;
+    firstFlaggedAt: string;
+    lastFlaggedAt: string;
+  };
+}
+
+/**
+ * Review moderation action
+ */
+export interface ReviewModerationAction {
+  action: 'APPROVE' | 'REMOVE' | 'WARN_USER' | 'BAN_USER';
+  reason?: string;
+  adminNotes?: string;
+  banDuration?: number; // days
+}
+
+/**
+ * Flag analytics
+ */
+export interface FlagAnalytics {
+  totalFlagged: number;
+  byReason: Array<{
+    reason: FlagReason;
+    count: number;
+    percentage: number;
+  }>;
+  trend: Array<{
+    date: string;
+    count: number;
+  }>;
+  topFlaggedReviewers: Array<{
+    userId: string;
+    userName: string;
+    flagCount: number;
+  }>;
+}
+
+// ========================================
 // Zod Schemas for Validation
 // ========================================
 

@@ -8,21 +8,22 @@
  * @version 1.0.0 - Sprint 2
  */
 
-import type { UserType } from '@/types/shared/unified';
+import type { UserRole } from '@/types/backend-aligned';
 
 /**
  * Get the appropriate dashboard route based on user role
- * @param userRole - The user's role (freelancer, employer, admin, moderator)
+ * @param userRole - The user's role (FREELANCER, EMPLOYER, ADMIN, MODERATOR)
  * @returns The dashboard route path
  */
-export function getDashboardRoute(userRole?: UserType | string): string {
-  switch (userRole) {
-    case 'freelancer':
+export function getDashboardRoute(userRole?: UserRole | string): string {
+  const role = userRole?.toUpperCase();
+  switch (role) {
+    case 'FREELANCER':
       return '/dashboard/freelancer';
-    case 'employer':
+    case 'EMPLOYER':
       return '/dashboard/employer';
-    case 'admin':
-    case 'moderator':
+    case 'ADMIN':
+    case 'MODERATOR':
       return '/admin';
     default:
       return '/dashboard';
@@ -146,8 +147,10 @@ export function getDashboardNavigation(role: 'freelancer' | 'employer') {
     },
   ];
 
+  // Normalize role for comparison
+  const normalizedRole = role?.toUpperCase();
   return [
-    ...(role === 'freelancer' ? freelancerNav : employerNav),
+    ...(normalizedRole === 'FREELANCER' ? freelancerNav : employerNav),
     ...sharedNav,
   ];
 }

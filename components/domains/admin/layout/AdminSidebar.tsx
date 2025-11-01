@@ -46,7 +46,7 @@ export default function AdminSidebar({
           : 'Admin User',
       email: user?.email || 'admin@marifetbul.com',
       role:
-        user?.role === 'admin' || user?.role === 'super_admin'
+        user?.role === 'ADMIN' || user?.role === 'MODERATOR'
           ? 'Administrator'
           : 'Admin',
       avatar: user?.avatar || '/avatars/admin.jpg',
