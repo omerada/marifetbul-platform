@@ -34,6 +34,24 @@ export { useUserManagement } from './business/useUserManagement';
 export { useContentModeration } from './business/useContentModeration';
 export { useSupport, useSupportTicket } from './business/useSupport';
 export { useHelpCenter } from './business/useHelpCenter';
+
+// Moderation hooks (Sprint: Moderator Dashboard)
+export {
+  useModerationStats,
+  usePendingItems,
+  useRecentActivities,
+  usePendingComments,
+  useCommentsByStatus,
+  useBulkCommentActions,
+  useCommentActions,
+  usePendingReviews,
+  useFlaggedReviews,
+  useReviewActions,
+  useUserModerationHistory,
+  useUserModerationActions,
+  usePendingReports,
+  useReportActions,
+} from './business/useModeration';
 // Business hooks
 export * from './business/useOrder';
 export * from './business/useReviews';

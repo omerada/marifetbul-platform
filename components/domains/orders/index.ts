@@ -19,6 +19,9 @@ export { DeliverySubmissionModal } from './DeliverySubmissionModal';
 export { CancelOrderModal } from './CancelOrderModal';
 export { EscrowReleaseModal } from './EscrowReleaseModal';
 
+// Order revision components (Sprint 1.3)
+export { OrderRevisionList } from './OrderRevisionList';
+
 // Order UI components
 export {
   OrderReviewButton,

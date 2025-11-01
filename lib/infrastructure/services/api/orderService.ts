@@ -65,6 +65,40 @@ export interface RequestRevisionRequest {
   attachments?: string[];
 }
 
+export interface AcceptRevisionRequest {
+  responseNote?: string;
+}
+
+export interface CompleteRevisionRequest {
+  completionNote?: string;
+}
+
+export interface RejectRevisionRequest {
+  rejectionReason: string;
+}
+
+export interface OrderRevisionResponse {
+  id: string;
+  orderId: string;
+  requestedBy: {
+    id: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    fullName: string;
+    avatarUrl?: string;
+  };
+  revisionNumber: number;
+  revisionNote: string;
+  responseNote?: string;
+  status: 'PENDING' | 'ACCEPTED' | 'COMPLETED' | 'REJECTED';
+  createdAt: string;
+  updatedAt: string;
+  acceptedAt?: string;
+  completedAt?: string;
+  rejectedAt?: string;
+}
+
 export interface CancelOrderRequest {
   reason: string;
   note?: string;
@@ -287,15 +321,82 @@ class OrderService {
 
   /**
    * Request revision (buyer action)
-   * POST /api/v1/orders/:orderId/revision
+   * POST /api/v1/orders/:orderId/revisions
    */
   async requestRevision(
     orderId: string,
     request: RequestRevisionRequest
-  ): Promise<ApiResponse<OrderResponse>> {
-    return apiClient.post<ApiResponse<OrderResponse>>(
+  ): Promise<ApiResponse<OrderRevisionResponse>> {
+    return apiClient.post<ApiResponse<OrderRevisionResponse>>(
       ORDER_ENDPOINTS.REQUEST_REVISION(orderId),
       request
+    );
+  }
+
+  /**
+   * Get all revisions for an order
+   * GET /api/v1/orders/:orderId/revisions
+   */
+  async getOrderRevisions(
+    orderId: string
+  ): Promise<ApiResponse<OrderRevisionResponse[]>> {
+    return apiClient.get<ApiResponse<OrderRevisionResponse[]>>(
+      ORDER_ENDPOINTS.GET_REVISIONS(orderId)
+    );
+  }
+
+  /**
+   * Accept revision (seller action)
+   * PUT /api/v1/orders/:orderId/revisions/:revisionId/accept
+   */
+  async acceptRevision(
+    orderId: string,
+    revisionId: string,
+    request?: AcceptRevisionRequest
+  ): Promise<ApiResponse<OrderRevisionResponse>> {
+    return apiClient.put<ApiResponse<OrderRevisionResponse>>(
+      ORDER_ENDPOINTS.ACCEPT_REVISION(orderId, revisionId),
+      request || {}
+    );
+  }
+
+  /**
+   * Complete revision (seller action)
+   * PUT /api/v1/orders/:orderId/revisions/:revisionId/complete
+   */
+  async completeRevision(
+    orderId: string,
+    revisionId: string,
+    request?: CompleteRevisionRequest
+  ): Promise<ApiResponse<OrderRevisionResponse>> {
+    return apiClient.put<ApiResponse<OrderRevisionResponse>>(
+      ORDER_ENDPOINTS.COMPLETE_REVISION(orderId, revisionId),
+      request || {}
+    );
+  }
+
+  /**
+   * Reject revision (seller action)
+   * PUT /api/v1/orders/:orderId/revisions/:revisionId/reject
+   */
+  async rejectRevision(
+    orderId: string,
+    revisionId: string,
+    request: RejectRevisionRequest
+  ): Promise<ApiResponse<OrderRevisionResponse>> {
+    return apiClient.put<ApiResponse<OrderRevisionResponse>>(
+      ORDER_ENDPOINTS.REJECT_REVISION(orderId, revisionId),
+      request
+    );
+  }
+
+  /**
+   * Get pending revisions for seller
+   * GET /api/v1/orders/pending/revisions
+   */
+  async getPendingRevisions(): Promise<ApiResponse<OrderRevisionResponse[]>> {
+    return apiClient.get<ApiResponse<OrderRevisionResponse[]>>(
+      ORDER_ENDPOINTS.PENDING_REVISIONS
     );
   }
 

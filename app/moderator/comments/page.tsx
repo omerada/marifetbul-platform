@@ -5,7 +5,7 @@
  * Blog comment moderation interface with bulk actions
  *
  * Sprint 2.2: Comment Moderation Queue
- * @version 2.0.0
+ * @version 3.0.0
  * @author MarifetBul Development Team
  */
 
@@ -13,63 +13,133 @@
 
 import React, { useState } from 'react';
 import { logger } from '@/lib/shared/utils/logger';
-import { Check, X, Flag, Search } from 'lucide-react';
+import { Check, X, Flag, Search, Loader2 } from 'lucide-react';
+import {
+  usePendingComments,
+  useCommentsByStatus,
+  useBulkCommentActions,
+  useCommentActions,
+} from '@/hooks';
+import { CommentStatus } from '@/types/business/moderation';
 
-type CommentStatus =
-  | 'PENDING'
-  | 'APPROVED'
-  | 'REJECTED'
-  | 'SPAM'
-  | 'FLAGGED'
-  | 'ALL';
+type CommentStatusFilter = CommentStatus | 'ALL';
 
 export default function CommentModerationPage() {
-  const [selectedStatus, setSelectedStatus] =
-    useState<CommentStatus>('PENDING');
+  const [selectedStatus, setSelectedStatus] = useState<CommentStatusFilter>(
+    CommentStatus.PENDING
+  );
   const [selectedComments, setSelectedComments] = useState<Set<string>>(
     new Set()
   );
   const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(0);
+  const pageSize = 20;
 
-  // Mock data - will be replaced with real API
-  const comments = [
-    {
-      id: '1',
-      author: { name: 'Ahmet Yılmaz', avatar: null },
-      content:
-        'Çok faydalı bir makale olmuş. React Hook Form kullanımı hakkında daha detaylı bilgi alabilir miyiz?',
-      postTitle: 'React Hook Form ile Form Yönetimi',
-      createdAt: new Date(Date.now() - 3600000).toISOString(),
-      status: 'PENDING',
-      flagged: false,
-    },
-    {
-      id: '2',
-      author: { name: 'Mehmet Demir', avatar: null },
-      content: 'Spam içerik - satış linki',
-      postTitle: 'Next.js 13 Yenilikleri',
-      createdAt: new Date(Date.now() - 7200000).toISOString(),
-      status: 'PENDING',
-      flagged: true,
-      flagReason: 'Spam',
-    },
-    {
-      id: '3',
-      author: { name: 'Ayşe Kara', avatar: null },
-      content:
-        'Harika açıklamalar! TypeScript migration konusunda da yazı bekliyoruz.',
-      postTitle: 'JavaScript Best Practices',
-      createdAt: new Date(Date.now() - 10800000).toISOString(),
-      status: 'PENDING',
-      flagged: false,
-    },
-  ];
+  // Fetch comments based on status
+  const {
+    comments: pendingComments,
+    total: pendingTotal,
+    isLoading: pendingLoading,
+  } = usePendingComments(page, pageSize);
+
+  const {
+    comments: approvedComments,
+    total: approvedTotal,
+    isLoading: approvedLoading,
+  } = useCommentsByStatus(CommentStatus.APPROVED, page, pageSize);
+
+  const {
+    comments: rejectedComments,
+    total: rejectedTotal,
+    isLoading: rejectedLoading,
+  } = useCommentsByStatus(CommentStatus.REJECTED, page, pageSize);
+
+  const {
+    comments: spamComments,
+    total: spamTotal,
+    isLoading: spamLoading,
+  } = useCommentsByStatus(CommentStatus.SPAM, page, pageSize);
+
+  // Bulk actions
+  const {
+    bulkApprove,
+    bulkReject,
+    bulkSpam,
+    isProcessing: isBulkProcessing,
+  } = useBulkCommentActions();
+
+  // Single actions
+  const {
+    approve,
+    reject,
+    spam,
+    isProcessing: isSingleProcessing,
+  } = useCommentActions();
+
+  // Get current comments based on filter
+  const getCurrentComments = () => {
+    switch (selectedStatus) {
+      case CommentStatus.PENDING:
+        return {
+          comments: pendingComments,
+          total: pendingTotal,
+          isLoading: pendingLoading,
+        };
+      case CommentStatus.APPROVED:
+        return {
+          comments: approvedComments,
+          total: approvedTotal,
+          isLoading: approvedLoading,
+        };
+      case CommentStatus.REJECTED:
+        return {
+          comments: rejectedComments,
+          total: rejectedTotal,
+          isLoading: rejectedLoading,
+        };
+      case CommentStatus.SPAM:
+        return {
+          comments: spamComments,
+          total: spamTotal,
+          isLoading: spamLoading,
+        };
+      case 'ALL':
+        return {
+          comments: [
+            ...pendingComments,
+            ...approvedComments,
+            ...rejectedComments,
+            ...spamComments,
+          ],
+          total: pendingTotal + approvedTotal + rejectedTotal + spamTotal,
+          isLoading:
+            pendingLoading || approvedLoading || rejectedLoading || spamLoading,
+        };
+      default:
+        return {
+          comments: pendingComments,
+          total: pendingTotal,
+          isLoading: pendingLoading,
+        };
+    }
+  };
+
+  const { comments, total, isLoading } = getCurrentComments();
+
+  // Filter by search query
+  const filteredComments = searchQuery
+    ? comments.filter(
+        (comment) =>
+          comment.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          comment.authorName.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : comments;
 
   const handleSelectAll = () => {
-    if (selectedComments.size === comments.length) {
+    if (selectedComments.size === filteredComments.length) {
       setSelectedComments(new Set());
     } else {
-      setSelectedComments(new Set(comments.map((c) => c.id)));
+      setSelectedComments(new Set(filteredComments.map((c) => c.id)));
     }
   };
 
@@ -84,16 +154,57 @@ export default function CommentModerationPage() {
   };
 
   const handleBulkApprove = async () => {
-    logger.debug('Bulk approve:', Array.from(selectedComments));
-    // TODO: API call
-    setSelectedComments(new Set());
+    try {
+      await bulkApprove(Array.from(selectedComments));
+      setSelectedComments(new Set());
+    } catch (error) {
+      logger.error('Bulk approve failed:', error);
+    }
   };
 
   const handleBulkReject = async () => {
-    logger.debug('Bulk reject:', Array.from(selectedComments));
-    // TODO: API call
-    setSelectedComments(new Set());
+    try {
+      await bulkReject(Array.from(selectedComments));
+      setSelectedComments(new Set());
+    } catch (error) {
+      logger.error('Bulk reject failed:', error);
+    }
   };
+
+  const handleBulkSpam = async () => {
+    try {
+      await bulkSpam(Array.from(selectedComments));
+      setSelectedComments(new Set());
+    } catch (error) {
+      logger.error('Bulk spam failed:', error);
+    }
+  };
+
+  const handleSingleApprove = async (id: string) => {
+    try {
+      await approve(id);
+    } catch (error) {
+      logger.error('Approve failed:', error);
+    }
+  };
+
+  const handleSingleReject = async (id: string) => {
+    try {
+      await reject(id);
+    } catch (error) {
+      logger.error('Reject failed:', error);
+    }
+  };
+
+  const handleSingleSpam = async (id: string) => {
+    try {
+      await spam(id);
+    } catch (error) {
+      logger.error('Spam failed:', error);
+    }
+  };
+
+  const isProcessing = isBulkProcessing || isSingleProcessing;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -112,11 +223,10 @@ export default function CommentModerationPage() {
           {(
             [
               'ALL',
-              'PENDING',
-              'FLAGGED',
-              'APPROVED',
-              'REJECTED',
-              'SPAM',
+              CommentStatus.PENDING,
+              CommentStatus.APPROVED,
+              CommentStatus.REJECTED,
+              CommentStatus.SPAM,
             ] as const
           ).map((status) => (
             <button
@@ -129,11 +239,10 @@ export default function CommentModerationPage() {
               }`}
             >
               {status === 'ALL' && 'Tümü'}
-              {status === 'PENDING' && 'Bekleyen'}
-              {status === 'FLAGGED' && 'İşaretli'}
-              {status === 'APPROVED' && 'Onaylı'}
-              {status === 'REJECTED' && 'Reddedilen'}
-              {status === 'SPAM' && 'Spam'}
+              {status === CommentStatus.PENDING && 'Bekleyen'}
+              {status === CommentStatus.APPROVED && 'Onaylı'}
+              {status === CommentStatus.REJECTED && 'Reddedilen'}
+              {status === CommentStatus.SPAM && 'Spam'}
             </button>
           ))}
         </div>
@@ -197,12 +306,18 @@ export default function CommentModerationPage() {
 
         {/* Comments */}
         <div className="divide-y divide-gray-200">
-          {comments.length === 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center p-8">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            </div>
+          ) : filteredComments.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
-              Gösterilecek yorum bulunmuyor
+              {searchQuery
+                ? 'Arama kriterlerine uygun yorum bulunamadı'
+                : 'Gösterilecek yorum bulunmuyor'}
             </div>
           ) : (
-            comments.map((comment) => (
+            filteredComments.map((comment) => (
               <div key={comment.id} className="p-4 hover:bg-gray-50">
                 <div className="flex items-start gap-4">
                   {/* Checkbox */}
@@ -211,12 +326,13 @@ export default function CommentModerationPage() {
                     checked={selectedComments.has(comment.id)}
                     onChange={() => handleSelectComment(comment.id)}
                     className="mt-1 h-4 w-4 rounded border-gray-300"
+                    disabled={isProcessing}
                   />
 
                   {/* Avatar */}
                   <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-200">
                     <span className="text-sm font-medium text-gray-600">
-                      {comment.author.name.charAt(0).toUpperCase()}
+                      {comment.authorName.charAt(0).toUpperCase()}
                     </span>
                   </div>
 
@@ -224,37 +340,74 @@ export default function CommentModerationPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-gray-900">
-                        {comment.author.name}
+                        {comment.authorName}
                       </span>
                       <span className="text-sm text-gray-500">
                         {new Date(comment.createdAt).toLocaleString('tr-TR')}
                       </span>
-                      {comment.flagged && (
+                      {comment.flaggedCount > 0 && (
                         <span className="flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
                           <Flag className="h-3 w-3" />
-                          {comment.flagReason}
+                          {comment.flaggedCount} şikayet
                         </span>
                       )}
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                          comment.status === CommentStatus.PENDING
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : comment.status === CommentStatus.APPROVED
+                              ? 'bg-green-100 text-green-700'
+                              : comment.status === CommentStatus.REJECTED
+                                ? 'bg-red-100 text-red-700'
+                                : 'bg-gray-100 text-gray-700'
+                        }`}
+                      >
+                        {comment.status}
+                      </span>
                     </div>
                     <p className="mt-1 text-sm text-gray-600">
-                      {comment.postTitle}
+                      Blog: {comment.postTitle}
                     </p>
                     <p className="mt-2 text-gray-900">{comment.content}</p>
+                    {comment.flagReasons && comment.flagReasons.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {comment.flagReasons.map((reason, index) => (
+                          <span
+                            key={index}
+                            className="rounded bg-red-50 px-2 py-1 text-xs text-red-600"
+                          >
+                            {reason}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* Actions */}
                   <div className="flex gap-2">
                     <button
-                      className="rounded-lg p-2 text-green-600 hover:bg-green-50"
+                      onClick={() => handleSingleApprove(comment.id)}
+                      disabled={isProcessing}
+                      className="rounded-lg p-2 text-green-600 hover:bg-green-50 disabled:opacity-50"
                       title="Onayla"
                     >
                       <Check className="h-5 w-5" />
                     </button>
                     <button
-                      className="rounded-lg p-2 text-red-600 hover:bg-red-50"
+                      onClick={() => handleSingleReject(comment.id)}
+                      disabled={isProcessing}
+                      className="rounded-lg p-2 text-red-600 hover:bg-red-50 disabled:opacity-50"
                       title="Reddet"
                     >
                       <X className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={() => handleSingleSpam(comment.id)}
+                      disabled={isProcessing}
+                      className="rounded-lg p-2 text-orange-600 hover:bg-orange-50 disabled:opacity-50"
+                      title="Spam"
+                    >
+                      <Flag className="h-5 w-5" />
                     </button>
                   </div>
                 </div>
@@ -267,19 +420,41 @@ export default function CommentModerationPage() {
         <div className="border-t border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-600">
-              Toplam {comments.length} yorum
+              Sayfa {page + 1} - Toplam {total} yorum
             </p>
             <div className="flex gap-2">
-              <button className="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50">
+              <button
+                onClick={() => setPage((p) => Math.max(0, p - 1))}
+                disabled={page === 0 || isLoading}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+              >
                 Önceki
               </button>
-              <button className="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50">
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                disabled={page >= Math.ceil(total / pageSize) - 1 || isLoading}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+              >
                 Sonraki
               </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Bulk Actions Floating Button */}
+      {selectedComments.size > 0 && (
+        <div className="fixed right-8 bottom-8 flex gap-2 rounded-lg border border-blue-200 bg-white p-4 shadow-lg">
+          <button
+            onClick={handleBulkSpam}
+            disabled={isProcessing}
+            className="flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-sm text-white hover:bg-orange-700 disabled:opacity-50"
+          >
+            <Flag className="h-4 w-4" />
+            Spam ({selectedComments.size})
+          </button>
+        </div>
+      )}
     </div>
   );
 }

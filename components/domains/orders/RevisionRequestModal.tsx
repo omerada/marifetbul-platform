@@ -35,7 +35,6 @@ import {
   unwrapOrderResponse,
   type OrderWithComputed,
 } from '@/lib/api/orders';
-import { fileUploadService } from '@/lib/services/file-upload.service';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { z } from 'zod';
@@ -88,7 +87,6 @@ export function RevisionRequestModal({
   const [reason, setReason] = useState('');
   const [details, setDetails] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
   const [errors, setErrors] = useState<
     Partial<Record<keyof RevisionRequestInput, string>>
   >({});
@@ -151,42 +149,20 @@ export function RevisionRequestModal({
     try {
       setIsLoading(true);
 
-      // Upload attachments first if any
-      let attachmentUrls: string[] = [];
-      if (attachments.length > 0) {
-        setIsUploading(true);
-        try {
-          const results = await fileUploadService.uploadFiles(attachments, {
-            folder: `orders/${order.id}/revisions`,
-            metadata: {
-              orderId: order.id,
-              type: 'revision',
-            },
-          });
-
-          attachmentUrls = results.map((result) => result.fileUrl);
-        } catch (uploadError) {
-          logger.error('File upload failed:', uploadError);
-          toast.warning('Dosya yükleme başarısız', {
-            description:
-              'Dosyalar yüklenemedi ancak revizyon talebi gönderilecek.',
-          });
-        } finally {
-          setIsUploading(false);
-        }
-      }
-
       const response = await orderApi.requestRevision(order.id, {
         revisionNote: reason + (details.trim() ? `\n\n${details.trim()}` : ''),
-        attachments: attachmentUrls.length > 0 ? attachmentUrls : undefined,
       });
 
-      const data = unwrapOrderResponse(response);
-      const updatedOrder = enrichOrder(data);
+      // Response contains the created revision
+      logger.info('Revision created:', response.data);
 
       toast.success('Revizyon Talebi Gönderildi!', {
         description: `Satıcı revizyonunuzu inceleyecek. ${revisionsRemaining - 1} revizyon hakkınız kaldı.`,
       });
+
+      // Refresh order data to get updated revision count
+      const orderResponse = await orderApi.getOrderById(order.id);
+      const updatedOrder = enrichOrder(unwrapOrderResponse(orderResponse));
 
       onSuccess?.(updatedOrder);
       handleClose();
@@ -409,11 +385,11 @@ export function RevisionRequestModal({
                   variant="outline"
                   size="sm"
                   onClick={handleAddAttachment}
-                  disabled={isLoading || isUploading}
+                  disabled={isLoading}
                   className="w-full"
                 >
                   <Upload className="mr-2 h-4 w-4" />
-                  {isUploading ? 'Yükleniyor...' : 'Dosya Ekle (Max 5, 10MB)'}
+                  Dosya Ekle (Max 5, 10MB)
                 </Button>
               )}
               <p className="text-xs text-gray-500">

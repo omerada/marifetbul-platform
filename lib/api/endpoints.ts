@@ -215,8 +215,18 @@ export const ORDER_ENDPOINTS = {
   START: (orderId: string) => `/orders/${orderId}/start`,
   DELIVER: (orderId: string) => `/orders/${orderId}/deliver`,
   ACCEPT_DELIVERY: (orderId: string) => `/orders/${orderId}/accept`,
-  REQUEST_REVISION: (orderId: string) => `/orders/${orderId}/revision`,
+  REQUEST_REVISION: (orderId: string) => `/orders/${orderId}/revisions`, // Updated to match new API
   COMPLETE: (orderId: string) => `/orders/${orderId}/complete`,
+
+  // Order Revisions
+  GET_REVISIONS: (orderId: string) => `/orders/${orderId}/revisions`,
+  ACCEPT_REVISION: (orderId: string, revisionId: string) =>
+    `/orders/${orderId}/revisions/${revisionId}/accept`,
+  COMPLETE_REVISION: (orderId: string, revisionId: string) =>
+    `/orders/${orderId}/revisions/${revisionId}/complete`,
+  REJECT_REVISION: (orderId: string, revisionId: string) =>
+    `/orders/${orderId}/revisions/${revisionId}/reject`,
+  PENDING_REVISIONS: '/orders/pending/revisions',
 
   // Order Timeline
   GET_TIMELINE: (orderId: string) => `/orders/${orderId}/timeline`,

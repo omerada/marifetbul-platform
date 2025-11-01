@@ -17,6 +17,10 @@ import type {
   CreateCustomOrderRequest,
   SubmitDeliveryRequest,
   RequestRevisionRequest,
+  AcceptRevisionRequest,
+  CompleteRevisionRequest,
+  RejectRevisionRequest,
+  OrderRevisionResponse,
   CancelOrderRequest,
   OrderFilters,
 } from '@/lib/infrastructure/services/api/orderService';
@@ -28,6 +32,10 @@ export type {
   CreateCustomOrderRequest,
   SubmitDeliveryRequest,
   RequestRevisionRequest,
+  AcceptRevisionRequest,
+  CompleteRevisionRequest,
+  RejectRevisionRequest,
+  OrderRevisionResponse,
   CancelOrderRequest,
   OrderFilters,
 };
@@ -105,6 +113,18 @@ export const orderApi = {
   completeOrder: orderServiceInstance.completeOrder.bind(orderServiceInstance),
   cancelOrder: orderServiceInstance.cancelOrder.bind(orderServiceInstance),
 
+  // ==================== ORDER REVISIONS ====================
+  getOrderRevisions:
+    orderServiceInstance.getOrderRevisions.bind(orderServiceInstance),
+  acceptRevision:
+    orderServiceInstance.acceptRevision.bind(orderServiceInstance),
+  completeRevision:
+    orderServiceInstance.completeRevision.bind(orderServiceInstance),
+  rejectRevision:
+    orderServiceInstance.rejectRevision.bind(orderServiceInstance),
+  getPendingRevisions:
+    orderServiceInstance.getPendingRevisions.bind(orderServiceInstance),
+
   // ==================== ORDER STATISTICS ====================
   getOrderStatistics:
     orderServiceInstance.getOrderStatistics.bind(orderServiceInstance),
@@ -177,3 +197,10 @@ export const requestRevision = orderApi.requestRevision;
 export const completeOrder = orderApi.completeOrder;
 export const cancelOrder = orderApi.cancelOrder;
 export const getOrderStatistics = orderApi.getOrderStatistics;
+
+// Revision exports
+export const getOrderRevisions = orderApi.getOrderRevisions;
+export const acceptRevision = orderApi.acceptRevision;
+export const completeRevision = orderApi.completeRevision;
+export const rejectRevision = orderApi.rejectRevision;
+export const getPendingRevisions = orderApi.getPendingRevisions;
