@@ -165,3 +165,114 @@ export const includesRefund = (
 export const isDisputeActive = (status: DisputeStatus): boolean => {
   return status !== DisputeStatus.RESOLVED && status !== DisputeStatus.CLOSED;
 };
+
+// ==================== EXTENDED TYPES FOR FRONTEND ====================
+
+/**
+ * Dispute with order and user details (enriched for frontend)
+ */
+export interface DisputeWithDetails extends DisputeResponse {
+  orderNumber?: string;
+  packageTitle?: string;
+  sellerName?: string;
+  buyerName?: string;
+}
+
+/**
+ * Dispute evidence file metadata
+ */
+export interface DisputeEvidence {
+  id: string;
+  disputeId: string;
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number;
+  uploadedAt: string;
+  uploadedBy: string;
+}
+
+/**
+ * Dispute message for messaging thread
+ */
+export interface DisputeMessage {
+  id: string;
+  disputeId: string;
+  userId: string;
+  userFullName: string;
+  userRole: 'BUYER' | 'SELLER' | 'ADMIN';
+  message: string;
+  attachments?: string[];
+  createdAt: string;
+}
+
+/**
+ * Dispute filters for admin list
+ */
+export interface DisputeFilters {
+  status?: DisputeStatus;
+  reason?: DisputeReason;
+  raisedByUserId?: string;
+  orderId?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  page?: number;
+  size?: number;
+  sort?: 'createdAt' | 'updatedAt' | 'resolvedAt';
+  order?: 'asc' | 'desc';
+}
+
+/**
+ * Dispute statistics for admin dashboard (extended)
+ */
+export interface DisputeStatisticsExtended extends DisputeStatistics {
+  totalDisputes: number;
+  resolvedDisputes: number;
+  resolutionRate: number;
+  favorBuyerCount: number;
+  favorSellerCount: number;
+  mutualAgreementCount: number;
+  topReasons: Array<{
+    reason: DisputeReason;
+    count: number;
+    percentage: number;
+  }>;
+  disputesOverTime: Array<{
+    date: string;
+    count: number;
+  }>;
+}
+
+/**
+ * Create dispute form data (UI state)
+ */
+export interface CreateDisputeFormData {
+  orderId: string;
+  reason: DisputeReason;
+  description: string;
+  evidenceFiles?: File[];
+}
+
+/**
+ * Pagination response wrapper
+ */
+export interface PageResponse<T> {
+  content: T[];
+  pageNumber: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+}
+
+/**
+ * Type guard: Check if resolution includes refund
+ */
+export const resolutionIncludesRefund = (
+  resolution: DisputeResolutionRequest
+): boolean => {
+  return (
+    resolution.resolutionType !== DisputeResolutionType.FAVOR_SELLER_NO_REFUND
+  );
+};

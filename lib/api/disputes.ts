@@ -135,3 +135,114 @@ export async function getDisputeStatistics(): Promise<DisputeStatistics> {
     `${DISPUTES_BASE_URL}/admin/statistics`
   );
 }
+
+// ==================== EVIDENCE & MESSAGING ====================
+
+/**
+ * Upload evidence for a dispute
+ */
+export async function uploadDisputeEvidence(
+  disputeId: string,
+  files: File[]
+): Promise<{ urls: string[] }> {
+  const formData = new FormData();
+  files.forEach((file) => {
+    formData.append('files', file);
+  });
+
+  return apiClient.post<{ urls: string[] }>(
+    `${DISPUTES_BASE_URL}/${disputeId}/evidence`,
+    formData
+  );
+}
+
+/**
+ * Add a message to dispute
+ */
+export async function addDisputeMessage(
+  disputeId: string,
+  message: string,
+  attachments?: string[]
+): Promise<void> {
+  return apiClient.post<void>(`${DISPUTES_BASE_URL}/${disputeId}/messages`, {
+    message,
+    attachments,
+  });
+}
+
+/**
+ * Get dispute messages
+ */
+export async function getDisputeMessages(
+  disputeId: string
+): Promise<DisputeMessage[]> {
+  return apiClient.get<DisputeMessage[]>(
+    `${DISPUTES_BASE_URL}/${disputeId}/messages`
+  );
+}
+
+// ==================== ADMIN FILTERS ====================
+
+/**
+ * Get disputes with advanced filters (admin only)
+ */
+export async function getDisputesWithFilters(
+  filters: DisputeFilters
+): Promise<PageResponse<DisputeResponse>> {
+  const searchParams: Record<string, string> = {};
+
+  if (filters.status) searchParams.status = filters.status;
+  if (filters.reason) searchParams.reason = filters.reason;
+  if (filters.raisedByUserId)
+    searchParams.raisedByUserId = filters.raisedByUserId;
+  if (filters.orderId) searchParams.orderId = filters.orderId;
+  if (filters.dateFrom) searchParams.dateFrom = filters.dateFrom;
+  if (filters.dateTo) searchParams.dateTo = filters.dateTo;
+  if (filters.page !== undefined) searchParams.page = String(filters.page);
+  if (filters.size !== undefined) searchParams.size = String(filters.size);
+  if (filters.sort) searchParams.sort = filters.sort;
+  if (filters.order) searchParams.order = filters.order;
+
+  return apiClient.get<PageResponse<DisputeResponse>>(
+    `${DISPUTES_BASE_URL}/admin/search`,
+    searchParams
+  );
+}
+
+/**
+ * Export disputes to CSV (admin only)
+ */
+export async function exportDisputesToCSV(
+  filters?: DisputeFilters
+): Promise<Blob> {
+  const searchParams: Record<string, string> = {};
+
+  if (filters?.status) searchParams.status = filters.status;
+  if (filters?.reason) searchParams.reason = filters.reason;
+  if (filters?.dateFrom) searchParams.dateFrom = filters.dateFrom;
+  if (filters?.dateTo) searchParams.dateTo = filters.dateTo;
+
+  const response = await fetch(
+    `${DISPUTES_BASE_URL}/admin/export?${new URLSearchParams(searchParams)}`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to export disputes');
+  }
+
+  return response.blob();
+}
+
+// ==================== TYPE IMPORTS ====================
+
+import type {
+  DisputeMessage,
+  DisputeFilters,
+  PageResponse,
+} from '@/types/dispute';

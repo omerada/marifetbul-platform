@@ -11,3 +11,5 @@
 export { AdminDisputeDetailModal } from './AdminDisputeDetailModal';
 export { default as DisputeResolutionModal } from './DisputeResolutionModal';
 export { default as DisputeList } from './DisputeList';
+export { AdminDisputeList } from './AdminDisputeList';
+export { AdminDisputeTable } from './AdminDisputeTable';
