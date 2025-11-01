@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/shared/utils/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +18,7 @@ export async function GET(
     const { id } = await params;
     const backendUrl = `${BACKEND_API_URL}/users/${id}`;
 
-    console.log('[User API] Fetching user:', id);
+    logger.debug('[User API] Fetching user:', id);
 
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
@@ -41,7 +42,7 @@ export async function GET(
       credentials: 'include',
     });
 
-    console.log('[User API] Backend response status:', response.status);
+    logger.debug('[User API] Backend response status:', response.status);
 
     const data = await response.text();
 
@@ -56,7 +57,7 @@ export async function GET(
       headers: responseHeaders,
     });
   } catch (error) {
-    console.error('[User API] Error:', error);
+    logger.error('[User API] Error:', error);
 
     return NextResponse.json(
       {
@@ -85,7 +86,7 @@ export async function PATCH(
     const { id } = await params;
     const backendUrl = `${BACKEND_API_URL}/users/${id}`;
 
-    console.log('[User API] Updating user:', id);
+    logger.debug('[User API] Updating user:', id);
 
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
@@ -113,7 +114,7 @@ export async function PATCH(
       body,
     });
 
-    console.log('[User API] Update response status:', response.status);
+    logger.debug('[User API] Update response status:', response.status);
 
     const data = await response.text();
 
@@ -128,7 +129,7 @@ export async function PATCH(
       headers: responseHeaders,
     });
   } catch (error) {
-    console.error('[User API] Update error:', error);
+    logger.error('[User API] Update error:', error);
 
     return NextResponse.json(
       {

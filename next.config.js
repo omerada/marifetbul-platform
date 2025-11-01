@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+/* eslint-disable no-console */
 const nextConfig = {
   // ================================================
   // PRODUCTION OPTIMIZATIONS

@@ -6,6 +6,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/shared/utils/logger';
 
 const BACKEND_API_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
@@ -35,7 +36,7 @@ export async function GET(
     const backendUrl = `${BACKEND_API_URL}/messages/conversations/${conversationId}/messages?${backendParams.toString()}`;
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('[Conversation Messages API] GET request:', {
+      logger.debug('[Conversation Messages API] GET request:', {
         conversationId,
         url: backendUrl,
       });
@@ -63,7 +64,7 @@ export async function GET(
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('[Conversation Messages API] Backend error:', {
+      logger.error('[Conversation Messages API] Backend error:', {
         status: response.status,
         error: errorText,
       });
@@ -123,7 +124,7 @@ export async function GET(
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('[Conversation Messages API] Error:', error);
+    logger.error('[Conversation Messages API] Error:', error);
 
     return NextResponse.json({
       success: true,
@@ -158,7 +159,7 @@ export async function POST(
     const backendUrl = `${BACKEND_API_URL}/messages/conversations/${conversationId}/messages`;
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('[Conversation Messages API] POST request:', {
+      logger.debug('[Conversation Messages API] POST request:', {
         conversationId,
         url: backendUrl,
         body,
@@ -194,7 +195,7 @@ export async function POST(
 
     return NextResponse.json(data, { status: 201 });
   } catch (error) {
-    console.error('[Conversation Messages API] POST Error:', error);
+    logger.error('[Conversation Messages API] POST Error:', error);
     return NextResponse.json(
       {
         success: false,

@@ -10,6 +10,7 @@
  */
 
 import { useCallback, useState } from 'react';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // TYPES
@@ -148,9 +149,9 @@ function sleep(ms: number): Promise<void> {
  *     const result = await execute(async () => {
  *       return await apiClient.post('/api/data', data);
  *     });
- *     console.log('Success:', result);
+ *     logger.debug('Success:', result);
  *   } catch (error) {
- *     console.error('All retries failed:', error);
+ *     logger.error('All retries failed:', error);
  *   }
  * };
  * ```

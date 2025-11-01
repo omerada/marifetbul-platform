@@ -16,6 +16,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useWallet } from './useWallet';
 import { useTransactions } from './useTransactions';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ============================================================================
 // TYPES
@@ -93,7 +94,7 @@ export interface UseWalletPollingReturn {
  * const { isPolling, pause, resume, lastPollTime } = useWalletPolling({
  *   interval: 30000, // 30 seconds
  *   enabled: true,
- *   onUpdate: () => console.log('Wallet updated!'),
+ *   onUpdate: () => logger.debug('Wallet updated!'),
  * });
  *
  * return (
@@ -163,7 +164,7 @@ export const useWalletPolling = (
         onError(errorMessage);
       }
 
-      console.error('[useWalletPolling] Poll failed:', errorMessage);
+      logger.error('[useWalletPolling] Poll failed:', errorMessage);
     }
   }, [
     fetchWallet,

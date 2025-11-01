@@ -9,6 +9,7 @@
 
 import React, { Component, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ============================================================================
 // TYPES
@@ -50,7 +51,7 @@ export class PortfolioErrorBoundary extends Component<
 
   override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error to console
-    console.error(
+    logger.error(
       'Portfolio Error Boundary caught an error:',
       error,
       errorInfo
@@ -208,7 +209,7 @@ export class CompactErrorBoundary extends Component<
   }
 
   override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error(
+    logger.error(
       `Error in ${this.props.componentName || 'component'}:`,
       error,
       errorInfo

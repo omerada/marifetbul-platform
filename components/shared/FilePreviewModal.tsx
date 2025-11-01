@@ -21,6 +21,7 @@ import {
 import { Button } from '@/components/ui';
 import { Download, X, FileText, Image as ImageIcon } from 'lucide-react';
 import { fileUploadService } from '@/lib/services/file-upload.service';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // TYPES
@@ -67,7 +68,7 @@ export function FilePreviewModal({
     try {
       await fileUploadService.downloadFile(file.fileUrl, file.fileName);
     } catch (error) {
-      console.error('Download failed:', error);
+      logger.error('Download failed:', error);
     }
   };
 

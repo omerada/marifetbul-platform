@@ -28,6 +28,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { logger } from '@/lib/shared/utils/logger';
 import type { Payout } from '@/types/business/features/wallet';
 
 // ================================================
@@ -125,7 +126,7 @@ export const BulkPayoutActions: React.FC<BulkPayoutActionsProps> = ({
       onClearSelection();
     } catch (error) {
       toast.error('Toplu onaylama sırasında bir hata oluştu');
-      console.error('Bulk approve failed:', error);
+      logger.error('Bulk approve failed:', error);
     } finally {
       setIsProcessing(false);
     }
@@ -161,7 +162,7 @@ export const BulkPayoutActions: React.FC<BulkPayoutActionsProps> = ({
       onClearSelection();
     } catch (error) {
       toast.error('Toplu reddetme sırasında bir hata oluştu');
-      console.error('Bulk reject failed:', error);
+      logger.error('Bulk reject failed:', error);
     } finally {
       setIsProcessing(false);
     }
@@ -241,7 +242,7 @@ export const BulkPayoutActions: React.FC<BulkPayoutActionsProps> = ({
       );
     } catch (error) {
       toast.error('Dosya oluşturulurken bir hata oluştu');
-      console.error('Export failed:', error);
+      logger.error('Export failed:', error);
     }
   };
 

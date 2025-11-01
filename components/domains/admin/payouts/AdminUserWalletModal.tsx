@@ -31,6 +31,7 @@ import { formatCurrency, formatDate } from '@/lib/api/admin/payout-admin-api';
 import { AdminPayoutStatusBadge } from './AdminPayoutStatusBadge';
 import { Skeleton } from '@/components/ui/UnifiedSkeleton';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // TYPES
@@ -85,7 +86,7 @@ export const AdminUserWalletModal: React.FC<AdminUserWalletModalProps> = ({
       setTransactions(transactionsData.content);
       setPayouts(payoutsData);
     } catch (error) {
-      console.error('Failed to fetch wallet data:', error);
+      logger.error('Failed to fetch wallet data:', error);
     } finally {
       setIsLoading(false);
     }

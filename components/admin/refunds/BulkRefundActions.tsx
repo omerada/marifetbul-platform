@@ -17,6 +17,7 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Label } from '@/components/ui/Label';
 import { CheckCircle, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // TYPES
@@ -49,7 +50,7 @@ export function BulkRefundActions({
       setShowNotesInput(false);
       toast.success(`${selectedCount} iade talebi başarıyla onaylandı`);
     } catch (error) {
-      console.error('Bulk approve failed:', error);
+      logger.error('Bulk approve failed:', error);
       toast.error('Toplu onaylama sırasında bir hata oluştu');
     } finally {
       setIsProcessing(false);

@@ -6,6 +6,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/shared/utils/logger';
 
 const BACKEND_API_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
     const backendUrl = `${BACKEND_API_URL}/messages/conversations?${backendParams.toString()}`;
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('[Conversations API] GET request:', {
+      logger.debug('[Conversations API] GET request:', {
         url: backendUrl,
         params: Object.fromEntries(backendParams),
       });
@@ -65,7 +66,7 @@ export async function GET(request: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('[Conversations API] Backend error:', {
+      logger.error('[Conversations API] Backend error:', {
         status: response.status,
         error: errorText,
       });
@@ -77,7 +78,7 @@ export async function GET(request: NextRequest) {
         response.status === 401
       ) {
         if (process.env.NODE_ENV === 'development') {
-          console.log(
+          logger.debug(
             '[Conversations API] Backend not ready or auth issue, returning empty data. Status:',
             response.status
           );
@@ -135,7 +136,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('[Conversations API] Error:', error);
+    logger.error('[Conversations API] Error:', error);
 
     // Return empty array instead of error to prevent blocking the UI
     return NextResponse.json({
@@ -166,7 +167,7 @@ export async function POST(request: NextRequest) {
     const backendUrl = `${BACKEND_API_URL}/messages/conversations`;
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('[Conversations API] POST request:', {
+      logger.debug('[Conversations API] POST request:', {
         url: backendUrl,
         body,
       });
@@ -201,7 +202,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(data, { status: 201 });
   } catch (error) {
-    console.error('[Conversations API] POST Error:', error);
+    logger.error('[Conversations API] POST Error:', error);
     return NextResponse.json(
       {
         success: false,

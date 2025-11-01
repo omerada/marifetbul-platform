@@ -25,6 +25,7 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Alert } from '@/components/ui/Alert';
 import { RatingCategory } from './RatingStars';
 import { reviewApi } from '@/lib/api/review';
+import { logger } from '@/lib/shared/utils/logger';
 import {
   createReviewSchema,
   updateReviewSchema,
@@ -219,7 +220,7 @@ export function ReviewForm({
             images.map((file) => reviewApi.uploadImage(savedReview.id, file))
           );
         } catch (uploadError) {
-          console.error('Image upload failed:', uploadError);
+          logger.error('Image upload failed:', uploadError);
           setError('Değerlendirme kaydedildi ancak resimler yüklenemedi');
         } finally {
           setUploadingImages(false);
@@ -231,7 +232,7 @@ export function ReviewForm({
 
       onSuccess?.(savedReview);
     } catch (err) {
-      console.error('Review submission failed:', err);
+      logger.error('Review submission failed:', err);
       setError(
         err instanceof Error
           ? err.message

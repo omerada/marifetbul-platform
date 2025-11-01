@@ -137,7 +137,7 @@ export function MessagesList({
         setModalState({ type: null, conversationId: null, isLoading: false });
       }
     } catch (error) {
-      console.error('Error performing action:', error);
+      logger.error('Error performing action:', error);
     } finally {
       setModalState((prev) => ({ ...prev, isLoading: false }));
     }

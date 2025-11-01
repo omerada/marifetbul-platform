@@ -39,6 +39,7 @@ import { fileUploadService } from '@/lib/services/file-upload.service';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { z } from 'zod';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // VALIDATION SCHEMA
@@ -165,7 +166,7 @@ export function RevisionRequestModal({
 
           attachmentUrls = results.map((result) => result.fileUrl);
         } catch (uploadError) {
-          console.error('File upload failed:', uploadError);
+          logger.error('File upload failed:', uploadError);
           toast.warning('Dosya yükleme başarısız', {
             description:
               'Dosyalar yüklenemedi ancak revizyon talebi gönderilecek.',

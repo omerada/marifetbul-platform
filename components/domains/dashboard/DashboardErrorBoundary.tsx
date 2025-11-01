@@ -11,6 +11,7 @@ import { Card } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import { AlertCircle, RefreshCw, Home } from 'lucide-react';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface Props {
   children: ReactNode;
@@ -44,7 +45,7 @@ export class DashboardErrorBoundary extends Component<Props, State> {
 
   override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error to error reporting service
-    console.error('Dashboard Error:', error, errorInfo);
+    logger.error('Dashboard Error:', error, errorInfo);
 
     this.setState({
       error,

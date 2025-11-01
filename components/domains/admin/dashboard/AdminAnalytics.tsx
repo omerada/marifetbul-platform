@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
+import { logger } from '@/lib/shared/utils/logger';
 import {
   BarChart3,
   DollarSign,
@@ -93,7 +94,7 @@ export function AdminAnalytics() {
 
       alert('Analytics exported successfully!');
     } catch (error) {
-      console.error('Export failed:', error);
+      logger.error('Export failed:', error);
       alert('Export failed. Please try again.');
     }
   };

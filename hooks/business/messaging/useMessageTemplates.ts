@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiClient } from '@/lib/infrastructure/api/client';
+import { logger } from '@/lib/shared/utils/logger';
 import type {
   MessageTemplate,
   ContextType,
@@ -109,7 +110,7 @@ export function useMessageTemplates(
       const error =
         err instanceof Error ? err : new Error('Failed to fetch templates');
       setError(error);
-      console.error('Failed to fetch templates:', error);
+      logger.error('Failed to fetch templates:', error);
     } finally {
       setIsLoading(false);
     }

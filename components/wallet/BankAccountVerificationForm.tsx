@@ -37,6 +37,7 @@ import {
 } from 'lucide-react';
 import { IBANInput } from './IBANInput';
 import { BankSelector } from './BankSelector';
+import { logger } from '@/lib/shared/utils/logger';
 import type {
   BankInfo,
   IBANValidationResult,
@@ -167,7 +168,7 @@ export const BankAccountVerificationForm: React.FC<
         toast.error('Hesap doğrulanamadı. Lütfen bilgilerinizi kontrol edin.');
       }
     } catch (error) {
-      console.error('Verification failed:', error);
+      logger.error('Verification failed:', error);
       toast.error('Doğrulama sırasında bir hata oluştu');
     } finally {
       setIsVerifying(false);
@@ -194,7 +195,7 @@ export const BankAccountVerificationForm: React.FC<
       await onSave(accountData);
       toast.success('Banka hesap bilgileri kaydedildi');
     } catch (error) {
-      console.error('Save failed:', error);
+      logger.error('Save failed:', error);
       toast.error('Kaydetme sırasında bir hata oluştu');
     } finally {
       setIsSaving(false);

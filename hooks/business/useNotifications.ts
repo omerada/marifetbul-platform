@@ -8,6 +8,7 @@ import {
   markAllAsRead,
 } from '@/lib/api/notification';
 import { getWebSocketClient } from '@/lib/infrastructure/websocket/client';
+import { logger } from '@/lib/shared/utils/logger';
 import type {
   Notification,
   WebSocketNotificationPayload,
@@ -72,12 +73,12 @@ export function useNotifications() {
     const ws = getWebSocketClient();
 
     if (!ws) {
-      console.warn('WebSocket client not available');
+      logger.warn('WebSocket client not available');
       return;
     }
 
     const handleNotification = (payload: WebSocketNotificationPayload) => {
-      console.log('Received notification:', payload);
+      logger.debug('Received notification:', payload);
 
       // Update recent notifications list
       mutate();
@@ -134,7 +135,7 @@ export function useNotifications() {
         mutate();
         mutateCount();
       } catch (error) {
-        console.error('Failed to mark notification as read:', error);
+        logger.error('Failed to mark notification as read:', error);
         toast.error('Bildirim okundu olarak işaretlenemedi');
       }
     },
@@ -158,7 +159,7 @@ export function useNotifications() {
 
       toast.success(`${updatedCount} bildirim okundu olarak işaretlendi`);
     } catch (error) {
-      console.error('Failed to mark all as read:', error);
+      logger.error('Failed to mark all as read:', error);
       toast.error('Bildirimler işaretlenemedi');
     }
   }, [mutate, mutateCount]);

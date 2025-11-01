@@ -20,6 +20,7 @@ const eslintConfig = [
       'next-env.d.ts',
       'scripts/**',
       'public/**',
+      'lib/api/__tests__/proposals.test.ts', // Bozuk dosya - clean-console script'i tarafından bozulmuş
     ],
   },
   {
@@ -36,6 +37,13 @@ const eslintConfig = [
       'jsx-a11y/alt-text': 'warn', // Allow alt text warnings
       '@next/next/no-img-element': 'warn', // Allow img element warnings
       'react-hooks/exhaustive-deps': 'warn', // Allow hook dependency warnings
+      // Sprint Day 1 - Task 1.3: Enforce logger usage instead of console
+      'no-console': [
+        'error',
+        {
+          allow: ['warn', 'error'], // Allow console.warn and console.error for critical issues
+        },
+      ],
     },
   },
 ];

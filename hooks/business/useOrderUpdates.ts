@@ -88,7 +88,7 @@ const DEFAULT_TOAST_MESSAGES: Record<OrderWebSocketEventType, string> = {
  *     setOrder(updatedOrder);
  *   },
  *   onDelivered: (data) => {
- *     console.log('Delivered with files:', data.attachments);
+ *     logger.debug('Delivered with files:', data.attachments);
  *   },
  * });
  * ```

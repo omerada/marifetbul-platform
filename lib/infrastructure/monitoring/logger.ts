@@ -14,6 +14,8 @@
  * logger.error('Payment failed', { orderId: '456', error });
  */
 
+/* eslint-disable no-console */
+
 import { captureSentryError, captureSentryMessage } from './sentry';
 
 // ============================================================================

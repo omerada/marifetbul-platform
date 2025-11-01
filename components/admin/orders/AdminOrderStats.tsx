@@ -8,6 +8,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/Card';
+import { logger } from '@/lib/shared/utils/logger';
 import {
   Package,
   CheckCircle,
@@ -45,7 +46,7 @@ export function AdminOrderStats({ className }: AdminOrderStatsProps) {
           setStats(data.data);
         }
       } catch (err) {
-        console.error('Failed to fetch stats:', err);
+        logger.error('Failed to fetch stats:', err);
       } finally {
         setIsLoading(false);
       }

@@ -18,6 +18,7 @@ import { Card } from '@/components/ui/Card';
 import { toast } from 'sonner';
 import { usePortfolio } from '@/hooks/business/portfolio/usePortfolio';
 import { uploadImage, isCloudinaryConfigured } from '@/lib/utils/cloudinary';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ============================================================================
 // VALIDATION SCHEMA
@@ -121,7 +122,7 @@ export function PortfolioCreateModal({
       // Check Cloudinary configuration
       if (!isCloudinaryConfigured()) {
         toast.error('Cloudinary yapılandırması eksik');
-        console.error('Cloudinary is not configured');
+        logger.error('Cloudinary is not configured');
         return;
       }
 
@@ -139,7 +140,7 @@ export function PortfolioCreateModal({
       }
     } catch (error) {
       toast.error('Görsel yüklenirken hata oluştu', { id: 'upload' });
-      console.error('Image upload error:', error);
+      logger.error('Image upload error:', error);
     } finally {
       setUploadingImage(false);
     }

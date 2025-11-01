@@ -12,6 +12,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { logger } from '@/lib/shared/utils/logger';
 import {
   AlertTriangle,
   Shield,
@@ -104,22 +105,22 @@ export default function ModeratorReportsPage() {
   };
 
   const handleWarn = (reportId: string) => {
-    console.log('Warn user for report:', reportId);
+    logger.debug('Warn user for report:', reportId);
     // TODO: API call
   };
 
   const handleSuspend = (reportId: string) => {
-    console.log('Suspend user for report:', reportId);
+    logger.debug('Suspend user for report:', reportId);
     // TODO: API call
   };
 
   const handleBan = (reportId: string) => {
-    console.log('Ban user for report:', reportId);
+    logger.debug('Ban user for report:', reportId);
     // TODO: API call
   };
 
   const handleDismiss = (reportId: string) => {
-    console.log('Dismiss report:', reportId);
+    logger.debug('Dismiss report:', reportId);
     // TODO: API call
   };
 

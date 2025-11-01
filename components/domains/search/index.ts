@@ -13,9 +13,11 @@ export { LocationSearch } from './LocationSearch';
 // Filters
 export { EnhancedFilters } from './EnhancedFilters';
 export { EnhancedSearchSystem } from './EnhancedSearchSystem';
+export { AdvancedSearchFiltersSidebar } from './AdvancedSearchFiltersSidebar';
 
-// Autocomplete
+// Autocomplete & History
 export { SearchAutocomplete } from './SearchAutocomplete';
+export { SearchHistoryPanel } from './SearchHistoryPanel';
 
 // Legacy search components (moved from search folder)
 export * from './search';

@@ -272,15 +272,13 @@ export async function vote(
 
 /**
  * Remove vote from review
- * Note: Backend might not have explicit unvote endpoint - voting again toggles
- * @deprecated Backend may handle this differently in new architecture
+ * Backend: DELETE /api/v1/reviews/{reviewId}/vote
  */
-export async function removeVote(_reviewId: string): Promise<Review> {
-  // This endpoint may need backend support or toggle behavior
-  // Keeping for backward compatibility
-  throw new Error(
-    'removeVote: Backend endpoint not yet implemented in new architecture'
+export async function removeVote(reviewId: string): Promise<Review> {
+  const response = await apiClient.delete<ApiResponse<Review>>(
+    `/api/v1/reviews/${reviewId}/vote`
   );
+  return response.data;
 }
 
 // ========================================

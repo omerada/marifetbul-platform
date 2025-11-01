@@ -1,30 +1,51 @@
 /**
  * ================================================
- * COMMISSION BREAKDOWN WIDGET
+ * COMMISSION BREAKDOWN WIDGET - ENHANCED
  * ================================================
- * Sprint 1 - Task 1.1.5
+ * Sprint DAY 2 - Task 6: Commission Charts Enhancement
  *
- * Displays commission breakdown and earnings analysis
- * Shows platform fees, net earnings, and commission rates
+ * Enhanced with:
+ * - Recharts visualizations (Line & Pie charts)
+ * - CSV export functionality
+ * - Period comparison (week/month/year)
+ * - Interactive tooltips
+ * - Trend analysis
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 2.0.0 - Enhanced
  */
 
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   TrendingUp,
   TrendingDown,
   DollarSign,
   Percent,
   Info,
+  Download,
+  BarChart3,
+  PieChart as PieChartIcon,
 } from 'lucide-react';
+import {
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Progress } from '@/components/ui/Progress';
 import { Skeleton } from '@/components/ui/UnifiedSkeleton';
+import { Button } from '@/components/ui';
 import {
   Tooltip,
   TooltipContent,
@@ -32,6 +53,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/Tooltip';
 import { formatCurrency, formatPercentage } from '@/lib/shared/formatters';
+import { logger } from '@/lib/shared/utils/logger';
 import type { Transaction } from '@/lib/api/validators';
 
 // ============================================================================
@@ -59,6 +81,18 @@ export interface CommissionBreakdownProps {
    * @default 'month'
    */
   period?: 'week' | 'month' | 'year' | 'all';
+
+  /**
+   * Show charts
+   * @default true
+   */
+  showCharts?: boolean;
+
+  /**
+   * Enable CSV export
+   * @default true
+   */
+  enableExport?: boolean;
 }
 
 interface CommissionData {
@@ -69,6 +103,22 @@ interface CommissionData {
   transactionCount: number;
   averageCommission: number;
 }
+
+interface TimeSeriesData {
+  date: string;
+  earnings: number;
+  fees: number;
+  net: number;
+}
+
+interface PieData {
+  name: string;
+  value: number;
+  color: string;
+  [key: string]: string | number; // Add index signature for Recharts
+}
+
+type ChartView = 'line' | 'pie' | 'bar';
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -129,6 +179,165 @@ function calculateCommissionData(transactions: Transaction[]): CommissionData {
   };
 }
 
+/**
+ * Prepare time series data for line/bar charts
+ */
+function prepareTimeSeriesData(transactions: Transaction[]): TimeSeriesData[] {
+  // Group by date
+  const groupedByDate = transactions.reduce<Record<string, Transaction[]>>(
+    (acc, t) => {
+      const date = new Date(t.createdAt).toISOString().split('T')[0];
+      if (!acc[date]) acc[date] = [];
+      acc[date].push(t);
+      return acc;
+    },
+    {}
+  );
+
+  // Calculate per-date metrics
+  return Object.entries(groupedByDate)
+    .map(([date, dayTransactions]) => {
+      const earnings = dayTransactions
+        .filter((t) => t.type === 'CREDIT' || t.type === 'ESCROW_RELEASE')
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      const fees = Math.abs(
+        dayTransactions
+          .filter((t) => t.type === 'FEE')
+          .reduce((sum, t) => sum + t.amount, 0)
+      );
+
+      return {
+        date: new Date(date).toLocaleDateString('tr-TR', {
+          day: '2-digit',
+          month: 'short',
+        }),
+        earnings,
+        fees,
+        net: earnings - fees,
+      };
+    })
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+/**
+ * Prepare pie chart data
+ */
+function preparePieData(data: CommissionData): PieData[] {
+  return [
+    {
+      name: 'Net Kazanç',
+      value: data.netEarnings,
+      color: '#10b981',
+    },
+    {
+      name: 'Platform Ücreti',
+      value: data.platformFees,
+      color: '#ef4444',
+    },
+  ];
+}
+
+/**
+ * Export data to CSV
+ */
+function exportToCSV(
+  transactions: Transaction[],
+  commissionData: CommissionData,
+  period: string
+) {
+  try {
+    // Prepare CSV content
+    const headers = [
+      'Tarih',
+      'İşlem Tipi',
+      'Tutar',
+      'Komisyon',
+      'Net Tutar',
+      'Açıklama',
+    ];
+
+    const rows = transactions.map((t) => {
+      const isFee = t.type === 'FEE';
+      const isEarning = t.type === 'CREDIT' || t.type === 'ESCROW_RELEASE';
+      const commission = isFee ? Math.abs(t.amount) : 0;
+      const net = isEarning ? t.amount - commission : 0;
+
+      return [
+        new Date(t.createdAt).toLocaleString('tr-TR'),
+        t.type,
+        t.amount.toFixed(2),
+        commission.toFixed(2),
+        net.toFixed(2),
+        t.description || '-',
+      ];
+    });
+
+    // Add summary row
+    rows.push([]);
+    rows.push(['ÖZET', '', '', '', '', '']);
+    rows.push([
+      'Toplam Kazanç',
+      '',
+      commissionData.totalEarnings.toFixed(2),
+      '',
+      '',
+      '',
+    ]);
+    rows.push([
+      'Platform Ücreti',
+      '',
+      commissionData.platformFees.toFixed(2),
+      '',
+      '',
+      '',
+    ]);
+    rows.push([
+      'Net Kazanç',
+      '',
+      commissionData.netEarnings.toFixed(2),
+      '',
+      '',
+      '',
+    ]);
+    rows.push([
+      'Komisyon Oranı',
+      '',
+      `${commissionData.commissionRate.toFixed(2)}%`,
+      '',
+      '',
+      '',
+    ]);
+
+    // Create CSV string
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((row) => row.join(',')),
+    ].join('\n');
+
+    // Create blob and download
+    const blob = new Blob(['\uFEFF' + csvContent], {
+      type: 'text/csv;charset=utf-8;',
+    });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    const filename = `komisyon-raporu-${period}-${new Date().toISOString().split('T')[0]}.csv`;
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    logger.info('CSV export successful', { period, filename });
+  } catch (error) {
+    logger.error('CSV export failed', error);
+    alert('CSV export başarısız oldu. Lütfen tekrar deneyin.');
+  }
+}
+
 // ============================================================================
 // COMPONENTS
 // ============================================================================
@@ -181,12 +390,34 @@ export function CommissionBreakdown({
   isLoading = false,
   className = '',
   period = 'month',
+  showCharts = true,
+  enableExport = true,
 }: CommissionBreakdownProps) {
+  // State
+  const [chartView, setChartView] = useState<ChartView>('line');
+
   // Process commission data
   const commissionData = useMemo(() => {
     const filtered = filterTransactionsByPeriod(transactions, period);
     return calculateCommissionData(filtered);
   }, [transactions, period]);
+
+  // Prepare chart data
+  const timeSeriesData = useMemo(() => {
+    const filtered = filterTransactionsByPeriod(transactions, period);
+    return prepareTimeSeriesData(filtered);
+  }, [transactions, period]);
+
+  const pieData = useMemo(
+    () => preparePieData(commissionData),
+    [commissionData]
+  );
+
+  // Export handler
+  const handleExport = () => {
+    const filtered = filterTransactionsByPeriod(transactions, period);
+    exportToCSV(filtered, commissionData, periodLabels[period]);
+  };
 
   const periodLabels = {
     week: 'Son 7 Gün',
@@ -221,7 +452,20 @@ export function CommissionBreakdown({
             <Percent className="h-5 w-5 text-blue-600" />
             Komisyon Analizi
           </CardTitle>
-          <Badge variant="secondary">{periodLabels[period]}</Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary">{periodLabels[period]}</Badge>
+            {enableExport && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExport}
+                className="gap-2"
+              >
+                <Download className="h-4 w-4" />
+                CSV İndir
+              </Button>
+            )}
+          </div>
         </div>
         <p className="mt-1 text-sm text-gray-600">
           Platform komisyonları ve net kazançlarınız
@@ -281,6 +525,119 @@ export function CommissionBreakdown({
             className="h-2 bg-gray-100"
           />
         </div>
+
+        {/* Charts Section */}
+        {showCharts && timeSeriesData.length > 0 && (
+          <div className="mb-6">
+            {/* Chart Toggle */}
+            <div className="mb-4 flex items-center justify-between">
+              <h4 className="text-sm font-semibold text-gray-700">
+                Komisyon Trendleri
+              </h4>
+              <div className="flex gap-1 rounded-lg border border-gray-200 p-1">
+                <button
+                  onClick={() => setChartView('line')}
+                  className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${
+                    chartView === 'line'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <BarChart3 className="inline h-3.5 w-3.5" />
+                </button>
+                <button
+                  onClick={() => setChartView('pie')}
+                  className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${
+                    chartView === 'pie'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <PieChartIcon className="inline h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Line Chart */}
+            {chartView === 'line' && (
+              <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={timeSeriesData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fontSize: 12 }}
+                      stroke="#888"
+                    />
+                    <YAxis tick={{ fontSize: 12 }} stroke="#888" />
+                    <RechartsTooltip
+                      contentStyle={{
+                        backgroundColor: '#fff',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '6px',
+                      }}
+                      formatter={(value: number) =>
+                        formatCurrency(value, 'TRY')
+                      }
+                    />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="earnings"
+                      stroke="#3b82f6"
+                      name="Kazanç"
+                      strokeWidth={2}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="fees"
+                      stroke="#ef4444"
+                      name="Komisyon"
+                      strokeWidth={2}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="net"
+                      stroke="#10b981"
+                      name="Net"
+                      strokeWidth={2}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+
+            {/* Pie Chart */}
+            {chartView === 'pie' && (
+              <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {pieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <RechartsTooltip
+                      formatter={(value: number) =>
+                        formatCurrency(value, 'TRY')
+                      }
+                    />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Breakdown Details */}
         <div className="space-y-3">

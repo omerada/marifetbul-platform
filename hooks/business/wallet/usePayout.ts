@@ -12,6 +12,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useToast } from '@/hooks';
+import { logger } from '@/lib/shared/utils/logger';
 import { payoutApi, type CreatePayoutRequest } from '@/lib/api/payout';
 import type { Payout } from '@/lib/api/validators';
 
@@ -68,7 +69,7 @@ export function usePayout(options: UsePayoutOptions = {}): UsePayoutReturn {
       const errorMessage =
         err instanceof Error ? err.message : 'Ödeme geçmişi yüklenemedi';
       setError(errorMessage);
-      console.error('Load payouts error:', err);
+      logger.error('Load payouts error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -88,7 +89,7 @@ export function usePayout(options: UsePayoutOptions = {}): UsePayoutReturn {
       const errorMessage =
         err instanceof Error ? err.message : 'Bekleyen ödemeler yüklenemedi';
       setError(errorMessage);
-      console.error('Load pending payouts error:', err);
+      logger.error('Load pending payouts error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -244,7 +245,7 @@ export function usePayoutAdmin(): UsePayoutAdminReturn {
       const errorMessage =
         err instanceof Error ? err.message : 'Bekleyen ödemeler yüklenemedi';
       setError(errorMessage);
-      console.error('Load pending payouts error:', err);
+      logger.error('Load pending payouts error:', err);
     } finally {
       setIsLoading(false);
     }

@@ -12,6 +12,7 @@ import { MarketplaceFilters } from './MarketplaceFilters';
 import { Button } from '@/components/ui';
 import type { PackageSummary } from '@/types/business/features/package';
 import { transformServicePackagesToSummaries } from '@/lib/transformers/package.transformer';
+import { logger } from '@/lib/shared/utils/logger';
 
 export function MarketplaceContainer() {
   const [packages, setPackages] = useState<PackageSummary[]>([]);
@@ -89,7 +90,7 @@ export function MarketplaceContainer() {
       setTotalPages(response.pagination?.totalPages || 1);
     } catch (err) {
       setError('Paketler yüklenirken bir hata oluştu.');
-      console.error('Failed to fetch packages:', err);
+      logger.error('Failed to fetch packages:', err);
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/shared/utils/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +14,7 @@ export async function POST(request: NextRequest) {
   try {
     const backendUrl = `${BACKEND_API_URL}/users/avatar`;
 
-    console.log('[Avatar Upload] Uploading avatar');
+    logger.debug('[Avatar Upload] Uploading avatar');
 
     const headers: HeadersInit = {};
 
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
       body: formData, // FormData is automatically handled
     });
 
-    console.log('[Avatar Upload] Backend response status:', response.status);
+    logger.debug('[Avatar Upload] Backend response status:', response.status);
 
     const data = await response.text();
 
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
       headers: responseHeaders,
     });
   } catch (error) {
-    console.error('[Avatar Upload] Error:', error);
+    logger.error('[Avatar Upload] Error:', error);
 
     return NextResponse.json(
       {

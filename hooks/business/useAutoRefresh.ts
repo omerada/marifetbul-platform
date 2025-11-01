@@ -10,6 +10,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // TYPES
@@ -152,7 +153,7 @@ export function useAutoRefresh(
     } catch (error) {
       const err = error instanceof Error ? error : new Error('Refresh failed');
       onRefreshError?.(err);
-      console.error('Auto-refresh error:', err);
+      logger.error('Auto-refresh error:', err);
     } finally {
       setIsRefreshing(false);
     }

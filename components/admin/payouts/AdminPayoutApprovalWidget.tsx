@@ -27,6 +27,7 @@ import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/UnifiedSkeleton';
 import { formatCurrency, formatRelativeTime } from '@/lib/shared/formatters';
+import { logger } from '@/lib/shared/utils/logger';
 import type { Payout } from '@/lib/api/validators';
 
 // ============================================================================
@@ -220,7 +221,7 @@ export function AdminPayoutApprovalWidget({
       await new Promise((resolve) => setTimeout(resolve, 800));
       setPayouts(MOCK_PENDING_PAYOUTS.slice(0, maxItems));
     } catch (error) {
-      console.error('Failed to load pending payouts:', error);
+      logger.error('Failed to load pending payouts:', error);
     } finally {
       setIsLoading(false);
     }
@@ -236,7 +237,7 @@ export function AdminPayoutApprovalWidget({
       // Remove from list after successful approval
       setPayouts((prev) => prev.filter((p) => p.id !== payoutId));
     } catch (error) {
-      console.error('Failed to approve payout:', error);
+      logger.error('Failed to approve payout:', error);
     } finally {
       setProcessingId(null);
     }
@@ -255,7 +256,7 @@ export function AdminPayoutApprovalWidget({
       // Remove from list after successful rejection
       setPayouts((prev) => prev.filter((p) => p.id !== payoutId));
     } catch (error) {
-      console.error('Failed to reject payout:', error);
+      logger.error('Failed to reject payout:', error);
     } finally {
       setProcessingId(null);
     }

@@ -16,6 +16,7 @@ import { followApi } from '@/lib/api/follow';
 import type { User } from '@/types/core/base';
 import type { PaginationMeta } from '@/types';
 import { transformUserResponses } from '@/lib/transformers/user.transformer';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface UseFollowingListOptions {
   userId: string;
@@ -80,7 +81,7 @@ export function useFollowingList({
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to load following';
         setError(errorMessage);
-        console.error('Error fetching following:', err);
+        logger.error('Error fetching following:', err);
       } finally {
         setIsLoading(false);
       }

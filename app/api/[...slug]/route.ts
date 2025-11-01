@@ -2,6 +2,8 @@
 // This route handles API requests that don't match specific routes
 // All requests are proxied to the backend API
 
+import { logger } from '@/lib/shared/utils/logger';
+
 export const dynamic = 'force-dynamic';
 
 const BACKEND_API_URL =
@@ -17,7 +19,7 @@ async function proxyToBackend(request: Request, method: string) {
 
     // Debug logging for development
     if (process.env.NODE_ENV === 'development') {
-      console.log('[API Proxy]', {
+      logger.debug('[API Proxy]', {
         original: url.pathname,
         backend: backendUrl,
         method,
@@ -68,15 +70,15 @@ async function proxyToBackend(request: Request, method: string) {
 
     if (process.env.NODE_ENV === 'development') {
       const hasCookies = response.headers.has('set-cookie');
-      console.log('[API Proxy] Response status:', response.status);
-      console.log('[API Proxy] Has Set-Cookie header:', hasCookies);
+      logger.debug('[API Proxy] Response status:', response.status);
+      logger.debug('[API Proxy] Has Set-Cookie header:', hasCookies);
 
       if (hasCookies) {
         // Log cookie details
         const cookies = response.headers.get('set-cookie');
-        console.log('[API Proxy] Set-Cookie value:', cookies);
+        logger.debug('[API Proxy] Set-Cookie value:', cookies);
       } else {
-        console.log(
+        logger.debug(
           '[API Proxy] All headers:',
           Array.from(response.headers.entries())
         );

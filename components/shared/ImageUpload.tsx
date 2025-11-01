@@ -21,6 +21,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { Upload, X, Loader2 } from 'lucide-react';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // TYPES
@@ -220,7 +221,7 @@ export function ImageUpload({
           const uploadedImage = await uploadToCloudinary(file);
           newImages.push(uploadedImage);
         } catch (err) {
-          console.error('Upload failed:', err);
+          logger.error('Upload failed:', err);
           setError(err instanceof Error ? err.message : 'Yükleme başarısız');
         }
       }

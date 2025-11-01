@@ -28,6 +28,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import UnifiedSkeleton from '@/components/ui/UnifiedLoadingSystem';
 import { reviewApi } from '@/lib/api/review';
+import { logger } from '@/lib/shared/utils/logger';
 import type { PlatformReviewStats } from '@/types/business/review';
 
 interface AdminReviewStatsWidgetProps {
@@ -50,7 +51,7 @@ export function AdminReviewStatsWidget({
       const platformStats = await reviewApi.getPlatformStats();
       setStats(platformStats);
     } catch (err) {
-      console.error('Error fetching review stats:', err);
+      logger.error('Error fetching review stats:', err);
       setError('İstatistikler yüklenemedi');
     } finally {
       setLoading(false);

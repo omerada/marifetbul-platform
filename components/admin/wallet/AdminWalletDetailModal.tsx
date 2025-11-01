@@ -53,6 +53,7 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // TYPES
@@ -119,7 +120,7 @@ export const AdminWalletDetailModal: React.FC<AdminWalletDetailModalProps> = ({
       onRefresh();
       onClose();
     } catch (error) {
-      console.error('Failed to adjust balance:', error);
+      logger.error('Failed to adjust balance:', error);
       toast.error('Bakiye güncellenemedi');
     } finally {
       setIsLoading(false);
@@ -140,7 +141,7 @@ export const AdminWalletDetailModal: React.FC<AdminWalletDetailModalProps> = ({
       onRefresh();
       onClose();
     } catch (error) {
-      console.error('Failed to freeze wallet:', error);
+      logger.error('Failed to freeze wallet:', error);
       toast.error('İşlem başarısız');
     } finally {
       setIsLoading(false);
@@ -155,7 +156,7 @@ export const AdminWalletDetailModal: React.FC<AdminWalletDetailModalProps> = ({
       onRefresh();
       onClose();
     } catch (error) {
-      console.error('Failed to unfreeze wallet:', error);
+      logger.error('Failed to unfreeze wallet:', error);
       toast.error('İşlem başarısız');
     } finally {
       setIsLoading(false);

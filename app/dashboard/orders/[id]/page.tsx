@@ -19,6 +19,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { logger } from '@/lib/shared/utils/logger';
 import { Card } from '@/components/ui/Card';
 import { Button, Loading } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
@@ -169,7 +170,7 @@ export default function OrderDetailPage() {
       setDispute(disputeData);
     } catch (_err) {
       // No dispute found is OK - user might be about to create one
-      console.info('No dispute found for order:', orderId);
+      logger.debug('No dispute found for order:', orderId);
     }
   }, [orderId, order]);
 

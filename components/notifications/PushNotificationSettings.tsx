@@ -10,6 +10,7 @@ import {
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface DeviceToken {
   id: string;
@@ -41,7 +42,7 @@ export function PushNotificationSettings() {
       const deviceList = await getRegisteredDevices();
       setDevices(deviceList);
     } catch (error) {
-      console.error('Error loading devices:', error);
+      logger.error('Error loading devices:', error);
       toast.error('Cihazlar yüklenirken hata oluştu');
     } finally {
       setIsLoading(false);
@@ -60,7 +61,7 @@ export function PushNotificationSettings() {
       await loadDevices();
       toast.success('Cihaz kaydı kaldırıldı');
     } catch (error) {
-      console.error('Error deleting device:', error);
+      logger.error('Error deleting device:', error);
       toast.error('Cihaz silinirken hata oluştu');
     } finally {
       setDeletingDeviceId(null);
@@ -72,7 +73,7 @@ export function PushNotificationSettings() {
     try {
       await sendTestNotification();
     } catch (error) {
-      console.error('Error sending test notification:', error);
+      logger.error('Error sending test notification:', error);
     } finally {
       setIsSendingTest(false);
     }

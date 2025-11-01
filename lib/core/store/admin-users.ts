@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import { logger } from '@/lib/shared/utils/logger';
 import type {
   AdminUserStore,
   AdminUserData,
@@ -42,13 +43,13 @@ export const useAdminUserStore = create<AdminUserStore>()(
           lastFetchRequest === requestKey &&
           now - lastFetchTime < MIN_FETCH_INTERVAL
         ) {
-          console.log('[useAdminUserStore] Skipping duplicate request');
+          logger.debug('[useAdminUserStore] Skipping duplicate request');
           return;
         }
 
         // Skip if already loading
         if (get().isLoading) {
-          console.log('[useAdminUserStore] Already loading, skipping request');
+          logger.debug('[useAdminUserStore] Already loading, skipping request');
           return;
         }
 

@@ -21,6 +21,7 @@ import type {
   PackageSortBy,
 } from '@/types/business/features/package';
 import { transformServicePackagesToSummaries } from '@/lib/transformers/package.transformer';
+import { logger } from '@/lib/shared/utils/logger';
 
 export function PackageListContainer() {
   const [packages, setPackages] = useState<PackageSummary[]>([]);
@@ -88,7 +89,7 @@ export function PackageListContainer() {
       });
     } catch (err) {
       setError('Paketler yüklenirken bir hata oluştu');
-      console.error('Failed to fetch packages:', err);
+      logger.error('Failed to fetch packages:', err);
     } finally {
       setLoading(false);
     }
@@ -116,7 +117,7 @@ export function PackageListContainer() {
       fetchPackages();
     } catch (err) {
       alert('Durum değiştirilemedi');
-      console.error('Failed to change status:', err);
+      logger.error('Failed to change status:', err);
     }
   };
 
@@ -126,7 +127,7 @@ export function PackageListContainer() {
       fetchPackages();
     } catch (err) {
       alert('Paket silinemedi');
-      console.error('Failed to delete package:', err);
+      logger.error('Failed to delete package:', err);
     }
   };
 

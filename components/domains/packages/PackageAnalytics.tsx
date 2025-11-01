@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui';
+import { logger } from '@/lib/shared/utils/logger';
 import {
   TrendingUp,
   TrendingDown,
@@ -152,7 +153,7 @@ export function PackageAnalytics() {
         setData(mockData);
       } catch (err) {
         setError('Failed to load analytics data');
-        console.error('Analytics error:', err);
+        logger.error('Analytics error:', err);
       } finally {
         setLoading(false);
       }

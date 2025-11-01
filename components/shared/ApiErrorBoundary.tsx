@@ -10,6 +10,7 @@
 import { Component, ReactNode } from 'react';
 import { ApiError, getUserFriendlyErrorMessage } from '@/lib/api/errors';
 import { ErrorAlert } from './ErrorAlert';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface Props {
   /**
@@ -77,7 +78,7 @@ export class ApiErrorBoundary extends Component<Props, State> {
     errorInfo: { componentStack: string }
   ) {
     // Log error to monitoring service
-    console.error('ApiErrorBoundary caught an error:', error, errorInfo);
+    logger.error('ApiErrorBoundary caught an error:', error, errorInfo);
 
     // Call optional error handler
     if (this.props.onError) {

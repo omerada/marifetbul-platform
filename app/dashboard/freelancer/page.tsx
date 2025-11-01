@@ -1,24 +1,21 @@
-import React from 'react';
-import { Loading } from '@/components/ui';
-import { lazy, Suspense } from 'react';
+/**
+ * ================================================
+ * DEPRECATED - FREELANCER DASHBOARD PAGE
+ * ================================================
+ * @deprecated This page is deprecated. Use /dashboard instead.
+ * Kept for backward compatibility and SEO.
+ * Will redirect to main dashboard.
+ *
+ * Sprint Day 1 - Task 1.1: Dashboard Routing Consolidation
+ * @version 2.0.0 - Deprecated, redirects to unified dashboard
+ */
 
-// Force dynamic due to client components
+import { redirect } from 'next/navigation';
+
 export const revalidate = 0;
 export const dynamic = 'force-dynamic';
 
-// Lazy load the UnifiedDashboard component
-const UnifiedDashboard = lazy(() =>
-  import('@/components/domains/dashboard').then((mod) => ({
-    default: mod.UnifiedDashboard,
-  }))
-);
-
 export default function FreelancerDashboardPage() {
-  return (
-    <Suspense
-      fallback={<Loading size="lg" text="Loading freelancer dashboard..." />}
-    >
-      <UnifiedDashboard role="FREELANCER" />
-    </Suspense>
-  );
+  // Redirect to main dashboard - UnifiedDashboard will handle role-based rendering
+  redirect('/dashboard');
 }

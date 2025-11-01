@@ -3,6 +3,8 @@
 // ================================================
 // Production-ready error handling with monitoring and recovery
 
+/* eslint-disable no-console */
+
 import { ErrorInfo } from 'react';
 import { logger } from '@/lib/shared/utils/logger';
 import { getBackendApiUrl } from '@/lib/config/api';

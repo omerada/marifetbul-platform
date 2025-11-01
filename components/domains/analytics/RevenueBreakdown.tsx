@@ -13,6 +13,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { logger } from '@/lib/shared/utils/logger';
 import {
   getRevenueBreakdown,
   type RevenueBreakdownResponse,
@@ -41,7 +42,7 @@ export default function RevenueBreakdown() {
 
         setData(response);
       } catch (err) {
-        console.error('Failed to load revenue breakdown:', err);
+        logger.error('Failed to load revenue breakdown:', err);
         setError('Gelir dağılımı yüklenemedi');
       } finally {
         setLoading(false);

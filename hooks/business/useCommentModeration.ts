@@ -12,6 +12,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { apiClient } from '@/lib/api';
 import { BLOG_ENDPOINTS } from '@/lib/api/endpoints';
+import { logger } from '@/lib/shared/utils/logger';
 import type { BlogComment } from '@/types/blog';
 
 // ================================================
@@ -174,7 +175,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
 
       setTotalPages(response.totalPages || 1);
     } catch (err) {
-      console.error('Failed to fetch comments:', err);
+      logger.error('Failed to fetch comments:', err);
       setError('Yorumlar yüklenirken bir hata oluştu');
     } finally {
       setLoading(false);
@@ -275,7 +276,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
 
       return true;
     } catch (err) {
-      console.error('Failed to approve comment:', err);
+      logger.error('Failed to approve comment:', err);
       setError('Yorum onaylanırken bir hata oluştu');
       return false;
     }
@@ -300,7 +301,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
 
       return true;
     } catch (err) {
-      console.error('Failed to reject comment:', err);
+      logger.error('Failed to reject comment:', err);
       setError('Yorum reddedilirken bir hata oluştu');
       return false;
     }
@@ -323,7 +324,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
 
       return true;
     } catch (err) {
-      console.error('Failed to mark as spam:', err);
+      logger.error('Failed to mark as spam:', err);
       setError('Yorum spam olarak işaretlenirken bir hata oluştu');
       return false;
     }

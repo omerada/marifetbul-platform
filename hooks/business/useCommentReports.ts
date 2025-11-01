@@ -10,6 +10,7 @@
  */
 
 import { useState, useCallback } from 'react';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // TYPES
@@ -106,7 +107,7 @@ export function useCommentReports(): UseCommentReportsReturn {
 
         // For development: Log report data
         if (process.env.NODE_ENV === 'development') {
-          console.log('Comment Report (Mock):', {
+          logger.debug('Comment Report (Mock):', {
             commentId: data.commentId,
             reason: data.reason,
             reasonLabel: REPORT_REASON_LABELS[data.reason],
@@ -118,7 +119,7 @@ export function useCommentReports(): UseCommentReportsReturn {
         setSuccess(true);
         return true;
       } catch (err) {
-        console.error('Failed to report comment:', err);
+        logger.error('Failed to report comment:', err);
 
         if (err instanceof Error) {
           if (err.message.includes('401')) {

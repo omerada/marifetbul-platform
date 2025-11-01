@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/shared/utils/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +14,7 @@ export async function POST(request: NextRequest) {
   try {
     const backendUrl = `${BACKEND_API_URL}/auth/refresh`;
 
-    console.log('[Token Refresh] Proxying to:', backendUrl);
+    logger.debug('[Token Refresh] Proxying to:', backendUrl);
 
     // Forward all headers including cookies
     const headers: HeadersInit = {
@@ -24,9 +25,9 @@ export async function POST(request: NextRequest) {
     const cookieHeader = request.headers.get('Cookie');
     if (cookieHeader) {
       headers['Cookie'] = cookieHeader;
-      console.log('[Token Refresh] Forwarding cookies');
+      logger.debug('[Token Refresh] Forwarding cookies');
     } else {
-      console.warn('[Token Refresh] No cookies found in request');
+      logger.warn('[Token Refresh] No cookies found in request');
     }
 
     // Forward Authorization header if present
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
       body: body || '{}', // Always send a body
     });
 
-    console.log('[Token Refresh] Backend response status:', response.status);
+    logger.debug('[Token Refresh] Backend response status:', response.status);
 
     // Get response body
     const data = await response.text();
@@ -66,12 +67,12 @@ export async function POST(request: NextRequest) {
 
     // Log Set-Cookie headers for debugging
     if (response.headers.has('set-cookie')) {
-      console.log(
+      logger.debug(
         '[Token Refresh] Set-Cookie header present:',
         response.headers.get('set-cookie')
       );
     } else {
-      console.warn('[Token Refresh] No Set-Cookie header from backend');
+      logger.warn('[Token Refresh] No Set-Cookie header from backend');
     }
 
     return new Response(data, {
@@ -79,7 +80,7 @@ export async function POST(request: NextRequest) {
       headers: responseHeaders,
     });
   } catch (error) {
-    console.error('[Token Refresh] Error:', error);
+    logger.error('[Token Refresh] Error:', error);
 
     return NextResponse.json(
       {

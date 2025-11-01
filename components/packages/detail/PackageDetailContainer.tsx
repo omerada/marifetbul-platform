@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { packageApi } from '@/lib/api/packages';
 import { PackageDetailView } from '@/components/packages/detail';
 import { Button } from '@/components/ui';
+import { logger } from '@/lib/shared/utils/logger';
 import type { Package } from '@/types/business/features/package';
 
 interface PackageAnalytics {
@@ -53,7 +54,7 @@ export function PackageDetailContainer() {
       });
     } catch (err) {
       setError('Paket yüklenirken bir hata oluştu');
-      console.error('Failed to fetch package:', err);
+      logger.error('Failed to fetch package:', err);
     } finally {
       setLoading(false);
     }

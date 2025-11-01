@@ -13,6 +13,7 @@ import { PublicPackageDetail } from './PublicPackageDetail';
 import { Button } from '@/components/ui';
 import type { Package } from '@/types/business/features/package';
 import { transformServicePackageToPackage } from '@/lib/transformers/package.transformer';
+import { logger } from '@/lib/shared/utils/logger';
 
 export function PublicPackageDetailContainer() {
   const params = useParams();
@@ -40,7 +41,7 @@ export function PublicPackageDetailContainer() {
       }
     } catch (err) {
       setError('Paket bulunamadı.');
-      console.error('Failed to fetch package:', err);
+      logger.error('Failed to fetch package:', err);
     } finally {
       setLoading(false);
     }

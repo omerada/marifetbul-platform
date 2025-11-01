@@ -25,6 +25,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // COMPONENT
@@ -41,7 +42,7 @@ export function RefundStatisticsDashboard() {
       const data = await refundAdminApi.getRefundStatistics();
       setStats(data);
     } catch (error) {
-      console.error('Failed to fetch statistics:', error);
+      logger.error('Failed to fetch statistics:', error);
       toast.error('İstatistikler yüklenemedi');
     } finally {
       setIsLoading(false);

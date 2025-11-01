@@ -120,3 +120,30 @@ export async function markAllAsRead() {
 export async function deleteNotification(notificationId: string) {
   await apiClient.delete(`/notifications/${notificationId}`);
 }
+
+/**
+ * Mark multiple notifications as read (bulk action)
+ * @throws {AuthenticationError} Not authenticated
+ * @returns Number of notifications marked as read
+ */
+export async function markMultipleAsRead(notificationIds: string[]) {
+  const response = await apiClient.put<number>(
+    '/notifications/bulk/mark-read',
+    {
+      notificationIds,
+    }
+  );
+  return response;
+}
+
+/**
+ * Delete multiple notifications (bulk action)
+ * @throws {AuthenticationError} Not authenticated
+ * @returns Number of notifications deleted
+ */
+export async function deleteMultipleNotifications(notificationIds: string[]) {
+  const response = await apiClient.post<number>('/notifications/bulk/delete', {
+    notificationIds,
+  });
+  return response;
+}

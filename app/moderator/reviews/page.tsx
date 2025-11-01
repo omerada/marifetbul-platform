@@ -12,6 +12,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { logger } from '@/lib/shared/utils/logger';
 import {
   Star,
   Flag,
@@ -88,22 +89,22 @@ export default function ModeratorReviewsPage() {
   ];
 
   const handleApprove = (reviewId: string) => {
-    console.log('Approve review:', reviewId);
+    logger.debug('Approve review:', reviewId);
     // TODO: API call
   };
 
   const handleRemove = (reviewId: string) => {
-    console.log('Remove review:', reviewId);
+    logger.debug('Remove review:', reviewId);
     // TODO: API call
   };
 
   const handleWarnUser = (reviewId: string) => {
-    console.log('Warn user for review:', reviewId);
+    logger.debug('Warn user for review:', reviewId);
     // TODO: API call
   };
 
   const handleBanUser = (reviewId: string) => {
-    console.log('Ban user for review:', reviewId);
+    logger.debug('Ban user for review:', reviewId);
     // TODO: API call
   };
 

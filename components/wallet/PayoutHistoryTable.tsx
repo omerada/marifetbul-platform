@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { usePayout } from '@/hooks/business/wallet/usePayout';
+import { logger } from '@/lib/shared/utils/logger';
 import type { Payout } from '@/lib/api/validators';
 
 // ============================================================================
@@ -58,7 +59,7 @@ export function PayoutHistoryTable({
       await cancel(payoutId);
       await load();
     } catch (err) {
-      console.error('Cancel payout error:', err);
+      logger.error('Cancel payout error:', err);
     } finally {
       setCancellingId(null);
     }

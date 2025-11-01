@@ -52,6 +52,7 @@ import {
 } from 'lucide-react';
 import { AdminWalletDetailModal } from './AdminWalletDetailModal';
 import { AdminWalletFilters } from './AdminWalletFilters';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // TYPES
@@ -109,7 +110,7 @@ export const AdminWalletManagement: React.FC = () => {
       setWallets(response.content);
       setTotalPages(response.totalPages);
     } catch (error) {
-      console.error('Failed to fetch wallets:', error);
+      logger.error('Failed to fetch wallets:', error);
       toast.error('Cüzdanlar yüklenemedi');
     } finally {
       setIsLoading(false);
@@ -121,7 +122,7 @@ export const AdminWalletManagement: React.FC = () => {
       const data = await walletAdminApi.getWalletStats();
       setStats(data);
     } catch (error) {
-      console.error('Failed to fetch stats:', error);
+      logger.error('Failed to fetch stats:', error);
     }
   };
 
@@ -161,7 +162,7 @@ export const AdminWalletManagement: React.FC = () => {
       fetchWallets();
       fetchStats();
     } catch (error) {
-      console.error('Failed to freeze wallet:', error);
+      logger.error('Failed to freeze wallet:', error);
       toast.error('Cüzdan dondurulamadı');
     }
   };
@@ -173,7 +174,7 @@ export const AdminWalletManagement: React.FC = () => {
       fetchWallets();
       fetchStats();
     } catch (error) {
-      console.error('Failed to unfreeze wallet:', error);
+      logger.error('Failed to unfreeze wallet:', error);
       toast.error('İşlem başarısız');
     }
   };

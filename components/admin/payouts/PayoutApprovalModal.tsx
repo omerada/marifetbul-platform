@@ -29,6 +29,7 @@ import {
   CreditCard,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { logger } from '@/lib/shared/utils/logger';
 import type { Payout } from '@/types/business/features/wallet';
 
 // ================================================
@@ -87,7 +88,7 @@ export const PayoutApprovalModal: React.FC<PayoutApprovalModalProps> = ({
       handleClose();
     } catch (error) {
       toast.error('Ödeme onaylanırken bir hata oluştu');
-      console.error('Failed to approve payout:', error);
+      logger.error('Failed to approve payout:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -113,7 +114,7 @@ export const PayoutApprovalModal: React.FC<PayoutApprovalModalProps> = ({
       handleClose();
     } catch (error) {
       toast.error('Ödeme reddedilirken bir hata oluştu');
-      console.error('Failed to reject payout:', error);
+      logger.error('Failed to reject payout:', error);
     } finally {
       setIsSubmitting(false);
     }

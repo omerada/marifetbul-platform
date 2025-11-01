@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { toast } from 'sonner';
+import { logger } from '@/lib/shared/utils/logger';
 import {
   bulkApproveComments,
   bulkRejectComments,
@@ -79,13 +80,13 @@ export function BulkActionToolbar({
         toast.error(`${response.failureCount} yorum onaylanamadı`, {
           description: 'Detaylar için loglara bakın',
         });
-        console.error('Failed comment approvals:', response.failures);
+        logger.error('Failed comment approvals:', response.failures);
       }
 
       onActionComplete();
       onClearSelection();
     } catch (error) {
-      console.error('Bulk approve error:', error);
+      logger.error('Bulk approve error:', error);
       toast.error('Toplu onaylama sırasında hata oluştu');
     } finally {
       setLoading(false);
@@ -113,7 +114,7 @@ export function BulkActionToolbar({
 
       if (response.failureCount > 0) {
         toast.error(`${response.failureCount} yorum reddedilemedi`);
-        console.error('Failed comment rejections:', response.failures);
+        logger.error('Failed comment rejections:', response.failures);
       }
 
       setShowRejectDialog(false);
@@ -121,7 +122,7 @@ export function BulkActionToolbar({
       onActionComplete();
       onClearSelection();
     } catch (error) {
-      console.error('Bulk reject error:', error);
+      logger.error('Bulk reject error:', error);
       toast.error('Toplu reddetme sırasında hata oluştu');
     } finally {
       setLoading(false);
@@ -159,13 +160,13 @@ export function BulkActionToolbar({
 
       if (response.failureCount > 0) {
         toast.error(`${response.failureCount} yorum işaretlenemedi`);
-        console.error('Failed spam marking:', response.failures);
+        logger.error('Failed spam marking:', response.failures);
       }
 
       onActionComplete();
       onClearSelection();
     } catch (error) {
-      console.error('Bulk spam error:', error);
+      logger.error('Bulk spam error:', error);
       toast.error('Spam işaretleme sırasında hata oluştu');
     } finally {
       setLoading(false);

@@ -13,6 +13,7 @@
 
 import { useWalletStore } from '@/stores/walletStore';
 import { useEffect, useState, useCallback } from 'react';
+import { logger } from '@/lib/shared/utils/logger';
 import type { Transaction } from '@/lib/api/validators';
 import type {
   TransactionFilters,
@@ -154,7 +155,7 @@ export const useTransactions = (
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
       } catch (error) {
-        console.error('Failed to export transactions:', error);
+        logger.error('Failed to export transactions:', error);
         throw error;
       }
     },

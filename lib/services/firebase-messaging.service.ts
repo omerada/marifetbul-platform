@@ -1,6 +1,8 @@
 // Firebase Cloud Messaging Service
 // Handles FCM token generation, subscription, and foreground notifications
 
+/* eslint-disable no-console */
+
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import {
   getMessaging,

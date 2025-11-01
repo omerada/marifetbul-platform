@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/Dialog';
 import { AlertCircle, DollarSign } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { logger } from '@/lib/shared/utils/logger';
 
 // Validation schema
 const resolutionFormSchema = z.object({
@@ -123,7 +124,7 @@ export default function DisputeResolutionModal({
       reset();
       onClose();
     } catch (error) {
-      console.error('Failed to resolve dispute:', error);
+      logger.error('Failed to resolve dispute:', error);
 
       toast.error('İtiraz Çözümlenemedi', {
         description: 'Bir hata oluştu. Lütfen tekrar deneyin.',

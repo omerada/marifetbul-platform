@@ -13,6 +13,7 @@ import { PackageCard } from './PackageCard';
 import { Button } from '@/components/ui';
 import type { PackageSummary } from '@/types/business/features/package';
 import { transformServicePackagesToSummaries } from '@/lib/transformers/package.transformer';
+import { logger } from '@/lib/shared/utils/logger';
 
 interface FeaturedPackagesProps {
   limit?: number;
@@ -39,7 +40,7 @@ export function FeaturedPackages({
         );
         setPackages(transformed);
       } catch (error) {
-        console.error('Failed to fetch featured packages:', error);
+        logger.error('Failed to fetch featured packages:', error);
         setPackages([]);
       } finally {
         setLoading(false);

@@ -97,14 +97,14 @@ export interface UseWebSocketReturn {
  * @example
  * ```tsx
  * const { isConnected, subscribe, send } = useWebSocket({
- *   onConnect: () => console.log('Connected!'),
+ *   onConnect: () => logger.debug('Connected!'),
  * });
  *
  * useEffect(() => {
  *   if (!isConnected) return;
  *
  *   const subId = subscribe('/topic/messages', (message) => {
- *     console.log('Received:', message);
+ *     logger.debug('Received:', message);
  *   });
  *
  *   return () => unsubscribe(subId);

@@ -12,6 +12,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { logger } from '@/lib/shared/utils/logger';
 import { Check, X, Flag, Search } from 'lucide-react';
 
 type CommentStatus =
@@ -83,13 +84,13 @@ export default function CommentModerationPage() {
   };
 
   const handleBulkApprove = async () => {
-    console.log('Bulk approve:', Array.from(selectedComments));
+    logger.debug('Bulk approve:', Array.from(selectedComments));
     // TODO: API call
     setSelectedComments(new Set());
   };
 
   const handleBulkReject = async () => {
-    console.log('Bulk reject:', Array.from(selectedComments));
+    logger.debug('Bulk reject:', Array.from(selectedComments));
     // TODO: API call
     setSelectedComments(new Set());
   };

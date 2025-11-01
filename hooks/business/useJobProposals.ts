@@ -140,7 +140,7 @@ export interface UseJobProposalsReturn {
  * // Check if job has proposals
  * if (hasProposals('job-1')) {
  *   const summary = getProposalSummary('job-1');
- *   console.log(`${summary.unreadCount} new proposals`);
+ *   logger.debug(`${summary.unreadCount} new proposals`);
  * }
  *
  * // Get total unread across all jobs

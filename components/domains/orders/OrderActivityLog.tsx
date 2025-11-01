@@ -40,6 +40,7 @@ import {
 import type { OrderEvent } from '@/types/backend-aligned';
 import { useWebSocket } from '@/hooks';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // TYPES
@@ -272,7 +273,7 @@ export function OrderActivityLog({
         // Add new event to the top
         setEvents((prev) => [newEvent, ...prev]);
       } catch (err) {
-        console.error('Failed to parse order event:', err);
+        logger.error('Failed to parse order event:', err);
       }
     });
 

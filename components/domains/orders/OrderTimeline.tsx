@@ -36,6 +36,7 @@ import {
 import { cn } from '@/lib/utils';
 import type { OrderEvent } from '@/types/backend-aligned';
 import { useWebSocket } from '@/hooks';
+import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
 // TYPES
@@ -115,7 +116,7 @@ export function OrderTimeline({
           // Add new event to the beginning
           setTimelineEvents((prev) => [newEvent, ...prev]);
         } catch (err) {
-          console.error('Failed to parse order event:', err);
+          logger.error('Failed to parse order event:', err);
         }
       }
     );

@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { X, Clock, RefreshCw, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { orderApi } from '@/lib/api/orders';
+import { logger } from '@/lib/shared/utils/logger';
 import type { Package } from '@/types/business/features/package';
 
 interface OrderModalProps {
@@ -72,7 +73,7 @@ export function OrderModal({
       // Navigate to checkout with order ID
       router.push(`/checkout/${response.data.id}`);
     } catch (err) {
-      console.error('Failed to create order:', err);
+      logger.error('Failed to create order:', err);
       const errorMessage =
         err instanceof Error ? err.message : 'Sipariş oluşturulamadı';
       setError(errorMessage);

@@ -51,6 +51,7 @@ import {
   disputeReasonLabels,
   disputeResolutionTypeLabels,
 } from '@/types/dispute';
+import { logger } from '@/lib/shared/utils/logger';
 import {
   DisputeTimeline,
   createTimelineEvents,
@@ -117,7 +118,7 @@ export function AdminDisputeDetailModal({
         const orderData = await orderApi.getOrderById(dispute.orderId);
         setOrder(orderData.data);
       } catch (error) {
-        console.error('Failed to load order:', error);
+        logger.error('Failed to load order:', error);
         toast.error('Sipariş bilgileri yüklenemedi');
       } finally {
         setIsLoadingOrder(false);

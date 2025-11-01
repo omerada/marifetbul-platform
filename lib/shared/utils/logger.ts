@@ -3,6 +3,8 @@
  * Conditionally logs based on environment
  */
 
+/* eslint-disable no-console */
+
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
