@@ -1,7 +1,12 @@
 'use client';
 
-import { AdminDashboard } from '@/components/domains/admin';
+import { redirect } from 'next/navigation';
 
+/**
+ * Admin page now redirects to unified dashboard
+ * UnifiedDashboard will render AdminDashboardView based on role
+ * Sprint Day 9 - Dashboard Consolidation
+ */
 export default function AdminPage() {
-  return <AdminDashboard />;
+  redirect('/dashboard');
 }

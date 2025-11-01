@@ -3,10 +3,10 @@
  * UNIFIED DASHBOARD ENTRY POINT
  * ================================================
  * Main dashboard page that renders unified dashboard based on user role
- * No more redirects - single entry point for all user types
+ * Single entry point for ALL user types (FREELANCER, EMPLOYER, ADMIN, MODERATOR)
  *
- * Sprint Day 1 - Task 1.1: Dashboard Routing Consolidation
- * @version 2.0.0
+ * Sprint Day 9 - Dashboard Consolidation Complete
+ * @version 3.0.0
  */
 
 'use client';
@@ -28,16 +28,6 @@ const UnifiedDashboard = lazy(() =>
 export default function DashboardPage() {
   const { user, isLoading } = useAuthStore();
 
-  // Handle special roles with their own dedicated pages
-  if (!isLoading && user) {
-    if (user.role === 'ADMIN') {
-      redirect('/admin');
-    }
-    if (user.role === 'MODERATOR') {
-      redirect('/moderator');
-    }
-  }
-
   // Redirect to login if no user
   if (!isLoading && !user) {
     redirect('/login');
@@ -52,7 +42,7 @@ export default function DashboardPage() {
     );
   }
 
-  // Render unified dashboard for FREELANCER and EMPLOYER
+  // Render unified dashboard for ALL user roles
   return (
     <Suspense
       fallback={
@@ -61,9 +51,7 @@ export default function DashboardPage() {
         </div>
       }
     >
-      <UnifiedDashboard
-        role={user?.role as 'FREELANCER' | 'EMPLOYER' | undefined}
-      />
+      <UnifiedDashboard />
     </Suspense>
   );
 }
