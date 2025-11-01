@@ -102,6 +102,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       description: 'Platform metrikleri',
     },
     {
+      name: 'Kalite',
+      href: '/admin/quality',
+      icon: Activity,
+      current: pathname === '/admin/quality',
+      description: 'Kalite & Değerlendirme',
+    },
+    {
       name: 'İçerik',
       href: '/admin/moderation',
       icon: Shield,

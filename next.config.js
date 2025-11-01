@@ -58,6 +58,37 @@ const nextConfig = {
   // ================================================
   async redirects() {
     return [
+      // Deprecated dashboard routes - redirect to unified dashboard
+      {
+        source: '/dashboard/employer',
+        destination: '/dashboard',
+        permanent: true,
+      },
+      {
+        source: '/dashboard/freelancer',
+        destination: '/dashboard',
+        permanent: true,
+      },
+      {
+        source: '/dashboard/employer/orders',
+        destination: '/dashboard/orders',
+        permanent: true,
+      },
+      {
+        source: '/dashboard/freelancer/orders',
+        destination: '/dashboard/orders',
+        permanent: true,
+      },
+      {
+        source: '/dashboard/employer/orders/:id',
+        destination: '/dashboard/orders/:id',
+        permanent: true,
+      },
+      {
+        source: '/dashboard/freelancer/orders/:id',
+        destination: '/dashboard/orders/:id',
+        permanent: true,
+      },
       // Info & Support redirects
       {
         source: '/help',

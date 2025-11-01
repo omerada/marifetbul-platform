@@ -10,7 +10,7 @@
  */
 
 import { toast } from 'sonner';
-import type { OrderStatus } from '@/lib/api/validators/order';
+import type { OrderStatus } from '@/types/backend-aligned';
 
 // ================================================
 // ERROR TYPES

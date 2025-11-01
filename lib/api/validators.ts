@@ -4,14 +4,11 @@
  * Runtime validation schemas using Zod for type-safe API responses.
  * Ensures responses match expected structure and provides detailed validation errors.
  *
- * NOTE: Order-related schemas moved to validators/order.ts for backend alignment.
+ * NOTE: Order types moved to @/types/backend-aligned for centralized type management
  */
 
 import { z } from 'zod';
 import { ValidationError } from './errors';
-
-// Re-export order validators (backend-aligned)
-export * from './validators/order';
 
 // ============================================================================
 // Base Schemas

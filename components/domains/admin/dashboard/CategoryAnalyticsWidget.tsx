@@ -17,23 +17,19 @@ import { logger } from '@/lib/shared/utils/logger';
 
 /**
  * Category Analytics Widget v4.0.0
- * 
+ *
  * @version 4.0.0 - Migrated to centralized state (Phase 3)
  * @since 2025-10-30
- * 
+ *
  * MIGRATION NOTES:
  * - Removed 5 local useState (topByRevenue, topByOrders, selectedView, isLoading, error)
  * - Removed 2 fetch calls (categories/top-revenue, categories/top-orders)
  * - Uses store.topPackages from useAdminDashboard hook
  * - Network-aware via store (offline support)
- * - Props (startDate, endDate, limit) are now informational - store handles data fetching
+ * - All data fetching handled by centralized store
  */
 
 interface CategoryAnalyticsWidgetProps {
-  /** @deprecated Data is now from centralized store */
-  startDate?: string;
-  /** @deprecated Data is now from centralized store */
-  endDate?: string;
   /** Maximum number of items to display (client-side filtering) */
   limit?: number;
 }
@@ -69,11 +65,11 @@ export function CategoryAnalyticsWidget({
     // Group by category (using first word of package title as category proxy)
     // Note: In real implementation, packages should have categoryId/categoryName
     const categoryMap = new Map<string, { revenue: number; orders: number }>();
-    
+
     topPackages.forEach((pkg) => {
       // Extract category from title (temporary solution)
       const category = pkg.title.split(' ')[0] || 'Diğer';
-      
+
       const current = categoryMap.get(category) || { revenue: 0, orders: 0 };
       categoryMap.set(category, {
         revenue: current.revenue + pkg.revenue,
@@ -94,7 +90,8 @@ export function CategoryAnalyticsWidget({
         totalRevenue: data.revenue,
         orderCount: data.orders,
         averageOrderValue: data.orders > 0 ? data.revenue / data.orders : 0,
-        revenuePercentage: totalRevenue > 0 ? (data.revenue / totalRevenue) * 100 : 0,
+        revenuePercentage:
+          totalRevenue > 0 ? (data.revenue / totalRevenue) * 100 : 0,
       }))
       .sort((a, b) => b.totalRevenue - a.totalRevenue)
       .slice(0, limit);
@@ -120,7 +117,9 @@ export function CategoryAnalyticsWidget({
   }, [topPackages, limit]);
 
   // Local UI state for view toggle
-  const [selectedView, setSelectedView] = React.useState<'revenue' | 'orders'>('revenue');
+  const [selectedView, setSelectedView] = React.useState<'revenue' | 'orders'>(
+    'revenue'
+  );
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('tr-TR', {

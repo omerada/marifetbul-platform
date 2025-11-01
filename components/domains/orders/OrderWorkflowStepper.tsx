@@ -29,7 +29,7 @@ import {
   AlertTriangle,
   Clock,
 } from 'lucide-react';
-import type { OrderStatus } from '@/lib/api/validators/order';
+import type { OrderStatus } from '@/types/backend-aligned';
 import { cn } from '@/lib/utils';
 
 // ================================================

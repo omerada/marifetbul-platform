@@ -9,7 +9,10 @@
  * @version 1.0.0 - Story 10: Validation & Error Handling
  */
 
-import type { Order, OrderStatus } from '@/lib/api/validators/order';
+import type {
+  OrderResponse as Order,
+  OrderStatus,
+} from '@/types/backend-aligned';
 import { toast } from 'sonner';
 
 // ================================================

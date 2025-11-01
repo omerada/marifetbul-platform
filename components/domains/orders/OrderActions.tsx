@@ -29,7 +29,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { orderApi } from '@/lib/api/orders';
-import type { Order } from '@/lib/api/validators/order';
+import type { OrderResponse as Order } from '@/types/backend-aligned';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import {

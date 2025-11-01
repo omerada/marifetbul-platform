@@ -28,7 +28,8 @@ import { Button, Textarea, Label } from '@/components/ui';
 import FileUpload from '@/components/ui/FileUpload';
 import { Package, Upload, FileText, AlertCircle, X } from 'lucide-react';
 import { orderApi } from '@/lib/api/orders';
-import type { Order, SubmitDeliveryRequest } from '@/lib/api/validators/order';
+import type { OrderResponse as Order } from '@/types/backend-aligned';
+import type { SubmitDeliveryRequest } from '@/lib/infrastructure/services/api/orderService';
 import {
   fileUploadService,
   type UploadProgress,

@@ -20,7 +20,10 @@
 import Link from 'next/link';
 import { Calendar, Clock, DollarSign, Package, User } from 'lucide-react';
 import { Button } from '@/components/ui';
-import type { Order, OrderSummary } from '@/lib/api/validators/order';
+import type {
+  OrderResponse as Order,
+  OrderSummaryResponse as OrderSummary,
+} from '@/types/backend-aligned';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';

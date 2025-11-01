@@ -299,10 +299,226 @@ export async function resolveReviewFlag(
 }
 
 // ============================================================================
-// USER ACTIONS (WARNINGS & BANS)
+// USER MODERATION (WARNINGS & SUSPENSIONS)
 // ============================================================================
 
 /**
+ * Issue warning to user
+ * Backend: POST /api/v1/moderator/users/warnings
+ */
+export async function issueWarning(request: {
+  userId: string;
+  reason: string;
+  details: string;
+  relatedContentRef?: string;
+}): Promise<UserWarning> {
+  const response = await apiClient.post<ApiResponse<UserWarning>>(
+    '/api/v1/moderator/users/warnings',
+    request
+  );
+  return response.data;
+}
+
+/**
+ * Get user warnings
+ * Backend: GET /api/v1/moderator/users/warnings/user/{userId}
+ */
+export async function getUserWarnings(
+  userId: string,
+  page = 0,
+  size = 20
+): Promise<{ content: UserWarning[]; totalElements: number }> {
+  const response = await apiClient.get<
+    ApiResponse<{ content: UserWarning[]; totalElements: number }>
+  >(`/api/v1/moderator/users/warnings/user/${userId}`, {
+    page: page.toString(),
+    size: size.toString(),
+  });
+  return response.data;
+}
+
+/**
+ * Get active user warnings
+ * Backend: GET /api/v1/moderator/users/warnings/user/{userId}/active
+ */
+export async function getActiveUserWarnings(
+  userId: string
+): Promise<UserWarning[]> {
+  const response = await apiClient.get<ApiResponse<UserWarning[]>>(
+    `/api/v1/moderator/users/warnings/user/${userId}/active`
+  );
+  return response.data;
+}
+
+/**
+ * Revoke warning
+ * Backend: POST /api/v1/moderator/users/warnings/{warningId}/revoke?reason=...
+ */
+export async function revokeWarning(
+  warningId: string,
+  reason: string
+): Promise<UserWarning> {
+  const response = await apiClient.post<ApiResponse<UserWarning>>(
+    `/api/v1/moderator/users/warnings/${warningId}/revoke?reason=${encodeURIComponent(reason)}`
+  );
+  return response.data;
+}
+
+/**
+ * Suspend user
+ * Backend: POST /api/v1/moderator/users/suspensions
+ */
+export async function suspendUser(request: {
+  userId: string;
+  suspensionType:
+    | 'TEMPORARY'
+    | 'PERMANENT'
+    | 'SELLER_RESTRICTED'
+    | 'BUYER_RESTRICTED';
+  reason: string;
+  details: string;
+  durationDays?: number;
+  internalNotes?: string;
+}): Promise<UserSuspension> {
+  const response = await apiClient.post<ApiResponse<UserSuspension>>(
+    '/api/v1/moderator/users/suspensions',
+    request
+  );
+  return response.data;
+}
+
+/**
+ * Get user suspensions
+ * Backend: GET /api/v1/moderator/users/suspensions/user/{userId}
+ */
+export async function getUserSuspensions(
+  userId: string,
+  page = 0,
+  size = 20
+): Promise<{ content: UserSuspension[]; totalElements: number }> {
+  const response = await apiClient.get<
+    ApiResponse<{ content: UserSuspension[]; totalElements: number }>
+  >(`/api/v1/moderator/users/suspensions/user/${userId}`, {
+    page: page.toString(),
+    size: size.toString(),
+  });
+  return response.data;
+}
+
+/**
+ * Get user suspension status
+ * Backend: GET /api/v1/moderator/users/suspensions/user/{userId}/status
+ */
+export async function getUserSuspensionStatus(
+  userId: string
+): Promise<UserSuspension | null> {
+  const response = await apiClient.get<ApiResponse<UserSuspension | null>>(
+    `/api/v1/moderator/users/suspensions/user/${userId}/status`
+  );
+  return response.data;
+}
+
+/**
+ * Lift suspension (unsuspend user)
+ * Backend: POST /api/v1/moderator/users/suspensions/{suspensionId}/lift?reason=...
+ */
+export async function liftSuspension(
+  suspensionId: string,
+  reason: string
+): Promise<UserSuspension> {
+  const response = await apiClient.post<ApiResponse<UserSuspension>>(
+    `/api/v1/moderator/users/suspensions/${suspensionId}/lift?reason=${encodeURIComponent(reason)}`
+  );
+  return response.data;
+}
+
+/**
+ * Decide on suspension appeal
+ * Backend: POST /api/v1/moderator/users/suspensions/{suspensionId}/appeal/decide
+ */
+export async function decideSuspensionAppeal(
+  suspensionId: string,
+  decision: 'APPROVED' | 'REJECTED' | 'REDUCED',
+  reason: string
+): Promise<UserSuspension> {
+  const response = await apiClient.post<ApiResponse<UserSuspension>>(
+    `/api/v1/moderator/users/suspensions/${suspensionId}/appeal/decide`,
+    { decision, reason }
+  );
+  return response.data;
+}
+
+/**
+ * Get user moderation summary
+ * Backend: GET /api/v1/moderator/users/summary/{userId}
+ */
+export async function getUserModerationSummary(
+  userId: string
+): Promise<string> {
+  const response = await apiClient.get<ApiResponse<string>>(
+    `/api/v1/moderator/users/summary/${userId}`
+  );
+  return response.data;
+}
+
+// Type definitions for new user moderation system
+export interface UserWarning {
+  id: string;
+  userId: string;
+  moderatorId: string;
+  moderatorName?: string;
+  warningLevel: 'LEVEL_1' | 'LEVEL_2' | 'LEVEL_3';
+  reason: string;
+  reasonDescription: string;
+  details: string;
+  relatedContentRef?: string;
+  status: 'ACTIVE' | 'EXPIRED' | 'APPEALED' | 'REVOKED' | 'ESCALATED';
+  createdAt: string;
+  expiresAt?: string;
+  acknowledgedAt?: string;
+  appealedAt?: string;
+  appealDecision?: string;
+  active: boolean;
+  canAppeal: boolean;
+}
+
+export interface UserSuspension {
+  id: string;
+  userId: string;
+  moderatorId: string;
+  moderatorName?: string;
+  suspensionType:
+    | 'TEMPORARY'
+    | 'PERMANENT'
+    | 'SELLER_RESTRICTED'
+    | 'BUYER_RESTRICTED';
+  suspensionTypeDescription: string;
+  reason: string;
+  reasonDescription: string;
+  details: string;
+  warningId?: string;
+  startsAt: string;
+  expiresAt?: string;
+  status: 'SCHEDULED' | 'ACTIVE' | 'EXPIRED' | 'LIFTED' | 'APPEALED';
+  createdAt: string;
+  appealedAt?: string;
+  appealMessage?: string;
+  appealDecision?: 'APPROVED' | 'REJECTED' | 'REDUCED';
+  appealDecisionReason?: string;
+  appealDecidedAt?: string;
+  unsuspendedAt?: string;
+  unsuspensionReason?: string;
+  active: boolean;
+  permanent: boolean;
+  canAppeal: boolean;
+}
+
+// ============================================================================
+// LEGACY USER ACTIONS (DEPRECATED - Use new endpoints above)
+// ============================================================================
+
+/**
+ * @deprecated Use issueWarning instead
  * Warn a user
  * Backend: POST /api/v1/admin/users/{userId}/warn
  */
@@ -318,6 +534,7 @@ export async function warnUser(
 }
 
 /**
+ * @deprecated Use suspendUser instead
  * Ban a user temporarily
  * Backend: POST /api/v1/admin/users/{userId}/ban
  */
@@ -334,6 +551,7 @@ export async function banUser(
 }
 
 /**
+ * @deprecated Use liftSuspension instead
  * Unban a user
  * Backend: POST /api/v1/admin/users/{userId}/unban
  */
@@ -437,7 +655,19 @@ export const moderationApi = {
   flagReview,
   resolveReviewFlag,
 
-  // User Actions
+  // User Moderation (New)
+  issueWarning,
+  getUserWarnings,
+  getActiveUserWarnings,
+  revokeWarning,
+  suspendUser,
+  getUserSuspensions,
+  getUserSuspensionStatus,
+  liftSuspension,
+  decideSuspensionAppeal,
+  getUserModerationSummary,
+
+  // User Actions (Legacy - Deprecated)
   warnUser,
   banUser,
   unbanUser,
