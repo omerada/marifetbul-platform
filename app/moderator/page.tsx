@@ -138,7 +138,7 @@ export default function ModeratorDashboardPage() {
                 {isLoading ? (
                   <span className="animate-pulse text-gray-400">--</span>
                 ) : (
-                  (stats?.userReports ?? 0)
+                  (stats?.pendingReports ?? 0)
                 )}
               </p>
             </div>
@@ -170,7 +170,7 @@ export default function ModeratorDashboardPage() {
                 {isLoading ? (
                   <span className="animate-pulse text-gray-400">--</span>
                 ) : (
-                  (stats?.openTickets ?? 0)
+                  (stats?.pendingSupportTickets ?? 0)
                 )}
               </p>
             </div>
@@ -202,32 +202,32 @@ export default function ModeratorDashboardPage() {
           <div className="space-y-3">
             {pendingItems.map((item) => (
               <a
-                key={item.id}
-                href={item.url}
+                key={item.itemId}
+                href={item.reviewUrl}
                 className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-blue-300 hover:shadow-md"
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-3">
                     <span
                       className={`rounded-full px-2 py-1 text-xs font-medium ${
-                        item.priority === 'URGENT'
+                        item.priority === 'HIGH'
                           ? 'bg-red-100 text-red-700'
-                          : item.priority === 'HIGH'
-                            ? 'bg-orange-100 text-orange-700'
-                            : item.priority === 'MEDIUM'
-                              ? 'bg-yellow-100 text-yellow-700'
-                              : 'bg-gray-100 text-gray-700'
+                          : item.priority === 'MEDIUM'
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : 'bg-gray-100 text-gray-700'
                       }`}
                     >
                       {item.priority}
                     </span>
-                    <span className="text-xs text-gray-500">{item.type}</span>
+                    <span className="text-xs text-gray-500">
+                      {item.itemType}
+                    </span>
                   </div>
                   <h3 className="mt-2 font-medium text-gray-900">
-                    {item.title}
+                    {item.authorName} - {item.relatedEntity}
                   </h3>
                   <p className="mt-1 line-clamp-1 text-sm text-gray-600">
-                    {item.description}
+                    {item.content}
                   </p>
                   <p className="mt-1 text-xs text-gray-500">
                     {new Date(item.createdAt).toLocaleString('tr-TR')}
@@ -384,7 +384,7 @@ export default function ModeratorDashboardPage() {
             <div className="space-y-4">
               {recentActivities.map((activity) => (
                 <div
-                  key={activity.id}
+                  key={activity.activityId}
                   className="flex items-start gap-4 border-b border-gray-100 pb-4 last:border-0"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
@@ -397,12 +397,12 @@ export default function ModeratorDashboardPage() {
                       <span className="font-medium">
                         {activity.moderatorName}
                       </span>{' '}
-                      {activity.action === 'approved' && 'onayladı'}
-                      {activity.action === 'rejected' && 'reddetti'}
-                      {activity.action === 'banned' && 'engelledi'}
-                      {activity.action === 'resolved' && 'çözdü'}{' '}
+                      {activity.actionType === 'APPROVE' && 'onayladı'}
+                      {activity.actionType === 'REJECT' && 'reddetti'}
+                      {activity.actionType === 'BAN' && 'engelledi'}
+                      {activity.actionType === 'RESOLVE' && 'çözdü'}{' '}
                       <span className="text-gray-600">
-                        {activity.targetTitle}
+                        {activity.description}
                       </span>
                     </p>
                     <p className="mt-1 text-xs text-gray-500">

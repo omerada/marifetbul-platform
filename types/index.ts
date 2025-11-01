@@ -44,7 +44,18 @@ export * from './business/features/search';
 
 // Moderation (Sprint 2)
 export * from './business/moderation';
-export * from './business/report';
+// Export report types except conflicting ReportStatus (use moderation's version)
+export type {
+  ReportReason,
+  ReportPriority,
+  UserReport,
+  CreateReportRequest,
+  ResolveReportRequest,
+  UserActionRequest as ReportUserActionRequest,
+  ReportsResponse,
+  ReportFilters,
+  ReportStatistics,
+} from './business/report';
 
 // Admin Dashboard (Sprint 3.2)
 export * from './business/admin-dashboard';
