@@ -36,31 +36,31 @@ export function usePaymentIntent(): UsePaymentIntentReturn {
    * Create a new payment intent for an order
    */
   const createIntent = useCallback(
-    async (orderId: string, amount: number): Promise<IyzicoPaymentResponse> => {
+    async (
+      orderId: string,
+      _amount?: number
+    ): Promise<IyzicoPaymentResponse> => {
       setIsCreating(true);
       setError(null);
 
       try {
         const request: IyzicoPaymentRequest = {
           orderId,
-          amount,
-          currency: 'TRY',
-          metadata: {
-            orderId,
-            source: 'web-checkout',
-            timestamp: new Date().toISOString(),
-          },
+          returnUrl: `${window.location.origin}/checkout/callback`,
         };
 
-        const response = await apiClient.post<{
-          data: IyzicoPaymentResponse;
-        }>(PAYMENT_ENDPOINTS.CREATE_INTENT, request);
+        // Call new backend endpoint: POST /api/v1/payments/intent
+        const response = await apiClient.post<IyzicoPaymentResponse>(
+          PAYMENT_ENDPOINTS.CREATE_INTENT,
+          request
+        );
 
-        if (!response.data) {
+        if (!response) {
           throw new Error('Ödeme oluşturulamadı');
         }
 
-        return response.data;
+        // Backend returns: { paymentId, clientSecret, amount, currency, status, requiresAction, nextActionUrl }
+        return response;
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Ödeme işlemi başlatılamadı';

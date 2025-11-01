@@ -34,8 +34,8 @@ export function useIyzicoCheckout(): UseIyzicoCheckoutReturn {
    * Process payment with Iyzico
    */
   const processPayment = useCallback(
-    async (token: string): Promise<IyzicoPaymentResult> => {
-      if (!token) {
+    async (paymentIntentId: string): Promise<IyzicoPaymentResult> => {
+      if (!paymentIntentId) {
         const errorMessage = 'Ödeme tokeni bulunamadı.';
         const errorResult: IyzicoPaymentResult = {
           success: false,
@@ -52,13 +52,18 @@ export function useIyzicoCheckout(): UseIyzicoCheckoutReturn {
       setError(null);
 
       try {
-        // Call backend to complete Iyzico payment
-        const response = await fetch('/api/payments/iyzico/complete', {
+        // Call backend to confirm Iyzico payment
+        // POST /api/v1/payments/confirm
+        const response = await fetch('/api/v1/payments/confirm', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ token }),
+          credentials: 'include', // Include auth cookies
+          body: JSON.stringify({
+            paymentIntentId,
+            conversationId: paymentIntentId, // Same as payment intent for tracking
+          }),
         });
 
         const data = await response.json();
@@ -81,15 +86,16 @@ export function useIyzicoCheckout(): UseIyzicoCheckoutReturn {
           };
         }
 
-        if (data.success && data.payment) {
+        // Success response from backend
+        if (data.paymentId && data.status) {
           return {
             success: true,
             payment: {
-              id: data.payment.id,
-              status: data.payment.status,
-              amount: data.payment.amount,
-              currency: data.payment.currency,
-              conversationId: data.payment.conversationId,
+              id: data.paymentId,
+              status: data.status,
+              amount: data.amount,
+              currency: data.currency || 'TRY',
+              conversationId: paymentIntentId,
             },
           };
         }

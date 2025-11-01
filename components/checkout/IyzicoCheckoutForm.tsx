@@ -86,19 +86,20 @@ export function IyzicoCheckoutForm({
         checkoutSession.amount
       );
 
-      if (
-        !intentResponse ||
-        (!intentResponse.threeDSHtmlContent && !intentResponse.token)
-      ) {
+      if (!intentResponse || !intentResponse.clientSecret) {
         throw new Error('Payment intent oluşturulamadı');
       }
 
-      // Step 2: Process payment with Iyzico
-      setProcessingStage('processing-payment');
+      // Step 2: Check if 3D Secure is required
+      if (intentResponse.requiresAction && intentResponse.nextActionUrl) {
+        // Redirect to Iyzico 3D Secure page
+        window.location.href = intentResponse.nextActionUrl;
+        return;
+      }
 
-      // For Iyzico, we need to redirect to 3D Secure page or use threeDSHtmlContent
-      // This is simplified - actual implementation should render threeDSHtmlContent
-      const paymentResult = await processPayment(intentResponse.token || '');
+      // Step 3: Payment completed without 3D Secure (unlikely with Iyzico)
+      setProcessingStage('processing-payment');
+      const paymentResult = await processPayment(intentResponse.clientSecret);
 
       if (!paymentResult.success) {
         throw new Error(
@@ -106,7 +107,7 @@ export function IyzicoCheckoutForm({
         );
       }
 
-      // Step 3: Success
+      // Step 4: Success
       setProcessingStage('success');
       onSuccess?.(intentResponse.paymentId);
 

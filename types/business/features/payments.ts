@@ -230,18 +230,17 @@ export interface PaymentIntent {
 
 export interface IyzicoPaymentRequest {
   orderId: string;
-  amount: number;
-  currency: Currency;
-  metadata?: Record<string, string>;
+  returnUrl?: string;
 }
 
 export interface IyzicoPaymentResponse {
   paymentId: string;
-  token: string;
+  clientSecret: string; // Iyzico token
   amount: number;
-  currency: Currency;
-  status: PaymentIntent['status'];
-  threeDSHtmlContent?: string;
+  currency: string;
+  status: 'pending' | 'succeeded' | 'failed' | 'requires_action';
+  requiresAction: boolean;
+  nextActionUrl?: string; // Iyzico 3D Secure URL
 }
 
 export interface IyzicoCardOptions {
