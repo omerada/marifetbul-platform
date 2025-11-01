@@ -1,3 +1,7 @@
+/**
+ * @deprecated Use TransactionDisplay from @/components/domains/wallet/TransactionDisplay instead
+ * This component will be removed in a future version.
+ */
 import { ArrowUpRight, ArrowDownRight, Clock } from 'lucide-react';
 import { Badge, Card } from '@/components/ui';
 import { formatCurrency } from '@/lib/shared/utils/format';

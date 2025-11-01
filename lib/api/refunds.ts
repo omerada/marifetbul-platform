@@ -96,7 +96,7 @@ export async function getRefundByOrderId(
   orderId: string
 ): Promise<RefundDto | null> {
   try {
-    return await apiClient.get<RefundDto>(`/api/v1/refunds/order/${orderId}`);
+    return await apiClient.get<RefundDto>(`/api/v1/refunds/orders/${orderId}`);
   } catch (error: unknown) {
     if (
       (error as { response?: { status?: number } })?.response?.status === 404
@@ -111,14 +111,14 @@ export async function getRefundByOrderId(
  * Get current user's refund requests
  */
 export async function getMyRefunds(): Promise<RefundDto[]> {
-  return apiClient.get<RefundDto[]>('/api/v1/refunds/my-requests');
+  return apiClient.get<RefundDto[]>('/api/v1/refunds/my-refunds');
 }
 
 /**
  * Cancel a pending refund request
  */
-export async function cancelRefund(refundId: string): Promise<RefundDto> {
-  return apiClient.post<RefundDto>(`/api/v1/refunds/${refundId}/cancel`);
+export async function cancelRefund(refundId: string): Promise<void> {
+  return apiClient.delete<void>(`/api/v1/refunds/${refundId}`);
 }
 
 /**

@@ -80,11 +80,12 @@ export {
 
 export { WalletDashboard } from './wallet/WalletDashboard';
 export { WalletCard } from './wallet/WalletCard';
-export { TransactionHistory } from './wallet/TransactionHistory';
+/** @deprecated Use TransactionDisplay instead */ export { TransactionHistory } from './wallet/TransactionHistory';
 export { EscrowViewer } from './domains/wallet/EscrowViewer';
 export { CommissionBreakdown } from './domains/wallet/CommissionBreakdown';
 export { PayoutRequestWizard } from './domains/wallet/PayoutRequestWizard';
 export { PayoutStatusTracker } from './domains/wallet/PayoutStatusTracker';
+export { TransactionDisplay } from './domains/wallet/TransactionDisplay';
 
 // ================================================
 // Admin Components

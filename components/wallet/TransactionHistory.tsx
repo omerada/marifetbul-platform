@@ -2,6 +2,9 @@
  * ================================================
  * TRANSACTION HISTORY COMPONENT
  * ================================================
+ * @deprecated Use TransactionDisplay from @/components/domains/wallet/TransactionDisplay instead
+ * This component will be removed in a future version.
+ *
  * Comprehensive transaction history with advanced features
  *
  * Features:

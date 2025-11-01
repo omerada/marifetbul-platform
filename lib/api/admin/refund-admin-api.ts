@@ -174,8 +174,9 @@ export async function getRefunds(
     params.append('size', filters.size.toString());
   if (filters.sort) params.append('sort', filters.sort);
 
+  // Use pending endpoint for admin refunds listing
   return apiClient.get<PageResponse<RefundDto>>(
-    `/api/v1/refunds/admin/search?${params.toString()}`
+    `/api/v1/refunds/pending?${params.toString()}`
   );
 }
 
@@ -193,8 +194,8 @@ export async function approveRefund(
   refundId: string,
   request: ApproveRefundRequest
 ): Promise<RefundDto> {
-  return apiClient.post<RefundDto>(
-    `/api/v1/refunds/admin/${refundId}/approve`,
+  return apiClient.patch<RefundDto>(
+    `/api/v1/refunds/${refundId}/approve`,
     request
   );
 }
@@ -206,8 +207,8 @@ export async function rejectRefund(
   refundId: string,
   request: RejectRefundRequest
 ): Promise<RefundDto> {
-  return apiClient.post<RefundDto>(
-    `/api/v1/refunds/admin/${refundId}/reject`,
+  return apiClient.patch<RefundDto>(
+    `/api/v1/refunds/${refundId}/reject`,
     request
   );
 }
@@ -218,14 +219,14 @@ export async function rejectRefund(
 export async function bulkApproveRefunds(
   request: BulkApproveRefundsRequest
 ): Promise<number> {
-  return apiClient.post<number>('/api/v1/refunds/admin/bulk-approve', request);
+  return apiClient.post<number>('/api/v1/refunds/bulk-approve', request);
 }
 
 /**
  * Process approved refund
  */
 export async function processRefund(refundId: string): Promise<RefundDto> {
-  return apiClient.post<RefundDto>(`/api/v1/refunds/admin/${refundId}/process`);
+  return apiClient.post<RefundDto>(`/api/v1/refunds/${refundId}/process`);
 }
 
 /**
@@ -240,7 +241,7 @@ export async function getRefundStatistics(
   if (endDate) params.append('endDate', endDate);
 
   return apiClient.get<RefundStatisticsDto>(
-    `/api/v1/refunds/admin/statistics?${params.toString()}`
+    `/api/v1/refunds/statistics?${params.toString()}`
   );
 }
 
