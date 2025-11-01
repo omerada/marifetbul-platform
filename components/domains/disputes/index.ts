@@ -7,3 +7,5 @@ export { DisputeCreationModal } from './DisputeCreationModal';
 export { EvidenceUpload } from './EvidenceUpload';
 export { DisputeTimeline, createTimelineEvents } from './DisputeTimeline';
 export type { DisputeEvent, DisputeEventType } from './DisputeTimeline';
+export { DisputeCard } from './DisputeCard';
+export { DisputeList } from './DisputeList';

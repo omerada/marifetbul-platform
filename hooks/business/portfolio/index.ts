@@ -1,6 +1,7 @@
 /**
  * Portfolio Business Hooks Index
  * Sprint 1: Portfolio & Analytics System
+ * Sprint 17: Added Image Upload Hook
  */
 
 export { usePortfolio } from './usePortfolio';
@@ -26,3 +27,7 @@ export type {
   UsePortfolioFiltersReturn,
   PortfolioFilters,
 } from './usePortfolioFilters';
+
+// Sprint 17 - Image Upload
+export { usePortfolioImageUpload } from './usePortfolioImageUpload';
+export type { UsePortfolioImageUploadReturn } from './usePortfolioImageUpload';

@@ -1,6 +1,6 @@
 /**
  * Dispute API Client
- * Sprint 1: Order Dispute System
+ * Sprint 16: Dispute System Completion
  */
 
 import { apiClient } from '../infrastructure/api/client';
@@ -10,9 +10,14 @@ import type {
   DisputeResolutionRequest,
   DisputeStatistics,
   DisputeStatus,
+  DisputeFilters,
+  PageResponse,
+  DisputeEvidence,
 } from '@/types/dispute';
 
 const DISPUTES_BASE_URL = '/api/v1/disputes';
+
+// ==================== USER ENDPOINTS ====================
 
 /**
  * Raise a new dispute for an order
@@ -56,6 +61,74 @@ export async function getMyDisputes(params?: {
     `${DISPUTES_BASE_URL}/my-disputes`,
     searchParams
   );
+}
+
+// ==================== EVIDENCE & ESCALATION ====================
+
+/**
+ * Upload evidence for a dispute
+ */
+export async function uploadDisputeEvidence(
+  disputeId: string,
+  evidenceRequest: {
+    fileUrl: string;
+    fileType: string;
+    fileName: string;
+    fileSize: number;
+    description?: string;
+  }
+): Promise<DisputeEvidence> {
+  return apiClient.post<DisputeEvidence>(
+    `${DISPUTES_BASE_URL}/${disputeId}/evidence`,
+    evidenceRequest
+  );
+}
+
+/**
+ * Get all evidence for a dispute
+ */
+export async function getDisputeEvidence(
+  disputeId: string
+): Promise<DisputeEvidence[]> {
+  return apiClient.get<DisputeEvidence[]>(
+    `${DISPUTES_BASE_URL}/${disputeId}/evidence`
+  );
+}
+
+/**
+ * Escalate a dispute (request admin intervention)
+ */
+export async function escalateDispute(
+  disputeId: string,
+  reason?: string
+): Promise<DisputeResponse> {
+  return apiClient.put<DisputeResponse>(
+    `${DISPUTES_BASE_URL}/${disputeId}/escalate`,
+    { reason }
+  );
+}
+
+/**
+ * Get dispute timeline (all events)
+ */
+export async function getDisputeTimeline(disputeId: string): Promise<
+  Array<{
+    id: string;
+    eventType: string;
+    description: string;
+    timestamp: string;
+    performedBy?: string;
+  }>
+> {
+  return apiClient.get<
+    Array<{
+      id: string;
+      eventType: string;
+      description: string;
+      timestamp: string;
+      performedBy?: string;
+    }>
+  >(`${DISPUTES_BASE_URL}/${disputeId}/timeline`);
 }
 
 // ==================== ADMIN ENDPOINTS ====================
@@ -136,51 +209,6 @@ export async function getDisputeStatistics(): Promise<DisputeStatistics> {
   );
 }
 
-// ==================== EVIDENCE & MESSAGING ====================
-
-/**
- * Upload evidence for a dispute
- */
-export async function uploadDisputeEvidence(
-  disputeId: string,
-  files: File[]
-): Promise<{ urls: string[] }> {
-  const formData = new FormData();
-  files.forEach((file) => {
-    formData.append('files', file);
-  });
-
-  return apiClient.post<{ urls: string[] }>(
-    `${DISPUTES_BASE_URL}/${disputeId}/evidence`,
-    formData
-  );
-}
-
-/**
- * Add a message to dispute
- */
-export async function addDisputeMessage(
-  disputeId: string,
-  message: string,
-  attachments?: string[]
-): Promise<void> {
-  return apiClient.post<void>(`${DISPUTES_BASE_URL}/${disputeId}/messages`, {
-    message,
-    attachments,
-  });
-}
-
-/**
- * Get dispute messages
- */
-export async function getDisputeMessages(
-  disputeId: string
-): Promise<DisputeMessage[]> {
-  return apiClient.get<DisputeMessage[]>(
-    `${DISPUTES_BASE_URL}/${disputeId}/messages`
-  );
-}
-
 // ==================== ADMIN FILTERS ====================
 
 /**
@@ -238,11 +266,3 @@ export async function exportDisputesToCSV(
 
   return response.blob();
 }
-
-// ==================== TYPE IMPORTS ====================
-
-import type {
-  DisputeMessage,
-  DisputeFilters,
-  PageResponse,
-} from '@/types/dispute';

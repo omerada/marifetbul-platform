@@ -27,6 +27,7 @@ import { DashboardCharts } from './DashboardCharts';
 import { QuickActions } from './QuickActions';
 import { ActivityTimeline } from './ActivityTimeline';
 import { DashboardSkeleton } from './DashboardSkeleton';
+import { DisputesWidget } from '@/components/dashboard/DisputesWidget';
 import {
   Calendar,
   Bell,
@@ -324,6 +325,11 @@ export function UnifiedDashboard({
           <div className="space-y-8">
             <div className="transition-all duration-300 ease-in-out">
               <ActivityTimeline user={user} />
+            </div>
+
+            {/* Disputes Widget - Sprint 16 Story 2.2 */}
+            <div className="transition-all duration-300 ease-in-out">
+              <DisputesWidget />
             </div>
 
             {/* Cross-Promotion Recommendations */}

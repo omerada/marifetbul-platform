@@ -12,9 +12,9 @@ import { toast } from 'sonner';
 import { getAllDisputes, getDisputeStatistics } from '@/lib/api/disputes';
 import { orderApi } from '@/lib/api/orders';
 import type { DisputeResponse, DisputeStatistics } from '@/types/dispute';
-import DisputeList from '@/components/admin/disputes/DisputeList';
 import DisputeResolutionModal from '@/components/admin/disputes/DisputeResolutionModal';
 import { AdminDisputeDetailModal } from '@/components/admin/disputes/AdminDisputeDetailModal';
+import { AdminDisputeQueue } from '@/components/admin/disputes/AdminDisputeQueue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { AlertCircle, Clock, CheckCircle } from 'lucide-react';
 import { useWebSocket } from '@/hooks';
@@ -27,7 +27,7 @@ export default function AdminDisputesPage() {
   const [orderTotalAmount, setOrderTotalAmount] = useState<number>(0);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isResolutionModalOpen, setIsResolutionModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, _setCurrentPage] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   const socket = useWebSocket();
@@ -229,16 +229,13 @@ export default function AdminDisputesPage() {
         </div>
       )}
 
-      {/* Disputes List */}
-      <DisputeList
+      {/* Disputes Queue - Sprint 16 Story 3.3 */}
+      <AdminDisputeQueue
         disputes={disputes}
-        totalCount={disputes.length}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        onPageChange={setCurrentPage}
-        onViewDispute={handleViewDispute}
-        onResolveDispute={handleResolveDispute}
         isLoading={isLoading}
+        onRefresh={fetchData}
+        onViewDetails={handleViewDispute}
+        onResolveDispute={handleResolveDispute}
       />
 
       {/* Detail Modal */}

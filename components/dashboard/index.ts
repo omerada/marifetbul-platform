@@ -17,3 +17,6 @@ export { ClientStatistics } from './ClientStatistics';
 export { EarningsChart } from '../domains/wallet/EarningsChart';
 export { default as RevenueBreakdown } from '../domains/analytics/RevenueBreakdown';
 export { default as TransactionSummary } from '../domains/analytics/TransactionSummary';
+
+// Disputes Widget (Sprint 16 - Story 2.1)
+export { DisputesWidget } from './DisputesWidget';
