@@ -135,7 +135,7 @@ self.addEventListener('notificationclick', (event) => {
         targetUrl = `/profile/${data.userId || ''}`;
         break;
       case 'PAYMENT_RECEIVED':
-        targetUrl = '/wallet';
+        targetUrl = '/dashboard/wallet';
         break;
       case 'NEW_FOLLOWER':
         targetUrl = `/profile/${data.followerId || ''}`;

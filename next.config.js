@@ -58,6 +58,17 @@ const nextConfig = {
   // ================================================
   async redirects() {
     return [
+      // Wallet redirects - cleanup duplicate routes
+      {
+        source: '/wallet',
+        destination: '/dashboard/wallet',
+        permanent: true,
+      },
+      {
+        source: '/admin/wallet/transactions',
+        destination: '/admin/wallets/transactions',
+        permanent: true,
+      },
       // Deprecated dashboard routes - redirect to unified dashboard
       {
         source: '/dashboard/employer',

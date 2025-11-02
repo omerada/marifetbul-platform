@@ -140,7 +140,7 @@ export const RecentTransactionsWidget: React.FC<
         </CardTitle>
         {showViewAll && transactions.length > limit && (
           <Link
-            href="/dashboard/freelancer/wallet/transactions"
+            href="/dashboard/wallet/transactions"
             className="text-primary inline-flex items-center gap-1 text-sm hover:underline"
           >
             Tümünü Gör

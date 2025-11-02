@@ -291,7 +291,7 @@ export const PayoutRequestModal: React.FC<PayoutRequestModalProps> = ({
                   Banka Hesabı <span className="text-red-500">*</span>
                 </label>
                 <Link
-                  href="/dashboard/freelancer/wallet/bank-accounts"
+                  href="/dashboard/wallet/bank-accounts/add"
                   className="text-primary hover:text-primary/80 text-sm font-medium"
                 >
                   <Plus className="mr-1 inline h-4 w-4" />
@@ -306,7 +306,7 @@ export const PayoutRequestModal: React.FC<PayoutRequestModalProps> = ({
                     Kayıtlı banka hesabınız yok
                   </p>
                   <Link
-                    href="/dashboard/freelancer/wallet/bank-accounts"
+                    href="/dashboard/wallet/bank-accounts/add"
                     className="text-primary hover:text-primary/80 text-sm font-medium"
                   >
                     Banka Hesabı Ekle →

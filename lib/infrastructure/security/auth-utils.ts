@@ -80,7 +80,6 @@ export const ROUTE_CONFIG = {
     '/freelancers',
     '/projects',
     '/notifications',
-    '/wallet',
   ],
 
   /**

@@ -37,13 +37,12 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
 import { formatCurrency } from '@/lib/shared/utils/format';
 import { cn } from '@/lib/utils';
-import type {
-  Transaction,
-  TransactionFilter,
-  PaginatedTransactionResponse,
-} from '@/lib/api/validators';
 import { AdvancedTransactionFilters } from '@/components/wallet/AdvancedTransactionFilters';
 import type { TransactionFiltersState } from '@/components/wallet/AdvancedTransactionFilters';
+import {
+  walletAdminApi,
+  type TransactionResponse,
+} from '@/lib/api/admin/wallet-admin-api';
 
 // ============================================================================
 // TYPES
@@ -62,7 +61,7 @@ interface TransactionStats {
 
 export default function AdminWalletTransactionsPage() {
   // ==================== STATE ====================
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
   const [stats, setStats] = useState<TransactionStats>({
     totalTransactions: 0,
     totalIncome: 0,
@@ -101,50 +100,46 @@ export default function AdminWalletTransactionsPage() {
 
       try {
         // Build API filter from UI filters
-        const _apiFilter: TransactionFilter = {
-          page,
-          size: 20,
-          type: filters.types?.[0], // API supports single type for now
+        const apiFilter = {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          type: filters.types?.[0] as any, // Backend supports specific transaction types
           startDate: filters.startDate,
           endDate: filters.endDate,
           minAmount: filters.minAmount,
           maxAmount: filters.maxAmount,
-          search: filters.search,
+          page,
+          size: 20,
         };
 
-        // TODO: Replace with actual API call when admin wallet API is ready
-        // const response = await adminWalletApi.getAllTransactions(_apiFilter);
-        // setTransactions(response.content);
-        // setPagination({...});
+        // Fetch transactions from backend
+        const response = await walletAdminApi.getAllTransactions(apiFilter);
 
-        // Mock API delay
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Mock response
-        const mockResponse: PaginatedTransactionResponse = {
-          content: MOCK_TRANSACTIONS,
-          totalElements: 1247,
-          totalPages: 63,
-          currentPage: page,
-          pageSize: 20,
-          hasNext: page < 62,
-          hasPrevious: page > 0,
-          isFirst: page === 0,
-          isLast: page === 62,
-        };
-
-        setTransactions(mockResponse.content);
+        setTransactions(response.content);
         setPagination({
-          currentPage: mockResponse.currentPage,
-          totalPages: mockResponse.totalPages,
-          pageSize: mockResponse.pageSize,
-          totalElements: mockResponse.totalElements,
-          hasNext: mockResponse.hasNext,
-          hasPrevious: mockResponse.hasPrevious,
+          currentPage: response.currentPage,
+          totalPages: response.totalPages,
+          pageSize: response.pageSize,
+          totalElements: response.totalElements,
+          hasNext: !response.last,
+          hasPrevious: !response.first,
         });
 
-        // Update stats (in real app, fetch from analytics endpoint)
-        setStats(MOCK_STATS);
+        // Calculate stats from response
+        const income = response.content
+          .filter((t) => t.amount > 0)
+          .reduce((sum, t) => sum + t.amount, 0);
+        const expenses = response.content
+          .filter((t) => t.amount < 0)
+          .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+        const uniqueWallets = new Set(response.content.map((t) => t.walletId))
+          .size;
+
+        setStats({
+          totalTransactions: response.totalElements,
+          totalIncome: income,
+          totalExpenses: expenses,
+          uniqueUsers: uniqueWallets,
+        });
       } catch (err) {
         console.error('Failed to fetch transactions:', err);
         setError(
@@ -191,10 +186,49 @@ export default function AdminWalletTransactionsPage() {
    */
   const handleExport = async (format: 'csv' | 'excel') => {
     try {
-      // TODO: Implement export functionality
-      // const blob = await adminWalletApi.exportTransactions(filters, format);
-      // downloadBlob(blob, `transactions-${Date.now()}.${format}`);
-      alert(`Export to ${format.toUpperCase()} coming soon`);
+      if (format === 'csv') {
+        // Create CSV content
+        const headers = [
+          'ID',
+          'Wallet ID',
+          'Type',
+          'Amount',
+          'Balance Before',
+          'Balance After',
+          'Description',
+          'Date',
+        ];
+        const rows = transactions.map((t) => [
+          t.id,
+          t.walletId,
+          t.type,
+          t.amount.toString(),
+          t.balanceBefore.toString(),
+          t.balanceAfter.toString(),
+          t.description,
+          new Date(t.createdAt).toLocaleString('tr-TR'),
+        ]);
+
+        const csvContent = [
+          headers.join(','),
+          ...rows.map((row) => row.map((cell) => `"${cell}"`).join(',')),
+        ].join('\n');
+
+        // Download CSV
+        const blob = new Blob([csvContent], {
+          type: 'text/csv;charset=utf-8;',
+        });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `transactions-${Date.now()}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        alert('Excel export coming soon');
+      }
     } catch (err) {
       console.error('Export failed:', err);
       alert('Export işlemi başarısız oldu.');
@@ -492,10 +526,7 @@ export default function AdminWalletTransactionsPage() {
                               )}
                             >
                               {transaction.amount >= 0 ? '+' : ''}
-                              {formatCurrency(
-                                transaction.amount,
-                                transaction.currency
-                              )}
+                              {formatCurrency(transaction.amount)}
                             </span>
                           </td>
                           <td className="max-w-xs truncate px-4 py-4 text-sm text-gray-600 dark:text-gray-400">
@@ -570,72 +601,3 @@ export default function AdminWalletTransactionsPage() {
     </div>
   );
 }
-
-// ============================================================================
-// MOCK DATA (Replace with API calls)
-// ============================================================================
-
-const MOCK_STATS: TransactionStats = {
-  totalTransactions: 1247,
-  totalIncome: 125430.5,
-  totalExpenses: 78920.75,
-  uniqueUsers: 342,
-};
-
-const MOCK_TRANSACTIONS: Transaction[] = [
-  {
-    id: '1',
-    walletId: 'wallet-1',
-    type: 'CREDIT',
-    amount: 500.0,
-    currency: 'TRY',
-    balanceBefore: 1000.0,
-    balanceAfter: 1500.0,
-    description: 'Order #1234 completed',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    walletId: 'wallet-2',
-    type: 'DEBIT',
-    amount: -250.0,
-    currency: 'TRY',
-    balanceBefore: 1500.0,
-    balanceAfter: 1250.0,
-    description: 'Withdrawal request',
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: '3',
-    walletId: 'wallet-3',
-    type: 'ESCROW_HOLD',
-    amount: -300.0,
-    currency: 'TRY',
-    balanceBefore: 2000.0,
-    balanceAfter: 1700.0,
-    description: 'Escrow hold for Order #5678',
-    createdAt: new Date(Date.now() - 172800000).toISOString(),
-  },
-  {
-    id: '4',
-    walletId: 'wallet-4',
-    type: 'COMMISSION',
-    amount: -50.0,
-    currency: 'TRY',
-    balanceBefore: 1000.0,
-    balanceAfter: 950.0,
-    description: 'Platform commission',
-    createdAt: new Date(Date.now() - 259200000).toISOString(),
-  },
-  {
-    id: '5',
-    walletId: 'wallet-5',
-    type: 'ESCROW_RELEASE',
-    amount: 300.0,
-    currency: 'TRY',
-    balanceBefore: 500.0,
-    balanceAfter: 800.0,
-    description: 'Escrow release for Order #5678',
-    createdAt: new Date(Date.now() - 345600000).toISOString(),
-  },
-];

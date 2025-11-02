@@ -130,7 +130,7 @@ export const freelancerDashboardNavigation: NavigationItem[] = [
     icon: Shield,
   },
   {
-    href: '/dashboard/freelancer/wallet',
+    href: '/dashboard/wallet',
     label: 'Cüzdan',
     icon: Shield,
   },

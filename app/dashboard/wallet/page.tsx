@@ -1,14 +1,14 @@
 /**
  * ================================================
- * WALLET DASHBOARD PAGE - Role-based Routing
+ * WALLET DASHBOARD PAGE - Unified Wallet Route
  * ================================================
- * Main wallet page that redirects based on user role
- * - FREELANCER → /dashboard/freelancer/wallet
- * - EMPLOYER → Access denied (employers don't have wallets)
- * - ADMIN → /admin/wallets
+ * Main wallet page with role-based access control
+ * - FREELANCER → Shows wallet dashboard
+ * - EMPLOYER → Access denied (no wallet access)
+ * - ADMIN → Redirects to /admin/wallets
  *
- * Sprint Day 1 - Task 4: Wallet Page Routing Fix
- * @version 1.0.0
+ * Sprint Day 1 - Task 4: Wallet Route Cleanup
+ * @version 2.0.0
  */
 
 'use client';
@@ -19,6 +19,7 @@ import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { Loading } from '@/components/ui';
 import { Card } from '@/components/ui/Card';
 import { AlertCircle, Wallet } from 'lucide-react';
+import { WalletDashboard } from '@/components/domains/wallet';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,19 +28,11 @@ export default function WalletPage() {
 
   useEffect(() => {
     if (!isLoading && user) {
-      switch (user.role) {
-        case 'FREELANCER':
-          redirect('/dashboard/freelancer/wallet');
-          break;
-        case 'ADMIN':
-          redirect('/admin/wallets');
-          break;
-        case 'EMPLOYER':
-          // Employers don't have wallet access - show error below
-          break;
-        default:
-          redirect('/dashboard');
+      // Admin users should manage wallets from admin panel
+      if (user.role === 'ADMIN') {
+        redirect('/admin/wallets');
       }
+      // Non-authenticated users
     } else if (!isLoading && !user) {
       redirect('/login');
     }
@@ -54,7 +47,7 @@ export default function WalletPage() {
     );
   }
 
-  // Show error for employers
+  // Show error for employers (they don't have wallet access)
   if (user?.role === 'EMPLOYER') {
     return (
       <div className="container mx-auto max-w-2xl px-4 py-16">
@@ -86,7 +79,16 @@ export default function WalletPage() {
     );
   }
 
-  // Fallback loading (should not reach here due to redirects)
+  // Show wallet dashboard for freelancers
+  if (user?.role === 'FREELANCER') {
+    return (
+      <div className="container mx-auto px-4 py-6">
+        <WalletDashboard defaultView="overview" showAnalytics={true} />
+      </div>
+    );
+  }
+
+  // Fallback - should not reach here
   return (
     <div className="flex h-screen items-center justify-center bg-gray-50">
       <Loading size="lg" text="Yönlendiriliyor..." />

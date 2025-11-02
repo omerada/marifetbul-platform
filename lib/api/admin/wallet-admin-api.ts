@@ -13,7 +13,6 @@
 import { apiClient } from '@/lib/api';
 import type {
   WalletResponse,
-  Transaction,
   Payout,
   WalletStatus,
 } from '@/types/business/features/wallet';
@@ -21,6 +20,31 @@ import type {
 // ================================================
 // TYPES
 // ================================================
+
+/**
+ * Transaction response from backend (aligned with TransactionResponse.java)
+ */
+export interface TransactionResponse {
+  id: string;
+  walletId: string;
+  paymentId?: string;
+  type:
+    | 'CREDIT'
+    | 'DEBIT'
+    | 'ESCROW_HOLD'
+    | 'ESCROW_RELEASE'
+    | 'COMMISSION'
+    | 'REFUND'
+    | 'WITHDRAWAL'
+    | 'DEPOSIT'
+    | 'PAYOUT';
+  amount: number;
+  balanceBefore: number;
+  balanceAfter: number;
+  description: string;
+  referenceId?: string;
+  createdAt: string;
+}
 
 export interface WalletFilters {
   status?: WalletStatus;
@@ -54,7 +78,7 @@ export interface AdminWalletDetail {
     role: string;
     verified: boolean;
   };
-  recentTransactions: Transaction[];
+  recentTransactions: TransactionResponse[];
   recentPayouts: Payout[];
   stats: {
     totalEarned: number;
@@ -82,6 +106,29 @@ export interface WalletStats {
   totalBalance: number;
   totalPendingBalance: number;
   averageBalance: number;
+}
+
+/**
+ * Transaction filters for admin transaction listing
+ */
+export interface TransactionFilters {
+  userId?: string;
+  type?:
+    | 'CREDIT'
+    | 'DEBIT'
+    | 'ESCROW_HOLD'
+    | 'ESCROW_RELEASE'
+    | 'COMMISSION'
+    | 'REFUND'
+    | 'WITHDRAWAL';
+  startDate?: string; // ISO format
+  endDate?: string; // ISO format
+  minAmount?: number;
+  maxAmount?: number;
+  page?: number;
+  size?: number;
+  sortBy?: 'createdAt' | 'amount';
+  sortDirection?: 'asc' | 'desc';
 }
 
 // ================================================
@@ -132,8 +179,8 @@ export const walletAdminApi = {
     userId: string,
     page: number = 0,
     size: number = 20
-  ): Promise<PageResponse<Transaction>> => {
-    return apiClient.get<PageResponse<Transaction>>(
+  ): Promise<PageResponse<TransactionResponse>> => {
+    return apiClient.get<PageResponse<TransactionResponse>>(
       `/api/v1/admin/wallets/${userId}/transactions?page=${page}&size=${size}`
     );
   },
@@ -183,6 +230,58 @@ export const walletAdminApi = {
    */
   getWalletStats: async (): Promise<WalletStats> => {
     return apiClient.get<WalletStats>('/api/v1/admin/wallets/statistics');
+  },
+
+  /**
+   * Get all transactions (paginated and filtered) - NEW
+   * GET /api/v1/admin/wallets/transactions
+   */
+  getAllTransactions: async (
+    filters: TransactionFilters = {}
+  ): Promise<PageResponse<TransactionResponse>> => {
+    const params = new URLSearchParams();
+
+    if (filters.userId) params.append('userId', filters.userId);
+    if (filters.type) params.append('type', filters.type);
+    if (filters.startDate) params.append('startDate', filters.startDate);
+    if (filters.endDate) params.append('endDate', filters.endDate);
+    if (filters.minAmount)
+      params.append('minAmount', filters.minAmount.toString());
+    if (filters.maxAmount)
+      params.append('maxAmount', filters.maxAmount.toString());
+    if (filters.sortBy) params.append('sortBy', filters.sortBy);
+    if (filters.sortDirection)
+      params.append('sortDirection', filters.sortDirection);
+    params.append('page', (filters.page || 0).toString());
+    params.append('size', (filters.size || 20).toString());
+
+    const queryString = params.toString();
+    return apiClient.get<PageResponse<TransactionResponse>>(
+      `/api/v1/admin/wallets/transactions${queryString ? `?${queryString}` : ''}`
+    );
+  },
+
+  /**
+   * Get transactions by user ID - NEW
+   * GET /api/v1/admin/wallets/transactions/user/{userId}
+   */
+  getTransactionsByUserId: async (
+    userId: string,
+    page: number = 0,
+    size: number = 20,
+    sortBy?: string,
+    sortDirection?: 'asc' | 'desc'
+  ): Promise<PageResponse<TransactionResponse>> => {
+    const params = new URLSearchParams();
+    params.append('page', page.toString());
+    params.append('size', size.toString());
+    if (sortBy) params.append('sortBy', sortBy);
+    if (sortDirection) params.append('sortDirection', sortDirection);
+
+    const queryString = params.toString();
+    return apiClient.get<PageResponse<TransactionResponse>>(
+      `/api/v1/admin/wallets/transactions/user/${userId}${queryString ? `?${queryString}` : ''}`
+    );
   },
 };
 

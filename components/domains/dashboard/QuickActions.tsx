@@ -61,7 +61,7 @@ export function QuickActions({ user }: QuickActionsProps) {
             </div>
           </Link>
 
-          <Link href="/dashboard/freelancer/wallet" className="group">
+          <Link href="/dashboard/wallet" className="group">
             <div className="flex flex-col items-center rounded-lg border border-gray-200 p-4 transition-all hover:border-green-300 hover:bg-green-50">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100 transition-colors group-hover:bg-green-200">
                 <Wallet className="h-6 w-6 text-green-600" />

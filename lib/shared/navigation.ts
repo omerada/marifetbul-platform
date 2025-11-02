@@ -85,7 +85,7 @@ export function getDashboardNavigation(role: 'freelancer' | 'employer') {
     },
     {
       label: 'Cüzdan',
-      href: '/dashboard/freelancer/wallet',
+      href: '/dashboard/wallet',
       icon: 'Wallet',
     },
     {
