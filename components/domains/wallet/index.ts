@@ -5,7 +5,7 @@
  * Central export point for all wallet UI components
  *
  * @author MarifetBul Development Team
- * @version 2.1.0 - Sprint 1 Epic 1.1: Added WalletDashboard & BalanceCard
+ * @version 2.2.0 - Sprint Day 5: Added Commission Tracking Components
  */
 
 // Sprint 1 - Epic 1.1 - NEW Components
@@ -17,6 +17,21 @@ export type { BalanceCardProps } from './BalanceCard';
 
 export { WalletAnalytics } from './WalletAnalytics';
 export type { WalletAnalyticsProps, AnalyticsPeriod } from './WalletAnalytics';
+
+// Sprint Day 5 - Commission Tracking UI
+export { CommissionSummaryCard } from './CommissionSummaryCard';
+export type {
+  CommissionSummaryCardProps,
+  CommissionData,
+} from './CommissionSummaryCard';
+
+export { CommissionChart } from './CommissionChart';
+export type {
+  CommissionChartProps,
+  MonthlyCommissionData,
+  ChartType,
+  ChartPeriod as CommissionChartPeriod,
+} from './CommissionChart';
 
 // Sprint 1 - Epic 1.2 - Escrow Management (Days 4-5)
 export { EscrowList } from './EscrowList';
