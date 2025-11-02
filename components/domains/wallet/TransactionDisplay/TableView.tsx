@@ -3,10 +3,12 @@
  * TABLE VIEW - Desktop Transaction Display
  * ================================================
  * Table-based transaction view for desktop screens
+ * Optimized with React.memo for performance
  */
 
 'use client';
 
+import { memo } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { formatCurrency, formatDate } from '@/lib/shared/formatters';
@@ -22,44 +24,80 @@ export interface TableViewProps {
   onTransactionClick?: (transaction: Transaction) => void;
 }
 
-export function TableView({
+function TableViewComponent({
   transactions,
   onTransactionClick,
 }: TableViewProps) {
   return (
     <Card>
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table
+          className="w-full"
+          role="table"
+          aria-label="İşlem geçmişi tablosu"
+        >
           <thead>
-            <tr className="border-b bg-gray-50">
-              <th className="p-4 text-left text-sm font-medium text-gray-700">
+            <tr className="border-b bg-gray-50" role="row">
+              <th
+                className="p-4 text-left text-sm font-medium text-gray-700"
+                scope="col"
+                role="columnheader"
+              >
                 Tarih
               </th>
-              <th className="p-4 text-left text-sm font-medium text-gray-700">
+              <th
+                className="p-4 text-left text-sm font-medium text-gray-700"
+                scope="col"
+                role="columnheader"
+              >
                 Açıklama
               </th>
-              <th className="p-4 text-left text-sm font-medium text-gray-700">
+              <th
+                className="p-4 text-left text-sm font-medium text-gray-700"
+                scope="col"
+                role="columnheader"
+              >
                 Tip
               </th>
-              <th className="p-4 text-right text-sm font-medium text-gray-700">
+              <th
+                className="p-4 text-right text-sm font-medium text-gray-700"
+                scope="col"
+                role="columnheader"
+              >
                 Tutar
               </th>
-              <th className="p-4 text-right text-sm font-medium text-gray-700">
+              <th
+                className="p-4 text-right text-sm font-medium text-gray-700"
+                scope="col"
+                role="columnheader"
+              >
                 Bakiye
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody role="rowgroup">
             {transactions.map((transaction) => {
               const iconConfig = getTransactionIcon(transaction.type);
 
               return (
                 <tr
                   key={transaction.id}
+                  role="row"
+                  tabIndex={onTransactionClick ? 0 : undefined}
                   className={`border-b transition-colors ${
                     onTransactionClick ? 'cursor-pointer hover:bg-gray-50' : ''
                   }`}
                   onClick={() => onTransactionClick?.(transaction)}
+                  onKeyDown={(e) => {
+                    if (
+                      onTransactionClick &&
+                      (e.key === 'Enter' || e.key === ' ')
+                    ) {
+                      e.preventDefault();
+                      onTransactionClick(transaction);
+                    }
+                  }}
+                  aria-label={`${getTransactionTypeLabel(transaction.type)} işlemi, ${formatCurrency(transaction.amount)}, ${formatDate(transaction.createdAt, 'SHORT')}`}
                 >
                   <td className="p-4">
                     <div className="text-sm text-gray-900">
@@ -125,3 +163,7 @@ export function TableView({
     </Card>
   );
 }
+
+// Export memoized component for performance
+export const TableView = memo(TableViewComponent);
+TableView.displayName = 'TableView';

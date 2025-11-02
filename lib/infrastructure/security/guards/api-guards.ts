@@ -1,28 +1,25 @@
 /**
  * ================================================
- * API AUTH GUARDS
+ * API ROUTE GUARDS
  * ================================================
- * Middleware functions for protecting API routes
- *
- * Features:
- * - Role-based API protection
- * - Permission-based API protection
- * - User context injection
- * - Error handling
- *
+ * 
+ * Server-side guards for protecting API routes.
+ * Uses permission-based access control for fine-grained authorization.
+ * 
+ * @module guards/api-guards
  * @author MarifetBul Development Team
- * @version 1.0.0 - Sprint 3.1: Admin vs Moderator Permission Separation
+ * @version 2.0.0 - Sprint Day 2
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest, type UserContext } from './auth-utils';
+import { getUserFromRequest, type UserContext } from '../auth-utils';
 import {
   hasPermission,
   hasAnyPermission,
   canAccessAdmin,
   canAccessModerator,
   type Permission,
-} from './permissions';
+} from '../permissions';
 import { logger } from '@/lib/shared/utils/logger';
 
 // ================================================
@@ -47,9 +44,9 @@ export type AuthenticatedRouteHandler = (
 ) => Promise<Response>;
 
 /**
- * Auth guard options
+ * API Auth guard options
  */
-export interface AuthGuardOptions {
+export interface ApiAuthGuardOptions {
   /**
    * Custom error message
    */
@@ -72,11 +69,11 @@ export interface AuthGuardOptions {
 }
 
 // ================================================
-// GUARD UTILITIES
+// RESPONSE UTILITIES
 // ================================================
 
 /**
- * Create unauthorized response
+ * Create unauthorized response (401)
  */
 function unauthorizedResponse(message = 'Unauthorized'): NextResponse {
   return NextResponse.json(
@@ -90,7 +87,7 @@ function unauthorizedResponse(message = 'Unauthorized'): NextResponse {
 }
 
 /**
- * Create forbidden response
+ * Create forbidden response (403)
  */
 function forbiddenResponse(message = 'Forbidden'): NextResponse {
   return NextResponse.json(
@@ -118,14 +115,13 @@ function forbiddenResponse(message = 'Forbidden'): NextResponse {
  * @example
  * ```typescript
  * export const GET = requireAuth(async (request, user) => {
- *   // user is guaranteed to be authenticated
  *   return NextResponse.json({ userId: user.id });
  * });
  * ```
  */
 export function requireAuth(
   handler: AuthenticatedRouteHandler,
-  options: AuthGuardOptions = {}
+  options: ApiAuthGuardOptions = {}
 ): NextRouteHandler {
   return async (request: Request, context) => {
     try {
@@ -184,23 +180,17 @@ export function requireAuth(
 
 /**
  * Require admin role
- * User must be authenticated and have admin role
- *
- * @param handler - Route handler to protect
- * @param options - Guard options
- * @returns Protected route handler
  *
  * @example
  * ```typescript
  * export const GET = requireAdmin(async (request, user) => {
- *   // user is guaranteed to be admin
  *   return NextResponse.json({ message: 'Admin only' });
  * });
  * ```
  */
 export function requireAdmin(
   handler: AuthenticatedRouteHandler,
-  options: AuthGuardOptions = {}
+  options: ApiAuthGuardOptions = {}
 ): NextRouteHandler {
   return requireAuth(async (request, user, context) => {
     if (!canAccessAdmin(user)) {
@@ -218,23 +208,17 @@ export function requireAdmin(
 
 /**
  * Require moderator role (or admin)
- * User must be authenticated and have moderator or admin role
- *
- * @param handler - Route handler to protect
- * @param options - Guard options
- * @returns Protected route handler
  *
  * @example
  * ```typescript
  * export const GET = requireModerator(async (request, user) => {
- *   // user is guaranteed to be moderator or admin
  *   return NextResponse.json({ message: 'Moderator access' });
  * });
  * ```
  */
 export function requireModerator(
   handler: AuthenticatedRouteHandler,
-  options: AuthGuardOptions = {}
+  options: ApiAuthGuardOptions = {}
 ): NextRouteHandler {
   return requireAuth(async (request, user, context) => {
     if (!canAccessModerator(user)) {
@@ -254,19 +238,12 @@ export function requireModerator(
 
 /**
  * Require specific permission
- * User must be authenticated and have the specified permission
- *
- * @param permission - Required permission
- * @param handler - Route handler to protect
- * @param options - Guard options
- * @returns Protected route handler
  *
  * @example
  * ```typescript
  * export const POST = requirePermission(
  *   PERMISSIONS.USER_BAN,
  *   async (request, user) => {
- *     // user is guaranteed to have user.ban permission
  *     return NextResponse.json({ message: 'User banned' });
  *   }
  * );
@@ -275,7 +252,7 @@ export function requireModerator(
 export function requirePermission(
   permission: Permission,
   handler: AuthenticatedRouteHandler,
-  options: AuthGuardOptions = {}
+  options: ApiAuthGuardOptions = {}
 ): NextRouteHandler {
   return requireAuth(
     async (request, user, context) => {
@@ -300,19 +277,12 @@ export function requirePermission(
 
 /**
  * Require any of the specified permissions
- * User must be authenticated and have at least one of the permissions
- *
- * @param permissions - Array of permissions (user needs at least one)
- * @param handler - Route handler to protect
- * @param options - Guard options
- * @returns Protected route handler
  *
  * @example
  * ```typescript
  * export const GET = requireAnyPermission(
  *   [PERMISSIONS.USER_VIEW, PERMISSIONS.USER_MANAGE],
  *   async (request, user) => {
- *     // user has at least one of the permissions
  *     return NextResponse.json({ users: [] });
  *   }
  * );
@@ -321,7 +291,7 @@ export function requirePermission(
 export function requireAnyPermission(
   permissions: Permission[],
   handler: AuthenticatedRouteHandler,
-  options: AuthGuardOptions = {}
+  options: ApiAuthGuardOptions = {}
 ): NextRouteHandler {
   return requireAuth(
     async (request, user, context) => {
@@ -349,19 +319,12 @@ export function requireAnyPermission(
 
 /**
  * Require all of the specified permissions
- * User must be authenticated and have all permissions
- *
- * @param permissions - Array of permissions (user needs all)
- * @param handler - Route handler to protect
- * @param options - Guard options
- * @returns Protected route handler
  *
  * @example
  * ```typescript
  * export const POST = requireAllPermissions(
  *   [PERMISSIONS.USER_VIEW, PERMISSIONS.USER_EDIT],
  *   async (request, user) => {
- *     // user has all permissions
  *     return NextResponse.json({ success: true });
  *   }
  * );
@@ -370,7 +333,7 @@ export function requireAnyPermission(
 export function requireAllPermissions(
   permissions: Permission[],
   handler: AuthenticatedRouteHandler,
-  options: AuthGuardOptions = {}
+  options: ApiAuthGuardOptions = {}
 ): NextRouteHandler {
   return requireAuth(
     async (request, user, context) => {
@@ -399,18 +362,3 @@ export function requireAllPermissions(
     }
   );
 }
-
-// ================================================
-// EXPORTS
-// ================================================
-
-const authGuards = {
-  requireAuth,
-  requireAdmin,
-  requireModerator,
-  requirePermission,
-  requireAnyPermission,
-  requireAllPermissions,
-};
-
-export default authGuards;

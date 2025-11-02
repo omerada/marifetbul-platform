@@ -5,7 +5,7 @@
  * Centralized exports for security utilities
  *
  * @author MarifetBul Development Team
- * @version 1.0.0 - Sprint 3.1: Permission System
+ * @version 2.0.0 - Sprint Day 2: Unified Guards
  */
 
 // Auth utilities
@@ -15,6 +15,6 @@ export * from './auth-utils';
 export * from './permissions';
 export { default as permissionSystem } from './permissions';
 
-// API guards
-export * from './auth-guards';
-export { default as authGuards } from './auth-guards';
+// Guards (API + Component)
+export * from './guards';
+export { default as guards } from './guards';

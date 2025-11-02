@@ -3,10 +3,12 @@
  * CARD VIEW - Mobile Transaction Display
  * ================================================
  * Card-based transaction view optimized for mobile
+ * Optimized with React.memo for performance
  */
 
 'use client';
 
+import { memo } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { formatCurrency, formatDate } from '@/lib/shared/formatters';
@@ -22,21 +24,37 @@ export interface CardViewProps {
   onTransactionClick?: (transaction: Transaction) => void;
 }
 
-export function CardView({ transactions, onTransactionClick }: CardViewProps) {
+function CardViewComponent({
+  transactions,
+  onTransactionClick,
+}: CardViewProps) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+    <div
+      className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1"
+      role="list"
+      aria-label="İşlem kartları"
+    >
       {transactions.map((transaction) => {
         const iconConfig = getTransactionIcon(transaction.type);
 
         return (
           <Card
             key={transaction.id}
+            role="listitem"
+            tabIndex={onTransactionClick ? 0 : undefined}
             className={`p-4 transition-all ${
               onTransactionClick
                 ? 'hover:border-primary/50 cursor-pointer hover:shadow-md'
                 : ''
             }`}
             onClick={() => onTransactionClick?.(transaction)}
+            onKeyDown={(e) => {
+              if (onTransactionClick && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                onTransactionClick(transaction);
+              }
+            }}
+            aria-label={`${getTransactionTypeLabel(transaction.type)} işlemi: ${transaction.description}, ${formatCurrency(transaction.amount)}, ${formatDate(transaction.createdAt, 'SHORT')}`}
           >
             {/* Header: Icon + Amount */}
             <div className="mb-3 flex items-start justify-between">
@@ -93,3 +111,7 @@ export function CardView({ transactions, onTransactionClick }: CardViewProps) {
     </div>
   );
 }
+
+// Export memoized component for performance
+export const CardView = memo(CardViewComponent);
+CardView.displayName = 'CardView';

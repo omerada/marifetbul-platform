@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Wallet, TrendingUp, DollarSign, Clock } from 'lucide-react';
 import { Button, Card } from '@/components/ui';
-import { TransactionTable } from '@/components/wallet';
+import { TransactionDisplay } from '@/components/domains/wallet/TransactionDisplay';
 import { payoutAdminApi } from '@/lib/api/admin/payout-admin-api';
 import { formatCurrency } from '@/lib/shared/utils/format';
 import type { WalletResponse } from '@/types/business/features/wallet';
+import type { Transaction } from '@/types/business/features/wallet';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -21,10 +22,10 @@ export default function AdminUserWalletPage({ params }: Props) {
   const router = useRouter();
   const [userId, setUserId] = useState<string>('');
   const [wallet, setWallet] = useState<WalletResponse | null>(null);
-  const [transactions, setTransactions] = useState<
-    Array<Record<string, unknown>>
-  >([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [totalTransactions, setTotalTransactions] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
 
@@ -32,29 +33,49 @@ export default function AdminUserWalletPage({ params }: Props) {
     params.then((p) => setUserId(p.id));
   }, [params]);
 
+  // Initial load - fetch wallet info
   useEffect(() => {
     if (!userId) return;
 
-    const fetchData = async () => {
+    const fetchWallet = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        const [walletData, transactionsData] = await Promise.all([
-          payoutAdminApi.getUserWallet(userId),
-          payoutAdminApi.getUserTransactions(userId, page, 20),
-        ]);
+        const walletData = await payoutAdminApi.getUserWallet(userId);
         setWallet(walletData);
-        // Map transactions to compatible format
-        setTransactions(transactionsData.content as any);
-      } catch (err) {
-        console.error('Failed to fetch user wallet:', err);
+      } catch (_err) {
         setError('Kullanıcı cüzdan bilgileri yüklenemedi');
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchData();
+    fetchWallet();
+  }, [userId]);
+
+  // Fetch transactions separately when page changes
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchTransactions = async () => {
+      setIsLoadingTransactions(true);
+      try {
+        const transactionsData = await payoutAdminApi.getUserTransactions(
+          userId,
+          page,
+          20
+        );
+        setTransactions(transactionsData.content as Transaction[]);
+        setTotalTransactions(transactionsData.totalElements);
+      } catch (_err) {
+        // Silent fail for transactions, don't break the page
+        setTransactions([]);
+      } finally {
+        setIsLoadingTransactions(false);
+      }
+    };
+
+    fetchTransactions();
   }, [userId, page]);
 
   if (isLoading) {
@@ -177,33 +198,20 @@ export default function AdminUserWalletPage({ params }: Props) {
       {/* Transactions */}
       <Card className="p-6">
         <h2 className="mb-4 text-xl font-bold">İşlem Geçmişi</h2>
-        <TransactionTable
-          transactions={transactions as any}
-          emptyMessage="İşlem bulunamadı"
+        <TransactionDisplay
+          transactions={transactions}
+          isLoading={isLoadingTransactions}
+          totalCount={totalTransactions}
+          currentPage={page}
+          pageSize={20}
+          onPageChange={setPage}
+          showFilters={true}
+          showExport={false}
+          showRefresh={false}
+          allowViewModeChange={true}
+          emptyMessage="Henüz işlem bulunmuyor"
+          viewMode="table"
         />
-
-        {/* Pagination */}
-        {transactions.length >= 20 && (
-          <div className="mt-6 flex items-center justify-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPage(Math.max(0, page - 1))}
-              disabled={page === 0}
-            >
-              Önceki
-            </Button>
-            <span className="text-sm">Sayfa {page + 1}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPage(page + 1)}
-              disabled={transactions.length < 20}
-            >
-              Sonraki
-            </Button>
-          </div>
-        )}
       </Card>
     </div>
   );

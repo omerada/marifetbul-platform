@@ -32,6 +32,7 @@ import { ListView } from './ListView';
 import { CardView } from './CardView';
 import { TransactionFilters as Filters } from './Filters';
 import { TransactionToolbar } from './Toolbar';
+import { TransactionDisplayErrorBoundary } from './ErrorBoundary';
 
 // ================================================
 // TYPES
@@ -185,88 +186,107 @@ export function TransactionDisplay({
   }
 
   return (
-    <div className={className}>
-      {/* Toolbar */}
-      <TransactionToolbar
-        viewMode={viewMode}
-        onViewModeChange={allowViewModeChange ? setViewMode : undefined}
-        showFilters={showFilters}
-        showExport={showExport}
-        showRefresh={showRefresh}
-        filtersOpen={filtersOpen}
-        onFiltersToggle={() => setFiltersOpen(!filtersOpen)}
-        onExport={onExport}
-        onRefresh={onRefresh}
-      />
+    <TransactionDisplayErrorBoundary
+      errorMessage="İşlem listesi yüklenirken bir sorun oluştu."
+      showRetry={true}
+      onError={(error, errorInfo) => {
+        // Additional error logging or reporting can be done here
+        console.error('TransactionDisplay error:', error, errorInfo);
+      }}
+    >
+      <div className={className}>
+        {/* Toolbar */}
+        <TransactionToolbar
+          viewMode={viewMode}
+          onViewModeChange={allowViewModeChange ? setViewMode : undefined}
+          showFilters={showFilters}
+          showExport={showExport}
+          showRefresh={showRefresh}
+          filtersOpen={filtersOpen}
+          onFiltersToggle={() => setFiltersOpen(!filtersOpen)}
+          onExport={onExport}
+          onRefresh={onRefresh}
+        />
 
-      {/* Filters Panel */}
-      {showFilters && filtersOpen && (
-        <div className="mb-4">
-          <Filters
-            filters={filters}
-            onFiltersChange={handleFilterChange}
-            onClear={handleFilterClear}
-            isOpen={filtersOpen}
-            onToggle={() => setFiltersOpen(!filtersOpen)}
-          />
+        {/* Filters Panel */}
+        {showFilters && filtersOpen && (
+          <div className="mb-4">
+            <Filters
+              filters={filters}
+              onFiltersChange={handleFilterChange}
+              onClear={handleFilterClear}
+              isOpen={filtersOpen}
+              onToggle={() => setFiltersOpen(!filtersOpen)}
+            />
+          </div>
+        )}
+
+        {/* Transaction View */}
+        <div className="mt-4">
+          {viewMode === 'table' && (
+            <TableView
+              transactions={transactions}
+              onTransactionClick={onTransactionClick}
+            />
+          )}
+
+          {viewMode === 'list' && (
+            <ListView
+              transactions={transactions}
+              onTransactionClick={onTransactionClick}
+            />
+          )}
+
+          {viewMode === 'card' && (
+            <CardView
+              transactions={transactions}
+              onTransactionClick={onTransactionClick}
+            />
+          )}
         </div>
-      )}
 
-      {/* Transaction View */}
-      <div className="mt-4">
-        {viewMode === 'table' && (
-          <TableView
-            transactions={transactions}
-            onTransactionClick={onTransactionClick}
-          />
-        )}
+        {/* Pagination */}
+        {showPagination && totalCount && totalCount > pageSize && (
+          <div className="mt-6 flex items-center justify-between">
+            <p className="text-muted-foreground text-sm">
+              {totalCount} işlemden {currentPage * pageSize + 1}-
+              {Math.min((currentPage + 1) * pageSize, totalCount)} arası
+              gösteriliyor
+            </p>
 
-        {viewMode === 'list' && (
-          <ListView
-            transactions={transactions}
-            onTransactionClick={onTransactionClick}
-          />
-        )}
-
-        {viewMode === 'card' && (
-          <CardView
-            transactions={transactions}
-            onTransactionClick={onTransactionClick}
-          />
+            <div className="flex gap-2">
+              <button
+                onClick={() => onPageChange?.(currentPage - 1)}
+                disabled={currentPage === 0}
+                className="rounded-lg border px-4 py-2 text-sm font-medium disabled:opacity-50"
+              >
+                Önceki
+              </button>
+              <button
+                onClick={() => onPageChange?.(currentPage + 1)}
+                disabled={(currentPage + 1) * pageSize >= totalCount}
+                className="rounded-lg border px-4 py-2 text-sm font-medium disabled:opacity-50"
+              >
+                Sonraki
+              </button>
+            </div>
+          </div>
         )}
       </div>
-
-      {/* Pagination */}
-      {showPagination && totalCount && totalCount > pageSize && (
-        <div className="mt-6 flex items-center justify-between">
-          <p className="text-muted-foreground text-sm">
-            {totalCount} işlemden {currentPage * pageSize + 1}-
-            {Math.min((currentPage + 1) * pageSize, totalCount)} arası
-            gösteriliyor
-          </p>
-
-          <div className="flex gap-2">
-            <button
-              onClick={() => onPageChange?.(currentPage - 1)}
-              disabled={currentPage === 0}
-              className="rounded-lg border px-4 py-2 text-sm font-medium disabled:opacity-50"
-            >
-              Önceki
-            </button>
-            <button
-              onClick={() => onPageChange?.(currentPage + 1)}
-              disabled={(currentPage + 1) * pageSize >= totalCount}
-              className="rounded-lg border px-4 py-2 text-sm font-medium disabled:opacity-50"
-            >
-              Sonraki
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+    </TransactionDisplayErrorBoundary>
   );
 }
 
 // Re-export child components for direct use if needed
-export { TableView, ListView, CardView };
-export type { Transaction, TransactionFilters };
+export { TableView } from './TableView';
+export { ListView } from './ListView';
+export { CardView } from './CardView';
+export { TransactionFilters } from './Filters';
+export { TransactionToolbar } from './Toolbar';
+export { TransactionDisplayErrorBoundary } from './ErrorBoundary';
+
+// Re-export types
+export type {
+  Transaction,
+  TransactionFilters as TransactionFiltersType,
+} from '@/types/business/features/wallet';

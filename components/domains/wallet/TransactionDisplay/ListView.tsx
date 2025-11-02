@@ -3,10 +3,12 @@
  * LIST VIEW - Compact Transaction Display
  * ================================================
  * List-based transaction view for compact display
+ * Optimized with React.memo for performance
  */
 
 'use client';
 
+import { memo } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { formatCurrency, formatDate } from '@/lib/shared/formatters';
@@ -22,21 +24,33 @@ export interface ListViewProps {
   onTransactionClick?: (transaction: Transaction) => void;
 }
 
-export function ListView({ transactions, onTransactionClick }: ListViewProps) {
+function ListViewComponent({
+  transactions,
+  onTransactionClick,
+}: ListViewProps) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" role="list" aria-label="İşlem listesi">
       {transactions.map((transaction) => {
         const iconConfig = getTransactionIcon(transaction.type);
 
         return (
           <Card
             key={transaction.id}
+            role="listitem"
+            tabIndex={onTransactionClick ? 0 : undefined}
             className={`p-4 transition-all ${
               onTransactionClick
                 ? 'hover:border-primary/50 cursor-pointer hover:shadow-sm'
                 : ''
             }`}
             onClick={() => onTransactionClick?.(transaction)}
+            onKeyDown={(e) => {
+              if (onTransactionClick && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                onTransactionClick(transaction);
+              }
+            }}
+            aria-label={`${getTransactionTypeLabel(transaction.type)} işlemi: ${transaction.description}, ${formatCurrency(transaction.amount)}, ${formatDate(transaction.createdAt, 'SHORT')}`}
           >
             <div className="flex items-center justify-between gap-4">
               {/* Left: Icon + Description */}
@@ -95,3 +109,7 @@ export function ListView({ transactions, onTransactionClick }: ListViewProps) {
     </div>
   );
 }
+
+// Export memoized component for performance
+export const ListView = memo(ListViewComponent);
+ListView.displayName = 'ListView';
