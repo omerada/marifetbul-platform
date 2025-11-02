@@ -73,6 +73,12 @@ export function CommentListWithBulkActions({
     setSelectedIds([]);
   }, []);
 
+  const handleInvertSelection = useCallback(() => {
+    const allIds = comments.map((c) => Number(c.id));
+    const inverted = allIds.filter((id) => !selectedIds.includes(id));
+    setSelectedIds(inverted);
+  }, [comments, selectedIds]);
+
   const handleActionComplete = useCallback(() => {
     setSelectedIds([]);
     onRefresh();
@@ -125,7 +131,7 @@ export function CommentListWithBulkActions({
 
   return (
     <div className="space-y-4">
-      {/* Select All Header */}
+      {/* Enhanced Select Header */}
       <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3">
         <input
           type="checkbox"
@@ -143,6 +149,35 @@ export function CommentListWithBulkActions({
             ? `${selectedIds.length} yorum seçildi`
             : 'Tümünü Seç'}
         </span>
+
+        {/* Quick Selection Actions */}
+        {comments.length > 0 && (
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              onClick={() => handleSelectAll(true)}
+              className="text-xs text-blue-600 hover:text-blue-700 hover:underline"
+            >
+              Tümü
+            </button>
+            <span className="text-gray-300">|</span>
+            <button
+              onClick={handleClearSelection}
+              className="text-xs text-gray-600 hover:text-gray-700 hover:underline"
+            >
+              Hiçbiri
+            </button>
+            <span className="text-gray-300">|</span>
+            <button
+              onClick={handleInvertSelection}
+              className="text-xs text-purple-600 hover:text-purple-700 hover:underline"
+            >
+              Ters Çevir
+            </button>
+            <span className="ml-2 text-xs text-gray-500">
+              ({comments.length} toplam)
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Comment List */}

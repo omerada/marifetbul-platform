@@ -6,7 +6,20 @@ import { AppLayout } from '@/components/layout';
 import { UniversalSearch } from '@/components/domains/search';
 import { SearchSearchResults } from '@/components/domains/search';
 import { Card, Button, Loading } from '@/components/ui';
-import { useResponsive } from '@/hooks';
+import { useResponsive, useFilterState, useFacets } from '@/hooks';
+import {
+  AdvancedFilterPanel,
+  FilterChips,
+  FacetedNavigation,
+  SortOptions,
+  DEFAULT_FACET_GROUPS,
+  DEFAULT_SORT,
+} from '@/components/shared/filters';
+import type {
+  FilterState,
+  SortOption,
+  ViewMode,
+} from '@/components/shared/filters';
 import {
   Search,
   Filter,
@@ -17,6 +30,7 @@ import {
   MapPin,
   Clock,
   Star,
+  X,
 } from 'lucide-react';
 import { trackSearch } from '@/lib/api/search-analytics';
 import { logger } from '@/lib/shared/utils/logger';
@@ -34,7 +48,70 @@ function SearchContent() {
   const [activeTab, setActiveTab] = useState<SearchTab>(type || 'all');
   const [searchQuery, setSearchQuery] = useState(query);
   const [showFilters, setShowFilters] = useState(false);
-  const [sortBy, setSortBy] = useState('relevance');
+  const [sortBy, setSortBy] = useState<SortOption>(DEFAULT_SORT);
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+
+  // Sprint 4: Advanced filter state management
+  const {
+    filters,
+    updateFilters,
+    clearFilters,
+    hasActiveFilters,
+    activeFilterCount,
+  } = useFilterState({
+    defaultFilters: {
+      priceRange: [100, 10000],
+      minRating: null,
+      deliveryTime: null,
+      sellerLevels: [],
+      location: null,
+    },
+    syncWithUrl: true,
+  });
+
+  // Sprint 4 Day 2: Faceted navigation
+  const {
+    facetGroups,
+    selectedFacets,
+    toggleFacet,
+    isLoading: facetsLoading,
+  } = useFacets({
+    facetGroups: DEFAULT_FACET_GROUPS,
+    fetchOnMount: true,
+    currentFilters: filters as unknown as Record<string, unknown>,
+  });
+
+  // Handle filter chip removal
+  const handleRemoveFilter = (
+    filterKey: keyof FilterState,
+    value?: string | number
+  ) => {
+    const newFilters = { ...filters };
+
+    switch (filterKey) {
+      case 'priceRange':
+        newFilters.priceRange = [100, 10000];
+        break;
+      case 'minRating':
+        newFilters.minRating = null;
+        break;
+      case 'deliveryTime':
+        newFilters.deliveryTime = null;
+        break;
+      case 'sellerLevels':
+        if (value) {
+          newFilters.sellerLevels = newFilters.sellerLevels.filter(
+            (l) => l !== value
+          );
+        }
+        break;
+      case 'location':
+        newFilters.location = null;
+        break;
+    }
+
+    updateFilters(newFilters);
+  };
 
   // Update URL when tab or query changes
   useEffect(() => {
@@ -134,14 +211,7 @@ function SearchContent() {
     },
   ];
 
-  const sortOptions = [
-    { value: 'relevance', label: 'En İlgili' },
-    { value: 'newest', label: 'En Yeni' },
-    { value: 'price_low', label: 'Fiyat: Düşük → Yüksek' },
-    { value: 'price_high', label: 'Fiyat: Yüksek → Düşük' },
-    { value: 'rating', label: 'En Yüksek Puan' },
-    { value: 'popular', label: 'En Popüler' },
-  ];
+  // Removed sortOptions array - using SortOptions component now
 
   const quickFilters = [
     { label: 'Uzaktan', icon: MapPin, active: false },
@@ -176,6 +246,20 @@ function SearchContent() {
           </div>
         </section>
 
+        {/* Sprint 4 Day 2: Sort Options Bar */}
+        <section className="border-b bg-gray-50 py-4">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <SortOptions
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              resultCount={searchResults[activeTab]}
+              showViewToggle={!isMobile}
+            />
+          </div>
+        </section>
+
         {/* Search Navigation */}
         <section className="sticky top-0 z-30 border-b bg-white shadow-sm">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -204,20 +288,8 @@ function SearchContent() {
                 ))}
               </div>
 
-              {/* Sort and Filter */}
+              {/* Sort and Filter - Sprint 4 Day 2 */}
               <div className="flex items-center space-x-3">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                >
-                  {sortOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-
                 <Button
                   variant="outline"
                   size="sm"
@@ -226,6 +298,11 @@ function SearchContent() {
                 >
                   <SlidersHorizontal className="h-4 w-4" />
                   {!isMobile && 'Filtreler'}
+                  {hasActiveFilters && (
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">
+                      {activeFilterCount}
+                    </span>
+                  )}
                 </Button>
               </div>
             </div>
@@ -259,134 +336,31 @@ function SearchContent() {
               {/* Advanced Filters Sidebar - Desktop */}
               {!isMobile && showFilters && (
                 <div className="lg:col-span-1">
-                  <Card className="sticky top-24 p-6">
-                    <div className="mb-4 flex items-center gap-2">
-                      <Filter className="h-5 w-5" />
-                      <h3 className="font-semibold">Detaylı Filtreler</h3>
-                    </div>
-
-                    <div className="space-y-6">
-                      {/* Category Filter */}
-                      <div>
-                        <h4 className="mb-3 text-sm font-medium text-gray-900">
-                          Kategori
-                        </h4>
-                        <div className="space-y-2">
-                          {[
-                            'Web Geliştirme',
-                            'Mobil Geliştirme',
-                            'Tasarım',
-                            'Yazarlık',
-                            'Pazarlama',
-                          ].map((category) => (
-                            <label
-                              key={category}
-                              className="flex items-center gap-2"
-                            >
-                              <input
-                                type="checkbox"
-                                className="h-4 w-4 rounded border-gray-300 text-blue-600"
-                              />
-                              <span className="text-sm text-gray-700">
-                                {category}
-                              </span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Price Range */}
-                      <div>
-                        <h4 className="mb-3 text-sm font-medium text-gray-900">
-                          Fiyat Aralığı
-                        </h4>
-                        <div className="space-y-2">
-                          {[
-                            '₺0 - ₺500',
-                            '₺500 - ₺2.000',
-                            '₺2.000 - ₺5.000',
-                            '₺5.000+',
-                          ].map((range) => (
-                            <label
-                              key={range}
-                              className="flex items-center gap-2"
-                            >
-                              <input
-                                type="checkbox"
-                                className="h-4 w-4 rounded border-gray-300 text-blue-600"
-                              />
-                              <span className="text-sm text-gray-700">
-                                {range}
-                              </span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Location */}
-                      <div>
-                        <h4 className="mb-3 text-sm font-medium text-gray-900">
-                          Konum
-                        </h4>
-                        <div className="space-y-2">
-                          {['Uzaktan', 'İstanbul', 'Ankara', 'İzmir'].map(
-                            (location) => (
-                              <label
-                                key={location}
-                                className="flex items-center gap-2"
-                              >
-                                <input
-                                  type="checkbox"
-                                  className="h-4 w-4 rounded border-gray-300 text-blue-600"
-                                />
-                                <span className="text-sm text-gray-700">
-                                  {location}
-                                </span>
-                              </label>
-                            )
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Rating */}
-                      <div>
-                        <h4 className="mb-3 text-sm font-medium text-gray-900">
-                          Değerlendirme
-                        </h4>
-                        <div className="space-y-2">
-                          {[
-                            { stars: 5, label: '5 yıldız' },
-                            { stars: 4, label: '4+ yıldız' },
-                            { stars: 3, label: '3+ yıldız' },
-                          ].map((rating) => (
-                            <label
-                              key={rating.stars}
-                              className="flex items-center gap-2"
-                            >
-                              <input
-                                type="checkbox"
-                                className="h-4 w-4 rounded border-gray-300 text-blue-600"
-                              />
-                              <span className="text-sm text-gray-700">
-                                {rating.label}
-                              </span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-6 w-full"
-                      onClick={() => {
-                        // Clear all filters
+                  <div className="sticky top-24 space-y-4">
+                    {/* Sprint 4: Advanced Filter Panel */}
+                    <AdvancedFilterPanel
+                      initialFilters={filters}
+                      onFiltersChange={(newFilters) => {
+                        updateFilters(newFilters);
                       }}
+                      onClose={() => setShowFilters(false)}
+                      className="shadow-sm ring-1 ring-gray-200/60"
+                    />
+
+                    {/* Sprint 4 Day 2: Faceted Navigation */}
+                    <Card
+                      className="overflow-hidden shadow-sm ring-1 ring-gray-200/60"
+                      padding="sm"
                     >
-                      Filtreleri Temizle
-                    </Button>
-                  </Card>
+                      <FacetedNavigation
+                        facetGroups={facetGroups}
+                        selectedFacets={selectedFacets}
+                        onFacetToggle={toggleFacet}
+                        isLoading={facetsLoading}
+                        initialShowCount={5}
+                      />
+                    </Card>
+                  </div>
                 </div>
               )}
 
@@ -396,6 +370,36 @@ function SearchContent() {
                   showFilters && !isMobile ? 'lg:col-span-3' : 'lg:col-span-4'
                 }
               >
+                {/* Sprint 4: Filter Chips - Active filters display */}
+                {hasActiveFilters && (
+                  <div className="mb-6">
+                    <Card className="bg-blue-50/50 ring-1 ring-blue-200/60">
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="mb-2 flex items-center gap-2">
+                            <Filter className="h-4 w-4 text-blue-600" />
+                            <span className="text-sm font-medium text-blue-900">
+                              Aktif Filtreler ({activeFilterCount})
+                            </span>
+                          </div>
+                          <FilterChips
+                            filters={filters}
+                            onRemoveFilter={handleRemoveFilter}
+                            onClearAll={clearFilters}
+                          />
+                        </div>
+                        <button
+                          onClick={clearFilters}
+                          className="rounded-lg p-2 text-red-600 transition-colors hover:bg-red-50"
+                          title="Tüm filtreleri temizle"
+                        >
+                          <X className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </Card>
+                  </div>
+                )}
+
                 <SearchSearchResults
                   query={searchQuery}
                   activeTab={activeTab}

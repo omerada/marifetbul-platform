@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   Loader2,
   Info,
+  Flag,
 } from 'lucide-react';
 
 // ================================================
@@ -36,6 +37,7 @@ export interface CommentBulkActionsProps {
   onApprove: () => Promise<BulkActionResult>;
   onReject: () => Promise<BulkActionResult>;
   onSpam: () => Promise<BulkActionResult>;
+  onEscalate?: () => Promise<BulkActionResult>;
   onCancel: () => void;
   disabled?: boolean;
 }
@@ -49,6 +51,7 @@ export function CommentBulkActions({
   onApprove,
   onReject,
   onSpam,
+  onEscalate,
   onCancel,
   disabled = false,
 }: CommentBulkActionsProps) {
@@ -58,7 +61,7 @@ export function CommentBulkActions({
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [showConfirm, setShowConfirm] = useState<
-    'approve' | 'reject' | 'spam' | null
+    'approve' | 'reject' | 'spam' | 'escalate' | null
   >(null);
   const [result, setResult] = useState<BulkActionResult | null>(null);
 
@@ -66,7 +69,9 @@ export function CommentBulkActions({
   // HANDLERS
   // ================================================
 
-  const handleAction = async (action: 'approve' | 'reject' | 'spam') => {
+  const handleAction = async (
+    action: 'approve' | 'reject' | 'spam' | 'escalate'
+  ) => {
     setIsProcessing(true);
     setResult(null);
 
@@ -82,6 +87,13 @@ export function CommentBulkActions({
           break;
         case 'spam':
           actionResult = await onSpam();
+          break;
+        case 'escalate':
+          if (onEscalate) {
+            actionResult = await onEscalate();
+          } else {
+            throw new Error('Escalate handler not provided');
+          }
           break;
       }
 
@@ -106,7 +118,9 @@ export function CommentBulkActions({
     }
   };
 
-  const handleConfirm = (action: 'approve' | 'reject' | 'spam') => {
+  const handleConfirm = (
+    action: 'approve' | 'reject' | 'spam' | 'escalate'
+  ) => {
     setShowConfirm(action);
     setResult(null);
   };
@@ -132,14 +146,18 @@ export function CommentBulkActions({
         ? 'onaylamak'
         : showConfirm === 'reject'
           ? 'reddetmek'
-          : 'spam olarak işaretlemek';
+          : showConfirm === 'spam'
+            ? 'spam olarak işaretlemek'
+            : 'yükseltmek';
 
     const actionColor =
       showConfirm === 'approve'
         ? 'green'
         : showConfirm === 'reject'
           ? 'red'
-          : 'gray';
+          : showConfirm === 'escalate'
+            ? 'purple'
+            : 'gray';
 
     return (
       <div className="rounded-lg border-2 border-blue-200 bg-blue-50 p-4">
@@ -172,7 +190,9 @@ export function CommentBulkActions({
                     ? 'bg-green-600 hover:bg-green-700'
                     : actionColor === 'red'
                       ? 'bg-red-600 hover:bg-red-700'
-                      : 'bg-gray-600 hover:bg-gray-700'
+                      : actionColor === 'purple'
+                        ? 'bg-purple-600 hover:bg-purple-700'
+                        : 'bg-gray-600 hover:bg-gray-700'
                 }`}
               >
                 Evet, {actionText}
@@ -303,6 +323,17 @@ export function CommentBulkActions({
           <AlertTriangle className="h-4 w-4" />
           <span>Spam</span>
         </button>
+
+        {onEscalate && (
+          <button
+            onClick={() => handleConfirm('escalate')}
+            disabled={disabled || isProcessing}
+            className="flex items-center gap-1 rounded-lg border border-purple-600 bg-purple-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Flag className="h-4 w-4" />
+            <span>Yükselt</span>
+          </button>
+        )}
 
         <button
           onClick={onCancel}

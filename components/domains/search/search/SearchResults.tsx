@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useMarketplace } from '@/hooks';
 import { MarketplaceList } from '../../marketplace/marketplace/MarketplaceList';
-import { EmptyState } from '../../marketplace/marketplace/EmptyState';
+import { ZeroResultsState } from '@/components/shared/search';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Package, Briefcase, Users, RefreshCcw } from 'lucide-react';
@@ -164,26 +164,20 @@ export function SearchResults({
           </div>
         )}
 
-        {/* Empty state when no results */}
+        {/* Empty state when no results - Sprint 4 Day 3 */}
         {!isLoading && packages.length === 0 && jobs.length === 0 && query && (
-          <EmptyState
-            mode="jobs"
-            title="Arama sonucu bulunamadı"
-            description={`"${query}" için herhangi bir sonuç bulunamadı. Farklı anahtar kelimeler deneyin veya filtreleri değiştirin.`}
-            action={
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Button
-                  variant="outline"
-                  onClick={() => (window.location.href = '/marketplace')}
-                >
-                  Marketplace&apos;e Git
-                </Button>
-                <Button onClick={handleRefresh}>
-                  <RefreshCcw className="mr-2 h-4 w-4" />
-                  Yeniden Ara
-                </Button>
-              </div>
-            }
+          <ZeroResultsState
+            query={query}
+            hasActiveFilters={false}
+            onNewSearch={(newQuery) => {
+              window.location.href =
+                '/search?q=' + encodeURIComponent(newQuery);
+            }}
+            suggestions={[
+              query.replace(/ı/g, 'i'),
+              query.replace(/i/g, 'ı'),
+              query + ' hizmeti',
+            ]}
           />
         )}
       </div>

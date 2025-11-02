@@ -2,9 +2,22 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { useMarketplace } from '@/hooks';
+import { useMarketplace, useFilterState, useFacets } from '@/hooks';
 import { useResponsive } from '@/hooks';
 import { MarketplaceFilters } from './MarketplaceFilters';
+import {
+  AdvancedFilterPanel,
+  FilterChips,
+  FacetedNavigation,
+  SortOptions,
+  DEFAULT_FACET_GROUPS,
+  DEFAULT_SORT,
+} from '@/components/shared/filters';
+import type {
+  FilterState,
+  SortOption,
+  ViewMode,
+} from '@/components/shared/filters';
 import { MarketplaceList } from './MarketplaceList';
 import { Pagination } from '@/components/ui/Pagination';
 import { MobileMarketplace } from './MobileMarketplace';
@@ -25,6 +38,7 @@ import {
   Zap,
   Shield,
   MessageCircle,
+  X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { logger } from '@/lib/shared/utils/logger';
@@ -34,6 +48,9 @@ type MarketplaceMode = 'jobs' | 'packages';
 export function MarketplacePage() {
   const [mode, setMode] = useState<MarketplaceMode>('jobs');
   const [showFilters, setShowFilters] = useState(false);
+  const [useAdvancedFilters, setUseAdvancedFilters] = useState(true);
+  const [sortBy, setSortBy] = useState<SortOption>(DEFAULT_SORT);
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const { isMobile, isTablet } = useResponsive();
 
   const {
@@ -50,6 +67,95 @@ export function MarketplacePage() {
     updateViewPreferences,
     refreshData,
   } = useMarketplace();
+
+  // Sprint 4: Advanced filter state management
+  const {
+    filters,
+    updateFilters,
+    clearFilters: clearAdvancedFilters,
+    hasActiveFilters,
+    activeFilterCount,
+  } = useFilterState({
+    defaultFilters: {
+      priceRange: [100, 10000],
+      minRating: null,
+      deliveryTime: null,
+      sellerLevels: [],
+      location: null,
+    },
+    syncWithUrl: true,
+    onFilterChange: (newFilters) => {
+      // Apply filters to marketplace when they change
+      handleAdvancedFilterChange(newFilters);
+    },
+  });
+
+  // Sprint 4 Day 2: Faceted navigation
+  const {
+    facetGroups,
+    selectedFacets,
+    toggleFacet,
+    isLoading: facetsLoading,
+  } = useFacets({
+    facetGroups: DEFAULT_FACET_GROUPS,
+    fetchOnMount: true,
+    currentFilters: filters as unknown as Record<string, unknown>,
+  });
+
+  // Handle advanced filter changes
+  const handleAdvancedFilterChange = useCallback(
+    async (newFilters: FilterState) => {
+      try {
+        // TODO: Backend integration
+        // For now, log the filters - will be connected to API in backend integration task
+        logger.debug('Advanced filters changed:', newFilters);
+
+        // Trigger marketplace data refresh
+        // The actual filter application will be done via API calls
+        // when backend integration is complete (Task 7)
+        if (mode === 'jobs') {
+          await applyJobFilters();
+        } else {
+          await applyPackageFilters();
+        }
+      } catch (error) {
+        logger.error('Error applying advanced filters:', error);
+      }
+    },
+    [mode, applyJobFilters, applyPackageFilters]
+  );
+
+  // Handle filter chip removal
+  const handleRemoveFilter = useCallback(
+    (filterKey: keyof FilterState, value?: string | number) => {
+      const newFilters = { ...filters };
+
+      switch (filterKey) {
+        case 'priceRange':
+          newFilters.priceRange = [100, 10000];
+          break;
+        case 'minRating':
+          newFilters.minRating = null;
+          break;
+        case 'deliveryTime':
+          newFilters.deliveryTime = null;
+          break;
+        case 'sellerLevels':
+          if (value) {
+            newFilters.sellerLevels = newFilters.sellerLevels.filter(
+              (l) => l !== value
+            );
+          }
+          break;
+        case 'location':
+          newFilters.location = null;
+          break;
+      }
+
+      updateFilters(newFilters);
+    },
+    [filters, updateFilters]
+  );
 
   // Initial data fetch
   useEffect(() => {
@@ -302,6 +408,21 @@ export function MarketplacePage() {
         className="container mx-auto px-4 py-12 sm:px-6 lg:px-8"
         data-search-section
       >
+        {/* Sort & View Options - Sprint 4 Day 2 */}
+        <div className="mb-6">
+          <SortOptions
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            resultCount={
+              mode === 'jobs' ? jobsPagination.total : packagesPagination.total
+            }
+            isLoading={isLoading}
+            showViewToggle={!isMobile}
+          />
+        </div>
+
         {/* Kontrol Barı - Ana sayfa teması */}
         <div className="mb-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200/60">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -405,24 +526,95 @@ export function MarketplacePage() {
                   className="overflow-hidden shadow-sm ring-1 ring-gray-200/60"
                   padding="none"
                 >
-                  <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
-                    <h3 className="font-semibold text-gray-900">Filtreler</h3>
-                  </div>
-                  <div className="p-6">
-                    <MarketplaceFilters
-                      mode={mode}
-                      onJobFiltersChange={applyJobFilters}
-                      onPackageFiltersChange={applyPackageFilters}
+                  {useAdvancedFilters ? (
+                    // Sprint 4: Advanced Filter Panel
+                    <AdvancedFilterPanel
+                      initialFilters={filters}
+                      onFiltersChange={(newFilters) => {
+                        updateFilters(newFilters);
+                      }}
                       onClose={() => setShowFilters(false)}
+                      className="border-0 shadow-none"
                     />
-                  </div>
+                  ) : (
+                    // Legacy filters (fallback)
+                    <>
+                      <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-semibold text-gray-900">
+                            Filtreler
+                          </h3>
+                          <button
+                            onClick={() => setUseAdvancedFilters(true)}
+                            className="text-xs text-blue-600 hover:text-blue-700"
+                          >
+                            Gelişmiş Filtreler
+                          </button>
+                        </div>
+                      </div>
+                      <div className="p-6">
+                        <MarketplaceFilters
+                          mode={mode}
+                          onJobFiltersChange={applyJobFilters}
+                          onPackageFiltersChange={applyPackageFilters}
+                          onClose={() => setShowFilters(false)}
+                        />
+                      </div>
+                    </>
+                  )}
                 </Card>
+
+                {/* Sprint 4 Day 2: Faceted Navigation */}
+                {useAdvancedFilters && (
+                  <Card
+                    className="overflow-hidden shadow-sm ring-1 ring-gray-200/60"
+                    padding="sm"
+                  >
+                    <FacetedNavigation
+                      facetGroups={facetGroups}
+                      selectedFacets={selectedFacets}
+                      onFacetToggle={toggleFacet}
+                      isLoading={facetsLoading}
+                      initialShowCount={5}
+                    />
+                  </Card>
+                )}
               </div>
             </div>
           )}
 
           {/* Ana İçerik */}
           <div className={cn(showFilters ? 'lg:col-span-3' : 'lg:col-span-4')}>
+            {/* Sprint 4: Filter Chips - Active filters display */}
+            {hasActiveFilters && (
+              <div className="mb-6">
+                <Card className="bg-blue-50/50 ring-1 ring-blue-200/60">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="mb-2 flex items-center gap-2">
+                        <Filter className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-900">
+                          Aktif Filtreler ({activeFilterCount})
+                        </span>
+                      </div>
+                      <FilterChips
+                        filters={filters}
+                        onRemoveFilter={handleRemoveFilter}
+                        onClearAll={clearAdvancedFilters}
+                      />
+                    </div>
+                    <button
+                      onClick={clearAdvancedFilters}
+                      className="rounded-lg p-2 text-red-600 transition-colors hover:bg-red-50"
+                      title="Tüm filtreleri temizle"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+                </Card>
+              </div>
+            )}
+
             <MarketplaceList
               mode={mode}
               data={currentData}
@@ -475,25 +667,41 @@ export function MarketplacePage() {
               className="h-full overflow-y-auto shadow-2xl ring-1 ring-gray-200"
               padding="none"
             >
-              <div className="sticky top-0 z-10 border-b border-gray-200 bg-white px-6 py-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-gray-900">Filtreler</h3>
-                  <button
-                    onClick={() => setShowFilters(false)}
-                    className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
-                  >
-                    <Filter className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-              <div className="p-6">
-                <MarketplaceFilters
-                  mode={mode}
-                  onJobFiltersChange={applyJobFilters}
-                  onPackageFiltersChange={applyPackageFilters}
+              {useAdvancedFilters ? (
+                // Sprint 4: Mobile Advanced Filters
+                <AdvancedFilterPanel
+                  initialFilters={filters}
+                  onFiltersChange={(newFilters) => {
+                    updateFilters(newFilters);
+                  }}
                   onClose={() => setShowFilters(false)}
+                  isMobile={true}
+                  className="h-full border-0 shadow-none"
                 />
-              </div>
+              ) : (
+                // Legacy mobile filters
+                <>
+                  <div className="sticky top-0 z-10 border-b border-gray-200 bg-white px-6 py-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-gray-900">Filtreler</h3>
+                      <button
+                        onClick={() => setShowFilters(false)}
+                        className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <MarketplaceFilters
+                      mode={mode}
+                      onJobFiltersChange={applyJobFilters}
+                      onPackageFiltersChange={applyPackageFilters}
+                      onClose={() => setShowFilters(false)}
+                    />
+                  </div>
+                </>
+              )}
             </Card>
           </div>
         </div>

@@ -41,6 +41,7 @@ import { Button } from '@/components/ui';
 import { Textarea } from '@/components/ui/Textarea';
 import { Label } from '@/components/ui/Label';
 import { formatCurrency } from '@/lib/shared/utils/format';
+import { DisputeReason } from '@/types/dispute';
 import type { EscrowItem } from './EscrowList';
 
 // ============================================================================
@@ -65,14 +66,6 @@ export interface DisputeEscrowModalProps {
   ) => Promise<void>;
 }
 
-export type DisputeReason =
-  | 'NOT_AS_DESCRIBED'
-  | 'NOT_DELIVERED'
-  | 'INCOMPLETE_WORK'
-  | 'QUALITY_ISSUE'
-  | 'COMMUNICATION_ISSUE'
-  | 'OTHER';
-
 type FlowStep = 'form' | 'processing' | 'success' | 'error';
 
 // ============================================================================
@@ -85,32 +78,32 @@ const DISPUTE_REASONS: {
   description: string;
 }[] = [
   {
-    value: 'NOT_AS_DESCRIBED',
+    value: DisputeReason.NOT_AS_DESCRIBED,
     label: 'Açıklamaya Uygun Değil',
     description: 'Alınan hizmet/ürün açıklamadaki gibi değil',
   },
   {
-    value: 'NOT_DELIVERED',
+    value: DisputeReason.DELIVERY_NOT_RECEIVED,
     label: 'Teslim Edilmedi',
     description: 'Sipariş hiç teslim edilmedi',
   },
   {
-    value: 'INCOMPLETE_WORK',
+    value: DisputeReason.INCOMPLETE_WORK,
     label: 'Eksik İş',
     description: 'Sipariş tamamlanmadı veya eksik',
   },
   {
-    value: 'QUALITY_ISSUE',
+    value: DisputeReason.QUALITY_ISSUE,
     label: 'Kalite Sorunu',
     description: 'İş kalitesi beklentileri karşılamıyor',
   },
   {
-    value: 'COMMUNICATION_ISSUE',
+    value: DisputeReason.COMMUNICATION_ISSUE,
     label: 'İletişim Sorunu',
     description: 'Satıcı ile iletişim kurulamıyor',
   },
   {
-    value: 'OTHER',
+    value: DisputeReason.OTHER,
     label: 'Diğer',
     description: 'Diğer bir sebep',
   },
@@ -127,8 +120,8 @@ export function DisputeEscrowModal({
   onSubmit,
 }: DisputeEscrowModalProps) {
   const [step, setStep] = useState<FlowStep>('form');
-  const [selectedReason, setSelectedReason] = useState<DisputeReason | null>(
-    null
+  const [selectedReason, setSelectedReason] = useState<DisputeReason>(
+    DisputeReason.NOT_AS_DESCRIBED
   );
   const [description, setDescription] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -139,7 +132,7 @@ export function DisputeEscrowModal({
   // Reset state when dialog closes
   const handleClose = () => {
     setStep('form');
-    setSelectedReason(null);
+    setSelectedReason(DisputeReason.NOT_AS_DESCRIBED);
     setDescription('');
     setError(null);
     onClose();

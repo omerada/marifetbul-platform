@@ -27,11 +27,14 @@ import {
   ReleaseEscrowFlow,
   DisputeEscrowModal,
   type EscrowItem,
-  type DisputeReason,
 } from '@/components/domains/wallet';
 import { useWalletData } from '@/hooks/business/wallet';
 import { Card } from '@/components/ui/Card';
+import { releaseEscrowPayment } from '@/lib/api/payment';
+import { raiseDispute } from '@/lib/api/disputes';
 import type { Transaction } from '@/types/business/features/wallet';
+import { DisputeReason } from '@/types/dispute';
+import { logger } from '@/lib/infrastructure/logging/logger';
 
 // ============================================================================
 // MAIN COMPONENT
@@ -63,25 +66,29 @@ export default function EscrowManagementPage() {
     setIsDisputeOpen(true);
   };
 
-  const handleReleaseConfirm = async (escrowId: string, notes?: string) => {
-    // TODO: Call backend API to release escrow
-    // For now, simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+  const handleReleaseConfirm = async (escrowId: string, _notes?: string) => {
+    try {
+      // Call backend API to release escrow
+      await releaseEscrowPayment(escrowId);
 
-    // eslint-disable-next-line no-console
-    console.log('Release escrow:', { escrowId, notes });
+      // Show success toast
+      toast.success('Ödeme Serbest Bırakıldı', {
+        description: 'Ödeme satıcıya başarıyla aktarıldı.',
+      });
 
-    // Show success toast
-    toast.success('Ödeme Serbest Bırakıldı', {
-      description: 'Ödeme satıcıya başarıyla aktarıldı.',
-    });
+      // Refresh data
+      await refresh();
 
-    // Refresh data
-    await refresh();
+      // Close modal
+      setIsReleaseOpen(false);
+      setIsDetailsOpen(false);
+    } catch (error) {
+      console.error('Failed to release escrow:', error);
 
-    // Close modal
-    setIsReleaseOpen(false);
-    setIsDetailsOpen(false);
+      toast.error('Ödeme Serbest Bırakılamadı', {
+        description: 'Bir hata oluştu. Lütfen tekrar deneyin.',
+      });
+    }
   };
 
   const handleDisputeSubmit = async (
@@ -89,24 +96,33 @@ export default function EscrowManagementPage() {
     reason: DisputeReason,
     description: string
   ) => {
-    // TODO: Call backend API to create dispute
-    // For now, simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      // Call backend API to create dispute
+      await raiseDispute({
+        orderId: escrowId,
+        reason: reason,
+        description: description,
+        evidenceUrls: [],
+      });
 
-    // eslint-disable-next-line no-console
-    console.log('Create dispute:', { escrowId, reason, description });
+      // Show success toast
+      toast.success('İhtilaf Başlatıldı', {
+        description: 'Moderatör ekibimiz en kısa sürede inceleyecektir.',
+      });
 
-    // Show success toast
-    toast.success('İhtilaf Başlatıldı', {
-      description: 'Moderatör ekibimiz en kısa sürede inceleyecektir.',
-    });
+      // Refresh data
+      await refresh();
 
-    // Refresh data
-    await refresh();
+      // Close modals
+      setIsDisputeOpen(false);
+      setIsDetailsOpen(false);
+    } catch (error) {
+      console.error('Failed to create dispute:', error);
 
-    // Close modals
-    setIsDisputeOpen(false);
-    setIsDetailsOpen(false);
+      toast.error('İhtilaf Başlatılamadı', {
+        description: 'Bir hata oluştu. Lütfen tekrar deneyin.',
+      });
+    }
   };
 
   // Loading state

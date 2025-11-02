@@ -11,12 +11,18 @@ import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { getAllDisputes, getDisputeStatistics } from '@/lib/api/disputes';
 import { orderApi } from '@/lib/api/orders';
-import type { DisputeResponse, DisputeStatistics } from '@/types/dispute';
+import type {
+  DisputeResponse,
+  DisputeStatistics,
+  DisputeFilters as DisputeFiltersType,
+} from '@/types/dispute';
 import DisputeResolutionModal from '@/components/admin/disputes/DisputeResolutionModal';
 import { AdminDisputeDetailModal } from '@/components/admin/disputes/AdminDisputeDetailModal';
 import { AdminDisputeQueue } from '@/components/admin/disputes/AdminDisputeQueue';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { AlertCircle, Clock, CheckCircle } from 'lucide-react';
+import {
+  DisputeStatistics as DisputeStatsComponent,
+  DisputeFilters,
+} from '@/components/domains/disputes';
 import { useWebSocket } from '@/hooks';
 
 export default function AdminDisputesPage() {
@@ -29,6 +35,7 @@ export default function AdminDisputesPage() {
   const [isResolutionModalOpen, setIsResolutionModalOpen] = useState(false);
   const [currentPage, _setCurrentPage] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeFilters, setActiveFilters] = useState<DisputeFiltersType>({});
 
   const socket = useWebSocket();
   const pageSize = 20;
@@ -38,7 +45,11 @@ export default function AdminDisputesPage() {
     setIsLoading(true);
     try {
       const [disputesData, statsData] = await Promise.all([
-        getAllDisputes({ page: currentPage, size: pageSize }),
+        getAllDisputes({
+          page: currentPage,
+          size: pageSize,
+          ...activeFilters,
+        }),
         getDisputeStatistics(),
       ]);
 
@@ -52,7 +63,7 @@ export default function AdminDisputesPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage]);
+  }, [currentPage, activeFilters]);
 
   useEffect(() => {
     fetchData();
@@ -163,6 +174,11 @@ export default function AdminDisputesPage() {
     setSelectedDispute(null);
   };
 
+  // Handle filter changes
+  const handleFiltersChange = (filters: DisputeFiltersType) => {
+    setActiveFilters(filters);
+  };
+
   return (
     <div className="space-y-6 p-6">
       {/* Page Header */}
@@ -173,61 +189,18 @@ export default function AdminDisputesPage() {
         </p>
       </div>
 
-      {/* Statistics Cards */}
-      {statistics && (
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Açık İtirazlar
-              </CardTitle>
-              <AlertCircle className="h-4 w-4 text-red-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {statistics.openDisputesCount}
-              </div>
-              <p className="text-muted-foreground text-xs">
-                Çözüm bekleyen itirazlar
-              </p>
-            </CardContent>
-          </Card>
+      {/* Statistics Cards - Sprint 1 Day 1.2 */}
+      <DisputeStatsComponent
+        statistics={statistics}
+        isLoading={isLoading}
+        onRefresh={fetchData}
+      />
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Ortalama Çözüm Süresi
-              </CardTitle>
-              <Clock className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {statistics.averageResolutionTimeHours > 0
-                  ? `${Math.round(statistics.averageResolutionTimeHours)} saat`
-                  : 'Veri yok'}
-              </div>
-              <p className="text-muted-foreground text-xs">
-                İtiraz çözüm süresi ortalaması
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Toplam İtiraz
-              </CardTitle>
-              <CheckCircle className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{disputes.length}</div>
-              <p className="text-muted-foreground text-xs">
-                Sistemdeki toplam itiraz sayısı
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+      {/* Advanced Filters - Sprint 1 Day 1.3 */}
+      <DisputeFilters
+        onFiltersChange={handleFiltersChange}
+        initialFilters={activeFilters}
+      />
 
       {/* Disputes Queue - Sprint 16 Story 3.3 */}
       <AdminDisputeQueue

@@ -49,6 +49,24 @@ export type {
   DisputeReason,
 } from './DisputeEscrowModal';
 
+// Sprint 1 - New Escrow UI Components
+export { EscrowStatusBadge } from './EscrowStatusBadge';
+export type { EscrowStatusBadgeProps } from './EscrowStatusBadge';
+
+export { EscrowTimeline } from './EscrowTimeline';
+export type {
+  EscrowTimelineProps,
+  EscrowTimelineEvent,
+  EscrowEventType,
+} from './EscrowTimeline';
+export { createEscrowTimelineEvent } from './EscrowTimeline';
+
+export { EscrowCard, EscrowCardSkeleton } from './EscrowCard';
+export type { EscrowCardProps, EscrowCardData } from './EscrowCard';
+
+export { EscrowActions, EscrowActionPermissions } from './EscrowActions';
+export type { EscrowActionsProps } from './EscrowActions';
+
 // Sprint 1 - Epic 1.3 - Payout System (Days 6-7)
 export { PayoutRequestFlow } from './PayoutRequestFlow';
 export type { PayoutRequestFlowProps } from './PayoutRequestFlow';

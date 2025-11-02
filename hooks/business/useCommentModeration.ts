@@ -78,9 +78,19 @@ export interface UseCommentModerationReturn {
   approveComment: (id: string) => Promise<boolean>;
   rejectComment: (id: string) => Promise<boolean>;
   markAsSpam: (id: string) => Promise<boolean>;
+  escalateComment: (
+    id: string,
+    reason: string,
+    priority?: 'LOW' | 'MEDIUM' | 'HIGH'
+  ) => Promise<boolean>;
   bulkApprove: (ids: string[]) => Promise<BulkActionResult>;
   bulkReject: (ids: string[]) => Promise<BulkActionResult>;
   bulkMarkAsSpam: (ids: string[]) => Promise<BulkActionResult>;
+  bulkEscalate: (
+    ids: string[],
+    reason: string,
+    priority?: 'LOW' | 'MEDIUM' | 'HIGH'
+  ) => Promise<BulkActionResult>;
 
   // Refresh
   refresh: () => Promise<void>;
@@ -330,6 +340,38 @@ export function useCommentModeration(): UseCommentModerationReturn {
     }
   }, []);
 
+  const escalateComment = useCallback(
+    async (
+      id: string,
+      reason: string,
+      priority: 'LOW' | 'MEDIUM' | 'HIGH' = 'MEDIUM'
+    ): Promise<boolean> => {
+      try {
+        await apiClient.post(`/api/admin/moderation/escalate/${id}`, {
+          reason,
+          priority,
+        });
+
+        // Update local data optimistically
+        setData((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            comments: prev.comments.filter((c) => c.id !== id),
+            pending: Math.max(0, prev.pending - 1),
+          };
+        });
+
+        return true;
+      } catch (err) {
+        logger.error('Failed to escalate comment:', err);
+        setError('Yorum yükseltilirken bir hata oluştu');
+        return false;
+      }
+    },
+    []
+  );
+
   // ================================================
   // BULK ACTIONS
   // ================================================
@@ -419,7 +461,47 @@ export function useCommentModeration(): UseCommentModerationReturn {
       };
     },
     [fetchComments]
-  ); // ================================================
+  );
+
+  const bulkEscalate = useCallback(
+    async (
+      ids: string[],
+      reason: string,
+      priority: 'LOW' | 'MEDIUM' | 'HIGH' = 'MEDIUM'
+    ): Promise<BulkActionResult> => {
+      const results = await Promise.allSettled(
+        ids.map((id) =>
+          apiClient.post(`/api/admin/moderation/escalate/${id}`, {
+            reason,
+            priority,
+          })
+        )
+      );
+
+      const success = results.filter((r) => r.status === 'fulfilled').length;
+      const failed = results.filter((r) => r.status === 'rejected').length;
+      const errors = results
+        .filter((r) => r.status === 'rejected')
+        .map(
+          (r) =>
+            (r as PromiseRejectedResult).reason?.message || 'Bilinmeyen hata'
+        );
+
+      // Refresh data after bulk operation
+      await fetchComments();
+      setSelectedComments(new Set());
+
+      return {
+        success,
+        failed,
+        total: ids.length,
+        errors: errors.length > 0 ? errors : undefined,
+      };
+    },
+    [fetchComments]
+  );
+
+  // ================================================
   // RETURN
   // ================================================
 
@@ -454,9 +536,11 @@ export function useCommentModeration(): UseCommentModerationReturn {
     approveComment,
     rejectComment,
     markAsSpam,
+    escalateComment,
     bulkApprove,
     bulkReject,
     bulkMarkAsSpam,
+    bulkEscalate,
 
     // Refresh
     refresh: fetchComments,

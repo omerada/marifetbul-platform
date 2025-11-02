@@ -445,7 +445,7 @@ export async function getPayoutLimits(): Promise<PayoutLimits> {
  * Check payout eligibility
  * GET /api/v1/payouts/eligibility
  *
- * @returns {Promise<PayoutEligibility>} Eligibility status with details
+ * @returns {Promise<PayoutEligibility>} Eligibility status with requirements
  *
  * @throws {AuthenticationError} Not authenticated
  */
@@ -458,6 +458,70 @@ export async function checkPayoutEligibility(): Promise<PayoutEligibility> {
     response,
     'PayoutEligibility'
   );
+}
+
+// ============================================================================
+// Escrow Operations
+// ============================================================================
+
+/**
+ * Get escrow payment details
+ * GET /api/v1/wallet/escrow/{orderId}
+ *
+ * @param {string} orderId - Order ID
+ * @returns {Promise<EscrowPaymentDetails>} Escrow payment details with history
+ *
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {NotFoundError} Escrow payment not found
+ */
+export async function getEscrowPaymentDetails(
+  orderId: string
+): Promise<import('@/types/business/features/wallet').EscrowPaymentDetails> {
+  const response = await apiClient.get<
+    import('@/types/business/features/wallet').EscrowPaymentDetails
+  >(`/wallet/escrow/${orderId}`);
+  return response;
+}
+
+/**
+ * Release escrow payment
+ * POST /api/v1/wallet/escrow/{paymentId}/release
+ *
+ * @param {string} paymentId - Payment ID
+ * @returns {Promise<void>}
+ *
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {NotFoundError} Payment not found
+ * @throws {BusinessRuleViolation} Cannot release payment
+ */
+export async function releaseEscrowPayment(paymentId: string): Promise<void> {
+  await apiClient.post(`/wallet/escrow/${paymentId}/release`);
+}
+
+/**
+ * Raise dispute for escrow payment
+ * POST /api/v1/wallet/escrow/{paymentId}/dispute
+ *
+ * @param {string} paymentId - Payment ID
+ * @param {object} data - Dispute data
+ * @returns {Promise<string>} Dispute ID
+ *
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {NotFoundError} Payment not found
+ * @throws {BusinessRuleViolation} Cannot raise dispute
+ */
+export async function raiseEscrowDispute(
+  paymentId: string,
+  data: {
+    reason: string;
+    description: string;
+  }
+): Promise<string> {
+  const response = await apiClient.post<{ disputeId: string }>(
+    `/wallet/escrow/${paymentId}/dispute`,
+    data
+  );
+  return response.disputeId;
 }
 
 // ============================================================================
@@ -487,6 +551,10 @@ export const walletApi = {
   cancelPayout,
   getPayoutLimits,
   checkPayoutEligibility,
+  // Escrow
+  getEscrowPaymentDetails,
+  releaseEscrowPayment,
+  raiseEscrowDispute,
 };
 
 export default walletApi;

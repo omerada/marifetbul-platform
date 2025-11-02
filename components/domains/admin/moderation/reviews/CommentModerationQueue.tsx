@@ -21,6 +21,7 @@ import {
   RefreshCw,
   Trash2,
   Clock,
+  Flag,
 } from 'lucide-react';
 import { useCommentModeration } from '@/hooks/business/useCommentModeration';
 import { useAutoRefresh } from '@/hooks/business/useAutoRefresh';
@@ -30,6 +31,7 @@ import { CommentBulkActions } from './CommentBulkActions';
 import { CommentFilterBar } from './CommentFilterBar';
 import { CommentSearchBar } from './CommentSearchBar';
 import { ModerationQueueSkeleton } from './LoadingSkeletons';
+import { toast } from 'sonner';
 
 // ================================================
 // COMPONENT
@@ -61,6 +63,11 @@ export function CommentModerationQueue() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [showEscalateDialog, setShowEscalateDialog] = useState(false);
+  const [escalateReason, setEscalateReason] = useState('');
+  const [escalatePriority, setEscalatePriority] = useState<
+    'LOW' | 'MEDIUM' | 'HIGH'
+  >('MEDIUM');
 
   // ================================================
   // COMPUTED
@@ -85,6 +92,41 @@ export function CommentModerationQueue() {
       moderation.deselectAll();
     } else {
       moderation.selectAll();
+    }
+  };
+
+  const handleEscalate = async () => {
+    if (!escalateReason.trim()) {
+      toast.error('Lütfen yükseltme sebebi girin');
+      return;
+    }
+
+    try {
+      const ids = Array.from(moderation.selectedComments);
+      const result = await moderation.bulkEscalate(
+        ids,
+        escalateReason,
+        escalatePriority
+      );
+
+      if (result.success > 0) {
+        toast.success(`${result.success} yorum başarıyla yükseltildi`, {
+          description:
+            result.failed > 0
+              ? `${result.failed} yorum yükseltilemedi`
+              : undefined,
+        });
+      }
+
+      if (result.failed > 0) {
+        toast.error(`${result.failed} yorum yükseltilemedi`);
+      }
+
+      setShowEscalateDialog(false);
+      setEscalateReason('');
+      setEscalatePriority('MEDIUM');
+    } catch (_error) {
+      toast.error('Yükseltme işlemi sırasında hata oluştu');
     }
   };
 
@@ -264,6 +306,11 @@ export function CommentModerationQueue() {
             const ids = Array.from(moderation.selectedComments);
             return await moderation.bulkMarkAsSpam(ids);
           }}
+          onEscalate={async () => {
+            setShowEscalateDialog(true);
+            // Return placeholder until dialog is confirmed
+            return { success: 0, failed: 0, total: 0 };
+          }}
           onCancel={() => moderation.deselectAll()}
           disabled={moderation.loading}
         />
@@ -335,6 +382,101 @@ export function CommentModerationQueue() {
           disabled={moderation.loading}
           size="md"
         />
+      )}
+
+      {/* Escalate Dialog */}
+      {showEscalateDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+            <div className="mb-4 flex items-center gap-2">
+              <Flag className="h-5 w-5 text-purple-600" />
+              <h3 className="text-lg font-semibold text-gray-900">
+                Yorumları Yükselt
+              </h3>
+            </div>
+
+            <p className="mb-4 text-sm text-gray-600">
+              {moderation.selectedComments.size} yorum yöneticilere
+              yükseltilecek. Lütfen sebep ve öncelik belirtin:
+            </p>
+
+            {/* Reason Input */}
+            <div className="mb-4">
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Yükseltme Sebebi *
+              </label>
+              <textarea
+                value={escalateReason}
+                onChange={(e) => setEscalateReason(e.target.value)}
+                placeholder="İçerik inceleme gerektirir, ..."
+                className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-200 focus:outline-none"
+                rows={3}
+                required
+              />
+            </div>
+
+            {/* Priority Selection */}
+            <div className="mb-6">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Öncelik
+              </label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setEscalatePriority('LOW')}
+                  className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                    escalatePriority === 'LOW'
+                      ? 'border-gray-600 bg-gray-600 text-white'
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  Düşük
+                </button>
+                <button
+                  onClick={() => setEscalatePriority('MEDIUM')}
+                  className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                    escalatePriority === 'MEDIUM'
+                      ? 'border-yellow-600 bg-yellow-600 text-white'
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  Orta
+                </button>
+                <button
+                  onClick={() => setEscalatePriority('HIGH')}
+                  className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                    escalatePriority === 'HIGH'
+                      ? 'border-red-600 bg-red-600 text-white'
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  Yüksek
+                </button>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowEscalateDialog(false);
+                  setEscalateReason('');
+                  setEscalatePriority('MEDIUM');
+                }}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                İptal
+              </button>
+              <button
+                onClick={handleEscalate}
+                disabled={!escalateReason.trim()}
+                className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Flag className="mr-2 inline-block h-4 w-4" />
+                Yükselt
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

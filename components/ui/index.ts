@@ -62,7 +62,7 @@ export {
 } from './Select';
 
 // Layout Components
-export { Card, CardHeader, CardContent, CardFooter } from './Card';
+export { Card, CardHeader, CardContent, CardFooter, CardTitle } from './Card';
 export { Badge } from './Badge';
 export { Pagination, MobilePagination } from './Pagination';
 export { ScrollArea } from './ScrollArea';

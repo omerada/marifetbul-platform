@@ -148,6 +148,20 @@ export type {
   UseBrowserNotificationsReturn,
 } from './shared/useBrowserNotifications';
 
+// FILTER HOOKS - Sprint 4: Search & Filter Optimization
+export { useFilterState } from './shared/useFilterState';
+export type {
+  UseFilterStateOptions,
+  FilterPreset,
+} from './shared/useFilterState';
+
+export { useFacets } from './shared/useFacets';
+export type {
+  FacetsData,
+  UseFacetsOptions,
+  UseFacetsReturn,
+} from './shared/useFacets';
+
 // INTEGRATION HOOKS - External services and APIs
 // useWebSocket moved to infrastructure/websocket
 export { useWebSocket, useStompWebSocket } from './infrastructure/websocket';

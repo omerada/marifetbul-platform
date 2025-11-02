@@ -9,6 +9,8 @@ import {
 } from '@/lib/api/notification';
 import { getWebSocketClient } from '@/lib/infrastructure/websocket/client';
 import { logger } from '@/lib/shared/utils/logger';
+import { playNotificationAlert } from '@/lib/utils/notificationSound';
+import { useNotificationPreferences } from './useNotificationPreferences';
 import type {
   Notification,
   WebSocketNotificationPayload,
@@ -34,6 +36,9 @@ export function useNotifications() {
   const [recentNotifications, setRecentNotifications] = useState<
     Notification[]
   >([]);
+
+  // Get notification preferences for sound/vibration
+  const { preferences } = useNotificationPreferences();
 
   // Fetch recent notifications (latest 5)
   const { data: notifications, mutate } = useSWR<Notification[]>(
@@ -87,6 +92,17 @@ export function useNotifications() {
       setUnreadCount((prev) => prev + 1);
       mutateCount();
 
+      // Play sound and vibration based on preferences
+      if (preferences) {
+        playNotificationAlert({
+          sound: true, // Default to true if no preference
+          vibration: true, // Default to true if no preference
+          doNotDisturb: preferences.doNotDisturb,
+          dndStartTime: preferences.dndStartTime,
+          dndEndTime: preferences.dndEndTime,
+        });
+      }
+
       // Show toast notification
       toast.success(payload.title, {
         description: payload.content,
@@ -113,7 +129,7 @@ export function useNotifications() {
         unsubscribe();
       }
     };
-  }, [mutate, mutateCount]);
+  }, [mutate, mutateCount, preferences]);
 
   // Mark notification as read
   const markNotificationAsRead = useCallback(

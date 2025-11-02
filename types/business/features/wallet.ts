@@ -72,6 +72,55 @@ export interface WalletBalance {
 }
 
 // ================================================
+// ESCROW PAYMENT TYPES
+// ================================================
+
+export interface EscrowPaymentDetails {
+  id: string;
+  orderId: string;
+  orderTitle: string;
+  amount: number;
+  currency: string;
+  status:
+    | 'HELD'
+    | 'FROZEN'
+    | 'RELEASED'
+    | 'REFUNDED'
+    | 'PARTIALLY_REFUNDED'
+    | 'PENDING_RELEASE';
+  buyerId: string;
+  buyerName: string;
+  sellerId: string;
+  sellerName: string;
+  createdAt: string;
+  autoReleaseDate?: string;
+  disputeId?: string;
+  canRelease: boolean;
+  canDispute: boolean;
+  history: Array<{
+    id: string;
+    type:
+      | 'PAYMENT_HELD'
+      | 'DISPUTE_RAISED'
+      | 'PAYMENT_FROZEN'
+      | 'DISPUTE_RESOLVED'
+      | 'PAYMENT_UNFROZEN'
+      | 'PAYMENT_RELEASED'
+      | 'REFUND_ISSUED'
+      | 'AUTO_RELEASE_SCHEDULED'
+      | 'ORDER_COMPLETED'
+      | 'ORDER_DELIVERED';
+    timestamp: string;
+    actor?: {
+      id: string;
+      name: string;
+      role: 'BUYER' | 'SELLER' | 'ADMIN' | 'SYSTEM';
+    };
+    metadata?: Record<string, unknown>;
+  }>;
+}
+
+// ================================================
 // TRANSACTION TYPES
 // ================================================
 

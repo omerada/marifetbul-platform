@@ -20,6 +20,7 @@ import {
   AlertTriangle,
   Loader2,
   Info,
+  Flag,
 } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { toast } from 'sonner';
@@ -39,6 +40,7 @@ export interface BulkActionToolbarProps {
   selectedIds: number[];
   onActionComplete: () => void;
   onClearSelection: () => void;
+  onEscalate?: (ids: number[]) => Promise<void>;
 }
 
 // ================================================
@@ -49,6 +51,7 @@ export function BulkActionToolbar({
   selectedIds,
   onActionComplete,
   onClearSelection,
+  onEscalate,
 }: BulkActionToolbarProps) {
   const [loading, setLoading] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
@@ -57,6 +60,32 @@ export function BulkActionToolbar({
   // ================================================
   // HANDLERS
   // ================================================
+
+  const handleBulkEscalate = async () => {
+    if (selectedIds.length === 0 || !onEscalate) return;
+
+    // Confirm action
+    if (
+      !confirm(
+        `${selectedIds.length} yorumu yöneticilere yükseltmek istediğinizden emin misiniz?`
+      )
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await onEscalate(selectedIds);
+      toast.success(`${selectedIds.length} yorum başarıyla yükseltildi`);
+      onActionComplete();
+      onClearSelection();
+    } catch (error) {
+      logger.error('Bulk escalate error:', error);
+      toast.error('Yükseltme sırasında hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleBulkApprove = async () => {
     if (selectedIds.length === 0) return;
@@ -296,6 +325,18 @@ export function BulkActionToolbar({
             <AlertTriangle className="mr-2 h-4 w-4" />
             Spam ({selectedIds.length})
           </Button>
+
+          {onEscalate && (
+            <Button
+              variant="outline"
+              onClick={handleBulkEscalate}
+              disabled={loading}
+              className="border-purple-300 text-purple-600 hover:bg-purple-50"
+            >
+              <Flag className="mr-2 h-4 w-4" />
+              Yükselt ({selectedIds.length})
+            </Button>
+          )}
         </div>
 
         {/* Loading State Overlay */}
