@@ -115,14 +115,17 @@ export const CommissionSummaryCard: React.FC<CommissionSummaryCardProps> = ({
         <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20" />
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="w-5 h-5 animate-spin rounded-full border-2 border-green-500 border-t-transparent" />
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-green-500 border-t-transparent" />
             Yükleniyor...
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+              <div
+                key={i}
+                className="h-16 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              />
             ))}
           </div>
         </CardContent>
@@ -143,16 +146,17 @@ export const CommissionSummaryCard: React.FC<CommissionSummaryCardProps> = ({
         <CardHeader className="relative">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <div className="p-2 bg-green-500/10 rounded-lg">
-                <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400" />
+              <div className="rounded-lg bg-green-500/10 p-2">
+                <DollarSign className="h-5 w-5 text-green-600 dark:text-green-400" />
               </div>
               Komisyon Kazançları
               <Tooltip>
                 <TooltipTrigger>
-                  <Info className="w-4 h-4 text-gray-400 cursor-help" />
+                  <Info className="h-4 w-4 cursor-help text-gray-400" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  Platform komisyon oranı: {formatPercentage(data.commissionRate)}
+                  Platform komisyon oranı:{' '}
+                  {formatPercentage(data.commissionRate)}
                 </TooltipContent>
               </Tooltip>
             </CardTitle>
@@ -164,7 +168,7 @@ export const CommissionSummaryCard: React.FC<CommissionSummaryCardProps> = ({
                 onClick={onExport}
                 className="gap-2"
               >
-                <Download className="w-4 h-4" />
+                <Download className="h-4 w-4" />
                 Dışa Aktar
               </Button>
             )}
@@ -173,14 +177,14 @@ export const CommissionSummaryCard: React.FC<CommissionSummaryCardProps> = ({
 
         <CardContent className="relative space-y-6">
           {/* Total Commission */}
-          <div className="p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg border border-green-100 dark:border-green-900/30">
-            <div className="flex items-center justify-between mb-2">
+          <div className="rounded-lg border border-green-100 bg-white/50 p-4 dark:border-green-900/30 dark:bg-gray-800/50">
+            <div className="mb-2 flex items-center justify-between">
               <span className="text-sm text-gray-600 dark:text-gray-400">
                 Toplam Komisyon
               </span>
               <Tooltip>
                 <TooltipTrigger>
-                  <span className="text-xs text-gray-500 dark:text-gray-500 cursor-help">
+                  <span className="cursor-help text-xs text-gray-500 dark:text-gray-500">
                     {data.orderCount} sipariş
                   </span>
                 </TooltipTrigger>
@@ -192,17 +196,18 @@ export const CommissionSummaryCard: React.FC<CommissionSummaryCardProps> = ({
             <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {formatCurrency(data.totalCommission, currency)}
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-              Ortalama: {formatCurrency(data.averageCommissionPerOrder, currency)}/sipariş
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">
+              Ortalama:{' '}
+              {formatCurrency(data.averageCommissionPerOrder, currency)}/sipariş
             </p>
           </div>
 
           {/* Monthly Commission */}
           <div className="grid grid-cols-2 gap-4">
             {/* Current Month */}
-            <div className="p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-800">
-              <div className="flex items-center gap-2 mb-2">
-                <Calendar className="w-4 h-4 text-gray-400" />
+            <div className="rounded-lg border border-gray-100 bg-white/50 p-4 dark:border-gray-800 dark:bg-gray-800/50">
+              <div className="mb-2 flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-gray-400" />
                 <span className="text-sm text-gray-600 dark:text-gray-400">
                   Bu Ay
                 </span>
@@ -210,18 +215,18 @@ export const CommissionSummaryCard: React.FC<CommissionSummaryCardProps> = ({
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {formatCurrency(data.monthlyCommission, currency)}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">
                 {data.monthlyOrderCount} sipariş
               </p>
             </div>
 
             {/* Month-over-Month Change */}
-            <div className="p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-800">
-              <div className="flex items-center gap-2 mb-2">
+            <div className="rounded-lg border border-gray-100 bg-white/50 p-4 dark:border-gray-800 dark:bg-gray-800/50">
+              <div className="mb-2 flex items-center gap-2">
                 {isPositiveTrend ? (
-                  <TrendingUp className="w-4 h-4 text-green-500" />
+                  <TrendingUp className="h-4 w-4 text-green-500" />
                 ) : (
-                  <TrendingDown className="w-4 h-4 text-red-500" />
+                  <TrendingDown className="h-4 w-4 text-red-500" />
                 )}
                 <span className="text-sm text-gray-600 dark:text-gray-400">
                   Değişim
@@ -238,18 +243,19 @@ export const CommissionSummaryCard: React.FC<CommissionSummaryCardProps> = ({
                 {isPositiveTrend ? '+' : ''}
                 {formatPercentage(Math.abs(monthOverMonthChange) / 100)}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">
                 Geçen aya göre
               </p>
             </div>
           </div>
 
           {/* Commission Rate Info */}
-          <div className="p-3 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-100 dark:border-green-900/30">
+          <div className="rounded-lg border border-green-100 bg-green-50 p-3 dark:border-green-900/30 dark:bg-green-950/30">
             <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-300">
-              <Percent className="w-4 h-4" />
+              <Percent className="h-4 w-4" />
               <span>
-                Platform komisyon oranı: <strong>{formatPercentage(data.commissionRate)}</strong>
+                Platform komisyon oranı:{' '}
+                <strong>{formatPercentage(data.commissionRate)}</strong>
               </span>
             </div>
           </div>

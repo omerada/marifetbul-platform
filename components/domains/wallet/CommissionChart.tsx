@@ -133,24 +133,36 @@ export const CommissionChart: React.FC<CommissionChartProps> = ({
   }, [filteredData]);
 
   // Custom tooltip
-  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: MonthlyCommissionData }> }) => {
+  const CustomTooltip = ({
+    active,
+    payload,
+  }: {
+    active?: boolean;
+    payload?: Array<{ payload: MonthlyCommissionData }>;
+  }) => {
     if (!active || !payload?.length) return null;
 
     const data = payload[0].payload;
     return (
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-lg">
-        <p className="font-semibold text-gray-900 dark:text-white mb-2">
+      <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+        <p className="mb-2 font-semibold text-gray-900 dark:text-white">
           {data.month}
         </p>
         <div className="space-y-1 text-sm">
           <p className="text-green-600 dark:text-green-400">
-            Komisyon: <span className="font-semibold">{formatCurrency(data.commission, currency)}</span>
+            Komisyon:{' '}
+            <span className="font-semibold">
+              {formatCurrency(data.commission, currency)}
+            </span>
           </p>
           <p className="text-gray-600 dark:text-gray-400">
             Sipariş: <span className="font-semibold">{data.orderCount}</span>
           </p>
           <p className="text-gray-600 dark:text-gray-400">
-            Ortalama: <span className="font-semibold">{formatCurrency(data.averagePerOrder, currency)}</span>
+            Ortalama:{' '}
+            <span className="font-semibold">
+              {formatCurrency(data.averagePerOrder, currency)}
+            </span>
           </p>
         </div>
       </div>
@@ -164,8 +176,8 @@ export const CommissionChart: React.FC<CommissionChartProps> = ({
           <CardTitle>Komisyon Trendi</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px] flex items-center justify-center">
-            <div className="w-8 h-8 animate-spin rounded-full border-4 border-green-500 border-t-transparent" />
+          <div className="flex h-[400px] items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-500 border-t-transparent" />
           </div>
         </CardContent>
       </Card>
@@ -179,7 +191,7 @@ export const CommissionChart: React.FC<CommissionChartProps> = ({
           <CardTitle>Komisyon Trendi</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px] flex items-center justify-center text-gray-500">
+          <div className="flex h-[400px] items-center justify-center text-gray-500">
             Henüz komisyon verisi bulunmuyor
           </div>
         </CardContent>
@@ -195,29 +207,30 @@ export const CommissionChart: React.FC<CommissionChartProps> = ({
     >
       <Card className={cn('relative', className)}>
         <CardHeader>
-          <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-green-500" />
+                <TrendingUp className="h-5 w-5 text-green-500" />
                 Komisyon Trendi
               </CardTitle>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Toplam: {formatCurrency(totals.commission, currency)} • {totals.orderCount} sipariş
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Toplam: {formatCurrency(totals.commission, currency)} •{' '}
+                {totals.orderCount} sipariş
               </p>
             </div>
 
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex flex-wrap items-center gap-2">
               {/* Period selector */}
-              <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+              <div className="flex items-center gap-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-800">
                 {(['6m', '12m', 'all'] as const).map((p) => (
                   <button
                     key={p}
                     onClick={() => setPeriod(p)}
                     className={cn(
-                      'px-3 py-1 text-sm rounded transition-colors',
+                      'rounded px-3 py-1 text-sm transition-colors',
                       period === p
-                        ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                        ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white'
+                        : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
                     )}
                   >
                     {p === '6m' ? '6 Ay' : p === '12m' ? '12 Ay' : 'Tümü'}
@@ -226,30 +239,30 @@ export const CommissionChart: React.FC<CommissionChartProps> = ({
               </div>
 
               {/* Chart type toggle */}
-              <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+              <div className="flex items-center gap-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-800">
                 <button
                   onClick={() => setChartType('line')}
                   className={cn(
-                    'px-3 py-1 rounded transition-colors',
+                    'rounded px-3 py-1 transition-colors',
                     chartType === 'line'
-                      ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                      ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white'
+                      : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
                   )}
                   title="Çizgi grafik"
                 >
-                  <TrendingUp className="w-4 h-4" />
+                  <TrendingUp className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => setChartType('bar')}
                   className={cn(
-                    'px-3 py-1 rounded transition-colors',
+                    'rounded px-3 py-1 transition-colors',
                     chartType === 'bar'
-                      ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                      ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white'
+                      : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
                   )}
                   title="Çubuk grafik"
                 >
-                  <BarChart3 className="w-4 h-4" />
+                  <BarChart3 className="h-4 w-4" />
                 </button>
               </div>
 
@@ -261,7 +274,7 @@ export const CommissionChart: React.FC<CommissionChartProps> = ({
                   onClick={onExport}
                   className="gap-2"
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="h-4 w-4" />
                   Dışa Aktar
                 </Button>
               )}
@@ -298,7 +311,9 @@ export const CommissionChart: React.FC<CommissionChartProps> = ({
                 <Tooltip content={<CustomTooltip />} />
                 <Legend
                   wrapperStyle={{ fontSize: 14 }}
-                  formatter={(value) => (value === 'commission' ? 'Komisyon' : value)}
+                  formatter={(value) =>
+                    value === 'commission' ? 'Komisyon' : value
+                  }
                 />
                 <Line
                   type="monotone"
@@ -337,7 +352,9 @@ export const CommissionChart: React.FC<CommissionChartProps> = ({
                 <Tooltip content={<CustomTooltip />} />
                 <Legend
                   wrapperStyle={{ fontSize: 14 }}
-                  formatter={(value) => (value === 'commission' ? 'Komisyon' : value)}
+                  formatter={(value) =>
+                    value === 'commission' ? 'Komisyon' : value
+                  }
                 />
                 <Bar
                   dataKey="commission"
