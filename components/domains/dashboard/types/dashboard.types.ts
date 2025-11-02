@@ -280,10 +280,12 @@ export interface ActivityItem {
   description?: string;
   /** Activity status */
   status: ActivityStatus;
-  /** Icon component */
-  icon?: LucideIcon;
+  /** Icon component name (as string for serialization) */
+  icon?: string;
   /** Icon color */
   iconColor?: string;
+  /** Navigation link */
+  link?: string;
   /** Timestamp (ISO string) */
   timestamp: string;
   /** User who performed the action */
@@ -350,12 +352,14 @@ export interface QuickAction {
   label: string;
   /** Action description */
   description?: string;
-  /** Icon component */
-  icon: LucideIcon;
+  /** Icon component (LucideIcon name as string for serialization) */
+  icon: string;
   /** Icon color */
   iconColor?: string;
-  /** Action handler */
-  onClick: () => void;
+  /** Action link (for navigation) */
+  href?: string;
+  /** Action handler (for buttons) */
+  onClick?: () => void;
   /** Whether action is disabled */
   disabled?: boolean;
   /** Badge count */

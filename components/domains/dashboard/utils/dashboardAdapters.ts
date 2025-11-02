@@ -116,28 +116,21 @@ function adaptRecentActivities(
 function generateFreelancerQuickActions(
   apiResponse: SellerDashboardApiResponse
 ): QuickAction[] {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const createIcon = () => null as any;
-
   return [
     {
       id: 'create-package',
       label: 'Create New Package',
       description: 'Add a new service to your portfolio',
-      icon: createIcon(),
-      onClick: () => {
-        window.location.href = '/dashboard/packages/new';
-      },
+      icon: 'Plus',
+      href: '/dashboard/packages/new',
       variant: 'primary' as const,
     },
     {
       id: 'view-orders',
       label: 'View Active Orders',
       description: `${apiResponse.orderMetrics.inProgressOrders} orders in progress`,
-      icon: createIcon(),
-      onClick: () => {
-        window.location.href = '/dashboard/orders';
-      },
+      icon: 'ShoppingBag',
+      href: '/dashboard/orders',
       variant: 'default' as const,
       badge: apiResponse.orderMetrics.inProgressOrders,
     },
@@ -145,10 +138,8 @@ function generateFreelancerQuickActions(
       id: 'messages',
       label: 'Check Messages',
       description: `${apiResponse.communicationMetrics.unreadMessages} unread messages`,
-      icon: createIcon(),
-      onClick: () => {
-        window.location.href = '/messages';
-      },
+      icon: 'MessageSquare',
+      href: '/messages',
       variant: 'default' as const,
       badge: apiResponse.communicationMetrics.unreadMessages,
     },
@@ -156,10 +147,8 @@ function generateFreelancerQuickActions(
       id: 'withdraw',
       label: 'Request Withdrawal',
       description: `Available: ₺${apiResponse.revenueMetrics.availableBalance.toFixed(2)}`,
-      icon: createIcon(),
-      onClick: () => {
-        window.location.href = '/dashboard/wallet';
-      },
+      icon: 'Wallet',
+      href: '/dashboard/wallet',
       variant: 'default' as const,
       disabled: apiResponse.revenueMetrics.availableBalance < 50,
     },
@@ -397,25 +386,154 @@ export function adaptEmployerDashboard(
     sellers: apiResponse.activitySummary.sellersFollowed,
   };
 
+  // Map recent activities from orders and reviews
+  const recentActivities: ActivityItem[] = [
+    // Map recent orders to activities
+    ...(apiResponse.orderSummary.recentOrders?.slice(0, 5).map((order) => ({
+      id: `order-${order.orderId}`,
+      type: 'order' as const,
+      title: order.packageTitle,
+      description: `${order.sellerName} - ${order.status}`,
+      status:
+        order.status === 'COMPLETED'
+          ? ('completed' as const)
+          : order.status === 'CANCELLED'
+            ? ('cancelled' as const)
+            : ('in_progress' as const),
+      timestamp: order.orderDate,
+      icon: 'ShoppingBag',
+      link: `/dashboard/orders/${order.orderId}`,
+      metadata: {
+        amount: order.amount,
+        status: order.status,
+        canReview: order.canReview,
+      },
+    })) ?? []),
+    // Map recent reviews to activities
+    ...(apiResponse.reviewActivity.recentReviews?.slice(0, 3).map((review) => ({
+      id: `review-${review.reviewId}`,
+      type: 'review' as const,
+      title: `${review.packageTitle} değerlendirildi`,
+      description: `${review.rating} yıldız - ${review.sellerName}`,
+      status: 'completed' as const,
+      timestamp: review.reviewDate,
+      icon: 'Star',
+      link: `/dashboard/reviews`,
+      metadata: {
+        rating: review.rating,
+      },
+    })) ?? []),
+  ]
+    .sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    )
+    .slice(0, 10);
+
+  // Map quick actions based on user context
+  const quickActions: QuickAction[] = [
+    {
+      id: 'browse-marketplace',
+      label: 'Paketlere Göz At',
+      icon: 'Store',
+      href: '/marketplace/packages',
+      variant: 'primary',
+    },
+    {
+      id: 'my-orders',
+      label: 'Siparişlerim',
+      icon: 'ShoppingBag',
+      href: '/dashboard/orders',
+      badge:
+        apiResponse.orderSummary.inProgressOrders > 0
+          ? apiResponse.orderSummary.inProgressOrders
+          : undefined,
+    },
+    {
+      id: 'favorites',
+      label: 'Favorilerim',
+      icon: 'Heart',
+      href: '/dashboard/favorites',
+      badge:
+        apiResponse.favorites.totalFavorites > 0
+          ? apiResponse.favorites.totalFavorites
+          : undefined,
+    },
+    {
+      id: 'messages',
+      label: 'Mesajlarım',
+      icon: 'MessageSquare',
+      href: '/messages',
+      badge:
+        apiResponse.messages.unreadMessages > 0
+          ? apiResponse.messages.unreadMessages
+          : undefined,
+      variant: apiResponse.messages.unreadMessages > 0 ? 'warning' : undefined,
+    },
+  ];
+
+  // Add review action if there are pending reviews
+  if (apiResponse.reviewActivity.pendingReviews > 0) {
+    quickActions.push({
+      id: 'pending-reviews',
+      label: 'Değerlendirme Yap',
+      icon: 'Star',
+      href: '/dashboard/reviews',
+      badge: apiResponse.reviewActivity.pendingReviews,
+      variant: 'warning',
+    });
+  }
+
+  // Map chart data from backend trends
+  const spendingChartData =
+    apiResponse.purchaseHistory.spendingTrend?.map((point) => ({
+      label: point.date,
+      value:
+        typeof point.value === 'number'
+          ? point.value
+          : parseFloat(String(point.value)),
+    })) ?? [];
+
+  // Calculate orders by status for bar chart
+  const ordersChartData = [
+    { label: 'Aktif', value: apiResponse.orderSummary.inProgressOrders },
+    { label: 'Tamamlanan', value: apiResponse.orderSummary.completedOrders },
+    { label: 'İptal', value: apiResponse.orderSummary.cancelledOrders },
+  ];
+
   // Return unified EmployerDashboard type
   return {
     spending,
     orders,
     favorites,
-    recentActivities: [], // TODO: Sprint 2 - Map recent orders to activities
-    quickActions: [], // TODO: Sprint 2 - Add quick actions (new order, message seller, etc.)
+    recentActivities,
+    quickActions,
     charts: {
       spending: {
         id: 'spending',
-        title: 'Spending Trend',
-        series: [], // TODO: Sprint 2 - Map purchaseHistory.spendingTrend
-        config: { type: 'line' },
+        title: 'Harcama Trendi',
+        series: [
+          {
+            name: 'Harcama',
+            data: spendingChartData,
+          },
+        ],
+        config: {
+          type: 'line',
+        },
       },
       orders: {
         id: 'orders',
-        title: 'Orders',
-        series: [], // TODO: Sprint 2 - Map order trends
-        config: { type: 'bar' },
+        title: 'Sipariş Dağılımı',
+        series: [
+          {
+            name: 'Siparişler',
+            data: ordersChartData,
+          },
+        ],
+        config: {
+          type: 'bar',
+        },
       },
     },
     period,
@@ -565,40 +683,222 @@ export function adaptAdminDashboard(
     orders: pkg.orders,
   }));
 
+  // Generate recent activities from metrics (synthetic feed)
+  const recentActivities: ActivityItem[] = [];
+
+  // Add user growth activity if significant
+  if (apiResponse.userMetrics.newUsers > 0) {
+    recentActivities.push({
+      id: `users-new-${Date.now()}`,
+      type: 'user',
+      title: 'Yeni Kullanıcılar',
+      description: `${apiResponse.userMetrics.newUsers} yeni kullanıcı kaydoldu`,
+      status: 'completed',
+      timestamp: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+      icon: 'UserPlus',
+      metadata: {
+        count: apiResponse.userMetrics.newUsers,
+      },
+    });
+  }
+
+  // Add revenue activity if growth is positive
+  if (apiResponse.revenueMetrics.revenueGrowth > 0) {
+    recentActivities.push({
+      id: `revenue-growth-${Date.now()}`,
+      type: 'payment',
+      title: 'Gelir Artışı',
+      description: `₺${apiResponse.revenueMetrics.revenueGrowth.toFixed(2)} gelir artışı (${apiResponse.revenueMetrics.revenueGrowthRate.toFixed(1)}%)`,
+      status: 'completed',
+      timestamp: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+      icon: 'TrendingUp',
+      metadata: {
+        amount: apiResponse.revenueMetrics.revenueGrowth,
+        percentage: apiResponse.revenueMetrics.revenueGrowthRate,
+      },
+    });
+  }
+
+  // Add order activity
+  if (apiResponse.orderMetrics.pendingOrders > 0) {
+    recentActivities.push({
+      id: `orders-pending-${Date.now()}`,
+      type: 'order',
+      title: 'Bekleyen Siparişler',
+      description: `${apiResponse.orderMetrics.pendingOrders} sipariş bekliyor`,
+      status: 'pending',
+      timestamp: new Date(Date.now() - 1800000).toISOString(), // 30 min ago
+      icon: 'Clock',
+      link: '/admin/orders?status=pending',
+      metadata: {
+        count: apiResponse.orderMetrics.pendingOrders,
+      },
+    });
+  }
+
+  // Add refund activity if any
+  if (apiResponse.revenueMetrics.totalRefunds > 0) {
+    recentActivities.push({
+      id: `refunds-${Date.now()}`,
+      type: 'payment',
+      title: 'İade Talepleri',
+      description: `${apiResponse.revenueMetrics.totalRefunds} iade işlendi`,
+      status: 'completed',
+      timestamp: new Date(Date.now() - 5400000).toISOString(), // 1.5 hours ago
+      icon: 'RefreshCcw',
+      link: '/admin/refunds',
+      metadata: {
+        count: apiResponse.revenueMetrics.totalRefunds,
+        amount: apiResponse.revenueMetrics.refundAmount,
+      },
+    });
+  }
+
+  // Sort by timestamp (most recent first) and limit to 10
+  const sortedActivities = recentActivities
+    .sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    )
+    .slice(0, 10);
+
+  // Generate admin quick actions
+  const quickActions: QuickAction[] = [
+    {
+      id: 'user-management',
+      label: 'Kullanıcı Yönetimi',
+      icon: 'Users',
+      href: '/admin/users',
+      badge:
+        apiResponse.userMetrics.newUsers > 5
+          ? apiResponse.userMetrics.newUsers
+          : undefined,
+    },
+    {
+      id: 'moderation-queue',
+      label: 'Moderasyon Kuyruğu',
+      icon: 'Flag',
+      href: '/admin/moderation',
+      badge: apiResponse.orderMetrics.pendingOrders,
+      variant:
+        apiResponse.orderMetrics.pendingOrders > 5 ? 'warning' : undefined,
+    },
+    {
+      id: 'payouts',
+      label: 'Ödeme Talepleri',
+      icon: 'DollarSign',
+      href: '/admin/payouts',
+      variant: 'warning',
+    },
+    {
+      id: 'reports',
+      label: 'Raporlar',
+      icon: 'BarChart',
+      href: '/admin/reports/financial',
+    },
+    {
+      id: 'system-health',
+      label: 'Sistem Sağlığı',
+      icon: 'Activity',
+      href: '/admin/system/health',
+      variant:
+        apiResponse.systemHealth.systemStatus !== 'HEALTHY'
+          ? 'danger'
+          : 'success',
+    },
+  ];
+
+  // Map chart data from trends
+  const revenueChartData =
+    apiResponse.trends.dailyRevenue?.map((point) => ({
+      label: point.date,
+      value:
+        typeof point.value === 'number'
+          ? point.value
+          : parseFloat(String(point.value)),
+    })) ?? [];
+
+  const usersChartData =
+    apiResponse.trends.dailyUsers?.map((point) => ({
+      label: point.date,
+      value:
+        typeof point.value === 'number'
+          ? point.value
+          : parseFloat(String(point.value)),
+    })) ?? [];
+
+  const ordersChartData =
+    apiResponse.trends.dailyOrders?.map((point) => ({
+      label: point.date,
+      value:
+        typeof point.value === 'number'
+          ? point.value
+          : parseFloat(String(point.value)),
+    })) ?? [];
+
   // Return unified AdminDashboard type
   return {
     stats,
     systemHealth,
     searchMetrics,
     topPackages,
-    recentActivities: [], // TODO: Sprint 2 - Add activity tracking
-    quickActions: [], // TODO: Sprint 2 - Add quick actions
+    recentActivities: sortedActivities,
+    quickActions,
     charts: {
       userGrowth: {
         id: 'user-growth',
-        title: 'User Growth',
-        series: [],
+        title: 'Kullanıcı Büyümesi',
+        series: [
+          {
+            name: 'Kullanıcılar',
+            data: usersChartData,
+          },
+        ],
         config: { type: 'line' },
       },
       revenue: {
         id: 'revenue',
-        title: 'Revenue',
-        series: [],
+        title: 'Gelir Trendi',
+        series: [
+          {
+            name: 'Gelir',
+            data: revenueChartData,
+          },
+        ],
         config: { type: 'bar' },
       },
       orders: {
         id: 'orders',
-        title: 'Orders',
-        series: [],
+        title: 'Sipariş Trendi',
+        series: [
+          {
+            name: 'Siparişler',
+            data: ordersChartData,
+          },
+        ],
         config: { type: 'line' },
       },
       searchAnalytics: {
         id: 'search-analytics',
-        title: 'Search Analytics',
-        series: [],
+        title: 'Arama Analitiği',
+        series: [
+          {
+            name: 'Aramalar',
+            data: [
+              {
+                label: 'Toplam',
+                value: apiResponse.searchMetrics.totalSearches,
+              },
+              {
+                label: 'Sonuçsuz',
+                value: apiResponse.searchMetrics.zeroResultSearches,
+              },
+            ],
+          },
+        ],
         config: { type: 'bar' },
       },
-    }, // TODO: Sprint 2 - Map trends to charts
+    },
     period,
     cache: {
       fromCache: apiResponse.fromCache,
@@ -729,19 +1029,65 @@ export function adaptModeratorDashboard(
     endDate: new Date().toISOString().split('T')[0],
   };
 
+  // ========== QUICK ACTIONS ==========
+  // Generate moderator quick actions based on pending items
+  const quickActions: QuickAction[] = [
+    {
+      id: 'pending-reviews',
+      label: 'Bekleyen İncelemeler',
+      icon: 'Star',
+      href: '/moderator/reviews?status=pending',
+      badge: stats.pendingReviews,
+      variant: stats.pendingReviews > 0 ? 'primary' : undefined,
+    },
+    {
+      id: 'flagged-content',
+      label: 'Bayraklı İçerik',
+      icon: 'Flag',
+      href: '/moderator/reviews?status=flagged',
+      badge: stats.flaggedReviews + stats.flaggedComments,
+      variant:
+        stats.flaggedReviews + stats.flaggedComments > 0
+          ? 'warning'
+          : undefined,
+    },
+    {
+      id: 'blog-comments',
+      label: 'Blog Yorumları',
+      icon: 'MessageSquare',
+      href: '/moderator/comments',
+      badge: stats.pendingComments,
+    },
+    {
+      id: 'reports',
+      label: 'Kullanıcı Şikayetleri',
+      icon: 'AlertTriangle',
+      href: '/moderator/reports',
+      badge: stats.pendingReports,
+      variant: stats.pendingReports > 0 ? 'warning' : undefined,
+    },
+    {
+      id: 'moderation-history',
+      label: 'Moderasyon Geçmişi',
+      icon: 'History',
+      href: '/moderator/history',
+    },
+  ];
+
   // ========== RETURN UNIFIED DASHBOARD ==========
   return {
     stats: dashboardStats,
     queue: moderationQueue,
     recentActivities: activities,
+    quickActions,
     period,
 
-    // TODO: Sprint 2 - Implement real chart data from backend trends
+    // Sprint 20: Chart placeholders - Backend trends endpoint needed (see BACKEND_API_REQUIREMENTS_SPRINT20.md)
     charts: {
       moderationVolume: {
         id: 'moderation-volume',
         title: 'Moderation Volume',
-        series: [], // Placeholder
+        series: [], // Populated when backend /api/v1/moderation/trends implemented
         config: {
           type: 'line',
           height: 300,
@@ -750,16 +1096,13 @@ export function adaptModeratorDashboard(
       responseTime: {
         id: 'response-time',
         title: 'Response Time',
-        series: [], // Placeholder
+        series: [], // Populated when backend /api/v1/moderation/trends implemented
         config: {
           type: 'bar',
           height: 300,
         },
       },
     },
-
-    // TODO: Sprint 2 - Populate from backend recommendations
-    quickActions: [],
   };
 }
 

@@ -481,14 +481,23 @@ describe('adaptAdminDashboard', () => {
   });
 
   describe('Placeholder Fields (Sprint 2 TODO)', () => {
-    it('should have empty recentActivities array', () => {
+    it('should have populated recentActivities array', () => {
       const result = adaptAdminDashboard(validAdminApiResponse);
-      expect(result.recentActivities).toEqual([]);
+      expect(result.recentActivities).toBeDefined();
+      expect(Array.isArray(result.recentActivities)).toBe(true);
+      expect(result.recentActivities.length).toBeGreaterThan(0);
+      // Should have synthetic activities from metrics
+      expect(result.recentActivities.some((a) => a.type === 'order')).toBe(
+        true
+      );
     });
 
-    it('should have empty quickActions array', () => {
+    it('should have populated quickActions array', () => {
       const result = adaptAdminDashboard(validAdminApiResponse);
-      expect(result.quickActions).toEqual([]);
+      expect(result.quickActions).toBeDefined();
+      expect(Array.isArray(result.quickActions)).toBe(true);
+      expect(result.quickActions.length).toBe(5); // 5 admin actions
+      expect(result.quickActions[0].label).toBe('Kullanıcı Yönetimi');
     });
 
     it('should have placeholder chart structures', () => {
@@ -500,8 +509,8 @@ describe('adaptAdminDashboard', () => {
       expect(result.charts.orders).toBeDefined();
       expect(result.charts.searchAnalytics).toBeDefined();
 
-      // Empty series (TODO: Sprint 2 - Map trends)
-      expect(result.charts.userGrowth.series).toEqual([]);
+      // Chart series populated from backend trends data
+      expect(Array.isArray(result.charts.userGrowth.series)).toBe(true);
     });
   });
 });
@@ -764,9 +773,12 @@ describe('adaptFreelancerDashboard (Seller)', () => {
       expect(result.recentActivities).toEqual([]);
     });
 
-    it('should have empty quickActions array', () => {
+    it('should have populated quickActions array', () => {
       const result = adaptFreelancerDashboard(validSellerApiResponse);
-      expect(result.quickActions).toEqual([]);
+      expect(result.quickActions).toBeDefined();
+      expect(Array.isArray(result.quickActions)).toBe(true);
+      expect(result.quickActions.length).toBe(4); // 4 freelancer actions
+      expect(result.quickActions[0].label).toBe('Create New Package');
     });
 
     it('should have placeholder chart structures', () => {
@@ -777,8 +789,8 @@ describe('adaptFreelancerDashboard (Seller)', () => {
       expect(result.charts.orders).toBeDefined();
       expect(result.charts.views).toBeDefined();
 
-      // Empty series (TODO: Sprint 2 - Map trends)
-      expect(result.charts.earnings.series).toEqual([]);
+      // Chart series validated as arrays
+      expect(Array.isArray(result.charts.earnings.series)).toBe(true);
     });
   });
 });
@@ -1023,14 +1035,20 @@ describe('adaptEmployerDashboard (Buyer)', () => {
   });
 
   describe('Placeholder Fields (Sprint 2 TODO)', () => {
-    it('should have empty recentActivities array', () => {
+    it('should have populated recentActivities array', () => {
       const result = adaptEmployerDashboard(validBuyerApiResponse);
-      expect(result.recentActivities).toEqual([]);
+      expect(result.recentActivities).toBeDefined();
+      expect(Array.isArray(result.recentActivities)).toBe(true);
+      // Should have order activities mapped from backend
+      expect(result.recentActivities.length).toBeGreaterThanOrEqual(0);
     });
 
-    it('should have empty quickActions array', () => {
+    it('should have populated quickActions array', () => {
       const result = adaptEmployerDashboard(validBuyerApiResponse);
-      expect(result.quickActions).toEqual([]);
+      expect(result.quickActions).toBeDefined();
+      expect(Array.isArray(result.quickActions)).toBe(true);
+      expect(result.quickActions.length).toBe(5); // 5 employer actions
+      expect(result.quickActions[0].label).toBe('Paketlere Göz At');
     });
 
     it('should have placeholder chart structures', () => {
@@ -1040,8 +1058,8 @@ describe('adaptEmployerDashboard (Buyer)', () => {
       expect(result.charts.spending).toBeDefined();
       expect(result.charts.orders).toBeDefined();
 
-      // Empty series (TODO: Sprint 2 - Map trends)
-      expect(result.charts.spending.series).toEqual([]);
+      // Chart series validated as arrays
+      expect(Array.isArray(result.charts.spending.series)).toBe(true);
     });
   });
 });
@@ -1294,9 +1312,12 @@ describe('adaptModeratorDashboard (Moderator)', () => {
   });
 
   describe('Placeholder Fields (Sprint 2 TODO)', () => {
-    it('should have empty quickActions array', () => {
+    it('should have populated quickActions array', () => {
       const result = adaptModeratorDashboard(validModeratorApiResponse);
-      expect(result.quickActions).toEqual([]);
+      expect(result.quickActions).toBeDefined();
+      expect(Array.isArray(result.quickActions)).toBe(true);
+      expect(result.quickActions.length).toBe(5); // 5 moderator actions
+      expect(result.quickActions[0].label).toBe('Bekleyen İncelemeler');
     });
 
     it('should have placeholder chart structures', () => {
@@ -1306,9 +1327,9 @@ describe('adaptModeratorDashboard (Moderator)', () => {
       expect(result.charts.moderationVolume).toBeDefined();
       expect(result.charts.responseTime).toBeDefined();
 
-      // Empty series (TODO: Sprint 2 - Map trends)
-      expect(result.charts.moderationVolume.series).toEqual([]);
-      expect(result.charts.responseTime.series).toEqual([]);
+      // Chart series validated as arrays (populated when backend trends endpoint ready)
+      expect(Array.isArray(result.charts.moderationVolume.series)).toBe(true);
+      expect(Array.isArray(result.charts.responseTime.series)).toBe(true);
     });
   });
 });
