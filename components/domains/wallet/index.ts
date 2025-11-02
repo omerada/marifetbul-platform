@@ -5,8 +5,50 @@
  * Central export point for all wallet UI components
  *
  * @author MarifetBul Development Team
- * @version 2.0.0 - Sprint 1: Consolidated payout modals
+ * @version 2.1.0 - Sprint 1 Epic 1.1: Added WalletDashboard & BalanceCard
  */
+
+// Sprint 1 - Epic 1.1 - NEW Components
+export { WalletDashboard } from './WalletDashboard';
+export type { WalletDashboardProps } from './WalletDashboard';
+
+export { BalanceCard } from './BalanceCard';
+export type { BalanceCardProps } from './BalanceCard';
+
+export { WalletAnalytics } from './WalletAnalytics';
+export type { WalletAnalyticsProps, AnalyticsPeriod } from './WalletAnalytics';
+
+// Sprint 1 - Epic 1.2 - Escrow Management (Days 4-5)
+export { EscrowList } from './EscrowList';
+export type { EscrowListProps, EscrowItem, EscrowStatus } from './EscrowList';
+
+export { EscrowDetailsModal } from './EscrowDetailsModal';
+export type { EscrowDetailsModalProps } from './EscrowDetailsModal';
+
+export { ReleaseEscrowFlow } from './ReleaseEscrowFlow';
+export type { ReleaseEscrowFlowProps } from './ReleaseEscrowFlow';
+
+export { DisputeEscrowModal } from './DisputeEscrowModal';
+export type {
+  DisputeEscrowModalProps,
+  DisputeReason,
+} from './DisputeEscrowModal';
+
+// Sprint 1 - Epic 1.3 - Payout System (Days 6-7)
+export { PayoutRequestFlow } from './PayoutRequestFlow';
+export type { PayoutRequestFlowProps } from './PayoutRequestFlow';
+
+export { PayoutHistory } from './PayoutHistory';
+export type { PayoutHistoryProps, PayoutFilters } from './PayoutHistory';
+
+export { BankAccountManager } from './BankAccountManager';
+export type {
+  BankAccountManagerProps,
+  BankAccount,
+} from './BankAccountManager';
+
+export { PayoutDashboard } from './PayoutDashboard';
+export type { PayoutDashboardProps } from './PayoutDashboard';
 
 // Main components
 export { WalletBalanceCard } from './WalletBalanceCard';
@@ -22,7 +64,14 @@ export { TransactionFilters } from './TransactionFilters';
 export type { TransactionFiltersProps } from './TransactionFilters';
 
 export { TransactionList } from './TransactionList';
-export type { TransactionListProps } from './TransactionList';
+export type {
+  TransactionListProps,
+  SortField,
+  SortDirection,
+} from './TransactionList';
+
+export { TransactionDetailsModal } from './TransactionDetailsModal';
+export type { TransactionDetailsModalProps } from './TransactionDetailsModal';
 
 // Unified payout request modal (consolidated from 3 versions)
 export { PayoutRequestModal } from './PayoutRequestModal';

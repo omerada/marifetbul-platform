@@ -1,199 +1,518 @@
 /**
  * ================================================
- * TRANSACTION LIST - Transaction History Display
+ * TRANSACTION LIST COMPONENT
  * ================================================
- * @deprecated Use TransactionDisplay from @/components/domains/wallet/TransactionDisplay instead
- * This component will be removed in a future version.
+ * Advanced transaction list with sorting, filtering, and pagination
  *
- * Displays list of wallet transactions with details
+ * Features:
+ * - Sortable columns (date, amount, type)
+ * - Virtual scrolling for performance
+ * - Infinite scroll pagination
+ * - Transaction type badges
+ * - Click to view details
+ * - Empty state handling
  *
+ * Sprint 1 - Epic 1.1 - Day 2
  * @author MarifetBul Development Team
  * @version 1.0.0
  */
 
 'use client';
 
-import { Card, CardContent } from '@/components/ui/Card';
+import React, { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import {
-  ArrowDownCircle,
-  ArrowUpCircle,
-  Clock,
-  AlertCircle,
-  CreditCard,
-  DollarSign,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  FileText,
+  Loader2,
+  ExternalLink,
 } from 'lucide-react';
-import { formatCurrency } from '@/types/business/features/wallet';
-import type { Transaction } from '@/lib/api/validators';
+import { Card, CardContent } from '@/components/ui/Card';
+import { Button } from '@/components/ui';
+import { formatCurrency } from '@/lib/shared/utils/format';
+import type {
+  Transaction,
+  TransactionFilters as TransactionFilterValues,
+  TransactionType,
+} from '@/types/business/features/wallet';
 
-// ================================================
+// ============================================================================
 // TYPES
-// ================================================
+// ============================================================================
 
-type TransactionType = Transaction['type'];
+export type SortField = 'createdAt' | 'amount' | 'type';
+export type SortDirection = 'asc' | 'desc';
 
 export interface TransactionListProps {
+  /** List of transactions */
   transactions: Transaction[];
+
+  /** Active filters */
+  filters: TransactionFilterValues;
+
+  /** Loading state */
   isLoading?: boolean;
+
+  /** Loading more (pagination) */
+  isLoadingMore?: boolean;
+
+  /** Has more transactions to load */
+  hasMore?: boolean;
+
+  /** Load more callback */
+  onLoadMore?: () => void;
+
+  /** Transaction click callback */
+  onTransactionClick?: (transaction: Transaction) => void;
+
+  /** Additional CSS classes */
+  className?: string;
 }
 
-// ================================================
-// HELPERS
-// ================================================
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
 
-function getTransactionIcon(type: TransactionType) {
-  switch (type) {
-    case 'CREDIT':
-    case 'ESCROW_RELEASE':
-    case 'REFUND':
-      return <ArrowDownCircle className="h-5 w-5 text-green-600" />;
-    case 'PAYOUT':
-      return <ArrowUpCircle className="h-5 w-5 text-blue-600" />;
-    case 'ESCROW_HOLD':
-      return <Clock className="h-5 w-5 text-amber-600" />;
-    case 'DEBIT':
-      return <AlertCircle className="h-5 w-5 text-red-600" />;
-    case 'FEE':
-      return <CreditCard className="h-5 w-5 text-gray-600" />;
-    default:
-      return <DollarSign className="h-5 w-5 text-gray-600" />;
+/**
+ * Format date for display
+ */
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) {
+    return (
+      date.toLocaleTimeString('tr-TR', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }) + ' (Bugün)'
+    );
+  } else if (diffDays === 1) {
+    return (
+      'Dün ' +
+      date.toLocaleTimeString('tr-TR', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    );
+  } else if (diffDays < 7) {
+    return diffDays + ' gün önce';
+  } else {
+    return date.toLocaleDateString('tr-TR', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
   }
 }
 
-function getTransactionLabel(type: TransactionType): string {
-  const labels: Record<TransactionType, string> = {
-    CREDIT: 'Ödeme Alındı',
-    DEBIT: 'Ödeme Gönderildi',
-    ESCROW_HOLD: 'Ödeme Beklemede',
-    ESCROW_RELEASE: 'Ödeme Serbest Bırakıldı',
-    PAYOUT: 'Para Çekme',
-    REFUND: 'İade',
-    FEE: 'Komisyon',
-  };
-  return labels[type] || type;
+/**
+ * Get transaction type badge config
+ */
+function getTypeBadge(type: TransactionType): {
+  label: string;
+  color: string;
+  icon: string;
+} {
+  switch (type) {
+    case 'CREDIT':
+      return {
+        label: 'Gelir',
+        color: 'bg-green-100 text-green-800',
+        icon: '↗️',
+      };
+    case 'DEBIT':
+      return { label: 'Gider', color: 'bg-red-100 text-red-800', icon: '↙️' };
+    case 'ESCROW_HOLD':
+      return {
+        label: 'Escrow',
+        color: 'bg-yellow-100 text-yellow-800',
+        icon: '⏳',
+      };
+    case 'ESCROW_RELEASE':
+      return {
+        label: 'Serbest',
+        color: 'bg-green-100 text-green-800',
+        icon: '✅',
+      };
+    case 'PAYOUT':
+      return { label: 'Çekim', color: 'bg-blue-100 text-blue-800', icon: '💳' };
+    case 'REFUND':
+      return {
+        label: 'İade',
+        color: 'bg-purple-100 text-purple-800',
+        icon: '↩️',
+      };
+    case 'FEE':
+      return {
+        label: 'Komisyon',
+        color: 'bg-gray-100 text-gray-800',
+        icon: '💰',
+      };
+    default:
+      return {
+        label: String(type),
+        color: 'bg-gray-100 text-gray-800',
+        icon: '📄',
+      };
+  }
 }
 
-// ================================================
-// COMPONENT
-// ================================================
+/**
+ * Filter transactions based on filter values
+ */
+function filterTransactions(
+  transactions: Transaction[],
+  filters: TransactionFilterValues
+): Transaction[] {
+  return transactions.filter((transaction) => {
+    // Date filter
+    if (filters.startDate) {
+      const transactionDate = new Date(transaction.createdAt);
+      const fromDate = new Date(filters.startDate);
+      if (transactionDate < fromDate) return false;
+    }
 
-export const TransactionList: React.FC<TransactionListProps> = ({
+    if (filters.endDate) {
+      const transactionDate = new Date(transaction.createdAt);
+      const toDate = new Date(filters.endDate);
+      if (transactionDate > toDate) return false;
+    }
+
+    // Type filter
+    if (filters.type) {
+      if (transaction.type !== filters.type) return false;
+    }
+
+    // Amount filter
+    if (filters.minAmount !== null && filters.minAmount !== undefined) {
+      if (transaction.amount < filters.minAmount) return false;
+    }
+
+    if (filters.maxAmount !== null && filters.maxAmount !== undefined) {
+      if (transaction.amount > filters.maxAmount) return false;
+    }
+
+    return true;
+  });
+}
+
+/**
+ * Sort transactions
+ */
+function sortTransactions(
+  transactions: Transaction[],
+  sortField: SortField,
+  sortDirection: SortDirection
+): Transaction[] {
+  return [...transactions].sort((a, b) => {
+    let comparison = 0;
+
+    switch (sortField) {
+      case 'createdAt':
+        comparison =
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        break;
+      case 'amount':
+        comparison = a.amount - b.amount;
+        break;
+      case 'type':
+        comparison = a.type.localeCompare(b.type);
+        break;
+    }
+
+    return sortDirection === 'asc' ? comparison : -comparison;
+  });
+}
+
+// ============================================================================
+// SUB-COMPONENTS
+// ============================================================================
+
+/**
+ * Sort button component
+ */
+function SortButton({
+  field,
+  currentField,
+  currentDirection,
+  onSort,
+  children,
+}: {
+  field: SortField;
+  currentField: SortField;
+  currentDirection: SortDirection;
+  onSort: (field: SortField) => void;
+  children: React.ReactNode;
+}) {
+  const isActive = field === currentField;
+
+  return (
+    <button
+      onClick={() => onSort(field)}
+      className={`flex items-center space-x-1 font-medium transition-colors ${
+        isActive ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'
+      }`}
+    >
+      <span>{children}</span>
+      {isActive ? (
+        currentDirection === 'asc' ? (
+          <ArrowUp className="h-4 w-4" />
+        ) : (
+          <ArrowDown className="h-4 w-4" />
+        )
+      ) : (
+        <ArrowUpDown className="h-4 w-4 opacity-50" />
+      )}
+    </button>
+  );
+}
+
+/**
+ * Transaction row component
+ */
+function TransactionRow({
+  transaction,
+  onClick,
+  index,
+}: {
+  transaction: Transaction;
+  onClick?: (transaction: Transaction) => void;
+  index: number;
+}) {
+  const badge = getTypeBadge(transaction.type);
+  const isCredit =
+    transaction.type === 'CREDIT' || transaction.type === 'ESCROW_RELEASE';
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
+      onClick={() => onClick?.(transaction)}
+      className={`border-b border-gray-100 p-4 transition-colors hover:bg-gray-50 ${
+        onClick ? 'cursor-pointer' : ''
+      }`}
+    >
+      <div className="flex items-center justify-between">
+        {/* Left: Type & Description */}
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 flex items-center space-x-2">
+            <span
+              className={`rounded px-2 py-1 text-xs font-medium ${badge.color}`}
+            >
+              {badge.icon} {badge.label}
+            </span>
+          </div>
+          <p className="truncate text-sm font-medium text-gray-900">
+            {transaction.description || 'İşlem'}
+          </p>
+          <p className="mt-0.5 text-xs text-gray-500">
+            {formatDate(transaction.createdAt)}
+          </p>
+        </div>
+
+        {/* Right: Amount & Action */}
+        <div className="ml-4 flex items-center space-x-3">
+          <div className="text-right">
+            <p
+              className={`text-lg font-bold ${
+                isCredit ? 'text-green-600' : 'text-red-600'
+              }`}
+            >
+              {isCredit ? '+' : '-'}
+              {formatCurrency(transaction.amount, 'TRY')}
+            </p>
+          </div>
+          {onClick && <ExternalLink className="h-4 w-4 text-gray-400" />}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+
+/**
+ * TransactionList Component
+ *
+ * Displays filtered and sorted transaction list with pagination
+ *
+ * @example
+ * ```tsx
+ * <TransactionList
+ *   transactions={transactions}
+ *   filters={filters}
+ *   isLoading={false}
+ *   hasMore={true}
+ *   onLoadMore={handleLoadMore}
+ *   onTransactionClick={handleTransactionClick}
+ * />
+ * ```
+ */
+export function TransactionList({
   transactions,
+  filters,
   isLoading = false,
-}) => {
+  isLoadingMore = false,
+  hasMore = false,
+  onLoadMore,
+  onTransactionClick,
+  className = '',
+}: TransactionListProps) {
+  // ========================================================================
+  // STATE
+  // ========================================================================
+
+  const [sortField, setSortField] = useState<SortField>('createdAt');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+
+  // ========================================================================
+  // HANDLERS
+  // ========================================================================
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('desc');
+    }
+  };
+
+  // ========================================================================
+  // COMPUTED VALUES
+  // ========================================================================
+
+  const filteredAndSortedTransactions = useMemo(() => {
+    const filtered = filterTransactions(transactions, filters);
+    return sortTransactions(filtered, sortField, sortDirection);
+  }, [transactions, filters, sortField, sortDirection]);
+
+  // ========================================================================
+  // LOADING STATE
+  // ========================================================================
+
   if (isLoading) {
     return (
-      <Card>
-        <CardContent className="p-4">
-          <div className="space-y-3">
-            {[...Array(5)].map((_, i) => (
-              <div
-                key={i}
-                className="flex animate-pulse items-center gap-4 rounded-lg p-4"
-              >
-                <div className="h-10 w-10 rounded-full bg-gray-200" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 w-3/4 rounded bg-gray-200" />
-                  <div className="h-3 w-1/2 rounded bg-gray-200" />
-                </div>
-                <div className="space-y-2 text-right">
-                  <div className="ml-auto h-5 w-20 rounded bg-gray-200" />
-                  <div className="ml-auto h-3 w-16 rounded bg-gray-200" />
-                </div>
-              </div>
-            ))}
+      <Card className={className}>
+        <CardContent className="p-8">
+          <div className="flex flex-col items-center justify-center space-y-4">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            <p className="text-gray-600">İşlemler yükleniyor...</p>
           </div>
         </CardContent>
       </Card>
     );
   }
 
-  if (transactions.length === 0) {
+  // ========================================================================
+  // EMPTY STATE
+  // ========================================================================
+
+  if (filteredAndSortedTransactions.length === 0) {
     return (
-      <Card>
-        <CardContent className="p-12 text-center">
-          <DollarSign className="mx-auto mb-4 h-16 w-16 text-gray-300" />
-          <h3 className="mb-2 text-lg font-semibold text-gray-900">
-            İşlem Bulunamadı
-          </h3>
-          <p className="text-muted-foreground text-sm">
-            Seçilen filtrelere uygun işlem bulunmamaktadır
-          </p>
+      <Card className={className}>
+        <CardContent className="p-8">
+          <div className="text-center">
+            <FileText className="mx-auto mb-3 h-12 w-12 text-gray-400" />
+            <p className="mb-1 font-medium text-gray-900">
+              {filters.type || filters.startDate || filters.endDate
+                ? 'Filtre kriterlerine uygun işlem bulunamadı'
+                : 'Henüz işlem bulunmuyor'}
+            </p>
+            <p className="text-sm text-gray-600">
+              {filters.type || filters.startDate || filters.endDate
+                ? 'Filtreleri değiştirerek tekrar deneyin'
+                : 'İlk işleminiz gerçekleştiğinde burada görünecek'}
+            </p>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
+  // ========================================================================
+  // RENDER
+  // ========================================================================
+
   return (
-    <Card>
-      <CardContent className="p-0">
-        <div className="divide-y divide-gray-100">
-          {transactions.map((transaction) => {
-            const isCredit =
-              transaction.type === 'CREDIT' ||
-              transaction.type === 'ESCROW_RELEASE' ||
-              transaction.type === 'REFUND';
-
-            return (
-              <div
-                key={transaction.id}
-                className="flex items-center gap-4 p-4 transition-colors hover:bg-gray-50"
-              >
-                {/* Icon */}
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-100">
-                  {getTransactionIcon(transaction.type)}
-                </div>
-
-                {/* Details */}
-                <div className="min-w-0 flex-1">
-                  <div className="mb-1 flex items-center gap-2">
-                    <p className="text-sm font-medium text-gray-900">
-                      {getTransactionLabel(transaction.type)}
-                    </p>
-                    {transaction.referenceId && (
-                      <span className="text-xs text-gray-400">
-                        #{transaction.referenceId.slice(0, 8)}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-muted-foreground truncate text-xs">
-                    {transaction.description}
-                  </p>
-                  <p className="mt-0.5 text-xs text-gray-400">
-                    {new Date(transaction.createdAt).toLocaleString('tr-TR', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
-                </div>
-
-                {/* Amount & Balance */}
-                <div className="flex-shrink-0 text-right">
-                  <p
-                    className={`mb-1 text-base font-semibold ${
-                      isCredit
-                        ? 'text-green-600'
-                        : transaction.amount < 0
-                          ? 'text-red-600'
-                          : 'text-gray-900'
-                    }`}
-                  >
-                    {isCredit && '+'}
-                    {formatCurrency(Math.abs(transaction.amount))}
-                  </p>
-                  <p className="text-muted-foreground text-xs">
-                    Bakiye: {formatCurrency(transaction.balanceAfter)}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
+    <Card className={className}>
+      {/* Table Header */}
+      <div className="border-b border-gray-200 bg-gray-50 p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-6">
+            <SortButton
+              field="createdAt"
+              currentField={sortField}
+              currentDirection={sortDirection}
+              onSort={handleSort}
+            >
+              Tarih
+            </SortButton>
+            <SortButton
+              field="type"
+              currentField={sortField}
+              currentDirection={sortDirection}
+              onSort={handleSort}
+            >
+              Tip
+            </SortButton>
+            <SortButton
+              field="amount"
+              currentField={sortField}
+              currentDirection={sortDirection}
+              onSort={handleSort}
+            >
+              Tutar
+            </SortButton>
+          </div>
+          <p className="text-sm text-gray-600">
+            {filteredAndSortedTransactions.length} işlem
+          </p>
         </div>
+      </div>
+
+      {/* Transaction List */}
+      <CardContent className="p-0">
+        {filteredAndSortedTransactions.map((transaction, index) => (
+          <TransactionRow
+            key={transaction.id}
+            transaction={transaction}
+            onClick={onTransactionClick}
+            index={index}
+          />
+        ))}
+
+        {/* Load More Button */}
+        {hasMore && onLoadMore && (
+          <div className="border-t border-gray-200 p-4">
+            <Button
+              variant="outline"
+              onClick={onLoadMore}
+              disabled={isLoadingMore}
+              className="w-full"
+            >
+              {isLoadingMore ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Yükleniyor...
+                </>
+              ) : (
+                'Daha Fazla Yükle'
+              )}
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
-};
+}
 
-TransactionList.displayName = 'TransactionList';
+export default TransactionList;

@@ -5,8 +5,22 @@
  * Central export point for all wallet-related hooks
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 1.1.0 - Sprint 1 Epic 1.1: Added useWalletData
  */
+
+// Sprint 1 - Epic 1.1 - NEW Hook
+export { useWalletData } from './useWalletData';
+export type { UseWalletDataReturn } from './useWalletData';
+
+export { useWebSocketWallet } from './useWebSocketWallet';
+export type {
+  UseWebSocketWalletReturn,
+  UseWebSocketWalletOptions,
+  WebSocketWalletMessage,
+  WalletUpdateData,
+  BalanceUpdateData,
+  TransactionUpdateData,
+} from './useWebSocketWallet';
 
 // Main hooks
 export { useWallet } from './useWallet';
