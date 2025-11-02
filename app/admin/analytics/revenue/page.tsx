@@ -72,11 +72,28 @@ export default function AdminRevenueAnalyticsPage() {
   // Handle export
   const handleExport = async () => {
     try {
-      toast.info('Rapor hazırlanıyor...');
-      // TODO: Implement export functionality
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast.success('Rapor başarıyla indirildi');
-    } catch (_err) {
+      toast.info('CSV raporu hazırlanıyor...');
+
+      // Use existing backend CSV export endpoint
+      const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0]; // 30 days ago
+      const endDate = new Date().toISOString().split('T')[0]; // Today
+
+      // Create download link
+      const downloadUrl = `/api/v1/admin/analytics/revenue/export/csv?startDate=${startDate}&endDate=${endDate}`;
+
+      // Trigger download
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `revenue_${startDate}_${endDate}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success('CSV raporu başarıyla indirildi');
+    } catch (err) {
+      console.error('Export failed:', err);
       toast.error('Rapor indirme başarısız');
     }
   };

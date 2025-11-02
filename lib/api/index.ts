@@ -86,6 +86,9 @@ export * from './proposals';
 // Export Blog Moderation API
 export * from './blog-moderation';
 
+// Export Review Moderation API
+export * from './review-moderation';
+
 // Export Moderation Activity API
 export { default as moderationActivityAPI } from './moderation-activity';
 export * from './moderation-activity';

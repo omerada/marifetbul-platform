@@ -95,45 +95,11 @@ export default function AdminQualityDashboard() {
       );
       setPlatformStats(statsResponse);
 
-      // Fetch order statistics
-      const ordersStatsResponse = await apiClient.get<{
-        totalOrders: number;
-        completedOrders: number;
-        inProgressOrders: number;
-        cancelledOrders: number;
-      }>('/api/v1/orders/statistics');
-
-      // Fetch dispute stats
-      const disputeStatsResponse = await apiClient.get<{
-        openDisputesCount: number;
-        averageResolutionTimeHours: number;
-      }>('/api/v1/disputes/admin/statistics');
-
-      // Calculate quality metrics
-      const totalOrders = ordersStatsResponse.totalOrders || 0;
-      const completedOrders = ordersStatsResponse.completedOrders || 0;
-      const completionRate =
-        totalOrders > 0 ? (completedOrders / totalOrders) * 100 : 0;
-      const averageRating = statsResponse.averageRating || 0;
-
-      // Note: Revision and dispute counts would need dedicated endpoints
-      // For now, using placeholder values - TODO: Add dedicated endpoints
-      const totalRevisions = 0;
-      const revisionRate = 0;
-      const totalDisputes = disputeStatsResponse.openDisputesCount || 0;
-      const disputeRate =
-        totalOrders > 0 ? (totalDisputes / totalOrders) * 100 : 0;
-
-      setQualityMetrics({
-        totalOrders,
-        completedOrders,
-        completionRate,
-        averageRating,
-        totalRevisions,
-        revisionRate,
-        totalDisputes,
-        disputeRate,
-      });
+      // Fetch quality metrics from new endpoint (Sprint 2)
+      const qualityMetricsResponse = await apiClient.get<QualityMetrics>(
+        '/api/v1/admin/quality/metrics'
+      );
+      setQualityMetrics(qualityMetricsResponse);
 
       // Fetch top rated sellers
       const sellersResponse = await apiClient.get<{
@@ -151,7 +117,7 @@ export default function AdminQualityDashboard() {
       setTopSellers(
         sellersResponse.content.map((s) => ({
           ...s,
-          completedOrders: 0, // TODO: Add endpoint for completed orders count
+          completedOrders: 0, // Can be added later if needed
         }))
       );
     } catch (error) {
