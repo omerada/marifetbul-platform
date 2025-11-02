@@ -2,10 +2,10 @@
  * ================================================
  * AUTHENTICATION GUARDS - UNIFIED
  * ================================================
- * 
+ *
  * Centralized authentication and authorization guards.
  * Combines API route protection and component protection in one place.
- * 
+ *
  * Features:
  * - ✅ API Route Guards (Server-side, Permission-based)
  * - ✅ Component Guards/HOCs (Client-side, Role-based)
@@ -13,7 +13,7 @@
  * - ✅ Permission-based access control
  * - ✅ Type-safe user context
  * - ✅ Comprehensive logging
- * 
+ *
  * @author MarifetBul Development Team
  * @version 2.0.0 - Sprint Day 2: Unified Guards
  * @refactored Merged auth-guards.ts + auth-guards.tsx

@@ -17,12 +17,21 @@ import {
   PayoutSchema,
   PayoutLimitsSchema,
   PayoutEligibilitySchema,
+  PaginatedTransactionResponseSchema,
+  EarningsTrendResponseSchema,
+  RevenueBreakdownResponseSchema,
+  TransactionSummaryResponseSchema,
   type Wallet,
   type BalanceResponse,
   type Transaction,
   type Payout,
   type PayoutLimits,
   type PayoutEligibility,
+  type TransactionFilter,
+  type PaginatedTransactionResponse,
+  type EarningsTrendResponse,
+  type RevenueBreakdownResponse,
+  type TransactionSummaryResponse,
 } from '@/lib/api/validators';
 
 // ============================================================================
@@ -88,6 +97,43 @@ export async function getTransactions(
 }
 
 /**
+ * Get filtered transaction history with advanced filters
+ * GET /api/v1/wallet/transactions/filtered
+ *
+ * @param {TransactionFilter} filter - Filter parameters
+ * @returns {Promise<PaginatedTransactionResponse>} Paginated transactions
+ *
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {ValidationError} Invalid response format
+ */
+export async function getFilteredTransactions(
+  filter: TransactionFilter
+): Promise<PaginatedTransactionResponse> {
+  const params = new URLSearchParams();
+  params.append('page', filter.page?.toString() || '0');
+  params.append('size', filter.size?.toString() || '20');
+
+  if (filter.type) params.append('type', filter.type);
+  if (filter.startDate) params.append('startDate', filter.startDate);
+  if (filter.endDate) params.append('endDate', filter.endDate);
+  if (filter.minAmount !== undefined)
+    params.append('minAmount', filter.minAmount.toString());
+  if (filter.maxAmount !== undefined)
+    params.append('maxAmount', filter.maxAmount.toString());
+  if (filter.search) params.append('search', filter.search);
+
+  const response = await apiClient.get<PaginatedTransactionResponse>(
+    `/wallet/transactions/filtered?${params.toString()}`
+  );
+
+  return validateResponse(
+    PaginatedTransactionResponseSchema,
+    response,
+    'PaginatedTransactionResponse'
+  );
+}
+
+/**
  * Export transaction history
  * GET /api/v1/wallet/transactions/export
  *
@@ -124,6 +170,163 @@ export async function getWalletStats(): Promise<{
   const [wallet, balance] = await Promise.all([getWallet(), getBalance()]);
 
   return { wallet, balance };
+}
+
+/**
+ * Check if user has sufficient balance
+ * GET /api/v1/wallet/check-balance
+ *
+ * @param {number} amount - Amount to check
+ * @returns {Promise<boolean>} True if sufficient balance
+ *
+ * @throws {AuthenticationError} Not authenticated
+ */
+export async function checkBalance(amount: number): Promise<boolean> {
+  const response = await apiClient.get<boolean>(
+    `/wallet/check-balance?amount=${amount}`
+  );
+  return response;
+}
+
+/**
+ * Credit wallet balance (add funds)
+ * POST /api/v1/wallet/credit
+ *
+ * @param {Object} request - Credit request
+ * @param {number} request.amount - Amount to credit
+ * @param {string} request.description - Transaction description
+ * @returns {Promise<Wallet>} Updated wallet
+ *
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {ValidationError} Invalid amount
+ */
+export async function creditBalance(request: {
+  amount: number;
+  description: string;
+}): Promise<Wallet> {
+  const response = await apiClient.post<Wallet>('/wallet/credit', request);
+  return validateResponse(WalletSchema, response, 'Wallet');
+}
+
+/**
+ * Debit wallet balance (deduct funds)
+ * POST /api/v1/wallet/debit
+ *
+ * @param {Object} request - Debit request
+ * @param {number} request.amount - Amount to debit
+ * @param {string} request.description - Transaction description
+ * @returns {Promise<Wallet>} Updated wallet
+ *
+ * @throws {AuthenticationError} Not authenticated
+ * @throws {ValidationError} Invalid amount
+ * @throws {InsufficientBalanceError} Insufficient balance
+ */
+export async function debitBalance(request: {
+  amount: number;
+  description: string;
+}): Promise<Wallet> {
+  const response = await apiClient.post<Wallet>('/wallet/debit', request);
+  return validateResponse(WalletSchema, response, 'Wallet');
+}
+
+// ============================================================================
+// Wallet Analytics
+// ============================================================================
+
+/**
+ * Get earnings trend over a period
+ * GET /api/v1/wallet/analytics/earnings-trend
+ *
+ * @param {string} startDate - Start date (ISO format)
+ * @param {string} endDate - End date (ISO format)
+ * @returns {Promise<EarningsTrendResponse>} Earnings trend data
+ *
+ * @throws {AuthenticationError} Not authenticated
+ */
+export async function getEarningsTrend(
+  startDate?: string,
+  endDate?: string
+): Promise<EarningsTrendResponse> {
+  let url = '/wallet/analytics/earnings-trend';
+  const params = new URLSearchParams();
+
+  if (startDate) params.append('startDate', startDate);
+  if (endDate) params.append('endDate', endDate);
+
+  if (params.toString()) {
+    url += `?${params.toString()}`;
+  }
+
+  const response = await apiClient.get<EarningsTrendResponse>(url);
+  return validateResponse(
+    EarningsTrendResponseSchema,
+    response,
+    'EarningsTrendResponse'
+  );
+}
+
+/**
+ * Get revenue breakdown by category
+ * GET /api/v1/wallet/analytics/revenue-breakdown
+ *
+ * @param {string} startDate - Start date (ISO format)
+ * @param {string} endDate - End date (ISO format)
+ * @returns {Promise<RevenueBreakdownResponse>} Revenue breakdown data
+ *
+ * @throws {AuthenticationError} Not authenticated
+ */
+export async function getRevenueBreakdown(
+  startDate?: string,
+  endDate?: string
+): Promise<RevenueBreakdownResponse> {
+  let url = '/wallet/analytics/revenue-breakdown';
+  const params = new URLSearchParams();
+
+  if (startDate) params.append('startDate', startDate);
+  if (endDate) params.append('endDate', endDate);
+
+  if (params.toString()) {
+    url += `?${params.toString()}`;
+  }
+
+  const response = await apiClient.get<RevenueBreakdownResponse>(url);
+  return validateResponse(
+    RevenueBreakdownResponseSchema,
+    response,
+    'RevenueBreakdownResponse'
+  );
+}
+
+/**
+ * Get transaction summary with income vs expenses
+ * GET /api/v1/wallet/analytics/transaction-summary
+ *
+ * @param {string} startDate - Start date (ISO format)
+ * @param {string} endDate - End date (ISO format)
+ * @returns {Promise<TransactionSummaryResponse>} Transaction summary data
+ *
+ * @throws {AuthenticationError} Not authenticated
+ */
+export async function getTransactionSummary(
+  startDate?: string,
+  endDate?: string
+): Promise<TransactionSummaryResponse> {
+  let url = '/wallet/analytics/transaction-summary';
+  const params = new URLSearchParams();
+
+  if (startDate) params.append('startDate', startDate);
+  if (endDate) params.append('endDate', endDate);
+
+  if (params.toString()) {
+    url += `?${params.toString()}`;
+  }
+
+  const response = await apiClient.get<TransactionSummaryResponse>(url);
+  return validateResponse(
+    TransactionSummaryResponseSchema,
+    response,
+    'TransactionSummaryResponse'
+  );
 }
 
 // ============================================================================
@@ -266,8 +469,16 @@ export const walletApi = {
   getWallet,
   getBalance,
   getTransactions,
+  getFilteredTransactions,
   exportTransactions,
   getWalletStats,
+  checkBalance,
+  creditBalance,
+  debitBalance,
+  // Analytics
+  getEarningsTrend,
+  getRevenueBreakdown,
+  getTransactionSummary,
   // Payouts
   requestPayout,
   getPayout,

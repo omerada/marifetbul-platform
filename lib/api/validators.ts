@@ -488,6 +488,9 @@ export const TransactionTypeSchema = z.enum([
   'PAYOUT',
   'REFUND',
   'FEE',
+  'COMMISSION',
+  'DEPOSIT',
+  'WITHDRAWAL',
 ]);
 
 /**
@@ -508,6 +511,41 @@ export const TransactionSchema = z.object({
 });
 
 export type Transaction = z.infer<typeof TransactionSchema>;
+
+/**
+ * Transaction filter schema
+ */
+export const TransactionFilterSchema = z.object({
+  page: z.number().int().min(0).default(0),
+  size: z.number().int().min(1).max(100).default(20),
+  type: TransactionTypeSchema.optional(),
+  startDate: z.string().datetime().optional(),
+  endDate: z.string().datetime().optional(),
+  minAmount: z.number().optional(),
+  maxAmount: z.number().optional(),
+  search: z.string().optional(),
+});
+
+export type TransactionFilter = z.infer<typeof TransactionFilterSchema>;
+
+/**
+ * Paginated transaction response schema
+ */
+export const PaginatedTransactionResponseSchema = z.object({
+  content: z.array(TransactionSchema),
+  totalElements: z.number().int(),
+  totalPages: z.number().int(),
+  currentPage: z.number().int(),
+  pageSize: z.number().int(),
+  hasNext: z.boolean(),
+  hasPrevious: z.boolean(),
+  isFirst: z.boolean(),
+  isLast: z.boolean(),
+});
+
+export type PaginatedTransactionResponse = z.infer<
+  typeof PaginatedTransactionResponseSchema
+>;
 
 /**
  * Payment status schema
@@ -632,6 +670,118 @@ export const PayoutEligibilitySchema = z.object({
 });
 
 export type PayoutEligibility = z.infer<typeof PayoutEligibilitySchema>;
+
+// ============================================================================
+// Wallet Analytics Schemas
+// ============================================================================
+
+/**
+ * Earnings data point schema (for trend charts)
+ */
+export const EarningsDataPointSchema = z.object({
+  date: z.string(), // ISO date string (YYYY-MM-DD)
+  amount: z.number().min(0),
+  transactionCount: z.number().int().min(0),
+});
+
+export type EarningsDataPoint = z.infer<typeof EarningsDataPointSchema>;
+
+/**
+ * Earnings trend response schema
+ */
+export const EarningsTrendResponseSchema = z.object({
+  period: z.object({
+    startDate: z.string(),
+    endDate: z.string(),
+  }),
+  currentPeriod: z.object({
+    totalEarnings: z.number().min(0),
+    averagePerDay: z.number().min(0),
+    transactionCount: z.number().int().min(0),
+  }),
+  previousPeriod: z.object({
+    totalEarnings: z.number().min(0),
+    averagePerDay: z.number().min(0),
+    transactionCount: z.number().int().min(0),
+  }),
+  comparison: z.object({
+    earningsChange: z.number(), // Percentage change
+    transactionChange: z.number(), // Percentage change
+  }),
+  dataPoints: z.array(EarningsDataPointSchema),
+});
+
+export type EarningsTrendResponse = z.infer<typeof EarningsTrendResponseSchema>;
+
+/**
+ * Revenue category schema
+ */
+export const RevenueCategorySchema = z.object({
+  categoryId: z.string().uuid(),
+  categoryName: z.string(),
+  revenue: z.number().min(0),
+  percentage: z.number().min(0).max(100),
+  orderCount: z.number().int().min(0),
+});
+
+export type RevenueCategory = z.infer<typeof RevenueCategorySchema>;
+
+/**
+ * Revenue breakdown response schema
+ */
+export const RevenueBreakdownResponseSchema = z.object({
+  period: z.object({
+    startDate: z.string(),
+    endDate: z.string(),
+  }),
+  totalRevenue: z.number().min(0),
+  categories: z.array(RevenueCategorySchema),
+  topCategory: RevenueCategorySchema.optional(),
+});
+
+export type RevenueBreakdownResponse = z.infer<
+  typeof RevenueBreakdownResponseSchema
+>;
+
+/**
+ * Transaction type summary schema
+ */
+export const TransactionTypeSummarySchema = z.object({
+  type: TransactionTypeSchema,
+  count: z.number().int().min(0),
+  totalAmount: z.number(),
+  percentage: z.number().min(0).max(100),
+});
+
+export type TransactionTypeSummary = z.infer<
+  typeof TransactionTypeSummarySchema
+>;
+
+/**
+ * Transaction summary response schema
+ */
+export const TransactionSummaryResponseSchema = z.object({
+  period: z.object({
+    startDate: z.string(),
+    endDate: z.string(),
+  }),
+  income: z.object({
+    total: z.number().min(0),
+    count: z.number().int().min(0),
+    average: z.number().min(0),
+  }),
+  expenses: z.object({
+    total: z.number().min(0),
+    count: z.number().int().min(0),
+    average: z.number().min(0),
+  }),
+  netIncome: z.number(),
+  transactionsByType: z.array(TransactionTypeSummarySchema),
+});
+
+export type TransactionSummaryResponse = z.infer<
+  typeof TransactionSummaryResponseSchema
+>;
 
 // ============================================================================
 // Validation Helper

@@ -2,10 +2,10 @@
  * ================================================
  * API ROUTE GUARDS
  * ================================================
- * 
+ *
  * Server-side guards for protecting API routes.
  * Uses permission-based access control for fine-grained authorization.
- * 
+ *
  * @module guards/api-guards
  * @author MarifetBul Development Team
  * @version 2.0.0 - Sprint Day 2
