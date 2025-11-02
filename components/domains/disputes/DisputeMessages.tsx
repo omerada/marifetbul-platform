@@ -45,6 +45,7 @@ import { Badge } from '@/components/ui/Badge';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { useDisputeMessages } from '@/hooks/business/disputes';
+import { uploadDisputeAttachment } from '@/lib/api/disputes';
 import type { MessageRole } from '@/types/dispute';
 
 // ================================================
@@ -137,6 +138,10 @@ export default function DisputeMessages({
 
   const [messageText, setMessageText] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
+    {}
+  );
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -159,12 +164,51 @@ export default function DisputeMessages({
   const handleSendMessage = useCallback(async () => {
     if (!messageText.trim() && attachments.length === 0) return;
 
-    // For now, attachments not supported (TODO: file upload API)
-    const success = await sendMessage(messageText.trim());
+    try {
+      // Upload attachments if any
+      const attachmentUrls: string[] = [];
 
-    if (success) {
-      setMessageText('');
-      setAttachments([]);
+      if (attachments.length > 0) {
+        setIsUploading(true);
+
+        for (const file of attachments) {
+          try {
+            const uploadResponse = await uploadDisputeAttachment(
+              file,
+              (progress: number) => {
+                setUploadProgress((prev: Record<string, number>) => ({
+                  ...prev,
+                  [file.name]: progress,
+                }));
+              }
+            );
+
+            attachmentUrls.push(uploadResponse.fileUrl);
+          } catch (_uploadError) {
+            toast.error('Dosya yüklenemedi', {
+              description: `${file.name} yüklenirken hata oluştu.`,
+            });
+            setIsUploading(false);
+            return;
+          }
+        }
+
+        setIsUploading(false);
+        setUploadProgress({});
+      }
+
+      // Send message with attachment URLs
+      const success = await sendMessage(messageText.trim(), attachmentUrls);
+
+      if (success) {
+        setMessageText('');
+        setAttachments([]);
+      }
+    } catch (_error) {
+      toast.error('Mesaj gönderilemedi', {
+        description: 'Lütfen tekrar deneyin.',
+      });
+      setIsUploading(false);
     }
   }, [messageText, attachments, sendMessage]);
 
@@ -436,11 +480,25 @@ export default function DisputeMessages({
                   <p className="text-xs text-gray-500">
                     {formatFileSize(file.size)}
                   </p>
+                  {isUploading && uploadProgress[file.name] !== undefined && (
+                    <div className="mt-1">
+                      <div className="h-1 w-full overflow-hidden rounded-full bg-gray-200">
+                        <div
+                          className="h-full bg-purple-600 transition-all duration-300"
+                          style={{ width: `${uploadProgress[file.name]}%` }}
+                        />
+                      </div>
+                      <p className="mt-0.5 text-xs text-gray-500">
+                        {uploadProgress[file.name]}%
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <button
                   type="button"
                   onClick={() => handleRemoveAttachment(index)}
                   className="rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+                  disabled={isUploading}
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -466,7 +524,7 @@ export default function DisputeMessages({
             variant="ghost"
             size="sm"
             onClick={() => fileInputRef.current?.click()}
-            disabled={isSending || attachments.length >= 5}
+            disabled={isSending || isUploading || attachments.length >= 5}
             className="flex-shrink-0"
           >
             <Paperclip className="h-5 w-5" />
@@ -480,7 +538,7 @@ export default function DisputeMessages({
               onChange={(e) => setMessageText(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Mesajınızı yazın... (Enter: Gönder, Shift+Enter: Yeni satır)"
-              disabled={isSending}
+              disabled={isSending || isUploading}
               rows={1}
               className="w-full resize-none rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none disabled:bg-gray-100"
               style={{ maxHeight: '150px' }}
@@ -493,11 +551,17 @@ export default function DisputeMessages({
             size="sm"
             onClick={handleSendMessage}
             disabled={
-              isSending || (!messageText.trim() && attachments.length === 0)
+              isSending ||
+              isUploading ||
+              (!messageText.trim() && attachments.length === 0)
             }
             className="flex-shrink-0"
           >
-            {isSending ? <Loading size="sm" /> : <Send className="h-5 w-5" />}
+            {isSending || isUploading ? (
+              <Loading size="sm" />
+            ) : (
+              <Send className="h-5 w-5" />
+            )}
           </Button>
         </div>
 

@@ -34,6 +34,11 @@ import {
   RevenueForecastWidget,
 } from '@/components/admin/analytics';
 import { toast } from 'sonner';
+import {
+  exportToCSV,
+  formatDateForExport,
+  formatCurrencyForExport,
+} from '@/lib/utils/export';
 
 /**
  * Admin Revenue Comparison & Forecast Page
@@ -94,8 +99,89 @@ export default function AdminRevenueComparisonForecastPage() {
   const handleExport = async () => {
     try {
       toast.info('Rapor hazırlanıyor...');
-      // TODO: Implement export functionality
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      if (activeTab === 'comparison' && comparisonData) {
+        // Export comparison data
+        const exportData = [
+          {
+            'Karşılaştırma Tipi': comparisonData.comparisonType,
+            'Mevcut Dönem Başlangıç': comparisonData.currentPeriod.startDate,
+            'Mevcut Dönem Bitiş': comparisonData.currentPeriod.endDate,
+            'Mevcut Dönem Gelir': formatCurrencyForExport(
+              comparisonData.currentPeriod.revenue
+            ),
+            'Mevcut Dönem Sipariş': comparisonData.currentPeriod.orders,
+            'Mevcut Ort. Sipariş Değeri': formatCurrencyForExport(
+              comparisonData.currentPeriod.averageOrderValue
+            ),
+            'Önceki Dönem Başlangıç': comparisonData.previousPeriod.startDate,
+            'Önceki Dönem Bitiş': comparisonData.previousPeriod.endDate,
+            'Önceki Dönem Gelir': formatCurrencyForExport(
+              comparisonData.previousPeriod.revenue
+            ),
+            'Önceki Dönem Sipariş': comparisonData.previousPeriod.orders,
+            'Önceki Ort. Sipariş Değeri': formatCurrencyForExport(
+              comparisonData.previousPeriod.averageOrderValue
+            ),
+            'Gelir Değişimi': formatCurrencyForExport(
+              comparisonData.comparison.revenueChange
+            ),
+            'Gelir Değişim Yüzdesi':
+              comparisonData.comparison.revenueChangePercentage.toFixed(2) +
+              '%',
+            'Sipariş Değişimi': comparisonData.comparison.ordersChange,
+            'Sipariş Değişim Yüzdesi':
+              comparisonData.comparison.ordersChangePercentage.toFixed(2) + '%',
+            Trend: comparisonData.performance.trend,
+            'Önem Seviyesi': comparisonData.performance.significance,
+            'Rapor Tarihi': formatDateForExport(new Date()),
+          },
+        ];
+
+        exportToCSV(
+          exportData,
+          `gelir-karsilastirma-${comparisonType}-${new Date().toISOString().split('T')[0]}.csv`
+        );
+      } else if (activeTab === 'forecast' && forecastData) {
+        // Export forecast data
+        const exportData = [
+          {
+            'Tahmin Periyodu': forecastData.forecastPeriod,
+            'Başlangıç Tarihi': forecastData.startDate,
+            'Bitiş Tarihi': forecastData.endDate,
+            'Temel Alınan Gün Sayısı': forecastData.basedOnDays,
+            'Tahmin Edilen Gelir': formatCurrencyForExport(
+              forecastData.predicted.revenue
+            ),
+            'Tahmin Edilen Sipariş': forecastData.predicted.orderCount,
+            'Tahmin Ort. Sipariş Değeri': formatCurrencyForExport(
+              forecastData.predicted.averageOrderValue
+            ),
+            'Alt Güven Sınırı': formatCurrencyForExport(
+              forecastData.confidence.lower
+            ),
+            'Üst Güven Sınırı': formatCurrencyForExport(
+              forecastData.confidence.upper
+            ),
+            'Güven Seviyesi': forecastData.confidence.level.toFixed(2) + '%',
+            'Trend Yönü': forecastData.trend.direction,
+            'Trend Gücü': forecastData.trend.strength.toFixed(2),
+            Güvenilirlik: forecastData.trend.reliability.toFixed(2),
+            'Geçmiş Ort. Günlük Gelir': formatCurrencyForExport(
+              forecastData.historicalAverage.dailyRevenue
+            ),
+            'Geçmiş Ort. Günlük Sipariş':
+              forecastData.historicalAverage.dailyOrders,
+            'Rapor Tarihi': formatDateForExport(new Date()),
+          },
+        ];
+
+        exportToCSV(
+          exportData,
+          `gelir-tahmin-${forecastPeriod}-${new Date().toISOString().split('T')[0]}.csv`
+        );
+      }
+
       toast.success('Rapor başarıyla indirildi');
     } catch (_err) {
       toast.error('Rapor indirme başarısız');

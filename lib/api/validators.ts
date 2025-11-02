@@ -460,6 +460,7 @@ export const WalletSchema = z.object({
   status: WalletStatusSchema,
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
+  activeOrdersCount: z.number().int().min(0).optional(),
 });
 
 export type Wallet = z.infer<typeof WalletSchema>;

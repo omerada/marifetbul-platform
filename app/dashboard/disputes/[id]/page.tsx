@@ -29,6 +29,7 @@ import {
   escalateDispute,
 } from '@/lib/api/disputes';
 import type { DisputeResponse, DisputeEvidence } from '@/types/dispute';
+import { useAuthState } from '@/hooks/shared/useAuth';
 import {
   disputeStatusLabels,
   disputeReasonLabels,
@@ -87,6 +88,7 @@ export default function UserDisputeDetailPage({
   params,
 }: UserDisputeDetailPageProps) {
   const router = useRouter();
+  const { user } = useAuthState();
   const [disputeId, setDisputeId] = useState<string>('');
   const [dispute, setDispute] = useState<DisputeResponse | null>(null);
   const [evidence, setEvidence] = useState<DisputeEvidence[]>([]);
@@ -350,7 +352,7 @@ export default function UserDisputeDetailPage({
               <div className="h-[600px]">
                 <DisputeMessages
                   disputeId={disputeId}
-                  currentUserId="current-user-id" // TODO: Get from auth context
+                  currentUserId={user?.id || 'anonymous'}
                 />
               </div>
             </Card>

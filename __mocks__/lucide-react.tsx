@@ -113,3 +113,7 @@ export const Loader2 = createMockIcon('Loader2');
 export const Package = createMockIcon('Package');
 export const ShoppingCart = createMockIcon('ShoppingCart');
 export const ShoppingBag = createMockIcon('ShoppingBag');
+
+// Orders & Disputes
+export const RotateCcw = createMockIcon('RotateCcw');
+export const Flag = createMockIcon('Flag');

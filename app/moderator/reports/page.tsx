@@ -4,15 +4,21 @@
  * ================================================
  * User report moderation interface
  *
- * Sprint 2.4: User Reports System
- * @version 2.0.0
+ * Sprint 2: Mock Data Removed - Real API Integration
+ * @version 3.0.0
  * @author MarifetBul Development Team
  */
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { logger } from '@/lib/shared/utils/logger';
+import {
+  getPendingReports,
+  resolveReport,
+  dismissReport,
+} from '@/lib/api/moderation';
+import type { ReportDto } from '@/types/business/moderation';
 import {
   AlertTriangle,
   Shield,
@@ -25,60 +31,33 @@ import {
 
 type ReportStatus = 'ALL' | 'PENDING' | 'IN_REVIEW' | 'RESOLVED' | 'DISMISSED';
 
-interface MockReport {
-  id: string;
-  reporterName: string;
-  reportedUserName: string;
-  reportedUserAvatar?: string;
-  reason: string;
-  description: string;
-  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
-  status: string;
-  createdAt: string;
-  evidence?: string[];
-}
-
 export default function ModeratorReportsPage() {
   const [selectedStatus, setSelectedStatus] = useState<ReportStatus>('PENDING');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedReport, setSelectedReport] = useState<MockReport | null>(null);
+  const [selectedReport, setSelectedReport] = useState<ReportDto | null>(null);
+  const [reports, setReports] = useState<ReportDto[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [totalReports, setTotalReports] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
 
-  // Mock data
-  const reports: MockReport[] = [
-    {
-      id: '1',
-      reporterName: 'Ahmet Yılmaz',
-      reportedUserName: 'spam_user_123',
-      reason: 'SPAM',
-      description:
-        'Bu kullanıcı sürekli spam mesajlar gönderiyor ve istenmeyen içerikler paylaşıyor.',
-      priority: 'HIGH',
-      status: 'PENDING',
-      createdAt: new Date(Date.now() - 3600000).toISOString(),
-      evidence: ['https://example.com/screenshot1.png'],
-    },
-    {
-      id: '2',
-      reporterName: 'Zeynep Demir',
-      reportedUserName: 'fake_account',
-      reason: 'FAKE_PROFILE',
-      description:
-        'Sahte profil kullanıyor, başka birinin fotoğraflarını paylaşıyor.',
-      priority: 'MEDIUM',
-      status: 'PENDING',
-      createdAt: new Date(Date.now() - 7200000).toISOString(),
-    },
-    {
-      id: '3',
-      reporterName: 'Mehmet Kaya',
-      reportedUserName: 'abusive_user',
-      reason: 'ABUSIVE_BEHAVIOR',
-      description: 'Hakaret içeren mesajlar gönderiyor ve tehdit ediyor.',
-      priority: 'URGENT',
-      status: 'IN_REVIEW',
-      createdAt: new Date(Date.now() - 10800000).toISOString(),
-    },
-  ];
+  // Fetch reports from API
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        setIsLoading(true);
+        const response = await getPendingReports(currentPage, 20);
+        setReports(response.reports);
+        setTotalReports(response.total);
+        logger.info('Fetched reports:', response.reports.length);
+      } catch (error) {
+        logger.error('Failed to fetch reports:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReports();
+  }, [selectedStatus, currentPage]);
 
   const getReasonLabel = (reason: string): string => {
     const labels: Record<string, string> = {
@@ -94,34 +73,76 @@ export default function ModeratorReportsPage() {
     return labels[reason] || reason;
   };
 
-  const getPriorityColor = (priority: string): string => {
+  const getStatusColor = (status: string): string => {
     const colors: Record<string, string> = {
-      LOW: 'bg-gray-100 text-gray-700',
-      MEDIUM: 'bg-yellow-100 text-yellow-700',
-      HIGH: 'bg-orange-100 text-orange-700',
-      URGENT: 'bg-red-100 text-red-700',
+      PENDING: 'bg-yellow-100 text-yellow-700',
+      INVESTIGATING: 'bg-blue-100 text-blue-700',
+      RESOLVED: 'bg-green-100 text-green-700',
+      REJECTED: 'bg-gray-100 text-gray-700',
     };
-    return colors[priority] || colors.MEDIUM;
+    return colors[status] || colors.PENDING;
   };
 
-  const handleWarn = (reportId: string) => {
-    logger.debug('Warn user for report:', reportId);
-    // TODO: API call
+  const getStatusLabel = (status: string): string => {
+    const labels: Record<string, string> = {
+      PENDING: 'Bekleyen',
+      INVESTIGATING: 'İncelemede',
+      RESOLVED: 'Çözümlendi',
+      REJECTED: 'Reddedildi',
+    };
+    return labels[status] || status;
   };
 
-  const handleSuspend = (reportId: string) => {
-    logger.debug('Suspend user for report:', reportId);
-    // TODO: API call
+  const handleWarn = async (reportId: string) => {
+    try {
+      logger.debug('Warn user for report:', reportId);
+      await resolveReport(reportId, 'WARN', 'User warned by moderator');
+      // Refetch reports
+      const response = await getPendingReports(currentPage, 20);
+      setReports(response.reports);
+      setTotalReports(response.total);
+    } catch (error) {
+      logger.error('Failed to warn user:', error);
+    }
   };
 
-  const handleBan = (reportId: string) => {
-    logger.debug('Ban user for report:', reportId);
-    // TODO: API call
+  const handleSuspend = async (reportId: string) => {
+    try {
+      logger.debug('Suspend user for report:', reportId);
+      await resolveReport(reportId, 'SUSPEND', 'User suspended by moderator');
+      // Refetch reports
+      const response = await getPendingReports(currentPage, 20);
+      setReports(response.reports);
+      setTotalReports(response.total);
+    } catch (error) {
+      logger.error('Failed to suspend user:', error);
+    }
   };
 
-  const handleDismiss = (reportId: string) => {
-    logger.debug('Dismiss report:', reportId);
-    // TODO: API call
+  const handleBan = async (reportId: string) => {
+    try {
+      logger.debug('Ban user for report:', reportId);
+      await resolveReport(reportId, 'BAN', 'User banned by moderator');
+      // Refetch reports
+      const response = await getPendingReports(currentPage, 20);
+      setReports(response.reports);
+      setTotalReports(response.total);
+    } catch (error) {
+      logger.error('Failed to ban user:', error);
+    }
+  };
+
+  const handleDismiss = async (reportId: string) => {
+    try {
+      logger.debug('Dismiss report:', reportId);
+      await dismissReport(reportId, 'Report dismissed - no violation found');
+      // Refetch reports
+      const response = await getPendingReports(currentPage, 20);
+      setReports(response.reports);
+      setTotalReports(response.total);
+    } catch (error) {
+      logger.error('Failed to dismiss report:', error);
+    }
   };
 
   return (
@@ -154,7 +175,7 @@ export default function ModeratorReportsPage() {
             <div>
               <p className="text-sm text-gray-600">İncelemede</p>
               <p className="text-2xl font-bold text-gray-900">
-                {reports.filter((r) => r.status === 'IN_REVIEW').length}
+                {reports.filter((r) => r.status === 'INVESTIGATING').length}
               </p>
             </div>
             <Eye className="h-8 w-8 text-blue-600" />
@@ -219,117 +240,131 @@ export default function ModeratorReportsPage() {
       </div>
 
       {/* Reports List */}
-      <div className="space-y-4">
-        {reports.map((report) => (
-          <div
-            key={report.id}
-            className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
-          >
-            <div className="flex items-start justify-between">
-              {/* Report Content */}
-              <div className="flex-1">
-                {/* Header */}
-                <div className="mb-3 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
-                    <Shield className="h-5 w-5 text-red-600" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium text-gray-900">
-                        {report.reportedUserName}
-                      </p>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${getPriorityColor(
-                          report.priority
-                        )}`}
-                      >
-                        {report.priority}
-                      </span>
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+            <p className="text-gray-600">Raporlar yükleniyor...</p>
+          </div>
+        </div>
+      ) : reports.length === 0 ? (
+        <div className="rounded-lg border border-gray-200 bg-white p-12 text-center">
+          <AlertTriangle className="mx-auto h-12 w-12 text-gray-400" />
+          <p className="mt-4 text-gray-600">Henüz rapor bulunmamaktadır.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {reports.map((report) => (
+            <div
+              key={report.id}
+              className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+            >
+              <div className="flex items-start justify-between">
+                {/* Report Content */}
+                <div className="flex-1">
+                  {/* Header */}
+                  <div className="mb-3 flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
+                      <Shield className="h-5 w-5 text-red-600" />
                     </div>
-                    <p className="text-sm text-gray-500">
-                      Raporlayan: {report.reporterName}
-                    </p>
-                  </div>
-                  <span className="text-sm text-gray-500">
-                    {new Date(report.createdAt).toLocaleString('tr-TR')}
-                  </span>
-                </div>
-
-                {/* Reason */}
-                <div className="mb-3">
-                  <span className="rounded-lg bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">
-                    {getReasonLabel(report.reason)}
-                  </span>
-                </div>
-
-                {/* Description */}
-                <p className="mb-3 text-gray-900">{report.description}</p>
-
-                {/* Evidence */}
-                {report.evidence && report.evidence.length > 0 && (
-                  <div className="mb-3">
-                    <p className="mb-2 text-sm font-medium text-gray-700">
-                      Kanıtlar:
-                    </p>
-                    <div className="flex gap-2">
-                      {report.evidence.map((url, idx) => (
-                        <a
-                          key={idx}
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-blue-600 hover:underline"
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-gray-900">
+                          {report.reportedUserName}
+                        </p>
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs font-medium ${getStatusColor(
+                            report.status
+                          )}`}
                         >
-                          Kanıt {idx + 1}
-                        </a>
-                      ))}
+                          {getStatusLabel(report.status)}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-500">
+                        Raporlayan: {report.reporterName}
+                      </p>
                     </div>
+                    <span className="text-sm text-gray-500">
+                      {new Date(report.createdAt).toLocaleString('tr-TR')}
+                    </span>
                   </div>
-                )}
+
+                  {/* Reason */}
+                  <div className="mb-3">
+                    <span className="rounded-lg bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">
+                      {getReasonLabel(report.reason)}
+                    </span>
+                  </div>
+
+                  {/* Description */}
+                  <p className="mb-3 text-gray-900">{report.description}</p>
+
+                  {/* Evidence */}
+                  {report.evidence && report.evidence.length > 0 && (
+                    <div className="mb-3">
+                      <p className="mb-2 text-sm font-medium text-gray-700">
+                        Kanıtlar:
+                      </p>
+                      <div className="flex gap-2">
+                        {report.evidence.map((url, idx) => (
+                          <a
+                            key={idx}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 hover:underline"
+                          >
+                            Kanıt {idx + 1}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="mt-4 flex gap-2 border-t border-gray-100 pt-4">
+                <button
+                  onClick={() => setSelectedReport(report)}
+                  className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50"
+                >
+                  <Eye className="h-4 w-4" />
+                  Detay
+                </button>
+                <button
+                  onClick={() => handleWarn(report.id)}
+                  className="flex items-center gap-2 rounded-lg bg-yellow-600 px-4 py-2 text-sm text-white hover:bg-yellow-700"
+                >
+                  <AlertTriangle className="h-4 w-4" />
+                  Uyar
+                </button>
+                <button
+                  onClick={() => handleSuspend(report.id)}
+                  className="flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-sm text-white hover:bg-orange-700"
+                >
+                  <Shield className="h-4 w-4" />
+                  Askıya Al
+                </button>
+                <button
+                  onClick={() => handleBan(report.id)}
+                  className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700"
+                >
+                  <Ban className="h-4 w-4" />
+                  Engelle
+                </button>
+                <button
+                  onClick={() => handleDismiss(report.id)}
+                  className="ml-auto flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50"
+                >
+                  <XCircle className="h-4 w-4" />
+                  Reddet
+                </button>
               </div>
             </div>
-
-            {/* Actions */}
-            <div className="mt-4 flex gap-2 border-t border-gray-100 pt-4">
-              <button
-                onClick={() => setSelectedReport(report)}
-                className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50"
-              >
-                <Eye className="h-4 w-4" />
-                Detay
-              </button>
-              <button
-                onClick={() => handleWarn(report.id)}
-                className="flex items-center gap-2 rounded-lg bg-yellow-600 px-4 py-2 text-sm text-white hover:bg-yellow-700"
-              >
-                <AlertTriangle className="h-4 w-4" />
-                Uyar
-              </button>
-              <button
-                onClick={() => handleSuspend(report.id)}
-                className="flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-sm text-white hover:bg-orange-700"
-              >
-                <Shield className="h-4 w-4" />
-                Askıya Al
-              </button>
-              <button
-                onClick={() => handleBan(report.id)}
-                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700"
-              >
-                <Ban className="h-4 w-4" />
-                Engelle
-              </button>
-              <button
-                onClick={() => handleDismiss(report.id)}
-                className="ml-auto flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50"
-              >
-                <XCircle className="h-4 w-4" />
-                Reddet
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Detail Modal */}
       {selectedReport && (
@@ -361,11 +396,11 @@ export default function ModeratorReportsPage() {
                     {selectedReport.reportedUserName}
                   </p>
                   <span
-                    className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${getPriorityColor(
-                      selectedReport.priority
+                    className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${getStatusColor(
+                      selectedReport.status
                     )}`}
                   >
-                    {selectedReport.priority} Priority
+                    {getStatusLabel(selectedReport.status)}
                   </span>
                 </div>
               </div>
@@ -460,12 +495,23 @@ export default function ModeratorReportsPage() {
 
       {/* Pagination */}
       <div className="mt-6 flex items-center justify-between">
-        <p className="text-sm text-gray-600">Toplam {reports.length} rapor</p>
+        <p className="text-sm text-gray-600">Toplam {totalReports} rapor</p>
         <div className="flex gap-2">
-          <button className="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
+            disabled={currentPage === 0}
+            className="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
             Önceki
           </button>
-          <button className="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50">
+          <span className="flex items-center px-4 text-sm text-gray-600">
+            Sayfa {currentPage + 1}
+          </span>
+          <button
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            disabled={(currentPage + 1) * 20 >= totalReports}
+            className="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
             Sonraki
           </button>
         </div>

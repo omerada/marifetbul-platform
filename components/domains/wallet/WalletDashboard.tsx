@@ -239,6 +239,7 @@ export function WalletDashboard({
   // ========================================================================
 
   const {
+    wallet,
     transactions,
     isLoading,
     isRefreshing,
@@ -302,7 +303,7 @@ export function WalletDashboard({
   const quickStats = [
     {
       label: 'Aktif Siparişler',
-      value: '0', // TODO: Add activeOrdersCount to Wallet schema
+      value: wallet?.activeOrdersCount?.toString() || '0',
       icon: <TrendingUp className="h-6 w-6 text-blue-600" />,
       color: 'bg-blue-100',
     },

@@ -22,6 +22,9 @@ import type {
   AdminDashboard,
   ModeratorDashboard,
   DashboardPeriod,
+  ActivityItem,
+  ActivityStatus,
+  QuickAction,
 } from '../types/dashboard.types';
 
 import {
@@ -55,18 +58,112 @@ type LegacyApiResponse = any;
 // ============================================================================
 
 /**
- * Generate default dashboard period
+ * Adapt recent activities from order metrics
  */
-function getDefaultPeriod(): DashboardPeriod {
-  const endDate = new Date();
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - 7);
+function adaptRecentActivities(
+  apiResponse: SellerDashboardApiResponse
+): ActivityItem[] {
+  const activities: ActivityItem[] = [];
 
-  return {
-    days: 7,
-    startDate: startDate.toISOString(),
-    endDate: endDate.toISOString(),
-  };
+  // Add recent order activities
+  if (apiResponse.orderMetrics.recentOrders) {
+    apiResponse.orderMetrics.recentOrders.slice(0, 5).forEach((order) => {
+      // Map order status to ActivityStatus
+      let status: ActivityStatus = 'pending';
+      if (order.status === 'COMPLETED') status = 'completed';
+      else if (order.status === 'CANCELLED') status = 'cancelled';
+      else if (order.status === 'FAILED') status = 'failed';
+      else if (order.status === 'IN_PROGRESS' || order.status === 'ACTIVE')
+        status = 'in_progress';
+
+      activities.push({
+        id: order.orderId,
+        type: 'order' as const,
+        title: `New order: ${order.packageTitle}`,
+        description: `Order from ${order.buyerName}`,
+        timestamp: order.orderDate,
+        status,
+      });
+    });
+  }
+
+  // Add recent reviews
+  if (apiResponse.reviewMetrics.recentReviews) {
+    apiResponse.reviewMetrics.recentReviews.slice(0, 3).forEach((review) => {
+      activities.push({
+        id: review.reviewId,
+        type: 'review' as const,
+        title: `New ${review.rating}-star review`,
+        description: review.comment.slice(0, 100),
+        timestamp: review.reviewDate,
+        status: 'completed' as ActivityStatus,
+      });
+    });
+  }
+
+  // Sort by timestamp descending
+  return activities
+    .sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    )
+    .slice(0, 10);
+}
+
+/**
+ * Generate quick actions for freelancer
+ */
+function generateFreelancerQuickActions(
+  apiResponse: SellerDashboardApiResponse
+): QuickAction[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const createIcon = () => null as any;
+
+  return [
+    {
+      id: 'create-package',
+      label: 'Create New Package',
+      description: 'Add a new service to your portfolio',
+      icon: createIcon(),
+      onClick: () => {
+        window.location.href = '/dashboard/packages/new';
+      },
+      variant: 'primary' as const,
+    },
+    {
+      id: 'view-orders',
+      label: 'View Active Orders',
+      description: `${apiResponse.orderMetrics.inProgressOrders} orders in progress`,
+      icon: createIcon(),
+      onClick: () => {
+        window.location.href = '/dashboard/orders';
+      },
+      variant: 'default' as const,
+      badge: apiResponse.orderMetrics.inProgressOrders,
+    },
+    {
+      id: 'messages',
+      label: 'Check Messages',
+      description: `${apiResponse.communicationMetrics.unreadMessages} unread messages`,
+      icon: createIcon(),
+      onClick: () => {
+        window.location.href = '/messages';
+      },
+      variant: 'default' as const,
+      badge: apiResponse.communicationMetrics.unreadMessages,
+    },
+    {
+      id: 'withdraw',
+      label: 'Request Withdrawal',
+      description: `Available: ₺${apiResponse.revenueMetrics.availableBalance.toFixed(2)}`,
+      icon: createIcon(),
+      onClick: () => {
+        window.location.href = '/dashboard/wallet';
+      },
+      variant: 'default' as const,
+      disabled: apiResponse.revenueMetrics.availableBalance < 50,
+    },
+  ];
 }
 
 // ============================================================================
@@ -157,25 +254,58 @@ export function adaptFreelancerDashboard(
     orders,
     packages,
     ratings,
-    recentActivities: [], // TODO: Sprint 2 - Map recent orders to activities
-    quickActions: [], // TODO: Sprint 2 - Add quick actions
+    recentActivities: adaptRecentActivities(apiResponse),
+    quickActions: generateFreelancerQuickActions(apiResponse),
     charts: {
       earnings: {
         id: 'earnings',
         title: 'Earnings Trend',
-        series: [], // TODO: Sprint 2 - Map trends.dailyRevenue
+        series: [
+          {
+            name: 'Revenue',
+            data: apiResponse.trends.dailyRevenue.map((trend) => ({
+              label: trend.date,
+              value:
+                typeof trend.value === 'number'
+                  ? trend.value
+                  : parseFloat(String(trend.value)),
+            })),
+          },
+        ],
         config: { type: 'line' },
       },
       orders: {
         id: 'orders',
         title: 'Orders Trend',
-        series: [], // TODO: Sprint 2 - Map trends.dailyOrders
+        series: [
+          {
+            name: 'Orders',
+            data: apiResponse.trends.dailyOrders.map((trend) => ({
+              label: trend.date,
+              value:
+                typeof trend.value === 'number'
+                  ? trend.value
+                  : parseFloat(String(trend.value)),
+            })),
+          },
+        ],
         config: { type: 'bar' },
       },
       views: {
         id: 'views',
         title: 'Package Views',
-        series: [], // TODO: Sprint 2 - Map trends.dailyViews
+        series: [
+          {
+            name: 'Views',
+            data: apiResponse.trends.dailyViews.map((trend) => ({
+              label: trend.date,
+              value:
+                typeof trend.value === 'number'
+                  ? trend.value
+                  : parseFloat(String(trend.value)),
+            })),
+          },
+        ],
         config: { type: 'line' },
       },
     },

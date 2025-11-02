@@ -34,6 +34,7 @@ import {
   getDisputeTimeline,
 } from '@/lib/api/disputes';
 import { orderApi } from '@/lib/api/orders';
+import { useAuthState } from '@/hooks/shared/useAuth';
 import type { DisputeResponse, DisputeEvidence } from '@/types/dispute';
 import type { OrderResponse } from '@/types/backend-aligned';
 import {
@@ -104,6 +105,7 @@ export default function AdminDisputeDetailPage({
   params,
 }: DisputeDetailPageProps) {
   const router = useRouter();
+  const { user } = useAuthState();
   const [disputeId, setDisputeId] = useState<string>('');
   const [dispute, setDispute] = useState<DisputeResponse | null>(null);
   const [order, setOrder] = useState<OrderResponse | null>(null);
@@ -421,7 +423,7 @@ export default function AdminDisputeDetailPage({
               <div className="h-[600px]">
                 <DisputeMessages
                   disputeId={disputeId}
-                  currentUserId="admin-789" // TODO: Get from auth context
+                  currentUserId={user?.id || 'admin'}
                 />
               </div>
             </Card>

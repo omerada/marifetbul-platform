@@ -60,6 +60,7 @@ export interface Wallet {
   status: WalletStatus;
   createdAt: string;
   updatedAt: string;
+  activeOrdersCount?: number; // Number of active orders with pending escrow
 }
 
 export interface WalletBalance {

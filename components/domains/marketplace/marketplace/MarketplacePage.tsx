@@ -106,13 +106,12 @@ export function MarketplacePage() {
   const handleAdvancedFilterChange = useCallback(
     async (newFilters: FilterState) => {
       try {
-        // TODO: Backend integration
-        // For now, log the filters - will be connected to API in backend integration task
         logger.debug('Advanced filters changed:', newFilters);
 
-        // Trigger marketplace data refresh
-        // The actual filter application will be done via API calls
-        // when backend integration is complete (Task 7)
+        // Update filters state with new advanced filters
+        updateFilters(newFilters);
+
+        // Apply filters to backend via store
         if (mode === 'jobs') {
           await applyJobFilters();
         } else {
@@ -122,7 +121,7 @@ export function MarketplacePage() {
         logger.error('Error applying advanced filters:', error);
       }
     },
-    [mode, applyJobFilters, applyPackageFilters]
+    [mode, applyJobFilters, applyPackageFilters, updateFilters]
   );
 
   // Handle filter chip removal

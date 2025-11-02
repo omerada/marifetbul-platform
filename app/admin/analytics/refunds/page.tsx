@@ -33,6 +33,7 @@ import {
   RefundTrendChart,
 } from '@/components/admin/analytics';
 import { toast } from 'sonner';
+import { exportToCSV, formatCurrencyForExport } from '@/lib/utils/export';
 
 /**
  * Admin Refund Analytics Page
@@ -61,9 +62,51 @@ export default function AdminRefundAnalyticsPage() {
   const handleExport = async () => {
     try {
       toast.info('İade raporu hazırlanıyor...');
-      // TODO: Implement export functionality
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast.success('Rapor başarıyla indirildi');
+
+      if (analyticsData) {
+        const exportData = [
+          {
+            Periyod:
+              period === 'today'
+                ? 'Bugün'
+                : period === 'week'
+                  ? 'Bu Hafta'
+                  : period === 'month'
+                    ? 'Bu Ay'
+                    : 'Özel',
+            'Toplam İade Sayısı': analyticsData.totalRefunds,
+            'Toplam İade Tutarı': formatCurrencyForExport(
+              analyticsData.totalAmount
+            ),
+            'Bekleyen Sayı': analyticsData.pendingCount,
+            'Bekleyen Tutar': formatCurrencyForExport(
+              analyticsData.pendingAmount
+            ),
+            'Onaylanan Sayı': analyticsData.approvedCount,
+            'Onaylanan Tutar': formatCurrencyForExport(
+              analyticsData.approvedAmount
+            ),
+            'Reddedilen Sayı': analyticsData.rejectedCount,
+            'Tamamlanan Sayı': analyticsData.completedCount,
+            'Tamamlanan Tutar': formatCurrencyForExport(
+              analyticsData.completedAmount
+            ),
+            'Başarısız Sayı': analyticsData.failedCount,
+            'Ort. İşlem Süresi (Saat)':
+              analyticsData.averageProcessingTimeHours.toFixed(2),
+            'Onay Oranı': analyticsData.approvalRate.toFixed(2) + '%',
+            'Başarı Oranı': analyticsData.successRate.toFixed(2) + '%',
+            'Rapor Tarihi': new Date().toLocaleString('tr-TR'),
+          },
+        ];
+
+        exportToCSV(
+          exportData,
+          `iade-analitikleri-${period}-${new Date().toISOString().split('T')[0]}.csv`
+        );
+
+        toast.success('Rapor başarıyla indirildi');
+      }
     } catch (_err) {
       toast.error('Rapor indirme başarısız');
     }

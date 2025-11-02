@@ -26,6 +26,7 @@ import { RefreshCw, Download, TrendingUp } from 'lucide-react';
 import { usePlatformStatistics } from '@/hooks';
 import { PlatformStatsWidget } from '@/components/admin/analytics';
 import { toast } from 'sonner';
+import { exportToCSV, formatCurrencyForExport } from '@/lib/utils/export';
 
 /**
  * Admin Platform Statistics Page
@@ -40,9 +41,89 @@ export default function AdminPlatformStatisticsPage() {
   const handleExport = async () => {
     try {
       toast.info('Rapor hazırlanıyor...');
-      // TODO: Implement export functionality
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast.success('Rapor başarıyla indirildi');
+
+      if (data) {
+        const exportData = [
+          {
+            // Wallet Metrics
+            'Toplam Cüzdan': data.totalWallets,
+            'Aktif Cüzdan': data.activeWallets,
+            'Toplam Bakiye': formatCurrencyForExport(data.totalBalance),
+            'Bekleyen Bakiye': formatCurrencyForExport(
+              data.totalPendingBalance
+            ),
+            'Ortalama Bakiye': formatCurrencyForExport(data.averageBalance),
+            'Bakiyeli Cüzdan': data.walletsWithBalance,
+            'Dondurulmuş Cüzdan': data.frozenWallets,
+
+            // Payout Statistics
+            'Toplam Ödeme Sayısı': data.totalPayouts,
+            'Bekleyen Ödeme': data.pendingPayouts,
+            'Toplam Ödeme Tutarı': formatCurrencyForExport(
+              data.totalPayoutAmount
+            ),
+            'Bekleyen Ödeme Tutarı': formatCurrencyForExport(
+              data.totalPendingPayouts
+            ),
+            'Bekleyen Ödeme Sayısı': data.pendingPayoutCount,
+            'Onaylı Ödeme Tutarı': formatCurrencyForExport(
+              data.totalApprovedPayouts
+            ),
+            'Onaylı Ödeme Sayısı': data.approvedPayoutCount,
+            'Tamamlanan Ödeme Tutarı': formatCurrencyForExport(
+              data.totalCompletedPayouts
+            ),
+            'Tamamlanan Ödeme Sayısı': data.completedPayoutCount,
+
+            // Transaction Statistics
+            'Toplam İşlem': data.totalTransactions,
+            'Toplam İşlem Hacmi': formatCurrencyForExport(
+              data.totalTransactionVolume
+            ),
+            'Toplam İşlem Sayısı': data.totalTransactionCount,
+            'Ortalama İşlem Tutarı': formatCurrencyForExport(
+              data.averageTransactionAmount
+            ),
+            'Ödenen Tutar': formatCurrencyForExport(data.totalPaymentReleased),
+            'Ödenen İşlem Sayısı': data.paymentReleasedCount,
+            'Tamamlanan Ödeme': formatCurrencyForExport(
+              data.totalPayoutsCompleted
+            ),
+            'Ödeme İşlem Sayısı': data.payoutsCompletedCount,
+            'İade Edilen': formatCurrencyForExport(data.totalRefundsIssued),
+            'İade Sayısı': data.refundsIssuedCount,
+            'Kesilen Ücret': formatCurrencyForExport(data.totalFeesCharged),
+            'Ücret İşlem Sayısı': data.feesChargedCount,
+
+            // Growth Metrics
+            'İşlem Hacmi Büyümesi': formatCurrencyForExport(
+              data.transactionVolumeGrowth
+            ),
+            'İşlem Hacmi Büyüme %':
+              data.transactionVolumeGrowthPercentage.toFixed(2) + '%',
+            'Ödeme Hacmi Büyümesi': formatCurrencyForExport(
+              data.payoutVolumeGrowth
+            ),
+            'Ödeme Hacmi Büyüme %':
+              data.payoutVolumeGrowthPercentage.toFixed(2) + '%',
+
+            // Batch Statistics
+            'Bekleyen Batch': data.pendingBatchCount,
+            'İşleniyor Batch': data.processingBatchCount,
+            'Tamamlanan Batch': data.completedBatchCount,
+            'Başarısız Batch': data.failedBatchCount,
+
+            'Rapor Tarihi': new Date().toLocaleString('tr-TR'),
+          },
+        ];
+
+        exportToCSV(
+          exportData,
+          `platform-istatistikleri-${new Date().toISOString().split('T')[0]}.csv`
+        );
+
+        toast.success('Rapor başarıyla indirildi');
+      }
     } catch (_err) {
       toast.error('Rapor indirme başarısız');
     }
