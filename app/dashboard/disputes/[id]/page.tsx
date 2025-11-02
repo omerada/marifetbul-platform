@@ -351,7 +351,6 @@ export default function UserDisputeDetailPage({
                 <DisputeMessages
                   disputeId={disputeId}
                   currentUserId="current-user-id" // TODO: Get from auth context
-                  currentUserRole="BUYER" // TODO: Get from auth context based on dispute
                 />
               </div>
             </Card>

@@ -422,7 +422,6 @@ export default function AdminDisputeDetailPage({
                 <DisputeMessages
                   disputeId={disputeId}
                   currentUserId="admin-789" // TODO: Get from auth context
-                  currentUserRole="ADMIN" // TODO: Get from auth context
                 />
               </div>
             </Card>

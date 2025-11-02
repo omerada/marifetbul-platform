@@ -13,6 +13,8 @@ import type {
   DisputeFilters,
   PageResponse,
   DisputeEvidence,
+  DisputeConversationResponse,
+  DisputeMessageResponse,
 } from '@/types/dispute';
 
 const DISPUTES_BASE_URL = '/api/v1/disputes';
@@ -265,4 +267,92 @@ export async function exportDisputesToCSV(
   }
 
   return response.blob();
+}
+
+// ==================== DISPUTE MESSAGING (Sprint 2 Story 2.1) ====================
+
+/**
+ * Send a message in a dispute conversation
+ * @param disputeId Dispute ID
+ * @param content Message content
+ * @param attachmentUrls Optional attachment URLs
+ */
+export async function sendDisputeMessage(
+  disputeId: string,
+  content: string,
+  attachmentUrls?: string[]
+): Promise<DisputeMessageResponse> {
+  return apiClient.post<DisputeMessageResponse>(
+    `${DISPUTES_BASE_URL}/${disputeId}/messages`,
+    {
+      content,
+      attachmentUrls: attachmentUrls || [],
+    }
+  );
+}
+
+/**
+ * Get all messages for a dispute
+ * @param disputeId Dispute ID
+ * @param page Page number (optional)
+ * @param size Page size (optional)
+ */
+export async function getDisputeMessages(
+  disputeId: string,
+  page?: number,
+  size?: number
+): Promise<DisputeConversationResponse> {
+  const params: Record<string, string> = {};
+  if (page !== undefined) params.page = String(page);
+  if (size !== undefined) params.size = String(size);
+
+  return apiClient.get<DisputeConversationResponse>(
+    `${DISPUTES_BASE_URL}/${disputeId}/messages`,
+    params
+  );
+}
+
+/**
+ * Mark all messages as read in a dispute
+ * @param disputeId Dispute ID
+ */
+export async function markDisputeMessagesAsRead(
+  disputeId: string
+): Promise<{ markedCount: number }> {
+  return apiClient.put(`${DISPUTES_BASE_URL}/${disputeId}/messages/read`, {});
+}
+
+/**
+ * Get unread message count for a dispute
+ * @param disputeId Dispute ID
+ */
+export async function getDisputeUnreadCount(
+  disputeId: string
+): Promise<{ unreadCount: number }> {
+  return apiClient.get(
+    `${DISPUTES_BASE_URL}/${disputeId}/messages/unread-count`
+  );
+}
+
+/**
+ * Get messages since a timestamp (for real-time updates)
+ * @param disputeId Dispute ID
+ * @param since ISO timestamp
+ */
+export async function getDisputeMessagesSince(
+  disputeId: string,
+  since: string
+): Promise<DisputeMessageResponse[]> {
+  return apiClient.get<DisputeMessageResponse[]>(
+    `${DISPUTES_BASE_URL}/${disputeId}/messages/since`,
+    { since }
+  );
+}
+
+/**
+ * Delete a message (within 5-minute window)
+ * @param messageId Message ID
+ */
+export async function deleteDisputeMessage(messageId: string): Promise<void> {
+  return apiClient.delete(`${DISPUTES_BASE_URL}/messages/${messageId}`);
 }

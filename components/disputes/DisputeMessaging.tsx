@@ -88,7 +88,7 @@ export function DisputeMessaging({ disputeId }: DisputeMessagingProps) {
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              {error || 'Mesajlar yüklenirken bir hata oluştu'}
+              {error.message || 'Mesajlar yüklenirken bir hata oluştu'}
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -113,14 +113,16 @@ export function DisputeMessaging({ disputeId }: DisputeMessagingProps) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold">
-                      {message.userFullName}
+                      {message.senderFullName || 'System'}
                     </span>
-                    <Badge variant={getRoleBadgeVariant(message.userRole)}>
-                      {message.userRole === 'ADMIN'
+                    <Badge variant={getRoleBadgeVariant(message.senderRole)}>
+                      {message.senderRole === 'ADMIN'
                         ? 'Admin'
-                        : message.userRole === 'SELLER'
+                        : message.senderRole === 'SELLER'
                           ? 'Satıcı'
-                          : 'Alıcı'}
+                          : message.senderRole === 'BUYER'
+                            ? 'Alıcı'
+                            : 'Sistem'}
                     </Badge>
                   </div>
                   <span className="text-muted-foreground text-xs">
@@ -130,23 +132,26 @@ export function DisputeMessaging({ disputeId }: DisputeMessagingProps) {
                     })}
                   </span>
                 </div>
-                <p className="text-sm whitespace-pre-wrap">{message.message}</p>
-                {message.attachments && message.attachments.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {message.attachments.map((attachment, idx) => (
-                      <a
-                        key={idx}
-                        href={attachment}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary flex items-center gap-1 text-xs hover:underline"
-                      >
-                        <Paperclip className="h-3 w-3" />
-                        Ek {idx + 1}
-                      </a>
-                    ))}
-                  </div>
-                )}
+                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                {message.attachmentUrls &&
+                  message.attachmentUrls.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {message.attachmentUrls.map(
+                        (attachment: string, idx: number) => (
+                          <a
+                            key={idx}
+                            href={attachment}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary flex items-center gap-1 text-xs hover:underline"
+                          >
+                            <Paperclip className="h-3 w-3" />
+                            Ek {idx + 1}
+                          </a>
+                        )
+                      )}
+                    </div>
+                  )}
               </div>
             ))
           ) : (

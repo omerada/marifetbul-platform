@@ -2,26 +2,24 @@
  * ================================================
  * DISPUTE MESSAGES COMPONENT
  * ================================================
- * Sprint 1 - Day 3.1: Real-time messaging for disputes
+ * Sprint 2 Story 2.1: Real-time messaging for disputes
  *
  * Features:
- * - Real-time chat interface
+ * - Real-time chat interface (10s auto-refresh)
  * - Message history with auto-scroll
  * - File attachment support
- * - Typing indicators
+ * - System message display
  * - Participant role badges
  * - Message timestamps
+ * - Read/unread tracking
+ * - Message deletion (5-min window)
  * - Empty states
  * - Loading states
  *
- * @note Backend API endpoints pending implementation:
- *   - GET /api/v1/disputes/{id}/messages
- *   - POST /api/v1/disputes/{id}/messages
- *   - POST /api/v1/disputes/{id}/messages/attachments
- *   - WebSocket /ws/disputes/{id}/messages
+ * @updated Sprint 2: Integrated with backend messaging API
  *
  * @author MarifetBul Development Team
- * @version 1.0.0 - Sprint 1: Dispute System
+ * @version 2.0.0 - Sprint 2: Backend Integration
  */
 
 'use client';
@@ -32,21 +30,22 @@ import {
   Send,
   Paperclip,
   X,
-  FileIcon,
-  ImageIcon,
   User,
   Shield,
-  Clock,
+  AlertCircle,
+  Trash2,
+  Bot,
   Check,
   CheckCheck,
-  AlertCircle,
+  FileText,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { Button, Loading } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import { logger } from '@/lib/shared/utils/logger';
-import type { DisputeMessage } from '@/types/dispute';
+import { useDisputeMessages } from '@/hooks/business/disputes';
+import type { MessageRole } from '@/types/dispute';
 
 // ================================================
 // TYPES
@@ -55,14 +54,7 @@ import type { DisputeMessage } from '@/types/dispute';
 interface DisputeMessagesProps {
   disputeId: string;
   currentUserId: string;
-  currentUserRole: 'BUYER' | 'SELLER' | 'ADMIN';
   className?: string;
-}
-
-interface ExtendedDisputeMessage extends DisputeMessage {
-  isSending?: boolean;
-  isDelivered?: boolean;
-  isRead?: boolean;
 }
 
 // ================================================
@@ -75,7 +67,7 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function getRoleBadgeColor(role: 'BUYER' | 'SELLER' | 'ADMIN'): {
+function getRoleBadgeColor(role: MessageRole): {
   bg: string;
   text: string;
 } {
@@ -86,10 +78,14 @@ function getRoleBadgeColor(role: 'BUYER' | 'SELLER' | 'ADMIN'): {
       return { bg: 'bg-blue-100', text: 'text-blue-700' };
     case 'SELLER':
       return { bg: 'bg-green-100', text: 'text-green-700' };
+    case 'SYSTEM':
+      return { bg: 'bg-gray-100', text: 'text-gray-700' };
+    default:
+      return { bg: 'bg-gray-100', text: 'text-gray-700' };
   }
 }
 
-function getRoleLabel(role: 'BUYER' | 'SELLER' | 'ADMIN'): string {
+function getRoleLabel(role: MessageRole): string {
   switch (role) {
     case 'ADMIN':
       return 'Admin';
@@ -97,99 +93,33 @@ function getRoleLabel(role: 'BUYER' | 'SELLER' | 'ADMIN'): string {
       return 'Alıcı';
     case 'SELLER':
       return 'Satıcı';
+    case 'SYSTEM':
+      return 'Sistem';
+    default:
+      return 'Bilinmeyen';
   }
 }
 
-function getRoleIcon(role: 'BUYER' | 'SELLER' | 'ADMIN') {
+function getRoleIcon(
+  role: MessageRole
+): typeof Shield | typeof User | typeof Bot {
   switch (role) {
     case 'ADMIN':
       return Shield;
+    case 'SYSTEM':
+      return Bot;
     case 'BUYER':
     case 'SELLER':
+    default:
       return User;
   }
 }
 
-// ================================================
-// MOCK API (Replace with real API when backend is ready)
-// ================================================
-
-async function fetchDisputeMessages(
-  disputeId: string
-): Promise<ExtendedDisputeMessage[]> {
-  // TODO: Replace with actual API call when backend implements endpoint
-  // return apiClient.get<DisputeMessage[]>(`/api/v1/disputes/${disputeId}/messages`);
-
-  // Mock data for development
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  return [
-    {
-      id: '1',
-      disputeId,
-      userId: 'user-buyer-123',
-      userFullName: 'Ahmet Yılmaz',
-      userRole: 'BUYER',
-      message:
-        'Merhaba, siparişimle ilgili ciddi bir sorun var. Gönderilen paket beklediğim gibi değil.',
-      createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      isDelivered: true,
-      isRead: true,
-    },
-    {
-      id: '2',
-      disputeId,
-      userId: 'user-seller-456',
-      userFullName: 'Mehmet Demir',
-      userRole: 'SELLER',
-      message:
-        'Merhaba, siparişi tam olarak tanımlandığı şekilde gönderdim. Neden memnun kalmadığınızı detaylı açıklayabilir misiniz?',
-      createdAt: new Date(Date.now() - 1.5 * 60 * 60 * 1000).toISOString(),
-      isDelivered: true,
-      isRead: true,
-    },
-    {
-      id: '3',
-      disputeId,
-      userId: 'admin-789',
-      userFullName: 'Destek Ekibi',
-      userRole: 'ADMIN',
-      message:
-        'Merhaba, itirazınızı inceliyoruz. Lütfen sorunu detaylandırın ve varsa kanıt ekleyin.',
-      createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-      isDelivered: true,
-      isRead: true,
-    },
-  ];
-}
-
-async function sendDisputeMessage(
-  disputeId: string,
-  message: string,
-  attachments?: File[]
-): Promise<ExtendedDisputeMessage> {
-  // TODO: Replace with actual API call when backend implements endpoint
-  // const formData = new FormData();
-  // formData.append('message', message);
-  // attachments?.forEach(file => formData.append('attachments', file));
-  // return apiClient.post<DisputeMessage>(`/api/v1/disputes/${disputeId}/messages`, formData);
-
-  // Mock response for development
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
-  return {
-    id: `msg-${Date.now()}`,
-    disputeId,
-    userId: 'current-user-id', // Would come from auth context
-    userFullName: 'Siz',
-    userRole: 'ADMIN', // Would come from auth context
-    message,
-    attachments: attachments?.map((file) => file.name),
-    createdAt: new Date().toISOString(),
-    isSending: false,
-    isDelivered: true,
-    isRead: false,
-  };
+function canDeleteMessage(createdAt: string): boolean {
+  const messageTime = new Date(createdAt).getTime();
+  const now = Date.now();
+  const fiveMinutesInMs = 5 * 60 * 1000;
+  return now - messageTime < fiveMinutesInMs;
 }
 
 // ================================================
@@ -199,39 +129,18 @@ async function sendDisputeMessage(
 export default function DisputeMessages({
   disputeId,
   currentUserId,
-  currentUserRole,
   className = '',
 }: DisputeMessagesProps) {
-  const [messages, setMessages] = useState<ExtendedDisputeMessage[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // Use the real hook instead of mock data
+  const { messages, isLoading, isSending, sendMessage, deleteMessage } =
+    useDisputeMessages(disputeId);
+
   const [messageText, setMessageText] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
-  const [isSending, setIsSending] = useState(false);
-  const [isTyping] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  // Fetch messages on mount
-  useEffect(() => {
-    const loadMessages = async () => {
-      setIsLoading(true);
-      try {
-        const fetchedMessages = await fetchDisputeMessages(disputeId);
-        setMessages(fetchedMessages);
-      } catch (error) {
-        logger.error('Failed to fetch dispute messages:', error);
-        toast.error('Mesajlar yüklenemedi', {
-          description: 'Mesajlar yüklenirken bir hata oluştu.',
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadMessages();
-  }, [disputeId]);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -250,50 +159,33 @@ export default function DisputeMessages({
   const handleSendMessage = useCallback(async () => {
     if (!messageText.trim() && attachments.length === 0) return;
 
-    setIsSending(true);
+    // For now, attachments not supported (TODO: file upload API)
+    const success = await sendMessage(messageText.trim());
 
-    // Optimistic update
-    const tempMessage: ExtendedDisputeMessage = {
-      id: `temp-${Date.now()}`,
-      disputeId,
-      userId: currentUserId,
-      userFullName: 'Siz',
-      userRole: currentUserRole,
-      message: messageText,
-      attachments: attachments.map((file) => file.name),
-      createdAt: new Date().toISOString(),
-      isSending: true,
-    };
-
-    setMessages((prev) => [...prev, tempMessage]);
-    setMessageText('');
-    setAttachments([]);
-
-    try {
-      const sentMessage = await sendDisputeMessage(
-        disputeId,
-        messageText,
-        attachments
-      );
-
-      // Replace temp message with real one
-      setMessages((prev) =>
-        prev.map((msg) => (msg.id === tempMessage.id ? sentMessage : msg))
-      );
-
-      toast.success('Mesaj gönderildi');
-    } catch (error) {
-      logger.error('Failed to send message:', error);
-      toast.error('Mesaj gönderilemedi', {
-        description: 'Lütfen tekrar deneyin.',
-      });
-
-      // Remove temp message on error
-      setMessages((prev) => prev.filter((msg) => msg.id !== tempMessage.id));
-    } finally {
-      setIsSending(false);
+    if (success) {
+      setMessageText('');
+      setAttachments([]);
     }
-  }, [messageText, attachments, disputeId, currentUserId, currentUserRole]);
+  }, [messageText, attachments, sendMessage]);
+
+  // Handle delete message
+  const handleDeleteMessage = useCallback(
+    async (messageId: string, createdAt: string) => {
+      if (!canDeleteMessage(createdAt)) {
+        toast.error('Bu mesaj artık silinemez', {
+          description:
+            'Mesajlar sadece gönderildikten sonraki 5 dakika içinde silinebilir',
+        });
+        return;
+      }
+
+      const success = await deleteMessage(messageId);
+      if (success) {
+        toast.success('Mesaj silindi');
+      }
+    },
+    [deleteMessage]
+  );
 
   // Handle file selection
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -371,96 +263,148 @@ export default function DisputeMessages({
         ) : (
           <>
             {messages.map((message) => {
-              const isOwnMessage = message.userId === currentUserId;
-              const RoleIcon = getRoleIcon(message.userRole);
-              const roleBadge = getRoleBadgeColor(message.userRole);
+              // System messages have senderId = null
+              const isSystemMessage = message.isSystemMessage;
+              const isOwnMessage =
+                !isSystemMessage && message.senderId === currentUserId;
+              const RoleIcon = getRoleIcon(message.senderRole);
+              const roleBadge = getRoleBadgeColor(message.senderRole);
+              const canDelete = isOwnMessage && !isSystemMessage;
 
               return (
                 <div
                   key={message.id}
-                  className={`flex gap-3 ${isOwnMessage ? 'flex-row-reverse' : 'flex-row'}`}
+                  className={`flex gap-3 ${
+                    isSystemMessage
+                      ? 'justify-center'
+                      : isOwnMessage
+                        ? 'flex-row-reverse'
+                        : 'flex-row'
+                  }`}
                 >
-                  {/* Avatar */}
-                  <div
-                    className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${roleBadge.bg}`}
-                  >
-                    <RoleIcon className={`h-5 w-5 ${roleBadge.text}`} />
-                  </div>
-
-                  {/* Message Content */}
-                  <div
-                    className={`max-w-md flex-1 ${isOwnMessage ? 'text-right' : 'text-left'}`}
-                  >
-                    {/* Header */}
-                    <div
-                      className={`mb-1 flex items-center gap-2 ${isOwnMessage ? 'flex-row-reverse' : 'flex-row'}`}
-                    >
-                      <span className="text-sm font-medium text-gray-900">
-                        {message.userFullName}
-                      </span>
-                      <Badge
-                        className={`${roleBadge.bg} ${roleBadge.text} text-xs`}
-                      >
-                        {getRoleLabel(message.userRole)}
-                      </Badge>
-                      <span className="text-xs text-gray-500">
-                        {formatDistanceToNow(new Date(message.createdAt), {
-                          addSuffix: true,
-                          locale: tr,
-                        })}
-                      </span>
+                  {/* System Message Styling */}
+                  {isSystemMessage ? (
+                    <div className="mx-auto w-full max-w-md">
+                      <div className="mb-2 flex items-center justify-center gap-2">
+                        <Bot className="h-4 w-4 text-gray-400" />
+                        <span className="text-xs text-gray-500">
+                          {formatDistanceToNow(new Date(message.createdAt), {
+                            addSuffix: true,
+                            locale: tr,
+                          })}
+                        </span>
+                      </div>
+                      <div className="rounded-lg border border-gray-200 bg-gray-100 p-3 text-center">
+                        <p className="text-sm whitespace-pre-wrap text-gray-700">
+                          {message.content}
+                        </p>
+                      </div>
                     </div>
+                  ) : (
+                    <>
+                      {/* Avatar */}
+                      <div
+                        className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${roleBadge.bg}`}
+                      >
+                        <RoleIcon className={`h-5 w-5 ${roleBadge.text}`} />
+                      </div>
 
-                    {/* Message Bubble */}
-                    <div
-                      className={`inline-block rounded-lg p-3 ${
-                        isOwnMessage
-                          ? 'bg-purple-600 text-white'
-                          : 'border border-gray-200 bg-white text-gray-900'
-                      }`}
-                    >
-                      <p className="text-sm whitespace-pre-wrap">
-                        {message.message}
-                      </p>
+                      {/* Message Content */}
+                      <div
+                        className={`max-w-md flex-1 ${isOwnMessage ? 'text-right' : 'text-left'}`}
+                      >
+                        {/* Header */}
+                        <div
+                          className={`mb-1 flex items-center gap-2 ${isOwnMessage ? 'flex-row-reverse' : 'flex-row'}`}
+                        >
+                          <span className="text-sm font-medium text-gray-900">
+                            {message.senderFullName || 'Sistem'}
+                          </span>
+                          <Badge
+                            className={`${roleBadge.bg} ${roleBadge.text} text-xs`}
+                          >
+                            {getRoleLabel(message.senderRole)}
+                          </Badge>
+                          <span className="text-xs text-gray-500">
+                            {formatDistanceToNow(new Date(message.createdAt), {
+                              addSuffix: true,
+                              locale: tr,
+                            })}
+                          </span>
+                        </div>
 
-                      {/* Attachments */}
-                      {message.attachments &&
-                        message.attachments.length > 0 && (
-                          <div className="mt-2 space-y-2">
-                            {message.attachments.map((attachment, index) => (
-                              <div
-                                key={index}
-                                className={`flex items-center gap-2 rounded p-2 ${
-                                  isOwnMessage
-                                    ? 'bg-purple-700'
-                                    : 'border border-gray-200 bg-gray-50'
-                                }`}
-                              >
-                                <FileIcon className="h-4 w-4" />
-                                <span className="truncate text-xs">
-                                  {attachment}
-                                </span>
+                        {/* Message Bubble */}
+                        <div
+                          className={`inline-block rounded-lg p-3 ${
+                            isOwnMessage
+                              ? 'bg-purple-600 text-white'
+                              : 'border border-gray-200 bg-white text-gray-900'
+                          }`}
+                        >
+                          <p className="text-sm whitespace-pre-wrap">
+                            {message.content}
+                          </p>
+
+                          {/* Attachments */}
+                          {message.attachmentUrls &&
+                            message.attachmentUrls.length > 0 && (
+                              <div className="mt-2 space-y-2">
+                                {message.attachmentUrls.map(
+                                  (attachmentUrl: string, index: number) => (
+                                    <a
+                                      key={index}
+                                      href={attachmentUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className={`flex items-center gap-2 rounded p-2 transition-opacity hover:opacity-80 ${
+                                        isOwnMessage
+                                          ? 'bg-purple-700'
+                                          : 'border border-gray-200 bg-gray-50'
+                                      }`}
+                                    >
+                                      <FileText className="h-4 w-4" />
+                                      <span className="truncate text-xs">
+                                        {attachmentUrl.split('/').pop() ||
+                                          'Dosya'}
+                                      </span>
+                                    </a>
+                                  )
+                                )}
                               </div>
-                            ))}
-                          </div>
-                        )}
+                            )}
 
-                      {/* Status Indicators */}
-                      {isOwnMessage && (
-                        <div className="mt-1 flex items-center justify-end gap-1">
-                          {message.isSending && (
-                            <Clock className="h-3 w-3 animate-pulse text-purple-200" />
+                          {/* Status Indicators */}
+                          {isOwnMessage && (
+                            <div className="mt-1 flex items-center justify-end gap-1">
+                              {!message.isRead && (
+                                <Check className="h-3 w-3 text-purple-200" />
+                              )}
+                              {message.isRead && (
+                                <CheckCheck className="h-3 w-3 text-purple-200" />
+                              )}
+                            </div>
                           )}
-                          {message.isDelivered && !message.isRead && (
-                            <Check className="h-3 w-3 text-purple-200" />
-                          )}
-                          {message.isRead && (
-                            <CheckCheck className="h-3 w-3 text-purple-200" />
+
+                          {/* Delete Button (5-min window) */}
+                          {canDelete && canDeleteMessage(message.createdAt) && (
+                            <button
+                              onClick={() =>
+                                handleDeleteMessage(
+                                  message.id,
+                                  message.createdAt
+                                )
+                              }
+                              className="mt-2 flex items-center gap-1 text-xs text-purple-200 transition-colors hover:text-white"
+                              title="Mesajı sil (5 dakika içinde)"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                              <span>Sil</span>
+                            </button>
                           )}
                         </div>
-                      )}
-                    </div>
-                  </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               );
             })}
@@ -468,23 +412,7 @@ export default function DisputeMessages({
           </>
         )}
 
-        {/* Typing Indicator */}
-        {isTyping && (
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <div className="flex gap-1">
-              <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400" />
-              <span
-                className="h-2 w-2 animate-bounce rounded-full bg-gray-400"
-                style={{ animationDelay: '0.1s' }}
-              />
-              <span
-                className="h-2 w-2 animate-bounce rounded-full bg-gray-400"
-                style={{ animationDelay: '0.2s' }}
-              />
-            </div>
-            <span>Yazıyor...</span>
-          </div>
-        )}
+        {/* Typing Indicator - Placeholder for future WebSocket implementation */}
       </div>
 
       {/* Attachment Preview */}
@@ -499,7 +427,7 @@ export default function DisputeMessages({
                 {file.type.startsWith('image/') ? (
                   <ImageIcon className="h-4 w-4 text-gray-600" />
                 ) : (
-                  <FileIcon className="h-4 w-4 text-gray-600" />
+                  <FileText className="h-4 w-4 text-gray-600" />
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-gray-900">

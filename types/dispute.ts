@@ -206,6 +206,53 @@ export interface DisputeMessage {
   createdAt: string;
 }
 
+// ==================== SPRINT 2: MESSAGING SYSTEM TYPES ====================
+
+/**
+ * Message role enum (matches backend)
+ */
+export enum MessageRole {
+  BUYER = 'BUYER',
+  SELLER = 'SELLER',
+  ADMIN = 'ADMIN',
+  SYSTEM = 'SYSTEM',
+}
+
+/**
+ * Dispute message response from backend (Sprint 1 Story 1.1)
+ */
+export interface DisputeMessageResponse {
+  id: string;
+  disputeId: string;
+  senderId: string | null;
+  senderFullName: string | null;
+  senderRole: MessageRole;
+  content: string;
+  attachmentUrls: string[];
+  isRead: boolean;
+  isSystemMessage: boolean;
+  createdAt: string;
+}
+
+/**
+ * Dispute conversation response (includes metadata)
+ */
+export interface DisputeConversationResponse {
+  messages: DisputeMessageResponse[];
+  totalMessages: number;
+  unreadCount: number;
+}
+
+/**
+ * Send message request
+ */
+export interface SendMessageRequest {
+  content: string;
+  attachmentUrls?: string[];
+}
+
+// ==================== END SPRINT 2 TYPES ====================
+
 /**
  * Dispute filters for admin list
  */
