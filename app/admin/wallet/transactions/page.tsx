@@ -267,9 +267,7 @@ export default function AdminWalletTransactionsPage() {
             disabled={isLoading}
             className="gap-2"
           >
-            <RefreshCw
-              className={cn('h-4 w-4', isLoading && 'animate-spin')}
-            />
+            <RefreshCw className={cn('h-4 w-4', isLoading && 'animate-spin')} />
             Yenile
           </Button>
         </div>
@@ -504,15 +502,16 @@ export default function AdminWalletTransactionsPage() {
                             {transaction.description}
                           </td>
                           <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
-                            {new Date(
-                              transaction.createdAt
-                            ).toLocaleDateString('tr-TR', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
+                            {new Date(transaction.createdAt).toLocaleDateString(
+                              'tr-TR',
+                              {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              }
+                            )}
                           </td>
                           <td className="px-4 py-4">
                             <Button variant="ghost" size="sm">
