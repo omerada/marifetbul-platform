@@ -2,13 +2,18 @@
  * ================================================
  * DASHBOARD DATA ADAPTERS
  * ================================================
- * Transform API responses to unified dashboard types
- * Sprint Day 9 - Data Transformation Layer
+ * Transform backend API responses to unified dashboard types
  *
- * NOTE: These adapters are placeholders for future API integration.
- * Currently returning mock data since API schemas are not finalized.
+ * Sprint 1 - Task T-102: Real Data Integration
  *
- * @version 1.0.0
+ * Architecture:
+ * - Minimal transformation layer (thin adapters)
+ * - Backend DTO types from types/backend/dashboard/*
+ * - Frontend types from components/domains/dashboard/types/*
+ * - Store handles additional transformations if needed
+ *
+ * @version 2.0.0
+ * @updated 2025-11-02
  */
 
 import type {
@@ -19,16 +24,31 @@ import type {
   DashboardPeriod,
 } from '../types/dashboard.types';
 
+import {
+  type AdminDashboardApiResponse,
+  isAdminDashboardApiResponse,
+  type SellerDashboardApiResponse,
+  isSellerDashboardApiResponse,
+  type BuyerDashboardApiResponse,
+  isBuyerDashboardApiResponse,
+  type ModeratorDashboardApiResponse,
+  isModeratorDashboardApiResponse,
+  type PendingItemDto,
+  type ActivityLogDto,
+} from '@/types/backend/dashboard';
+
+import { logger } from '@/lib/shared/utils/logger';
+
 // ============================================================================
-// API RESPONSE TYPES (Legacy - Will be defined when backend is ready)
+// API RESPONSE TYPES
 // ============================================================================
 
 /**
- * Generic API response wrapper
- * @todo Define actual API response structure when backend is ready
+ * Generic API response wrapper (for non-Admin dashboards still using mocks)
+ * @deprecated Will be replaced with specific types in future sprints
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ApiResponse = any;
+type LegacyApiResponse = any;
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -54,14 +74,118 @@ function getDefaultPeriod(): DashboardPeriod {
 // ============================================================================
 
 /**
- * Transform legacy freelancer API response to FreelancerDashboard
- * @todo Implement actual transformation when API is ready
+ * Transform Seller Dashboard API response to FreelancerDashboard type
+ *
+ * Sprint 1 - Task T-105: Real API Integration
+ *
+ * Maps SellerDashboardApiResponse (backend DTO) to FreelancerDashboard (frontend type)
+ *
+ * Note: "Seller" (backend) = "Freelancer" (frontend terminology)
+ * This is a THIN adapter following the same pattern as AdminDashboard.
+ *
+ * @param apiResponse - Raw API response from /api/v1/dashboard/seller
+ * @returns FreelancerDashboard - Unified frontend dashboard type
+ * @throws Error if API response is invalid
  */
 export function adaptFreelancerDashboard(
-  _apiResponse: ApiResponse
+  apiResponse: SellerDashboardApiResponse | LegacyApiResponse
 ): FreelancerDashboard {
-  // TODO: Implement actual transformation
-  return generateMockFreelancerDashboard();
+  // Type guard: Validate API response structure
+  if (!isSellerDashboardApiResponse(apiResponse)) {
+    logger.error(
+      'Invalid SellerDashboard API response - missing required fields',
+      {
+        received: apiResponse,
+        component: 'adaptFreelancerDashboard',
+      }
+    );
+    throw new Error(
+      'Failed to adapt Freelancer dashboard: Invalid API response structure'
+    );
+  }
+
+  // Extract period information
+  const period: DashboardPeriod = {
+    days: apiResponse.periodDays,
+    startDate: apiResponse.periodStart,
+    endDate: apiResponse.periodEnd,
+  };
+
+  // Map earnings
+  const earnings = {
+    total: apiResponse.revenueMetrics.lifetimeEarnings,
+    pending: apiResponse.revenueMetrics.pendingBalance,
+    available: apiResponse.revenueMetrics.availableBalance,
+    currency: 'TRY',
+    trend: {
+      value: apiResponse.revenueMetrics.revenueChangePercent,
+      direction:
+        apiResponse.revenueMetrics.revenueChangePercent > 0
+          ? ('up' as const)
+          : ('down' as const),
+      percentage: Math.abs(apiResponse.revenueMetrics.revenueChangePercent),
+      isPositive: apiResponse.revenueMetrics.revenueChangePercent > 0,
+    },
+  };
+
+  // Map orders
+  const orders = {
+    active: apiResponse.orderMetrics.inProgressOrders,
+    completed: apiResponse.orderMetrics.completedOrders,
+    cancelled: apiResponse.orderMetrics.cancelledOrders,
+    totalRevenue: apiResponse.revenueMetrics.totalRevenue,
+  };
+
+  // Map packages
+  const packages = {
+    total: apiResponse.packagePerformance.totalPackages,
+    active: apiResponse.packagePerformance.activePackages,
+    paused: apiResponse.packagePerformance.inactivePackages,
+    views: apiResponse.packagePerformance.totalViews,
+  };
+
+  // Map ratings
+  const ratings = {
+    average: apiResponse.reviewMetrics.averageRating,
+    count: apiResponse.reviewMetrics.totalReviews,
+    distribution: apiResponse.reviewMetrics.ratingDistribution,
+  };
+
+  // Return unified FreelancerDashboard type
+  return {
+    earnings,
+    orders,
+    packages,
+    ratings,
+    recentActivities: [], // TODO: Sprint 2 - Map recent orders to activities
+    quickActions: [], // TODO: Sprint 2 - Add quick actions
+    charts: {
+      earnings: {
+        id: 'earnings',
+        title: 'Earnings Trend',
+        series: [], // TODO: Sprint 2 - Map trends.dailyRevenue
+        config: { type: 'line' },
+      },
+      orders: {
+        id: 'orders',
+        title: 'Orders Trend',
+        series: [], // TODO: Sprint 2 - Map trends.dailyOrders
+        config: { type: 'bar' },
+      },
+      views: {
+        id: 'views',
+        title: 'Package Views',
+        series: [], // TODO: Sprint 2 - Map trends.dailyViews
+        config: { type: 'line' },
+      },
+    },
+    period,
+    cache: {
+      fromCache: apiResponse.fromCache,
+      generatedAt: apiResponse.generatedAt,
+      cacheKey: `seller-dashboard-${apiResponse.periodDays}`,
+    },
+  };
 }
 
 // ============================================================================
@@ -69,14 +193,108 @@ export function adaptFreelancerDashboard(
 // ============================================================================
 
 /**
- * Transform legacy employer API response to EmployerDashboard
- * @todo Implement actual transformation when API is ready
+ * Transform Buyer Dashboard API response to EmployerDashboard type
+ *
+ * Sprint 1 - Task T-108: Real API Integration
+ *
+ * Maps BuyerDashboardApiResponse (backend DTO) to EmployerDashboard (frontend type)
+ *
+ * Note: "Buyer" (backend) = "Employer" (frontend terminology)
+ * This is a THIN adapter following the same pattern as Admin & Freelancer.
+ *
+ * @param apiResponse - Raw API response from /api/v1/dashboard/buyer
+ * @returns EmployerDashboard - Unified frontend dashboard type
+ * @throws Error if API response is invalid
  */
 export function adaptEmployerDashboard(
-  _apiResponse: ApiResponse
+  apiResponse: BuyerDashboardApiResponse | LegacyApiResponse
 ): EmployerDashboard {
-  // TODO: Implement actual transformation
-  return generateMockEmployerDashboard();
+  // Type guard: Validate API response structure
+  if (!isBuyerDashboardApiResponse(apiResponse)) {
+    logger.error(
+      'Invalid BuyerDashboard API response - missing required fields',
+      {
+        received: apiResponse,
+        component: 'adaptEmployerDashboard',
+      }
+    );
+    throw new Error(
+      'Failed to adapt Employer dashboard: Invalid API response structure'
+    );
+  }
+
+  // Extract period information
+  const period: DashboardPeriod = {
+    days: apiResponse.periodDays,
+    startDate: apiResponse.periodStart,
+    endDate: apiResponse.periodEnd,
+  };
+
+  // Calculate spending trend from purchase history
+  const spendingTrendValue =
+    apiResponse.purchaseHistory.lifetimeSpent > 0
+      ? ((apiResponse.orderSummary.totalSpent /
+          apiResponse.purchaseHistory.lifetimeSpent) *
+          100 -
+          100) /
+        (apiResponse.periodDays / 30)
+      : 0;
+
+  // Map spending
+  const spending = {
+    total: apiResponse.purchaseHistory.lifetimeSpent,
+    thisMonth: apiResponse.orderSummary.totalSpent,
+    currency: 'TRY',
+    trend: {
+      value: spendingTrendValue,
+      direction: spendingTrendValue > 0 ? ('up' as const) : ('down' as const),
+      percentage: Math.abs(spendingTrendValue),
+      isPositive: false, // For buyers, spending UP is not necessarily positive
+    },
+  };
+
+  // Map orders
+  const orders = {
+    active: apiResponse.orderSummary.inProgressOrders,
+    completed: apiResponse.orderSummary.completedOrders,
+    cancelled: apiResponse.orderSummary.cancelledOrders,
+    totalSpent: apiResponse.orderSummary.totalSpent,
+  };
+
+  // Map favorites
+  const favorites = {
+    packages: apiResponse.favorites.totalFavorites,
+    sellers: apiResponse.activitySummary.sellersFollowed,
+  };
+
+  // Return unified EmployerDashboard type
+  return {
+    spending,
+    orders,
+    favorites,
+    recentActivities: [], // TODO: Sprint 2 - Map recent orders to activities
+    quickActions: [], // TODO: Sprint 2 - Add quick actions (new order, message seller, etc.)
+    charts: {
+      spending: {
+        id: 'spending',
+        title: 'Spending Trend',
+        series: [], // TODO: Sprint 2 - Map purchaseHistory.spendingTrend
+        config: { type: 'line' },
+      },
+      orders: {
+        id: 'orders',
+        title: 'Orders',
+        series: [], // TODO: Sprint 2 - Map order trends
+        config: { type: 'bar' },
+      },
+    },
+    period,
+    cache: {
+      fromCache: apiResponse.fromCache,
+      generatedAt: apiResponse.generatedAt,
+      cacheKey: `buyer-dashboard-${apiResponse.periodDays}`,
+    },
+  };
 }
 
 // ============================================================================
@@ -84,12 +302,180 @@ export function adaptEmployerDashboard(
 // ============================================================================
 
 /**
- * Transform legacy admin API response to AdminDashboard
- * @todo Implement actual transformation when API is ready
+ * Transform Admin Dashboard API response to AdminDashboard type
+ *
+ * Sprint 1 - Task T-102: Real API Integration
+ *
+ * Maps AdminDashboardApiResponse (backend DTO) to AdminDashboard (frontend type)
+ *
+ * Note: This is a THIN adapter. Complex transformations are handled by the store.
+ * Follows single transformation pattern - no duplicate logic.
+ *
+ * @param apiResponse - Raw API response from /api/v1/dashboard/admin
+ * @returns AdminDashboard - Unified frontend dashboard type
+ * @throws Error if API response is invalid
  */
-export function adaptAdminDashboard(_apiResponse: ApiResponse): AdminDashboard {
-  // TODO: Implement actual transformation
-  return generateMockAdminDashboard();
+export function adaptAdminDashboard(
+  apiResponse: AdminDashboardApiResponse | LegacyApiResponse
+): AdminDashboard {
+  // Validate API response structure
+  if (!isAdminDashboardApiResponse(apiResponse)) {
+    logger.error(
+      'Invalid AdminDashboard API response - missing required fields',
+      {
+        received: apiResponse,
+        component: 'adaptAdminDashboard',
+      }
+    );
+    throw new Error(
+      'Failed to adapt Admin dashboard: Invalid API response structure'
+    );
+  }
+
+  // Extract period information
+  const period: DashboardPeriod = {
+    days: apiResponse.periodDays,
+    startDate: apiResponse.periodStart,
+    endDate: apiResponse.periodEnd,
+  };
+
+  // Map backend stats to frontend stats structure
+  const stats = {
+    users: {
+      total: apiResponse.userMetrics.totalUsers,
+      active: apiResponse.userMetrics.activeUsers,
+      new: apiResponse.userMetrics.newUsers,
+      trend: {
+        value: apiResponse.userMetrics.userGrowthRate,
+        direction:
+          apiResponse.userMetrics.userGrowthRate > 0
+            ? ('up' as const)
+            : ('down' as const),
+        percentage: Math.abs(apiResponse.userMetrics.userGrowthRate),
+        isPositive: apiResponse.userMetrics.userGrowthRate > 0,
+      },
+    },
+    packages: {
+      total: apiResponse.packageMetrics.totalPackages,
+      active: apiResponse.packageMetrics.activePackages,
+      paused:
+        apiResponse.packageMetrics.totalPackages -
+        apiResponse.packageMetrics.activePackages,
+      trend: {
+        value: apiResponse.packageMetrics.newPackages,
+        direction: 'up' as const,
+        percentage: 0,
+        isPositive: true,
+      },
+    },
+    orders: {
+      total: apiResponse.orderMetrics.totalOrders,
+      completed: apiResponse.orderMetrics.completedOrders,
+      active: apiResponse.orderMetrics.pendingOrders, // Map pending to active
+      revenue: apiResponse.revenueMetrics.totalRevenue,
+      trend: {
+        value: apiResponse.orderMetrics.completionRate,
+        direction: 'up' as const,
+        percentage: apiResponse.orderMetrics.completionRate,
+        isPositive: true,
+      },
+    },
+    revenue: {
+      total: apiResponse.revenueMetrics.totalRevenue,
+      commission: apiResponse.revenueMetrics.platformFee,
+      currency: 'TRY',
+      trend: {
+        value: apiResponse.revenueMetrics.revenueGrowthRate,
+        direction:
+          apiResponse.revenueMetrics.revenueGrowthRate > 0
+            ? ('up' as const)
+            : ('down' as const),
+        percentage: Math.abs(apiResponse.revenueMetrics.revenueGrowthRate),
+        isPositive: apiResponse.revenueMetrics.revenueGrowthRate > 0,
+      },
+    },
+  };
+
+  // Map system health
+  const systemHealth = {
+    status:
+      apiResponse.systemHealth.systemStatus === 'HEALTHY'
+        ? ('healthy' as const)
+        : apiResponse.systemHealth.systemStatus === 'DEGRADED'
+          ? ('warning' as const)
+          : ('critical' as const),
+    uptime: apiResponse.systemHealth.uptimeSeconds,
+    cpu: 0, // Not available in backend DTO
+    memory: apiResponse.systemHealth.heapUsagePercent,
+    storage: 0, // Not available in backend DTO
+    activeConnections: apiResponse.systemHealth.activeConnections,
+    cacheHitRate: 0, // Not available in backend DTO
+    lastChecked: apiResponse.generatedAt,
+  };
+
+  // Map search metrics
+  const searchMetrics = {
+    totalSearches: apiResponse.searchMetrics.totalSearches,
+    avgResultsPerSearch: apiResponse.searchMetrics.averageResultCount,
+    topSearchTerms: apiResponse.searchMetrics.topKeywords.map(
+      (keyword, index) => ({
+        term: keyword,
+        count: 100 - index * 10, // Mock count, backend doesn't provide individual counts
+      })
+    ),
+    noResultsCount: apiResponse.searchMetrics.zeroResultSearches,
+  };
+
+  // Map top packages
+  const topPackages = apiResponse.packageMetrics.topPackages.map((pkg) => ({
+    id: pkg.packageId,
+    title: pkg.title,
+    seller: pkg.sellerName,
+    revenue: pkg.revenue,
+    orders: pkg.orders,
+  }));
+
+  // Return unified AdminDashboard type
+  return {
+    stats,
+    systemHealth,
+    searchMetrics,
+    topPackages,
+    recentActivities: [], // TODO: Sprint 2 - Add activity tracking
+    quickActions: [], // TODO: Sprint 2 - Add quick actions
+    charts: {
+      userGrowth: {
+        id: 'user-growth',
+        title: 'User Growth',
+        series: [],
+        config: { type: 'line' },
+      },
+      revenue: {
+        id: 'revenue',
+        title: 'Revenue',
+        series: [],
+        config: { type: 'bar' },
+      },
+      orders: {
+        id: 'orders',
+        title: 'Orders',
+        series: [],
+        config: { type: 'line' },
+      },
+      searchAnalytics: {
+        id: 'search-analytics',
+        title: 'Search Analytics',
+        series: [],
+        config: { type: 'bar' },
+      },
+    }, // TODO: Sprint 2 - Map trends to charts
+    period,
+    cache: {
+      fromCache: apiResponse.fromCache,
+      generatedAt: apiResponse.generatedAt,
+      cacheKey: `admin-dashboard-${apiResponse.periodDays}`,
+    },
+  };
 }
 
 // ============================================================================
@@ -97,14 +483,154 @@ export function adaptAdminDashboard(_apiResponse: ApiResponse): AdminDashboard {
 // ============================================================================
 
 /**
- * Transform legacy moderator API response to ModeratorDashboard
- * @todo Implement actual transformation when API is ready
+ * Transform Moderator API response to ModeratorDashboard
+ *
+ * Terminology: Backend uses "Moderation", Frontend uses "Moderator"
+ * Backend DTO: ModerationStats + PendingItemsResponse + RecentActivitiesResponse
+ * Frontend Type: ModeratorDashboard
+ *
+ * Note: This is a THIN adapter. Complex transformations are handled by the store.
+ * Follows single transformation pattern - no duplicate logic.
+ *
+ * Note: Unlike other dashboards, Moderator data comes from MULTIPLE endpoints:
+ * - GET /api/v1/moderator/stats
+ * - GET /api/v1/moderator/pending-items
+ * - GET /api/v1/moderator/activities
+ *
+ * This adapter expects a COMBINED response object.
+ *
+ * @param apiResponse - Combined API response from multiple moderator endpoints
+ * @returns ModeratorDashboard - Unified frontend dashboard type
+ * @throws Error if API response is invalid
  */
 export function adaptModeratorDashboard(
-  _apiResponse: ApiResponse
+  apiResponse: ModeratorDashboardApiResponse | LegacyApiResponse
 ): ModeratorDashboard {
-  // TODO: Implement actual transformation
-  return generateMockModeratorDashboard();
+  // Validate API response structure
+  if (!isModeratorDashboardApiResponse(apiResponse)) {
+    logger.error(
+      'Invalid ModeratorDashboard API response - missing required fields',
+      {
+        received: apiResponse,
+        component: 'adaptModeratorDashboard',
+      }
+    );
+    throw new Error(
+      'Failed to adapt Moderator dashboard: Invalid API response structure'
+    );
+  }
+
+  // Destructure API response
+  const { stats, pendingItems, recentActivities } = apiResponse;
+
+  // ========== STATISTICS ==========
+  // Map backend ModerationStatsDto to frontend stats structure
+  const dashboardStats = {
+    pendingItems: stats.totalPendingItems,
+    approvedToday: stats.commentsApprovedToday + stats.reviewsApprovedToday,
+    rejectedToday: stats.commentsRejectedToday + stats.reviewsRejectedToday,
+    spamDetected: stats.flaggedComments + stats.flaggedReviews,
+    avgResponseTime: Math.round(stats.averageResponseTimeMinutes),
+  };
+
+  // ========== PENDING ITEMS QUEUE ==========
+  // Map backend PendingItemDto[] to frontend ModerationItem[]
+  const moderationQueue = {
+    items: pendingItems.items.map((item: PendingItemDto) => ({
+      id: item.itemId,
+      type: item.itemType.toLowerCase() as
+        | 'comment'
+        | 'package'
+        | 'dispute'
+        | 'report'
+        | 'user',
+      title: item.relatedEntityTitle || item.itemType,
+      content: item.content,
+      submittedBy: {
+        id: item.authorId,
+        name: item.authorName,
+      },
+      submittedAt: item.submittedAt,
+      status: item.status.toLowerCase() as
+        | 'pending'
+        | 'approved'
+        | 'rejected'
+        | 'spam',
+      priority: item.priority.toLowerCase() as
+        | 'low'
+        | 'medium'
+        | 'high'
+        | 'urgent',
+      flagsCount: item.flagCount,
+    })),
+    total: pendingItems.totalCount,
+    page: pendingItems.currentPage,
+    pageSize: pendingItems.pageSize,
+  };
+
+  // ========== RECENT ACTIVITIES ==========
+  // Map backend ActivityLogDto[] to frontend ActivityItem[]
+  const activities = recentActivities.activities.map(
+    (activity: ActivityLogDto) => ({
+      id: activity.activityId,
+      type: 'moderation' as const,
+      title: activity.description,
+      description: activity.reason || '',
+      timestamp: activity.timestamp,
+      status: 'completed' as const, // All logged activities are completed
+      user: {
+        id: activity.moderatorId,
+        name: activity.moderatorName,
+      },
+      metadata: {
+        action: activity.actionType.toLowerCase(),
+        targetType: activity.targetType.toLowerCase(),
+        targetId: activity.targetId,
+      },
+    })
+  );
+
+  // ========== PERIOD INFORMATION ==========
+  const period = {
+    type: 'day' as const,
+    label: 'Today',
+    days: 1, // Required by DashboardPeriod
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0],
+  };
+
+  // ========== RETURN UNIFIED DASHBOARD ==========
+  return {
+    stats: dashboardStats,
+    queue: moderationQueue,
+    recentActivities: activities,
+    period,
+
+    // TODO: Sprint 2 - Implement real chart data from backend trends
+    charts: {
+      moderationVolume: {
+        id: 'moderation-volume',
+        title: 'Moderation Volume',
+        series: [], // Placeholder
+        config: {
+          type: 'line',
+          height: 300,
+        },
+      },
+      responseTime: {
+        id: 'response-time',
+        title: 'Response Time',
+        series: [], // Placeholder
+        config: {
+          type: 'bar',
+          height: 300,
+        },
+      },
+    },
+
+    // TODO: Sprint 2 - Populate from backend recommendations
+    quickActions: [],
+  };
 }
 
 // ============================================================================
@@ -116,7 +642,12 @@ export function adaptModeratorDashboard(
  */
 export function adaptDashboardData(
   role: 'FREELANCER' | 'EMPLOYER' | 'ADMIN' | 'MODERATOR',
-  apiResponse: ApiResponse
+  apiResponse:
+    | AdminDashboardApiResponse
+    | SellerDashboardApiResponse
+    | BuyerDashboardApiResponse
+    | ModeratorDashboardApiResponse
+    | LegacyApiResponse
 ):
   | FreelancerDashboard
   | EmployerDashboard
@@ -134,323 +665,4 @@ export function adaptDashboardData(
     default:
       throw new Error(`Unknown role: ${role}`);
   }
-}
-
-// ============================================================================
-// MOCK DATA GENERATORS (for development/testing)
-// ============================================================================
-
-/**
- * Generate mock freelancer dashboard data
- */
-export function generateMockFreelancerDashboard(): FreelancerDashboard {
-  return {
-    earnings: {
-      total: 12500,
-      pending: 500,
-      available: 12000,
-      currency: 'TRY',
-      trend: {
-        direction: 'up',
-        percentage: 15,
-        isPositive: true,
-      },
-    },
-    orders: {
-      active: 3,
-      completed: 21,
-      cancelled: 2,
-      totalRevenue: 12500,
-    },
-    packages: {
-      total: 8,
-      active: 6,
-      paused: 2,
-      views: 1234,
-    },
-    ratings: {
-      average: 4.8,
-      count: 15,
-      distribution: { 5: 12, 4: 2, 3: 1, 2: 0, 1: 0 },
-    },
-    recentActivities: [],
-    quickActions: [],
-    charts: {
-      earnings: {
-        title: 'Kazançlar',
-        total: 12500,
-        change: 15,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-      orders: {
-        title: 'Siparişler',
-        total: 21,
-        change: 10,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-      views: {
-        title: 'Görüntülenmeler',
-        total: 1234,
-        change: 8,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-    },
-    period: getDefaultPeriod(),
-  };
-}
-
-/**
- * Generate mock employer dashboard data
- */
-export function generateMockEmployerDashboard(): EmployerDashboard {
-  return {
-    spending: {
-      total: 45000,
-      thisMonth: 8500,
-      currency: 'TRY',
-      trend: {
-        direction: 'up',
-        percentage: 12,
-        isPositive: true,
-      },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any,
-    orders: {
-      active: 5,
-      completed: 28,
-      cancelled: 3,
-      totalSpent: 45000,
-    },
-    favorites: {
-      packages: 12,
-      sellers: 8,
-    },
-    recentActivities: [],
-    quickActions: [],
-    charts: {
-      spending: {
-        title: 'Harcamalar',
-        total: 45000,
-        change: 12,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-      orders: {
-        title: 'Siparişler',
-        total: 28,
-        change: 8,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-    },
-    period: getDefaultPeriod(),
-  };
-}
-
-/**
- * Generate mock admin dashboard data
- */
-export function generateMockAdminDashboard(): AdminDashboard {
-  return {
-    stats: {
-      users: {
-        total: 1542,
-        active: 892,
-        new: 45,
-        trend: {
-          direction: 'up',
-          percentage: 8,
-          isPositive: true,
-        },
-      },
-      packages: {
-        total: 324,
-        active: 287,
-        paused: 37,
-        trend: {
-          direction: 'up',
-          percentage: 5,
-          isPositive: true,
-        },
-      },
-      orders: {
-        total: 2156,
-        completed: 1890,
-        active: 266,
-        revenue: 125000,
-        trend: {
-          direction: 'up',
-          percentage: 12,
-          isPositive: true,
-        },
-      },
-      revenue: {
-        total: 125000,
-        commission: 18750,
-        currency: 'TRY',
-        trend: {
-          direction: 'up',
-          percentage: 15,
-          isPositive: true,
-        },
-      },
-    },
-    systemHealth: {
-      status: 'healthy',
-      uptime: 99.8,
-      cpu: 45,
-      memory: 62,
-      storage: 38,
-      activeConnections: 234,
-      cacheHitRate: 87,
-      lastChecked: new Date().toISOString(),
-    },
-    searchMetrics: {
-      totalSearches: 5432,
-      avgResultsPerSearch: 12,
-      topSearchTerms: [
-        { term: 'web tasarım', count: 234 },
-        { term: 'logo', count: 189 },
-        { term: 'mobil uygulama', count: 167 },
-        { term: 'seo', count: 145 },
-        { term: 'içerik yazarlığı', count: 123 },
-      ],
-      noResultsCount: 89,
-    },
-    topPackages: [
-      {
-        id: '1',
-        title: 'Profesyonel Logo Tasarımı',
-        seller: 'Ahmet Yılmaz',
-        revenue: 12500,
-        orders: 25,
-      },
-      {
-        id: '2',
-        title: 'Kurumsal Web Sitesi',
-        seller: 'Mehmet Kaya',
-        revenue: 11200,
-        orders: 18,
-      },
-      {
-        id: '3',
-        title: 'SEO Optimizasyonu',
-        seller: 'Ayşe Demir',
-        revenue: 9800,
-        orders: 32,
-      },
-      {
-        id: '4',
-        title: 'Mobil Uygulama Geliştirme',
-        seller: 'Fatma Şahin',
-        revenue: 8900,
-        orders: 12,
-      },
-      {
-        id: '5',
-        title: 'İçerik Yazarlığı',
-        seller: 'Ali Çelik',
-        revenue: 7600,
-        orders: 45,
-      },
-    ],
-    recentActivities: [],
-    quickActions: [],
-    charts: {
-      userGrowth: {
-        title: 'Kullanıcı Artışı',
-        total: 1542,
-        change: 8,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-      revenue: {
-        title: 'Gelir',
-        total: 125000,
-        change: 15,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-      orders: {
-        title: 'Siparişler',
-        total: 2156,
-        change: 12,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-      searchAnalytics: {
-        title: 'Arama Analizi',
-        total: 5432,
-        change: 5,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-    },
-    period: getDefaultPeriod(),
-  };
-}
-
-/**
- * Generate mock moderator dashboard data
- */
-export function generateMockModeratorDashboard(): ModeratorDashboard {
-  return {
-    stats: {
-      pendingItems: 23,
-      approvedToday: 45,
-      rejectedToday: 12,
-      spamDetected: 8,
-      avgResponseTime: 15,
-    },
-    queue: {
-      items: [
-        {
-          id: '1',
-          type: 'package',
-          title: 'Yeni Paket Onayı',
-          content: 'Logo tasarım paketi inceleme bekliyor',
-          submittedBy: {
-            id: '1',
-            name: 'Ahmet Yılmaz',
-            avatar: '/avatars/user1.jpg',
-          },
-          submittedAt: new Date().toISOString(),
-          priority: 'high',
-          status: 'pending',
-          category: 'Grafik Tasarım',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any,
-        {
-          id: '2',
-          type: 'comment',
-          title: 'Yorum Şikayeti',
-          content: 'Kullanıcı yorumu rahatsız edici içerik barındırıyor',
-          submittedBy: {
-            id: '2',
-            name: 'Mehmet Kaya',
-            avatar: '/avatars/user2.jpg',
-          },
-          submittedAt: new Date().toISOString(),
-          priority: 'urgent',
-          status: 'pending',
-          category: 'Yorumlar',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any,
-      ],
-      total: 23,
-      page: 1,
-      pageSize: 10,
-    },
-    recentActivities: [],
-    quickActions: [],
-    charts: {
-      moderationVolume: {
-        title: 'Moderasyon Hacmi',
-        total: 156,
-        change: 5,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-      responseTime: {
-        title: 'Yanıt Süresi',
-        total: 15,
-        change: -10,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-    },
-    period: getDefaultPeriod(),
-  };
 }
