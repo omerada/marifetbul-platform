@@ -7,14 +7,48 @@ import {
   markAsRead,
   markAllAsRead,
 } from '@/lib/api/notification';
-import { getWebSocketClient } from '@/lib/infrastructure/websocket/client';
+import { subscribeToNotifications } from '@/lib/infrastructure/websocket/notificationWebSocket';
 import { logger } from '@/lib/shared/utils/logger';
 import { playNotificationAlert } from '@/lib/utils/notificationSound';
 import { useNotificationPreferences } from './useNotificationPreferences';
-import type {
-  Notification,
-  WebSocketNotificationPayload,
-} from '@/types/core/notification';
+import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import type { Notification as BackendNotification } from '@/types/core/notification';
+import type { InAppNotification } from '@/types/business/features/notifications';
+
+/**
+ * Transform backend notification to frontend format
+ */
+function transformNotification(
+  notification: BackendNotification
+): InAppNotification {
+  return {
+    id: notification.id,
+    userId: notification.userId,
+    type: notification.type.toLowerCase() as InAppNotification['type'],
+    title: notification.title,
+    message: notification.content, // Backend uses 'content', frontend uses 'message'
+    isRead: notification.isRead,
+    createdAt: notification.createdAt,
+    readAt: notification.readAt,
+    actionUrl: notification.actionUrl,
+    priority:
+      notification.priority.toLowerCase() as InAppNotification['priority'],
+    data: notification.relatedEntityId
+      ? {
+          relatedEntityType: notification.relatedEntityType,
+          relatedEntityId: notification.relatedEntityId,
+        }
+      : undefined,
+  };
+}
+
+/**
+ * Fetcher function for SWR
+ */
+async function fetchRecentNotifications(): Promise<InAppNotification[]> {
+  const data = await getRecentNotifications(5);
+  return data.map(transformNotification);
+}
 
 /**
  * Custom hook for notifications with real-time WebSocket updates
@@ -34,16 +68,19 @@ import type {
 export function useNotifications() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [recentNotifications, setRecentNotifications] = useState<
-    Notification[]
+    InAppNotification[]
   >([]);
+
+  // Get auth user
+  const { user } = useAuthStore();
 
   // Get notification preferences for sound/vibration
   const { preferences } = useNotificationPreferences();
 
   // Fetch recent notifications (latest 5)
-  const { data: notifications, mutate } = useSWR<Notification[]>(
+  const { data: notifications, mutate } = useSWR<InAppNotification[]>(
     '/api/notifications/recent',
-    () => getRecentNotifications(5),
+    fetchRecentNotifications,
     {
       refreshInterval: 30000, // Refresh every 30 seconds
       revalidateOnFocus: true,
@@ -75,61 +112,102 @@ export function useNotifications() {
 
   // WebSocket listener for real-time notifications
   useEffect(() => {
-    const ws = getWebSocketClient();
-
-    if (!ws) {
-      logger.warn('WebSocket client not available');
+    if (!user?.id) {
+      logger.warn(
+        'useNotifications',
+        'No user ID, skipping WebSocket subscription'
+      );
       return;
     }
 
-    const handleNotification = (payload: WebSocketNotificationPayload) => {
-      logger.debug('Received notification:', payload);
+    logger.info('useNotifications', 'Setting up WebSocket subscription', {
+      userId: user.id,
+    });
 
-      // Update recent notifications list
-      mutate();
-
-      // Increment unread count
-      setUnreadCount((prev) => prev + 1);
-      mutateCount();
-
-      // Play sound and vibration based on preferences
-      if (preferences) {
-        playNotificationAlert({
-          sound: true, // Default to true if no preference
-          vibration: true, // Default to true if no preference
-          doNotDisturb: preferences.doNotDisturb,
-          dndStartTime: preferences.dndStartTime,
-          dndEndTime: preferences.dndEndTime,
-        });
-      }
-
-      // Show toast notification
-      toast.success(payload.title, {
-        description: payload.content,
-        action: payload.actionUrl
-          ? {
-              label: 'Görüntüle',
-              onClick: () => {
-                if (payload.actionUrl) {
-                  window.location.href = payload.actionUrl;
-                }
-              },
+    try {
+      const unsubscribe = subscribeToNotifications(user.id, {
+        onNotification: (notification) => {
+          logger.debug(
+            'useNotifications',
+            'Received notification via WebSocket',
+            {
+              notification,
             }
-          : undefined,
-        duration: 5000,
+          );
+
+          // Update recent notifications list (add to beginning)
+          setRecentNotifications((prev) => [notification, ...prev.slice(0, 4)]);
+
+          // Increment unread count
+          setUnreadCount((prev) => prev + 1);
+
+          // Revalidate data
+          mutate();
+          mutateCount();
+
+          // Play sound and vibration if push notifications are enabled
+          // Check multiple push flags to ensure sound plays
+          const shouldPlayAlert =
+            preferences &&
+            (preferences.messagePush ||
+              preferences.jobPush ||
+              preferences.proposalPush ||
+              preferences.orderPush ||
+              preferences.paymentPush ||
+              preferences.reviewPush ||
+              preferences.systemPush ||
+              preferences.followPush);
+
+          if (shouldPlayAlert) {
+            playNotificationAlert({
+              sound: true,
+              vibration: true,
+              doNotDisturb: preferences.doNotDisturb,
+              dndStartTime: preferences.dndStartTime,
+              dndEndTime: preferences.dndEndTime,
+            });
+          }
+
+          // Show toast notification
+          toast.success(notification.title, {
+            description: notification.message,
+            action: notification.actionUrl
+              ? {
+                  label: 'Görüntüle',
+                  onClick: () => {
+                    if (notification.actionUrl) {
+                      window.location.href = notification.actionUrl;
+                    }
+                  },
+                }
+              : undefined,
+            duration: 5000,
+          });
+        },
+        onError: (error) => {
+          logger.error('useNotifications', 'WebSocket notification error', {
+            error,
+          });
+        },
       });
-    };
 
-    // Subscribe to notification events
-    const unsubscribe = ws.on('NOTIFICATION_RECEIVED', handleNotification);
+      logger.info('useNotifications', 'WebSocket subscription successful');
 
-    // Cleanup
-    return () => {
-      if (unsubscribe) {
+      // Cleanup on unmount
+      return () => {
+        logger.info('useNotifications', 'Cleaning up WebSocket subscription');
         unsubscribe();
-      }
-    };
-  }, [mutate, mutateCount, preferences]);
+      };
+    } catch (error) {
+      logger.error(
+        'useNotifications',
+        'Failed to setup WebSocket subscription',
+        {
+          error,
+        }
+      );
+    }
+  }, [user?.id, preferences, mutate, mutateCount]);
 
   // Mark notification as read
   const markNotificationAsRead = useCallback(
