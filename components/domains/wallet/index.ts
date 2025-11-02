@@ -67,6 +67,15 @@ export type { EscrowCardProps, EscrowCardData } from './EscrowCard';
 export { EscrowActions, EscrowActionPermissions } from './EscrowActions';
 export type { EscrowActionsProps } from './EscrowActions';
 
+export { PayoutStatusBadge } from './PayoutStatusBadge';
+export type { PayoutStatusBadgeProps } from './PayoutStatusBadge';
+export {
+  getPayoutStatusColor,
+  getPayoutStatusDescription,
+  isPayoutStatusFinal,
+  isPayoutStatusInProgress,
+} from './PayoutStatusBadge';
+
 // Sprint 1 - Epic 1.3 - Payout System (Days 6-7)
 export { PayoutRequestFlow } from './PayoutRequestFlow';
 export type { PayoutRequestFlowProps } from './PayoutRequestFlow';

@@ -18,7 +18,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Wallet,
@@ -32,12 +32,14 @@ import {
 } from 'lucide-react';
 import { BalanceCard } from './BalanceCard';
 import { WalletAnalytics } from './WalletAnalytics';
+import { PayoutRequestModal } from './PayoutRequestModal';
 import { useWalletData } from '@/hooks/business/wallet/useWalletData';
 import { useWebSocketWallet } from '@/hooks/business/wallet/useWebSocketWallet';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
 import { formatCurrency } from '@/lib/shared/utils/format';
+import { toast } from 'sonner';
 
 // Helper function for date formatting
 const formatDate = (dateString: string) => {
@@ -227,6 +229,12 @@ export function WalletDashboard({
   className = '',
 }: WalletDashboardProps) {
   // ========================================================================
+  // STATE
+  // ========================================================================
+
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+
+  // ========================================================================
   // HOOKS
   // ========================================================================
 
@@ -266,8 +274,15 @@ export function WalletDashboard({
   // ========================================================================
 
   const handleWithdraw = () => {
-    // TODO: Open withdraw modal (Epic 1.3)
-    // Will be implemented in Epic 1.3
+    setIsWithdrawModalOpen(true);
+  };
+
+  const handleWithdrawSuccess = () => {
+    toast.success('Para çekme talebi oluşturuldu', {
+      description:
+        'Talebiniz işleme alındı. 1-3 iş günü içinde hesabınıza ulaşacaktır.',
+    });
+    refresh(); // Refresh wallet data
   };
 
   const handleViewTransactions = () => {
@@ -444,6 +459,13 @@ export function WalletDashboard({
           />
         </motion.div>
       )}
+
+      {/* Withdraw Modal */}
+      <PayoutRequestModal
+        isOpen={isWithdrawModalOpen}
+        onClose={() => setIsWithdrawModalOpen(false)}
+        onSuccess={handleWithdrawSuccess}
+      />
     </div>
   );
 }
