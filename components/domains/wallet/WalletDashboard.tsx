@@ -295,9 +295,9 @@ export function WalletDashboard({
   const handleExportTransactions = async () => {
     try {
       toast.info('İşlem geçmişi indiriliyor...');
-      
+
       const blob = await exportTransactions('csv');
-      
+
       // Create download link
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -307,12 +307,12 @@ export function WalletDashboard({
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      
+
       toast.success('İşlem geçmişi indirildi');
     } catch (error) {
       console.error('Export failed:', error);
       toast.error('İndirme başarısız', {
-        description: 'İşlem geçmişi indirilirken bir hata oluştu'
+        description: 'İşlem geçmişi indirilirken bir hata oluştu',
       });
     }
   };
