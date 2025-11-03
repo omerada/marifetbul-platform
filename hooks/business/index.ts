@@ -552,6 +552,87 @@ export {
   type OptimisticUpdateResult,
   type UseOptimisticModerationReturn,
 } from './useOptimisticModeration';
+
+// ================================================
+// REVIEW MODERATION (Sprint 1 - Story 1.1)
+// ================================================
+export { useReviewModeration } from './moderation/useReviewModeration';
+export type {
+  ReviewModerationFilters,
+  ReviewModerationStats,
+  UseReviewModerationOptions,
+  UseReviewModerationReturn,
+} from './moderation/useReviewModeration';
+
+// ================================================
+// TICKET MODERATION (Sprint 1 - Story 1.2)
+// ================================================
+export { useTicketModeration } from './moderation/useTicketModeration';
+export type {
+  TicketStatus,
+  TicketPriority,
+  TicketModerationFilters,
+  TicketModerationStats,
+  UseTicketModerationOptions,
+  UseTicketModerationReturn,
+} from './moderation/useTicketModeration';
+
+// ================================================
+// REPORT MODERATION (Sprint 1 - Story 1.3)
+// ================================================
+export { useReportModeration } from './moderation/useReportModeration';
+export type {
+  ReportStatus,
+  ReportType,
+  ReportPriority,
+  ReportAction,
+  Report,
+  ReportModerationFilters,
+  ReportModerationStats,
+  UseReportModerationOptions,
+  UseReportModerationReturn,
+} from './moderation/useReportModeration';
+
+// ================================================
+// MODERATOR DASHBOARD (Sprint 2 - Story 2.1)
+// ================================================
+export { useModeratorDashboard } from './moderation/useModeratorDashboard';
+export type {
+  ModerationStats,
+  PendingItem,
+  PendingItemsResponse,
+  UseModeratorDashboardOptions,
+  UseModeratorDashboardReturn,
+} from './moderation/useModeratorDashboard';
+
+// ================================================
+// MODERATOR ACTIVITY (Sprint 2 - Story 2.3)
+// ================================================
+export { useModeratorActivity } from './moderation/useModeratorActivity';
+export type {
+  ActionType,
+  TargetType,
+  ActivityLog,
+  ActivityFilters,
+  UseModeratorActivityOptions,
+  UseModeratorActivityReturn,
+} from './moderation/useModeratorActivity';
+
+// ================================================
+// MODERATOR PERFORMANCE (Sprint 2 - Story 2.2)
+// ================================================
+export { useModeratorPerformance } from './moderation/useModeratorPerformance';
+export type {
+  OverallMetrics,
+  DailyMetric,
+  CategoryMetric,
+  CategoryBreakdown,
+  ComparativeMetrics,
+  PerformanceMetrics,
+  UseModeratorPerformanceOptions,
+  UseModeratorPerformanceReturn,
+} from './moderation/useModeratorPerformance';
+
 export { useSearchAnalytics } from './useSearchAnalytics';
 export {
   type UseSearchAnalyticsOptions,

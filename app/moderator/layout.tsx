@@ -68,6 +68,18 @@ export default function ModeratorLayout({
               >
                 Destek
               </Link>
+              <Link
+                href="/moderator/performance"
+                className="text-sm font-medium text-gray-700 transition-colors hover:text-blue-600"
+              >
+                Performans
+              </Link>
+              <Link
+                href="/moderator/activity"
+                className="text-sm font-medium text-gray-700 transition-colors hover:text-blue-600"
+              >
+                Aktivite
+              </Link>
             </nav>
 
             <div className="flex items-center space-x-4">
