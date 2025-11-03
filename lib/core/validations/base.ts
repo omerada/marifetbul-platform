@@ -59,8 +59,8 @@ export const baseSchemas = {
     .min(5, 'En az 5 karakter')
     .max(200, 'En fazla 200 karakter'),
 
-  // Financial
-  currency: z.enum(['TRY', 'USD', 'EUR'], { message: 'Para birimi seçiniz' }),
+  // Financial - Only TRY supported
+  currency: z.enum(['TRY'], { message: 'Para birimi TRY olmalıdır' }),
   price: z.number().min(0, 'Fiyat 0 veya daha büyük olmalıdır'),
   priceString: z.string().regex(/^\d+(\.\d{1,2})?$/, 'Geçerli fiyat formatı'),
 

@@ -58,6 +58,9 @@ export type {
 export { walletApi } from './wallet';
 export type { Wallet, BalanceResponse, Transaction } from './validators';
 
+// Export Bank Accounts API
+export * from './bank-accounts';
+
 // Export Payment API
 export { paymentApi } from './payment';
 export type { Payment, PaymentIntent } from './validators';

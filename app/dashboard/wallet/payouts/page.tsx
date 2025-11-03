@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { PayoutDashboard } from '@/components/domains/wallet/PayoutDashboard';
 import { PayoutRequestFlow } from '@/components/domains/wallet/PayoutRequestFlow';
@@ -10,10 +10,23 @@ import { usePayouts } from '@/hooks/business/wallet/usePayouts';
 import { useWalletStore } from '@/stores/walletStore';
 import { Download, Clock, Building2 } from 'lucide-react';
 import type { PayoutRequestData } from '@/components/domains/wallet/PayoutRequestFlow';
+import {
+  getBankAccounts,
+  addBankAccount,
+  setDefaultBankAccount,
+  removeBankAccount,
+  type BankAccountResponse,
+  type AddBankAccountRequest,
+} from '@/lib/api/bank-accounts';
+import { useToast } from '@/hooks/core/useToast';
+import type { BankAccount } from '@/components/domains/wallet/BankAccountManager';
 
 export default function PayoutSystemPage() {
   const [isRequestFlowOpen, setIsRequestFlowOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [bankAccounts, setBankAccounts] = useState<BankAccountResponse[]>([]);
+  const [isBankAccountsLoading, setIsBankAccountsLoading] = useState(true);
+  const { error: showErrorToast, success: showSuccessToast } = useToast();
 
   // Fetch payout data from hook
   const { payouts, limits, eligibility, isLoading, requestPayout, refresh } =
@@ -22,18 +35,88 @@ export default function PayoutSystemPage() {
   // Get balance from wallet store
   const balance = useWalletStore((state) => state.balance);
 
-  // Mock bank accounts for now (will be replaced with real data in Story 3.1)
-  const bankAccounts = [
-    {
-      id: '1',
-      bankName: 'Garanti Bankası',
-      iban: 'TR98 0006 2000 1234 5678 9012 34',
-      accountHolder: 'Kullanıcı Adı',
-      isDefault: true,
-      isVerified: true,
-      createdAt: new Date().toISOString(),
+  // Fetch bank accounts from API
+  const loadBankAccounts = useCallback(async () => {
+    try {
+      setIsBankAccountsLoading(true);
+      const accounts = await getBankAccounts();
+      setBankAccounts(accounts);
+    } catch (error) {
+      console.error('Failed to load bank accounts:', error);
+      showErrorToast('Hata', 'Banka hesapları yüklenirken bir hata oluştu');
+      setBankAccounts([]);
+    } finally {
+      setIsBankAccountsLoading(false);
+    }
+  }, [showErrorToast]);
+
+  useEffect(() => {
+    loadBankAccounts();
+  }, [loadBankAccounts]);
+
+  // Handle add bank account
+  const handleAddBankAccount = useCallback(
+    async (account: Omit<BankAccount, 'id' | 'createdAt'>) => {
+      try {
+        const request: AddBankAccountRequest = {
+          iban: account.iban.replace(/\s/g, '').toUpperCase(),
+          accountHolder: account.accountHolder,
+          bankName: account.bankName,
+        };
+
+        await addBankAccount(request);
+        showSuccessToast(
+          'Başarılı',
+          'Banka hesabı eklendi. Admin onayı bekleniyor.'
+        );
+        await loadBankAccounts();
+      } catch (error: unknown) {
+        console.error('Failed to add bank account:', error);
+        const errorMessage =
+          error &&
+          typeof error === 'object' &&
+          'message' in error &&
+          typeof error.message === 'string'
+            ? error.message
+            : 'Banka hesabı eklenirken bir hata oluştu';
+        showErrorToast('Hata', errorMessage);
+        throw error;
+      }
     },
-  ];
+    [loadBankAccounts, showErrorToast, showSuccessToast]
+  );
+
+  // Handle set default bank account
+  const handleSetDefaultAccount = useCallback(
+    async (id: string) => {
+      try {
+        await setDefaultBankAccount(id);
+        showSuccessToast('Başarılı', 'Varsayılan hesap güncellendi');
+        await loadBankAccounts();
+      } catch (error) {
+        console.error('Failed to set default account:', error);
+        showErrorToast('Hata', 'Varsayılan hesap ayarlanırken bir hata oluştu');
+        throw error;
+      }
+    },
+    [loadBankAccounts, showErrorToast, showSuccessToast]
+  );
+
+  // Handle delete bank account
+  const handleDeleteBankAccount = useCallback(
+    async (id: string) => {
+      try {
+        await removeBankAccount(id);
+        showSuccessToast('Başarılı', 'Banka hesabı kaldırıldı');
+        await loadBankAccounts();
+      } catch (error) {
+        console.error('Failed to delete bank account:', error);
+        showErrorToast('Hata', 'Banka hesabı silinirken bir hata oluştu');
+        throw error;
+      }
+    },
+    [loadBankAccounts, showErrorToast, showSuccessToast]
+  );
 
   // Handle payout request
   const handlePayoutRequest = async (data: PayoutRequestData) => {
@@ -104,7 +187,23 @@ export default function PayoutSystemPage() {
         </TabsContent>
 
         <TabsContent value="accounts">
-          <BankAccountManager accounts={bankAccounts} isLoading={isLoading} />
+          <BankAccountManager
+            accounts={bankAccounts.map((account) => ({
+              id: account.id,
+              bankName: account.bankName,
+              iban: account.iban,
+              accountHolder: account.accountHolder,
+              isDefault: account.isDefault,
+              isVerified: account.status === 'VERIFIED',
+              status: account.status,
+              rejectionReason: account.rejectionReason,
+              createdAt: account.createdAt,
+            }))}
+            isLoading={isBankAccountsLoading}
+            onAddAccount={handleAddBankAccount}
+            onDeleteAccount={handleDeleteBankAccount}
+            onSetDefault={handleSetDefaultAccount}
+          />
         </TabsContent>
       </Tabs>
 
@@ -120,7 +219,17 @@ export default function PayoutSystemPage() {
           minimum: limits?.minimumAmount || 50,
           maximum: limits?.maximumAmount || 10000,
         }}
-        bankAccounts={bankAccounts}
+        bankAccounts={bankAccounts.map((account) => ({
+          id: account.id,
+          bankName: account.bankName,
+          iban: account.iban,
+          accountHolder: account.accountHolder,
+          isDefault: account.isDefault,
+          isVerified: account.status === 'VERIFIED',
+          status: account.status,
+          rejectionReason: account.rejectionReason,
+          createdAt: account.createdAt,
+        }))}
         onSubmit={handlePayoutRequest}
         onAddBankAccount={() => setActiveTab('accounts')}
       />

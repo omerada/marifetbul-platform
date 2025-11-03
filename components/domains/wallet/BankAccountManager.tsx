@@ -41,6 +41,13 @@ import {
 } from '@/components/ui/Dialog';
 import { Badge } from '@/components/ui/Badge';
 import type { BankAccountInfo } from '@/types/business/features/wallet';
+import {
+  isValidTurkishIban,
+  formatIban,
+  maskIban as maskIbanHelper,
+  BankAccountStatus,
+  getBankAccountStatusLabel,
+} from '@/lib/api/bank-accounts';
 
 // ============================================================================
 // TYPES
@@ -50,6 +57,8 @@ export interface BankAccount extends BankAccountInfo {
   id: string;
   isDefault: boolean;
   isVerified: boolean;
+  status?: BankAccountStatus; // NEW: Status from API
+  rejectionReason?: string; // NEW: Rejection reason if status is REJECTED
   createdAt: string;
 }
 
@@ -82,73 +91,69 @@ interface BankAccountFormData {
 // CONSTANTS
 // ============================================================================
 
+/**
+ * Major Turkish Banks (synchronized with backend TurkishBankInfoService)
+ * Auto-detection from IBAN happens on backend, this list is for manual selection
+ */
 const TURKISH_BANKS = [
-  'Türkiye İş Bankası',
-  'Garanti BBVA',
-  'Yapı Kredi',
   'Ziraat Bankası',
-  'Akbank',
-  'Halkbank',
-  'QNB Finansbank',
+  'Halk Bankası',
   'Vakıfbank',
-  'TEB',
-  'ING',
-  'Denizbank',
-  'Kuveyt Türk',
-  'Albaraka Türk',
-  'Türkiye Finans',
-  'Vakıf Katılım',
-  'Ziraat Katılım',
-  'HSBC',
-  'Fibabanka',
-  'Odeabank',
-  'Alternatifbank',
-  'Burgan Bank',
+  'Türk Ekonomi Bankası (TEB)',
+  'Akbank',
+  'Garanti BBVA',
+  'İş Bankası',
+  'Yapı Kredi',
   'Şekerbank',
-];
+  'ING Bank',
+  'QNB Finansbank',
+  'Denizbank',
+  'Aktif Bank',
+  'Odea Bank',
+  'Albaraka Türk',
+  'Kuveyt Türk',
+  'Türkiye Finans',
+  'Ziraat Katılım',
+  'Vakıf Katılım',
+  'Burgan Bank',
+  'Fibabanka',
+  'Alternatifbank',
+  'Anadolubank',
+  'HSBC Turkey',
+  'BankPozitif',
+].sort();
 
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================
 
 /**
- * Validate IBAN format (TR + 24 digits)
+ * Validate IBAN format using imported validation
  */
 function validateIBAN(iban: string): string | null {
-  const cleaned = iban.replace(/\s/g, '').toUpperCase();
-
-  if (!cleaned.startsWith('TR')) {
-    return 'IBAN TR ile başlamalıdır';
+  if (!iban) {
+    return 'IBAN gereklidir';
   }
 
-  if (cleaned.length !== 26) {
-    return 'IBAN 26 karakter olmalıdır (TR + 24 rakam)';
-  }
-
-  const digits = cleaned.slice(2);
-  if (!/^\d+$/.test(digits)) {
-    return 'IBAN sadece rakam içermelidir';
+  if (!isValidTurkishIban(iban)) {
+    return 'Geçersiz IBAN formatı. TR ile başlamalı ve 26 karakter olmalıdır.';
   }
 
   return null;
 }
 
 /**
- * Format IBAN for display (TR** **** **** **** **** **** **)
+ * Format IBAN for display (using imported helper)
  */
 function _formatIBAN(iban: string): string {
-  const cleaned = iban.replace(/\s/g, '').toUpperCase();
-  return cleaned.replace(/(.{4})/g, '$1 ').trim();
+  return formatIban(iban);
 }
 
 /**
- * Mask IBAN for security (TR** **** **** **** **** **** 1234)
+ * Mask IBAN for security (using imported helper)
  */
 function maskIBAN(iban: string): string {
-  const cleaned = iban.replace(/\s/g, '').toUpperCase();
-  const masked =
-    cleaned.slice(0, 4) + ' **** **** **** **** **** ' + cleaned.slice(-4);
-  return masked;
+  return maskIbanHelper(iban);
 }
 
 // ============================================================================
@@ -376,10 +381,35 @@ export function BankAccountManager({
                           Varsayılan
                         </Badge>
                       )}
-                      {account.isVerified && (
+                      {/* Status Badge - Priority: status prop > isVerified fallback */}
+                      {account.status ? (
+                        <Badge
+                          variant={
+                            account.status === BankAccountStatus.VERIFIED
+                              ? 'success'
+                              : account.status === BankAccountStatus.PENDING
+                                ? 'warning'
+                                : 'destructive'
+                          }
+                          className="gap-1"
+                        >
+                          {account.status === BankAccountStatus.VERIFIED && (
+                            <Check className="h-3 w-3" />
+                          )}
+                          {account.status === BankAccountStatus.REJECTED && (
+                            <AlertCircle className="h-3 w-3" />
+                          )}
+                          {getBankAccountStatusLabel(account.status)}
+                        </Badge>
+                      ) : account.isVerified ? (
                         <Badge variant="success" className="gap-1">
                           <Check className="h-3 w-3" />
                           Doğrulanmış
+                        </Badge>
+                      ) : (
+                        <Badge variant="warning" className="gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          Beklemede
                         </Badge>
                       )}
                     </div>
@@ -398,6 +428,16 @@ export function BankAccountManager({
                           Hesap No: {account.accountNumber}
                         </p>
                       )}
+                      {/* Show rejection reason if rejected */}
+                      {account.status === BankAccountStatus.REJECTED &&
+                        account.rejectionReason && (
+                          <div className="mt-2 rounded-md bg-red-50 p-2">
+                            <p className="text-xs text-red-600">
+                              <strong>Red Sebebi:</strong>{' '}
+                              {account.rejectionReason}
+                            </p>
+                          </div>
+                        )}
                     </div>
                   </div>
 
@@ -482,14 +522,25 @@ export function BankAccountManager({
                 id="add-iban"
                 placeholder="TR00 0000 0000 0000 0000 0000 00"
                 value={formData.iban}
-                onChange={(e) =>
-                  setFormData({ ...formData, iban: e.target.value })
-                }
+                onChange={(e) => {
+                  // Auto-format IBAN as user types
+                  let value = e.target.value.replace(/\s/g, '').toUpperCase();
+
+                  // Format with spaces every 4 characters
+                  if (value.length > 0) {
+                    value = formatIban(value);
+                  }
+
+                  setFormData({ ...formData, iban: value });
+                }}
                 maxLength={32}
               />
               {errors.iban && (
                 <p className="mt-1 text-sm text-red-500">{errors.iban}</p>
               )}
+              <p className="text-muted-foreground mt-1 text-xs">
+                Türk bankalarına ait IBAN (TR ile başlamalı, 26 karakter)
+              </p>
             </div>
 
             {/* Account Holder */}
@@ -601,14 +652,25 @@ export function BankAccountManager({
                 id="edit-iban"
                 placeholder="TR00 0000 0000 0000 0000 0000 00"
                 value={formData.iban}
-                onChange={(e) =>
-                  setFormData({ ...formData, iban: e.target.value })
-                }
+                onChange={(e) => {
+                  // Auto-format IBAN as user types
+                  let value = e.target.value.replace(/\s/g, '').toUpperCase();
+
+                  // Format with spaces every 4 characters
+                  if (value.length > 0) {
+                    value = formatIban(value);
+                  }
+
+                  setFormData({ ...formData, iban: value });
+                }}
                 maxLength={32}
               />
               {errors.iban && (
                 <p className="mt-1 text-sm text-red-500">{errors.iban}</p>
               )}
+              <p className="text-muted-foreground mt-1 text-xs">
+                Türk bankalarına ait IBAN (TR ile başlamalı, 26 karakter)
+              </p>
             </div>
 
             {/* Account Holder */}
