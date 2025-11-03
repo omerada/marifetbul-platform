@@ -29,6 +29,7 @@ import { Skeleton } from '@/components/ui/UnifiedSkeleton';
 import { formatCurrency, formatRelativeTime } from '@/lib/shared/formatters';
 import { logger } from '@/lib/shared/utils/logger';
 import type { Payout } from '@/lib/api/validators';
+import { payoutAdminApi } from '@/lib/api/admin/payout-admin-api';
 
 // ============================================================================
 // TYPES
@@ -56,49 +57,6 @@ export interface AdminPayoutApprovalWidgetProps {
    */
   onReject?: (payoutId: string, reason: string) => Promise<void>;
 }
-
-// ============================================================================
-// MOCK DATA (Replace with actual API call)
-// ============================================================================
-
-const MOCK_PENDING_PAYOUTS: Payout[] = [
-  {
-    id: '550e8400-e29b-41d4-a716-446655440001',
-    userId: '550e8400-e29b-41d4-a716-446655440002',
-    amount: 1500,
-    currency: 'TRY',
-    status: 'PENDING',
-    method: 'BANK_TRANSFER',
-    description: 'Haftalık kazanç çekimi',
-    paymentMethodDetails: 'Garanti Bankası - TR98 0001 2345 6789 0123 4567 89',
-    requestedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440003',
-    userId: '550e8400-e29b-41d4-a716-446655440004',
-    amount: 850.5,
-    currency: 'TRY',
-    status: 'PENDING',
-    method: 'BANK_TRANSFER',
-    description: 'Aylık kazanç transferi',
-    paymentMethodDetails: 'İş Bankası - TR98 0006 4000 0011 1234 5678 90',
-    requestedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
-    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440005',
-    userId: '550e8400-e29b-41d4-a716-446655440006',
-    amount: 2300,
-    currency: 'TRY',
-    status: 'PENDING',
-    method: 'BANK_TRANSFER',
-    description: 'Proje ödemesi çekimi',
-    paymentMethodDetails: 'Yapı Kredi - TR98 0006 7010 0000 1234 5678 90',
-    requestedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
 
 // ============================================================================
 // COMPONENTS
@@ -214,14 +172,12 @@ export function AdminPayoutApprovalWidget({
   const loadPayouts = async () => {
     try {
       setIsLoading(true);
-      // TODO: Replace with actual API call
-      // const data = await adminPayoutApi.getPendingPayouts(maxItems);
-
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      setPayouts(MOCK_PENDING_PAYOUTS.slice(0, maxItems));
+      const data = await payoutAdminApi.getPendingPayouts();
+      setPayouts(data.slice(0, maxItems) as Payout[]);
     } catch (error) {
       logger.error('Failed to load pending payouts:', error);
+      // Fallback to empty array on error
+      setPayouts([]);
     } finally {
       setIsLoading(false);
     }

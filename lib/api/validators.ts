@@ -467,6 +467,7 @@ export type Wallet = z.infer<typeof WalletSchema>;
 
 /**
  * Balance response schema
+ * @updated Story 1.3: Added completedPayouts field
  */
 export const BalanceResponseSchema = z.object({
   availableBalance: z.number().min(0),
@@ -474,6 +475,7 @@ export const BalanceResponseSchema = z.object({
   totalBalance: z.number().min(0),
   totalEarnings: z.number().min(0),
   pendingPayouts: z.number().min(0),
+  completedPayouts: z.number().min(0).optional(), // Story 1.3: Payout History Calculator
 });
 
 export type BalanceResponse = z.infer<typeof BalanceResponseSchema>;

@@ -25,13 +25,13 @@ import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import {
   EscrowStatusBadge,
   EscrowTimeline,
-  EscrowActions,
   EscrowActionPermissions,
   createEscrowTimelineEvent,
   type EscrowTimelineEvent,
 } from '@/components/domains/wallet';
 import { getEscrowPaymentDetails } from '@/lib/api/wallet';
 import type { EscrowPaymentDetails } from '@/types/business/features/wallet';
+import { EscrowPageClient } from './EscrowPageClient';
 
 // ============================================================================
 // PAGE COMPONENT
@@ -222,22 +222,14 @@ export default async function EscrowDetailPage({
         {/* Right Column - Actions */}
         <div className="space-y-6">
           {/* Actions */}
-          <EscrowActions
+          <EscrowPageClient
             paymentId={escrowData.id}
             orderId={escrowData.orderId}
+            orderNumber={params.orderId.slice(0, 8)}
             status={escrowData.status}
             userRole={userRole}
             canRelease={escrowData.canRelease}
             canDispute={escrowData.canDispute}
-            onRelease={async (paymentId) => {
-              'use server';
-              // TODO: Implement server action for payment release
-              console.error('Release payment server action needed:', paymentId);
-            }}
-            onDispute={(paymentId) => {
-              // TODO: Implement dispute modal opening
-              console.error('Dispute modal needed:', paymentId);
-            }}
           />
 
           {/* Permissions */}

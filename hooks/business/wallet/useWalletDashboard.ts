@@ -291,7 +291,7 @@ export function useWalletDashboard(
       return {
         totalTransactions: transactions.length,
         pendingPayouts: balance?.pendingPayouts || 0,
-        completedPayouts: 0, // TODO: Calculate from payout history
+        completedPayouts: balance?.completedPayouts || 0,
         averageTransaction,
         thisMonthEarnings,
         lastMonthEarnings,

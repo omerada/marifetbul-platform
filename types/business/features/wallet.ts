@@ -393,12 +393,18 @@ export interface WalletResponse {
   updatedAt: string;
 }
 
+/**
+ * Balance response with payout history
+ * @updated Story 1.3: Added completedPayouts field
+ */
 export interface BalanceResponse {
   balance: number;
   pendingBalance: number;
   availableForPayout: number;
   totalEarnings: number;
   totalPayouts: number;
+  /** Number of completed payouts (withdrawals) - Story 1.3 */
+  completedPayouts?: number;
 }
 
 export interface PayoutEligibilityResponse {

@@ -40,6 +40,7 @@ import { Button } from '@/components/ui';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
 import { formatCurrency } from '@/lib/shared/utils/format';
 import { toast } from 'sonner';
+import { exportTransactions } from '@/lib/api/wallet';
 
 // Helper function for date formatting
 const formatDate = (dateString: string) => {
@@ -291,9 +292,29 @@ export function WalletDashboard({
     // Will be implemented tomorrow
   };
 
-  const handleExportTransactions = () => {
-    // TODO: Export transactions (Epic 1.1 - Day 2)
-    // Will be implemented tomorrow
+  const handleExportTransactions = async () => {
+    try {
+      toast.info('İşlem geçmişi indiriliyor...');
+      
+      const blob = await exportTransactions('csv');
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `marifetbul_islemler_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('İşlem geçmişi indirildi');
+    } catch (error) {
+      console.error('Export failed:', error);
+      toast.error('İndirme başarısız', {
+        description: 'İşlem geçmişi indirilirken bir hata oluştu'
+      });
+    }
   };
 
   // ========================================================================
@@ -382,7 +403,7 @@ export function WalletDashboard({
         transition={{ duration: 0.5 }}
         className="flex items-center justify-between"
       >
-        <div>
+        <div className="flex-1">
           <h1 className="flex items-center space-x-3 text-3xl font-bold text-gray-900">
             <Wallet className="h-8 w-8 text-blue-600" />
             <span>Cüzdanım</span>
