@@ -41,8 +41,8 @@ import {
 } from '@/lib/utils/order-normalization';
 import { AcceptOrderModal } from './AcceptOrderModal';
 import { DeliverySubmissionModal } from './DeliverySubmissionModal';
-import { ApproveDeliveryModal } from './ApproveDeliveryModal.v2';
-import { RequestRevisionModal } from './RequestRevisionModal.v2';
+import { ApproveDeliveryModal } from './ApproveDeliveryModal';
+import { RequestRevisionModal } from './RequestRevisionModal';
 import { CancelOrderModal } from './CancelOrderModal';
 import { DisputeModal } from '@/components/domains/orders/DisputeModal';
 

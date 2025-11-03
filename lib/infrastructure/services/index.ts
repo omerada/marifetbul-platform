@@ -31,6 +31,14 @@ export type {
 export { JobService } from './api/jobService';
 export { PackageService } from './api/packageService';
 export { AuthService, UserService } from './api/authService';
+export { moderatorService } from './api/moderatorService.production';
+export type {
+  ModerationStats,
+  PendingItem,
+  PendingItemsResponse,
+  ActivityLog,
+  BulkActionResponse,
+} from './api/moderatorService.production';
 
 // Other Services
 export { MessagingService } from './messaging.service';
