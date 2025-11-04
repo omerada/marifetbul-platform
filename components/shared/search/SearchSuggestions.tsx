@@ -130,47 +130,34 @@ async function fetchSuggestions(query: string): Promise<SearchSuggestion[]> {
       count: undefined, // Backend doesn't return counts yet
     }));
   } catch (error) {
-    console.error('[fetchSuggestions] API error, using fallback:', error);
+    console.error('[fetchSuggestions] API error:', error);
 
-    // Fallback to mock data on error
-    const mockSuggestions: SearchSuggestion[] = [
-      {
-        id: '1',
-        text: `${query} tasarım`,
-        type: 'suggestion',
-        count: 142,
-        category: 'Grafik Tasarım',
-      },
-      {
-        id: '2',
-        text: `${query} geliştirme`,
-        type: 'suggestion',
-        count: 89,
-        category: 'Web Geliştirme',
-      },
-      {
-        id: '3',
-        text: `${query} uzmanı`,
-        type: 'suggestion',
-        count: 67,
-      },
-      {
-        id: '4',
-        text: `${query} hizmeti`,
-        type: 'suggestion',
-        count: 54,
-      },
-    ];
-
-    return mockSuggestions;
+    // Return empty array on error - graceful degradation
+    // Users will still see recent searches and popular searches
+    return [];
   }
 }
 
 /**
  * Get popular searches
+ *
+ * TODO: Backend Implementation Needed
+ * Endpoint: GET /api/v1/analytics/search/popular?limit=10
+ *
+ * For now, returns hardcoded popular searches.
+ * Should be replaced with real trending data from analytics.
  */
 function getPopularSearches(): SearchSuggestion[] {
-  // TODO: Fetch from API
+  // TODO: Fetch from API when backend implements popular searches endpoint
+  // const response = await fetch('/api/v1/analytics/search/popular?limit=10');
+  // const data = await response.json();
+  // return data.data.map((item, idx) => ({
+  //   id: `pop${idx}`,
+  //   text: item.searchTerm,
+  //   type: 'popular',
+  //   count: item.searchCount
+  // }));
+
   return [
     {
       id: 'pop1',

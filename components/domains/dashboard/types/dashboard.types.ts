@@ -352,8 +352,8 @@ export interface QuickAction {
   label: string;
   /** Action description */
   description?: string;
-  /** Icon component (LucideIcon name as string for serialization) */
-  icon: string;
+  /** Icon component (LucideIcon for client-side rendering) */
+  icon: LucideIcon;
   /** Icon color */
   iconColor?: string;
   /** Action link (for navigation) */
@@ -578,6 +578,8 @@ export interface ModeratorDashboard {
   charts: {
     actionsToday: ChartWidgetData;
     categoryBreakdown: ChartWidgetData;
+    moderationVolume: ChartWidgetData;
+    responseTime: ChartWidgetData;
   };
   /** Period info */
   period: DashboardPeriod;

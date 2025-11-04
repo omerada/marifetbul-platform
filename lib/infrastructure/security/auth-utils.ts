@@ -93,6 +93,11 @@ export const ROUTE_CONFIG = {
   moderator: ['/moderator'],
 
   /**
+   * Development/test routes (only accessible in development mode)
+   */
+  test: ['/test'],
+
+  /**
    * Authentication pages (redirect if already authenticated)
    */
   auth: ['/login', '/register', '/forgot-password', '/reset-password'],
@@ -435,6 +440,16 @@ export function isPublicRoute(pathname: string): boolean {
  */
 export function isProfileViewRoute(pathname: string): boolean {
   return pathname.startsWith('/profile/') && !pathname.includes('/edit');
+}
+
+/**
+ * Check if pathname is a test/development route
+ *
+ * @param pathname - URL pathname
+ * @returns True if pathname is a test route
+ */
+export function isTestRoute(pathname: string): boolean {
+  return ROUTE_CONFIG.test.some((route) => pathname.startsWith(route));
 }
 
 // ================================================

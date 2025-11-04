@@ -10,8 +10,8 @@ export { default as AdminHeader } from './layout/AdminHeader';
 export { default as AdminFooter } from './layout/AdminFooter';
 export { default as AdminSidebar } from './layout/AdminSidebar';
 
-// Dashboard Components
-export { default as AdminDashboard } from './dashboard/AdminDashboard';
+// Dashboard Components (Legacy - use AdminDashboardView from @/components/domains/dashboard/views)
+// REMOVED: export { default as AdminDashboard } - DEPRECATED, use AdminDashboardView instead
 export { default as AdminAnalytics } from './dashboard/AdminAnalytics';
 export { default as AdminReports } from './dashboard/AdminReports';
 export { default as SystemHealthWidget } from './dashboard/SystemHealthWidget';
@@ -31,7 +31,7 @@ export { default as AdminModeration } from './moderation/AdminModeration';
 export { default as ContentModerationQueue } from './moderation/ContentModerationQueue';
 export { ContentAppealSystem } from './moderation/ContentAppealSystem';
 export { default as ModerationAnalytics } from './moderation/ModerationAnalytics';
-export { default as ModerationDashboard } from './moderation/ModerationDashboard';
+// REMOVED: ModerationDashboard - Use ModeratorDashboardView from @/components/domains/dashboard/views
 
 // Review & Comment Moderation
 export * from './moderation/review-moderation-exports';

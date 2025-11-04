@@ -31,7 +31,10 @@ export { DashboardSection } from './DashboardSection';
 // State components
 export { EmptyState } from './EmptyState';
 export { ErrorState } from './ErrorState';
-export { LoadingState, CardLoadingSkeleton } from './LoadingState';
+export {
+  LoadingState as DashboardLoadingState,
+  CardLoadingSkeleton,
+} from './LoadingState';
 
 // ============================================================================
 // STATUS: 9/9 widgets complete (100% - Day 4 DONE!)

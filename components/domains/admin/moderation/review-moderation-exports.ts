@@ -58,8 +58,9 @@ export type { FlagStatisticsPanelProps } from './reviews/FlagStatisticsPanel';
 // Sprint 3 Day 4 - Analytics Dashboard (NEW)
 export { ModeratorAnalyticsDashboard } from './reviews/ModeratorAnalyticsDashboard';
 export type { ModeratorAnalyticsDashboardProps } from './reviews/ModeratorAnalyticsDashboard';
-export { ModeratorDashboard } from './reviews/ModeratorDashboard';
-export type { ModeratorDashboardProps } from './reviews/ModeratorDashboard';
+// RENAMED to avoid conflict with ModeratorDashboardView
+export { ModeratorDashboard as ModerationDashboardWidget } from './reviews/ModeratorDashboard';
+export type { ModeratorDashboardProps as ModerationDashboardWidgetProps } from './reviews/ModeratorDashboard';
 
 // Comment Dashboard Widgets
 export { CommentModerationSummary } from '../dashboard/CommentModerationSummary';

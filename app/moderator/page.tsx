@@ -1,18 +1,24 @@
-﻿'use client';
+﻿/**
+ * ================================================
+ * MODERATOR DASHBOARD PAGE
+ * ================================================
+ * Moderator rolü için dashboard sayfası
+ * UnifiedDashboard'a redirect eder
+ *
+ * Sprint: Dashboard Consolidation
+ * @version 2.0.0
+ * @refactored 2025-11-04
+ */
 
-import { ModeratorDashboardOverview } from '@/components/domains/moderator';
+'use client';
 
+import { redirect } from 'next/navigation';
+
+/**
+ * Moderator page now redirects to unified dashboard
+ * UnifiedDashboard will render ModeratorDashboardView based on role
+ * Sprint: Moderator Dashboard Consolidation
+ */
 export default function ModeratorDashboardPage() {
-  return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Moderasyon Paneli</h1>
-        <p className="text-muted-foreground">
-          Tüm moderasyon işlemlerinin genel görünümü ve öncelikli işlemler.
-        </p>
-      </div>
-
-      <ModeratorDashboardOverview />
-    </div>
-  );
+  redirect('/dashboard');
 }

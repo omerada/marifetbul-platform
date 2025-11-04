@@ -183,6 +183,49 @@ export const employerDashboardNavigation: NavigationItem[] = [
 ];
 
 /**
+ * Moderator Tools Navigation
+ * Note: Main moderator dashboard is at /dashboard (UnifiedDashboard)
+ * These are moderator-specific tools and actions
+ */
+export const moderatorToolsNavigation: NavigationItem[] = [
+  {
+    href: '/dashboard',
+    label: 'Dashboard',
+    icon: Home,
+  },
+  {
+    href: '/moderator/comments',
+    label: 'Yorumlar',
+    icon: MessageCircle,
+  },
+  {
+    href: '/moderator/reviews',
+    label: 'Değerlendirmeler',
+    icon: Shield,
+  },
+  {
+    href: '/moderator/reports',
+    label: 'Raporlar',
+    icon: FileText,
+  },
+  {
+    href: '/moderator/tickets',
+    label: 'Destek',
+    icon: HelpCircle,
+  },
+  {
+    href: '/moderator/performance',
+    label: 'Performans',
+    icon: Grid,
+  },
+  {
+    href: '/moderator/activity',
+    label: 'Aktivite',
+    icon: Bell,
+  },
+];
+
+/**
  * Settings Navigation
  */
 export const settingsNavigation: NavigationItem[] = [
@@ -323,6 +366,7 @@ const navigationConfig = {
   marketplaceNavigation,
   freelancerDashboardNavigation,
   employerDashboardNavigation,
+  moderatorToolsNavigation,
   settingsNavigation,
   footerNavigation,
   userMenuNavigation,

@@ -34,8 +34,10 @@ export { ModeratorReportQueue } from './ModeratorReportQueue';
 // ============================================================================
 // DASHBOARD COMPONENTS (Sprint 2)
 // ============================================================================
+// DEPRECATED: ModeratorDashboardOverview - Use ModeratorDashboardView from @/components/domains/dashboard/views
+// Migration: All moderator dashboard functionality moved to UnifiedDashboard
+// See: components/domains/dashboard/views/ModeratorDashboardView.tsx
 
-export { ModeratorDashboardOverview } from './ModeratorDashboardOverview';
 export { ModeratorActivityTimeline } from './ModeratorActivityTimeline';
 export type { ModeratorActivityTimelineProps } from './ModeratorActivityTimeline';
 export { ModeratorPerformanceCharts } from './ModeratorPerformanceCharts';

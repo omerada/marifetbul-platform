@@ -8,6 +8,7 @@ import {
   isAuthRoute,
   isPublicRoute,
   isProfileViewRoute,
+  isTestRoute,
   getLoginRedirectUrl,
   AUTH_COOKIES,
 } from './lib/infrastructure/security/auth-utils';
@@ -109,6 +110,19 @@ export async function middleware(request: NextRequest) {
 
   // Allow public profile viewing: /profile/[id] but not /profile/edit
   if (isProfileViewRoute(pathname)) {
+    const response = NextResponse.next();
+    return addSecurityHeaders(response);
+  }
+
+  // Block test routes in production
+  if (isTestRoute(pathname)) {
+    if (process.env.NODE_ENV === 'production') {
+      logger.warn('[Middleware] Test route blocked in production', {
+        pathname,
+      });
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+    // Allow in development
     const response = NextResponse.next();
     return addSecurityHeaders(response);
   }

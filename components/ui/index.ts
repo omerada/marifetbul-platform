@@ -78,6 +78,7 @@ export {
   SkeletonPage,
   UnifiedSkeletonSystem,
 } from './UnifiedSkeleton';
+export { Skeleton as BaseSkeleton } from './skeleton';
 
 // Interactive Components
 export {

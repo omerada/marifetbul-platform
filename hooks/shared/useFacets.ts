@@ -134,42 +134,43 @@ function convertToFacetGroups(
 
 /**
  * Fetch facets from API
- * Connected to backend: GET /api/v1/jobs/search with skills parameter
+ *
+ * TODO: Backend Implementation Required
+ * Endpoint: GET /api/v1/jobs/facets
+ * Query Params: ?category={category}&location={location}&minBudget={min}&maxBudget={max}
+ *
+ * Expected Response:
+ * {
+ *   success: true,
+ *   data: {
+ *     categories: { "Web Geliştirme": 142, ... },
+ *     skills: { "React": 89, ... },
+ *     locations: { "İstanbul": 234, ... },
+ *     budgetRanges: { "0-500": 45, ... }
+ *   }
+ * }
+ *
+ * For now, returns mock data. Should be replaced with real facet counts from search index.
  */
 async function fetchFacetsFromAPI(
   filters?: Record<string, unknown>
 ): Promise<FacetsData> {
   try {
-    // Build query params from filters
-    const params = new URLSearchParams();
-    if (filters?.skills && Array.isArray(filters.skills)) {
-      filters.skills.forEach((skill) => params.append('skills', skill));
-    }
-    if (filters?.category) {
-      params.set('category', String(filters.category));
-    }
-    if (filters?.location) {
-      params.set('location', String(filters.location));
-    }
+    // TODO: Implement when backend creates dedicated facets endpoint
+    // const params = new URLSearchParams();
+    // if (filters?.category) params.set('category', String(filters.category));
+    // if (filters?.location) params.set('location', String(filters.location));
+    //
+    // const response = await fetch(`/api/v1/jobs/facets?${params.toString()}`);
+    // if (!response.ok) throw new Error(`API error: ${response.status}`);
+    // const result = await response.json();
+    // return result.data;
 
-    // Use jobs search endpoint to get facet-like data
-    // Note: Backend doesn't have dedicated /facets endpoint yet
-    // This is a workaround using existing search API
-    const response = await fetch(
-      `/api/v1/jobs/search?${params.toString()}&page=0&size=100`
-    );
-
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-
-    // For now, return mock data until backend implements facets endpoint
-    // TODO: Backend team - create GET /api/v1/jobs/facets endpoint
-    void response; // Suppress unused warning
+    // Using mock data until backend implements facets endpoint
+    void filters; // Suppress unused warning
     return DEFAULT_FACETS_DATA;
   } catch (error) {
     console.error('[fetchFacetsFromAPI] Error:', error);
-    // Fallback to mock data on error
     return DEFAULT_FACETS_DATA;
   }
 }

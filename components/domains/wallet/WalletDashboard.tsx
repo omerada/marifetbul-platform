@@ -393,8 +393,12 @@ export function WalletDashboard({
     if (externalOnViewTransactions) {
       externalOnViewTransactions();
     } else {
-      // Default behavior: Navigate to transactions page
-      // TODO: Navigate to transactions page (Epic 1.1 - Day 2)
+      // Navigate to wallet transactions page
+      // Note: Create /dashboard/wallet/transactions page for full transaction history
+      // For now, transactions are visible in the dashboard below
+      toast.info('İşlem geçmişi', {
+        description: 'Tüm işlemlerinizi aşağıda görüntüleyebilirsiniz',
+      });
     }
   };
 
@@ -402,8 +406,8 @@ export function WalletDashboard({
     if (externalOnViewPayouts) {
       externalOnViewPayouts();
     } else {
-      // Default behavior: Navigate to payouts page
-      // TODO: Navigate to payouts page
+      // Navigate to existing payouts page
+      window.location.href = '/dashboard/wallet/payouts';
     }
   };
 

@@ -113,10 +113,21 @@ export function useReportBuilder(): UseReportBuilderReturn {
         return;
       }
 
-      // Simulate report generation
-      // TODO: Replace with actual API calls
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // TODO: Backend Implementation Required
+      // Endpoint: POST /api/v1/admin/reports/generate
+      // Body: { reportType, metrics, startDate, endDate, groupBy, filters }
+      // Response: { success: true, data: [...], summary: {...} }
+      //
+      // const response = await fetch('/api/v1/admin/reports/generate', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(config)
+      // });
+      // const result = await response.json();
+      // setReportData({ config, data: result.data, generatedAt: new Date().toISOString(), summary: result.summary });
 
+      // Using mock data until backend implements report generation
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       const mockData = generateMockData(config);
 
       setReportData({
@@ -206,6 +217,41 @@ export function useReportBuilder(): UseReportBuilderReturn {
 
 /**
  * Generate mock data for testing
+ *
+ * TODO: Backend Implementation Required
+ * This mock data generator should be replaced with actual backend API integration.
+ *
+ * Required Backend Endpoint: POST /api/v1/admin/reports/generate
+ * Request Body: {
+ *   reportType: 'revenue' | 'orders' | 'refunds' | 'users' | 'custom',
+ *   metrics: string[],
+ *   startDate: string (ISO8601),
+ *   endDate: string (ISO8601),
+ *   groupBy: 'day' | 'week' | 'month',
+ *   filters?: {
+ *     categories?: string[],
+ *     status?: string[],
+ *     userTypes?: string[],
+ *     minAmount?: number,
+ *     maxAmount?: number
+ *   }
+ * }
+ *
+ * Response: {
+ *   success: true,
+ *   data: Array<{
+ *     date: string,
+ *     [metricKey: string]: number | string
+ *   }>,
+ *   summary: {
+ *     total: number,
+ *     average: number,
+ *     min: number,
+ *     max: number,
+ *     trend: 'up' | 'down' | 'stable',
+ *     percentageChange: number
+ *   }
+ * }
  */
 function generateMockData(config: ReportConfig): unknown[] {
   const days = Math.ceil(

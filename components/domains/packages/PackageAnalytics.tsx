@@ -60,7 +60,15 @@ interface PackageAnalyticsData {
   };
 }
 
-// Mock data generator (temporary - will be replaced with API call)
+/**
+ * Mock data generator
+ *
+ * TODO: Remove this function when backend analytics endpoint is ready
+ * Backend Endpoint: GET /api/v1/packages/analytics/seller
+ *
+ * This function generates realistic-looking analytics data for development.
+ * Should be replaced with real API integration.
+ */
 function generateMockData(): PackageAnalyticsData {
   const now = new Date();
   const labels = Array.from({ length: 7 }, (_, i) => {
@@ -133,24 +141,33 @@ export function PackageAnalytics() {
   >('views');
 
   useEffect(() => {
-    // Simulate API call
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // Production Ready: Implement backend API endpoint
-        // Expected endpoint: GET /api/v1/packages/analytics?period={period}
-        // Response format: { period, stats: { views, clicks, orders, revenue, conversion }, trends: {...} }
-        // const response = await fetch(`/api/v1/packages/analytics?period=${period}`);
-        // const result = await response.json();
-        // setData(result);
+        // TODO: Backend Implementation Required
+        // Endpoint: GET /api/v1/packages/analytics/seller
+        // Headers: Authorization: Bearer {token}
+        // Response: {
+        //   success: boolean,
+        //   data: {
+        //     metrics: { totalPackages, activePackages, totalViews, totalOrders, totalRevenue, averageRating, completionRate, conversionRate },
+        //     trends: { views, orders, revenue, rating },
+        //     topPackages: [{ id, title, category, views, orders, revenue, rating }],
+        //     chartData: { labels: string[], views: number[], orders: number[], revenue: number[] }
+        //   }
+        // }
 
-        // Simulate network delay for development
+        // For now, using mock data until backend endpoint is ready
         await new Promise((resolve) => setTimeout(resolve, 1000));
-
         const mockData = generateMockData();
         setData(mockData);
+
+        logger.info('[PackageAnalytics] Mock data loaded', {
+          packagesCount: mockData.metrics.totalPackages,
+          component: 'PackageAnalytics',
+        });
       } catch (err) {
         setError('Failed to load analytics data');
         logger.error('Analytics error:', err);

@@ -94,28 +94,3 @@ export { TransactionDisplay } from './domains/wallet/TransactionDisplay';
 // Admin Components
 export { AdminPayoutApprovalWidget } from './admin/payouts/AdminPayoutApprovalWidget';
 
-// ================================================
-// UI COMPONENTS
-// ================================================
-// Base UI components and design system
-
-export * from './ui';
-
-// ================================================
-// LAYOUT COMPONENTS
-// ================================================
-// Layout and navigation components
-
-export * from './layout';
-
-// ================================================
-// FORM COMPONENTS
-// ================================================
-// Form-related components
-
-export * from './forms';
-
-// ================================================
-// PROVIDER COMPONENTS
-// ================================================
-// Context providers and wrappers

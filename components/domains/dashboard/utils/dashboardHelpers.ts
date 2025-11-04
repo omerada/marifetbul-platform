@@ -192,21 +192,7 @@ export function formatStatValue(
 // ============================================================================
 // TREND CALCULATIONS
 // ============================================================================
-
-/**
- * Trend direction type
- */
-export type TrendDirection = 'up' | 'down' | 'neutral';
-
-/**
- * Trend indicator
- */
-export interface TrendIndicator {
-  percentage: number;
-  direction: TrendDirection;
-  isPositive: boolean;
-  label: string;
-}
+import type { TrendDirection, TrendIndicator } from '../types/dashboard.types';
 
 /**
  * Calculate trend between two values

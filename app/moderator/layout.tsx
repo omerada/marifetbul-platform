@@ -2,21 +2,30 @@
  * ================================================
  * MODERATOR LAYOUT
  * ================================================
- * Layout for moderator pages with navigation sidebar
+ * Layout for moderator-specific tools and pages
  *
- * Sprint 1.2: MODERATOR Role Frontend Integration
+ * Note: Main moderator dashboard is at /dashboard (via UnifiedDashboard)
+ * This layout is for moderator-specific tools:
+ * - /moderator/comments - Comment moderation
+ * - /moderator/reviews - Review moderation
+ * - /moderator/reports - Report handling
+ * - /moderator/tickets - Support ticket management
+ * - /moderator/performance - Performance metrics
+ * - /moderator/activity - Activity logs
  *
- * @version 1.0.0
- * @author MarifetBul Development Team
+ * Sprint: Dashboard Consolidation
+ * @version 2.0.0
+ * @refactored 2025-11-04
  */
 
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { moderatorToolsNavigation } from '@/lib/config/navigation';
 
 export const metadata: Metadata = {
-  title: 'Moderasyon Paneli - MarifetBul',
-  description: 'İçerik moderasyonu ve kullanıcı yönetimi',
+  title: 'Moderasyon Araçları - MarifetBul',
+  description: 'İçerik moderasyonu ve kullanıcı yönetimi araçları',
 };
 
 export default function ModeratorLayout({
@@ -26,7 +35,7 @@ export default function ModeratorLayout({
 }) {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Moderator Navigation Header */}
+      {/* Moderator Tools Navigation Header */}
       <header className="sticky top-0 z-10 border-b border-gray-200 bg-white">
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
@@ -34,62 +43,20 @@ export default function ModeratorLayout({
               <Link href="/" className="text-xl font-bold text-blue-600">
                 MarifetBul
               </Link>
-              <span className="text-sm text-gray-500">Moderasyon</span>
+              <span className="text-sm text-gray-500">Moderasyon Araçları</span>
             </div>
 
             <nav className="flex items-center space-x-6">
-              <Link
-                href="/moderator"
-                className="text-sm font-medium text-gray-700 transition-colors hover:text-blue-600"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/moderator/comments"
-                className="text-sm font-medium text-gray-700 transition-colors hover:text-blue-600"
-              >
-                Yorumlar
-              </Link>
-              <Link
-                href="/moderator/reviews"
-                className="text-sm font-medium text-gray-700 transition-colors hover:text-blue-600"
-              >
-                Değerlendirmeler
-              </Link>
-              <Link
-                href="/moderator/reports"
-                className="text-sm font-medium text-gray-700 transition-colors hover:text-blue-600"
-              >
-                Raporlar
-              </Link>
-              <Link
-                href="/moderator/tickets"
-                className="text-sm font-medium text-gray-700 transition-colors hover:text-blue-600"
-              >
-                Destek
-              </Link>
-              <Link
-                href="/moderator/performance"
-                className="text-sm font-medium text-gray-700 transition-colors hover:text-blue-600"
-              >
-                Performans
-              </Link>
-              <Link
-                href="/moderator/activity"
-                className="text-sm font-medium text-gray-700 transition-colors hover:text-blue-600"
-              >
-                Aktivite
-              </Link>
+              {moderatorToolsNavigation.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-sm font-medium text-gray-700 transition-colors hover:text-blue-600"
+                >
+                  {item.label}
+                </Link>
+              ))}
             </nav>
-
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/dashboard"
-                className="text-sm text-gray-600 hover:text-gray-900"
-              >
-                Dashboard&apos;a Dön
-              </Link>
-            </div>
           </div>
         </div>
       </header>
