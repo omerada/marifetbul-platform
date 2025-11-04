@@ -270,7 +270,8 @@ export function useWebSocket(
                 userId: notification.userId,
                 type: notificationTypeMap[notification.type] || 'system_update',
                 title: notification.title,
-                message: notification.content,
+                message: notification.content || notification.message || '',
+                content: notification.content,
                 isRead: notification.isRead,
                 createdAt: notification.createdAt,
                 readAt: notification.readAt,
@@ -280,6 +281,8 @@ export function useWebSocket(
                   | 'medium'
                   | 'high'
                   | 'urgent',
+                relatedEntityType: notification.relatedEntityType,
+                relatedEntityId: notification.relatedEntityId,
                 data: {
                   relatedEntityType: notification.relatedEntityType,
                   relatedEntityId: notification.relatedEntityId,

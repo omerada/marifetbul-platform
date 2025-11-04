@@ -26,13 +26,16 @@ function transformNotification(
     userId: notification.userId,
     type: notification.type.toLowerCase() as InAppNotification['type'],
     title: notification.title,
-    message: notification.content, // Backend uses 'content', frontend uses 'message'
+    message: notification.content || notification.message || '', // Backend uses 'content', frontend uses 'message'
+    content: notification.content, // Backward compatibility
     isRead: notification.isRead,
     createdAt: notification.createdAt,
     readAt: notification.readAt,
     actionUrl: notification.actionUrl,
     priority:
       notification.priority.toLowerCase() as InAppNotification['priority'],
+    relatedEntityType: notification.relatedEntityType,
+    relatedEntityId: notification.relatedEntityId,
     data: notification.relatedEntityId
       ? {
           relatedEntityType: notification.relatedEntityType,

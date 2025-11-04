@@ -14,22 +14,22 @@ export function NotificationItem({
 }: NotificationItemProps) {
   const getNotificationIcon = (type: NotificationType) => {
     switch (type) {
-      case 'ORDER':
-        return '📦';
-      case 'PAYMENT':
+      case 'job_application':
+      case 'job_accepted':
+      case 'job_completed':
+        return '�';
+      case 'payment_received':
         return '💰';
-      case 'REVIEW':
+      case 'review_received':
         return '⭐';
-      case 'FOLLOW':
-        return '👤';
-      case 'MESSAGE':
+      case 'message_received':
         return '💬';
-      case 'JOB':
-        return '💼';
-      case 'PROPOSAL':
-        return '📝';
-      case 'SYSTEM':
+      case 'system_update':
         return '⚙️';
+      case 'promotion':
+        return '🎁';
+      case 'reminder':
+        return '⏰';
       default:
         return '🔔';
     }
@@ -37,11 +37,12 @@ export function NotificationItem({
 
   const getPriorityColor = (priority: Notification['priority']) => {
     switch (priority) {
-      case 'HIGH':
+      case 'high':
+      case 'urgent':
         return 'text-red-600';
-      case 'MEDIUM':
+      case 'medium':
         return 'text-orange-600';
-      case 'LOW':
+      case 'low':
         return 'text-blue-600';
       default:
         return 'text-gray-600';
@@ -93,7 +94,7 @@ export function NotificationItem({
             )}
           </div>
           <p className="mb-2 line-clamp-2 text-sm text-gray-600">
-            {notification.content}
+            {notification.message}
           </p>
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-500">

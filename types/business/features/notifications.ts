@@ -110,12 +110,16 @@ export interface InAppNotification {
   type: NotificationType;
   title: string;
   message: string;
+  content?: string; // Alias for message - backward compatibility
   data?: Record<string, unknown>;
   isRead: boolean;
   createdAt: string;
   readAt?: string;
   actionUrl?: string;
   priority: 'low' | 'medium' | 'high' | 'urgent';
+  // Entity tracking fields
+  relatedEntityType?: string;
+  relatedEntityId?: string;
 }
 
 export type NotificationType =
