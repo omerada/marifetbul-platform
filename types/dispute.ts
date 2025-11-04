@@ -39,6 +39,7 @@ export enum DisputeStatus {
   UNDER_REVIEW = 'UNDER_REVIEW',
   AWAITING_BUYER_RESPONSE = 'AWAITING_BUYER_RESPONSE',
   AWAITING_SELLER_RESPONSE = 'AWAITING_SELLER_RESPONSE',
+  ESCALATED = 'ESCALATED',
   RESOLVED = 'RESOLVED',
   CLOSED = 'CLOSED',
 }
@@ -51,6 +52,7 @@ export const disputeStatusLabels: Record<DisputeStatus, string> = {
   [DisputeStatus.UNDER_REVIEW]: 'İnceleniyor',
   [DisputeStatus.AWAITING_BUYER_RESPONSE]: 'Alıcı Yanıtı Bekleniyor',
   [DisputeStatus.AWAITING_SELLER_RESPONSE]: 'Satıcı Yanıtı Bekleniyor',
+  [DisputeStatus.ESCALATED]: 'Yükseltildi',
   [DisputeStatus.RESOLVED]: 'Çözümlendi',
   [DisputeStatus.CLOSED]: 'Kapatıldı',
 };
@@ -63,6 +65,7 @@ export const disputeStatusColors: Record<DisputeStatus, string> = {
   [DisputeStatus.UNDER_REVIEW]: 'bg-yellow-100 text-yellow-800',
   [DisputeStatus.AWAITING_BUYER_RESPONSE]: 'bg-blue-100 text-blue-800',
   [DisputeStatus.AWAITING_SELLER_RESPONSE]: 'bg-purple-100 text-purple-800',
+  [DisputeStatus.ESCALATED]: 'bg-orange-100 text-orange-800',
   [DisputeStatus.RESOLVED]: 'bg-green-100 text-green-800',
   [DisputeStatus.CLOSED]: 'bg-gray-100 text-gray-800',
 };

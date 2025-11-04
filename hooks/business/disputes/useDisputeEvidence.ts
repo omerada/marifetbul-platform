@@ -4,7 +4,10 @@
  */
 
 import { useState } from 'react';
-import { uploadDisputeEvidence } from '@/lib/api/disputes';
+import {
+  uploadDisputeEvidence,
+  uploadDisputeAttachment,
+} from '@/lib/api/disputes';
 import { toast } from 'sonner';
 import { logger } from '@/lib/shared/utils/logger';
 
@@ -49,7 +52,17 @@ export function useDisputeEvidence(disputeId: string) {
     setUploadError(null);
 
     try {
-      await uploadDisputeEvidence(disputeId, files);
+      // Upload each file first, then create evidence records
+      for (const file of files) {
+        const uploadResult = await uploadDisputeAttachment(file);
+        await uploadDisputeEvidence(disputeId, {
+          fileUrl: uploadResult.fileUrl,
+          fileType: uploadResult.fileType,
+          fileName: uploadResult.fileName,
+          fileSize: uploadResult.fileSize,
+          description: `Uploaded evidence: ${file.name}`,
+        });
+      }
       logger.info('Evidence uploaded successfully', {
         disputeId,
         fileCount: files.length,

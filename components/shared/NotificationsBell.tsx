@@ -57,7 +57,7 @@ export default function NotificationsBell() {
                 <div className="flex-1">
                   <p className="text-sm font-medium">{n.title}</p>
                   <p className="text-muted-foreground mt-1 text-xs">
-                    {n.content}
+                    {n.message}
                   </p>
                   <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
                     <span>{new Date(n.createdAt).toLocaleString('tr-TR')}</span>

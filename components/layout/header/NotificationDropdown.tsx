@@ -43,22 +43,22 @@ export function NotificationDropdown() {
 
   const getNotificationIcon = (type: Notification['type']) => {
     switch (type) {
-      case 'ORDER':
-        return '📦';
-      case 'PAYMENT':
+      case 'job_application':
+      case 'job_accepted':
+      case 'job_completed':
+        return '�';
+      case 'payment_received':
         return '💰';
-      case 'REVIEW':
+      case 'review_received':
         return '⭐';
-      case 'FOLLOW':
-        return '👤';
-      case 'MESSAGE':
+      case 'message_received':
         return '💬';
-      case 'JOB':
-        return '💼';
-      case 'PROPOSAL':
-        return '📝';
-      case 'SYSTEM':
+      case 'system_update':
         return '⚙️';
+      case 'promotion':
+        return '🎁';
+      case 'reminder':
+        return '⏰';
       default:
         return '🔔';
     }
@@ -143,7 +143,7 @@ export function NotificationDropdown() {
                           )}
                         </div>
                         <p className="mt-1 line-clamp-2 text-sm text-gray-600">
-                          {notification.content}
+                          {notification.message}
                         </p>
                         <div className="mt-2 flex items-center justify-between">
                           <span className="text-xs text-gray-500">

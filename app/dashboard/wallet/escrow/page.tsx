@@ -34,7 +34,6 @@ import { releaseEscrowPayment } from '@/lib/api/payment';
 import { raiseDispute } from '@/lib/api/disputes';
 import type { Transaction } from '@/types/business/features/wallet';
 import { DisputeReason } from '@/types/dispute';
-import { logger } from '@/lib/infrastructure/logging/logger';
 
 // ============================================================================
 // MAIN COMPONENT

@@ -1,14 +1,13 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth/auth-options';
-import { getApiUrl } from '@/lib/config/api-config';
+import { cookies } from 'next/headers';
 
 /**
  * Server action to release payment from escrow
  *
  * Story 2.1: Escrow Payment Release Flow
+ * TODO: Sprint 10 - Implement proper authentication with cookie-based session
  *
  * @param orderId - Order ID containing the payment
  * @returns Success or error message
@@ -18,9 +17,11 @@ export async function releasePaymentFromEscrow(orderId: string): Promise<{
   message: string;
 }> {
   try {
-    // Get authenticated session
-    const session = await getServerSession(authOptions);
-    if (!session?.accessToken) {
+    // Get access token from cookies
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get('accessToken')?.value;
+
+    if (!accessToken) {
       return {
         success: false,
         message: 'Oturum bulunamadı. Lütfen tekrar giriş yapın.',
@@ -28,12 +29,13 @@ export async function releasePaymentFromEscrow(orderId: string): Promise<{
     }
 
     // Call backend API
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
     const response = await fetch(
-      `${getApiUrl()}/api/v1/wallet/escrow/release/${orderId}`,
+      `${apiUrl}/api/v1/wallet/escrow/release/${orderId}`,
       {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${session.accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
       }

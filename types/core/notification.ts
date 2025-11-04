@@ -1,35 +1,14 @@
 /**
  * Notification type definitions
+ * Re-exports from business/features/notifications to avoid duplication
  */
 
-export type NotificationType =
-  | 'MESSAGE'
-  | 'JOB'
-  | 'PROPOSAL'
-  | 'ORDER'
-  | 'PAYMENT'
-  | 'REVIEW'
-  | 'FOLLOW'
-  | 'SYSTEM';
+export type {
+  NotificationType,
+  InAppNotification as Notification,
+} from '../business/features/notifications';
 
-export type NotificationPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
-
-export interface Notification {
-  id: string;
-  userId: string;
-  type: NotificationType;
-  priority: NotificationPriority;
-  title: string;
-  content: string;
-  actionUrl?: string;
-  actionLabel?: string;
-  relatedEntityType?: string;
-  relatedEntityId?: string;
-  isRead: boolean;
-  readAt?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+export type NotificationPriority = 'low' | 'medium' | 'high' | 'urgent';
 
 export interface NotificationCountResponse {
   totalCount: number;

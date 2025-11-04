@@ -45,6 +45,11 @@ const statusConfig: Record<
     variant: 'secondary',
     icon: <MessageSquare className="h-3 w-3" />,
   },
+  ESCALATED: {
+    label: 'Yükseltildi',
+    variant: 'destructive',
+    icon: <AlertCircle className="h-3 w-3" />,
+  },
   RESOLVED: {
     label: 'Çözüldü',
     variant: 'outline',

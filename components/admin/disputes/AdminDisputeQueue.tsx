@@ -10,6 +10,7 @@ import {
   Eye,
   FileText,
   Filter,
+  Flag,
   RefreshCw,
   Search,
   XCircle,
@@ -54,6 +55,7 @@ const statusColors: Record<DisputeStatus, string> = {
   UNDER_REVIEW: 'bg-yellow-100 text-yellow-800',
   AWAITING_BUYER_RESPONSE: 'bg-blue-100 text-blue-800',
   AWAITING_SELLER_RESPONSE: 'bg-purple-100 text-purple-800',
+  ESCALATED: 'bg-orange-100 text-orange-800',
   RESOLVED: 'bg-green-100 text-green-800',
   CLOSED: 'bg-gray-100 text-gray-800',
 };
@@ -63,6 +65,7 @@ const statusIcons: Record<DisputeStatus, React.ReactNode> = {
   UNDER_REVIEW: <AlertTriangle className="h-4 w-4" />,
   AWAITING_BUYER_RESPONSE: <Clock className="h-4 w-4" />,
   AWAITING_SELLER_RESPONSE: <Clock className="h-4 w-4" />,
+  ESCALATED: <Flag className="h-4 w-4" />,
   RESOLVED: <CheckCircle className="h-4 w-4" />,
   CLOSED: <XCircle className="h-4 w-4" />,
 };
@@ -72,6 +75,7 @@ const statusLabels: Record<DisputeStatus, string> = {
   UNDER_REVIEW: 'İncelemede',
   AWAITING_BUYER_RESPONSE: 'Alıcı Yanıtı Bekleniyor',
   AWAITING_SELLER_RESPONSE: 'Satıcı Yanıtı Bekleniyor',
+  ESCALATED: 'Yükseltildi',
   RESOLVED: 'Çözüldü',
   CLOSED: 'Kapatıldı',
 };

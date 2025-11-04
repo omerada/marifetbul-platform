@@ -21,7 +21,7 @@
 import { useEffect, useCallback, useMemo } from 'react';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import useDashboardStore from '@/lib/core/store/dashboard';
-import type { FreelancerDashboard, EmployerDashboard } from '@/types';
+import type { UnifiedDashboardData } from '@/lib/core/store/dashboard';
 import type { DashboardError } from '@/lib/core/store/dashboard';
 
 // ============================================================================
@@ -31,7 +31,7 @@ import type { DashboardError } from '@/lib/core/store/dashboard';
 /**
  * Dashboard data union type
  */
-export type DashboardData = FreelancerDashboard | EmployerDashboard;
+export type DashboardData = UnifiedDashboardData;
 
 /**
  * User role type

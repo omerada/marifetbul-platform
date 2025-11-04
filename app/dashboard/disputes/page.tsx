@@ -38,7 +38,7 @@ import { Card } from '@/components/ui/Card';
 import { Button, Loading } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { getMyDisputes } from '@/lib/api/disputes';
-import type { DisputeResponse, DisputeStatus } from '@/types/dispute';
+import type { DisputeResponse } from '@/types/dispute';
 import {
   disputeStatusLabels,
   disputeReasonLabels,
@@ -53,7 +53,7 @@ import { logger } from '@/lib/shared/utils/logger';
 // TYPES
 // ================================================
 
-type FilterStatus = 'all' | DisputeStatus;
+type FilterStatus = 'all' | 'OPEN' | 'UNDER_REVIEW' | 'ESCALATED' | 'RESOLVED';
 
 // ================================================
 // HELPER FUNCTIONS

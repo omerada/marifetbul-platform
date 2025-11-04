@@ -4,7 +4,11 @@
  */
 
 import { useState } from 'react';
-import { raiseDispute, uploadDisputeEvidence } from '@/lib/api/disputes';
+import {
+  raiseDispute,
+  uploadDisputeEvidence,
+  uploadDisputeAttachment,
+} from '@/lib/api/disputes';
 import type { DisputeRequest, DisputeResponse } from '@/types/dispute';
 import { toast } from 'sonner';
 import { logger } from '@/lib/shared/utils/logger';
@@ -28,7 +32,17 @@ export function useCreateDispute() {
       // Step 2: Upload evidence files if provided
       if (evidenceFiles && evidenceFiles.length > 0) {
         try {
-          await uploadDisputeEvidence(dispute.id, evidenceFiles);
+          // Upload each file first, then create evidence records
+          for (const file of evidenceFiles) {
+            const uploadResult = await uploadDisputeAttachment(file);
+            await uploadDisputeEvidence(dispute.id, {
+              fileUrl: uploadResult.fileUrl,
+              fileType: uploadResult.fileType,
+              fileName: uploadResult.fileName,
+              fileSize: uploadResult.fileSize,
+              description: `Uploaded evidence: ${file.name}`,
+            });
+          }
           logger.info('Evidence uploaded', {
             disputeId: dispute.id,
             fileCount: evidenceFiles.length,

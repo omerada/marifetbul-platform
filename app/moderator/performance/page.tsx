@@ -12,7 +12,7 @@ export default function ModeratorPerformancePage() {
         </p>
       </div>
 
-      <ModeratorPerformanceCharts days={30} />
+      <ModeratorPerformanceCharts initialDays={30} />
     </div>
   );
 }
