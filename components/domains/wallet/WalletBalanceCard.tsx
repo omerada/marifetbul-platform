@@ -1,12 +1,19 @@
 /**
  * ================================================
- * WALLET BALANCE CARD - Balance Display Component
+ * WALLET BALANCE CARD (DEPRECATED)
  * ================================================
- * Displays current balance, pending balance, and available for payout
- * with tooltips and loading states
+ * ⚠️ DEPRECATION NOTICE: This component is deprecated.
+ * Please use BalanceCard from @/components/domains/wallet/BalanceCard instead.
  *
+ * @deprecated since v3.0.0 - Use components/domains/wallet/BalanceCard
+ * @see components/domains/wallet/BalanceCard.tsx
+ *
+ * This file will be removed in v4.0.0
+ * Migration: Replace WalletBalanceCard with BalanceCard
+ *
+ * Sprint 1 - Story 1.2 - Card Standardization
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 1.0.0 (Deprecated)
  */
 
 'use client';

@@ -2,17 +2,30 @@
  * Wallet Components
  * Reusable wallet UI components
  *
- * NOTE: WalletDashboard has been moved to @/components/domains/wallet/WalletDashboard
- * Use that location for the main dashboard component.
+ * NOTE: Main WalletDashboard moved to @/components/domains/wallet/WalletDashboard
  *
- * @version 3.0.0 - Sprint 1: Component Consolidation Complete
+ * @version 3.0.0 - Sprint 1: Component Consolidation & Standardization
  */
 
-// Core wallet UI components
+// ================================================
+// CARD COMPONENTS
+// ================================================
+
+/** Generic metric display card - Standardized v2.0 */
 export { WalletCard } from './WalletCard';
+export type { WalletCardProps } from './WalletCard';
+
+// ================================================
+// UI COMPONENTS
+// ================================================
+
 export { QuickStatsGrid } from './QuickStatsGrid';
 export { PayoutTable } from './PayoutTable';
 export { PayoutHistoryTable } from './PayoutHistoryTable';
+
+// ================================================
+// FEATURE COMPONENTS
+// ================================================
 
 // Transaction & Export components
 export { TransactionExportModal } from './TransactionExportModal';

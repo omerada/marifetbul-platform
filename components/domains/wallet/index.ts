@@ -5,25 +5,41 @@
  * Central export point for all wallet UI components
  *
  * @author MarifetBul Development Team
- * @version 2.2.0 - Sprint Day 5: Added Commission Tracking Components
+ * @version 3.0.0 - Sprint 1: Consolidated & Standardized
  */
 
-// Sprint 1 - Epic 1.1 - NEW Components
+// ================================================
+// MAIN DASHBOARD
+// ================================================
+
+/** Main wallet dashboard - Unified component */
 export { WalletDashboard } from './WalletDashboard';
 export type { WalletDashboardProps } from './WalletDashboard';
 
+// ================================================
+// CARD COMPONENTS - Standardized
+// ================================================
+
+/** Balance display card - Active, Standardized */
 export { BalanceCard } from './BalanceCard';
 export type { BalanceCardProps } from './BalanceCard';
 
-export { WalletAnalytics } from './WalletAnalytics';
-export type { WalletAnalyticsProps, AnalyticsPeriod } from './WalletAnalytics';
+/** @deprecated Use BalanceCard instead - Will be removed in v4.0.0 */
+export { WalletBalanceCard } from './WalletBalanceCard';
+export type { WalletBalanceCardProps } from './WalletBalanceCard';
 
-// Sprint Day 5 - Commission Tracking UI
 export { CommissionSummaryCard } from './CommissionSummaryCard';
 export type {
   CommissionSummaryCardProps,
   CommissionData,
 } from './CommissionSummaryCard';
+
+// ================================================
+// ANALYTICS & CHARTS
+// ================================================
+
+export { WalletAnalytics } from './WalletAnalytics';
+export type { WalletAnalyticsProps, AnalyticsPeriod } from './WalletAnalytics';
 
 export { CommissionChart } from './CommissionChart';
 export type {
@@ -33,7 +49,10 @@ export type {
   ChartPeriod as CommissionChartPeriod,
 } from './CommissionChart';
 
-// Sprint 1 - Epic 1.2 - Escrow Management (Days 4-5)
+// ================================================
+// ESCROW MANAGEMENT
+// ================================================
+
 export { EscrowList } from './EscrowList';
 export type { EscrowListProps, EscrowItem, EscrowStatus } from './EscrowList';
 
@@ -44,12 +63,9 @@ export { ReleaseEscrowFlow } from './ReleaseEscrowFlow';
 export type { ReleaseEscrowFlowProps } from './ReleaseEscrowFlow';
 
 export { DisputeEscrowModal } from './DisputeEscrowModal';
-export type {
-  DisputeEscrowModalProps,
-  DisputeReason,
-} from './DisputeEscrowModal';
+export type { DisputeEscrowModalProps } from './DisputeEscrowModal';
+// Note: DisputeReason is imported from @/types/dispute in DisputeEscrowModal
 
-// Sprint 1 - New Escrow UI Components
 export { EscrowStatusBadge } from './EscrowStatusBadge';
 export type { EscrowStatusBadgeProps } from './EscrowStatusBadge';
 
@@ -92,15 +108,19 @@ export type {
 export { PayoutDashboard } from './PayoutDashboard';
 export type { PayoutDashboardProps } from './PayoutDashboard';
 
-// Main components
-export { WalletBalanceCard } from './WalletBalanceCard';
-export type { WalletBalanceCardProps } from './WalletBalanceCard';
+// ================================================
+// CHARTS & WIDGETS
+// ================================================
 
 export { EarningsChart } from './EarningsChart';
 export type { EarningsChartProps, ChartPeriod } from './EarningsChart';
 
 export { RecentTransactionsWidget } from './RecentTransactionsWidget';
 export type { RecentTransactionsWidgetProps } from './RecentTransactionsWidget';
+
+// ================================================
+// TRANSACTION COMPONENTS
+// ================================================
 
 export { TransactionFilters } from './TransactionFilters';
 export type { TransactionFiltersProps } from './TransactionFilters';
