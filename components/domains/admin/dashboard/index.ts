@@ -7,9 +7,11 @@
  *
  * @module components/domains/admin/dashboard
  * @since Sprint 1
+ * @updated Sprint 2.1 - Dashboard Consolidation
  */
 
 // Main Dashboard Components
+/** @deprecated Use AdminDashboardView from @/components/domains/dashboard/views instead */
 export { AdminDashboard } from './AdminDashboard';
 export { AdminAnalytics } from './AdminAnalytics';
 export { AdminReports } from './AdminReports';

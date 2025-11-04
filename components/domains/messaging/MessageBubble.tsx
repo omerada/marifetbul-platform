@@ -19,12 +19,14 @@ import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { CheckCheck, Clock, User } from 'lucide-react';
 import type { Message } from '@/types/business/features/messaging';
+import { MessageReactions } from './MessageReactions';
 
 interface MessageBubbleProps {
   message: Message;
   isOwnMessage: boolean;
   showAvatar?: boolean;
   showTimestamp?: boolean;
+  currentUserId: string;
 }
 
 /**
@@ -70,6 +72,7 @@ export const MessageBubble = memo(function MessageBubble({
   isOwnMessage,
   showAvatar = true,
   showTimestamp = true,
+  currentUserId,
 }: MessageBubbleProps) {
   const statusIcon = getStatusIcon(message, isOwnMessage);
 
@@ -140,6 +143,14 @@ export const MessageBubble = memo(function MessageBubble({
             {statusIcon}
           </div>
         )}
+
+        {/* Message Reactions */}
+        <MessageReactions
+          messageId={message.id}
+          reactions={message.reactions}
+          currentUserId={currentUserId}
+          isOwnMessage={isOwnMessage}
+        />
       </div>
     </div>
   );

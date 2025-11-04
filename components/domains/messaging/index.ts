@@ -20,6 +20,8 @@ export { MessageThread } from './MessageThread';
 export { MessageBubble } from './MessageBubble';
 export { MessageInput } from './MessageInput';
 export { ConversationHeader } from './ConversationHeader';
+export { MessageSearch } from './MessageSearch';
+export { MessageReactions } from './MessageReactions';
 
 // Context Menu and Modals
 export { ConversationContextMenu } from './ConversationContextMenu';

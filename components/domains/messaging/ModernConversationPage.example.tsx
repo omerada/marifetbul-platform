@@ -36,6 +36,7 @@ import type {
   Conversation,
   Message,
 } from '@/types/business/features/messaging';
+import type { MessageAttachment } from '@/hooks/business/messaging/useMessageAttachments';
 
 export default function ModernConversationPage() {
   const params = useParams();
@@ -136,7 +137,7 @@ export default function ModernConversationPage() {
 
   // Send message
   const handleSendMessage = useCallback(
-    async (content: string) => {
+    async (content: string, attachments?: MessageAttachment[]) => {
       if (!conversationId || !user) return;
 
       setIsSending(true);
@@ -144,6 +145,18 @@ export default function ModernConversationPage() {
       try {
         // Optimistic update
         const tempId = `temp-${Date.now()}`;
+
+        // Map MessageAttachment to FileAttachment
+        const fileAttachments = attachments?.map((att) => ({
+          id: att.id,
+          name: att.filename,
+          url: att.url,
+          type: att.mimeType,
+          size: att.size,
+          uploadedAt: att.uploadedAt,
+          thumbnailUrl: att.thumbnailUrl,
+        }));
+
         const optimisticMessage: Message = {
           id: tempId,
           conversationId,
@@ -156,6 +169,7 @@ export default function ModernConversationPage() {
           sentAt: new Date().toISOString(),
           createdAt: new Date().toISOString(),
           timestamp: new Date().toISOString(),
+          attachments: fileAttachments || [],
         };
 
         setMessages((prev) => [...prev, optimisticMessage]);
@@ -165,6 +179,7 @@ export default function ModernConversationPage() {
           conversationId,
           content,
           type: 'text' as any, // Type will be converted by API
+          attachments: attachments?.map((a) => a.id),
         });
 
         // Replace optimistic message with real one
@@ -174,6 +189,7 @@ export default function ModernConversationPage() {
 
         logger.info('ModernConversationPage', 'Message sent', {
           messageId: message.id,
+          attachmentCount: attachments?.length || 0,
         });
       } catch (error) {
         logger.error('ModernConversationPage', 'Failed to send message', {

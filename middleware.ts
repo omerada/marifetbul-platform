@@ -3,6 +3,7 @@ import { logger } from './lib/shared/utils/logger';
 import {
   isProtectedRoute,
   isAdminRoute,
+  isModeratorRoute,
   isAdminLoginPage,
   isAuthRoute,
   isPublicRoute,
@@ -135,6 +136,37 @@ export async function middleware(request: NextRequest) {
     }
 
     logger.debug('[Middleware] Admin access granted');
+    const response = NextResponse.next();
+    return addSecurityHeaders(response);
+  }
+
+  // Moderator route protection (Admin also allowed - super role)
+  if (isModeratorRoute(pathname)) {
+    logger.debug('[Middleware] Moderator route check', {
+      pathname,
+      hasToken: !!token,
+      userRole,
+    });
+
+    if (!token) {
+      logger.info('[Middleware] No token found, redirecting to login');
+      const loginUrl = new URL(getLoginRedirectUrl(pathname), request.url);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    // Allow both MODERATOR and ADMIN roles (admin is super role)
+    const normalizedRole = userRole?.toUpperCase();
+    if (normalizedRole !== 'MODERATOR' && normalizedRole !== 'ADMIN') {
+      logger.info(
+        '[Middleware] User is not moderator or admin, redirecting to dashboard',
+        { userRole }
+      );
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+
+    logger.debug('[Middleware] Moderator access granted', {
+      role: normalizedRole,
+    });
     const response = NextResponse.next();
     return addSecurityHeaders(response);
   }

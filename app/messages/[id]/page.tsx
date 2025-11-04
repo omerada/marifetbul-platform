@@ -16,6 +16,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useStompWebSocket } from '@/hooks/infrastructure/websocket';
+import { useReadReceipts } from '@/hooks/business/messaging';
 import { AppLayout } from '@/components/layout';
 import { Loading } from '@/components/ui';
 import { Card } from '@/components/ui/Card';
@@ -28,7 +29,6 @@ import {
   getConversationById,
   getMessages,
   sendMessage,
-  markConversationAsRead,
 } from '@/lib/api/messaging';
 import {
   Message,
@@ -80,6 +80,18 @@ export default function ConversationPage() {
     },
   });
 
+  // Read Receipts - Real-time read status updates
+  const { markAsRead: _markAsRead, markAllAsRead } = useReadReceipts({
+    conversationId: conversationId || '',
+    onMessageRead: (event) => {
+      logger.debug('ConversationPage', 'Message read receipt received', {
+        messageId: event.messageId,
+        readBy: event.readByName,
+        readAt: event.readAt,
+      });
+    },
+  });
+
   // Load conversation and messages
   useEffect(() => {
     if (!conversationId || !isAuthenticated) return;
@@ -96,8 +108,8 @@ export default function ConversationPage() {
         const messagesData = await getMessages(conversationId, 0, 50);
         setMessages(messagesData.content.reverse()); // Reverse to show oldest first
 
-        // Mark as read
-        await markConversationAsRead(conversationId);
+        // Mark all messages as read (bulk operation)
+        await markAllAsRead();
 
         logger.info('ConversationPage', 'Data loaded', {
           conversationId,
@@ -111,7 +123,7 @@ export default function ConversationPage() {
     };
 
     loadData();
-  }, [conversationId, isAuthenticated]);
+  }, [conversationId, isAuthenticated, markAllAsRead]);
 
   // Subscribe to real-time messages
   useEffect(() => {
@@ -141,7 +153,7 @@ export default function ConversationPage() {
 
             // Mark as read if not from current user
             if (event.message.senderId !== user.id) {
-              markConversationAsRead(conversationId).catch((err) =>
+              markAllAsRead().catch((err) =>
                 logger.error('ConversationPage', 'Failed to mark as read', {
                   error: err,
                 })
@@ -185,7 +197,14 @@ export default function ConversationPage() {
       unsubscribe(messageDestination);
       unsubscribe(typingDestination);
     };
-  }, [isConnected, conversationId, user, subscribe, unsubscribe]);
+  }, [
+    isConnected,
+    conversationId,
+    user,
+    subscribe,
+    unsubscribe,
+    markAllAsRead,
+  ]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {

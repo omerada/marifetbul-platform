@@ -6,6 +6,23 @@ export { useContextMessage } from './useContextMessage';
 export { useMessageAttachments } from './useMessageAttachments';
 export type { MessageAttachment } from './useMessageAttachments';
 export { useConversationSearch } from './useConversationSearch';
+export { useReadReceipts } from './useReadReceipts';
+export { useAutoMarkAsRead } from './useAutoMarkAsRead';
+export { useMessagePagination } from './useMessagePagination';
+export type {
+  ReadReceiptEvent,
+  UseReadReceiptsOptions,
+  UseReadReceiptsReturn,
+} from './useReadReceipts';
+export type {
+  UseAutoMarkAsReadOptions,
+  UseAutoMarkAsReadReturn,
+} from './useAutoMarkAsRead';
+export type {
+  MessagePaginationState,
+  UseMessagePaginationOptions,
+  UseMessagePaginationReturn,
+} from './useMessagePagination';
 export type {
   ConversationSearchRequest,
   ConversationSearchResult,

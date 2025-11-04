@@ -24,6 +24,7 @@ import {
   Shield,
   Ban,
   Trash2,
+  Activity,
 } from 'lucide-react';
 import { ActionMenuProps } from '../types/userTableTypes';
 import { isUserActive, formatUserName } from '../utils/userTableHelpers';
@@ -58,6 +59,15 @@ export function ActionMenu({ user, onAction }: ActionMenuProps) {
           >
             <Eye className="mr-2 h-4 w-4" />
             Detayları Gör
+          </DropdownMenuItem>
+
+          {/* Activity Timeline */}
+          <DropdownMenuItem
+            onClick={() => onAction('activity')}
+            className="cursor-pointer"
+          >
+            <Activity className="mr-2 h-4 w-4" />
+            Aktivite Geçmişi
           </DropdownMenuItem>
 
           {/* Send Email */}

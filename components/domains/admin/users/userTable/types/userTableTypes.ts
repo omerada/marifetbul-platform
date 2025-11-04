@@ -26,7 +26,8 @@ export type UserActionType =
   | 'delete'
   | 'verify'
   | 'view'
-  | 'email';
+  | 'email'
+  | 'activity';
 
 export interface AdminUserData {
   id: string;

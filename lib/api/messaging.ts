@@ -1,9 +1,9 @@
 /**
  * Messaging API Service
- * 
+ *
  * Simplified API client for messaging system.
  * Backend returns data wrapped in ApiResponse<T> format.
- * 
+ *
  * @sprint Sprint 5 - Real-time Messaging
  */
 
@@ -15,6 +15,7 @@ import type {
   CreateConversationRequest,
   SendMessageResponse,
   MessageAttachment,
+  MessageReaction,
 } from '@/types/message';
 
 // Backend response wrapper
@@ -38,26 +39,26 @@ interface BackendPageResponse<T> {
 // ==================== CONVERSATIONS ====================
 
 export async function getConversations(page = 0, size = 20) {
-  const response = await apiClient.get<BackendApiResponse<BackendPageResponse<Conversation>>>(
-    '/api/v1/conversations',
-    { page: String(page), size: String(size) }
-  );
+  const response = await apiClient.get<
+    BackendApiResponse<BackendPageResponse<Conversation>>
+  >('/api/v1/conversations', { page: String(page), size: String(size) });
   return response.data;
 }
 
 export async function getActiveConversations(page = 0, size = 20) {
-  const response = await apiClient.get<BackendApiResponse<BackendPageResponse<Conversation>>>(
-    '/api/v1/conversations/active',
-    { page: String(page), size: String(size) }
-  );
+  const response = await apiClient.get<
+    BackendApiResponse<BackendPageResponse<Conversation>>
+  >('/api/v1/conversations/active', { page: String(page), size: String(size) });
   return response.data;
 }
 
 export async function getArchivedConversations(page = 0, size = 20) {
-  const response = await apiClient.get<BackendApiResponse<BackendPageResponse<Conversation>>>(
-    '/api/v1/conversations/archived',
-    { page: String(page), size: String(size) }
-  );
+  const response = await apiClient.get<
+    BackendApiResponse<BackendPageResponse<Conversation>>
+  >('/api/v1/conversations/archived', {
+    page: String(page),
+    size: String(size),
+  });
   return response.data;
 }
 
@@ -120,10 +121,9 @@ export async function deleteConversation(conversationId: string) {
 }
 
 export async function searchConversations(query: string, page = 0, size = 20) {
-  const response = await apiClient.post<BackendApiResponse<BackendPageResponse<Conversation>>>(
-    '/api/v1/conversations/search',
-    { query, page, size }
-  );
+  const response = await apiClient.post<
+    BackendApiResponse<BackendPageResponse<Conversation>>
+  >('/api/v1/conversations/search', { query, page, size });
   return response.data;
 }
 
@@ -137,22 +137,26 @@ export async function getUnreadMessageCount() {
 // ==================== MESSAGES ====================
 
 export async function getMessages(conversationId: string, page = 0, size = 50) {
-  const response = await apiClient.get<BackendApiResponse<BackendPageResponse<Message>>>(
-    `/api/v1/conversations/${conversationId}/messages`,
-    { page: String(page), size: String(size) }
-  );
+  const response = await apiClient.get<
+    BackendApiResponse<BackendPageResponse<Message>>
+  >(`/api/v1/conversations/${conversationId}/messages`, {
+    page: String(page),
+    size: String(size),
+  });
   return response.data;
 }
 
-export async function sendMessage(request: CreateMessageRequest): Promise<SendMessageResponse> {
+export async function sendMessage(
+  request: CreateMessageRequest
+): Promise<SendMessageResponse> {
   const response = await apiClient.post<BackendApiResponse<Message>>(
     '/api/v1/messages',
     request
   );
-  
+
   const message = response.data;
   const conversation = await getConversationById(message.conversationId);
-  
+
   return { message, conversation };
 }
 
@@ -163,17 +167,26 @@ export async function getMessageById(messageId: string) {
   return response.data;
 }
 
+/**
+ * Mark single message as read
+ * Backend: PATCH /api/v1/messages/{messageId}/read
+ */
 export async function markMessageAsRead(messageId: string) {
-  const response = await apiClient.put<BackendApiResponse<Message>>(
-    `/api/v1/messages/${messageId}/mark-read`
+  const response = await apiClient.patch<BackendApiResponse<Message>>(
+    `/api/v1/messages/${messageId}/read`
   );
   return response.data;
 }
 
+/**
+ * Mark all messages in conversation as read (bulk operation)
+ * Backend: PATCH /api/v1/messages/conversations/{conversationId}/read-all
+ */
 export async function markConversationAsRead(conversationId: string) {
-  await apiClient.put(
-    `/api/v1/conversations/${conversationId}/mark-all-read`
+  const response = await apiClient.patch<BackendApiResponse<{ count: number }>>(
+    `/api/v1/messages/conversations/${conversationId}/read-all`
   );
+  return response.data;
 }
 
 export async function deleteMessage(messageId: string) {
@@ -199,15 +212,14 @@ export async function searchMessages(
     page: String(page),
     size: String(size),
   };
-  
+
   if (conversationId) {
     params.conversationId = conversationId;
   }
-  
-  const response = await apiClient.get<BackendApiResponse<BackendPageResponse<Message>>>(
-    '/api/v1/messages/search',
-    params
-  );
+
+  const response = await apiClient.get<
+    BackendApiResponse<BackendPageResponse<Message>>
+  >('/api/v1/messages/search', params);
   return response.data;
 }
 
@@ -221,10 +233,11 @@ export async function uploadAttachment(
   formData.append('file', file);
 
   // For file upload, we'll use fetch directly
-  const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-  
+  const token =
+    typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+
   const xhr = new XMLHttpRequest();
-  
+
   return new Promise((resolve, reject) => {
     xhr.upload.addEventListener('progress', (e) => {
       if (e.lengthComputable && onProgress) {
@@ -235,7 +248,9 @@ export async function uploadAttachment(
 
     xhr.addEventListener('load', () => {
       if (xhr.status === 200 || xhr.status === 201) {
-        const response = JSON.parse(xhr.responseText) as BackendApiResponse<MessageAttachment>;
+        const response = JSON.parse(
+          xhr.responseText
+        ) as BackendApiResponse<MessageAttachment>;
         resolve(response.data);
       } else {
         reject(new Error(`Upload failed: ${xhr.statusText}`));
@@ -250,12 +265,15 @@ export async function uploadAttachment(
       reject(new Error('Upload cancelled'));
     });
 
-    xhr.open('POST', `${process.env.NEXT_PUBLIC_API_URL}/api/v1/messages/attachments`);
-    
+    xhr.open(
+      'POST',
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/messages/attachments`
+    );
+
     if (token) {
       xhr.setRequestHeader('Authorization', `Bearer ${token}`);
     }
-    
+
     xhr.send(formData);
   });
 }
@@ -267,25 +285,46 @@ export async function deleteAttachment(attachmentId: string) {
 // ==================== MESSAGE REACTIONS ====================
 
 export async function addMessageReaction(messageId: string, emoji: string) {
-  await apiClient.post(`/api/v1/messages/${messageId}/reactions`, { emoji });
+  const response = await apiClient.post<BackendApiResponse<MessageReaction>>(
+    `/api/v1/messages/${messageId}/reactions`,
+    { emoji }
+  );
+  return response.data;
 }
 
 export async function removeMessageReaction(messageId: string, emoji: string) {
-  // Using fetch directly for DELETE with body
-  const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-  
-  await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/messages/${messageId}/reactions`,
-    {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-      body: JSON.stringify({ emoji }),
-      credentials: 'include',
-    }
+  await apiClient.delete(
+    `/api/v1/messages/${messageId}/reactions/${encodeURIComponent(emoji)}`
   );
+}
+
+export async function toggleMessageReaction(messageId: string, emoji: string) {
+  const response = await apiClient.post<
+    BackendApiResponse<MessageReaction | null>
+  >(`/api/v1/messages/${messageId}/reactions/toggle`, { emoji });
+  return response.data;
+}
+
+export async function getMessageReactions(messageId: string) {
+  const response = await apiClient.get<BackendApiResponse<MessageReaction[]>>(
+    `/api/v1/messages/${messageId}/reactions`
+  );
+  return response.data;
+}
+
+export async function getReactionSummary(messageId: string) {
+  const response = await apiClient.get<BackendApiResponse<ReactionSummary[]>>(
+    `/api/v1/messages/${messageId}/reactions/summary`
+  );
+  return response.data;
+}
+
+// Reaction summary type for grouped reactions
+export interface ReactionSummary {
+  emoji: string;
+  count: number;
+  userIds: string[];
+  hasReacted: boolean;
 }
 
 // ==================== MESSAGE TEMPLATES ====================

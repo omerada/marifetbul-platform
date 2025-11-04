@@ -171,6 +171,7 @@ export const MessageThread = memo(function MessageThread({
                     isOwnMessage={isOwnMessage}
                     showAvatar={showAvatar}
                     showTimestamp={true}
+                    currentUserId={currentUserId}
                   />
                 );
               })}

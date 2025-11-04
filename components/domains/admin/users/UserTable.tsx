@@ -46,6 +46,8 @@ import {
 } from './userTable/components';
 import { useUserTableActions } from './userTable/hooks/useUserTableActions';
 import { formatUserName } from './userTable/utils/userTableHelpers';
+import { UserActivityTimeline } from './UserActivityTimeline';
+import { UserExportButton } from './UserExportButton';
 
 interface UserTableProps {
   className?: string;
@@ -74,12 +76,19 @@ export function UserTable({ className }: UserTableProps) {
     handleBan,
     handleVerify,
     handleDelete,
-    handleExport,
   } = useUserTableActions();
+
+  // Get selected users for export
+  const selectedUsersForExport = users.filter((u) =>
+    bulkSelection.selectedIds.includes(u.id)
+  ) as AdminUserData[];
 
   // Local state for dialogs
   const [actionUser, setActionUser] = useState<AdminUserData | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showActivityTimeline, setShowActivityTimeline] = useState(false);
+  const [selectedUserForActivity, setSelectedUserForActivity] =
+    useState<AdminUserData | null>(null);
 
   // Handle user action
   const handleUserAction = async (action: UserActionType, userId: string) => {
@@ -105,6 +114,14 @@ export function UserTable({ className }: UserTableProps) {
         // Future: setShowEmailModal(true); setSelectedUser(userId);
         logger.debug('Email user feature to be implemented:', userId);
         break;
+      case 'activity':
+        // Show activity timeline
+        const user = users.find((u) => u.id === userId);
+        if (user) {
+          setSelectedUserForActivity(user as AdminUserData);
+          setShowActivityTimeline(true);
+        }
+        break;
       default:
         break;
     }
@@ -120,16 +137,25 @@ export function UserTable({ className }: UserTableProps) {
       {/* Header Card */}
       <Card className="border-0 bg-gradient-to-r from-white to-gray-50 shadow-xl">
         <CardHeader className="pb-4">
-          <TableHeader
-            title="Kullanıcı Yönetimi"
-            description="Platform kullanıcılarını ve izinlerini yönetin"
-            userCount={users.length}
-            isLoading={isLoading}
-            onRefresh={() => onFilterChange({})}
-            onExport={(format) =>
-              handleExport(format, filters as Record<string, unknown>)
-            }
-          />
+          <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+            {/* Title Section */}
+            <TableHeader
+              title="Kullanıcı Yönetimi"
+              description="Platform kullanıcılarını ve izinlerini yönetin"
+              userCount={users.length}
+              isLoading={isLoading}
+              onRefresh={() => onFilterChange({})}
+              onExport={() => {}} // Deprecated, using UserExportButton now
+            />
+
+            {/* Export Button */}
+            <UserExportButton
+              users={users as AdminUserData[]}
+              selectedUsers={selectedUsersForExport}
+              filters={filters as Record<string, unknown>}
+              className="self-end lg:self-center"
+            />
+          </div>
         </CardHeader>
         <CardContent>
           <TableFilters
@@ -274,6 +300,19 @@ export function UserTable({ className }: UserTableProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Activity Timeline Modal */}
+      {selectedUserForActivity && (
+        <UserActivityTimeline
+          userId={selectedUserForActivity.id}
+          userName={formatUserName(selectedUserForActivity)}
+          open={showActivityTimeline}
+          onClose={() => {
+            setShowActivityTimeline(false);
+            setSelectedUserForActivity(null);
+          }}
+        />
+      )}
     </div>
   );
 }

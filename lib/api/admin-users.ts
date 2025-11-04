@@ -11,6 +11,10 @@
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { ADMIN_ENDPOINTS } from '@/lib/api/endpoints';
 import type { ApiResponse, PageResponse } from '@/types/backend-aligned';
+import type {
+  UserActivityLog,
+  UserActivityFilters,
+} from '@/types/admin/user-activity';
 
 /**
  * User DTOs - Backend aligned types
@@ -167,6 +171,36 @@ export const adminUsersApi = {
   async deleteUser(userId: string): Promise<ApiResponse<void>> {
     return apiClient.delete<ApiResponse<void>>(
       ADMIN_ENDPOINTS.DELETE_USER(userId)
+    );
+  },
+
+  /**
+   * Get user activity log (admin only)
+   * GET /api/v1/admin/users/:userId/activity
+   *
+   * Backend endpoint: UserActivityRepository.findByUserId()
+   * Returns paginated user activity history
+   */
+  async getUserActivity(
+    userId: string,
+    filters?: UserActivityFilters
+  ): Promise<ApiResponse<PageResponse<UserActivityLog>>> {
+    const params: Record<string, string> = {};
+
+    if (filters) {
+      if (filters.activityType) params.activityType = filters.activityType;
+      if (filters.activityCategory)
+        params.activityCategory = filters.activityCategory;
+      if (filters.startDate) params.startDate = filters.startDate;
+      if (filters.endDate) params.endDate = filters.endDate;
+      if (filters.page !== undefined) params.page = String(filters.page);
+      if (filters.size !== undefined) params.size = String(filters.size);
+      if (filters.sort) params.sort = filters.sort;
+    }
+
+    return apiClient.get<ApiResponse<PageResponse<UserActivityLog>>>(
+      `/api/v1/admin/users/${userId}/activity`,
+      params
     );
   },
 };

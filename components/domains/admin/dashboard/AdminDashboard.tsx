@@ -1,9 +1,17 @@
 /**
- * AdminDashboard Component - Production Ready
+ * AdminDashboard Component - DEPRECATED
  *
- * Fully integrated admin dashboard with real backend data.
- * No mock/demo data - 100% production-ready implementation.
+ * ⚠️ DEPRECATED: This component is deprecated and will be removed in Sprint 3.
+ * Please use AdminDashboardView from @/components/domains/dashboard/views instead.
  *
+ * Migration Guide:
+ * Old: import { AdminDashboard } from '@/components/domains/admin/dashboard'
+ * New: import { AdminDashboardView } from '@/components/domains/dashboard/views'
+ *
+ * Or use UnifiedDashboard which automatically renders the correct view based on user role:
+ * import { UnifiedDashboard } from '@/components/domains/dashboard'
+ *
+ * @deprecated Since Sprint 2.1 - Use AdminDashboardView instead
  * @module AdminDashboard
  * @refactored 2025-10-18
  * @production-ready true
@@ -32,12 +40,16 @@ import { UserGrowthWidget } from './UserGrowthWidget';
 /**
  * AdminDashboard - Main component
  *
+ * ⚠️ DEPRECATED: Use AdminDashboardView instead
+ *
  * Displays comprehensive admin dashboard with:
  * - Real-time system health monitoring
  * - Key performance metrics from backend
  * - Activity feed and trends
  * - System health indicators
  * - Performance analytics
+ *
+ * @deprecated Use AdminDashboardView from @/components/domains/dashboard/views
  */
 export function AdminDashboard() {
   // Fetch dashboard data from backend
