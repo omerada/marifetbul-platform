@@ -139,7 +139,5 @@ export type { PayoutRequestModalProps } from './PayoutRequestModal';
 export { AddBankAccountModal } from './AddBankAccountModal';
 export type { AddBankAccountModalProps } from './AddBankAccountModal';
 
-export { BankAccountManagement } from './BankAccountManagement';
-
 export { TransactionFiltersPanel } from './TransactionFiltersPanel';
 export type { TransactionFilters as TransactionFilterValues } from './TransactionFiltersPanel';
