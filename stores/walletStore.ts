@@ -209,16 +209,20 @@ export const useWalletStore = create<WalletStore>()(
 
       fetchLimits: async () => {
         try {
-          // Backend'de limits endpoint'i yok, mock data kullanıyoruz
-          const mockLimits: PayoutLimitsResponse = {
-            minimumAmount: 100,
-            maximumAmount: 50000,
-            dailyLimit: 10000,
-            monthlyLimit: 100000,
-            remainingDailyLimit: 10000,
-            remainingMonthlyLimit: 100000,
+          // Sprint 1 - Task 3: Real API integration
+          const data = await payoutApi.getPayoutLimits();
+
+          // Transform backend response to store format
+          const limits: PayoutLimitsResponse = {
+            minimumAmount: data.minimumAmount,
+            maximumAmount: data.maximumAmount,
+            dailyLimit: data.dailyLimit,
+            monthlyLimit: data.monthlyLimit,
+            remainingDailyLimit: data.remainingDailyLimit,
+            remainingMonthlyLimit: data.remainingMonthlyLimit,
           };
-          set({ limits: mockLimits });
+
+          set({ limits });
         } catch (error) {
           console.error('Failed to fetch limits:', error);
           throw error;

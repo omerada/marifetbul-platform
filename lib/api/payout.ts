@@ -164,17 +164,30 @@ export async function checkPayoutEligibility(): Promise<PayoutEligibility> {
  * Get payout limits
  * GET /api/v1/payouts/limits
  *
- * @returns {Promise<{minimum: number, maximum: number}>} Payout limits
+ * Sprint 1 - Task 3: Updated to include remaining limits
+ *
+ * @returns {Promise<PayoutLimitsResponse>} Payout limits with remaining amounts
  *
  * @throws {AuthenticationError} Not authenticated
  */
 export async function getPayoutLimits(): Promise<{
-  minimum: number;
-  maximum: number;
+  minimumAmount: number;
+  maximumAmount: number;
+  dailyLimit: number;
+  monthlyLimit: number;
+  remainingDailyLimit: number;
+  remainingMonthlyLimit: number;
+  currency: string;
 }> {
-  return await apiClient.get<{ minimum: number; maximum: number }>(
-    '/payouts/limits'
-  );
+  return await apiClient.get<{
+    minimumAmount: number;
+    maximumAmount: number;
+    dailyLimit: number;
+    monthlyLimit: number;
+    remainingDailyLimit: number;
+    remainingMonthlyLimit: number;
+    currency: string;
+  }>('/payouts/limits');
 }
 
 // ============================================================================

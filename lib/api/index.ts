@@ -95,3 +95,62 @@ export * from './review-moderation';
 // Export Moderation Activity API
 export { default as moderationActivityAPI } from './moderation-activity';
 export * from './moderation-activity';
+
+// Export Package Analytics API (Sprint 1 - Task 1)
+export * from './package-analytics';
+export {
+  fetchPackageAnalytics,
+  fetchPackageAnalyticsByDateRange,
+} from './package-analytics';
+export type {
+  PackageMetrics,
+  PackageTrends,
+  TopPackage,
+  ChartData,
+  PackageAnalyticsData,
+} from './package-analytics';
+
+// Export Popular Searches API (Sprint 1 - Task 2)
+export * from './popular-searches';
+export {
+  fetchPopularSearches,
+  fetchPopularSearchesWithCache,
+} from './popular-searches';
+export type {
+  PopularSearch,
+  PopularSearchesResponse,
+} from './popular-searches';
+
+// Export Job Facets API (Sprint 1 - Task 5)
+export * from './job-facets';
+export {
+  fetchJobFacets,
+  fetchJobFacetsWithCache,
+  jobFacetsApi,
+} from './job-facets';
+export type { JobFacetsData } from './job-facets';
+
+// Export Admin Reports API (Sprint 1 - Task 4)
+export * from './admin-reports';
+export {
+  generateReport,
+  getReportTypes,
+  getDateRange,
+  getTrendIcon,
+  getTrendColor,
+  formatMetricValue,
+  formatDateForAPI,
+} from './admin-reports';
+export type {
+  ReportType,
+  GroupByPeriod,
+  TrendDirection,
+  ReportFilters,
+  ReportRequest,
+  ReportDataPoint,
+  ReportSummary,
+  ReportMetadata,
+  ReportResponse,
+  ReportTypeInfo,
+  ReportTypesResponse,
+} from './admin-reports';

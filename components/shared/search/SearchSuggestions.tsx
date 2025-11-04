@@ -141,49 +141,30 @@ async function fetchSuggestions(query: string): Promise<SearchSuggestion[]> {
 /**
  * Get popular searches
  *
- * TODO: Backend Implementation Needed
- * Endpoint: GET /api/v1/analytics/search/popular?limit=10
+ * Sprint 1 - Task 2: Real API Integration
+ * Fetches trending searches from backend analytics
  *
- * For now, returns hardcoded popular searches.
- * Should be replaced with real trending data from analytics.
+ * Backend Endpoint: GET /api/v1/analytics/search/popular?limit=10&days=7
  */
-function getPopularSearches(): SearchSuggestion[] {
-  // TODO: Fetch from API when backend implements popular searches endpoint
-  // const response = await fetch('/api/v1/analytics/search/popular?limit=10');
-  // const data = await response.json();
-  // return data.data.map((item, idx) => ({
-  //   id: `pop${idx}`,
-  //   text: item.searchTerm,
-  //   type: 'popular',
-  //   count: item.searchCount
-  // }));
+async function getPopularSearches(): Promise<SearchSuggestion[]> {
+  try {
+    const { fetchPopularSearches } = await import('@/lib/api/popular-searches');
+    const popularSearches = await fetchPopularSearches(4, 7); // Top 4 from last 7 days
 
-  return [
-    {
-      id: 'pop1',
-      text: 'logo tasarım',
-      type: 'popular',
-      count: 1240,
-    },
-    {
-      id: 'pop2',
-      text: 'web sitesi',
-      type: 'popular',
-      count: 980,
-    },
-    {
-      id: 'pop3',
-      text: 'mobil uygulama',
-      type: 'popular',
-      count: 756,
-    },
-    {
-      id: 'pop4',
-      text: 'içerik yazarlığı',
-      type: 'popular',
-      count: 623,
-    },
-  ];
+    return popularSearches.map((item, idx) => ({
+      id: `pop${idx}`,
+      text: item.searchTerm,
+      type: 'popular' as const,
+      count: item.searchCount,
+      category: item.category || undefined,
+    }));
+  } catch (error) {
+    console.error('[getPopularSearches] Failed to fetch:', error);
+
+    // Fallback to empty array - graceful degradation
+    // Component will handle empty state
+    return [];
+  }
 }
 
 export function SearchSuggestions({
@@ -197,13 +178,24 @@ export function SearchSuggestions({
 }: SearchSuggestionsProps) {
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [popularSearches, setPopularSearches] = useState<SearchSuggestion[]>(
+    []
+  );
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Load recent searches on mount
+  // Load recent searches and popular searches on mount
   useEffect(() => {
     setRecentSearches(getRecentSearches());
+
+    // Load popular searches from API
+    getPopularSearches()
+      .then(setPopularSearches)
+      .catch((error) => {
+        console.error('Failed to load popular searches:', error);
+        setPopularSearches([]);
+      });
   }, []);
 
   // Fetch suggestions when query changes (debounced)
@@ -335,8 +327,8 @@ export function SearchSuggestions({
   // Prepare items to show
   const showSuggestions = suggestions.length > 0;
   const showRecent = !query && recentSearches.length > 0;
-  const showPopular = !query && !showRecent;
-  const popularSearches = showPopular ? getPopularSearches().slice(0, 5) : [];
+  const showPopular = !query && !showRecent && popularSearches.length > 0;
+  const visiblePopularSearches = showPopular ? popularSearches.slice(0, 5) : [];
 
   const hasContent = showSuggestions || showRecent || showPopular;
 
@@ -438,7 +430,7 @@ export function SearchSuggestions({
                 <div className="px-4 py-2 text-xs font-medium text-gray-500">
                   Popüler Aramalar
                 </div>
-                {popularSearches.map((popular, index) => (
+                {visiblePopularSearches.map((popular, index) => (
                   <button
                     key={popular.id}
                     onClick={() => handleSelect(popular.text)}

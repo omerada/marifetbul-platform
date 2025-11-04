@@ -20,6 +20,7 @@ import {
   Calendar,
   User,
   FileText,
+  ArrowUpCircle,
 } from 'lucide-react';
 import type { BlogCommentResponse } from '@/types/backend-aligned';
 import {
@@ -34,6 +35,7 @@ export interface CommentModerationCardProps {
   onApprove: (commentId: number) => void;
   onReject: (commentId: number) => void;
   onMarkSpam: (commentId: number) => void;
+  onEscalate?: (commentId: number) => void;
   onSelect?: (commentId: number, selected: boolean) => void;
   isSelected?: boolean;
   showActions?: boolean;
@@ -44,6 +46,7 @@ export function CommentModerationCard({
   onApprove,
   onReject,
   onMarkSpam,
+  onEscalate,
   onSelect,
   isSelected = false,
   showActions = true,
@@ -247,6 +250,19 @@ export function CommentModerationCard({
             <AlertOctagon className="h-4 w-4" />
             Spam İşaretle
           </Button>
+
+          {/* Sprint 1 - Task 6: Escalation Button */}
+          {onEscalate && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onEscalate(comment.id)}
+              className="flex items-center gap-1 text-orange-600 hover:bg-orange-50"
+            >
+              <ArrowUpCircle className="h-4 w-4" />
+              Üste İlet
+            </Button>
+          )}
         </div>
       )}
 

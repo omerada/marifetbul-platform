@@ -68,6 +68,8 @@ export interface PayoutLimitsResponse {
   maximumAmount: number;
   dailyLimit: number;
   monthlyLimit: number;
+  remainingDailyLimit: number;
+  remainingMonthlyLimit: number;
   currency: string;
 }
 

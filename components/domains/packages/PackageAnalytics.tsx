@@ -3,11 +3,18 @@
 /**
  * Package Analytics Dashboard
  * Displays analytics metrics for user's packages
+ *
+ * Sprint 1 - Task 1: Package Analytics Backend Integration
+ * Real API integration - Mock data removed
  */
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui';
 import { logger } from '@/lib/shared/utils/logger';
+import {
+  fetchPackageAnalytics,
+  type PackageAnalyticsData,
+} from '@/lib/api/package-analytics';
 import {
   TrendingUp,
   TrendingDown,
@@ -19,119 +26,6 @@ import {
   Loader2,
 } from 'lucide-react';
 
-// Mock data interface (will be replaced with real API)
-interface PackageMetrics {
-  totalPackages: number;
-  activePackages: number;
-  totalViews: number;
-  totalOrders: number;
-  totalRevenue: number;
-  averageRating: number;
-  completionRate: number;
-  conversionRate: number;
-}
-
-interface PackageTrends {
-  views: number;
-  orders: number;
-  revenue: number;
-  rating: number;
-}
-
-interface TopPackage {
-  id: string;
-  title: string;
-  category: string;
-  views: number;
-  orders: number;
-  revenue: number;
-  rating: number;
-}
-
-interface PackageAnalyticsData {
-  metrics: PackageMetrics;
-  trends: PackageTrends;
-  topPackages: TopPackage[];
-  chartData: {
-    labels: string[];
-    views: number[];
-    orders: number[];
-    revenue: number[];
-  };
-}
-
-/**
- * Mock data generator
- *
- * TODO: Remove this function when backend analytics endpoint is ready
- * Backend Endpoint: GET /api/v1/packages/analytics/seller
- *
- * This function generates realistic-looking analytics data for development.
- * Should be replaced with real API integration.
- */
-function generateMockData(): PackageAnalyticsData {
-  const now = new Date();
-  const labels = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(now);
-    date.setDate(date.getDate() - (6 - i));
-    return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
-  });
-
-  return {
-    metrics: {
-      totalPackages: 12,
-      activePackages: 9,
-      totalViews: 3420,
-      totalOrders: 156,
-      totalRevenue: 45680,
-      averageRating: 4.8,
-      completionRate: 94.5,
-      conversionRate: 4.56,
-    },
-    trends: {
-      views: 12.5,
-      orders: 8.3,
-      revenue: 15.7,
-      rating: 0.2,
-    },
-    topPackages: [
-      {
-        id: '1',
-        title: 'Professional Logo Design',
-        category: 'Graphic Design',
-        views: 850,
-        orders: 45,
-        revenue: 13500,
-        rating: 4.9,
-      },
-      {
-        id: '2',
-        title: 'Website Development',
-        category: 'Web Development',
-        views: 720,
-        orders: 32,
-        revenue: 19200,
-        rating: 4.8,
-      },
-      {
-        id: '3',
-        title: 'Social Media Management',
-        category: 'Digital Marketing',
-        views: 640,
-        orders: 28,
-        revenue: 8400,
-        rating: 4.7,
-      },
-    ],
-    chartData: {
-      labels,
-      views: [420, 480, 510, 495, 530, 560, 425],
-      orders: [18, 22, 25, 21, 24, 28, 18],
-      revenue: [5400, 6600, 7500, 6300, 7200, 8400, 4200],
-    },
-  };
-}
-
 export function PackageAnalytics() {
   const [data, setData] = useState<PackageAnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -139,45 +33,43 @@ export function PackageAnalytics() {
   const [selectedMetric, setSelectedMetric] = useState<
     'views' | 'orders' | 'revenue'
   >('views');
+  const [days] = useState(30); // Days filter (can be made dynamic later)
 
   useEffect(() => {
-    const fetchData = async () => {
+    const loadAnalytics = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // TODO: Backend Implementation Required
-        // Endpoint: GET /api/v1/packages/analytics/seller
-        // Headers: Authorization: Bearer {token}
-        // Response: {
-        //   success: boolean,
-        //   data: {
-        //     metrics: { totalPackages, activePackages, totalViews, totalOrders, totalRevenue, averageRating, completionRate, conversionRate },
-        //     trends: { views, orders, revenue, rating },
-        //     topPackages: [{ id, title, category, views, orders, revenue, rating }],
-        //     chartData: { labels: string[], views: number[], orders: number[], revenue: number[] }
-        //   }
-        // }
+        logger.info('[PackageAnalytics] Fetching analytics data', {
+          days,
+          component: 'PackageAnalytics',
+        });
 
-        // For now, using mock data until backend endpoint is ready
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const mockData = generateMockData();
-        setData(mockData);
+        const analyticsData = await fetchPackageAnalytics(days);
+        setData(analyticsData);
 
-        logger.info('[PackageAnalytics] Mock data loaded', {
-          packagesCount: mockData.metrics.totalPackages,
+        logger.info('[PackageAnalytics] Analytics data loaded successfully', {
+          packagesCount: analyticsData.metrics.totalPackages,
+          totalRevenue: analyticsData.metrics.totalRevenue,
           component: 'PackageAnalytics',
         });
       } catch (err) {
-        setError('Failed to load analytics data');
-        logger.error('Analytics error:', err);
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to load analytics data';
+        setError(errorMessage);
+        logger.error('[PackageAnalytics] Failed to load analytics', {
+          error: err,
+          days,
+          component: 'PackageAnalytics',
+        });
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, []);
+    loadAnalytics();
+  }, [days]);
 
   if (loading) {
     return (

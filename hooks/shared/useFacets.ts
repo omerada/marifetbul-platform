@@ -2,25 +2,24 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import type { Facet, FacetGroup } from '@/components/shared/filters';
+import {
+  fetchJobFacetsWithCache,
+  type JobFacetsData,
+} from '@/lib/api/job-facets';
 
 /**
  * useFacets Hook - Sprint 4 Day 2
+ * Updated Sprint 1 - Task 5: Faceted Search Implementation
  *
  * Manages facet data and state for faceted navigation
  *
  * Features:
- * - Fetch facet counts from API
+ * - Fetch facet counts from API ✅
  * - Update on filter changes
  * - Handle facet selection/deselection
  * - Optimistic UI updates
  * - Loading and error states
  */
-
-export interface FacetsData {
-  categories: Record<string, number>;
-  skills: Record<string, number>;
-  locations: Record<string, number>;
-}
 
 export interface UseFacetsOptions {
   /** Initial facet groups structure */
@@ -53,46 +52,10 @@ export interface UseFacetsReturn {
 }
 
 /**
- * Default facets data (mock for development)
- */
-const DEFAULT_FACETS_DATA: FacetsData = {
-  categories: {
-    'Web Geliştirme': 142,
-    'Mobil Uygulama': 87,
-    'Grafik Tasarım': 156,
-    'İçerik Yazarlığı': 93,
-    'Dijital Pazarlama': 78,
-    'Video Düzenleme': 64,
-    SEO: 52,
-    'Veri Girişi': 121,
-  },
-  skills: {
-    React: 89,
-    'Node.js': 67,
-    TypeScript: 54,
-    Python: 78,
-    'Adobe Photoshop': 94,
-    Figma: 72,
-    WordPress: 103,
-    'Social Media': 45,
-  },
-  locations: {
-    İstanbul: 234,
-    Ankara: 112,
-    İzmir: 89,
-    Antalya: 45,
-    Bursa: 38,
-    Adana: 32,
-    Konya: 28,
-    Uzaktan: 456,
-  },
-};
-
-/**
  * Convert facets data to FacetGroup format
  */
 function convertToFacetGroups(
-  data: FacetsData,
+  data: JobFacetsData,
   baseGroups: FacetGroup[]
 ): FacetGroup[] {
   return baseGroups.map((group) => {
@@ -132,49 +95,6 @@ function convertToFacetGroups(
   });
 }
 
-/**
- * Fetch facets from API
- *
- * TODO: Backend Implementation Required
- * Endpoint: GET /api/v1/jobs/facets
- * Query Params: ?category={category}&location={location}&minBudget={min}&maxBudget={max}
- *
- * Expected Response:
- * {
- *   success: true,
- *   data: {
- *     categories: { "Web Geliştirme": 142, ... },
- *     skills: { "React": 89, ... },
- *     locations: { "İstanbul": 234, ... },
- *     budgetRanges: { "0-500": 45, ... }
- *   }
- * }
- *
- * For now, returns mock data. Should be replaced with real facet counts from search index.
- */
-async function fetchFacetsFromAPI(
-  filters?: Record<string, unknown>
-): Promise<FacetsData> {
-  try {
-    // TODO: Implement when backend creates dedicated facets endpoint
-    // const params = new URLSearchParams();
-    // if (filters?.category) params.set('category', String(filters.category));
-    // if (filters?.location) params.set('location', String(filters.location));
-    //
-    // const response = await fetch(`/api/v1/jobs/facets?${params.toString()}`);
-    // if (!response.ok) throw new Error(`API error: ${response.status}`);
-    // const result = await response.json();
-    // return result.data;
-
-    // Using mock data until backend implements facets endpoint
-    void filters; // Suppress unused warning
-    return DEFAULT_FACETS_DATA;
-  } catch (error) {
-    console.error('[fetchFacetsFromAPI] Error:', error);
-    return DEFAULT_FACETS_DATA;
-  }
-}
-
 export function useFacets(options: UseFacetsOptions = {}): UseFacetsReturn {
   const {
     facetGroups: initialGroups = [],
@@ -195,7 +115,22 @@ export function useFacets(options: UseFacetsOptions = {}): UseFacetsReturn {
       setIsLoading(true);
       setError(null);
 
-      const data = await fetchFacetsFromAPI(currentFilters);
+      // Build filters for API
+      const filters: Record<string, string | number | undefined> = {};
+      if (currentFilters.category) {
+        filters.category = String(currentFilters.category);
+      }
+      if (currentFilters.location) {
+        filters.location = String(currentFilters.location);
+      }
+      if (currentFilters.minBudget) {
+        filters.minBudget = Number(currentFilters.minBudget);
+      }
+      if (currentFilters.maxBudget) {
+        filters.maxBudget = Number(currentFilters.maxBudget);
+      }
+
+      const data = await fetchJobFacetsWithCache(filters);
       const groups = convertToFacetGroups(data, initialGroups);
       setFacetGroups(groups);
     } catch (err) {

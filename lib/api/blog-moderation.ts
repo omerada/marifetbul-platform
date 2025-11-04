@@ -226,6 +226,52 @@ export async function bulkMarkSpam(
   });
 }
 
+// ==================== ESCALATION (Sprint 1 - Task 6) ====================
+
+/**
+ * Escalate a comment to higher authority
+ * Sprint 1 - Task 6: Comment Escalation Feature
+ *
+ * @param commentId Comment ID to escalate
+ * @param reason Reason for escalation
+ * @returns Updated comment
+ * @throws {NotFoundError} Comment not found
+ * @throws {AuthorizationError} Insufficient permissions
+ */
+export async function escalateComment(
+  commentId: string,
+  reason?: string
+): Promise<BlogCommentResponse> {
+  const params = reason ? `?reason=${encodeURIComponent(reason)}` : '';
+  return apiClient.post<BlogCommentResponse>(
+    `/api/v1/blog/moderator/comments/${commentId}/escalate${params}`,
+    {}
+  );
+}
+
+/**
+ * Bulk escalate comments
+ * Sprint 1 - Task 6: Comment Escalation Feature
+ *
+ * @param commentIds List of comment IDs
+ * @param reason Optional escalation reason
+ * @returns Bulk action response
+ * @throws {AuthorizationError} Insufficient permissions
+ * @throws {ValidationError} Invalid comment IDs
+ */
+export async function bulkEscalateComments(
+  commentIds: string[],
+  reason?: string
+): Promise<BulkActionResponse> {
+  return apiClient.post<BulkActionResponse>(
+    '/api/v1/blog/moderator/comments/bulk/escalate',
+    {
+      commentIds,
+      reason,
+    }
+  );
+}
+
 /**
  * Get user's comments (for moderation)
  * @throws {NotFoundError} User not found
