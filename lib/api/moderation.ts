@@ -514,53 +514,8 @@ export interface UserSuspension {
 }
 
 // ============================================================================
-// LEGACY USER ACTIONS (DEPRECATED - Use new endpoints above)
+// USER MODERATION HISTORY
 // ============================================================================
-
-/**
- * @deprecated Use issueWarning instead
- * Warn a user
- * Backend: POST /api/v1/admin/users/{userId}/warn
- */
-export async function warnUser(
-  userId: string,
-  reason: string,
-  message: string
-): Promise<{ success: boolean; warning: UserModerationHistory }> {
-  const response = await apiClient.post<
-    ApiResponse<{ success: boolean; warning: UserModerationHistory }>
-  >(`/api/v1/admin/users/${userId}/warn`, { reason, message });
-  return response.data;
-}
-
-/**
- * @deprecated Use suspendUser instead
- * Ban a user temporarily
- * Backend: POST /api/v1/admin/users/{userId}/ban
- */
-export async function banUser(
-  userId: string,
-  reason: string,
-  duration: number, // in days
-  permanent = false
-): Promise<{ success: boolean; ban: UserModerationHistory }> {
-  const response = await apiClient.post<
-    ApiResponse<{ success: boolean; ban: UserModerationHistory }>
-  >(`/api/v1/admin/users/${userId}/ban`, { reason, duration, permanent });
-  return response.data;
-}
-
-/**
- * @deprecated Use liftSuspension instead
- * Unban a user
- * Backend: POST /api/v1/admin/users/{userId}/unban
- */
-export async function unbanUser(userId: string): Promise<{ success: boolean }> {
-  const response = await apiClient.post<ApiResponse<{ success: boolean }>>(
-    `/api/v1/admin/users/${userId}/unban`
-  );
-  return response.data;
-}
 
 /**
  * Get user moderation history
@@ -655,7 +610,7 @@ export const moderationApi = {
   flagReview,
   resolveReviewFlag,
 
-  // User Moderation (New)
+  // User Moderation
   issueWarning,
   getUserWarnings,
   getActiveUserWarnings,
@@ -666,11 +621,6 @@ export const moderationApi = {
   liftSuspension,
   decideSuspensionAppeal,
   getUserModerationSummary,
-
-  // User Actions (Legacy - Deprecated)
-  warnUser,
-  banUser,
-  unbanUser,
   getUserModerationHistory,
 
   // Reports

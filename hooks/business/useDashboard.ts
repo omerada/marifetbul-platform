@@ -1,21 +1,47 @@
 import { useEffect } from 'react';
 import useDashboardStore from '@/lib/core/store/dashboard';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { logger } from '@/lib/shared/utils/logger';
 
+/**
+ * Main dashboard hook with role-based data fetching
+ *
+ * Supports:
+ * - FREELANCER → Seller Dashboard
+ * - EMPLOYER → Buyer Dashboard
+ * - MODERATOR → Moderation Stats
+ * - ADMIN → Admin Dashboard (handled separately)
+ *
+ * @version 2.0.0 - Sprint 1 Task 1.1
+ */
 export function useDashboard() {
   const store = useDashboardStore();
   const { user, isAuthenticated } = useAuthStore();
 
+  // Normalize role from backend (ADMIN, MODERATOR, etc.) to userType
+  const normalizedUserType =
+    user?.role === 'MODERATOR' ? 'moderator' : user?.userType;
+
   useEffect(() => {
-    if (isAuthenticated && user?.userType && user.userType !== 'admin') {
-      store.fetchDashboard(user.userType);
+    // Skip admin - they have their own dashboard hook (useAdminDashboard)
+    if (
+      isAuthenticated &&
+      normalizedUserType &&
+      normalizedUserType !== 'admin'
+    ) {
+      logger.debug('[useDashboard] Initializing dashboard', {
+        role: user?.role,
+        userType: normalizedUserType,
+      });
+
+      store.fetchDashboard(normalizedUserType);
       store.startAutoRefresh();
     }
 
     return () => {
       store.stopAutoRefresh();
     };
-  }, [isAuthenticated, user?.userType, store]);
+  }, [isAuthenticated, normalizedUserType, store, user?.role]);
 
   // Handle visibility change for auto-refresh
   useEffect(() => {
@@ -24,8 +50,8 @@ export function useDashboard() {
         store.stopAutoRefresh();
       } else if (
         isAuthenticated &&
-        user?.userType &&
-        user.userType !== 'admin'
+        normalizedUserType &&
+        normalizedUserType !== 'admin'
       ) {
         store.startAutoRefresh();
         // Refresh when user comes back to tab
@@ -38,21 +64,31 @@ export function useDashboard() {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [isAuthenticated, user?.userType, store]);
+  }, [isAuthenticated, normalizedUserType, store]);
 
   return {
     ...store,
-    userType: user?.userType,
-    isFreelancer: user?.userType === 'freelancer',
-    isEmployer: user?.userType === 'employer',
+    userType: normalizedUserType,
+    isFreelancer: normalizedUserType === 'freelancer',
+    isEmployer: normalizedUserType === 'employer',
+    isModerator: normalizedUserType === 'moderator',
+    isAdmin: normalizedUserType === 'admin',
   };
 }
 
+/**
+ * Simplified refresh hook
+ * @deprecated Use useDashboard().refreshDashboard instead
+ */
 export function useDashboardRefresh() {
-  const { refreshDashboard, isLoading } = useDashboardStore();
+  const { refreshDashboard, isRefreshing } = useDashboardStore();
+
+  logger.warn(
+    '[useDashboardRefresh] This hook is deprecated. Use useDashboard().refreshDashboard instead.'
+  );
 
   return {
     refresh: refreshDashboard,
-    isRefreshing: isLoading,
+    isRefreshing,
   };
 }

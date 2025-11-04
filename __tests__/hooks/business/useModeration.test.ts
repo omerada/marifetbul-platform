@@ -10,12 +10,11 @@
  */
 
 import { renderHook, act } from '@testing-library/react';
-import useSWR, { mutate as swrMutate, type SWRResponse } from 'swr';
+import useSWR, { mutate as swrMutate } from 'swr';
 import type {
   ModerationStats,
   BlogCommentDto,
   ReviewDto,
-  PendingItemsResponse,
 } from '../../../types/business/moderation';
 import {
   CommentStatus,
@@ -399,89 +398,138 @@ describe('useModeration Hooks', () => {
   });
 
   describe('useUserModerationActions', () => {
-    it('should warn a user', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      mockModerationAPI.warnUser.mockResolvedValue({
-        success: true,
-        warning: {},
-      } as any);
+    it('should issue a warning to a user', async () => {
+      const mockWarning = {
+        id: '1',
+        userId: 'user1',
+        moderatorId: 'mod1',
+        warningLevel: 'LEVEL_1' as const,
+        reason: 'Spam content',
+        reasonDescription: 'Spam',
+        details: 'Please stop spamming',
+        status: 'ACTIVE' as const,
+        createdAt: '2025-11-01T10:00:00Z',
+        active: true,
+        canAppeal: true,
+      };
+      mockModerationAPI.issueWarning.mockResolvedValue(mockWarning);
 
       const { result } = renderHook(() => useUserModerationActions());
 
       await act(async () => {
-        await result.current.warn(
+        await result.current.issueWarning(
           'user1',
           'Spam content',
           'Please stop spamming'
         );
       });
 
-      expect(mockModerationAPI.warnUser).toHaveBeenCalledWith(
-        'user1',
-        'Spam content',
-        'Please stop spamming'
-      );
+      expect(mockModerationAPI.issueWarning).toHaveBeenCalledWith({
+        userId: 'user1',
+        reason: 'Spam content',
+        details: 'Please stop spamming',
+        relatedContentRef: undefined,
+      });
       expect(mockToast.success).toHaveBeenCalledWith(
         'Kullanıcıya uyarı gönderildi'
       );
     });
 
-    it('should ban a user temporarily', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      mockModerationAPI.banUser.mockResolvedValue({
-        success: true,
-        ban: {},
-      } as any);
+    it('should suspend a user temporarily', async () => {
+      const mockSuspension = {
+        id: '1',
+        userId: 'user2',
+        moderatorId: 'mod1',
+        suspensionType: 'TEMPORARY' as const,
+        suspensionTypeDescription: 'Temporary',
+        reason: 'Multiple violations',
+        reasonDescription: 'Violations',
+        details: 'User violated terms repeatedly',
+        startsAt: '2025-11-01T10:00:00Z',
+        status: 'ACTIVE' as const,
+        active: true,
+        canAppeal: true,
+        createdAt: '2025-11-01T10:00:00Z',
+        permanent: false,
+      };
+      mockModerationAPI.suspendUser.mockResolvedValue(mockSuspension);
 
       const { result } = renderHook(() => useUserModerationActions());
 
       await act(async () => {
-        await result.current.ban('user2', 'Multiple violations', 7, false);
+        await result.current.suspend(
+          'user2',
+          'TEMPORARY',
+          'Multiple violations',
+          'User violated terms repeatedly',
+          7
+        );
       });
 
-      expect(mockModerationAPI.banUser).toHaveBeenCalledWith(
-        'user2',
-        'Multiple violations',
-        7,
-        false
-      );
+      expect(mockModerationAPI.suspendUser).toHaveBeenCalledWith({
+        userId: 'user2',
+        suspensionType: 'TEMPORARY',
+        reason: 'Multiple violations',
+        details: 'User violated terms repeatedly',
+        durationDays: 7,
+      });
       expect(mockToast.success).toHaveBeenCalledWith(
-        'Kullanıcı 7 gün yasaklandı'
+        'Kullanıcı 7 gün askıya alındı'
       );
     });
 
-    it('should ban a user permanently', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      mockModerationAPI.banUser.mockResolvedValue({
-        success: true,
-        ban: {},
-      } as any);
+    it('should suspend a user permanently', async () => {
+      const mockSuspension = {
+        id: '1',
+        userId: 'user2',
+        moderatorId: 'mod1',
+        suspensionType: 'PERMANENT' as const,
+        suspensionTypeDescription: 'Permanent',
+        reason: 'Severe violations',
+        reasonDescription: 'Violations',
+        details: 'User violated terms severely',
+        startsAt: '2025-11-01T10:00:00Z',
+        status: 'ACTIVE' as const,
+        active: true,
+        canAppeal: false,
+        createdAt: '2025-11-01T10:00:00Z',
+        permanent: true,
+      };
+      mockModerationAPI.suspendUser.mockResolvedValue(mockSuspension);
 
       const { result } = renderHook(() => useUserModerationActions());
 
       await act(async () => {
-        await result.current.ban('user2', 'Severe violations', 0, true);
+        await result.current.suspend(
+          'user2',
+          'PERMANENT',
+          'Severe violations',
+          'User violated terms severely'
+        );
       });
 
-      expect(mockModerationAPI.banUser).toHaveBeenCalledWith(
-        'user2',
-        'Severe violations',
-        0,
-        true
-      );
+      expect(mockModerationAPI.suspendUser).toHaveBeenCalledWith({
+        userId: 'user2',
+        suspensionType: 'PERMANENT',
+        reason: 'Severe violations',
+        details: 'User violated terms severely',
+        durationDays: undefined,
+      });
       expect(mockToast.success).toHaveBeenCalledWith(
-        'Kullanıcı kalıcı olarak yasaklandı'
+        'Kullanıcı kalıcı olarak askıya alındı'
       );
     });
 
     it('should handle user action errors', async () => {
-      mockModerationAPI.warnUser.mockRejectedValue(new Error('User not found'));
+      mockModerationAPI.issueWarning.mockRejectedValue(
+        new Error('User not found')
+      );
 
       const { result } = renderHook(() => useUserModerationActions());
 
       await expect(
         act(async () => {
-          await result.current.warn('invalid', 'reason', 'message');
+          await result.current.issueWarning('invalid', 'reason', 'details');
         })
       ).rejects.toThrow('User not found');
 

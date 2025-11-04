@@ -28,8 +28,9 @@ import {
   getFlaggedReviews,
   approveReview,
   rejectReview,
-  warnUser,
-  banUser,
+  issueWarning,
+  suspendUser,
+  liftSuspension,
   getUserModerationHistory,
   getPendingReports,
   resolveReport,
@@ -53,17 +54,20 @@ import { useToast } from '@/hooks/core/useToast';
 
 /**
  * Hook for fetching and managing moderation statistics
- * Auto-refreshes every 30 seconds
+ *
+ * @param refreshInterval - Auto-refresh interval in milliseconds (default: 30000)
+ * @returns Moderation stats with loading state and refresh function
  */
-export function useModerationStats() {
+export function useModerationStats(refreshInterval = 30000) {
   const {
     data,
     error,
     isLoading,
     mutate: refresh,
   } = useSWR<ModerationStats>('/api/v1/moderator/stats', getModerationStats, {
-    refreshInterval: 30000, // Auto-refresh every 30 seconds
+    refreshInterval,
     revalidateOnFocus: true,
+    dedupingInterval: 10000, // Prevent duplicate requests within 10s
   });
 
   return {
@@ -80,13 +84,29 @@ export function useModerationStats() {
 
 /**
  * Hook for fetching pending moderation items with pagination
+ *
+ * @param page - Page number (default: 1)
+ * @param pageSize - Items per page (default: 10)
+ * @param refreshInterval - Auto-refresh interval in milliseconds (default: 60000)
+ * @returns Pending items with pagination info
  */
-export function usePendingItems(page = 1, pageSize = 10) {
-  const { data, error, isLoading } = useSWR<PendingItemsResponse>(
+export function usePendingItems(
+  page = 1,
+  pageSize = 10,
+  refreshInterval = 60000
+) {
+  const {
+    data,
+    error,
+    isLoading,
+    mutate: refresh,
+  } = useSWR<PendingItemsResponse>(
     ['/api/v1/moderator/pending-items', page, pageSize],
     () => getPendingItems(page, pageSize),
     {
-      refreshInterval: 60000, // Auto-refresh every minute
+      refreshInterval,
+      revalidateOnFocus: true,
+      dedupingInterval: 10000,
     }
   );
 
@@ -94,32 +114,54 @@ export function usePendingItems(page = 1, pageSize = 10) {
     items: data?.items ?? [],
     total: data?.total ?? 0,
     page: data?.page ?? 1,
-    pageSize: data?.pageSize ?? 10,
+    pageSize: data?.pageSize ?? pageSize,
     isLoading,
     error,
+    refresh,
   };
 }
 
+// ============================================================================
 // ============================================================================
 // RECENT ACTIVITIES HOOK
 // ============================================================================
 
 /**
  * Hook for fetching recent moderator activities
+ *
+ * @param page - Page number (default: 1)
+ * @param pageSize - Items per page (default: 20)
+ * @param refreshInterval - Auto-refresh interval in milliseconds (default: 60000)
+ * @returns Recent activities with pagination info
  */
-export function useRecentActivities(page = 1, pageSize = 20) {
-  const { data, error, isLoading } = useSWR<ModeratorActivitiesResponse>(
+export function useRecentActivities(
+  page = 1,
+  pageSize = 20,
+  refreshInterval = 60000
+) {
+  const {
+    data,
+    error,
+    isLoading,
+    mutate: refresh,
+  } = useSWR<ModeratorActivitiesResponse>(
     ['/api/v1/moderator/recent-activity', page, pageSize],
-    () => getRecentActivities(page, pageSize)
+    () => getRecentActivities(page, pageSize),
+    {
+      refreshInterval,
+      revalidateOnFocus: true,
+      dedupingInterval: 10000,
+    }
   );
 
   return {
     activities: data?.activities ?? [],
     total: data?.total ?? 0,
     page: data?.page ?? 1,
-    pageSize: data?.pageSize ?? 20,
+    pageSize: data?.pageSize ?? pageSize,
     isLoading,
     error,
+    refresh,
   };
 }
 
@@ -498,20 +540,26 @@ export function useUserModerationHistory(userId: string) {
 }
 
 /**
- * Hook for user moderation actions
+ * Hook for user moderation actions (warnings and suspensions)
  */
 export function useUserModerationActions() {
   const { success, error: showError } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleWarn = async (
+  const handleIssueWarning = async (
     userId: string,
     reason: string,
-    message: string
+    details: string,
+    relatedContentRef?: string
   ) => {
     setIsProcessing(true);
     try {
-      const result = await warnUser(userId, reason, message);
+      const result = await issueWarning({
+        userId,
+        reason,
+        details,
+        relatedContentRef,
+      });
 
       // Refresh stats
       await mutate('/api/v1/moderator/stats');
@@ -527,28 +575,61 @@ export function useUserModerationActions() {
     }
   };
 
-  const handleBan = async (
+  const handleSuspend = async (
     userId: string,
+    suspensionType:
+      | 'TEMPORARY'
+      | 'PERMANENT'
+      | 'SELLER_RESTRICTED'
+      | 'BUYER_RESTRICTED',
     reason: string,
-    duration: number,
-    permanent = false
+    details: string,
+    durationDays?: number
   ) => {
     setIsProcessing(true);
     try {
-      const result = await banUser(userId, reason, duration, permanent);
+      const result = await suspendUser({
+        userId,
+        suspensionType,
+        reason,
+        details,
+        durationDays,
+      });
 
       // Refresh stats
       await mutate('/api/v1/moderator/stats');
 
-      success(
-        permanent
-          ? 'Kullanıcı kalıcı olarak yasaklandı'
-          : `Kullanıcı ${duration} gün yasaklandı`
-      );
+      const message =
+        suspensionType === 'PERMANENT'
+          ? 'Kullanıcı kalıcı olarak askıya alındı'
+          : durationDays
+            ? `Kullanıcı ${durationDays} gün askıya alındı`
+            : 'Kullanıcı askıya alındı';
+
+      success(message);
 
       return result;
     } catch (err) {
-      showError('Kullanıcı yasaklanırken hata oluştu');
+      showError('Kullanıcı askıya alınırken hata oluştu');
+      throw err;
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleLiftSuspension = async (suspensionId: string, reason: string) => {
+    setIsProcessing(true);
+    try {
+      const result = await liftSuspension(suspensionId, reason);
+
+      // Refresh stats
+      await mutate('/api/v1/moderator/stats');
+
+      success('Kullanıcı askıdan kaldırıldı');
+
+      return result;
+    } catch (err) {
+      showError('Askı kaldırılırken hata oluştu');
       throw err;
     } finally {
       setIsProcessing(false);
@@ -556,8 +637,9 @@ export function useUserModerationActions() {
   };
 
   return {
-    warn: handleWarn,
-    ban: handleBan,
+    issueWarning: handleIssueWarning,
+    suspend: handleSuspend,
+    liftSuspension: handleLiftSuspension,
     isProcessing,
   };
 }

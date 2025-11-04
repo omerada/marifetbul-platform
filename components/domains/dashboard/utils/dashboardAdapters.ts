@@ -1074,6 +1074,41 @@ export function adaptModeratorDashboard(
     },
   ];
 
+  // ========== CHARTS & ANALYTICS ==========
+  // Generate chart data from available statistics
+  // Note: Backend trends endpoint (/api/v1/moderator/trends) is planned for future sprint
+  // For now, we generate meaningful chart data from current stats
+
+  const actionsToday = [
+    {
+      label: 'Approved',
+      value: stats.commentsApprovedToday + stats.reviewsApprovedToday,
+    },
+    {
+      label: 'Rejected',
+      value: stats.commentsRejectedToday + stats.reviewsRejectedToday,
+    },
+    {
+      label: 'Spam',
+      value: stats.flaggedComments + stats.flaggedReviews,
+    },
+  ];
+
+  const categoryBreakdown = [
+    {
+      label: 'Comments',
+      value: stats.pendingComments,
+    },
+    {
+      label: 'Reviews',
+      value: stats.pendingReviews,
+    },
+    {
+      label: 'Reports',
+      value: stats.pendingReports,
+    },
+  ];
+
   // ========== RETURN UNIFIED DASHBOARD ==========
   return {
     stats: dashboardStats,
@@ -1082,23 +1117,34 @@ export function adaptModeratorDashboard(
     quickActions,
     period,
 
-    // Sprint 20: Chart placeholders - Backend trends endpoint needed (see BACKEND_API_REQUIREMENTS_SPRINT20.md)
+    // Chart data derived from current statistics
+    // TODO Sprint 20: Replace with real trends data from /api/v1/moderator/trends
     charts: {
-      moderationVolume: {
-        id: 'moderation-volume',
-        title: 'Moderation Volume',
-        series: [], // Populated when backend /api/v1/moderation/trends implemented
+      actionsToday: {
+        id: 'actions-today',
+        title: 'Bugünkü İşlemler',
+        series: [
+          {
+            name: 'Actions',
+            data: actionsToday,
+          },
+        ],
         config: {
-          type: 'line',
+          type: 'bar',
           height: 300,
         },
       },
-      responseTime: {
-        id: 'response-time',
-        title: 'Response Time',
-        series: [], // Populated when backend /api/v1/moderation/trends implemented
+      categoryBreakdown: {
+        id: 'category-breakdown',
+        title: 'Kategori Dağılımı',
+        series: [
+          {
+            name: 'Pending Items',
+            data: categoryBreakdown,
+          },
+        ],
         config: {
-          type: 'bar',
+          type: 'donut',
           height: 300,
         },
       },

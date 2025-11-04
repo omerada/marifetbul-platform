@@ -1,14 +1,20 @@
 ﻿/**
  * Unified Dashboard Orchestrator
  * Routes to role-specific dashboard views
- * Sprint 1 - Day 9
+ * Sprint 1 - Day 9 + Task 1.3
  */
 
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { useDashboard } from '@/hooks/business/useDashboard';
+import {
+  approveComment,
+  rejectComment,
+  markCommentAsSpam,
+} from '@/lib/api/moderation';
+import { logger } from '@/lib/shared/utils/logger';
 import { DashboardSkeleton } from './DashboardSkeleton';
 import { DashboardErrorBoundary } from './DashboardErrorBoundary';
 import {
@@ -17,7 +23,7 @@ import {
   AdminDashboardView,
   ModeratorDashboardView,
 } from './views';
-import type { UserRole } from './types/dashboard.types';
+import type { UserRole, ModeratorDashboard } from './types/dashboard.types';
 import { RefreshCw, AlertCircle } from 'lucide-react';
 
 export interface UnifiedDashboardProps {
@@ -45,6 +51,49 @@ export function UnifiedDashboard({
     if (user?.role) return user.role as UserRole;
     return 'FREELANCER';
   }, [propRole, user?.role]);
+
+  // SPRINT 1 - Task 1.3: Moderation Action Handler
+  const handleModerateAction = useCallback(
+    async (itemId: string, action: 'approve' | 'reject' | 'spam') => {
+      try {
+        logger.debug('[UnifiedDashboard] Moderating item', { itemId, action });
+
+        // Call appropriate API endpoint based on action
+        switch (action) {
+          case 'approve':
+            await approveComment(itemId);
+            logger.info('[UnifiedDashboard] Item approved', { itemId });
+            break;
+          case 'reject':
+            await rejectComment(itemId, 'Rejected by moderator');
+            logger.info('[UnifiedDashboard] Item rejected', { itemId });
+            break;
+          case 'spam':
+            await markCommentAsSpam(itemId);
+            logger.info('[UnifiedDashboard] Item marked as spam', { itemId });
+            break;
+          default:
+            logger.warn('[UnifiedDashboard] Unknown action', { action });
+        }
+
+        // Refresh dashboard data after action
+        await retry();
+
+        // TODO: Show success toast notification
+        // toast.success(`Item ${action}d successfully`);
+      } catch (error) {
+        logger.error(
+          '[UnifiedDashboard] Moderation action failed',
+          error instanceof Error ? error : new Error(String(error)),
+          { itemId, action }
+        );
+
+        // TODO: Show error toast notification
+        // toast.error('Moderation action failed');
+      }
+    },
+    [retry]
+  );
 
   const isLoading = authLoading || dashboardLoading;
 
@@ -113,14 +162,11 @@ export function UnifiedDashboard({
       case 'MODERATOR':
         return (
           <ModeratorDashboardView
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            data={dashboardData as any}
+            data={dashboardData as ModeratorDashboard}
             isLoading={isLoading || isRefreshing}
             error={dashboardError ? new Error(dashboardError.message) : null}
             onRefresh={retry}
-            onModerate={(_id, _action) => {
-              // TODO: Implement moderation handler
-            }}
+            onModerate={handleModerateAction}
           />
         );
       case 'EMPLOYER':

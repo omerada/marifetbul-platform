@@ -606,19 +606,6 @@ export type {
 } from './moderation/useModeratorDashboard';
 
 // ================================================
-// MODERATOR ACTIVITY (Sprint 2 - Story 2.3)
-// ================================================
-export { useModeratorActivity } from './moderation/useModeratorActivity';
-export type {
-  ActionType,
-  TargetType,
-  ActivityLog,
-  ActivityFilters,
-  UseModeratorActivityOptions,
-  UseModeratorActivityReturn,
-} from './moderation/useModeratorActivity';
-
-// ================================================
 // MODERATOR PERFORMANCE (Sprint 2 - Story 2.2)
 // ================================================
 export { useModeratorPerformance } from './moderation/useModeratorPerformance';

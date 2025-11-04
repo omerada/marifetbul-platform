@@ -15,7 +15,9 @@
 // ============================================================================
 
 export { ModerationQueue } from './ModerationQueue';
+export { ModerationQueueContainer } from './ModerationQueueContainer';
 export { ModeratorStatsWidget } from './ModeratorStatsWidget';
+export { QuickActionButtons } from './QuickActionButtons';
 export { ModerationActionPanel } from './ModerationActionPanel';
 export { ModerationHistory } from './ModerationHistory';
 export { ModerationFilters } from './ModerationFilters';

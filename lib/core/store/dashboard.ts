@@ -1,9 +1,16 @@
 import { create } from 'zustand';
 import { FreelancerDashboard, EmployerDashboard } from '@/types';
+import type { ModeratorDashboard } from '@/components/domains/dashboard/types/dashboard.types';
 import { useAuthStore } from './domains/auth/authStore';
 import { logger } from '@/lib/shared/utils/logger';
 import { sellerDashboardApi } from '@/lib/api/seller-dashboard';
 import { buyerDashboardApi } from '@/lib/api/buyer-dashboard';
+import {
+  getModerationStats,
+  getPendingItems,
+  getRecentActivities,
+} from '@/lib/api/moderation';
+import { adaptModeratorDashboard } from '@/components/domains/dashboard/utils/dashboardAdapters';
 import {
   transformSellerDashboardV2,
   transformBuyerDashboardV2,
@@ -17,9 +24,15 @@ export interface DashboardError {
   timestamp: Date;
 }
 
+// Unified dashboard data type
+export type UnifiedDashboardData =
+  | FreelancerDashboard
+  | EmployerDashboard
+  | ModeratorDashboard;
+
 interface DashboardStore {
   // State
-  dashboardData: FreelancerDashboard | EmployerDashboard | null;
+  dashboardData: UnifiedDashboardData | null;
   isLoading: boolean;
   isRefreshing: boolean; // Separate state for refresh vs initial load
   error: DashboardError | null;
@@ -30,7 +43,7 @@ interface DashboardStore {
 
   // Actions
   fetchDashboard: (
-    userType: 'freelancer' | 'employer',
+    userType: 'freelancer' | 'employer' | 'moderator',
     days?: number
   ) => Promise<void>;
   refreshDashboard: () => Promise<void>;
@@ -42,9 +55,7 @@ interface DashboardStore {
 
   // Optimistic updates
   updateDashboardOptimistic: (
-    updater: (
-      data: FreelancerDashboard | EmployerDashboard
-    ) => FreelancerDashboard | EmployerDashboard
+    updater: (data: UnifiedDashboardData) => UnifiedDashboardData
   ) => void;
 }
 
@@ -61,7 +72,7 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
 
   // Fetch dashboard data
   fetchDashboard: async (
-    userType: 'freelancer' | 'employer',
+    userType: 'freelancer' | 'employer' | 'moderator',
     days: number = 30
   ) => {
     const { retryCount } = get();
@@ -86,7 +97,8 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
       });
 
       // Use appropriate API client based on user type
-      let dashboardData: FreelancerDashboard | EmployerDashboard;
+      let dashboardData: UnifiedDashboardData;
+
       if (userType === 'freelancer') {
         const backendData =
           await sellerDashboardApi.getSellerDashboardByDays(days);
@@ -95,6 +107,24 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
         const backendData =
           await buyerDashboardApi.getBuyerDashboardByDays(days);
         dashboardData = transformBuyerDashboardV2(backendData);
+      } else if (userType === 'moderator') {
+        // SPRINT 1 - Task 1.1: MODERATOR Dashboard Support
+        logger.debug('[Dashboard Store] Fetching moderator dashboard data');
+
+        // Fetch all moderator data in parallel for better performance
+        const [stats, pendingItems, activities] = await Promise.all([
+          getModerationStats(),
+          getPendingItems(1, 10), // First page, 10 items
+          getRecentActivities(1, 20), // First page, 20 activities
+        ]);
+
+        // Transform to ModeratorDashboard format
+        dashboardData = adaptModeratorDashboard({
+          stats,
+          pendingItems: pendingItems.items || [],
+          activities: activities.activities || [],
+          periodDays: days,
+        });
       } else {
         throw new Error(`Unsupported user type: ${userType}`);
       }
@@ -134,13 +164,18 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
     const { user } = useAuthStore.getState();
     const { retryCount } = get();
 
-    if (user?.userType && user.userType !== 'admin') {
+    // Normalize role to userType
+    const normalizedUserType =
+      user?.role === 'MODERATOR' ? 'moderator' : user?.userType;
+
+    if (normalizedUserType && normalizedUserType !== 'admin') {
       logger.debug('[Dashboard Store] Refreshing dashboard', {
-        userType: user.userType,
+        role: user?.role,
+        userType: normalizedUserType,
       });
 
       set({ isRefreshing: true, retryCount: retryCount + 1 });
-      await get().fetchDashboard(user.userType);
+      await get().fetchDashboard(normalizedUserType);
     }
   },
 
@@ -166,15 +201,20 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
       return;
     }
 
-    if (user?.userType && user.userType !== 'admin') {
+    // Normalize role to userType
+    const normalizedUserType =
+      user?.role === 'MODERATOR' ? 'moderator' : user?.userType;
+
+    if (normalizedUserType && normalizedUserType !== 'admin') {
       logger.debug('[Dashboard Store] Retry attempt', {
-        userType: user.userType,
+        role: user?.role,
+        userType: normalizedUserType,
         attempt: retryCount + 1,
         maxRetries,
       });
 
       set({ retryCount: retryCount + 1 });
-      await get().fetchDashboard(user.userType);
+      await get().fetchDashboard(normalizedUserType);
     }
   },
 

@@ -574,10 +574,10 @@ export interface ModeratorDashboard {
   recentActivities: ActivityItem[];
   /** Quick actions */
   quickActions: QuickAction[];
-  /** Moderation charts */
+  /** Moderation charts - Sprint 1 Task 1.2: Updated with real chart types */
   charts: {
-    moderationVolume: ChartWidgetData;
-    responseTime: ChartWidgetData;
+    actionsToday: ChartWidgetData;
+    categoryBreakdown: ChartWidgetData;
   };
   /** Period info */
   period: DashboardPeriod;
