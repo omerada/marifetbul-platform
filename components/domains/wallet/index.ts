@@ -24,10 +24,6 @@ export type { WalletDashboardProps } from './WalletDashboard';
 export { BalanceCard } from './BalanceCard';
 export type { BalanceCardProps } from './BalanceCard';
 
-/** @deprecated Use BalanceCard instead - Will be removed in v4.0.0 */
-export { WalletBalanceCard } from './WalletBalanceCard';
-export type { WalletBalanceCardProps } from './WalletBalanceCard';
-
 export { CommissionSummaryCard } from './CommissionSummaryCard';
 export type {
   CommissionSummaryCardProps,

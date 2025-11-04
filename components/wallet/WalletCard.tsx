@@ -104,8 +104,7 @@ export function WalletCard({
     default: 'border-gray-200 hover:border-gray-300',
     primary: 'border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100',
     success: 'border-green-200 bg-gradient-to-br from-green-50 to-green-100',
-    warning:
-      'border-yellow-200 bg-gradient-to-br from-yellow-50 to-yellow-100',
+    warning: 'border-yellow-200 bg-gradient-to-br from-yellow-50 to-yellow-100',
     danger: 'border-red-200 bg-gradient-to-br from-red-50 to-red-100',
   };
 
@@ -138,7 +137,7 @@ export function WalletCard({
       className={cn(
         'p-6 transition-all',
         variantStyles[variant],
-        onClick && 'cursor-pointer hover:shadow-lg hover:scale-[1.02]',
+        onClick && 'cursor-pointer hover:scale-[1.02] hover:shadow-lg',
         className
       )}
       onClick={onClick}
