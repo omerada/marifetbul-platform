@@ -43,6 +43,30 @@ import {
 import { logger } from '@/lib/shared/utils/logger';
 
 // ============================================================================
+// LUCIDE ICONS - Required for QuickAction components
+// ============================================================================
+import {
+  Plus,
+  ShoppingBag,
+  MessageSquare,
+  Wallet,
+  Star,
+  Store,
+  Heart,
+  UserPlus,
+  TrendingUp,
+  Clock,
+  RefreshCcw,
+  Users,
+  Flag,
+  DollarSign,
+  BarChart,
+  Activity,
+  AlertTriangle,
+  History,
+} from 'lucide-react';
+
+// ============================================================================
 // API RESPONSE TYPES
 // ============================================================================
 
@@ -121,7 +145,7 @@ function generateFreelancerQuickActions(
       id: 'create-package',
       label: 'Create New Package',
       description: 'Add a new service to your portfolio',
-      icon: 'Plus',
+      icon: Plus,
       href: '/dashboard/packages/new',
       variant: 'primary' as const,
     },
@@ -129,7 +153,7 @@ function generateFreelancerQuickActions(
       id: 'view-orders',
       label: 'View Active Orders',
       description: `${apiResponse.orderMetrics.inProgressOrders} orders in progress`,
-      icon: 'ShoppingBag',
+      icon: ShoppingBag,
       href: '/dashboard/orders',
       variant: 'default' as const,
       badge: apiResponse.orderMetrics.inProgressOrders,
@@ -138,7 +162,7 @@ function generateFreelancerQuickActions(
       id: 'messages',
       label: 'Check Messages',
       description: `${apiResponse.communicationMetrics.unreadMessages} unread messages`,
-      icon: 'MessageSquare',
+      icon: MessageSquare,
       href: '/messages',
       variant: 'default' as const,
       badge: apiResponse.communicationMetrics.unreadMessages,
@@ -147,7 +171,7 @@ function generateFreelancerQuickActions(
       id: 'withdraw',
       label: 'Request Withdrawal',
       description: `Available: ₺${apiResponse.revenueMetrics.availableBalance.toFixed(2)}`,
-      icon: 'Wallet',
+      icon: Wallet,
       href: '/dashboard/wallet',
       variant: 'default' as const,
       disabled: apiResponse.revenueMetrics.availableBalance < 50,
@@ -435,14 +459,14 @@ export function adaptEmployerDashboard(
     {
       id: 'browse-marketplace',
       label: 'Paketlere Göz At',
-      icon: 'Store',
+      icon: Store,
       href: '/marketplace/packages',
       variant: 'primary',
     },
     {
       id: 'my-orders',
       label: 'Siparişlerim',
-      icon: 'ShoppingBag',
+      icon: ShoppingBag,
       href: '/dashboard/orders',
       badge:
         apiResponse.orderSummary.inProgressOrders > 0
@@ -452,7 +476,7 @@ export function adaptEmployerDashboard(
     {
       id: 'favorites',
       label: 'Favorilerim',
-      icon: 'Heart',
+      icon: Heart,
       href: '/dashboard/favorites',
       badge:
         apiResponse.favorites.totalFavorites > 0
@@ -462,7 +486,7 @@ export function adaptEmployerDashboard(
     {
       id: 'messages',
       label: 'Mesajlarım',
-      icon: 'MessageSquare',
+      icon: MessageSquare,
       href: '/messages',
       badge:
         apiResponse.messages.unreadMessages > 0
@@ -477,7 +501,7 @@ export function adaptEmployerDashboard(
     quickActions.push({
       id: 'pending-reviews',
       label: 'Değerlendirme Yap',
-      icon: 'Star',
+      icon: Star,
       href: '/dashboard/reviews',
       badge: apiResponse.reviewActivity.pendingReviews,
       variant: 'warning',
@@ -767,7 +791,7 @@ export function adaptAdminDashboard(
     {
       id: 'user-management',
       label: 'Kullanıcı Yönetimi',
-      icon: 'Users',
+      icon: Users,
       href: '/admin/users',
       badge:
         apiResponse.userMetrics.newUsers > 5
@@ -777,7 +801,7 @@ export function adaptAdminDashboard(
     {
       id: 'moderation-queue',
       label: 'Moderasyon Kuyruğu',
-      icon: 'Flag',
+      icon: Flag,
       href: '/admin/moderation',
       badge: apiResponse.orderMetrics.pendingOrders,
       variant:
@@ -786,20 +810,20 @@ export function adaptAdminDashboard(
     {
       id: 'payouts',
       label: 'Ödeme Talepleri',
-      icon: 'DollarSign',
+      icon: DollarSign,
       href: '/admin/payouts',
       variant: 'warning',
     },
     {
       id: 'reports',
       label: 'Raporlar',
-      icon: 'BarChart',
+      icon: BarChart,
       href: '/admin/reports/financial',
     },
     {
       id: 'system-health',
       label: 'Sistem Sağlığı',
-      icon: 'Activity',
+      icon: Activity,
       href: '/admin/system/health',
       variant:
         apiResponse.systemHealth.systemStatus !== 'HEALTHY'
@@ -1035,7 +1059,7 @@ export function adaptModeratorDashboard(
     {
       id: 'pending-reviews',
       label: 'Bekleyen İncelemeler',
-      icon: 'Star',
+      icon: Star,
       href: '/moderator/reviews?status=pending',
       badge: stats.pendingReviews,
       variant: stats.pendingReviews > 0 ? 'primary' : undefined,
@@ -1043,7 +1067,7 @@ export function adaptModeratorDashboard(
     {
       id: 'flagged-content',
       label: 'Bayraklı İçerik',
-      icon: 'Flag',
+      icon: Flag,
       href: '/moderator/reviews?status=flagged',
       badge: stats.flaggedReviews + stats.flaggedComments,
       variant:
@@ -1054,14 +1078,14 @@ export function adaptModeratorDashboard(
     {
       id: 'blog-comments',
       label: 'Blog Yorumları',
-      icon: 'MessageSquare',
+      icon: MessageSquare,
       href: '/moderator/comments',
       badge: stats.pendingComments,
     },
     {
       id: 'reports',
       label: 'Kullanıcı Şikayetleri',
-      icon: 'AlertTriangle',
+      icon: AlertTriangle,
       href: '/moderator/reports',
       badge: stats.pendingReports,
       variant: stats.pendingReports > 0 ? 'warning' : undefined,
@@ -1069,7 +1093,7 @@ export function adaptModeratorDashboard(
     {
       id: 'moderation-history',
       label: 'Moderasyon Geçmişi',
-      icon: 'History',
+      icon: History,
       href: '/moderator/history',
     },
   ];
@@ -1145,6 +1169,40 @@ export function adaptModeratorDashboard(
         ],
         config: {
           type: 'donut',
+          height: 300,
+        },
+      },
+      moderationVolume: {
+        id: 'moderation-volume',
+        title: 'Moderasyon Hacmi',
+        series: [
+          {
+            name: 'Hacim',
+            data: actionsToday, // Reuse actionsToday data for now
+          },
+        ],
+        config: {
+          type: 'line',
+          height: 300,
+        },
+      },
+      responseTime: {
+        id: 'response-time',
+        title: 'Ortalama Yanıt Süresi',
+        series: [
+          {
+            name: 'Süre (dk)',
+            data: [
+              { label: '00:00', value: 0 },
+              { label: '06:00', value: 0 },
+              { label: '12:00', value: 0 },
+              { label: '18:00', value: 0 },
+              { label: '23:59', value: 0 },
+            ],
+          },
+        ],
+        config: {
+          type: 'area',
           height: 300,
         },
       },
