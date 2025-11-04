@@ -1,24 +1,25 @@
 /**
  * Wallet Components
- * Reusable components for wallet functionality
+ * Reusable wallet UI components
  *
- * @version 3.0.0 - Sprint 1: Deprecated component'ler kaldırıldı
+ * NOTE: WalletDashboard has been moved to @/components/domains/wallet/WalletDashboard
+ * Use that location for the main dashboard component.
+ *
+ * @version 3.0.0 - Sprint 1: Component Consolidation Complete
  */
 
+// Core wallet UI components
 export { WalletCard } from './WalletCard';
 export { QuickStatsGrid } from './QuickStatsGrid';
 export { PayoutTable } from './PayoutTable';
 export { PayoutHistoryTable } from './PayoutHistoryTable';
 
-// Sprint 1: Enhanced Components
-export { WalletDashboard } from './WalletDashboard';
-
-// Sprint 1, Story 1.2: UI Improvements (5 story points)
+// Transaction & Export components
 export { TransactionExportModal } from './TransactionExportModal';
 export { PayoutEligibilityWidget } from './PayoutEligibilityWidget';
 export { AdvancedTransactionFilters } from './AdvancedTransactionFilters';
 
-// Sprint 1, Story 1.3: Bank Account Validation (3 story points)
+// Bank Account components
 export { IBANInput } from './IBANInput';
 export { BankSelector } from './BankSelector';
 export { BankAccountVerificationForm } from './BankAccountVerificationForm';

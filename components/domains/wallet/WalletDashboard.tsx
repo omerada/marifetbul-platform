@@ -1,19 +1,24 @@
 /**
  * ================================================
- * WALLET DASHBOARD COMPONENT
+ * WALLET DASHBOARD COMPONENT (UNIFIED)
  * ================================================
- * Main wallet dashboard with balance, transactions, and quick actions
+ * Consolidated wallet management dashboard
  *
  * Features:
- * - Balance overview
- * - Recent transactions
+ * - Balance overview with real-time updates
+ * - Recent transactions with rich UI
+ * - Quick action buttons
+ * - Stats summary cards
  * - Escrow tracking
  * - Payout requests
- * - Analytics
+ * - Analytics integration
+ * - WebSocket support
+ * - Export functionality
  *
- * Sprint 1 - Epic 1.1 - Day 1
+ * Sprint 1 - Epic 1.1 - Component Consolidation
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 3.0.0 - Unified from 2 versions
+ * @since 2025-11-04
  */
 
 'use client';
@@ -74,6 +79,35 @@ export interface WalletDashboardProps {
 
   /** Additional CSS classes */
   className?: string;
+
+  /** Custom balance data (for controlled mode) */
+  balance?: {
+    availableBalance: number;
+    pendingBalance: number;
+    totalEarnings: number;
+    pendingPayouts?: number;
+  };
+
+  /** Custom transactions data (for controlled mode) */
+  transactions?: Transaction[];
+
+  /** Loading state (for controlled mode) */
+  isLoading?: boolean;
+
+  /** Error state (for controlled mode) */
+  error?: Error | string | null;
+
+  /** Refresh callback */
+  onRefresh?: () => void;
+
+  /** Request payout callback */
+  onRequestPayout?: () => void;
+
+  /** View transactions callback */
+  onViewTransactions?: () => void;
+
+  /** View payouts callback */
+  onViewPayouts?: () => void;
 }
 
 // ============================================================================
@@ -205,6 +239,47 @@ function QuickStats({
   );
 }
 
+/**
+ * Quick Actions - Fast access to common wallet operations
+ */
+interface QuickAction {
+  label: string;
+  icon: React.ReactNode;
+  onClick: () => void;
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  disabled?: boolean;
+}
+
+function QuickActions({ actions }: { actions: QuickAction[] }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <TrendingUp className="h-5 w-5" />
+          Hızlı İşlemler
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {actions.map((action, index) => (
+            <Button
+              key={index}
+              variant={action.variant || 'outline'}
+              className="h-auto flex-col gap-2 py-4"
+              onClick={action.onClick}
+              disabled={action.disabled}
+              size="sm"
+            >
+              {action.icon}
+              <span className="text-xs">{action.label}</span>
+            </Button>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ============================================================================
 // MAIN COMPONENT
 // ============================================================================
@@ -228,6 +303,14 @@ export function WalletDashboard({
   enableWebSocket = true,
   userId,
   className = '',
+  balance: externalBalance,
+  transactions: externalTransactions,
+  isLoading: externalIsLoading,
+  error: externalError,
+  onRefresh: externalOnRefresh,
+  onRequestPayout: externalOnRequestPayout,
+  onViewTransactions: externalOnViewTransactions,
+  onViewPayouts: externalOnViewPayouts,
 }: WalletDashboardProps) {
   // ========================================================================
   // STATE
@@ -236,21 +319,36 @@ export function WalletDashboard({
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
   // ========================================================================
-  // HOOKS
+  // HOOKS - Internal data fetching (only if external data not provided)
   // ========================================================================
+
+  const useInternalData = !externalBalance && !externalTransactions;
 
   const {
     wallet,
-    transactions,
-    isLoading,
+    transactions: internalTransactions,
+    isLoading: internalIsLoading,
     isRefreshing,
-    error,
-    refresh,
-    availableBalance,
-    pendingBalance,
-    totalEarnings,
-    totalPayouts,
-  } = useWalletData(true, 30000);
+    error: internalError,
+    refresh: internalRefresh,
+    availableBalance: internalAvailableBalance,
+    pendingBalance: internalPendingBalance,
+    totalEarnings: internalTotalEarnings,
+    totalPayouts: internalTotalPayouts,
+  } = useWalletData(useInternalData, 30000);
+
+  // Determine which data source to use (external props or internal hooks)
+  const isLoading = externalIsLoading ?? internalIsLoading;
+  const error = externalError ?? internalError;
+  const transactions = externalTransactions ?? internalTransactions ?? [];
+  const availableBalance =
+    externalBalance?.availableBalance ?? internalAvailableBalance;
+  const pendingBalance =
+    externalBalance?.pendingBalance ?? internalPendingBalance;
+  const totalEarnings = externalBalance?.totalEarnings ?? internalTotalEarnings;
+  const totalPayouts = externalBalance?.pendingPayouts ?? internalTotalPayouts;
+
+  const refresh = externalOnRefresh ?? internalRefresh;
 
   // WebSocket for real-time updates
   const {
@@ -276,7 +374,11 @@ export function WalletDashboard({
   // ========================================================================
 
   const handleWithdraw = () => {
-    setIsWithdrawModalOpen(true);
+    if (externalOnRequestPayout) {
+      externalOnRequestPayout();
+    } else {
+      setIsWithdrawModalOpen(true);
+    }
   };
 
   const handleWithdrawSuccess = () => {
@@ -288,8 +390,21 @@ export function WalletDashboard({
   };
 
   const handleViewTransactions = () => {
-    // TODO: Navigate to transactions page (Epic 1.1 - Day 2)
-    // Will be implemented tomorrow
+    if (externalOnViewTransactions) {
+      externalOnViewTransactions();
+    } else {
+      // Default behavior: Navigate to transactions page
+      // TODO: Navigate to transactions page (Epic 1.1 - Day 2)
+    }
+  };
+
+  const handleViewPayouts = () => {
+    if (externalOnViewPayouts) {
+      externalOnViewPayouts();
+    } else {
+      // Default behavior: Navigate to payouts page
+      // TODO: Navigate to payouts page
+    }
   };
 
   const handleExportTransactions = async () => {
@@ -342,6 +457,36 @@ export function WalletDashboard({
     },
   ];
 
+  // Quick actions for wallet operations
+  const quickActions: QuickAction[] = [
+    {
+      label: 'Para Çek',
+      icon: <Download className="h-5 w-5" />,
+      onClick: handleWithdraw,
+      variant: 'primary',
+      disabled: availableBalance <= 0,
+    },
+    {
+      label: 'İşlem Geçmişi',
+      icon: <FileText className="h-5 w-5" />,
+      onClick: handleViewTransactions,
+      variant: 'outline',
+    },
+    {
+      label: 'Çekim Geçmişi',
+      icon: <TrendingUp className="h-5 w-5" />,
+      onClick: handleViewPayouts,
+      variant: 'outline',
+    },
+    {
+      label: 'Dışa Aktar',
+      icon: <Download className="h-5 w-5" />,
+      onClick: handleExportTransactions,
+      variant: 'outline',
+      disabled: transactions.length === 0,
+    },
+  ];
+
   // ========================================================================
   // LOADING STATE
   // ========================================================================
@@ -367,6 +512,9 @@ export function WalletDashboard({
   // ========================================================================
 
   if (error) {
+    const errorMessage =
+      typeof error === 'string' ? error : error?.message || 'Bilinmeyen hata';
+
     return (
       <div className={className}>
         <Alert variant="destructive">
@@ -375,7 +523,7 @@ export function WalletDashboard({
             <p className="font-medium">
               Cüzdan bilgileri yüklenirken hata oluştu
             </p>
-            <p className="mt-1 text-sm">{error.message}</p>
+            <p className="mt-1 text-sm">{errorMessage}</p>
             <Button
               variant="outline"
               size="sm"
@@ -456,6 +604,9 @@ export function WalletDashboard({
         onWithdraw={handleWithdraw}
         onViewTransactions={handleViewTransactions}
       />
+
+      {/* Quick Actions */}
+      <QuickActions actions={quickActions} />
 
       {/* Quick Stats */}
       <QuickStats stats={quickStats} />

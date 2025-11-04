@@ -78,7 +78,11 @@ export {
 // ================================================
 // Wallet and financial management components
 
-export { WalletDashboard } from './wallet/WalletDashboard';
+// ⚠️ Canonical wallet components from domains/wallet
+export { WalletDashboard } from './domains/wallet/WalletDashboard';
+export type { WalletDashboardProps } from './domains/wallet/WalletDashboard';
+
+// Other wallet components
 export { WalletCard } from './wallet/WalletCard';
 export { EscrowViewer } from './domains/wallet/EscrowViewer';
 export { CommissionBreakdown } from './domains/wallet/CommissionBreakdown';
