@@ -9,19 +9,30 @@
  * - BlogCommentController.java (moderation endpoints)
  * - ReviewController.java (moderation endpoints)
  *
- * Base Paths:
- * - /api/v1/moderator (dashboard endpoints)
+ * Base Paths (Sprint 1 - Task 5: API Consolidation):
+ * - /api/v1/dashboard/moderator (dashboard endpoints)
  * - /api/v1/blog/admin/comments (comment moderation)
  * - /api/v1/review/moderation (review moderation)
  *
- * @version 1.0.0
+ * @version 2.0.0
  * @created November 3, 2025
+ * @updated November 5, 2025
  * @author MarifetBul Development Team
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { logger } from '@/lib/shared/utils/logger';
 import type { ApiResponse } from '@/types/backend-aligned';
+import type { PerformanceMetrics } from '@/hooks/business/moderation/useModeratorPerformance';
+
+// ================================================
+// CONSTANTS
+// ================================================
+
+/**
+ * API Base Path for Moderator Dashboard
+ */
+const MODERATOR_API_BASE = '/api/v1/dashboard/moderator';
 
 // ================================================
 // TYPE DEFINITIONS
@@ -172,7 +183,7 @@ class ModeratorService {
 
   /**
    * Get moderation statistics
-   * GET /api/v1/moderator/stats
+   * GET /api/v1/dashboard/moderator/stats
    *
    * Returns comprehensive dashboard statistics including:
    * - Pending items count
@@ -184,7 +195,7 @@ class ModeratorService {
     logger.debug('[ModeratorService] Fetching moderation stats');
 
     return apiClient.get<ApiResponse<ModerationStats>>(
-      '/api/v1/moderator/stats',
+      `${MODERATOR_API_BASE}/stats`,
       undefined,
       {
         caching: {
@@ -197,7 +208,7 @@ class ModeratorService {
 
   /**
    * Get pending moderation items
-   * GET /api/v1/moderator/pending-items
+   * GET /api/v1/dashboard/moderator/pending-items
    *
    * @param page - Page number (0-based, default: 0)
    * @param size - Page size (default: 20, max: 100)
@@ -209,7 +220,7 @@ class ModeratorService {
     logger.debug('[ModeratorService] Fetching pending items', { page, size });
 
     return apiClient.get<ApiResponse<PendingItemsResponse>>(
-      '/api/v1/moderator/pending-items',
+      `${MODERATOR_API_BASE}/pending-items`,
       { page: page.toString(), size: size.toString() },
       {
         caching: {
@@ -221,7 +232,7 @@ class ModeratorService {
 
   /**
    * Get recent moderator activity
-   * GET /api/v1/moderator/recent-activity
+   * GET /api/v1/dashboard/moderator/recent-activity
    *
    * @param limit - Number of recent activities (default: 20, max: 100)
    */
@@ -229,12 +240,35 @@ class ModeratorService {
     logger.debug('[ModeratorService] Fetching recent activity', { limit });
 
     return apiClient.get<ApiResponse<ActivityLog[]>>(
-      '/api/v1/moderator/recent-activity',
+      `${MODERATOR_API_BASE}/recent-activity`,
       { limit: limit.toString() },
       {
         caching: {
           enabled: true,
           ttl: 30000, // 30 seconds cache
+        },
+      }
+    );
+  }
+
+  /**
+   * Get moderator performance metrics
+   * GET /api/v1/dashboard/moderator/performance
+   *
+   * @param days - Number of days to analyze (default: 30, max: 90)
+   */
+  async getPerformanceMetrics(
+    days = 30
+  ): Promise<ApiResponse<PerformanceMetrics>> {
+    logger.debug('[ModeratorService] Fetching performance metrics', { days });
+
+    return apiClient.get<ApiResponse<PerformanceMetrics>>(
+      `${MODERATOR_API_BASE}/performance`,
+      { days: days.toString() },
+      {
+        caching: {
+          enabled: true,
+          ttl: 60000, // 1 minute cache
         },
       }
     );
@@ -294,6 +328,61 @@ class ModeratorService {
     return apiClient.post<ApiResponse<void>>(
       `/api/v1/blog/admin/comments/${commentId}/spam`,
       {},
+      {
+        caching: { enabled: false },
+      }
+    );
+  }
+
+  /**
+   * Escalate a comment to admin/senior moderator
+   * POST /api/v1/moderator/comments/{id}/escalate?reason={reason}
+   * Sprint 1 - Task 6: Comment Escalation Feature
+   *
+   * @param commentId - Comment ID to escalate
+   * @param reason - Reason for escalation
+   */
+  async escalateComment(
+    commentId: string,
+    reason: string
+  ): Promise<ApiResponse<void>> {
+    logger.debug('[ModeratorService] Escalating comment', {
+      commentId,
+      reason,
+    });
+
+    // Encode reason as query parameter
+    const encodedReason = encodeURIComponent(reason);
+
+    return apiClient.post<ApiResponse<void>>(
+      `/api/v1/moderator/comments/${commentId}/escalate?reason=${encodedReason}`,
+      {},
+      {
+        caching: { enabled: false },
+      }
+    );
+  }
+
+  /**
+   * Bulk escalate comments
+   * POST /api/v1/moderator/comments/bulk/escalate
+   * Sprint 1 - Task 6: Comment Escalation Feature
+   *
+   * @param commentIds - Array of comment IDs to escalate
+   * @param reason - Reason for escalation
+   */
+  async bulkEscalateComments(
+    commentIds: string[],
+    reason: string
+  ): Promise<ApiResponse<BulkActionResponse>> {
+    logger.debug('[ModeratorService] Bulk escalating comments', {
+      count: commentIds.length,
+      reason,
+    });
+
+    return apiClient.post<ApiResponse<BulkActionResponse>>(
+      '/api/v1/moderator/comments/bulk/escalate',
+      { commentIds, reason },
       {
         caching: { enabled: false },
       }

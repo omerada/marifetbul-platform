@@ -10,12 +10,13 @@
  * - PendingItemsResponse.java
  * - ActivityLogDto.java
  *
- * Backend Endpoint: GET /api/v1/moderator/stats
+ * Backend Endpoint: GET /api/v1/dashboard/moderator/stats
  *
- * Sprint 1 - Day 4: Dashboard Data Transformation
- * Task: T-110 - Moderator API Schema Types
+ * Sprint 1 - Task 5: API Consolidation
+ * Path updated: /api/v1/moderator → /api/v1/dashboard/moderator
  *
  * @created 2025-11-02
+ * @updated 2025-11-05
  * @author MarifetBul Development Team
  */
 
@@ -348,10 +349,10 @@ export interface RecentActivitiesResponse {
  * Complete Moderator Dashboard API Response
  * Combines stats, pending items, and recent activities
  *
- * Backend Endpoints:
- * - GET /api/v1/moderator/stats → ModerationStats
- * - GET /api/v1/moderator/pending-items → PendingItemsResponse
- * - GET /api/v1/moderator/activities → RecentActivitiesResponse
+ * Backend Endpoints (Sprint 1 - Task 5: API Consolidation):
+ * - GET /api/v1/dashboard/moderator/stats → ModerationStats
+ * - GET /api/v1/dashboard/moderator/pending-items → PendingItemsResponse
+ * - GET /api/v1/dashboard/moderator/activities → RecentActivitiesResponse
  *
  * Note: Unlike Admin/Seller/Buyer dashboards, Moderator data
  * comes from MULTIPLE endpoints. This interface represents the

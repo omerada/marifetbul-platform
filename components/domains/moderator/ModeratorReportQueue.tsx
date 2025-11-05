@@ -21,6 +21,7 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import {
   AlertCircle,
   Clock,
@@ -84,7 +85,9 @@ interface DismissModalState {
 interface EscalateModalState {
   isOpen: boolean;
   reportId: string | null;
-  notes: string;
+  reason: string;
+  isBulk?: boolean;
+  toAdmin?: boolean; // Sprint 1 - Story 1.1: Distinguish admin escalation
 }
 
 interface DetailModalState {
@@ -112,7 +115,8 @@ export function ModeratorReportQueue() {
   const [escalateModal, setEscalateModal] = useState<EscalateModalState>({
     isOpen: false,
     reportId: null,
-    notes: '',
+    reason: '',
+    isBulk: false,
   });
   const [detailModal, setDetailModal] = useState<DetailModalState>({
     isOpen: false,
@@ -145,8 +149,10 @@ export function ModeratorReportQueue() {
     resolve,
     dismiss,
     escalate,
+    escalateToAdmin, // Sprint 1 - Story 1.1
     bulkDismiss,
     bulkEscalate,
+    bulkEscalateToAdmin, // Sprint 1 - Story 1.1
     toggleSelection,
     selectAll,
     clearSelection,
@@ -205,11 +211,43 @@ export function ModeratorReportQueue() {
   };
 
   const handleEscalateSubmit = async () => {
-    if (!escalateModal.reportId) return;
+    if (!escalateModal.reason || escalateModal.reason.length < 10) {
+      toast.error('Yükseltme nedeni en az 10 karakter olmalıdır');
+      return;
+    }
 
-    const success = await escalate(escalateModal.reportId, escalateModal.notes);
+    let success = false;
+
+    // Sprint 1 - Story 1.1: Handle admin escalation separately
+    if (escalateModal.toAdmin) {
+      if (escalateModal.isBulk) {
+        success = await bulkEscalateToAdmin(
+          selectedReports,
+          escalateModal.reason
+        );
+      } else if (escalateModal.reportId) {
+        success = await escalateToAdmin(
+          escalateModal.reportId,
+          escalateModal.reason
+        );
+      }
+    } else {
+      // Priority escalation (existing)
+      if (escalateModal.isBulk) {
+        success = await bulkEscalate(selectedReports);
+      } else if (escalateModal.reportId) {
+        success = await escalate(escalateModal.reportId, escalateModal.reason);
+      }
+    }
+
     if (success) {
-      setEscalateModal({ isOpen: false, reportId: null, notes: '' });
+      setEscalateModal({
+        isOpen: false,
+        reportId: null,
+        reason: '',
+        isBulk: false,
+        toAdmin: false,
+      });
     }
   };
 
@@ -223,14 +261,40 @@ export function ModeratorReportQueue() {
   };
 
   const handleBulkEscalate = async () => {
-    if (selectedReports.length === 0) return;
+    if (selectedReports.length === 0) {
+      toast.error('Lütfen en az bir rapor seçin');
+      return;
+    }
 
-    const confirmed = confirm(
-      `${selectedReports.length} raporu yöneticiye yükseltmek istediğinizden emin misiniz?`
-    );
-    if (!confirmed) return;
+    setEscalateModal({
+      isOpen: true,
+      reportId: null,
+      reason: '',
+      isBulk: true,
+      toAdmin: false,
+    });
+  };
 
-    await bulkEscalate(selectedReports);
+  /**
+   * Sprint 1 - Story 1.1: Escalate to admin handler
+   */
+  const handleEscalateToAdmin = async (reportId: string, isBulk = false) => {
+    setEscalateModal({
+      isOpen: true,
+      reportId: isBulk ? null : reportId,
+      reason: '',
+      isBulk,
+      toAdmin: true,
+    });
+  };
+
+  const handleBulkEscalateToAdmin = async () => {
+    if (selectedReports.length === 0) {
+      toast.error('Lütfen en az bir rapor seçin');
+      return;
+    }
+
+    handleEscalateToAdmin('', true);
   };
 
   // ============================================================================
@@ -444,6 +508,15 @@ export function ModeratorReportQueue() {
             >
               Toplu Yükselt
             </UnifiedButton>
+            <UnifiedButton
+              variant="outline"
+              size="sm"
+              onClick={handleBulkEscalateToAdmin}
+              disabled={isProcessing}
+            >
+              <Shield className="mr-1 h-4 w-4" />
+              Admin&apos;e Yükselt
+            </UnifiedButton>
             <UnifiedButton variant="ghost" size="sm" onClick={clearSelection}>
               Temizle
             </UnifiedButton>
@@ -621,13 +694,24 @@ export function ModeratorReportQueue() {
                             setEscalateModal({
                               isOpen: true,
                               reportId: report.id,
-                              notes: '',
+                              reason: '',
+                              isBulk: false,
+                              toAdmin: false,
                             })
                           }
                           disabled={isProcessing}
                         >
                           <TrendingUp className="mr-1 h-4 w-4" />
                           Yükselt
+                        </UnifiedButton>
+                        <UnifiedButton
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleEscalateToAdmin(report.id)}
+                          disabled={isProcessing}
+                        >
+                          <Shield className="mr-1 h-4 w-4" />
+                          Admin&apos;e
                         </UnifiedButton>
                       </>
                     )}
@@ -801,45 +885,107 @@ export function ModeratorReportQueue() {
       <Dialog
         open={escalateModal.isOpen}
         onOpenChange={(open) =>
-          !open && setEscalateModal({ ...escalateModal, isOpen: false })
+          !open &&
+          setEscalateModal({
+            isOpen: false,
+            reportId: null,
+            reason: '',
+            isBulk: false,
+            toAdmin: false,
+          })
         }
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Yöneticiye Yükselt</DialogTitle>
+            <DialogTitle>
+              {escalateModal.toAdmin
+                ? escalateModal.isBulk
+                  ? 'Toplu Admin Yükseltme'
+                  : 'Admin İncelemesine Yükselt'
+                : escalateModal.isBulk
+                  ? 'Toplu Öncelik Yükseltme'
+                  : 'Öncelik Yükselt'}
+            </DialogTitle>
             <DialogDescription>
-              Bu rapor yönetici incelemesi için yükseltilecektir. Detaylı notlar
-              ekleyin.
+              {escalateModal.toAdmin
+                ? escalateModal.isBulk
+                  ? `${selectedReports.length} rapor admin incelemesi için yükseltilecektir. Detaylı nedeni açıklayın.`
+                  : 'Bu rapor admin seviyesinde inceleme için yükseltilecektir. Detaylı nedeni açıklayın.'
+                : escalateModal.isBulk
+                  ? `${selectedReports.length} rapor öncelik seviyesi artırılacaktır.`
+                  : 'Bu rapor öncelik seviyesi artırılacaktır.'}
             </DialogDescription>
           </DialogHeader>
-          <div>
-            <Textarea
-              value={escalateModal.notes}
-              onChange={(e) =>
-                setEscalateModal({ ...escalateModal, notes: e.target.value })
-              }
-              placeholder="Yükseltme notları (en az 10 karakter)..."
-              rows={4}
-            />
-            <p className="text-muted-foreground mt-1 text-xs">
-              {escalateModal.notes.length} / 10 karakter minimum
-            </p>
+          <div className="space-y-4">
+            <div>
+              <label className="mb-2 block text-sm font-medium">
+                {escalateModal.toAdmin
+                  ? 'Yükseltme Nedeni'
+                  : 'Notlar (opsiyonel)'}
+              </label>
+              <Textarea
+                value={escalateModal.reason}
+                onChange={(e) =>
+                  setEscalateModal({ ...escalateModal, reason: e.target.value })
+                }
+                placeholder={
+                  escalateModal.toAdmin
+                    ? 'Admin yükseltme nedenini detaylıca açıklayın (en az 10 karakter)...'
+                    : 'Öncelik artırma nedenini açıklayın...'
+                }
+                rows={4}
+              />
+              <p className="text-muted-foreground mt-1 text-xs">
+                {escalateModal.reason.length} /{' '}
+                {escalateModal.toAdmin ? '10 karakter minimum' : 'karakter'}
+              </p>
+            </div>
+            <div className="bg-muted rounded-lg p-3">
+              <p className="text-muted-foreground text-sm">
+                <strong>Not:</strong>{' '}
+                {escalateModal.toAdmin
+                  ? 'Yükseltilen raporlar ESCALATED durumuna geçirilerek admin kuyruğuna taşınacaktır.'
+                  : 'Yükseltilen raporlar bir üst öncelik seviyesine çıkarılacaktır.'}
+              </p>
+            </div>
           </div>
           <DialogFooter>
             <UnifiedButton
               variant="outline"
               onClick={() =>
-                setEscalateModal({ ...escalateModal, isOpen: false })
+                setEscalateModal({
+                  isOpen: false,
+                  reportId: null,
+                  reason: '',
+                  isBulk: false,
+                  toAdmin: false,
+                })
               }
             >
               İptal
             </UnifiedButton>
             <UnifiedButton
               onClick={handleEscalateSubmit}
-              disabled={escalateModal.notes.length < 10 || isProcessing}
+              disabled={
+                (escalateModal.toAdmin && escalateModal.reason.length < 10) ||
+                isProcessing
+              }
             >
-              <TrendingUp className="mr-2 h-4 w-4" />
-              Yükselt
+              {escalateModal.toAdmin ? (
+                <>
+                  <Shield className="mr-2 h-4 w-4" />
+                  {escalateModal.isBulk
+                    ? `${selectedReports.length} Raporu Admin'e Yükselt`
+                    : "Admin'e Yükselt"}
+                </>
+              ) : (
+                <>
+                  <TrendingUp className="mr-2 h-4 w-4" />
+                  {escalateModal.isBulk
+                    ? `${selectedReports.length} Raporu Yükselt`
+                    : 'Yükselt'}
+                </>
+              )}
             </UnifiedButton>
           </DialogFooter>
         </DialogContent>

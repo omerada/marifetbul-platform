@@ -82,14 +82,30 @@ export interface OrderMilestone {
  * Create Order Milestone Request
  */
 export interface CreateOrderMilestoneRequest {
+  /** Milestone sequence number */
+  sequence: number;
   /** Milestone title */
   title: string;
   /** Milestone description */
   description: string;
   /** Milestone amount */
   amount: number;
-  /** Due date */
-  dueDate: string;
+  /** Due date (optional) */
+  dueDate?: string;
+}
+
+/**
+ * Update Order Milestone Request
+ */
+export interface UpdateOrderMilestoneRequest {
+  /** Updated title */
+  title?: string;
+  /** Updated description */
+  description?: string;
+  /** Updated amount */
+  amount?: number;
+  /** Updated due date */
+  dueDate?: string;
 }
 
 /**
@@ -99,7 +115,7 @@ export interface DeliverMilestoneRequest {
   /** Delivery notes */
   deliveryNotes: string;
   /** Attachment URLs */
-  attachments?: string[];
+  attachments?: string;
 }
 
 // ================================================

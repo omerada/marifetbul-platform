@@ -61,6 +61,15 @@ export function ModeratorTicketQueue({
   );
   const [resolutionText, setResolutionText] = useState('');
   const [showResolveModal, setShowResolveModal] = useState<string | null>(null);
+  const [showEscalateModal, setShowEscalateModal] = useState<{
+    isOpen: boolean;
+    ticketId: string | null;
+    isBulk: boolean;
+  }>({
+    isOpen: false,
+    ticketId: null,
+    isBulk: false,
+  });
 
   // Use our dedicated hook
   const {
@@ -73,7 +82,9 @@ export function ModeratorTicketQueue({
     assignTicket,
     resolveTicket,
     closeTicket,
+    escalateTicket,
     bulkAssign,
+    bulkEscalate,
     toggleSelection,
     selectAll,
     clearSelection,
@@ -121,6 +132,23 @@ export function ModeratorTicketQueue({
 
   const handleBulkAssign = async () => {
     await bulkAssign(selectedTickets, 'CURRENT_MODERATOR');
+  };
+
+  const handleEscalate = async (ticketId: string) => {
+    const success = await escalateTicket(ticketId);
+    if (success) {
+      setShowEscalateModal({ isOpen: false, ticketId: null, isBulk: false });
+      if (viewingTicket?.id === ticketId) {
+        setViewingTicket(null);
+      }
+    }
+  };
+
+  const handleBulkEscalate = async () => {
+    const success = await bulkEscalate(selectedTickets);
+    if (success) {
+      setShowEscalateModal({ isOpen: false, ticketId: null, isBulk: false });
+    }
   };
 
   // ============================================================================
@@ -304,6 +332,21 @@ export function ModeratorTicketQueue({
               <User className="mr-1 h-4 w-4" />
               Tümünü Ata
             </UnifiedButton>
+            <UnifiedButton
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                setShowEscalateModal({
+                  isOpen: true,
+                  ticketId: null,
+                  isBulk: true,
+                })
+              }
+              disabled={isProcessing}
+            >
+              <ArrowUpCircle className="mr-1 h-4 w-4" />
+              Toplu Yükselt
+            </UnifiedButton>
             <UnifiedButton variant="ghost" size="sm" onClick={clearSelection}>
               Temizle
             </UnifiedButton>
@@ -464,6 +507,26 @@ export function ModeratorTicketQueue({
                         Kapat
                       </UnifiedButton>
                     )}
+
+                    {(ticket.status === 'open' ||
+                      ticket.status === 'pending' ||
+                      ticket.status === 'in_progress') && (
+                      <UnifiedButton
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setShowEscalateModal({
+                            isOpen: true,
+                            ticketId: ticket.id,
+                            isBulk: false,
+                          })
+                        }
+                        disabled={isProcessing}
+                      >
+                        <ArrowUpCircle className="mr-1 h-3 w-3" />
+                        Yükselt
+                      </UnifiedButton>
+                    )}
                   </div>
                 </div>
               </div>
@@ -622,6 +685,67 @@ export function ModeratorTicketQueue({
                   Çöz
                 </UnifiedButton>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Escalate Confirmation Modal */}
+      {showEscalateModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+            <div className="mb-4 flex items-center gap-2">
+              <ArrowUpCircle className="h-6 w-6 text-orange-500" />
+              <h3 className="text-lg font-semibold">
+                {showEscalateModal.isBulk
+                  ? 'Toplu Yükseltme'
+                  : 'Ticket Yükselt'}
+              </h3>
+            </div>
+
+            <p className="mb-6 text-sm text-gray-600">
+              {showEscalateModal.isBulk
+                ? `${selectedTickets.length} ticket yüksek öncelikli olarak işaretlenecek ve yönetici kuyruğuna taşınacak. Devam etmek istiyor musunuz?`
+                : 'Bu ticket yüksek öncelikli olarak işaretlenecek ve yönetici kuyruğuna taşınacak. Devam etmek istiyor musunuz?'}
+            </p>
+
+            <div className="mb-6 rounded-lg bg-orange-50 p-3">
+              <p className="text-xs text-orange-800">
+                <strong>Not:</strong> Yükseltilen ticketların öncelik seviyesi
+                otomatik olarak artırılacak ve durum ESCALATED olarak
+                değiştirilecektir.
+              </p>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <UnifiedButton
+                variant="ghost"
+                onClick={() =>
+                  setShowEscalateModal({
+                    isOpen: false,
+                    ticketId: null,
+                    isBulk: false,
+                  })
+                }
+              >
+                İptal
+              </UnifiedButton>
+              <UnifiedButton
+                variant="warning"
+                onClick={() => {
+                  if (showEscalateModal.isBulk) {
+                    handleBulkEscalate();
+                  } else if (showEscalateModal.ticketId) {
+                    handleEscalate(showEscalateModal.ticketId);
+                  }
+                }}
+                disabled={isProcessing}
+              >
+                <ArrowUpCircle className="mr-1 h-4 w-4" />
+                {showEscalateModal.isBulk
+                  ? `${selectedTickets.length} Ticket'ı Yükselt`
+                  : 'Yükselt'}
+              </UnifiedButton>
             </div>
           </div>
         </div>

@@ -24,6 +24,13 @@ export { ModerationFilters } from './ModerationFilters';
 export { BulkModerationPanel } from './BulkModerationPanel';
 
 // ============================================================================
+// ESCALATION FEATURE (Sprint 1 - Task 6)
+// ============================================================================
+
+export { EscalateCommentModal } from './EscalateCommentModal';
+export type { EscalateCommentModalProps } from './EscalateCommentModal';
+
+// ============================================================================
 // DEDICATED MODERATION COMPONENTS (Sprint 1)
 // ============================================================================
 

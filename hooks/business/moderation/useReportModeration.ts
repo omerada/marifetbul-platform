@@ -12,16 +12,29 @@
  * - Priority and type filtering
  * - Real-time stats updates
  *
- * Sprint 1 - Story 1.3: Reports Dashboard
+ * Sprint 1 - Task 5: API Consolidation
+ * API Path: /api/v1/dashboard/moderator/reports
+ *
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 2.0.0
  * @created November 3, 2025
+ * @updated November 5, 2025
  */
 
 import { useState, useCallback } from 'react';
 import useSWR from 'swr';
 import { toast } from 'sonner';
 import { logger } from '@/lib/shared/utils/logger';
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+/**
+ * API Base Path for Report Moderation
+ * Updated in Sprint 1 - Task 5: API Consolidation
+ */
+const API_BASE_PATH = '/api/v1/dashboard/moderator/reports';
 
 // ============================================================================
 // TYPES
@@ -147,8 +160,13 @@ export interface UseReportModerationReturn {
   ) => Promise<boolean>;
   dismiss: (reportId: string, reason: string) => Promise<boolean>;
   escalate: (reportId: string, notes: string) => Promise<boolean>;
+  escalateToAdmin: (reportId: string, reason: string) => Promise<boolean>; // Sprint 1 - Story 1.1
   bulkDismiss: (reportIds: string[], reason: string) => Promise<boolean>;
   bulkEscalate: (reportIds: string[]) => Promise<boolean>;
+  bulkEscalateToAdmin: (
+    reportIds: string[],
+    reason: string
+  ) => Promise<boolean>; // Sprint 1 - Story 1.1
   refresh: () => void;
   toggleSelection: (reportId: string) => void;
   selectAll: () => void;
@@ -171,12 +189,7 @@ export function useReportModeration(
 
   // Build cache key
   const cacheKey = autoFetch
-    ? [
-        '/api/v1/moderator/reports',
-        currentPage,
-        pageSize,
-        JSON.stringify(filters),
-      ]
+    ? [API_BASE_PATH, currentPage, pageSize, JSON.stringify(filters)]
     : null;
 
   // Fetch reports with SWR
@@ -194,7 +207,7 @@ export function useReportModeration(
       if (filters.unassigned) params.append('unassigned', 'true');
       if (filters.assignedToMe) params.append('assignedToMe', 'true');
 
-      const response = await fetch(`/api/v1/moderator/reports?${params}`);
+      const response = await fetch(`${API_BASE_PATH}?${params}`);
       if (!response.ok) throw new Error('Failed to fetch reports');
 
       const result = await response.json();
@@ -219,7 +232,7 @@ export function useReportModeration(
   // Fetch stats separately
   const fetchStats = async (): Promise<ReportModerationStats> => {
     try {
-      const response = await fetch('/api/v1/moderator/reports/statistics');
+      const response = await fetch(`${API_BASE_PATH}/statistics`);
       const result = await response.json();
 
       if (result.success && result.data) {
@@ -298,13 +311,10 @@ export function useReportModeration(
     async (reportId: string): Promise<boolean> => {
       setIsProcessing(true);
       try {
-        const response = await fetch(
-          `/api/v1/moderator/reports/${reportId}/assign`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-          }
-        );
+        const response = await fetch(`${API_BASE_PATH}/${reportId}/assign`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
 
         if (!response.ok) throw new Error('Failed to assign');
         await mutate();
@@ -327,7 +337,7 @@ export function useReportModeration(
       setIsProcessing(true);
       try {
         const response = await fetch(
-          `/api/v1/moderator/reports/${reportId}/investigate`,
+          `${API_BASE_PATH}/${reportId}/investigate`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -363,19 +373,16 @@ export function useReportModeration(
 
       setIsProcessing(true);
       try {
-        const response = await fetch(
-          `/api/v1/moderator/reports/${reportId}/resolve`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              actionTaken: action,
-              moderatorNotes: notes,
-              notifyReporter: true,
-              notifyEntityOwner: action !== 'NO_ACTION',
-            }),
-          }
-        );
+        const response = await fetch(`${API_BASE_PATH}/${reportId}/resolve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            actionTaken: action,
+            moderatorNotes: notes,
+            notifyReporter: true,
+            notifyEntityOwner: action !== 'NO_ACTION',
+          }),
+        });
 
         if (!response.ok) throw new Error('Failed to resolve');
         await mutate();
@@ -402,14 +409,11 @@ export function useReportModeration(
 
       setIsProcessing(true);
       try {
-        const response = await fetch(
-          `/api/v1/moderator/reports/${reportId}/dismiss`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ reason }),
-          }
-        );
+        const response = await fetch(`${API_BASE_PATH}/${reportId}/dismiss`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason }),
+        });
 
         if (!response.ok) throw new Error('Failed to dismiss');
         await mutate();
@@ -436,14 +440,11 @@ export function useReportModeration(
 
       setIsProcessing(true);
       try {
-        const response = await fetch(
-          `/api/v1/moderator/reports/${reportId}/escalate`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ notes }),
-          }
-        );
+        const response = await fetch(`${API_BASE_PATH}/${reportId}/escalate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ notes }),
+        });
 
         if (!response.ok) throw new Error('Failed to escalate');
         await mutate();
@@ -453,6 +454,43 @@ export function useReportModeration(
       } catch (error) {
         logger.error('Escalate failed:', error);
         toast.error('Yükseltme başarısız');
+        return false;
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [mutate]
+  );
+
+  /**
+   * Escalate report to admin review (Sprint 1 - Story 1.1)
+   * NEW: Moderator → Admin escalation with reason
+   */
+  const escalateToAdmin = useCallback(
+    async (reportId: string, reason: string): Promise<boolean> => {
+      if (!reason || reason.length < 10) {
+        toast.error('Yükseltme nedeni en az 10 karakter olmalıdır');
+        return false;
+      }
+
+      setIsProcessing(true);
+      try {
+        const response = await fetch(
+          `${API_BASE_PATH}/${reportId}/escalate-to-admin?reason=${encodeURIComponent(reason)}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+
+        if (!response.ok) throw new Error('Failed to escalate to admin');
+        await mutate();
+        toast.success('Rapor admin incelemesine yükseltildi');
+        logger.info('Report escalated to admin', { reportId });
+        return true;
+      } catch (error) {
+        logger.error('Escalate to admin failed:', error);
+        toast.error('Admin yükseltme başarısız');
         return false;
       } finally {
         setIsProcessing(false);
@@ -477,7 +515,7 @@ export function useReportModeration(
       try {
         const results = await Promise.allSettled(
           reportIds.map((id) =>
-            fetch(`/api/v1/moderator/reports/${id}/dismiss`, {
+            fetch(`${API_BASE_PATH}/${id}/dismiss`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ reason }),
@@ -522,14 +560,11 @@ export function useReportModeration(
 
       setIsProcessing(true);
       try {
-        const response = await fetch(
-          '/api/v1/moderator/reports/bulk/escalate',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ reportIds }),
-          }
-        );
+        const response = await fetch(`${API_BASE_PATH}/bulk/escalate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reportIds }),
+        });
 
         if (!response.ok) throw new Error('Failed to bulk escalate');
 
@@ -541,6 +576,55 @@ export function useReportModeration(
       } catch (error) {
         logger.error('Bulk escalate failed:', error);
         toast.error('Toplu yükseltme başarısız');
+        return false;
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [mutate, clearSelection]
+  );
+
+  /**
+   * Bulk escalate reports to admin (Sprint 1 - Story 1.1)
+   * NEW: Bulk Moderator → Admin escalation
+   */
+  const bulkEscalateToAdmin = useCallback(
+    async (reportIds: string[], reason: string): Promise<boolean> => {
+      if (reportIds.length === 0) {
+        toast.error('Lütfen en az bir rapor seçin');
+        return false;
+      }
+
+      if (!reason || reason.length < 10) {
+        toast.error('Yükseltme nedeni en az 10 karakter olmalıdır');
+        return false;
+      }
+
+      setIsProcessing(true);
+      try {
+        const response = await fetch(
+          `${API_BASE_PATH}/bulk/escalate-to-admin`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reportIds, reason }),
+          }
+        );
+
+        if (!response.ok) throw new Error('Failed to bulk escalate to admin');
+
+        await mutate();
+        clearSelection();
+        toast.success(
+          `${reportIds.length} rapor admin incelemesine yükseltildi`
+        );
+        logger.info('Bulk escalate to admin success', {
+          count: reportIds.length,
+        });
+        return true;
+      } catch (error) {
+        logger.error('Bulk escalate to admin failed:', error);
+        toast.error('Toplu admin yükseltme başarısız');
         return false;
       } finally {
         setIsProcessing(false);
@@ -590,8 +674,10 @@ export function useReportModeration(
     resolve,
     dismiss,
     escalate,
+    escalateToAdmin, // Sprint 1 - Story 1.1
     bulkDismiss,
     bulkEscalate,
+    bulkEscalateToAdmin, // Sprint 1 - Story 1.1
     refresh: mutate,
     toggleSelection,
     selectAll,

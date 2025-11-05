@@ -96,7 +96,9 @@ export interface UseTicketModerationReturn {
     ticketId: string,
     priority: TicketPriority
   ) => Promise<boolean>;
+  escalateTicket: (ticketId: string) => Promise<boolean>;
   bulkAssign: (ticketIds: string[], moderatorId: string) => Promise<boolean>;
+  bulkEscalate: (ticketIds: string[]) => Promise<boolean>;
   refresh: () => void;
   toggleSelection: (ticketId: string) => void;
   selectAll: () => void;
@@ -446,6 +448,67 @@ export function useTicketModeration(
     [mutate, clearSelection]
   );
 
+  const escalateTicket = useCallback(
+    async (ticketId: string): Promise<boolean> => {
+      setIsProcessing(true);
+      try {
+        const response = await fetch(
+          `/api/v1/support/tickets/${ticketId}/escalate`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+
+        if (!response.ok) throw new Error('Failed to escalate ticket');
+        await mutate();
+        toast.success('Ticket yükseltildi');
+        logger.info('Ticket escalated', { ticketId });
+        return true;
+      } catch (error) {
+        logger.error('Escalate failed:', error);
+        toast.error('Yükseltme başarısız');
+        return false;
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [mutate]
+  );
+
+  const bulkEscalate = useCallback(
+    async (ticketIds: string[]): Promise<boolean> => {
+      if (ticketIds.length === 0) {
+        toast.error('Lütfen en az bir ticket seçin');
+        return false;
+      }
+
+      setIsProcessing(true);
+      try {
+        const response = await fetch('/api/v1/support/tickets/bulk/escalate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ticketIds: ticketIds.map(Number) }),
+        });
+
+        if (!response.ok) throw new Error('Failed to bulk escalate');
+
+        await mutate();
+        clearSelection();
+        toast.success(`${ticketIds.length} ticket yükseltildi`);
+        logger.info('Bulk escalate success', { count: ticketIds.length });
+        return true;
+      } catch (error) {
+        logger.error('Bulk escalate failed:', error);
+        toast.error('Toplu yükseltme başarısız');
+        return false;
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [mutate, clearSelection]
+  );
+
   // ============================================================================
   // PAGINATION
   // ============================================================================
@@ -487,7 +550,9 @@ export function useTicketModeration(
     closeTicket,
     addResponse,
     updatePriority,
+    escalateTicket,
     bulkAssign,
+    bulkEscalate,
     refresh: mutate,
     toggleSelection,
     selectAll,

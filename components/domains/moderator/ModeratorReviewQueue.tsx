@@ -21,7 +21,15 @@
 'use client';
 
 import { useState } from 'react';
-import { Star, Flag, Check, X, Eye, AlertTriangle } from 'lucide-react';
+import {
+  Star,
+  Flag,
+  Check,
+  X,
+  Eye,
+  AlertTriangle,
+  ArrowUpCircle,
+} from 'lucide-react';
 import { UnifiedButton, Badge, Pagination, Loading } from '@/components/ui';
 import { useReviewModeration } from '@/hooks/business/moderation/useReviewModeration';
 import type { ReviewData } from '@/types';
@@ -46,6 +54,11 @@ export function ModeratorReviewQueue({
   const [rejectReason, setRejectReason] = useState('');
   const [showRejectModal, setShowRejectModal] = useState<string | null>(null);
   const [showBulkRejectModal, setShowBulkRejectModal] = useState(false);
+  const [showEscalateModal, setShowEscalateModal] = useState(false);
+  const [escalateReason, setEscalateReason] = useState('');
+  const [escalatePriority, setEscalatePriority] = useState<
+    'HIGH' | 'MEDIUM' | 'LOW'
+  >('MEDIUM');
 
   // Use our dedicated hook
   const {
@@ -57,8 +70,10 @@ export function ModeratorReviewQueue({
     selectedReviews,
     approveReview,
     rejectReview,
+    escalateReview: _escalateReview, // Reserved for future single-review escalation
     bulkApprove,
     bulkReject,
+    bulkEscalate,
     toggleSelection,
     selectAll,
     clearSelection,
@@ -111,6 +126,23 @@ export function ModeratorReviewQueue({
     if (success) {
       setShowBulkRejectModal(false);
       setRejectReason('');
+    }
+  };
+
+  const handleBulkEscalate = async () => {
+    if (!escalateReason || escalateReason.length < 10) {
+      return;
+    }
+
+    const success = await bulkEscalate(
+      selectedReviews,
+      escalateReason,
+      escalatePriority
+    );
+    if (success) {
+      setShowEscalateModal(false);
+      setEscalateReason('');
+      setEscalatePriority('MEDIUM');
     }
   };
 
@@ -264,6 +296,15 @@ export function ModeratorReviewQueue({
             >
               <X className="mr-1 h-4 w-4" />
               Tümünü Reddet
+            </UnifiedButton>
+            <UnifiedButton
+              variant="warning"
+              size="sm"
+              onClick={() => setShowEscalateModal(true)}
+              disabled={isProcessing}
+            >
+              <ArrowUpCircle className="mr-1 h-4 w-4" />
+              Yükselt
             </UnifiedButton>
             <UnifiedButton variant="ghost" size="sm" onClick={clearSelection}>
               Temizle
@@ -462,6 +503,98 @@ export function ModeratorReviewQueue({
                 disabled={rejectReason.length < 10 || isProcessing}
               >
                 Tümünü Reddet
+              </UnifiedButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Escalate Modal - Sprint 1 Story 1.2 */}
+      {showEscalateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-md rounded-lg bg-white p-6">
+            <div className="mb-4 flex items-center gap-2">
+              <ArrowUpCircle className="h-5 w-5 text-purple-600" />
+              <h3 className="text-lg font-medium">İncelemeleri Yükselt</h3>
+            </div>
+            <p className="mb-4 text-sm text-gray-600">
+              {selectedReviews.length} inceleme yöneticilere yükseltilecek.
+              Lütfen sebep ve öncelik belirtin:
+            </p>
+
+            {/* Reason Input */}
+            <div className="mb-4">
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Yükseltme Sebebi *
+              </label>
+              <textarea
+                value={escalateReason}
+                onChange={(e) => setEscalateReason(e.target.value)}
+                placeholder="İçerik inceleme gerektirir, ..."
+                className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-200 focus:outline-none"
+                rows={3}
+                required
+              />
+            </div>
+
+            {/* Priority Selection */}
+            <div className="mb-6">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Öncelik
+              </label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setEscalatePriority('LOW')}
+                  className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                    escalatePriority === 'LOW'
+                      ? 'border-gray-600 bg-gray-600 text-white'
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  Düşük
+                </button>
+                <button
+                  onClick={() => setEscalatePriority('MEDIUM')}
+                  className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                    escalatePriority === 'MEDIUM'
+                      ? 'border-yellow-600 bg-yellow-600 text-white'
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  Orta
+                </button>
+                <button
+                  onClick={() => setEscalatePriority('HIGH')}
+                  className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                    escalatePriority === 'HIGH'
+                      ? 'border-red-600 bg-red-600 text-white'
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  Yüksek
+                </button>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-3">
+              <UnifiedButton
+                variant="ghost"
+                onClick={() => {
+                  setShowEscalateModal(false);
+                  setEscalateReason('');
+                  setEscalatePriority('MEDIUM');
+                }}
+              >
+                İptal
+              </UnifiedButton>
+              <UnifiedButton
+                variant="warning"
+                onClick={handleBulkEscalate}
+                disabled={escalateReason.length < 10 || isProcessing}
+              >
+                <ArrowUpCircle className="mr-2 h-4 w-4" />
+                Yükselt
               </UnifiedButton>
             </div>
           </div>

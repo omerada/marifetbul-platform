@@ -11,15 +11,27 @@
  * - Category breakdown
  * - Comparative metrics
  *
- * Sprint 2 - Story 2.2: Performance Analytics
+ * Sprint 1 - Task 6: Moderator Performance Dashboard
+ * API Path: /api/v1/dashboard/moderator/performance
+ *
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 2.0.0
  * @created November 3, 2025
+ * @updated November 5, 2025
  */
 
 import { useCallback } from 'react';
 import useSWR from 'swr';
 import { logger } from '@/lib/shared/utils/logger';
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+/**
+ * API Base Path for Moderator Performance
+ */
+const PERFORMANCE_API_PATH = '/api/v1/dashboard/moderator/performance';
 
 // ============================================================================
 // TYPES
@@ -102,7 +114,7 @@ export function useModeratorPerformance(
   const { data, error, isLoading, mutate } = useSWR<{
     data: PerformanceMetrics;
   }>(
-    autoFetch ? ['/api/v1/moderator/performance', days] : null,
+    autoFetch ? [PERFORMANCE_API_PATH, days] : null,
     async ([url, d]: [string, number]) => {
       const params = new URLSearchParams({ days: d.toString() });
       const response = await fetch(`${url}?${params}`);

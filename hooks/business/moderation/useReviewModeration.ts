@@ -91,8 +91,18 @@ export interface UseReviewModerationReturn {
   // Actions
   approveReview: (reviewId: string) => Promise<boolean>;
   rejectReview: (reviewId: string, reason: string) => Promise<boolean>;
+  escalateReview: (
+    reviewId: string,
+    reason: string,
+    priority: 'HIGH' | 'MEDIUM' | 'LOW'
+  ) => Promise<boolean>;
   bulkApprove: (reviewIds: string[]) => Promise<boolean>;
   bulkReject: (reviewIds: string[], reason: string) => Promise<boolean>;
+  bulkEscalate: (
+    reviewIds: string[],
+    reason: string,
+    priority: 'HIGH' | 'MEDIUM' | 'LOW'
+  ) => Promise<boolean>;
   refresh: () => void;
 
   // Selection
@@ -352,6 +362,117 @@ export function useReviewModeration(
     [refresh]
   );
 
+  /**
+   * Escalate a review to admin
+   * Sprint 1 - Story 1.2: Review Escalation
+   */
+  const escalateReview = useCallback(
+    async (
+      reviewId: string,
+      reason: string,
+      priority: 'HIGH' | 'MEDIUM' | 'LOW' = 'MEDIUM'
+    ) => {
+      if (!reason || reason.length < 10) {
+        toast.error('Yükseltme nedeni en az 10 karakter olmalıdır');
+        return false;
+      }
+
+      setIsProcessing(true);
+
+      try {
+        const response = await fetch(
+          `/api/v1/reviews/moderation/${reviewId}/escalate?reason=${encodeURIComponent(reason)}&priority=${priority}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to escalate review');
+        }
+
+        // Optimistic update
+        await refresh();
+
+        toast.success('İnceleme yöneticiye yükseltildi');
+        logger.info('Review escalated', { reviewId, reason, priority });
+
+        return true;
+      } catch (error) {
+        logger.error('Failed to escalate review', error);
+        toast.error('İnceleme yükseltilemedi');
+        return false;
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [refresh]
+  );
+
+  /**
+   * Bulk escalate reviews to admin
+   * Sprint 1 - Story 1.2: Review Escalation
+   */
+  const bulkEscalate = useCallback(
+    async (
+      reviewIds: string[],
+      reason: string,
+      priority: 'HIGH' | 'MEDIUM' | 'LOW' = 'MEDIUM'
+    ) => {
+      if (reviewIds.length === 0) {
+        toast.error('Lütfen en az bir inceleme seçin');
+        return false;
+      }
+
+      if (!reason || reason.length < 10) {
+        toast.error('Yükseltme nedeni en az 10 karakter olmalıdır');
+        return false;
+      }
+
+      setIsProcessing(true);
+
+      try {
+        const response = await fetch(
+          '/api/v1/reviews/moderation/bulk/escalate',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+              reviewIds,
+              reason,
+              priority,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to bulk escalate reviews');
+        }
+
+        await refresh();
+        setSelectedReviews([]);
+
+        toast.success(`${reviewIds.length} inceleme yöneticiye yükseltildi`);
+        logger.info('Bulk escalate completed', {
+          count: reviewIds.length,
+          priority,
+        });
+
+        return true;
+      } catch (error) {
+        logger.error('Failed to bulk escalate reviews', error);
+        toast.error('Toplu yükseltme başarısız');
+        return false;
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [refresh]
+  );
+
   // ============================================================================
   // SELECTION MANAGEMENT
   // ============================================================================
@@ -421,8 +542,10 @@ export function useReviewModeration(
     // Actions
     approveReview,
     rejectReview,
+    escalateReview,
     bulkApprove,
     bulkReject,
+    bulkEscalate,
     refresh,
 
     // Selection

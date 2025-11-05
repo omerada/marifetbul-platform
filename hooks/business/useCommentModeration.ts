@@ -86,6 +86,12 @@ export interface UseCommentModerationReturn {
     reason: string,
     priority?: 'LOW' | 'MEDIUM' | 'HIGH'
   ) => Promise<boolean>;
+  flagComment: (
+    id: string,
+    flag: CommentFlagType,
+    reason: string
+  ) => Promise<boolean>;
+  hasUserFlagged: (id: string) => Promise<boolean>;
   bulkApprove: (ids: string[]) => Promise<BulkActionResult>;
   bulkReject: (ids: string[]) => Promise<BulkActionResult>;
   bulkMarkAsSpam: (ids: string[]) => Promise<BulkActionResult>;
@@ -98,6 +104,14 @@ export interface UseCommentModerationReturn {
   // Refresh
   refresh: () => Promise<void>;
 }
+
+export type CommentFlagType =
+  | 'SPAM'
+  | 'INAPPROPRIATE'
+  | 'OFFENSIVE'
+  | 'HARASSMENT'
+  | 'MISINFORMATION'
+  | 'OTHER';
 
 export interface BulkActionResult {
   success: number;
@@ -404,26 +418,130 @@ export function useCommentModeration(): UseCommentModerationReturn {
     }
   }, []);
 
-  // TODO: Backend'de comment escalation endpoint'i yok
-  // Dispute escalation var ama comment escalation için endpoint eklenecek
-  // Şimdilik bu özellik devre dışı
+  /**
+   * Escalate a comment to admin/senior moderator
+   * Sprint 1 - Task 6: Comment Escalation Feature
+   */
   const escalateComment = useCallback(
     async (
       id: string,
       reason: string,
       priority: 'LOW' | 'MEDIUM' | 'HIGH' = 'MEDIUM'
     ): Promise<boolean> => {
-      logger.warn(
-        '[useCommentModeration] Escalate feature not implemented yet',
-        { id, reason, priority }
-      );
-      toast.error('Bu özellik henüz aktif değil', {
-        description: 'Yorum yükseltme özelliği yakında eklenecek',
+      try {
+        logger.info('[useCommentModeration] Escalating comment', {
+          id,
+          reason,
+          priority,
+        });
+
+        // Call escalation endpoint
+        await moderatorService.escalateComment(id, reason);
+
+        // Show success toast
+        toast.success('Yorum yükseltildi', {
+          description: 'Yorum üst otoriteye başarıyla iletildi',
+        });
+
+        // Refresh data
+        await fetchComments();
+
+        return true;
+      } catch (err) {
+        logger.error('[useCommentModeration] Failed to escalate comment', {
+          id,
+          error: err,
+        });
+
+        toast.error('İşlem başarısız', {
+          description: 'Yorum yükseltilemedi',
+        });
+        return false;
+      }
+    },
+    [fetchComments]
+  );
+
+  /**
+   * Flag a comment for moderation
+   * Sprint 2 - Story 2.6: Frontend Comment Flag Hook
+   */
+  const flagComment = useCallback(
+    async (
+      id: string,
+      flag: CommentFlagType,
+      reason: string
+    ): Promise<boolean> => {
+      try {
+        logger.info('[useCommentModeration] Flagging comment', {
+          id,
+          flag,
+        });
+
+        // Call flag endpoint
+        const response = await fetch(`/api/v1/blog/comments/${id}/flag`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ flag, reason }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to flag comment');
+        }
+
+        // Show success toast
+        toast.success('Yorum işaretlendi', {
+          description: 'Yorum moderatörlere bildirildi',
+        });
+
+        // Refresh data
+        await fetchComments();
+
+        return true;
+      } catch (err) {
+        logger.error('[useCommentModeration] Failed to flag comment', {
+          id,
+          error: err,
+        });
+
+        toast.error('İşlem başarısız', {
+          description: 'Yorum işaretlenemedi',
+        });
+        return false;
+      }
+    },
+    [fetchComments]
+  );
+
+  /**
+   * Check if user has already flagged a comment
+   * Sprint 2 - Story 2.6: Frontend Comment Flag Hook
+   */
+  const hasUserFlagged = useCallback(async (id: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`/api/v1/blog/comments/${id}/flag/check`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const hasFlagged = await response.json();
+      return hasFlagged === true;
+    } catch (err) {
+      logger.error('[useCommentModeration] Failed to check flag status', {
+        id,
+        error: err,
       });
       return false;
-    },
-    []
-  );
+    }
+  }, []);
 
   // ================================================
   // BULK ACTIONS
@@ -600,30 +718,75 @@ export function useCommentModeration(): UseCommentModerationReturn {
     [fetchComments]
   );
 
-  // TODO: Backend'de comment escalation endpoint'i yok
-  // Şimdilik bu özellik devre dışı
+  /**
+   * Bulk escalate comments to admin/senior moderator
+   * Sprint 1 - Task 6: Comment Escalation Feature
+   */
   const bulkEscalate = useCallback(
     async (
       ids: string[],
       reason: string,
       priority: 'LOW' | 'MEDIUM' | 'HIGH' = 'MEDIUM'
     ): Promise<BulkActionResult> => {
-      logger.warn(
-        '[useCommentModeration] Bulk escalate feature not implemented yet',
-        { count: ids.length, reason, priority }
-      );
-      toast.error('Bu özellik henüz aktif değil', {
-        description: 'Toplu yükseltme özelliği yakında eklenecek',
-      });
+      try {
+        logger.debug('[useCommentModeration] Bulk escalating comments', {
+          count: ids.length,
+          reason,
+          priority,
+        });
 
-      return {
-        success: 0,
-        failed: ids.length,
-        total: ids.length,
-        errors: ['Özellik henüz aktif değil'],
-      };
+        // Call moderatorService bulk escalate
+        const response = await moderatorService.bulkEscalateComments(
+          ids,
+          reason
+        );
+
+        // Extract results
+        const result = {
+          success: response.data.successCount,
+          failed: response.data.failureCount,
+          total: response.data.totalProcessed,
+          errors: response.data.failures?.map((f) => f.errorMessage),
+        };
+
+        // Refresh data
+        await fetchComments();
+
+        // Clear selections
+        setSelectedComments(new Set());
+
+        // Show toast notifications
+        if (result.success > 0) {
+          toast.success(`${result.success} yorum yükseltildi`, {
+            description:
+              result.failed > 0
+                ? `${result.failed} yorum yükseltilemedi`
+                : 'Tüm yorumlar üst otoriteye iletildi',
+          });
+        }
+
+        if (result.failed > 0 && result.success === 0) {
+          toast.error('Yorumlar yükseltilemedi', {
+            description: 'Lütfen tekrar deneyin',
+          });
+        }
+
+        return result;
+      } catch (err) {
+        logger.error('[useCommentModeration] Bulk escalate failed', err);
+        toast.error('Toplu yükseltme başarısız', {
+          description: 'Bir hata oluştu, lütfen tekrar deneyin',
+        });
+
+        return {
+          success: 0,
+          failed: ids.length,
+          total: ids.length,
+          errors: ['Sunucu hatası'],
+        };
+      }
     },
-    []
+    [fetchComments]
   );
 
   // ================================================
@@ -662,6 +825,8 @@ export function useCommentModeration(): UseCommentModerationReturn {
     rejectComment,
     markAsSpam,
     escalateComment,
+    flagComment,
+    hasUserFlagged,
     bulkApprove,
     bulkReject,
     bulkMarkAsSpam,
