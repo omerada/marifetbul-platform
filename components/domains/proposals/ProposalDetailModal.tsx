@@ -18,8 +18,23 @@ import {
 import type { Proposal } from '@/types/core/jobs';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
-import { getStatusLabel } from './ProposalStatusBadge';
 import { FreelancerPreviewCard } from './FreelancerPreviewCard';
+
+// Helper to get Turkish labels for proposal statuses
+function getProposalStatusLabel(status: string): string {
+  switch (status) {
+    case 'PENDING':
+      return 'Beklemede';
+    case 'ACCEPTED':
+      return 'Kabul Edildi';
+    case 'REJECTED':
+      return 'Reddedildi';
+    case 'WITHDRAWN':
+      return 'Geri Çekildi';
+    default:
+      return 'Bilinmiyor';
+  }
+}
 
 type ProposalWithViewStatus = Proposal & { isViewed?: boolean };
 
@@ -112,7 +127,7 @@ export const ProposalDetailModal = memo<ProposalDetailModalProps>(
                             : 'secondary'
                     }
                   >
-                    {getStatusLabel(
+                    {getProposalStatusLabel(
                       proposal.status.toUpperCase() as
                         | 'PENDING'
                         | 'ACCEPTED'

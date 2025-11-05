@@ -13,7 +13,7 @@
 
 import { useState } from 'react';
 import type { Payout } from '@/types/business/features/wallet';
-import { AdminPayoutStatusBadge } from './AdminPayoutStatusBadge';
+import { StatusBadge } from '@/components/shared/StatusBadge';
 import {
   X,
   User,
@@ -197,9 +197,11 @@ export const AdminPayoutDetailModal: React.FC<AdminPayoutDetailModalProps> = ({
                     <div>
                       <p className="text-sm text-gray-600">Durum</p>
                       <div className="mt-1">
-                        <AdminPayoutStatusBadge
-                          status={payout.status}
+                        <StatusBadge
+                          type="PAYOUT"
+                          status={payout.status as any}
                           size="lg"
+                          showIcon
                         />
                       </div>
                     </div>

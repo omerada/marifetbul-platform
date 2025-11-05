@@ -22,17 +22,10 @@ import {
   DialogTitle,
 } from '@/components/ui/Dialog';
 import { Button } from '@/components/ui';
-import { Badge } from '@/components/ui/Badge';
 import { Textarea } from '@/components/ui/Textarea';
 import { Label } from '@/components/ui/Label';
-import {
-  CheckCircle,
-  XCircle,
-  Clock,
-  Package,
-  AlertCircle,
-  Play,
-} from 'lucide-react';
+import { StatusBadge } from '@/components/shared/StatusBadge';
+import { CheckCircle, XCircle, Package, AlertCircle, Play } from 'lucide-react';
 import type { RefundDto } from '@/lib/api/admin/refund-admin-api';
 
 // ================================================
@@ -118,7 +111,7 @@ export function RefundDetailsModal({
         <div className="space-y-6">
           {/* Status Badge */}
           <div className="flex items-center justify-between">
-            <RefundStatusBadge status={refund.status} />
+            <StatusBadge status={refund.status} type="REFUND" />
             <span className="text-muted-foreground text-sm">
               Talep Tarihi:{' '}
               {format(new Date(refund.requestedAt), 'dd MMM yyyy HH:mm', {
@@ -381,62 +374,6 @@ function InfoItem({ label, value }: { label: string; value: string }) {
       <Label className="text-muted-foreground text-xs">{label}</Label>
       <p className="mt-1 font-medium">{value}</p>
     </div>
-  );
-}
-
-function RefundStatusBadge({ status }: { status: string }) {
-  const statusConfig: Record<
-    string,
-    {
-      label: string;
-      variant: 'default' | 'secondary' | 'destructive' | 'outline';
-      icon: React.ReactNode;
-    }
-  > = {
-    PENDING: {
-      label: 'Beklemede',
-      variant: 'secondary',
-      icon: <Clock className="mr-1 h-3 w-3" />,
-    },
-    APPROVED: {
-      label: 'Onaylandı',
-      variant: 'default',
-      icon: <CheckCircle className="mr-1 h-3 w-3" />,
-    },
-    REJECTED: {
-      label: 'Reddedildi',
-      variant: 'destructive',
-      icon: <XCircle className="mr-1 h-3 w-3" />,
-    },
-    PROCESSING: {
-      label: 'İşleniyor',
-      variant: 'secondary',
-      icon: <Clock className="mr-1 h-3 w-3" />,
-    },
-    COMPLETED: {
-      label: 'Tamamlandı',
-      variant: 'default',
-      icon: <CheckCircle className="mr-1 h-3 w-3" />,
-    },
-    FAILED: {
-      label: 'Başarısız',
-      variant: 'destructive',
-      icon: <AlertCircle className="mr-1 h-3 w-3" />,
-    },
-    CANCELLED: {
-      label: 'İptal Edildi',
-      variant: 'outline',
-      icon: <XCircle className="mr-1 h-3 w-3" />,
-    },
-  };
-
-  const config = statusConfig[status] || statusConfig.PENDING;
-
-  return (
-    <Badge variant={config.variant} className="flex w-fit items-center">
-      {config.icon}
-      {config.label}
-    </Badge>
   );
 }
 

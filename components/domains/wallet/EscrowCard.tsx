@@ -38,7 +38,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu';
-import { EscrowStatusBadge } from './EscrowStatusBadge';
+import { StatusBadge } from '@/components/shared/StatusBadge';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 
@@ -233,7 +233,7 @@ export function EscrowCard({
               {formattedAmount}
             </p>
           </div>
-          <EscrowStatusBadge status={status} />
+          <StatusBadge status={status} type="ESCROW" />
         </div>
 
         {/* Counter-party Info */}

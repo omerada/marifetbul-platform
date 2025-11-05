@@ -9,9 +9,6 @@
  * @created October 26, 2025
  */
 
-export { AdminPayoutStatusBadge } from './AdminPayoutStatusBadge';
-export type { AdminPayoutStatusBadgeProps } from './AdminPayoutStatusBadge';
-
 export { AdminPayoutFilters } from './AdminPayoutFilters';
 export type { AdminPayoutFiltersProps } from './AdminPayoutFilters';
 
@@ -20,9 +17,6 @@ export type { AdminPayoutTableProps } from './AdminPayoutTable';
 
 export { AdminPayoutDetailModal } from './AdminPayoutDetailModal';
 export type { AdminPayoutDetailModalProps } from './AdminPayoutDetailModal';
-
-export { AdminUserWalletModal } from './AdminUserWalletModal';
-export type { AdminUserWalletModalProps } from './AdminUserWalletModal';
 
 export { PayoutApprovalModal } from './PayoutApprovalModal';
 export type { PayoutApprovalModalProps } from './PayoutApprovalModal';

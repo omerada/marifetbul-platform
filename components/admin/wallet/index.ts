@@ -4,13 +4,13 @@
  */
 
 export { AdminWalletManagement } from './AdminWalletManagement';
-export { AdminWalletDetailModal } from './AdminWalletDetailModal';
+export { UnifiedAdminWalletModal } from './UnifiedAdminWalletModal';
 export { AdminWalletFilters } from './AdminWalletFilters';
 export { AdminFinancialReports } from './AdminFinancialReports';
 export { BankAccountVerificationTable } from './BankAccountVerificationTable';
 export { BankAccountStatistics } from './BankAccountStatistics';
 
-export type { AdminWalletDetailModalProps } from './AdminWalletDetailModal';
+export type { UnifiedAdminWalletModalProps } from './UnifiedAdminWalletModal';
 export type { AdminWalletFiltersProps } from './AdminWalletFilters';
 export type { BankAccountVerificationTableProps } from './BankAccountVerificationTable';
 export type {

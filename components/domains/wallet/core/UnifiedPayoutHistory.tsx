@@ -54,7 +54,7 @@ import { Button } from '@/components/ui';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
-import { PayoutStatusBadge } from '../PayoutStatusBadge';
+import { StatusBadge } from '@/components/shared/StatusBadge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -648,8 +648,9 @@ export function UnifiedPayoutHistory({
                           </div>
                         </td>
                         <td className="px-4 py-3">
-                          <PayoutStatusBadge
-                            status={payout.status}
+                          <StatusBadge
+                            type="PAYOUT"
+                            status={payout.status as any}
                             showIcon={variant === 'advanced'}
                           />
                         </td>
@@ -735,7 +736,11 @@ export function UnifiedPayoutHistory({
                   {formatDate(payout.requestedAt)}
                 </div>
               </div>
-              <PayoutStatusBadge status={payout.status} showIcon />
+              <StatusBadge
+                type="PAYOUT"
+                status={payout.status as any}
+                showIcon
+              />
             </div>
 
             <div className="space-y-2 text-sm">

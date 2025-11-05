@@ -62,9 +62,6 @@ export { DisputeEscrowModal } from './DisputeEscrowModal';
 export type { DisputeEscrowModalProps } from './DisputeEscrowModal';
 // Note: DisputeReason is imported from @/types/dispute in DisputeEscrowModal
 
-export { EscrowStatusBadge } from './EscrowStatusBadge';
-export type { EscrowStatusBadgeProps } from './EscrowStatusBadge';
-
 export { EscrowTimeline } from './EscrowTimeline';
 export type {
   EscrowTimelineProps,
@@ -78,15 +75,6 @@ export type { EscrowCardProps, EscrowCardData } from './EscrowCard';
 
 export { EscrowActions, EscrowActionPermissions } from './EscrowActions';
 export type { EscrowActionsProps } from './EscrowActions';
-
-export { PayoutStatusBadge } from './PayoutStatusBadge';
-export type { PayoutStatusBadgeProps } from './PayoutStatusBadge';
-export {
-  getPayoutStatusColor,
-  getPayoutStatusDescription,
-  isPayoutStatusFinal,
-  isPayoutStatusInProgress,
-} from './PayoutStatusBadge';
 
 // Sprint 1 - Epic 1.3 - Payout System (Days 6-7)
 export { PayoutRequestFlow } from './PayoutRequestFlow';

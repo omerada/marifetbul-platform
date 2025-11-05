@@ -40,7 +40,7 @@ import {
   OrderMessagingPanel,
 } from '@/components/domains/orders';
 import { RefundRequestForm } from '@/components/domains/orders/RefundRequestForm';
-import { RefundStatusBadge } from '@/components/shared/RefundStatusBadge';
+import { StatusBadge } from '@/components/shared/StatusBadge';
 import { orderApi } from '@/lib/api/orders';
 import type { OrderResponse } from '@/types/backend-aligned';
 import { enrichOrder, type OrderWithComputed } from '@/types/backend-aligned';
@@ -731,7 +731,11 @@ export default function OrderDetailPage() {
                       <span className="text-sm font-medium text-gray-700">
                         İade Durumu
                       </span>
-                      <RefundStatusBadge status={refund.status} size="sm" />
+                      <StatusBadge
+                        status={refund.status}
+                        type="REFUND"
+                        size="sm"
+                      />
                     </div>
                     <Button
                       variant="outline"

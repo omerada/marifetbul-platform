@@ -15,7 +15,7 @@ import {
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
-import { ProposalStatusBadge } from '../proposals/ProposalStatusBadge';
+import { StatusBadge } from '@/components/shared/StatusBadge';
 import type { Proposal } from '@/hooks/business/useFreelancerProposals';
 
 interface FreelancerProposalCardProps {
@@ -83,7 +83,7 @@ export function FreelancerProposalCard({
         </div>
 
         <div className="flex flex-col items-end gap-2">
-          <ProposalStatusBadge status={proposal.status} />
+          <StatusBadge status={proposal.status} type="PROPOSAL" />
           {isPending && !isViewed && (
             <span className="flex items-center text-xs text-amber-600">
               <AlertCircle className="mr-1 h-3 w-3" />

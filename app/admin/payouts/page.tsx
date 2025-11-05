@@ -17,9 +17,9 @@ import {
   AdminPayoutTable,
   AdminPayoutFilters,
   AdminPayoutDetailModal,
-  AdminUserWalletModal,
   BulkPayoutActions,
 } from '@/components/admin/payouts';
+import { UnifiedAdminWalletModal } from '@/components/admin/wallet/UnifiedAdminWalletModal';
 import {
   payoutAdminApi,
   type PayoutFilters,
@@ -374,13 +374,17 @@ export default function AdminPayoutsPage() {
         onCancel={handleCancel}
       />
 
-      <AdminUserWalletModal
+      <UnifiedAdminWalletModal
         isOpen={isWalletModalOpen}
         onClose={() => {
           setIsWalletModalOpen(false);
           setSelectedUserId(null);
         }}
         userId={selectedUserId}
+        onRefresh={() => {
+          fetchPayouts();
+          fetchStats();
+        }}
       />
     </div>
   );

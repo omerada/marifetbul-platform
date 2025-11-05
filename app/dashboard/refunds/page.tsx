@@ -15,7 +15,7 @@ import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { Button } from '@/components/ui';
-import RefundStatusBadge from '@/components/shared/RefundStatusBadge';
+import { StatusBadge } from '@/components/shared/StatusBadge';
 import {
   Table,
   TableBody,
@@ -196,7 +196,12 @@ export default function UserRefundsPage() {
                     </span>
                   </TableCell>
                   <TableCell>
-                    <RefundStatusBadge status={refund.status} size="sm" />
+                    <StatusBadge
+                      type="REFUND"
+                      status={refund.status as any}
+                      size="sm"
+                      showIcon
+                    />
                   </TableCell>
                   <TableCell className="text-muted-foreground text-sm">
                     {format(new Date(refund.requestedAt), 'dd MMM yyyy', {

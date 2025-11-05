@@ -7,11 +7,6 @@ export { ProposalCard } from './ProposalCard';
 export { FreelancerProposalCardV2 } from './FreelancerProposalCardV2';
 export { AcceptProposalModal } from './AcceptProposalModal';
 export { RejectProposalModal } from './RejectProposalModal';
-export {
-  ProposalStatusBadge,
-  getStatusColor,
-  getStatusLabel,
-} from './ProposalStatusBadge';
 export { FreelancerProposalCard } from './FreelancerProposalCard';
 export { FreelancerPreviewCard } from './FreelancerPreviewCard';
 export { ProposalDetailModal } from './ProposalDetailModal';

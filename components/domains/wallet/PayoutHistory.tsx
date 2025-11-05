@@ -41,7 +41,7 @@ import {
 import { Button } from '@/components/ui';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
-import { PayoutStatusBadge } from './PayoutStatusBadge';
+import { StatusBadge } from '@/components/shared/StatusBadge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -483,7 +483,11 @@ export function PayoutHistory({
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <PayoutStatusBadge status={payout.status} showIcon />
+                        <StatusBadge
+                          type="PAYOUT"
+                          status={payout.status as any}
+                          showIcon
+                        />
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2 text-sm">

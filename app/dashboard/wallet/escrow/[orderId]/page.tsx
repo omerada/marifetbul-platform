@@ -22,8 +22,8 @@ import Link from 'next/link';
 import { ArrowLeft, Package, Calendar, TrendingUp } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { StatusBadge } from '@/components/shared/StatusBadge';
 import {
-  EscrowStatusBadge,
   EscrowTimeline,
   EscrowActionPermissions,
   createEscrowTimelineEvent,
@@ -97,7 +97,7 @@ export default async function EscrowDetailPage({
             </p>
           </div>
         </div>
-        <EscrowStatusBadge status={escrowData.status} />
+        <StatusBadge status={escrowData.status} type="ESCROW" />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -120,7 +120,7 @@ export default async function EscrowDetailPage({
 
                 <div>
                   <p className="text-muted-foreground mb-1 text-xs">Durum</p>
-                  <EscrowStatusBadge status={escrowData.status} />
+                  <StatusBadge status={escrowData.status} type="ESCROW" />
                 </div>
 
                 <div>

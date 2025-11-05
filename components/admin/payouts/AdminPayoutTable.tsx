@@ -13,7 +13,7 @@
 
 import { useState } from 'react';
 import type { Payout } from '@/types/business/features/wallet';
-import { AdminPayoutStatusBadge } from './AdminPayoutStatusBadge';
+import { StatusBadge } from '@/components/shared/StatusBadge';
 import {
   MoreVertical,
   Eye,
@@ -237,7 +237,12 @@ export const AdminPayoutTable: React.FC<AdminPayoutTableProps> = ({
 
                 {/* Status */}
                 <td className="px-4 py-4">
-                  <AdminPayoutStatusBadge status={payout.status} />
+                  <StatusBadge
+                    type="PAYOUT"
+                    status={payout.status as any}
+                    size="md"
+                    showIcon
+                  />
                 </td>
 
                 {/* Request Date */}
@@ -378,7 +383,12 @@ export const AdminPayoutTable: React.FC<AdminPayoutTableProps> = ({
                   </div>
                 </div>
               </div>
-              <AdminPayoutStatusBadge status={payout.status} size="sm" />
+              <StatusBadge
+                type="PAYOUT"
+                status={payout.status as any}
+                size="sm"
+                showIcon
+              />
             </div>
 
             <div className="space-y-2 text-sm">

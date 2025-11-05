@@ -23,6 +23,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import Image from 'next/image';
 import {
   walletAdminApi,
   formatCurrency,
@@ -50,7 +51,7 @@ import {
   ChevronRight,
   RefreshCw,
 } from 'lucide-react';
-import { AdminWalletDetailModal } from './AdminWalletDetailModal';
+import { UnifiedAdminWalletModal } from './UnifiedAdminWalletModal';
 import { AdminWalletFilters } from './AdminWalletFilters';
 import { logger } from '@/lib/shared/utils/logger';
 
@@ -110,7 +111,10 @@ export const AdminWalletManagement: React.FC = () => {
       setWallets(response.content);
       setTotalPages(response.totalPages);
     } catch (error) {
-      logger.error('Failed to fetch wallets:', error);
+      logger.error(
+        'Failed to fetch wallets:',
+        error instanceof Error ? error : undefined
+      );
       toast.error('Cüzdanlar yüklenemedi');
     } finally {
       setIsLoading(false);
@@ -122,7 +126,10 @@ export const AdminWalletManagement: React.FC = () => {
       const data = await walletAdminApi.getWalletStats();
       setStats(data);
     } catch (error) {
-      logger.error('Failed to fetch stats:', error);
+      logger.error(
+        'Failed to fetch stats:',
+        error instanceof Error ? error : undefined
+      );
     }
   };
 
@@ -162,7 +169,10 @@ export const AdminWalletManagement: React.FC = () => {
       fetchWallets();
       fetchStats();
     } catch (error) {
-      logger.error('Failed to freeze wallet:', error);
+      logger.error(
+        'Failed to freeze wallet:',
+        error instanceof Error ? error : undefined
+      );
       toast.error('Cüzdan dondurulamadı');
     }
   };
@@ -174,7 +184,10 @@ export const AdminWalletManagement: React.FC = () => {
       fetchWallets();
       fetchStats();
     } catch (error) {
-      logger.error('Failed to unfreeze wallet:', error);
+      logger.error(
+        'Failed to unfreeze wallet:',
+        error instanceof Error ? error : undefined
+      );
       toast.error('İşlem başarısız');
     }
   };
@@ -346,9 +359,11 @@ export const AdminWalletManagement: React.FC = () => {
                       <div className="flex items-center">
                         <div className="flex-shrink-0">
                           {wallet.user.avatarUrl ? (
-                            <img
+                            <Image
                               src={wallet.user.avatarUrl}
                               alt={wallet.user.fullName}
+                              width={40}
+                              height={40}
                               className="h-10 w-10 rounded-full"
                             />
                           ) : (
@@ -468,7 +483,7 @@ export const AdminWalletManagement: React.FC = () => {
       </Card>
 
       {/* Detail Modal */}
-      <AdminWalletDetailModal
+      <UnifiedAdminWalletModal
         isOpen={isDetailModalOpen}
         onClose={() => {
           setIsDetailModalOpen(false);
