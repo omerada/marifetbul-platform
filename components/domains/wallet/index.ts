@@ -92,6 +92,16 @@ export {
 export { PayoutRequestFlow } from './PayoutRequestFlow';
 export type { PayoutRequestFlowProps } from './PayoutRequestFlow';
 
+// Sprint 1.3: Unified Payout History Component
+// Replaces: components/wallet/PayoutTable.tsx, components/wallet/PayoutHistoryTable.tsx
+export { UnifiedPayoutHistory } from './core/UnifiedPayoutHistory';
+export type {
+  UnifiedPayoutHistoryProps,
+  PayoutHistoryVariant,
+  PayoutFilters as UnifiedPayoutFilters,
+} from './core/UnifiedPayoutHistory';
+
+// Legacy PayoutHistory - Consider migrating to UnifiedPayoutHistory
 export { PayoutHistory } from './PayoutHistory';
 export type { PayoutHistoryProps, PayoutFilters } from './PayoutHistory';
 

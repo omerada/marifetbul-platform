@@ -8,11 +8,14 @@
  * @module components/domains/admin/dashboard
  * @since Sprint 1
  * @updated Sprint 2.1 - Dashboard Consolidation
+ * @updated Sprint 1.2 - Removed deprecated AdminDashboard
  */
 
 // Main Dashboard Components
-/** @deprecated Use AdminDashboardView from @/components/domains/dashboard/views instead */
-export { AdminDashboard } from './AdminDashboard';
+// ⚠️ REMOVED: AdminDashboard (deprecated since Sprint 2.1)
+// Use AdminDashboardView from @/components/domains/dashboard/views instead:
+// import { AdminDashboardView } from '@/components/domains/dashboard/views';
+
 export { AdminAnalytics } from './AdminAnalytics';
 export { AdminReports } from './AdminReports';
 export { SystemHealthWidget } from './SystemHealthWidget';
