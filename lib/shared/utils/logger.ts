@@ -1,78 +1,42 @@
 /**
- * Production-ready Logger Utility
- * Conditionally logs based on environment
+ * @deprecated This logger is deprecated. Use @/lib/infrastructure/monitoring/logger instead.
+ *
+ * MIGRATION GUIDE:
+ * Before: import { logger } from '@/lib/shared/utils/logger';
+ * After:  import logger from '@/lib/infrastructure/monitoring/logger';
+ *
+ * The new logger provides:
+ * - Sentry integration
+ * - Structured logging
+ * - Context tracking
+ * - Performance monitoring
+ * - Child loggers
+ *
+ * This file now acts as a compatibility layer and will be removed in the future.
  */
 
-/* eslint-disable no-console */
+// Re-export from infrastructure logger (single source of truth)
+export { default as logger } from '@/lib/infrastructure/monitoring/logger';
+export {
+  apiLogger,
+  authLogger,
+  cacheLogger,
+  wsLogger,
+  paymentLogger,
+  analyticsLogger,
+} from '@/lib/infrastructure/monitoring/logger';
 
-type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+// For backward compatibility, re-export the default logger methods
+import infrastructureLogger from '@/lib/infrastructure/monitoring/logger';
 
-const isDevelopment = process.env.NODE_ENV === 'development';
-const isDebugEnabled = process.env.NEXT_PUBLIC_DEBUG === 'true';
+export const debug = infrastructureLogger.debug.bind(infrastructureLogger);
+export const info = infrastructureLogger.info.bind(infrastructureLogger);
+export const warn = infrastructureLogger.warn.bind(infrastructureLogger);
+export const error = infrastructureLogger.error.bind(infrastructureLogger);
 
-class Logger {
-  private shouldLog(level: LogLevel): boolean {
-    // Always log errors
-    if (level === 'error') return true;
+// Note: group() and table() are not available in the new logger
+// Use structured logging with context instead:
+// Before: logger.group('Label', () => { console.log(data); });
+// After:  logger.debug('Label', { data });
 
-    // Log warnings in development
-    if (level === 'warn' && isDevelopment) return true;
-
-    // Log info and debug only in development or when debug is enabled
-    if (
-      (level === 'info' || level === 'debug') &&
-      (isDevelopment || isDebugEnabled)
-    ) {
-      return true;
-    }
-
-    return false;
-  }
-
-  debug(message: string, ...args: unknown[]): void {
-    if (this.shouldLog('debug')) {
-      console.log(`[DEBUG] ${message}`, ...args);
-    }
-  }
-
-  info(message: string, ...args: unknown[]): void {
-    if (this.shouldLog('info')) {
-      console.log(`[INFO] ${message}`, ...args);
-    }
-  }
-
-  warn(message: string, ...args: unknown[]): void {
-    if (this.shouldLog('warn')) {
-      console.warn(`[WARN] ${message}`, ...args);
-    }
-  }
-
-  error(message: string, ...args: unknown[]): void {
-    if (this.shouldLog('error')) {
-      console.error(`[ERROR] ${message}`, ...args);
-    }
-  }
-
-  // Group logging for complex objects
-  group(label: string, callback: () => void): void {
-    if (isDevelopment || isDebugEnabled) {
-      console.group(label);
-      callback();
-      console.groupEnd();
-    }
-  }
-
-  // Table logging for arrays
-  table(data: unknown): void {
-    if (isDevelopment || isDebugEnabled) {
-      console.table(data);
-    }
-  }
-}
-
-export const logger = new Logger();
-
-// Re-export for convenience
-export const { debug, info, warn, error, group, table } = logger;
-
-export default logger;
+export default infrastructureLogger;

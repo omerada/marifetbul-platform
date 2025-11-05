@@ -31,6 +31,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^3.9.1",
+    "@sentry/nextjs": "^10.23.0",
     "@stomp/stompjs": "^7.2.1",
     "cloudinary": "^2.8.0",
     "clsx": "^2.1.1",

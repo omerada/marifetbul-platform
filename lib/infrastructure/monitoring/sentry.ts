@@ -1,8 +1,5 @@
 /**
- * Sentry Configuration for Error Tracking and Performance Monitoring
- *
- * NOTE: This module requires @sentry/nextjs package to be installed.
- * Install with: npm install @sentry/nextjs
+ * Sentry Integration for Error Tracking and Performance Monitoring
  *
  * Features:
  * - Error tracking with detailed context
@@ -13,10 +10,11 @@
  * - User context
  * - Release tracking
  *
- * For actual Sentry implementation, see: https://docs.sentry.io/platforms/javascript/guides/nextjs/
+ * Documentation: https://docs.sentry.io/platforms/javascript/guides/nextjs/
  */
 
-import { logger } from '@/lib/shared/utils/logger';
+import * as Sentry from '@sentry/nextjs';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -37,71 +35,67 @@ const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
 
 logger.info(
   SENTRY_ENABLED && SENTRY_DSN
-    ? '✅ Sentry configuration ready (install @sentry/nextjs to activate)'
+    ? '✅ Sentry integration active'
     : 'ℹ️ Sentry is disabled'
 );
 
 // ============================================================================
-// HELPER FUNCTIONS (Production-ready implementations)
+// HELPER FUNCTIONS
 // ============================================================================
 
 /**
  * Set user context for error tracking
- * When @sentry/nextjs is installed, this will send user context to Sentry
  */
 export function setSentryUser(user: SentryUser): void {
   if (!SENTRY_ENABLED) return;
-  logger.debug('Sentry user context set', {
+
+  logger.debug('Setting Sentry user context', {
     userId: user.id,
     email: user.email,
   });
 
-  // When @sentry/nextjs is installed, uncomment:
-  // Sentry.setUser({ id: user.id, email: user.email, username: user.username });
+  Sentry.setUser({
+    id: user.id,
+    email: user.email,
+    username: user.username,
+  });
 }
 
 /**
  * Clear user context (on logout)
- * When @sentry/nextjs is installed, this will clear user context from Sentry
  */
 export function clearSentryUser(): void {
   if (!SENTRY_ENABLED) return;
-  logger.debug('Sentry user context cleared');
 
-  // When @sentry/nextjs is installed, uncomment:
-  // Sentry.setUser(null);
+  logger.debug('Clearing Sentry user context');
+  Sentry.setUser(null);
 }
 
 /**
  * Add custom context to errors
- * When @sentry/nextjs is installed, this will add context to all future error reports
  */
 export function setSentryContext(
   key: string,
   context: Record<string, unknown>
 ): void {
   if (!SENTRY_ENABLED) return;
-  logger.debug('Sentry context added', { key, context });
 
-  // When @sentry/nextjs is installed, uncomment:
-  // Sentry.setContext(key, context);
+  logger.debug('Adding Sentry context', { key, context });
+  Sentry.setContext(key, context);
 }
 
 /**
  * Add tags to errors
- * When @sentry/nextjs is installed, this will tag all future error reports
  */
 export function setSentryTag(key: string, value: string): void {
   if (!SENTRY_ENABLED) return;
-  logger.debug('Sentry tag added', { key, value });
 
-  // When @sentry/nextjs is installed, uncomment:
-  // Sentry.setTag(key, value);
+  logger.debug('Adding Sentry tag', { key, value });
+  Sentry.setTag(key, value);
 }
 
 /**
  * Add breadcrumb manually
- * When @sentry/nextjs is installed, this will add a breadcrumb to the error trail
  */
 export function addSentryBreadcrumb(breadcrumb: {
   message: string;
@@ -110,33 +104,34 @@ export function addSentryBreadcrumb(breadcrumb: {
   data?: Record<string, unknown>;
 }): void {
   if (!SENTRY_ENABLED) return;
-  logger.debug('Sentry breadcrumb added', breadcrumb);
 
-  // When @sentry/nextjs is installed, uncomment:
-  // Sentry.addBreadcrumb(breadcrumb);
+  logger.debug('Adding Sentry breadcrumb', breadcrumb);
+  Sentry.addBreadcrumb({
+    message: breadcrumb.message,
+    category: breadcrumb.category,
+    level: breadcrumb.level,
+    data: breadcrumb.data,
+  });
 }
 
 /**
  * Capture custom error
- * When @sentry/nextjs is installed, this will send error to Sentry dashboard
  */
 export function captureSentryError(
   error: Error,
   context?: Record<string, unknown>
 ): void {
   if (!SENTRY_ENABLED) {
-    logger.error('Error captured', { error: error.message, context });
+    logger.error('Error captured (Sentry disabled)', error, context);
     return;
   }
-  logger.error('Sentry error captured', { error: error.message, context });
 
-  // When @sentry/nextjs is installed, uncomment:
-  // Sentry.captureException(error, { extra: context });
+  logger.error('Capturing error to Sentry', error, context);
+  Sentry.captureException(error, { extra: context });
 }
 
 /**
  * Capture custom message
- * When @sentry/nextjs is installed, this will send message to Sentry dashboard
  */
 export function captureSentryMessage(
   message: string,
@@ -145,44 +140,54 @@ export function captureSentryMessage(
 ): void {
   if (!SENTRY_ENABLED) {
     const logLevel = level === 'warning' ? 'warn' : level;
-    logger[logLevel](message, context);
+    if (logLevel === 'error') {
+      logger[logLevel](message, undefined, context);
+    } else {
+      logger[logLevel](message, context);
+    }
     return;
   }
+
   const logLevel = level === 'warning' ? 'warn' : level;
-  logger[logLevel](`Sentry message: ${message}`, context);
+  if (logLevel === 'error') {
+    logger[logLevel](`Sentry message: ${message}`, undefined, context);
+  } else {
+    logger[logLevel](`Sentry message: ${message}`, context);
+  }
 
-  // When @sentry/nextjs is installed, uncomment:
-  // Sentry.captureMessage(message, { level, extra: context });
+  Sentry.captureMessage(message, {
+    level: level as Sentry.SeverityLevel,
+    extra: context,
+  });
 }
 
 /**
- * Start a new transaction for performance monitoring
- * When @sentry/nextjs is installed, this will start a performance trace
+ * Start a performance span for tracing
+ * Uses modern Sentry v8 API
  */
-export function startSentryTransaction(name: string, op: string): unknown {
-  if (!SENTRY_ENABLED) return undefined;
-  logger.debug('Sentry transaction started', { name, op });
-
-  // When @sentry/nextjs is installed, uncomment and return actual transaction:
-  // return Sentry.startTransaction({ name, op });
-  return { name, op };
-}
-
-/**
- * Create a span within a transaction
- * When @sentry/nextjs is installed, this will create a child span for detailed tracing
- */
-export function createSentrySpan(
-  transaction: unknown,
+export function withSentrySpan<T>(
+  name: string,
   op: string,
-  description: string
-): unknown {
-  if (!SENTRY_ENABLED || !transaction) return undefined;
-  logger.debug('Sentry span created', { op, description });
+  callback: () => T
+): T {
+  if (!SENTRY_ENABLED) return callback();
 
-  // When @sentry/nextjs is installed, uncomment and return actual span:
-  // return (transaction as Transaction).startChild({ op, description });
-  return { transaction, op, description };
+  logger.debug('Starting Sentry span', { name, op });
+  return Sentry.startSpan({ name, op }, callback);
+}
+
+/**
+ * Start an async performance span
+ */
+export async function withSentrySpanAsync<T>(
+  name: string,
+  op: string,
+  callback: () => Promise<T>
+): Promise<T> {
+  if (!SENTRY_ENABLED) return callback();
+
+  logger.debug('Starting Sentry async span', { name, op });
+  return Sentry.startSpan({ name, op }, callback);
 }
 
 const sentryModule = {
@@ -193,8 +198,8 @@ const sentryModule = {
   addSentryBreadcrumb,
   captureSentryError,
   captureSentryMessage,
-  startSentryTransaction,
-  createSentrySpan,
+  withSentrySpan,
+  withSentrySpanAsync,
 };
 
 export default sentryModule;

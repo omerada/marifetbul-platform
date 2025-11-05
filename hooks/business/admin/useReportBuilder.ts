@@ -113,35 +113,33 @@ export function useReportBuilder(): UseReportBuilderReturn {
         return;
       }
 
-      // TODO: Backend Implementation Required
-      // Endpoint: POST /api/v1/admin/reports/generate
-      // Body: { reportType, metrics, startDate, endDate, groupBy, filters }
-      // Response: { success: true, data: [...], summary: {...} }
-      //
-      // const response = await fetch('/api/v1/admin/reports/generate', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(config)
-      // });
-      // const result = await response.json();
-      // setReportData({ config, data: result.data, generatedAt: new Date().toISOString(), summary: result.summary });
+      // Call backend API to generate report
+      const response = await fetch('/api/v1/admin/reports/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reportType: config.reportType.toUpperCase(),
+          title: config.title,
+          description: config.description,
+          metrics: config.metrics,
+          startDate: config.startDate,
+          endDate: config.endDate,
+          groupBy: config.groupBy?.toUpperCase() || 'DAY',
+          filters: config.filters,
+        }),
+      });
 
-      // Using mock data until backend implements report generation
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      const mockData = generateMockData(config);
+      if (!response.ok) {
+        throw new Error('Rapor oluşturulamadı');
+      }
+
+      const result = await response.json();
 
       setReportData({
         config,
-        data: mockData,
-        generatedAt: new Date().toISOString(),
-        summary: {
-          totalRecords: mockData.length,
-          periodDays: Math.ceil(
-            (new Date(config.endDate).getTime() -
-              new Date(config.startDate).getTime()) /
-              (1000 * 60 * 60 * 24)
-          ),
-        },
+        data: result.data || [],
+        generatedAt: result.metadata?.generatedAt || new Date().toISOString(),
+        summary: result.summary || {},
       });
 
       toast.success('Rapor başarıyla oluşturuldu');
@@ -167,16 +165,12 @@ export function useReportBuilder(): UseReportBuilderReturn {
       try {
         setIsExporting(true);
 
-        // Simulate export
-        // TODO: Replace with actual export implementation
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
         switch (format) {
           case 'csv':
-            downloadCSV(reportData);
+            await exportToCSV(reportData.config);
             break;
           case 'pdf':
-            toast.info('PDF export yakında eklenecek');
+            await exportToPDF(reportData.config);
             break;
           case 'json':
             downloadJSON(reportData);
@@ -216,87 +210,86 @@ export function useReportBuilder(): UseReportBuilderReturn {
 }
 
 /**
- * Generate mock data for testing
- *
- * TODO: Backend Implementation Required
- * This mock data generator should be replaced with actual backend API integration.
- *
- * Required Backend Endpoint: POST /api/v1/admin/reports/generate
- * Request Body: {
- *   reportType: 'revenue' | 'orders' | 'refunds' | 'users' | 'custom',
- *   metrics: string[],
- *   startDate: string (ISO8601),
- *   endDate: string (ISO8601),
- *   groupBy: 'day' | 'week' | 'month',
- *   filters?: {
- *     categories?: string[],
- *     status?: string[],
- *     userTypes?: string[],
- *     minAmount?: number,
- *     maxAmount?: number
- *   }
- * }
- *
- * Response: {
- *   success: true,
- *   data: Array<{
- *     date: string,
- *     [metricKey: string]: number | string
- *   }>,
- *   summary: {
- *     total: number,
- *     average: number,
- *     min: number,
- *     max: number,
- *     trend: 'up' | 'down' | 'stable',
- *     percentageChange: number
- *   }
- * }
+ * Export report to CSV via backend API
  */
-function generateMockData(config: ReportConfig): unknown[] {
-  const days = Math.ceil(
-    (new Date(config.endDate).getTime() -
-      new Date(config.startDate).getTime()) /
-      (1000 * 60 * 60 * 24)
-  );
-
-  return Array.from({ length: Math.min(days, 30) }, (_, i) => {
-    const date = new Date(
-      new Date(config.startDate).getTime() + i * 24 * 60 * 60 * 1000
-    );
-
-    return {
-      date: date.toISOString().split('T')[0],
-      revenue: Math.random() * 10000,
-      orders: Math.floor(Math.random() * 50),
-      refunds: Math.floor(Math.random() * 5),
-      users: Math.floor(Math.random() * 20),
-    };
+async function exportToCSV(config: ReportConfig): Promise<void> {
+  const response = await fetch('/api/v1/admin/reports/export/csv', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      reportType: config.reportType.toUpperCase(),
+      title: config.title,
+      description: config.description,
+      metrics: config.metrics,
+      startDate: config.startDate,
+      endDate: config.endDate,
+      groupBy: config.groupBy?.toUpperCase() || 'DAY',
+      filters: config.filters,
+    }),
   });
-}
 
-/**
- * Download CSV file
- */
-function downloadCSV(reportData: ReportData): void {
-  const csv = convertToCSV(reportData.data);
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  if (!response.ok) {
+    throw new Error('CSV export başarısız oldu');
+  }
+
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
   const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
 
   link.setAttribute('href', url);
   link.setAttribute(
     'download',
-    `${reportData.config.title.replace(/\s+/g, '_')}_${new Date().getTime()}.csv`
+    `${config.title.replace(/\s+/g, '_')}_${new Date().getTime()}.csv`
   );
   link.style.visibility = 'hidden';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
 }
 
 /**
- * Download JSON file
+ * Export report to PDF via backend API
+ */
+async function exportToPDF(config: ReportConfig): Promise<void> {
+  const response = await fetch('/api/v1/admin/reports/export/pdf', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      reportType: config.reportType.toUpperCase(),
+      title: config.title,
+      description: config.description,
+      metrics: config.metrics,
+      startDate: config.startDate,
+      endDate: config.endDate,
+      groupBy: config.groupBy?.toUpperCase() || 'DAY',
+      filters: config.filters,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'PDF export başarısız oldu');
+  }
+
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.setAttribute('href', url);
+  link.setAttribute(
+    'download',
+    `${config.title.replace(/\s+/g, '_')}_${new Date().getTime()}.pdf`
+  );
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
+}
+
+/**
+ * Download JSON file (client-side only)
  */
 function downloadJSON(reportData: ReportData): void {
   const json = JSON.stringify(reportData, null, 2);
@@ -313,26 +306,5 @@ function downloadJSON(reportData: ReportData): void {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-}
-
-/**
- * Convert data to CSV format
- */
-function convertToCSV(data: unknown[]): string {
-  if (data.length === 0) return '';
-
-  const headers = Object.keys(data[0] as Record<string, unknown>);
-  const csvRows = [
-    headers.join(','),
-    ...data.map((row) =>
-      headers
-        .map((header) => {
-          const value = (row as Record<string, unknown>)[header];
-          return typeof value === 'string' ? `"${value}"` : value;
-        })
-        .join(',')
-    ),
-  ];
-
-  return csvRows.join('\n');
+  window.URL.revokeObjectURL(url);
 }
