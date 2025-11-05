@@ -6,6 +6,23 @@
 export { useAuth } from './shared/useAuth';
 
 export { useAuthGuard } from './core/useAuthGuard';
+
+// Session management hooks (Sprint 1.2)
+export {
+  useSession,
+  useSessionExpired,
+  useSessionWarning,
+  useSessionTimeString,
+} from './core/useSession';
+
+// Email verification hooks (Sprint 1.4)
+export { useEmailVerification } from './shared/useEmailVerification';
+export type {
+  EmailVerificationState,
+  EmailVerificationActions,
+  UseEmailVerificationResult,
+} from './shared/useEmailVerification';
+
 export { useToast, ToastContext } from './core/useToast';
 export type {
   ToastData,
@@ -156,11 +173,7 @@ export type {
 } from './shared/useFilterState';
 
 export { useFacets } from './shared/useFacets';
-export type {
-  FacetsData,
-  UseFacetsOptions,
-  UseFacetsReturn,
-} from './shared/useFacets';
+export type { UseFacetsOptions, UseFacetsReturn } from './shared/useFacets';
 
 // INTEGRATION HOOKS - External services and APIs
 // useWebSocket moved to infrastructure/websocket

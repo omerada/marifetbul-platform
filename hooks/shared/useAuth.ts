@@ -1,5 +1,9 @@
-// Authentication hooks
-import { useState, useCallback } from 'react';
+// LEGACY AUTH HOOK - DEPRECATED
+// Use useUnifiedAuthStore from @/lib/core/store/domains/auth/unifiedAuthStore instead
+import { useCallback } from 'react';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
+
+type User = ReturnType<typeof authSelectors.useUser>;
 
 export interface AuthUser {
   id: string;
@@ -29,6 +33,20 @@ export interface RegisterData {
   firstName: string;
   lastName: string;
   userType: 'freelancer' | 'employer';
+  username?: string;
+}
+
+function convertToLegacyUser(user: User): AuthUser | null {
+  if (!user) return null;
+  return {
+    id: user.id,
+    email: user.email,
+    name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+    avatar: user.avatar || undefined,
+    isVerified: user.verificationStatus === 'verified',
+    userType: user.userType as 'freelancer' | 'employer',
+    role: user.role as 'freelancer' | 'employer' | 'admin',
+  };
 }
 
 export function useAuthState(): AuthState & {
@@ -37,108 +55,57 @@ export function useAuthState(): AuthState & {
   logout: () => Promise<void>;
   updateUser: (user: Partial<AuthUser>) => void;
 } {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    isAuthenticated: false,
-    isLoading: false,
-    error: null,
-  });
+  const storeUser = authSelectors.useUser();
+  const isAuthenticated = authSelectors.useIsAuthenticated();
+  const isLoading = authSelectors.useIsLoading();
+  const error = authSelectors.useError();
+  const {
+    login: storeLogin,
+    register: storeRegister,
+    logout: storeLogout,
+    updateProfile: storeUpdateProfile,
+  } = authSelectors.useActions();
 
-  const login = useCallback(async (credentials: LoginCredentials) => {
-    setState((prev) => ({ ...prev, isLoading: true, error: null }));
+  const login = useCallback(
+    async (credentials: LoginCredentials) => {
+      await storeLogin(credentials);
+    },
+    [storeLogin]
+  );
 
-    try {
-      // Real API call to backend
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials),
-        credentials: 'include', // Send cookies
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Login failed');
-      }
-
-      const data = await response.json();
-      const user: AuthUser = data.user;
-
-      setState({
-        user,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
-      });
-    } catch (error) {
-      setState((prev) => ({
-        ...prev,
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Login failed',
-      }));
-    }
-  }, []);
-
-  const register = useCallback(async (data: RegisterData) => {
-    setState((prev) => ({ ...prev, isLoading: true, error: null }));
-
-    try {
-      // Real API call to backend
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Registration failed');
-      }
-
-      const result = await response.json();
-      const user: AuthUser = {
-        id: result.user.id,
-        email: data.email,
-        name: `${data.firstName} ${data.lastName}`,
-        isVerified: false,
-        userType: data.userType,
-        role: data.userType,
-      };
-
-      setState({
-        user,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
-      });
-    } catch (error) {
-      setState((prev) => ({
-        ...prev,
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Registration failed',
-      }));
-    }
-  }, []);
+  const register = useCallback(
+    async (data: RegisterData) => {
+      const username = data.username || data.email.split('@')[0];
+      await storeRegister({ ...data, username });
+    },
+    [storeRegister]
+  );
 
   const logout = useCallback(async () => {
-    setState({
-      user: null,
-      isAuthenticated: false,
-      isLoading: false,
-      error: null,
-    });
-  }, []);
+    await storeLogout();
+  }, [storeLogout]);
 
-  const updateUser = useCallback((userData: Partial<AuthUser>) => {
-    setState((prev) => ({
-      ...prev,
-      user: prev.user ? { ...prev.user, ...userData } : null,
-    }));
-  }, []);
+  const updateUser = useCallback(
+    (userData: Partial<AuthUser>) => {
+      const profileData = {
+        firstName: userData.name?.split(' ')[0],
+        lastName: userData.name?.split(' ').slice(1).join(' '),
+        avatar: userData.avatar,
+      };
+      storeUpdateProfile(profileData).catch((err) => {
+        console.error('[useAuth] Failed to update profile:', err);
+      });
+    },
+    [storeUpdateProfile]
+  );
+
+  const legacyUser = convertToLegacyUser(storeUser);
 
   return {
-    ...state,
+    user: legacyUser,
+    isAuthenticated,
+    isLoading,
+    error,
     login,
     register,
     logout,
@@ -146,5 +113,4 @@ export function useAuthState(): AuthState & {
   };
 }
 
-// Alias for convenience
 export const useAuth = useAuthState;

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Toaster } from 'sonner';
 import { AuthProvider } from '@/components/providers/AuthProvider';
+import { SessionProvider } from '@/components/providers/SessionProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { ToastProvider } from '@/components/providers/ToastProvider';
 import { MonitoringProvider } from '@/components/providers/MonitoringProvider';
@@ -98,14 +99,16 @@ export default function RootLayout({
         <MonitoringProvider>
           <ThemeProvider>
             <AuthProvider>
-              <ToastProvider>
-                <OrderNotificationProvider />
-                <ToastManager />
-                <div className="fixed top-4 right-4 z-50">
-                  <NotificationsBell />
-                </div>
-                {children}
-              </ToastProvider>
+              <SessionProvider>
+                <ToastProvider>
+                  <OrderNotificationProvider />
+                  <ToastManager />
+                  <div className="fixed top-4 right-4 z-50">
+                    <NotificationsBell />
+                  </div>
+                  {children}
+                </ToastProvider>
+              </SessionProvider>
             </AuthProvider>
           </ThemeProvider>
         </MonitoringProvider>

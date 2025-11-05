@@ -35,6 +35,16 @@ export { PaymentModal } from './PaymentModal';
 export { ReviewPromptCard } from './ReviewPromptCard';
 export type { ReviewPromptCardProps } from './ReviewPromptCard';
 
+// Password & Authentication components (Sprint 1.3)
+export {
+  PasswordStrengthIndicator,
+  calculatePasswordStrength,
+} from './PasswordStrengthIndicator';
+export type { PasswordStrength } from './PasswordStrengthIndicator';
+
+// Email Verification components (Sprint 1.4)
+export { EmailVerificationBanner } from './EmailVerificationBanner';
+
 // Performance components
 export * from './performance';
 

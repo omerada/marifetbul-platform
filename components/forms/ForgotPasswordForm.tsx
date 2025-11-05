@@ -5,9 +5,10 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { Button, Input } from '@/components/ui';
-import { AuthService } from '@/lib/infrastructure/services/api/authService';
+import { unifiedAuthService } from '@/lib/core/auth/unifiedAuthService';
 import {
   forgotPasswordSchema,
   type ForgotPasswordFormData,
@@ -32,18 +33,17 @@ export function ForgotPasswordForm() {
       setIsLoading(true);
       setError('');
 
-      const success = await AuthService.requestPasswordReset(data.email);
+      // Use unified auth service from Sprint 1.1
+      await unifiedAuthService.forgotPassword({ email: data.email });
 
-      if (success) {
-        setIsSuccess(true);
-      } else {
-        setError(
-          'Şifre sıfırlama isteği gönderilemedi. Lütfen tekrar deneyin.'
-        );
-      }
+      setIsSuccess(true);
+      toast.success('Şifre sıfırlama e-postası gönderildi');
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
-      setError(error.message || 'Bir hata oluştu. Lütfen tekrar deneyin.');
+      const errorMessage =
+        error.message || 'Bir hata oluştu. Lütfen tekrar deneyin.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

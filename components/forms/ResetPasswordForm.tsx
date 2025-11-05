@@ -6,9 +6,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Lock, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { Button, Input } from '@/components/ui';
-import { AuthService } from '@/lib/infrastructure/services/api/authService';
+import { PasswordStrengthIndicator } from '@/components/shared/PasswordStrengthIndicator';
+import { unifiedAuthService } from '@/lib/core/auth/unifiedAuthService';
 import {
   resetPasswordSchema,
   type ResetPasswordFormData,
@@ -29,13 +31,18 @@ export function ResetPasswordForm() {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
   });
 
+  // Watch password field for strength indicator
+  const password = watch('password', '');
+
   const onSubmit = async (data: ResetPasswordFormData) => {
     if (!token) {
       setError('Geçersiz şifre sıfırlama bağlantısı');
+      toast.error('Geçersiz şifre sıfırlama bağlantısı');
       return;
     }
 
@@ -43,22 +50,26 @@ export function ResetPasswordForm() {
       setIsLoading(true);
       setError('');
 
-      const success = await AuthService.resetPassword(token, data.password);
+      // Use unified auth service from Sprint 1.1
+      await unifiedAuthService.resetPassword({
+        token,
+        newPassword: data.password,
+      });
 
-      if (success) {
-        setIsSuccess(true);
-        // Redirect to login after 3 seconds
-        setTimeout(() => {
-          router.push('/login');
-        }, 3000);
-      } else {
-        setError(
-          'Şifre sıfırlama başarısız. Bağlantı geçersiz veya süresi dolmuş olabilir.'
-        );
-      }
+      setIsSuccess(true);
+      toast.success('Şifreniz başarıyla güncellendi');
+
+      // Redirect to login after 3 seconds
+      setTimeout(() => {
+        router.push('/login');
+      }, 3000);
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
-      setError(error.message || 'Bir hata oluştu. Lütfen tekrar deneyin.');
+      const errorMessage =
+        error.message ||
+        'Şifre sıfırlama başarısız. Bağlantı geçersiz veya süresi dolmuş olabilir.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -199,19 +210,8 @@ export function ResetPasswordForm() {
           </div>
         )}
 
-        {/* Password Requirements */}
-        <div className="rounded-md border border-gray-200 bg-gray-50 p-3">
-          <p className="mb-2 text-sm font-medium text-gray-700">
-            Şifre gereksinimleri:
-          </p>
-          <ul className="space-y-1 text-sm text-gray-600">
-            <li>• En az 8 karakter uzunluğunda</li>
-            <li>• En az bir büyük harf içermeli</li>
-            <li>• En az bir küçük harf içermeli</li>
-            <li>• En az bir rakam içermeli</li>
-            <li>• En az bir özel karakter içermeli (@$!%*?&)</li>
-          </ul>
-        </div>
+        {/* Password Strength Indicator - Replaces static requirements */}
+        <PasswordStrengthIndicator password={password} showRequirements />
 
         {/* Submit Button */}
         <Button type="submit" loading={isLoading} fullWidth size="lg">
