@@ -6,15 +6,16 @@
  *
  * Features:
  * - Autocomplete search
- * - Turkish bank list
+ * - Turkish bank list (38+ banks)
  * - Bank logo display (placeholder)
  * - Keyboard navigation
  * - Selected bank display
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 2.0.0
  * @created October 30, 2025
- * @sprint Sprint 1 - Story 1.3 - Task 2 (1 story point)
+ * @updated November 5, 2025
+ * @sprint Sprint 1 - Week 1 - Day 1: Bank Account Management
  */
 
 'use client';
@@ -25,10 +26,10 @@ import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { Building2, Search, Check, ChevronDown, X } from 'lucide-react';
 import {
-  getAllBanks,
   searchBanks,
+  getAllBanks,
   type BankInfo,
-} from '@/lib/utils/iban-validator';
+} from '@/lib/services/bank-info-service';
 
 // ================================================
 // TYPES
@@ -61,7 +62,9 @@ export const BankSelector: React.FC<BankSelectorProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredBanks, setFilteredBanks] = useState<BankInfo[]>(getAllBanks());
+  const [filteredBanks, setFilteredBanks] = useState<BankInfo[]>(
+    getAllBanks({ activeOnly: true, sortBy: 'name' })
+  );
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -73,11 +76,11 @@ export const BankSelector: React.FC<BankSelectorProps> = ({
   // Filter banks when search query changes
   useEffect(() => {
     if (searchQuery) {
-      const results = searchBanks(searchQuery);
+      const results = searchBanks(searchQuery, { activeOnly: true });
       setFilteredBanks(results);
       setSelectedIndex(0);
     } else {
-      setFilteredBanks(getAllBanks());
+      setFilteredBanks(getAllBanks({ activeOnly: true, sortBy: 'name' }));
       setSelectedIndex(0);
     }
   }, [searchQuery]);

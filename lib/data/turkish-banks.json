@@ -1,0 +1,270 @@
+{
+  "banks": [
+    {
+      "code": "0001",
+      "name": "Türkiye Cumhuriyet Merkez Bankası",
+      "shortName": "TCMB",
+      "swift": "TCMBTR2A",
+      "active": true
+    },
+    {
+      "code": "0010",
+      "name": "T.C. Ziraat Bankası A.Ş.",
+      "shortName": "Ziraat Bankası",
+      "swift": "TCZBTR2A",
+      "active": true
+    },
+    {
+      "code": "0012",
+      "name": "Türkiye Halk Bankası A.Ş.",
+      "shortName": "Halkbank",
+      "swift": "TRHBTR2A",
+      "active": true
+    },
+    {
+      "code": "0015",
+      "name": "Türkiye Vakıflar Bankası T.A.O.",
+      "shortName": "Vakıfbank",
+      "swift": "TVBATR2A",
+      "active": true
+    },
+    {
+      "code": "0016",
+      "name": "Türkiye İhracat Kredi Bankası A.Ş.",
+      "shortName": "Eximbank",
+      "swift": "TEYBTR2A",
+      "active": true
+    },
+    {
+      "code": "0029",
+      "name": "Birleşik Fon Bankası A.Ş.",
+      "shortName": "BFB",
+      "swift": "BFBATR2A",
+      "active": true
+    },
+    {
+      "code": "0032",
+      "name": "Türk Ekonomi Bankası A.Ş.",
+      "shortName": "TEB",
+      "swift": "TEBUTR2A",
+      "active": true
+    },
+    {
+      "code": "0046",
+      "name": "Akbank T.A.Ş.",
+      "shortName": "Akbank",
+      "swift": "AKBKTR2A",
+      "active": true
+    },
+    {
+      "code": "0059",
+      "name": "Şekerbank T.A.Ş.",
+      "shortName": "Şekerbank",
+      "swift": "SKBKTR2A",
+      "active": true
+    },
+    {
+      "code": "0062",
+      "name": "Türkiye Garanti Bankası A.Ş.",
+      "shortName": "Garanti BBVA",
+      "swift": "TGBATRIS",
+      "active": true
+    },
+    {
+      "code": "0064",
+      "name": "Türkiye İş Bankası A.Ş.",
+      "shortName": "İş Bankası",
+      "swift": "ISBKTRIS",
+      "active": true
+    },
+    {
+      "code": "0067",
+      "name": "Yapı ve Kredi Bankası A.Ş.",
+      "shortName": "Yapı Kredi",
+      "swift": "YAPITRIS",
+      "active": true
+    },
+    {
+      "code": "0091",
+      "name": "Arap Türk Bankası A.Ş.",
+      "shortName": "Arap Türk Bankası",
+      "swift": "ARTUTR2A",
+      "active": true
+    },
+    {
+      "code": "0092",
+      "name": "Alternatif Bank A.Ş.",
+      "shortName": "Alternatifbank",
+      "swift": "ALBATR2A",
+      "active": true
+    },
+    {
+      "code": "0096",
+      "name": "Turkish Bank A.Ş.",
+      "shortName": "Turkish Bank",
+      "swift": "TRKBTR2A",
+      "active": true
+    },
+    {
+      "code": "0099",
+      "name": "ING Bank A.Ş.",
+      "shortName": "ING",
+      "swift": "INGBTR2A",
+      "active": true
+    },
+    {
+      "code": "0103",
+      "name": "Fibabanka A.Ş.",
+      "shortName": "Fibabanka",
+      "swift": "FNNBTR2A",
+      "active": true
+    },
+    {
+      "code": "0108",
+      "name": "Türk Eximbank",
+      "shortName": "Eximbank",
+      "swift": "TEYBTR2A",
+      "active": true
+    },
+    {
+      "code": "0111",
+      "name": "QNB Finansbank A.Ş.",
+      "shortName": "QNB Finansbank",
+      "swift": "FNNBTR2A",
+      "active": true
+    },
+    {
+      "code": "0115",
+      "name": "Denizbank A.Ş.",
+      "shortName": "Denizbank",
+      "swift": "DENIZTR2",
+      "active": true
+    },
+    {
+      "code": "0123",
+      "name": "HSBC Bank A.Ş.",
+      "shortName": "HSBC",
+      "swift": "HSBCTR2A",
+      "active": true
+    },
+    {
+      "code": "0124",
+      "name": "Turkland Bank A.Ş.",
+      "shortName": "Turkland Bank",
+      "swift": "TRKLTRIS",
+      "active": true
+    },
+    {
+      "code": "0125",
+      "name": "Burgan Bank A.Ş.",
+      "shortName": "Burgan Bank",
+      "swift": "BGNTTR2A",
+      "active": true
+    },
+    {
+      "code": "0132",
+      "name": "Citibank A.Ş.",
+      "shortName": "Citibank",
+      "swift": "CITIUS33",
+      "active": true
+    },
+    {
+      "code": "0134",
+      "name": "Deutsche Bank A.Ş.",
+      "shortName": "Deutsche Bank",
+      "swift": "DEUTTR2A",
+      "active": true
+    },
+    {
+      "code": "0135",
+      "name": "Anadolubank A.Ş.",
+      "shortName": "Anadolubank",
+      "swift": "ANASTR2A",
+      "active": true
+    },
+    {
+      "code": "0137",
+      "name": "Bank Mellat",
+      "shortName": "Bank Mellat",
+      "swift": "MELATRIS",
+      "active": true
+    },
+    {
+      "code": "0139",
+      "name": "GSD Yatırım Bankası A.Ş.",
+      "shortName": "GSD Yatırım Bankası",
+      "swift": "GSDYTR2A",
+      "active": true
+    },
+    {
+      "code": "0141",
+      "name": "Nurol Yatırım Bankası A.Ş.",
+      "shortName": "Nurol Yatırım Bankası",
+      "swift": "NURLTRIS",
+      "active": true
+    },
+    {
+      "code": "0142",
+      "name": "Aktif Yatırım Bankası A.Ş.",
+      "shortName": "Aktif Yatırım Bankası",
+      "swift": "AKTITR2A",
+      "active": true
+    },
+    {
+      "code": "0143",
+      "name": "Odea Bank A.Ş.",
+      "shortName": "Odea Bank",
+      "swift": "ODEATR2A",
+      "active": true
+    },
+    {
+      "code": "0146",
+      "name": "Alternatif Bank A.Ş.",
+      "shortName": "Alternatifbank",
+      "swift": "ALBATR2A",
+      "active": true
+    },
+    {
+      "code": "0203",
+      "name": "Albaraka Türk Katılım Bankası A.Ş.",
+      "shortName": "Albaraka Türk",
+      "swift": "ALATRIS",
+      "active": true
+    },
+    {
+      "code": "0205",
+      "name": "Kuveyt Türk Katılım Bankası A.Ş.",
+      "shortName": "Kuveyt Türk",
+      "swift": "KTEFTRIS",
+      "active": true
+    },
+    {
+      "code": "0206",
+      "name": "Türkiye Finans Katılım Bankası A.Ş.",
+      "shortName": "Türkiye Finans",
+      "swift": "TFSATRIS",
+      "active": true
+    },
+    {
+      "code": "0208",
+      "name": "Ziraat Katılım Bankası A.Ş.",
+      "shortName": "Ziraat Katılım",
+      "swift": "ZKATTRIS",
+      "active": true
+    },
+    {
+      "code": "0209",
+      "name": "Vakıf Katılım Bankası A.Ş.",
+      "shortName": "Vakıf Katılım",
+      "swift": "VKATTRIS",
+      "active": true
+    },
+    {
+      "code": "0210",
+      "name": "Emlak Katılım Bankası A.Ş.",
+      "shortName": "Emlak Katılım",
+      "swift": "EKATTRIS",
+      "active": true
+    }
+  ]
+}

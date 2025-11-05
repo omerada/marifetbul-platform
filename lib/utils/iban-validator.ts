@@ -12,10 +12,14 @@
  * - Real-time validation
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 2.0.0
  * @created October 30, 2025
- * @sprint Sprint 1 - Story 1.3 - Task 1 (1 story point)
+ * @updated November 5, 2025
+ * @sprint Sprint 1 - Week 1 - Day 1: Bank Account Management
  */
+
+import * as React from 'react';
+import turkishBanksData from '@/lib/data/turkish-banks.json';
 
 // ================================================
 // TYPES
@@ -24,6 +28,8 @@
 export interface BankInfo {
   code: string;
   name: string;
+  shortName?: string;
+  swift?: string;
   logo?: string;
 }
 
@@ -39,45 +45,21 @@ export interface IBANValidationResult {
 // TURKISH BANKS DATABASE
 // ================================================
 
-export const TURKISH_BANKS: Record<string, BankInfo> = {
-  '00001': { code: '00001', name: 'Türkiye Cumhuriyet Merkez Bankası' },
-  '00012': { code: '00012', name: 'Ziraat Bankası' },
-  '00015': { code: '00015', name: 'Vakıfbank' },
-  '00017': { code: '00017', name: 'Iller Bankası' },
-  '00029': { code: '00029', name: 'Birleşik Fon Bankası' },
-  '00032': { code: '00032', name: 'Türk Ekonomi Bankası' },
-  '00046': { code: '00046', name: 'Akbank' },
-  '00059': { code: '00059', name: 'Şekerbank' },
-  '00062': { code: '00062', name: 'Garanti BBVA' },
-  '00064': { code: '00064', name: 'İş Bankası' },
-  '00067': { code: '00067', name: 'Yapı Kredi Bankası' },
-  '00091': { code: '00091', name: 'Türkiye Finans' },
-  '00092': { code: '00092', name: 'Türk Eximbank' },
-  '00096': { code: '00096', name: 'Turkish Bank' },
-  '00098': { code: '00098', name: 'Kuveyt Türk' },
-  '00099': { code: '00099', name: 'ING Bank' },
-  '00103': { code: '00103', name: 'Fibabanka' },
-  '00108': { code: '00108', name: 'Türkiye Kalkınma ve Yatırım Bankası' },
-  '00109': { code: '00109', name: 'Aktif Yatırım Bankası' },
-  '00111': { code: '00111', name: 'QNB Finansbank' },
-  '00115': { code: '00115', name: 'Alternatifbank' },
-  '00121': { code: '00121', name: 'Burgan Bank' },
-  '00123': { code: '00123', name: 'HSBC' },
-  '00124': { code: '00124', name: 'Aktif Bank' },
-  '00125': { code: '00125', name: 'Anadolubank' },
-  '00132': { code: '00132', name: 'Citibank' },
-  '00134': { code: '00134', name: 'Denizbank' },
-  '00135': { code: '00135', name: 'Arap Türk Bankası' },
-  '00142': { code: '00142', name: 'Nurol Yatırım Bankası' },
-  '00143': { code: '00143', name: 'Odea Bank' },
-  '00146': { code: '00146', name: 'Bank of Tokyo-Mitsubishi UFJ Turkey' },
-  '00147': { code: '00147', name: 'Standard Chartered Yatırım Bankası' },
-  '00148': { code: '00148', name: 'Westlb' },
-  '00203': { code: '00203', name: 'Albaraka Türk' },
-  '00205': { code: '00205', name: 'Vakıf Katılım Bankası' },
-  '00206': { code: '00206', name: 'Ziraat Katılım Bankası' },
-  '00209': { code: '00209', name: 'Türkiye Emlak Katılım Bankası' },
-};
+// Transform JSON data to match BankInfo interface
+const TURKISH_BANKS_MAP: Record<string, BankInfo> = {};
+
+turkishBanksData.banks.forEach((bank) => {
+  if (bank.active) {
+    TURKISH_BANKS_MAP[bank.code.padStart(5, '0')] = {
+      code: bank.code.padStart(5, '0'),
+      name: bank.name,
+      shortName: bank.shortName,
+      swift: bank.swift,
+    };
+  }
+});
+
+export const TURKISH_BANKS: Record<string, BankInfo> = TURKISH_BANKS_MAP;
 
 // ================================================
 // VALIDATION FUNCTIONS
@@ -275,6 +257,3 @@ export function useIBANValidation(initialValue = ''): UseIBANValidationResult {
     reset: handleReset,
   };
 }
-
-// Required React import for the hook
-import * as React from 'react';
