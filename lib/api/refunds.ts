@@ -5,69 +5,21 @@
  * API client for user refund operations
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
- * @created October 31, 2025
+ * @version 1.1.0
+ * @updated November 5, 2025 - Refactored to use centralized types
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
+import {
+  type RefundDto,
+  RefundStatus,
+  RefundReasonCategory,
+  type CreateRefundRequest,
+} from '@/types/business/features/refund';
 
-// ================================================
-// TYPES (Re-use from admin API)
-// ================================================
-
-export interface RefundDto {
-  id: string;
-  orderId: string;
-  paymentId: string;
-  amount: number;
-  currency: string;
-  reason: string;
-  reasonCategory: RefundReasonCategory;
-  description?: string;
-  status: RefundStatus;
-  requestedBy: string;
-  requestedAt: string;
-  approvedBy?: string;
-  approvedAt?: string;
-  rejectedBy?: string;
-  rejectedAt?: string;
-  rejectionReason?: string;
-  processedAt?: string;
-  completedAt?: string;
-  adminNotes?: string;
-  orderNumber?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export enum RefundStatus {
-  PENDING = 'PENDING',
-  APPROVED = 'APPROVED',
-  REJECTED = 'REJECTED',
-  PROCESSING = 'PROCESSING',
-  COMPLETED = 'COMPLETED',
-  FAILED = 'FAILED',
-  CANCELLED = 'CANCELLED',
-}
-
-export enum RefundReasonCategory {
-  BUYER_REQUEST = 'BUYER_REQUEST',
-  SELLER_CANCELLATION = 'SELLER_CANCELLATION',
-  ORDER_NOT_DELIVERED = 'ORDER_NOT_DELIVERED',
-  PRODUCT_NOT_AS_DESCRIBED = 'PRODUCT_NOT_AS_DESCRIBED',
-  QUALITY_ISSUE = 'QUALITY_ISSUE',
-  DUPLICATE_PAYMENT = 'DUPLICATE_PAYMENT',
-  FRAUD_SUSPECTED = 'FRAUD_SUSPECTED',
-  DISPUTE_RESOLUTION = 'DISPUTE_RESOLUTION',
-  OTHER = 'OTHER',
-}
-
-export interface CreateRefundRequest {
-  orderId: string;
-  amount: number;
-  reasonCategory: RefundReasonCategory;
-  description?: string;
-}
+// Re-export types for convenience
+export type { RefundDto, CreateRefundRequest };
+export { RefundStatus, RefundReasonCategory };
 
 // ================================================
 // API FUNCTIONS
@@ -132,46 +84,11 @@ export const refundApi = {
   cancelRefund,
 };
 
-/**
- * Helper function to get refund reason label
- */
-export function getRefundReasonLabel(
-  reasonCategory: RefundReasonCategory
-): string {
-  const labels: Record<RefundReasonCategory, string> = {
-    [RefundReasonCategory.BUYER_REQUEST]: 'Alıcı Talebi',
-    [RefundReasonCategory.SELLER_CANCELLATION]: 'Satıcı İptali',
-    [RefundReasonCategory.ORDER_NOT_DELIVERED]: 'Sipariş Teslim Edilmedi',
-    [RefundReasonCategory.PRODUCT_NOT_AS_DESCRIBED]:
-      'Ürün Açıklamaya Uygun Değil',
-    [RefundReasonCategory.QUALITY_ISSUE]: 'Kalite Sorunu',
-    [RefundReasonCategory.DUPLICATE_PAYMENT]: 'Çift Ödeme',
-    [RefundReasonCategory.FRAUD_SUSPECTED]: 'Dolandırıcılık Şüphesi',
-    [RefundReasonCategory.DISPUTE_RESOLUTION]: 'Anlaşmazlık Çözümü',
-    [RefundReasonCategory.OTHER]: 'Diğer',
-  };
-  return labels[reasonCategory] || reasonCategory;
-}
-
-/**
- * Helper function to get refund status label
- */
-export function getRefundStatusLabel(status: RefundStatus): string {
-  const labels: Record<RefundStatus, string> = {
-    [RefundStatus.PENDING]: 'Beklemede',
-    [RefundStatus.APPROVED]: 'Onaylandı',
-    [RefundStatus.REJECTED]: 'Reddedildi',
-    [RefundStatus.PROCESSING]: 'İşleniyor',
-    [RefundStatus.COMPLETED]: 'Tamamlandı',
-    [RefundStatus.FAILED]: 'Başarısız',
-    [RefundStatus.CANCELLED]: 'İptal Edildi',
-  };
-  return labels[status] || status;
-}
-
-/**
- * Helper function to check if refund can be cancelled
- */
-export function canCancelRefund(refund: RefundDto): boolean {
-  return refund.status === RefundStatus.PENDING;
-}
+// Re-export helper functions from centralized types
+export {
+  getRefundReasonLabel,
+  getRefundStatusLabel,
+  canCancelRefund,
+  getRefundStatusColor,
+  isRefundFinal,
+} from '@/types/business/features/refund';

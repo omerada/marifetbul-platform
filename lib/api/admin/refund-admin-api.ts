@@ -5,144 +5,35 @@
  * API client for admin refund management
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
- * @created October 31, 2025
+ * @version 1.1.0
+ * @updated November 5, 2025 - Refactored to use centralized types
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
+import {
+  type RefundDto,
+  type RefundStatisticsDto,
+  type RefundFilters,
+  type ApproveRefundRequest,
+  type RejectRefundRequest,
+  type BulkApproveRefundsRequest,
+  type PageResponse,
+  RefundStatus,
+  RefundReasonCategory,
+  RefundMethod,
+} from '@/types/business/features/refund';
 
-// ================================================
-// TYPES
-// ================================================
-
-export interface RefundDto {
-  id: string;
-  orderId: string;
-  paymentId: string;
-  amount: number;
-  currency: string;
-  reason: string;
-  reasonCategory: RefundReasonCategory;
-  description?: string;
-  status: RefundStatus;
-  requestedBy: string;
-  requestedAt: string;
-  approvedBy?: string;
-  approvedAt?: string;
-  rejectedBy?: string;
-  rejectedAt?: string;
-  rejectionReason?: string;
-  processedAt?: string;
-  completedAt?: string;
-  failedAt?: string;
-  failureReason?: string;
-  adminNotes?: string;
-  gatewayRefundId?: string;
-  refundMethod?: RefundMethod;
-  createdAt: string;
-  updatedAt: string;
-  // Related entities
-  order?: {
-    id: string;
-    orderNumber: string;
-    totalAmount: number;
-    buyer?: {
-      id: string;
-      firstName: string;
-      lastName: string;
-      email: string;
-    };
-    seller?: {
-      id: string;
-      firstName: string;
-      lastName: string;
-      email: string;
-    };
-  };
-}
-
-export enum RefundStatus {
-  PENDING = 'PENDING',
-  APPROVED = 'APPROVED',
-  REJECTED = 'REJECTED',
-  PROCESSING = 'PROCESSING',
-  COMPLETED = 'COMPLETED',
-  FAILED = 'FAILED',
-  CANCELLED = 'CANCELLED',
-}
-
-export enum RefundReasonCategory {
-  BUYER_REQUEST = 'BUYER_REQUEST',
-  SELLER_CANCELLATION = 'SELLER_CANCELLATION',
-  ORDER_NOT_DELIVERED = 'ORDER_NOT_DELIVERED',
-  PRODUCT_NOT_AS_DESCRIBED = 'PRODUCT_NOT_AS_DESCRIBED',
-  QUALITY_ISSUE = 'QUALITY_ISSUE',
-  DUPLICATE_PAYMENT = 'DUPLICATE_PAYMENT',
-  FRAUD_SUSPECTED = 'FRAUD_SUSPECTED',
-  DISPUTE_RESOLUTION = 'DISPUTE_RESOLUTION',
-  OTHER = 'OTHER',
-}
-
-export enum RefundMethod {
-  CREDIT_CARD = 'CREDIT_CARD',
-  WALLET = 'WALLET',
-  BANK_TRANSFER = 'BANK_TRANSFER',
-}
-
-export interface RefundStatisticsDto {
-  totalRefunds: number;
-  totalAmount: number;
-  pendingCount: number;
-  pendingAmount: number;
-  approvedCount: number;
-  approvedAmount: number;
-  rejectedCount: number;
-  completedCount: number;
-  completedAmount: number;
-  failedCount: number;
-  averageProcessingTimeHours: number;
-  approvalRate: number;
-  successRate: number;
-}
-
-export interface RefundFilters {
-  status?: RefundStatus;
-  reasonCategory?: RefundReasonCategory;
-  userId?: string;
-  orderId?: string;
-  startDate?: string;
-  endDate?: string;
-  minAmount?: number;
-  maxAmount?: number;
-  searchQuery?: string;
-  page?: number;
-  size?: number;
-  sort?: string;
-}
-
-export interface ApproveRefundRequest {
-  adminNotes?: string;
-}
-
-export interface RejectRefundRequest {
-  rejectionReason: string;
-  adminNotes?: string;
-}
-
-export interface BulkApproveRefundsRequest {
-  refundIds: string[];
-  adminNotes?: string;
-}
-
-export interface PageResponse<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-  first: boolean;
-  last: boolean;
-}
+// Re-export types for convenience
+export type {
+  RefundDto,
+  RefundStatisticsDto,
+  RefundFilters,
+  ApproveRefundRequest,
+  RejectRefundRequest,
+  BulkApproveRefundsRequest,
+  PageResponse,
+};
+export { RefundStatus, RefundReasonCategory, RefundMethod };
 
 // ================================================
 // API FUNCTIONS

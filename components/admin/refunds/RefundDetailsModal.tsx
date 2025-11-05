@@ -6,8 +6,8 @@
  * with approve/reject actions
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
- * @created October 31, 2025
+ * @version 1.1.0
+ * @updated November 5, 2025 - Enhanced with centralized types
  */
 
 'use client';
@@ -26,7 +26,14 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Label } from '@/components/ui/Label';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { CheckCircle, XCircle, Package, AlertCircle, Play } from 'lucide-react';
-import type { RefundDto } from '@/lib/api/admin/refund-admin-api';
+import type { RefundDto } from '@/types/business/features/refund';
+import {
+  getRefundReasonLabel,
+  getRefundMethodLabel,
+  canApproveRefund,
+  canRejectRefund,
+  canProcessRefund,
+} from '@/types/business/features/refund';
 
 // ================================================
 // TYPES
@@ -94,9 +101,9 @@ export function RefundDetailsModal({
     }
   };
 
-  const canApprove = refund.status === 'PENDING';
-  const canReject = refund.status === 'PENDING';
-  const canProcess = refund.status === 'APPROVED';
+  const canApprove = canApproveRefund(refund);
+  const canReject = canRejectRefund(refund);
+  const canProcess = canProcessRefund(refund) && onProcess;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -128,13 +135,13 @@ export function RefundDetailsModal({
               <InfoItem label="Para Birimi" value={refund.currency} />
               <InfoItem
                 label="İade Nedeni"
-                value={getReasonLabel(refund.reasonCategory)}
+                value={getRefundReasonLabel(refund.reasonCategory)}
               />
               <InfoItem
                 label="İade Yöntemi"
                 value={
                   refund.refundMethod
-                    ? getMethodLabel(refund.refundMethod)
+                    ? getRefundMethodLabel(refund.refundMethod)
                     : '-'
                 }
               />
@@ -337,7 +344,7 @@ export function RefundDetailsModal({
               </>
             )}
 
-            {canProcess && onProcess && (
+            {canProcess && (
               <Button
                 onClick={handleProcess}
                 disabled={isProcessing}
@@ -375,28 +382,4 @@ function InfoItem({ label, value }: { label: string; value: string }) {
       <p className="mt-1 font-medium">{value}</p>
     </div>
   );
-}
-
-function getReasonLabel(reasonCategory: string): string {
-  const reasons: Record<string, string> = {
-    BUYER_REQUEST: 'Alıcı Talebi',
-    SELLER_CANCELLATION: 'Satıcı İptali',
-    ORDER_NOT_DELIVERED: 'Sipariş Teslim Edilmedi',
-    PRODUCT_NOT_AS_DESCRIBED: 'Ürün Açıklamaya Uygun Değil',
-    QUALITY_ISSUE: 'Kalite Sorunu',
-    DUPLICATE_PAYMENT: 'Çift Ödeme',
-    FRAUD_SUSPECTED: 'Dolandırıcılık Şüphesi',
-    DISPUTE_RESOLUTION: 'Anlaşmazlık Çözümü',
-    OTHER: 'Diğer',
-  };
-  return reasons[reasonCategory] || reasonCategory;
-}
-
-function getMethodLabel(method: string): string {
-  const methods: Record<string, string> = {
-    CREDIT_CARD: 'Kredi Kartı',
-    WALLET: 'Cüzdan',
-    BANK_TRANSFER: 'Banka Havalesi',
-  };
-  return methods[method] || method;
 }

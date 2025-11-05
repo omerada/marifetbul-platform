@@ -39,7 +39,7 @@ import {
   OrderActions,
   OrderMessagingPanel,
 } from '@/components/domains/orders';
-import { RefundRequestForm } from '@/components/domains/orders/RefundRequestForm';
+import { RefundCreationForm } from '@/components/domains/refunds';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { orderApi } from '@/lib/api/orders';
 import type { OrderResponse } from '@/types/backend-aligned';
@@ -51,7 +51,7 @@ import { getDisputeByOrderId } from '@/lib/api/disputes';
 import type { DisputeResponse } from '@/types/dispute';
 import { DisputeCreationModal } from '@/components/domains/disputes/DisputeCreationModal';
 import { getRefundByOrderId } from '@/lib/api/refunds';
-import type { RefundDto } from '@/lib/api/admin/refund-admin-api';
+import type { RefundDto } from '@/types/business/features/refund';
 
 // ================================================
 // HELPER FUNCTIONS
@@ -437,8 +437,17 @@ export default function OrderDetailPage() {
             </div>
           </div>
 
-          {/* Dispute Actions */}
+          {/* Action Buttons */}
           <div className="flex items-center gap-3">
+            {/* Refund Button */}
+            {canRequestRefund() && (
+              <Button variant="outline" onClick={() => setShowRefundForm(true)}>
+                <DollarSign className="mr-2 h-4 w-4" />
+                İade Talebi
+              </Button>
+            )}
+
+            {/* Dispute Actions */}
             {order.status === 'DISPUTED' && dispute && (
               <Button
                 variant="outline"
@@ -548,6 +557,102 @@ export default function OrderDetailPage() {
                   className="w-full"
                 >
                   İtiraz Detaylarını Görüntüle
+                </Button>
+              </div>
+            </Card>
+          )}
+
+          {/* Refund Information - Show if refund exists */}
+          {refund && (
+            <Card className="border-2 border-blue-300 bg-blue-50 p-6">
+              <div className="mb-4 flex items-start justify-between">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-200">
+                    <DollarSign className="h-5 w-5 text-blue-700" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-blue-900">
+                      İade Talebi
+                    </h2>
+                    <p className="text-sm text-blue-700">
+                      Bu sipariş için iade talebi oluşturulmuştur
+                    </p>
+                  </div>
+                </div>
+                <Badge
+                  variant={
+                    refund.status === 'APPROVED'
+                      ? 'success'
+                      : refund.status === 'REJECTED'
+                        ? 'destructive'
+                        : refund.status === 'COMPLETED'
+                          ? 'success'
+                          : 'warning'
+                  }
+                  size="md"
+                >
+                  {refund.status}
+                </Badge>
+              </div>
+
+              <div className="space-y-3 border-t border-blue-200 pt-4">
+                <div>
+                  <label className="text-sm font-medium text-blue-800">
+                    İade Tutarı
+                  </label>
+                  <p className="text-blue-900">
+                    {formatCurrency(refund.amount, refund.currency)}
+                  </p>
+                </div>
+
+                {refund.reason && (
+                  <div>
+                    <label className="text-sm font-medium text-blue-800">
+                      İade Nedeni
+                    </label>
+                    <p className="text-blue-900">{refund.reason}</p>
+                  </div>
+                )}
+
+                {refund.description && (
+                  <div>
+                    <label className="text-sm font-medium text-blue-800">
+                      Açıklama
+                    </label>
+                    <p className="text-sm text-blue-900">
+                      {refund.description}
+                    </p>
+                  </div>
+                )}
+
+                <div>
+                  <label className="text-sm font-medium text-blue-800">
+                    Oluşturulma Tarihi
+                  </label>
+                  <p className="text-sm text-blue-900">
+                    {formatDate(refund.createdAt)}
+                  </p>
+                </div>
+
+                {refund.processedAt && (
+                  <div>
+                    <label className="text-sm font-medium text-blue-800">
+                      İşlem Tarihi
+                    </label>
+                    <p className="text-sm text-blue-900">
+                      {formatDate(refund.processedAt)}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => router.push(`/dashboard/refunds/${refund.id}`)}
+                  className="w-full"
+                >
+                  İade Detaylarını Görüntüle
                 </Button>
               </div>
             </Card>
@@ -780,21 +885,14 @@ export default function OrderDetailPage() {
 
           {/* Refund Request Form Modal */}
           {showRefundForm && order && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-              <div className="w-full max-w-2xl">
-                <Card className="p-6">
-                  <h2 className="mb-4 text-xl font-semibold text-gray-900">
-                    İade Talebi Oluştur
-                  </h2>
-                  <RefundRequestForm
-                    orderId={order.id}
-                    maxRefundAmount={order.financials.total}
-                    onSuccess={handleRefundSuccess}
-                    onCancel={() => setShowRefundForm(false)}
-                  />
-                </Card>
-              </div>
-            </div>
+            <RefundCreationForm
+              isOpen={showRefundForm}
+              onClose={() => setShowRefundForm(false)}
+              orderId={order.id}
+              orderNumber={order.orderNumber}
+              maxAmount={order.financials.total}
+              onSuccess={handleRefundSuccess}
+            />
           )}
 
           {/* Financial Details */}

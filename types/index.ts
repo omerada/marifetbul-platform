@@ -41,6 +41,7 @@ export * from './business/features/marketplace';
 export * from './business/features/messaging';
 export * from './business/features/wallet';
 export * from './business/features/search';
+export * from './business/features/refund'; // Added November 5, 2025
 
 // Moderation (Sprint 2)
 export * from './business/moderation';
