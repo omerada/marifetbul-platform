@@ -3,17 +3,19 @@
  * MODERATOR COMMENT MODERATION PAGE
  * ================================================
  * Page for moderators to review and moderate blog comments
+ * Uses UnifiedCommentQueue for zero duplication
  *
- * Sprint 5.3: Moderator Panel Refactor - Phase 2
- * @version 4.0.0 - Refactored to use shared components
+ * Sprint 1 - EPIC 1.1: Component Deduplication (Comments)
  * @author MarifetBul Development Team
+ * @version 5.0.0 - Unified Components
+ * @updated November 6, 2025
  */
 
 'use client';
 
 import { MessageSquare } from 'lucide-react';
 import { UnifiedErrorBoundary } from '@/components/ui/UnifiedErrorBoundary';
-import { CommentModerationQueue } from '@/components/domains/admin';
+import { UnifiedCommentQueue } from '@/components/domains/moderation/shared';
 
 export default function ModeratorCommentModerationPage() {
   return (
@@ -38,9 +40,15 @@ export default function ModeratorCommentModerationPage() {
           </div>
         </div>
 
-        {/* Content */}
+        {/* Content - Unified Comment Queue (Moderator Role) */}
         <div className="mx-auto max-w-7xl px-6 py-8">
-          <CommentModerationQueue />
+          <UnifiedCommentQueue
+            role="moderator"
+            initialStatus="PENDING"
+            showStats={true}
+            enableBulkActions={true}
+            viewMode="compact"
+          />
         </div>
       </div>
     </UnifiedErrorBoundary>

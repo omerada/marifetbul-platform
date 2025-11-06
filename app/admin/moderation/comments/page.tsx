@@ -3,16 +3,19 @@
  * ADMIN COMMENT MODERATION PAGE
  * ================================================
  * Page for moderating blog comments
+ * Uses UnifiedCommentQueue for zero duplication
  *
+ * Sprint 1 - EPIC 1.1: Component Deduplication (Comments)
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 2.0.0 - Unified Components
+ * @updated November 6, 2025
  */
 
 'use client';
 
 import { MessageSquare } from 'lucide-react';
 import { UnifiedErrorBoundary } from '@/components/ui/UnifiedErrorBoundary';
-import { CommentModerationQueue } from '@/components/domains/admin';
+import { UnifiedCommentQueue } from '@/components/domains/moderation/shared';
 
 export default function AdminCommentModerationPage() {
   return (
@@ -37,9 +40,15 @@ export default function AdminCommentModerationPage() {
           </div>
         </div>
 
-        {/* Content */}
+        {/* Content - Unified Comment Queue (Admin Role) */}
         <div className="mx-auto max-w-7xl px-6 py-8">
-          <CommentModerationQueue />
+          <UnifiedCommentQueue
+            role="admin"
+            initialStatus="PENDING"
+            showStats={true}
+            enableBulkActions={true}
+            viewMode="card"
+          />
         </div>
       </div>
     </UnifiedErrorBoundary>

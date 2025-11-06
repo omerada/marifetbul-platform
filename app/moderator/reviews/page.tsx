@@ -2,29 +2,28 @@
  * ================================================
  * MODERATOR REVIEW MODERATION PAGE
  * ================================================
- * Dedicated moderator review management interface
- * No duplicate admin components - clean separation of concerns
+ * Unified moderator review management interface
+ * Uses shared components - NO DUPLICATION
  *
- * Sprint 1 - Story 1.1: Review Moderation System
+ * Sprint 1 - EPIC 1.1: Component Deduplication
  * @author MarifetBul Development Team
- * @version 5.0.0 - Dedicated Moderator Components
- * @created November 3, 2025
+ * @version 6.0.0 - Unified Components
+ * @updated November 6, 2025
  */
 
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { ModeratorReviewQueue } from '@/components/domains/moderator/ModeratorReviewQueue';
+import { UnifiedReviewQueue } from '@/components/domains/moderation/shared';
 
 /**
  * Moderator Review Moderation Page
  *
- * Clean, dedicated moderator interface:
- * - Uses specialized ModeratorReviewQueue component
- * - No admin component dependencies
- * - Focused on moderator-specific workflows
- * - Optimistic UI updates
- * - Bulk moderation support
+ * Clean, unified interface:
+ * - Uses shared UnifiedReviewQueue component
+ * - Role-based rendering (moderator)
+ * - No code duplication with admin
+ * - Consistent UX across all moderation interfaces
  */
 export default function ModeratorReviewsPage() {
   const searchParams = useSearchParams();
@@ -42,12 +41,18 @@ export default function ModeratorReviewsPage() {
             İnceleme Moderasyonu
           </h1>
           <p className="mt-2 text-gray-600">
-            İncelemeleri yönetin, onaylayın veya reddedin
+            İncelemeleri yönetin, onaylayın, reddedin veya yükseltin
           </p>
         </div>
 
-        {/* Main Content */}
-        <ModeratorReviewQueue initialStatus={initialStatus} />
+        {/* Unified Review Queue - Moderator Role */}
+        <UnifiedReviewQueue
+          role="moderator"
+          initialStatus={initialStatus}
+          showStats
+          enableBulkActions
+          viewMode="compact"
+        />
       </div>
     </div>
   );

@@ -34,7 +34,8 @@ export type { EscalateCommentModalProps } from './EscalateCommentModal';
 // DEDICATED MODERATION COMPONENTS (Sprint 1)
 // ============================================================================
 
-export { ModeratorReviewQueue } from './ModeratorReviewQueue';
+// DEPRECATED: ModeratorReviewQueue - Use UnifiedReviewQueue from @/components/domains/moderation/shared
+// export { ModeratorReviewQueue } from './ModeratorReviewQueue'; // REMOVED - Use UnifiedReviewQueue
 export { ModeratorTicketQueue } from './ModeratorTicketQueue';
 export { ModeratorReportQueue } from './ModeratorReportQueue';
 

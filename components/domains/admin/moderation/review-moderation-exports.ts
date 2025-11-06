@@ -1,15 +1,26 @@
 /**
  * Review and Comment Moderation Components
+ *
+ * Sprint 1 - EPIC 1.1: Component Deduplication
+ * @updated November 6, 2025
+ *
+ * NOTE: Review and Comment moderation now use Unified components from @/components/domains/moderation/shared
+ * - Reviews: Use UnifiedReviewQueue and UnifiedReviewModerationCard
+ * - Comments: Use UnifiedCommentQueue and UnifiedCommentModerationCard
+ *
+ * Legacy components have been deprecated and removed
  */
 
-// Review Moderation
-export { PendingReviewsList } from './reviews/PendingReviewsList';
-export { default as ReviewModerationCard } from './reviews/ReviewModerationCard';
+// Review Moderation - DEPRECATED: Use UnifiedReviewQueue instead
+// export { PendingReviewsList } from './reviews/PendingReviewsList'; // REMOVED - Use UnifiedReviewQueue
+// export { default as ReviewModerationCard } from './reviews/ReviewModerationCard'; // REMOVED - Use UnifiedReviewModerationCard
 export { default as ModerationStats } from './reviews/ModerationStats';
 
-// Comment Moderation
-export { CommentModerationQueue } from './reviews/CommentModerationQueue';
-export { CommentModerationCard } from './reviews/CommentModerationCard';
+// Comment Moderation - DEPRECATED: Use UnifiedCommentQueue and UnifiedCommentModerationCard
+// export { CommentModerationQueue } from './reviews/CommentModerationQueue'; // REMOVED - Use UnifiedCommentQueue
+// export { CommentModerationCard } from './reviews/CommentModerationCard'; // REMOVED - Use UnifiedCommentModerationCard
+
+// Supporting Comment Components (still in use)
 export { CommentBulkActions } from './reviews/CommentBulkActions';
 export { CommentFilterBar } from './reviews/CommentFilterBar';
 export { CommentSearchBar } from './reviews/CommentSearchBar';
@@ -20,9 +31,7 @@ export {
   ModerationQueueSkeleton,
   DashboardWidgetSkeleton as ModerationDashboardWidgetSkeleton,
   RecentCommentsSkeleton as ModerationRecentCommentsSkeleton,
-} from './reviews/LoadingSkeletons';
-
-// Sprint 1 - Bulk Action Components (NEW)
+} from './reviews/LoadingSkeletons'; // Sprint 1 - Bulk Action Components (NEW)
 export { BulkActionToolbar, CommentListWithBulkActions } from '.';
 export type {
   BulkActionToolbarProps,
