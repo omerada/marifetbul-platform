@@ -1,78 +1,72 @@
+/**
+ * ================================================
+ * PROPOSAL FORM COMPONENT
+ * ================================================
+ * Enhanced form for creating proposals with validation
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0
+ * @updated November 6, 2025
+ * Sprint: Job Posting & Proposal System - Story 2
+ */
+
 'use client';
 
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui';
 import { Card } from '@/components/ui/Card';
 import { Send, X, Upload, FileText } from 'lucide-react';
-import logger from '@/lib/infrastructure/monitoring/logger';
-
-const proposalSchema = z.object({
-  coverLetter: z
-    .string()
-    .min(50, 'Kapak mektubu en az 50 karakter olmalıdır')
-    .max(1000, 'Kapak mektubu en fazla 1000 karakter olabilir'),
-  bidAmount: z
-    .number()
-    .min(1, "Teklif tutarı 1 TL'den az olamaz")
-    .max(1000000, 'Teklif tutarı çok yüksek'),
-  deliveryTime: z
-    .number()
-    .min(1, 'Teslimat süresi en az 1 gün olmalıdır')
-    .max(365, 'Teslimat süresi en fazla 365 gün olabilir'),
-  milestones: z.string().optional(),
-});
-
-type ProposalFormData = z.infer<typeof proposalSchema>;
+import {
+  proposalSchema,
+  type ProposalFormData,
+  calculatePlatformFee,
+  calculateFreelancerAmount,
+  formatDeliveryTime,
+} from '@/lib/core/validations/proposals';
 
 interface ProposalFormProps {
   jobId: string;
-  onSubmit: (data: ProposalFormData) => void;
+  onSubmit: (data: ProposalFormData) => void | Promise<void>;
   onCancel: () => void;
+  defaultValues?: Partial<ProposalFormData>;
+  isSubmitting?: boolean;
 }
 
-export function ProposalForm({ jobId, onSubmit, onCancel }: ProposalFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export function ProposalForm({
+  jobId,
+  onSubmit,
+  onCancel,
+  defaultValues,
+  isSubmitting = false,
+}: ProposalFormProps) {
   const [attachments, setAttachments] = useState<File[]>([]);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
     watch,
+    formState: { errors },
   } = useForm<ProposalFormData>({
     resolver: zodResolver(proposalSchema),
     defaultValues: {
+      jobId,
       deliveryTime: 7,
+      ...defaultValues,
     },
   });
 
   const coverLetter = watch('coverLetter');
+  const bidAmount = watch('bidAmount') || 0;
+  const deliveryTime = watch('deliveryTime') || 7;
+
+  const platformFee = calculatePlatformFee(bidAmount);
+  const freelancerAmount = calculateFreelancerAmount(bidAmount);
 
   const handleFormSubmit = async (data: ProposalFormData) => {
-    setIsSubmitting(true);
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      logger.debug('Proposal submitted:', {
-        jobId,
-        data,
-        attachments: attachments.map((f) => f.name),
-      });
-
-      onSubmit(data);
-    } catch (error) {
-      logger.error(
-        'Error submitting proposal:',
-        error instanceof Error ? error : new Error(String(error))
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    await onSubmit(data);
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -212,19 +206,25 @@ export function ProposalForm({ jobId, onSubmit, onCancel }: ProposalFormProps) {
           <div className="flex justify-between">
             <span>Teklif Tutarı:</span>
             <span className="font-medium">
-              ₺{watch('bidAmount')?.toLocaleString('tr-TR') || '0'}
+              ₺{bidAmount.toLocaleString('tr-TR')}
             </span>
           </div>
           <div className="flex justify-between">
             <span>Platform Komisyonu (%5):</span>
             <span className="font-medium">
-              ₺{((watch('bidAmount') || 0) * 0.05).toLocaleString('tr-TR')}
+              ₺{platformFee.toLocaleString('tr-TR')}
             </span>
           </div>
           <div className="flex justify-between border-t border-blue-200 pt-1">
             <span>Alacağınız Tutar:</span>
             <span className="font-medium">
-              ₺{((watch('bidAmount') || 0) * 0.95).toLocaleString('tr-TR')}
+              ₺{freelancerAmount.toLocaleString('tr-TR')}
+            </span>
+          </div>
+          <div className="flex justify-between text-gray-600">
+            <span>Teslimat Süresi:</span>
+            <span className="font-medium">
+              {formatDeliveryTime(deliveryTime)}
             </span>
           </div>
         </div>

@@ -324,3 +324,7 @@ const UnifiedValidation = {
 };
 
 export default UnifiedValidation;
+
+// ✅ Sprint 1: Job Posting & Proposal System
+export * from './jobs';
+export * from './proposals';

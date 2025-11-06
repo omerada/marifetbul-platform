@@ -655,3 +655,9 @@ const BusinessHooks = {
 };
 
 export default BusinessHooks;
+
+// ================================================
+// JOB POSTING & PROPOSALS (Sprint 1)
+// ================================================
+export * from './jobs'; // ✅ Job Posting System
+export * from './proposals'; // ✅ Proposal System - Story 2

@@ -6,3 +6,5 @@ export { ResetPasswordForm } from './ResetPasswordForm';
 export { VerifyEmailForm } from './VerifyEmailForm';
 export { PaymentForm } from './PaymentForm';
 export { CheckoutModal } from './CheckoutModal';
+export { JobPostingForm } from './JobPostingForm';
+export { JobPostingWizard } from './JobPostingWizard';
