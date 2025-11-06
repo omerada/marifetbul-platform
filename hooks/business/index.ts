@@ -307,7 +307,10 @@ export function useAnalyticsTracker() {
       // Production note: Analytics tracking awaiting integration with third-party service
       // (Google Analytics, Mixpanel, Segment, etc.). Currently logs to console in development.
       if (process.env.NODE_ENV === 'development') {
-        logger.debug('Analytics:', { event, userIduserid, timestampnewDate }).toISOString(),
+        logger.debug('Analytics:', {
+          event,
+          userId: user?.id,
+          timestamp: new Date().toISOString(),
           ...properties,
         });
       }
@@ -502,6 +505,12 @@ export {
 } from './useProfile';
 export { useDashboard, useDashboardRefresh } from './useDashboard';
 export { useDashboardStats } from './dashboard/useDashboardStats';
+export {
+  usePlatformSnapshot,
+  useSellerSnapshot,
+  useBuyerSnapshot,
+  useDashboardSnapshot,
+} from './dashboard/useSnapshots';
 export { useProposal } from './useProposal';
 export { useProposalEligibility } from './useProposalEligibility';
 export { useFreelancerProposals } from './useFreelancerProposals';

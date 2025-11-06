@@ -21,7 +21,7 @@ export type {
   BusinessMetrics,
   Trends,
   DailyTrend,
-  PlatformSnapshot,
+  PlatformSnapshot as AdminPlatformSnapshot, // Renamed to avoid conflict with snapshot-api.types
   DashboardApiResponse,
   DashboardApiError,
 } from './admin-dashboard-api.types';
@@ -29,7 +29,7 @@ export type {
 export {
   isAdminDashboardApiResponse,
   isSystemHealth,
-  isPlatformSnapshot,
+  isPlatformSnapshot as isAdminPlatformSnapshot, // Renamed to avoid conflict
 } from './admin-dashboard-api.types';
 
 // Seller Dashboard (Sprint 1 - Day 2)
@@ -109,3 +109,27 @@ export {
   isPendingItemDto,
   isActivityLogDto,
 } from './moderator-dashboard-api.types';
+
+// Dashboard Snapshots (Sprint 1 - Story 2) - NEW
+export type {
+  PlatformSnapshot,
+  SellerSnapshot,
+  BuyerSnapshot,
+  SellerPendingActions,
+  SellerTopPackage,
+  BuyerRecentOrderSummary,
+  BuyerPendingActions,
+  PlatformSnapshotApiResponse,
+  SellerSnapshotApiResponse,
+  BuyerSnapshotApiResponse,
+  SnapshotApiResponse,
+  SnapshotLoadingState,
+  SnapshotState,
+} from './snapshot-api.types';
+
+export {
+  SystemStatus,
+  isPlatformSnapshot,
+  isSellerSnapshot,
+  isBuyerSnapshot,
+} from './snapshot-api.types';
