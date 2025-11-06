@@ -15,8 +15,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { PayoutRequestForm } from '@/components/wallet/PayoutRequestForm';
-import { BankVerificationStatus } from '@/components/wallet/BankVerificationStatus';
+import { PayoutRequestForm } from '@/components/domains/wallet';
+import { BankVerificationStatus } from '@/components/domains/wallet';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
 import { Alert } from '@/components/ui/Alert';

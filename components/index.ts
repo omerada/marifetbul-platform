@@ -83,13 +83,13 @@ export { WalletDashboard } from './domains/wallet/WalletDashboard';
 export type { WalletDashboardProps } from './domains/wallet/WalletDashboard';
 
 // Other wallet components
-export { WalletCard } from './wallet/WalletCard';
+export { WalletCard } from './domains/wallet/core/WalletCard';
 export { EscrowViewer } from './domains/wallet/EscrowViewer';
 export { CommissionBreakdown } from './domains/wallet/CommissionBreakdown';
 export { PayoutRequestWizard } from './domains/wallet/PayoutRequestWizard';
 export { PayoutStatusTracker } from './domains/wallet/PayoutStatusTracker';
 export { TransactionDisplay } from './domains/wallet/TransactionDisplay';
-export { default as TransactionExportButtons } from './wallet/TransactionExportButtons';
+export { default as TransactionExportButtons } from './domains/wallet/core/TransactionExportButtons';
 
 // ================================================
 // Admin Components

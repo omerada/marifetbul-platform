@@ -20,7 +20,7 @@
 'use client';
 
 import { useState } from 'react';
-import { BankAccountList, BankAccountForm } from '@/components/wallet';
+import { BankAccountList, BankAccountForm } from '@/components/domains/wallet';
 import { Dialog, DialogContent } from '@/components/ui/Dialog';
 import { Building2 } from 'lucide-react';
 import type { BankAccountResponse } from '@/lib/api/bank-accounts';

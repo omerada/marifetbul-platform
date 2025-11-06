@@ -9,6 +9,34 @@
  */
 
 // ================================================
+// CORE COMPONENTS (Bank Account Management)
+// ================================================
+// Migration: Sprint 1 - Moved from components/wallet/
+export {
+  BankAccountForm,
+  BankAccountList,
+  BankAccountVerificationForm,
+  IBANInput,
+  BankSelector,
+  BankVerificationStatus,
+  WalletCard,
+  QuickStatsGrid,
+  PayoutRequestForm,
+  PayoutEligibilityWidget,
+  AdvancedTransactionFilters,
+  TransactionExportModal,
+  TransactionExportButtons,
+} from './core';
+export type {
+  BankAccountFormData,
+  BankAccountFormProps,
+  BankAccountListProps,
+  WalletCardProps,
+  PayoutRequestFormProps,
+  TransactionExportButtonsProps,
+} from './core';
+
+// ================================================
 // MAIN DASHBOARD
 // ================================================
 

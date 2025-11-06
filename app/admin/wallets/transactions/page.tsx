@@ -37,8 +37,8 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
 import { formatCurrency } from '@/lib/shared/utils/format';
 import { cn } from '@/lib/utils';
-import { AdvancedTransactionFilters } from '@/components/wallet/AdvancedTransactionFilters';
-import type { TransactionFiltersState } from '@/components/wallet/AdvancedTransactionFilters';
+import { AdvancedTransactionFilters } from '@/components/domains/wallet';
+import type { TransactionFiltersState } from '@/components/domains/wallet/core/AdvancedTransactionFilters';
 import {
   walletAdminApi,
   type TransactionResponse,
