@@ -5,10 +5,12 @@
  * - Message list with virtualization
  * - Auto-scroll to bottom on new messages
  * - Typing indicator display
- * - Load more (pagination)
+ * - Infinite scroll pagination for message history
  * - Date separators
+ * - File attachment support
+ * - Delivery/read status indicators
  *
- * @sprint Sprint 1 - Story 1.4
+ * @sprint Sprint 1 - Story 1.2 (Enhanced)
  */
 
 'use client';
@@ -20,24 +22,47 @@ import type { Message } from '@/types/business/features/messaging';
 import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { Loader2 } from 'lucide-react';
+import { useInfiniteScroll } from '@/hooks/shared/useInfiniteScroll';
 
 interface MessageThreadProps {
-  /** Array of messages to display */
-  messages: Message[];
+  /** Array of messages to display (legacy mode) */
+  messages?: Message[];
   /** Current user ID to determine message ownership */
   currentUserId: string;
-  /** Whether messages are loading */
+  /** Whether messages are loading (legacy mode) */
   isLoading?: boolean;
   /** Whether to show typing indicator */
   isTyping?: boolean;
   /** Name of user who is typing */
   typingUserName?: string;
-  /** Whether there are more messages to load */
+  /** Whether there are more messages to load (legacy mode) */
   hasMore?: boolean;
-  /** Callback to load more messages */
+  /** Callback to load more messages (legacy mode) */
   onLoadMore?: () => void;
   /** Auto-scroll to bottom on new messages */
   autoScroll?: boolean;
+  /**
+   * Fetch page callback for infinite scroll pagination (NEW!)
+   * @param page - Page number (0-indexed, but for messages we fetch backwards)
+   * @param pageSize - Number of messages per page
+   * @returns Promise with data, hasMore flag
+   */
+  fetchPage?: (
+    page: number,
+    pageSize: number
+  ) => Promise<{
+    data: Message[];
+    hasMore: boolean;
+    total?: number;
+  }>;
+  /**
+   * Page size for infinite scroll (default: 30 messages)
+   */
+  pageSize?: number;
+  /**
+   * Enable infinite scroll pagination (default: false for backward compatibility)
+   */
+  enableInfiniteScroll?: boolean;
 }
 
 /**
@@ -64,17 +89,39 @@ function getDateSeparator(date: Date): string {
  * MessageThread Component
  */
 export const MessageThread = memo(function MessageThread({
-  messages,
+  messages: legacyMessages = [],
   currentUserId,
-  isLoading = false,
+  isLoading: legacyIsLoading = false,
   isTyping = false,
   typingUserName,
-  hasMore = false,
+  hasMore: legacyHasMore = false,
   onLoadMore,
   autoScroll = true,
+  fetchPage,
+  pageSize = 30,
+  enableInfiniteScroll = false,
 }: MessageThreadProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Infinite scroll for message history (loads older messages)
+  const infiniteScrollResult = useInfiniteScroll<Message>({
+    fetchPage:
+      fetchPage || (() => Promise.resolve({ data: [], hasMore: false })),
+    pageSize,
+    enabled: enableInfiniteScroll && !!fetchPage,
+  });
+
+  // Choose data source: infinite scroll or legacy props
+  const messages = enableInfiniteScroll
+    ? infiniteScrollResult.data
+    : legacyMessages;
+  const isLoading = enableInfiniteScroll
+    ? infiniteScrollResult.isLoading
+    : legacyIsLoading;
+  const hasMore = enableInfiniteScroll
+    ? infiniteScrollResult.hasMore
+    : legacyHasMore;
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -128,20 +175,43 @@ export const MessageThread = memo(function MessageThread({
       {/* Load More Button */}
       {hasMore && (
         <div className="mb-4 text-center">
-          <button
-            onClick={onLoadMore}
-            disabled={isLoading}
-            className="rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isLoading ? (
-              <span className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Yükleniyor...
-              </span>
-            ) : (
-              'Daha fazla mesaj yükle'
-            )}
-          </button>
+          {enableInfiniteScroll ? (
+            /* Infinite scroll trigger */
+            <div
+              ref={infiniteScrollResult.observerRef}
+              className="flex justify-center py-2"
+            >
+              {infiniteScrollResult.isLoadingMore ? (
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Eski mesajlar yükleniyor...</span>
+                </div>
+              ) : (
+                <button
+                  onClick={infiniteScrollResult.loadMore}
+                  className="rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50"
+                >
+                  Daha eski mesajları yükle
+                </button>
+              )}
+            </div>
+          ) : (
+            /* Legacy manual load more */
+            <button
+              onClick={onLoadMore}
+              disabled={isLoading}
+              className="rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isLoading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Yükleniyor...
+                </span>
+              ) : (
+                'Daha fazla mesaj yükle'
+              )}
+            </button>
+          )}
         </div>
       )}
 

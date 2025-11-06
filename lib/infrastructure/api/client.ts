@@ -25,6 +25,8 @@ interface RequestOptions extends RequestInit {
 // Base API client for making HTTP requests with caching and retry support
 class ApiClient {
   private baseURL: string;
+  private refreshTokenPromise: Promise<boolean> | null = null;
+  private isRefreshing = false;
 
   constructor(baseURL?: string) {
     // Use environment variable or centralized config
@@ -108,6 +110,65 @@ class ApiClient {
 
         const response = await fetch(url, config);
         const duration = performance.now() - startTime;
+
+        // Handle 401 Unauthorized - Token expired, attempt refresh
+        if (
+          response.status === 401 &&
+          endpoint !== '/auth/refresh' &&
+          endpoint !== '/auth/login'
+        ) {
+          apiLogger.warn('API request returned 401, attempting token refresh', {
+            endpoint,
+            method: config.method || 'GET',
+          });
+
+          // Attempt token refresh
+          const refreshSuccess = await this.handleTokenRefresh();
+
+          if (refreshSuccess) {
+            // Retry the original request after successful refresh
+            apiLogger.debug('Retrying request after token refresh', {
+              endpoint,
+            });
+            const retryResponse = await fetch(url, config);
+
+            if (!retryResponse.ok) {
+              const errorData = await retryResponse.json().catch(() => ({}));
+              const apiError = transformApiError({
+                status: retryResponse.status,
+                message: errorData.message || errorData.error,
+                code: errorData.code,
+                details: errorData.details,
+              });
+              throw apiError;
+            }
+
+            const retryData = await retryResponse.json();
+
+            // Cache successful GET requests
+            if (isGetRequest && cacheOptions?.enabled !== false) {
+              apiCache.set(
+                endpoint,
+                retryData,
+                undefined,
+                cacheOptions?.ttl || CachePresets.MEDIUM
+              );
+            }
+
+            return retryData;
+          } else {
+            // Refresh failed, redirect to login
+            apiLogger.error('Token refresh failed, redirecting to login');
+            if (typeof window !== 'undefined') {
+              window.location.href = '/login?session=expired';
+            }
+            throw transformApiError({
+              status: 401,
+              message: 'Session expired. Please login again.',
+              code: 'SESSION_EXPIRED',
+            });
+          }
+        }
 
         if (!response.ok) {
           // Transform HTTP errors to custom error classes
@@ -206,6 +267,54 @@ class ApiClient {
     }
 
     return fetchFn();
+  }
+
+  /**
+   * Handle token refresh with single-flight pattern
+   * Prevents multiple simultaneous refresh requests
+   */
+  private async handleTokenRefresh(): Promise<boolean> {
+    // If already refreshing, wait for existing refresh to complete
+    if (this.isRefreshing && this.refreshTokenPromise) {
+      apiLogger.debug('Token refresh already in progress, waiting...');
+      await this.refreshTokenPromise;
+      return !this.isRefreshing; // Return true if refresh completed successfully
+    }
+
+    this.isRefreshing = true;
+    this.refreshTokenPromise = (async () => {
+      try {
+        const response = await fetch(`${this.baseURL}/auth/refresh`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include', // Include cookies
+        });
+
+        if (response.ok) {
+          apiLogger.info('Token refresh successful');
+          this.isRefreshing = false;
+          return true;
+        } else {
+          apiLogger.error(
+            'Token refresh failed with status',
+            new Error(`Status: ${response.status}`)
+          );
+          this.isRefreshing = false;
+          return false;
+        }
+      } catch (error) {
+        apiLogger.error('Token refresh exception', error as Error);
+        this.isRefreshing = false;
+        return false;
+      } finally {
+        this.refreshTokenPromise = null;
+      }
+    })();
+
+    const result = await this.refreshTokenPromise;
+    return result;
   }
 
   async get<T>(

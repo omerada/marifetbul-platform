@@ -175,6 +175,12 @@ export type {
 export { useFacets } from './shared/useFacets';
 export type { UseFacetsOptions, UseFacetsReturn } from './shared/useFacets';
 
+export { useInfiniteScroll } from './shared/useInfiniteScroll';
+export type {
+  UseInfiniteScrollOptions,
+  UseInfiniteScrollResult,
+} from './shared/useInfiniteScroll';
+
 // INTEGRATION HOOKS - External services and APIs
 // useWebSocket moved to infrastructure/websocket
 export { useWebSocket, useStompWebSocket } from './infrastructure/websocket';

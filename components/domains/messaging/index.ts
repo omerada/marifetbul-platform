@@ -11,6 +11,9 @@
 export { MessagesList } from './MessagesList';
 export { ConversationItem } from './ConversationItem';
 export { ConversationListHeader } from './ConversationListHeader';
+export { ConversationListSkeleton } from './ConversationListSkeleton';
+export { ConversationFilters } from './ConversationFilters';
+export type { ConversationFiltersState } from './ConversationFilters';
 export { TypingIndicator } from './TypingIndicator';
 export { ConversationSearch } from './ConversationSearch';
 export type { ConversationSearchFilters } from './ConversationSearch';
@@ -19,8 +22,16 @@ export type { ConversationSearchFilters } from './ConversationSearch';
 export { MessageThread } from './MessageThread';
 export { MessageBubble } from './MessageBubble';
 export { MessageInput } from './MessageInput';
+export { MessageAttachment } from './MessageAttachment';
+export {
+  MessageStatusIndicator,
+  getMessageStatus,
+} from './MessageStatusIndicator';
+export type { MessageStatus } from './MessageStatusIndicator';
 export { ConversationHeader } from './ConversationHeader';
 export { MessageSearch } from './MessageSearch';
+export { MessageSearchFilters } from './MessageSearchFilters';
+export type { MessageSearchFilters as MessageSearchFiltersType } from './MessageSearchFilters';
 export { MessageReactions } from './MessageReactions';
 
 // Context Menu and Modals
@@ -37,3 +48,7 @@ export type { MessageButtonProps } from './MessageButton';
 
 export { QuickMessageModal } from './QuickMessageModal';
 export type { QuickMessageModalProps } from './QuickMessageModal';
+
+export { ContextBadge } from './ContextBadge';
+
+export { ContextQuickActions } from './ContextQuickActions';

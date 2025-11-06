@@ -37,8 +37,10 @@ export interface WebSocketConfig {
   token: string;
   /** Auto-reconnect on disconnect (default: true) */
   autoReconnect?: boolean;
-  /** Reconnect delay in ms (default: 3000) */
+  /** Initial reconnect delay in ms (default: 1000) */
   reconnectDelay?: number;
+  /** Max reconnect delay in ms (default: 30000) */
+  maxReconnectDelay?: number;
   /** Max reconnect attempts (default: 10, 0 = infinite) */
   maxReconnectAttempts?: number;
   /** Heartbeat interval in ms (default: 10000) */
@@ -73,12 +75,13 @@ export class WebSocketService {
   constructor(config: WebSocketConfig) {
     this.config = {
       autoReconnect: true,
-      reconnectDelay: 3000,
+      reconnectDelay: 1000,
+      maxReconnectDelay: 30000,
       maxReconnectAttempts: 10,
       heartbeatInterval: 10000,
       debug: false,
       ...config,
-    };
+    } as Required<WebSocketConfig>;
   }
 
   // ==================== CONNECTION ====================
@@ -354,9 +357,19 @@ export class WebSocketService {
     this.reconnectAttempts++;
     this.setState(WebSocketState.RECONNECTING);
 
+    // Exponential backoff: delay = min(initialDelay * 2^attempts, maxDelay)
+    const exponentialDelay = Math.min(
+      this.config.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1),
+      this.config.maxReconnectDelay
+    );
+
+    // Add jitter (random 0-20% variance) to prevent thundering herd
+    const jitter = exponentialDelay * 0.2 * Math.random();
+    const actualDelay = exponentialDelay + jitter;
+
     logger.info(
       'WebSocketService',
-      `Reconnecting... (attempt ${this.reconnectAttempts})`
+      `Reconnecting in ${Math.round(actualDelay)}ms... (attempt ${this.reconnectAttempts}/${this.config.maxReconnectAttempts || '∞'})`
     );
 
     if (this.eventHandlers.onReconnecting) {
@@ -368,10 +381,10 @@ export class WebSocketService {
       clearTimeout(this.reconnectTimer);
     }
 
-    // Schedule reconnect
+    // Schedule reconnect with exponential backoff
     this.reconnectTimer = setTimeout(() => {
       this.connect();
-    }, this.config.reconnectDelay);
+    }, actualDelay);
   }
 
   private setState(newState: WebSocketState): void {

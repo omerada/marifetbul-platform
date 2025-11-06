@@ -2,11 +2,12 @@
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
-import { MessageSquare, Archive, Inbox } from 'lucide-react';
+import { MessageSquare, Archive, Inbox, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { Conversation } from '@/types/business/features/messaging';
 import { ConversationItem } from './ConversationItem';
 import { ConversationListHeader } from './ConversationListHeader';
+import { ConversationListSkeleton } from './ConversationListSkeleton';
 import {
   ConfirmArchiveModal,
   ConfirmUnarchiveModal,
@@ -15,26 +16,58 @@ import {
 import type { ConversationFilter } from '@/hooks/business/messaging/useMessages';
 import { useWebSocket } from '@/hooks/infrastructure/websocket/useWebSocket';
 import { useMessagingStore } from '@/lib/core/store/domains/messaging/MessagingStore';
+import { useInfiniteScroll } from '@/hooks/shared/useInfiniteScroll';
 import { logger } from '@/lib/shared/utils/logger';
 
 interface MessagesListProps {
+  /**
+   * @deprecated Use fetchPage callback instead for better pagination support
+   */
   conversations?: Conversation[];
+  /**
+   * @deprecated Use useInfiniteScroll loading state instead
+   */
   isLoading?: boolean;
   filter?: ConversationFilter;
   onFilterChange?: (filter: ConversationFilter) => void;
   onArchive?: (conversationId: string) => Promise<boolean>;
   onUnarchive?: (conversationId: string) => Promise<boolean>;
   onDelete?: (conversationId: string) => Promise<boolean>;
+  /**
+   * Fetch page callback for infinite scroll pagination
+   * @param page - Page number (0-indexed)
+   * @param pageSize - Number of items per page
+   * @returns Promise with data, hasMore flag, and optional total count
+   */
+  fetchPage?: (
+    page: number,
+    pageSize: number
+  ) => Promise<{
+    data: Conversation[];
+    hasMore: boolean;
+    total?: number;
+  }>;
+  /**
+   * Page size for infinite scroll (default: 20)
+   */
+  pageSize?: number;
+  /**
+   * Enable infinite scroll pagination (default: false for backward compatibility)
+   */
+  enableInfiniteScroll?: boolean;
 }
 
 export function MessagesList({
-  conversations = [],
-  isLoading = false,
+  conversations: legacyConversations = [],
+  isLoading: legacyIsLoading = false,
   filter = 'all',
   onFilterChange,
   onArchive,
   onUnarchive,
   onDelete,
+  fetchPage,
+  pageSize = 20,
+  enableInfiniteScroll = false,
 }: MessagesListProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
@@ -57,13 +90,26 @@ export function MessagesList({
   // Get total unread count from store
   const totalUnreadCount = useMessagingStore((state) => state.totalUnreadCount);
 
+  // Infinite scroll pagination (optional)
+  const infiniteScrollResult = useInfiniteScroll<Conversation>({
+    fetchPage:
+      fetchPage || (() => Promise.resolve({ data: [], hasMore: false })),
+    pageSize,
+    enabled: enableInfiniteScroll && !!fetchPage,
+  });
+
+  // Choose data source: infinite scroll or legacy props
+  const conversations = enableInfiniteScroll
+    ? infiniteScrollResult.data
+    : legacyConversations;
+  const isLoading = enableInfiniteScroll
+    ? infiniteScrollResult.isLoading
+    : legacyIsLoading;
+
   // Log WebSocket connection status
   useEffect(() => {
     if (isConnected) {
-      logger.info(
-        'MessagesList',
-        'WebSocket connected - real-time updates enabled'
-      );
+      logger.info('WebSocket connected - real-time updates enabled');
     }
   }, [isConnected]);
 
@@ -137,7 +183,11 @@ export function MessagesList({
         setModalState({ type: null, conversationId: null, isLoading: false });
       }
     } catch (error) {
-      logger.error('Error performing action:', error);
+      logger.error(
+        'Error performing action',
+        error instanceof Error ? error : undefined,
+        { conversationId: modalState.conversationId, type: modalState.type }
+      );
     } finally {
       setModalState((prev) => ({ ...prev, isLoading: false }));
     }
@@ -161,12 +211,7 @@ export function MessagesList({
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900">Mesajlar</h1>
         </div>
-        <Card className="p-8 text-center">
-          <div className="animate-pulse space-y-4">
-            <div className="mx-auto h-8 w-3/4 rounded bg-gray-200"></div>
-            <div className="mx-auto h-4 w-1/2 rounded bg-gray-200"></div>
-          </div>
-        </Card>
+        <ConversationListSkeleton count={5} />
       </div>
     );
   }
@@ -229,6 +274,34 @@ export function MessagesList({
                 onDelete={handleDeleteClick}
               />
             ))}
+
+            {/* Infinite Scroll Trigger & Loading More Indicator */}
+            {enableInfiniteScroll && infiniteScrollResult.hasMore && (
+              <div
+                ref={infiniteScrollResult.observerRef}
+                className="flex items-center justify-center py-4"
+              >
+                {infiniteScrollResult.isLoadingMore ? (
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span className="text-sm">Yükleniyor...</span>
+                  </div>
+                ) : (
+                  <div className="text-sm text-gray-500">
+                    Daha fazla konuşma yüklemek için aşağı kaydırın
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* No More Items Indicator */}
+            {enableInfiniteScroll &&
+              !infiniteScrollResult.hasMore &&
+              conversations.length > 0 && (
+                <div className="py-4 text-center text-sm text-gray-500">
+                  Tüm konuşmalar yüklendi
+                </div>
+              )}
           </div>
         )}
 

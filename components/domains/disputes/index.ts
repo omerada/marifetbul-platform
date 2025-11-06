@@ -22,7 +22,3 @@ export { DisputeCard } from './DisputeCard';
 export { DisputeStatistics } from './DisputeStatistics';
 export { DisputeFilters } from './DisputeFilters';
 export { default as DisputeMessages } from './DisputeMessages';
-
-// ⚠️ DEPRECATED: Old DisputeList component - Use UnifiedDisputeList instead
-// Will be removed in next major version
-export { DisputeList as DisputeListLegacy } from './DisputeList';

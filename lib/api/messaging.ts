@@ -201,6 +201,19 @@ export async function editMessage(messageId: string, content: string) {
   return response.data;
 }
 
+export interface MessageSearchParams {
+  query: string;
+  conversationId?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  hasAttachment?: boolean;
+  attachmentType?: string;
+  messageType?: 'text' | 'system' | 'file';
+  unreadOnly?: boolean;
+  page?: number;
+  size?: number;
+}
+
 export async function searchMessages(
   query: string,
   conversationId?: string,
@@ -220,6 +233,41 @@ export async function searchMessages(
   const response = await apiClient.get<
     BackendApiResponse<BackendPageResponse<Message>>
   >('/api/v1/messages/search', params);
+  return response.data;
+}
+
+export async function searchMessagesAdvanced(params: MessageSearchParams) {
+  const queryParams: Record<string, string> = {
+    query: params.query,
+    page: String(params.page || 0),
+    size: String(params.size || 20),
+  };
+
+  if (params.conversationId) {
+    queryParams.conversationId = params.conversationId;
+  }
+  if (params.dateFrom) {
+    queryParams.dateFrom = params.dateFrom;
+  }
+  if (params.dateTo) {
+    queryParams.dateTo = params.dateTo;
+  }
+  if (params.hasAttachment !== undefined) {
+    queryParams.hasAttachment = String(params.hasAttachment);
+  }
+  if (params.attachmentType) {
+    queryParams.attachmentType = params.attachmentType;
+  }
+  if (params.messageType) {
+    queryParams.messageType = params.messageType;
+  }
+  if (params.unreadOnly !== undefined) {
+    queryParams.unreadOnly = String(params.unreadOnly);
+  }
+
+  const response = await apiClient.get<
+    BackendApiResponse<BackendPageResponse<Message>>
+  >('/api/v1/messages/search', queryParams);
   return response.data;
 }
 
