@@ -28,6 +28,13 @@ import {
   Eye,
   Plus,
   Settings,
+  MessageSquare,
+  Clock,
+  CheckCircle,
+  FileText,
+  AlertCircle,
+  TrendingUp,
+  Zap,
 } from 'lucide-react';
 import { useDashboardPermissions } from '../hooks';
 import {
@@ -85,7 +92,7 @@ export interface FreelancerDashboardViewProps {
  * Transform dashboard data to stats cards
  */
 function prepareStatsCards(data: FreelancerDashboard) {
-  return [
+  const cards = [
     {
       id: 'earnings',
       title: 'Toplam Kazanç',
@@ -120,6 +127,76 @@ function prepareStatsCards(data: FreelancerDashboard) {
       iconColor: 'text-yellow-600 dark:text-yellow-400',
     },
   ];
+
+  // Add messaging stats if available (EPIC 1 Story 1.1)
+  if (data.messages) {
+    cards.push({
+      id: 'messages',
+      title: 'Mesajlar',
+      value: data.messages.unread,
+      subtitle: `${data.messages.pendingResponses} yanıt bekliyor`,
+      icon: MessageSquare,
+      iconColor: 'text-orange-600 dark:text-orange-400',
+    });
+
+    // Only show response time if user has messaging history
+    if (data.messages.averageResponseTime > 0) {
+      cards.push({
+        id: 'response-time',
+        title: 'Ort. Yanıt Süresi',
+        value: `${data.messages.averageResponseTime.toFixed(1)}sa`,
+        subtitle: `%${data.messages.responseRate.toFixed(0)} yanıt oranı`,
+        icon: Clock,
+        iconColor: 'text-teal-600 dark:text-teal-400',
+      });
+    }
+  }
+
+  // Add pending actions if available (EPIC 1 Story 1.2)
+  if (data.pendingActions) {
+    const totalPending =
+      data.pendingActions.ordersToAccept +
+      data.pendingActions.ordersToDeliver +
+      data.pendingActions.reviewsToGive;
+
+    if (totalPending > 0) {
+      cards.push({
+        id: 'pending-actions',
+        title: 'Bekleyen İşlemler',
+        value: totalPending,
+        subtitle: `${data.pendingActions.ordersToAccept} kabul, ${data.pendingActions.ordersToDeliver} teslim, ${data.pendingActions.reviewsToGive} değerlendirme`,
+        icon: AlertCircle,
+        iconColor: 'text-red-600 dark:text-red-400',
+      });
+    }
+  }
+
+  // Add performance metrics if available (EPIC 1 Story 1.3)
+  if (data.performance) {
+    if (data.performance.conversionRate > 0) {
+      cards.push({
+        id: 'conversion-rate',
+        title: 'Dönüşüm Oranı',
+        value: `%${data.performance.conversionRate.toFixed(1)}`,
+        subtitle: 'Görüntüleme → Sipariş',
+        icon: TrendingUp,
+        iconColor: 'text-indigo-600 dark:text-indigo-400',
+      });
+    }
+
+    if (data.performance.onTimeDeliveryRate > 0) {
+      cards.push({
+        id: 'on-time-delivery',
+        title: 'Zamanında Teslimat',
+        value: `%${data.performance.onTimeDeliveryRate.toFixed(0)}`,
+        subtitle: `${data.performance.averageDeliveryTime.toFixed(1)}sa ortalama`,
+        icon: Zap,
+        iconColor: 'text-cyan-600 dark:text-cyan-400',
+      });
+    }
+  }
+
+  return cards;
 }
 
 /**

@@ -84,7 +84,25 @@ export default function PayoutRequestPage() {
       <div className="container mx-auto max-w-4xl px-4 py-8">
         <div className="flex flex-col items-center justify-center gap-4 py-20">
           <div className="h-12 w-12 animate-spin rounded-full border-4 border-purple-600 border-t-transparent" />
-          <p className="text-gray-600">Bakiye bilgileri yükleniyor...</p>
+          <div className="space-y-4">
+            <div className="rounded-lg border p-6">
+              <div className="space-y-3">
+                <div className="bg-muted h-6 w-32 animate-pulse rounded" />
+                <div className="bg-muted h-10 w-48 animate-pulse rounded" />
+                <div className="bg-muted h-4 w-64 animate-pulse rounded" />
+              </div>
+            </div>
+            <div className="rounded-lg border p-6">
+              <div className="space-y-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="space-y-2">
+                    <div className="bg-muted h-4 w-24 animate-pulse rounded" />
+                    <div className="bg-muted h-10 w-full animate-pulse rounded" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );

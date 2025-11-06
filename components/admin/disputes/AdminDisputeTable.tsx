@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import { Eye, Loader2, AlertCircle } from 'lucide-react';
+import { Eye, AlertCircle } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -16,6 +16,7 @@ import {
 import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { TableSkeleton } from '@/components/ui/loading/TableSkeleton';
 import type { DisputeResponse } from '@/types/dispute';
 import { disputeStatusLabels, disputeReasonLabels } from '@/types/dispute';
 
@@ -43,11 +44,7 @@ export function AdminDisputeTable({
   error,
 }: AdminDisputeTableProps) {
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
-      </div>
-    );
+    return <TableSkeleton rows={5} columns={6} showActions={true} />;
   }
 
   if (error) {

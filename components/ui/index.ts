@@ -48,6 +48,16 @@ export {
   useErrorBoundaryConfig,
 } from './UnifiedErrorBoundary';
 
+// New Error Boundary System - Sprint EPIC 4
+export {
+  ErrorBoundary as ReactErrorBoundary,
+  PageErrorBoundary,
+  SectionErrorBoundary,
+  ComponentErrorBoundary,
+  withErrorBoundary as withReactErrorBoundary,
+} from './ErrorBoundary';
+export type { ErrorBoundaryProps } from './ErrorBoundary';
+
 // Form Components
 export { Input } from './Input';
 export { Checkbox } from './Checkbox';

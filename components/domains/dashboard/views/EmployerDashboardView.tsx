@@ -28,6 +28,10 @@ import {
   Search,
   Settings,
   FileText,
+  MessageSquare,
+  AlertCircle,
+  Package,
+  User,
 } from 'lucide-react';
 import { useDashboardPermissions } from '../hooks';
 import {
@@ -80,7 +84,7 @@ export interface EmployerDashboardViewProps {
  * Transform dashboard data to stats cards
  */
 function prepareStatsCards(data: EmployerDashboard) {
-  return [
+  const cards = [
     {
       id: 'total-spending',
       title: 'Toplam Harcama',
@@ -115,6 +119,37 @@ function prepareStatsCards(data: EmployerDashboard) {
       iconColor: 'text-purple-600 dark:text-purple-400',
     },
   ];
+
+  // Add messaging stats if available (EPIC 1 Story 1.1)
+  if (data.messages) {
+    cards.push({
+      id: 'messages',
+      title: 'Mesajlar',
+      value: data.messages.unread,
+      subtitle: `${data.messages.activeConversations} aktif konuşma`,
+      icon: MessageSquare,
+      iconColor: 'text-orange-600 dark:text-orange-400',
+    });
+  }
+
+  // Add pending actions if available (EPIC 1 Story 1.2)
+  if (data.pendingActions) {
+    const totalPending =
+      data.pendingActions.ordersToApprove + data.pendingActions.reviewsToGive;
+
+    if (totalPending > 0) {
+      cards.push({
+        id: 'pending-actions',
+        title: 'Bekleyen İşlemler',
+        value: totalPending,
+        subtitle: `${data.pendingActions.ordersToApprove} onay, ${data.pendingActions.reviewsToGive} değerlendirme`,
+        icon: AlertCircle,
+        iconColor: 'text-red-600 dark:text-red-400',
+      });
+    }
+  }
+
+  return cards;
 }
 
 /**
@@ -278,6 +313,52 @@ export const EmployerDashboardView = memo<EmployerDashboardViewProps>(
               }}
               isLoading={isLoading}
             />
+          </DashboardSection>
+        )}
+
+        {/* Recent Order Section - SPRINT EPIC 2 Story 2.1 */}
+        {data.recentOrder && (
+          <DashboardSection
+            title="Son Sipariş"
+            subtitle="En son verdiğiniz sipariş"
+          >
+            <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3">
+                    <Package className="h-5 w-5 text-gray-400" />
+                    <h3 className="font-semibold text-gray-900 dark:text-white">
+                      {data.recentOrder.packageTitle}
+                    </h3>
+                  </div>
+                  <div className="mt-2 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                    <User className="h-4 w-4" />
+                    <span>{data.recentOrder.sellerName}</span>
+                  </div>
+                  <div className="mt-1 text-xs text-gray-500">
+                    Sipariş No: {data.recentOrder.orderNumber}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span
+                    className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+                      data.recentOrder.status === 'COMPLETED'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                        : data.recentOrder.status === 'IN_PROGRESS'
+                          ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+                          : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
+                    }`}
+                  >
+                    {data.recentOrder.status}
+                  </span>
+                  <div className="mt-2 text-xs text-gray-500">
+                    {new Date(data.recentOrder.lastUpdate).toLocaleDateString(
+                      'tr-TR'
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
           </DashboardSection>
         )}
 

@@ -43,5 +43,27 @@ export {
   UnifiedSkeletonSystem,
 } from '../UnifiedSkeleton';
 
+// Advanced skeleton components - Sprint EPIC 4
+export {
+  TableSkeleton,
+  TableSkeletonCompact,
+  StatsTableSkeleton,
+} from './TableSkeleton';
+export type { TableSkeletonProps } from './TableSkeleton';
+
+export {
+  FormSkeleton,
+  SettingsFormSkeleton,
+  InlineFormSkeleton,
+} from './FormSkeleton';
+export type { FormSkeletonProps, FormFieldConfig } from './FormSkeleton';
+
+export {
+  ListSkeleton,
+  OrderListSkeleton,
+  PackageListSkeleton,
+} from './ListSkeleton';
+export type { ListSkeletonProps, ListVariant } from './ListSkeleton';
+
 // Default export - most commonly used component
 export { UnifiedLoading as default } from '../UnifiedLoadingSystem';

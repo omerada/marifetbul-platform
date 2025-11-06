@@ -21,7 +21,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { Card } from '@/components/ui/Card';
-import { Button, Loading } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import {
   ChevronLeft,
@@ -380,8 +380,61 @@ export default function OrderDetailPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loading size="lg" />
+      <div className="container mx-auto max-w-6xl px-4 py-8">
+        <div className="mb-6 flex items-center gap-4">
+          <div className="bg-muted h-10 w-10 animate-pulse rounded" />
+          <div className="bg-muted h-8 w-48 animate-pulse rounded" />
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="space-y-6 lg:col-span-2">
+            {/* Order details skeleton */}
+            <div className="rounded-lg border p-6">
+              <div className="space-y-4">
+                <div className="bg-muted h-6 w-32 animate-pulse rounded" />
+                <div className="space-y-3">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <div className="bg-muted h-4 w-24 animate-pulse rounded" />
+                      <div className="bg-muted h-4 w-32 animate-pulse rounded" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Timeline skeleton */}
+            <div className="rounded-lg border p-6">
+              <div className="bg-muted mb-4 h-6 w-40 animate-pulse rounded" />
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="flex gap-3">
+                    <div className="bg-muted h-10 w-10 animate-pulse rounded-full" />
+                    <div className="flex-1 space-y-2">
+                      <div className="bg-muted h-4 w-3/4 animate-pulse rounded" />
+                      <div className="bg-muted h-3 w-1/2 animate-pulse rounded" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            {/* Actions skeleton */}
+            <div className="rounded-lg border p-6">
+              <div className="bg-muted mb-4 h-6 w-24 animate-pulse rounded" />
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-muted h-10 w-full animate-pulse rounded"
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

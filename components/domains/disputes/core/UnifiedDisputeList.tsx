@@ -22,7 +22,6 @@ import React, { useState, useMemo } from 'react';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import {
-  Loader2,
   AlertCircle,
   Eye,
   Filter,
@@ -53,6 +52,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/Table';
+import { TableSkeleton } from '@/components/ui/loading/TableSkeleton';
+import { ListSkeleton } from '@/components/ui/loading/ListSkeleton';
 
 // Types
 import type {
@@ -214,10 +215,23 @@ export function UnifiedDisputeList({
   // ============================================================================
 
   if (isLoading) {
+    if (variant === 'card') {
+      return (
+        <ListSkeleton
+          variant="card"
+          items={5}
+          showActions={true}
+          className={className}
+        />
+      );
+    }
     return (
-      <div className={`flex items-center justify-center py-12 ${className}`}>
-        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
-      </div>
+      <TableSkeleton
+        rows={5}
+        columns={6}
+        showActions={true}
+        className={className}
+      />
     );
   }
 

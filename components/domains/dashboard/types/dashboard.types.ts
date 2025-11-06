@@ -422,6 +422,32 @@ export interface FreelancerDashboard {
     count: number;
     distribution: Record<number, number>;
   };
+  /** Message statistics - SPRINT EPIC 1 Story 1.1 */
+  messages?: {
+    unread: number;
+    averageResponseTime: number; // in hours
+    responseRate: number; // percentage 0-100
+    pendingResponses: number;
+  };
+  /** Pending actions - SPRINT EPIC 1 Story 1.2 */
+  pendingActions?: {
+    ordersToAccept: number;
+    ordersToDeliver: number;
+    reviewsToGive: number;
+  };
+  /** Performance metrics - SPRINT EPIC 1 Story 1.3 */
+  performance?: {
+    conversionRate: number; // percentage 0-100
+    onTimeDeliveryRate: number; // percentage 0-100
+    averageDeliveryTime: number; // in hours
+  };
+  /** Top package - SPRINT EPIC 1 Story 1.3 */
+  topPackage?: {
+    packageId: string;
+    title: string;
+    orders: number;
+    revenue: number;
+  };
   /** Recent activities */
   recentActivities: ActivityItem[];
   /** Quick actions */
@@ -460,6 +486,26 @@ export interface EmployerDashboard {
   favorites: {
     packages: number;
     sellers: number;
+  };
+  /** Message statistics - SPRINT EPIC 1 Story 1.1 */
+  messages?: {
+    unread: number;
+    activeConversations: number;
+    pendingResponses: number;
+  };
+  /** Pending actions - SPRINT EPIC 1 Story 1.2 */
+  pendingActions?: {
+    ordersToApprove: number;
+    reviewsToGive: number;
+  };
+  /** Recent order - SPRINT EPIC 2 Story 2.1 */
+  recentOrder?: {
+    orderId: string;
+    orderNumber: string;
+    packageTitle: string;
+    sellerName: string;
+    status: string;
+    lastUpdate: string;
   };
   /** Recent activities */
   recentActivities: ActivityItem[];

@@ -42,7 +42,23 @@ export default function NotificationSettingsPage() {
           </Link>
         </div>
         <Card className="p-8 text-center">
-          <p className="text-gray-600">Yükleniyor...</p>
+          <div className="space-y-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="rounded-lg border p-6">
+                <div className="space-y-4">
+                  <div className="bg-muted h-6 w-48 animate-pulse rounded" />
+                  <div className="space-y-3">
+                    {Array.from({ length: 2 }).map((_, j) => (
+                      <div key={j} className="flex items-center gap-3">
+                        <div className="bg-muted h-5 w-5 animate-pulse rounded" />
+                        <div className="bg-muted h-4 w-32 animate-pulse rounded" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </Card>
       </div>
     );

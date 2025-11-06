@@ -10,6 +10,7 @@ import { packageApi } from '@/lib/api/packages';
 import { PackageGrid } from './PackageGrid';
 import { MarketplaceFilters } from './MarketplaceFilters';
 import { Button } from '@/components/ui';
+import { PackageListSkeleton } from '@/components/ui/loading/ListSkeleton';
 import type { PackageSummary } from '@/types/business/features/package';
 import { transformServicePackagesToSummaries } from '@/lib/transformers/package.transformer';
 import logger from '@/lib/infrastructure/monitoring/logger';
@@ -90,7 +91,10 @@ export function MarketplaceContainer() {
       setTotalPages(response.pagination?.totalPages || 1);
     } catch (err) {
       setError('Paketler yüklenirken bir hata oluştu.');
-      logger.error('Failed to fetch packages:', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Failed to fetch packages:',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
       setLoading(false);
     }
@@ -140,7 +144,11 @@ export function MarketplaceContainer() {
       )}
 
       {/* Package Grid */}
-      <PackageGrid packages={packages} loading={loading} />
+      {loading ? (
+        <PackageListSkeleton items={12} />
+      ) : (
+        <PackageGrid packages={packages} loading={false} />
+      )}
 
       {/* Pagination */}
       {!loading && totalPages > 1 && (

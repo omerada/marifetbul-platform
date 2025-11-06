@@ -233,7 +233,14 @@ export default function TemplatesPage() {
         {isLoading ? (
           <Card className="p-8 text-center">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-r-transparent"></div>
-            <p className="mt-2 text-gray-600">Yükleniyor...</p>
+            <div className="mt-4 space-y-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="rounded-lg border p-4">
+                  <div className="bg-muted mb-2 h-5 w-48 animate-pulse rounded" />
+                  <div className="bg-muted h-4 w-full animate-pulse rounded" />
+                </div>
+              ))}
+            </div>
           </Card>
         ) : filteredTemplates.length === 0 ? (
           <Card className="p-8 text-center">

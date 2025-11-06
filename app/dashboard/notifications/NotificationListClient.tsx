@@ -112,7 +112,20 @@ export default function NotificationListClient() {
         {isLoading ? (
           <div className="py-12 text-center">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-orange-600 border-r-transparent"></div>
-            <p className="mt-2 text-gray-600">Yükleniyor...</p>
+            <div className="space-y-3">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="rounded-lg border p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 space-y-2">
+                      <div className="bg-muted h-5 w-3/4 animate-pulse rounded" />
+                      <div className="bg-muted h-4 w-full animate-pulse rounded" />
+                      <div className="bg-muted h-3 w-24 animate-pulse rounded" />
+                    </div>
+                    <div className="bg-muted h-2 w-2 animate-pulse rounded-full" />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         ) : notifications.length === 0 ? (
           <div className="rounded-lg bg-gray-50 py-12 text-center">
