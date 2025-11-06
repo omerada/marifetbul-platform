@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export interface ConversationSearchRequest {
   query?: string;
@@ -88,7 +88,7 @@ export function useConversationSearch() {
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Search failed';
-        logger.error('Conversation search error:', err);
+        logger.error('Conversation search error:', err instanceof Error ? err : new Error(String(err)));
         setError(errorMessage);
         throw err;
       } finally {

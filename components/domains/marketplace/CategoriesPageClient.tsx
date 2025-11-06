@@ -16,7 +16,7 @@ import CategoryCard from '@/components/domains/marketplace/CategoryCard';
 import AllCategoriesCard from '@/components/domains/marketplace/AllCategoriesCard';
 import CategorySearch from '@/components/domains/marketplace/CategorySearch';
 import {} from '@/components/ui/DropdownMenu';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   useCategories,
   useCategorySearch,
@@ -76,7 +76,7 @@ const CategoriesPageClient: React.FC = () => {
       try {
         await Promise.all([fetchCategories(), fetchFeaturedCategories()]);
       } catch (error) {
-        logger.error('Error loading categories data:', error);
+        logger.error('Error loading categories data:', error instanceof Error ? error : new Error(String(error)));
       }
     };
 

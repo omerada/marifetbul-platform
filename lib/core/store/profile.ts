@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { User, Freelancer, PortfolioItem } from '@/types';
 import { useAuthStore } from './domains/auth/authStore';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import * as portfolioApi from '@/lib/api/portfolio';
 
 interface CropData {

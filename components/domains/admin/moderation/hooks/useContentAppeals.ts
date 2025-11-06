@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   ContentAppeal,
   AppealStats,
@@ -82,7 +82,7 @@ export function useContentAppeals(): UseContentAppealsReturn {
         err instanceof Error
           ? err.message
           : 'İtirazlar yüklenirken hata oluştu';
-      logger.error('Error fetching appeals:', err);
+      logger.error('Error fetching appeals:', err instanceof Error ? err : new Error(String(err)));
       setError(errorMessage);
       setAppeals([]);
     } finally {
@@ -104,7 +104,7 @@ export function useContentAppeals(): UseContentAppealsReturn {
       const data = await response.json();
       setStats(data.stats);
     } catch (err) {
-      logger.error('Error fetching stats:', err);
+      logger.error('Error fetching stats:', err instanceof Error ? err : new Error(String(err)));
       // Don't set error for stats - it's not critical
     }
   }, []);
@@ -145,7 +145,7 @@ export function useContentAppeals(): UseContentAppealsReturn {
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'İşlem sırasında hata oluştu';
-        logger.error('Error processing appeal action:', err);
+        logger.error('Error processing appeal action:', err instanceof Error ? err : new Error(String(err)));
         setError(errorMessage);
         return false;
       } finally {

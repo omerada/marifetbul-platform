@@ -13,7 +13,7 @@ import { PackageCard } from './PackageCard';
 import { Button } from '@/components/ui';
 import type { PackageSummary } from '@/types/business/features/package';
 import { transformServicePackagesToSummaries } from '@/lib/transformers/package.transformer';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface FeaturedPackagesProps {
   limit?: number;
@@ -40,7 +40,7 @@ export function FeaturedPackages({
         );
         setPackages(transformed);
       } catch (error) {
-        logger.error('Failed to fetch featured packages:', error);
+        logger.error('Failed to fetch featured packages:', error instanceof Error ? error : new Error(String(error)));
         setPackages([]);
       } finally {
         setLoading(false);

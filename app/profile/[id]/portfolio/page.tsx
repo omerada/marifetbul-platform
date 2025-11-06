@@ -9,7 +9,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { PortfolioShare } from '@/components/domains/profile/PortfolioShare';
 import { usePortfolioStore } from '@/stores/portfolioStore';
 import { PortfolioItem } from '@/types';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   ArrowLeft,
   ExternalLink,
@@ -54,7 +54,7 @@ export default function PortfolioPage() {
   useEffect(() => {
     if (userId) {
       fetchUserPortfolios(userId).catch((error) =>
-        logger.error('Failed to fetch user portfolios', error)
+        logger.error('Failed to fetch user portfolios', error instanceof Error ? error : new Error(String(error)))
       );
     }
   }, [userId, fetchUserPortfolios]);
@@ -67,7 +67,7 @@ export default function PortfolioPage() {
           setViewModalOpen(true, null);
           setViewingAll(false);
         })
-        .catch((error) => logger.error('Failed to fetch portfolio', error));
+        .catch((error) => logger.error('Failed to fetch portfolio', error instanceof Error ? error : new Error(String(error))));
     }
   }, [selectedPortfolioId, fetchPortfolio, setViewModalOpen]);
 

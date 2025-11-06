@@ -9,7 +9,7 @@ import { useMemo } from 'react';
 import useSWR from 'swr';
 import { getMyPortfolio, type PortfolioResponse } from '@/lib/api/portfolio';
 import { useAuthState } from '@/hooks/shared/useAuth';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -74,9 +74,7 @@ export function usePortfolioAnalytics(): UsePortfolioAnalyticsReturn {
   const analytics = useMemo(() => {
     if (!portfolios || portfolios.length === 0) return null;
 
-    logger.debug('[usePortfolioAnalytics] Calculating analytics', {
-      count: portfolios.length,
-    });
+    logger.debug('[usePortfolioAnalytics] Calculating analytics', { countportfolioslength,  });
 
     // Basic metrics
     const totalPortfolios = portfolios.length;

@@ -23,7 +23,7 @@ import type {
   DisputeConversationResponse,
 } from '@/types/dispute';
 import { toast } from 'sonner';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface UseDisputeMessagesReturn {
   messages: DisputeMessageResponse[];
@@ -104,10 +104,7 @@ export function useDisputeMessages(
 
     try {
       const result = await markDisputeMessagesAsRead(disputeId);
-      logger.info('Messages marked as read', {
-        disputeId,
-        count: result.markedCount,
-      });
+      logger.info('Messages marked as read', { disputeId, countresultmarkedCount,  });
 
       // Refresh to update UI
       await mutate();

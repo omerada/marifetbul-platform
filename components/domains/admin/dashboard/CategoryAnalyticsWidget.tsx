@@ -13,7 +13,7 @@ import {
   BarChart3,
 } from 'lucide-react';
 import { useAdminDashboard } from '@/hooks/business/useAdminDashboard';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * Category Analytics Widget v4.0.0
@@ -107,11 +107,7 @@ export function CategoryAnalyticsWidget({
       .sort((a, b) => b.totalOrders - a.totalOrders)
       .slice(0, limit);
 
-    logger.debug('[CategoryAnalyticsWidget] Transformed data:', {
-      categoriesCount: categoryMap.size,
-      topByRevenueCount: byRevenue.length,
-      topByOrdersCount: byOrders.length,
-    });
+    logger.debug('[CategoryAnalyticsWidget] Transformed data:', { categoriesCountcategoryMapsize, topByRevenueCountbyRevenuelength, topByOrdersCountbyOrderslength,  });
 
     return { topByRevenue: byRevenue, topByOrders: byOrders };
   }, [topPackages, limit]);

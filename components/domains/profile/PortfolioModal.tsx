@@ -21,7 +21,7 @@ import {
   Image as ImageIcon,
   Loader2,
 } from 'lucide-react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 const portfolioSchema = z.object({
   title: z.string().min(3, 'Proje başlığı en az 3 karakter olmalı'),

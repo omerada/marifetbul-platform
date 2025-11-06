@@ -10,7 +10,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES
@@ -119,7 +119,7 @@ export function useCommentReports(): UseCommentReportsReturn {
         setSuccess(true);
         return true;
       } catch (err) {
-        logger.error('Failed to report comment:', err);
+        logger.error('Failed to report comment:', err instanceof Error ? err : new Error(String(err)));
 
         if (err instanceof Error) {
           if (err.message.includes('401')) {

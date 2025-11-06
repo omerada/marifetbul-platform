@@ -17,7 +17,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/AlertDialog';
 import { PlatformSettings } from '@/types';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   Save,
   RefreshCw,
@@ -119,7 +119,7 @@ export function SystemSettings({ className }: SystemSettingsProps) {
     try {
       await updateSettings(formData as Partial<PlatformSettings>);
     } catch (error) {
-      logger.error('Failed to save settings:', error);
+      logger.error('Failed to save settings:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -128,7 +128,7 @@ export function SystemSettings({ className }: SystemSettingsProps) {
       await resetSettings();
       setShowResetDialog(false);
     } catch (error) {
-      logger.error('Failed to reset settings:', error);
+      logger.error('Failed to reset settings:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 

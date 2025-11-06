@@ -5,7 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { z } from 'zod';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================
 // TYPES

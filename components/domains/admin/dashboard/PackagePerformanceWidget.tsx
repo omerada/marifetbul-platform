@@ -16,7 +16,7 @@ import {
   Award,
 } from 'lucide-react';
 import type { PackagePerformance } from '@/types/analytics';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface PackagePerformanceWidgetProps {
   categoryId?: number;
@@ -60,7 +60,7 @@ export function PackagePerformanceWidget({
       const result = await response.json();
       setPackages(result.data || result);
     } catch (err) {
-      logger.error('Package performance fetch error:', err);
+      logger.error('Package performance fetch error:', err instanceof Error ? err : new Error(String(err)));
       setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
     } finally {
       setIsLoading(false);

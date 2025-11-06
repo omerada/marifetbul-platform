@@ -15,7 +15,7 @@ import { useHelpCenter } from '@/hooks';
 import { ArticleCard } from '@/components/shared/ArticleCard';
 import { cn } from '@/lib/utils';
 import type { HelpArticle, HelpCategory } from '@/types';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface SearchResultsProps {
   query?: string;

@@ -22,7 +22,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui';
 import { Download, FileText, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { Order } from '@/types/business/features/orders';
 
 // ================================================
@@ -155,7 +155,7 @@ export function OrderExportButton({
         toast.info('Excel dışa aktarma yakında eklenecek');
       }
     } catch (error) {
-      logger.error('Export error:', error);
+      logger.error('Export error:', error instanceof Error ? error : new Error(String(error)));
       toast.error('Dışa Aktarma Hatası', {
         description: 'Siparişler dışa aktarılırken bir hata oluştu',
       });

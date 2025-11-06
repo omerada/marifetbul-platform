@@ -3,7 +3,7 @@
  * Handles image upload, delete, and URL transformations for portfolios
  */
 
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // Cloudinary configuration from environment
 const CLOUDINARY_CONFIG = {
@@ -90,12 +90,7 @@ export async function uploadImage(file: File): Promise<UploadResult> {
     // Upload to Cloudinary
     const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/image/upload`;
 
-    logger.info('Uploading image to Cloudinary', {
-      fileName: file.name,
-      fileSize: file.size,
-      fileType: file.type,
-      folder: PORTFOLIO_FOLDER,
-    });
+    logger.info('Uploading image to Cloudinary', { fileNamefilename, fileSizefilesize, fileTypefiletype, folderPORTFOLIO_FOLDER,  });
 
     const response = await fetch(uploadUrl, {
       method: 'POST',
@@ -117,12 +112,7 @@ export async function uploadImage(file: File): Promise<UploadResult> {
 
     const data: CloudinaryUploadResponse = await response.json();
 
-    logger.info('Image uploaded successfully', {
-      publicId: data.public_id,
-      url: data.secure_url,
-      format: data.format,
-      size: data.bytes,
-    });
+    logger.info('Image uploaded successfully', { publicIddatapublic_id, urldatasecure_url, formatdataformat, sizedatabytes,  });
 
     return {
       success: true,

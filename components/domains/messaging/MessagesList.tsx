@@ -17,7 +17,7 @@ import type { ConversationFilter } from '@/hooks/business/messaging/useMessages'
 import { useWebSocket } from '@/hooks/infrastructure/websocket/useWebSocket';
 import { useMessagingStore } from '@/lib/core/store/domains/messaging/MessagingStore';
 import { useInfiniteScroll } from '@/hooks/shared/useInfiniteScroll';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface MessagesListProps {
   /**

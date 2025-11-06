@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { mutate } from 'swr';
 import { reorderPortfolio, type PortfolioResponse } from '@/lib/api/portfolio';
 import { useAuthState } from '@/hooks/shared/useAuth';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -75,9 +75,7 @@ export function usePortfolioReorder(
 
     setIsSaving(true);
     try {
-      logger.info('[usePortfolioReorder] Saving new order', {
-        itemCount: orderedItems.length,
-      });
+      logger.info('[usePortfolioReorder] Saving new order', { itemCountorderedItemslength,  });
 
       // Extract IDs in the new order
       const portfolioIds = orderedItems.map((item) => item.id);
@@ -97,7 +95,7 @@ export function usePortfolioReorder(
 
       return true;
     } catch (err) {
-      logger.error('[usePortfolioReorder] Save order failed', err);
+      logger.error('[usePortfolioReorder] Save order failed', err instanceof Error ? err : new Error(String(err)));
       toast.error('Sıralama kaydedilemedi. Lütfen tekrar deneyin.');
       return false;
     } finally {

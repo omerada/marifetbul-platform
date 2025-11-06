@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * SEO analytics hook for tracking page views and user interactions

@@ -16,7 +16,7 @@ import { CommentThreadView } from './CommentThreadView';
 import { CommentForm } from './CommentForm';
 import { ReportCommentModal } from './ReportCommentModal';
 import { blogApi } from '@/lib/api/blog';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { BlogComment } from '@/lib/api/blog';
 
 // ================================================
@@ -295,9 +295,7 @@ export function CommentList({
           }}
           onReportSubmitted={() => {
             // Optionally refresh comments or show a message
-            logger.info('Comment reported successfully', {
-              commentId: reportingCommentId,
-            });
+            logger.info('Comment reported successfully', { commentIdreportingCommentId,  });
           }}
         />
       )}

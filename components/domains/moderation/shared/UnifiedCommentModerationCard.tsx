@@ -32,7 +32,7 @@ import {
   ArrowUpCircle,
 } from 'lucide-react';
 import { Badge, UnifiedButton, Card, Avatar, Checkbox } from '@/components/ui';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import type { BlogComment } from '@/types/blog';
@@ -209,7 +209,7 @@ export function UnifiedCommentModerationCard({
       if (onReject) {
         const success = await onReject(commentId, rejectReason);
         if (success) {
-          logger.info('Comment rejected', { commentId, reason: rejectReason });
+          logger.info('Comment rejected', { commentId, reasonrejectReason });
           setShowRejectDialog(false);
           setRejectReason('');
           onUpdated?.();
@@ -268,11 +268,7 @@ export function UnifiedCommentModerationCard({
           escalatePriority
         );
         if (success) {
-          logger.info('Comment escalated', {
-            commentId,
-            reason: escalateReason,
-            priority: escalatePriority,
-          });
+          logger.info('Comment escalated', { commentId, reasonescalateReason, priorityescalatePriority,  });
           setShowEscalateDialog(false);
           setEscalateReason('');
           setEscalatePriority('MEDIUM');

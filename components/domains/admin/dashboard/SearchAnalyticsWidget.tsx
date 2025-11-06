@@ -1,6 +1,6 @@
 /**
- * SEARCH ANALYTICS WIDGET v4.0.0
- * Sprint 1 - Story 1.3.3: Migrated to Centralized State
+ * SEARCH ANALYTICS WIDGET v5.0.0
+ * Sprint 2: Refactored to use StatsCard instead of deprecated MetricCard
  * Now uses useAdminDashboard hook - no local state or API calls
  */
 
@@ -15,13 +15,13 @@ import {
   BarChart3,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
-import {
-  DashboardWidgetCard,
-  MetricCard,
-  formatPercentage,
-} from '@/components/shared/dashboard';
+import { DashboardWidgetCard } from '@/components/shared/dashboard';
+import { StatsCard } from '@/components/domains/dashboard/widgets/StatsCard';
 import { useAdminDashboard } from '@/hooks';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
+
+const formatPercentage = (value: number, decimals = 1): string =>
+  `${value.toFixed(decimals)}%`;
 
 export interface SearchAnalyticsWidgetProps {
   days?: number;
@@ -113,10 +113,7 @@ export function SearchAnalyticsWidget({
 
   useMemo(() => {
     if (searchMetrics) {
-      logger.debug('SearchAnalyticsWidget: Data from store', {
-        totalSearches: searchMetrics.totalSearches,
-        hasKeywords: searchMetrics.topKeywords?.length > 0,
-      });
+      logger.debug('SearchAnalyticsWidget: Data from store', { totalSearchessearchMetricstotalSearches, hasKeywordssearchMetricstopKeywordslength0,  });
     }
   }, [searchMetrics]);
 
@@ -152,48 +149,65 @@ export function SearchAnalyticsWidget({
       {displayMetrics ? (
         <div className="space-y-6">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <MetricCard
-              label="Total Searches"
-              value={displayMetrics.totalSearches}
-              icon={Search}
-              iconColor="text-blue-600"
-              description={`${formatNumber(displayMetrics.uniqueUsers)} unique users`}
+            <StatsCard
+              data={{
+                id: 'total-searches',
+                title: 'Total Searches',
+                value: displayMetrics.totalSearches.toString(),
+                subtitle: `${formatNumber(displayMetrics.uniqueUsers)} unique users`,
+                icon: Search,
+                iconColor: 'blue',
+              }}
             />
-            <MetricCard
-              label="Click-Through Rate"
-              value={formatPercentage(displayMetrics.clickThroughRate)}
-              icon={MousePointerClick}
-              iconColor="text-green-600"
-              trend={displayMetrics.clickThroughRate >= 30 ? 'up' : 'down'}
-              isPositiveTrendGood
+            <StatsCard
+              data={{
+                id: 'click-through-rate',
+                title: 'Click-Through Rate',
+                value: formatPercentage(displayMetrics.clickThroughRate),
+                icon: MousePointerClick,
+                iconColor: 'green',
+                trend: {
+                  percentage: displayMetrics.clickThroughRate,
+                  direction:
+                    displayMetrics.clickThroughRate >= 30 ? 'up' : 'down',
+                  isPositive: true,
+                },
+              }}
             />
-            <MetricCard
-              label="Conversion Rate"
-              value={formatPercentage(displayMetrics.conversionRate)}
-              icon={ShoppingCart}
-              iconColor="text-purple-600"
-              trend={displayMetrics.conversionRate >= 5 ? 'up' : 'down'}
-              isPositiveTrendGood
-              description="Search to order"
+            <StatsCard
+              data={{
+                id: 'conversion-rate',
+                title: 'Conversion Rate',
+                value: formatPercentage(displayMetrics.conversionRate),
+                subtitle: 'Search to order',
+                icon: ShoppingCart,
+                iconColor: 'purple',
+                trend: {
+                  percentage: displayMetrics.conversionRate,
+                  direction: displayMetrics.conversionRate >= 5 ? 'up' : 'down',
+                  isPositive: true,
+                },
+              }}
             />
-            <MetricCard
-              label="Zero Results"
-              value={formatPercentage(displayMetrics.zeroResultRate)}
-              icon={AlertCircle}
-              iconColor={
-                displayMetrics.zeroResultRate > 10
-                  ? 'text-red-600'
-                  : 'text-gray-600'
-              }
-              trend={
-                displayMetrics.zeroResultRate > 10
-                  ? 'up'
-                  : displayMetrics.zeroResultRate < 5
-                    ? 'down'
-                    : 'stable'
-              }
-              isPositiveTrendGood={false}
-              description={`${formatNumber(displayMetrics.zeroResultSearches)} searches`}
+            <StatsCard
+              data={{
+                id: 'zero-results',
+                title: 'Zero Results',
+                value: formatPercentage(displayMetrics.zeroResultRate),
+                subtitle: `${formatNumber(displayMetrics.zeroResultSearches)} searches`,
+                icon: AlertCircle,
+                iconColor: displayMetrics.zeroResultRate > 10 ? 'red' : 'gray',
+                trend: {
+                  percentage: displayMetrics.zeroResultRate,
+                  direction:
+                    displayMetrics.zeroResultRate > 10
+                      ? 'up'
+                      : displayMetrics.zeroResultRate < 5
+                        ? 'down'
+                        : 'neutral',
+                  isPositive: false, // Lower is better for zero results
+                },
+              }}
             />
           </div>
           <div className="border-t" />

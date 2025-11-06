@@ -23,7 +23,7 @@ import { devtools } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { User } from '@/types';
 import type { UserResponse } from '@/types/backend-aligned';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { unifiedAuthService } from '@/lib/core/auth/unifiedAuthService';
 import { sessionManager } from '@/lib/core/auth/sessionManager';
 import type {
@@ -190,9 +190,7 @@ export const useUnifiedAuthStore = create<UnifiedAuthStore>()(
                   get().logout();
                 },
                 onSessionWarning: (remainingMinutes) => {
-                  logger.warn('AuthStore: Session expiring soon', {
-                    remainingMinutes,
-                  });
+                  logger.warn('AuthStore: Session expiring soon', { remainingMinutes,  });
                   // You can show a warning modal here
                 },
                 onTokenRefreshed: () => {
@@ -268,9 +266,7 @@ export const useUnifiedAuthStore = create<UnifiedAuthStore>()(
               });
             }
 
-            logger.info('AuthStore: Registration successful', {
-              userId: user.id,
-            });
+            logger.info('AuthStore: Registration successful', { userIduserid,  });
           } catch (error) {
             const errorMessage =
               error instanceof Error

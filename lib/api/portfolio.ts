@@ -16,7 +16,7 @@
 
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { PortfolioItem } from '@/types';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { getBackendApiUrl } from '../config/api';
 
 // ================================================
@@ -94,7 +94,7 @@ export async function createPortfolio(
     logger.info('Portfolio item created successfully', { id: response.id });
     return response;
   } catch (error) {
-    logger.error('Failed to create portfolio', error);
+    logger.error('Failed to create portfolio', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -118,7 +118,7 @@ export async function updatePortfolio(
     logger.info('Portfolio item updated successfully', { id: portfolioId });
     return response;
   } catch (error) {
-    logger.error('Failed to update portfolio', error);
+    logger.error('Failed to update portfolio', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -135,7 +135,7 @@ export async function deletePortfolio(portfolioId: string): Promise<void> {
 
     logger.info('Portfolio item deleted successfully', { id: portfolioId });
   } catch (error) {
-    logger.error('Failed to delete portfolio', error);
+    logger.error('Failed to delete portfolio', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -156,7 +156,7 @@ export async function getPortfolio(
 
     return response;
   } catch (error) {
-    logger.error('Failed to fetch portfolio', error);
+    logger.error('Failed to fetch portfolio', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -181,15 +181,11 @@ export async function getUserPortfolio(
       size: String(size),
     });
 
-    logger.debug('User portfolio fetched', {
-      userId,
-      count: response.content.length,
-      total: response.totalElements,
-    });
+    logger.debug('User portfolio fetched', { userId, countresponsecontentlength, totalresponsetotalElements,  });
 
     return response;
   } catch (error) {
-    logger.error('Failed to fetch user portfolio', error);
+    logger.error('Failed to fetch user portfolio', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -209,7 +205,7 @@ export async function getMyPortfolio(): Promise<PortfolioResponse[]> {
     logger.debug('My portfolio fetched', { count: response.length });
     return response;
   } catch (error) {
-    logger.error('Failed to fetch my portfolio', error);
+    logger.error('Failed to fetch my portfolio', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -226,7 +222,7 @@ export async function reorderPortfolio(portfolioIds: string[]): Promise<void> {
 
     logger.info('Portfolio items reordered successfully');
   } catch (error) {
-    logger.error('Failed to reorder portfolio', error);
+    logger.error('Failed to reorder portfolio', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -246,11 +242,7 @@ export async function uploadPortfolioImage(
   isPrimary: boolean = false
 ): Promise<PortfolioImageResponse> {
   try {
-    logger.info('Uploading portfolio image', {
-      portfolioId,
-      fileName: file.name,
-      isPrimary,
-    });
+    logger.info('Uploading portfolio image', { portfolioId, fileNamefilename, isPrimary,  });
 
     const formData = new FormData();
     formData.append('file', file);
@@ -281,12 +273,10 @@ export async function uploadPortfolioImage(
     const result = await response.json();
     const imageData = result.data;
 
-    logger.info('Portfolio image uploaded successfully', {
-      imageId: imageData.id,
-    });
+    logger.info('Portfolio image uploaded successfully', { imageIdimageDataid,  });
     return imageData;
   } catch (error) {
-    logger.error('Failed to upload portfolio image', error);
+    logger.error('Failed to upload portfolio image', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -308,7 +298,7 @@ export async function deletePortfolioImage(
 
     logger.info('Portfolio image deleted successfully', { imageId });
   } catch (error) {
-    logger.error('Failed to delete portfolio image', error);
+    logger.error('Failed to delete portfolio image', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }

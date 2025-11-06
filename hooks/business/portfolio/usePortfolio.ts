@@ -18,7 +18,7 @@ import {
   type UpdatePortfolioRequest,
 } from '@/lib/api/portfolio';
 import { useAuthState } from '@/hooks/shared/useAuth';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -93,13 +93,11 @@ export function usePortfolio(): UsePortfolioReturn {
         await mutate(`/portfolios/user/${user.id}`);
 
         toast.success('Portfolio başarıyla oluşturuldu! 🎉');
-        logger.info('[usePortfolio] Portfolio created', {
-          portfolioId: newPortfolio.id,
-        });
+        logger.info('[usePortfolio] Portfolio created', { portfolioIdnewPortfolioid,  });
 
         return newPortfolio;
       } catch (err) {
-        logger.error('[usePortfolio] Create portfolio failed', err);
+        logger.error('[usePortfolio] Create portfolio failed', err instanceof Error ? err : new Error(String(err)));
         toast.error('Portfolio oluşturulamadı. Lütfen tekrar deneyin.');
         return null;
       } finally {
@@ -124,10 +122,7 @@ export function usePortfolio(): UsePortfolioReturn {
 
       setIsUpdating(true);
       try {
-        logger.info('[usePortfolio] Updating portfolio', {
-          portfolioId,
-          data,
-        });
+        logger.info('[usePortfolio] Updating portfolio', { portfolioId, data,  });
 
         const updatedPortfolio = await updatePortfolioApi(portfolioId, data);
 
@@ -139,7 +134,7 @@ export function usePortfolio(): UsePortfolioReturn {
 
         return updatedPortfolio;
       } catch (err) {
-        logger.error('[usePortfolio] Update portfolio failed', err);
+        logger.error('[usePortfolio] Update portfolio failed', err instanceof Error ? err : new Error(String(err)));
         toast.error('Portfolio güncellenemedi. Lütfen tekrar deneyin.');
         return null;
       } finally {
@@ -173,7 +168,7 @@ export function usePortfolio(): UsePortfolioReturn {
 
         return true;
       } catch (err) {
-        logger.error('[usePortfolio] Delete portfolio failed', err);
+        logger.error('[usePortfolio] Delete portfolio failed', err instanceof Error ? err : new Error(String(err)));
         toast.error('Portfolio silinemedi. Lütfen tekrar deneyin.');
         return false;
       } finally {

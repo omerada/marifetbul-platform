@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       headers: responseHeaders,
     });
   } catch (error) {
-    logger.error('[Avatar Upload] Error:', error);
+    logger.error('[Avatar Upload] Error:', error instanceof Error ? error : new Error(String(error)));
 
     return NextResponse.json(
       {

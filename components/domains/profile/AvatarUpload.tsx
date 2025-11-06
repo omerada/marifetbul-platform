@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { useUIStore } from '@/lib/core/store/domains/ui/uiStore';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import Image from 'next/image';
 import {
   Upload,
@@ -208,7 +208,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
         setPreviewUrl(null);
         setShowPreviewModal(false);
 
-        logger.info('Avatar uploaded successfully', { userId, url: avatarUrl });
+        logger.info('Avatar uploaded successfully', { userId, urlavatarUrl });
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Yükleme başarısız';

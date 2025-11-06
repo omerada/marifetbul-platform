@@ -2,7 +2,7 @@
 // This route handles API requests that don't match specific routes
 // All requests are proxied to the backend API
 
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,11 +19,7 @@ async function proxyToBackend(request: Request, method: string) {
 
     // Debug logging for development
     if (process.env.NODE_ENV === 'development') {
-      logger.debug('[API Proxy]', {
-        original: url.pathname,
-        backend: backendUrl,
-        method,
-      });
+      logger.debug('[API Proxy]', { originalurlpathname, backendbackendUrl, method,  });
     }
 
     const headers: HeadersInit = {

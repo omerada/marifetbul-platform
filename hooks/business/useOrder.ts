@@ -7,7 +7,7 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUIStore } from '@/lib/core/store/domains/ui/uiStore';
 import { ORDER_ENDPOINTS } from '@/lib/api/endpoints';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface DeliverOrderParams {
   deliveryNote: string;
@@ -130,7 +130,7 @@ export function useOrder(options: UseOrderOptions = {}) {
           router.push(`/dashboard/freelancer/orders/${orderId}`);
         }, 1500);
 
-        logger.info('Order delivered successfully', { orderId, ...params });
+        logger.info('Order delivered successfully', { orderId, params });
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : 'Bilinmeyen bir hata oluştu';
@@ -247,7 +247,7 @@ export function useOrder(options: UseOrderOptions = {}) {
 
         options.onSuccess?.();
 
-        logger.info('Revision requested successfully', { orderId, ...params });
+        logger.info('Revision requested successfully', { orderId, params });
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : 'Bilinmeyen bir hata oluştu';
@@ -364,10 +364,7 @@ export function useOrder(options: UseOrderOptions = {}) {
 
         options.onSuccess?.();
 
-        logger.info('Dispute opened successfully', {
-          orderId,
-          reason: params.reason,
-        });
+        logger.info('Dispute opened successfully', { orderId, reasonparamsreason,  });
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : 'Bilinmeyen bir hata oluştu';

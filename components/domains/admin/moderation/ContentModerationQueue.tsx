@@ -32,7 +32,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/AlertDialog';
 import { Checkbox } from '@/components/ui/Checkbox';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   Search,
   Filter,
@@ -92,7 +92,7 @@ export function ContentModerationQueue({
       setShowActionDialog(false);
       setModerationReason('');
     } catch (error) {
-      logger.error('Error performing moderation action:', error);
+      logger.error('Error performing moderation action:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setActionItem(null);
       setActionType('');

@@ -28,7 +28,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { ErrorState } from '@/components/shared/utilities';
 import { Loading } from '@/components/ui';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface PackageDetailProps {
   packageId: string;
@@ -134,7 +134,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
       });
       // Navigate to order confirmation or payment
     } catch (error) {
-      logger.error('Order creation error:', error);
+      logger.error('Order creation error:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 

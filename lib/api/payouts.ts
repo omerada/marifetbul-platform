@@ -80,14 +80,14 @@ export interface PayoutLimitsResponse {
 /**
  * Request a new payout
  *
- * @endpoint POST /api/v1/payouts/request
+ * @endpoint POST /api/v1/payouts
  * @param request Payout request data
  * @returns Created payout
  */
 export async function requestPayout(
   request: RequestPayoutRequest
 ): Promise<PayoutResponse> {
-  return apiClient.post<PayoutResponse>('/v1/payouts/request', request);
+  return apiClient.post<PayoutResponse>('/v1/payouts', request);
 }
 
 /**

@@ -23,7 +23,7 @@ import {
 import { useHelpCenter } from '@/hooks';
 import { cn } from '@/lib/utils';
 import type { HelpArticle } from '@/types';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { SafeHtml } from '@/lib/infrastructure/security/xss-protection';
 
 interface ArticleViewerProps {

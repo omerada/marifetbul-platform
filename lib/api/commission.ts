@@ -10,7 +10,7 @@
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { ApiResponse } from '@/types/shared/api';
 import { z } from 'zod';
 
@@ -134,13 +134,11 @@ export async function getCommissions(
       ApiResponse<PaginatedResponse<CommissionTransaction>>
     >(`/admin/commissions?${params}`);
 
-    logger.info('Commissions fetched successfully', {
-      totalElements: response.data.totalElements,
-    });
+    logger.info('Commissions fetched successfully', { totalElementsresponsedatatotalElements,  });
 
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commissions', error);
+    logger.error('Failed to fetch commissions', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -162,7 +160,7 @@ export async function getCommissionById(
     logger.info('Commission fetched successfully', { commissionId });
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commission', error);
+    logger.error('Failed to fetch commission', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -184,7 +182,7 @@ export async function getCommissionByPaymentId(
     logger.info('Commission fetched by payment ID', { paymentId });
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commission by payment ID', error);
+    logger.error('Failed to fetch commission by payment ID', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -212,14 +210,11 @@ export async function getCommissionsBySeller(
       ApiResponse<PaginatedResponse<CommissionTransaction>>
     >(`/admin/commissions/seller/${sellerId}?${params}`);
 
-    logger.info('Seller commissions fetched', {
-      sellerId,
-      totalElements: response.data.totalElements,
-    });
+    logger.info('Seller commissions fetched', { sellerId, totalElementsresponsedatatotalElements,  });
 
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch seller commissions', error);
+    logger.error('Failed to fetch seller commissions', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -248,7 +243,7 @@ export async function getCommissionStats(
     logger.info('Commission stats fetched', { startDate, endDate });
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commission stats', error);
+    logger.error('Failed to fetch commission stats', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -277,7 +272,7 @@ export async function getCommissionAnalytics(
     logger.info('Commission analytics fetched', { startDate, endDate });
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commission analytics', error);
+    logger.error('Failed to fetch commission analytics', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -311,10 +306,7 @@ export async function getMyCommissionSummary(): Promise<{
     logger.info('Commission summary fetched');
     return response.data;
   } catch (error) {
-    logger.warn(
-      'Commission summary endpoint not available, calculate from transactions',
-      error
-    );
+    logger.warn('Commission summary endpoint not available, { calculatefromtransactions, error });
     throw error;
   }
 }

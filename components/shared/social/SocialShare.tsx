@@ -16,7 +16,7 @@ import {
 import { useSocialStore } from '@/lib/core/store/social';
 import { SocialShareData } from '@/types/shared/social';
 import { cn } from '@/lib/utils';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface SocialShareProps {
   data: SocialShareData;
@@ -54,7 +54,7 @@ export function SocialShare({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      logger.error('Failed to copy link:', error);
+      logger.error('Failed to copy link:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 

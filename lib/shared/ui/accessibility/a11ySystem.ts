@@ -4,7 +4,7 @@
 // WCAG 2.1 AA compliant accessibility utilities
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================
 // TYPES

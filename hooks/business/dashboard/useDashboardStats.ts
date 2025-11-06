@@ -7,7 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface DashboardStats {
   revenue?: {
@@ -93,7 +93,7 @@ export function useDashboardStats(): UseDashboardStatsReturn {
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to fetch stats';
       setError(errorMessage);
-      logger.error('Dashboard stats error:', err);
+      logger.error('Dashboard stats error:', err instanceof Error ? err : new Error(String(err)));
     } finally {
       setLoading(false);
     }

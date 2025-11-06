@@ -8,7 +8,7 @@
  * - Business metrics collection
  */
 
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // Monitoring Configuration
 export interface MonitoringConfig {

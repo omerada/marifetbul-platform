@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { useProposalEligibility } from '@/hooks/business/useProposalEligibility';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface JobProposalButtonProps {
   jobId: string;

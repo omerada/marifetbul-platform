@@ -14,7 +14,7 @@ import {
   DialogFooter,
 } from '@/components/ui/Dialog';
 import { orderApi } from '@/lib/api/orders';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface AcceptOrderButtonProps {
   orderId: string;

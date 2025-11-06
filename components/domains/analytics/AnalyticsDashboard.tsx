@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface AnalyticsData {
   period: 'day' | 'week' | 'month' | 'year';
@@ -77,7 +77,7 @@ const fetchAnalyticsData = async (
 
     return await response.json();
   } catch (error) {
-    logger.error('Analytics fetch error:', error);
+    logger.error('Analytics fetch error:', error instanceof Error ? error : new Error(String(error)));
     // Return empty data structure on error
     return {
       period,
@@ -116,7 +116,7 @@ export function AnalyticsDashboard({
       const analyticsData = await fetchAnalyticsData(selectedPeriod);
       setData(analyticsData);
     } catch (error) {
-      logger.error('Failed to load analytics:', error);
+      logger.error('Failed to load analytics:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsLoading(false);
     }

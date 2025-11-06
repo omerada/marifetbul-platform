@@ -21,7 +21,7 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { useWebSocket } from '@/hooks/infrastructure/websocket';
 import { useToast } from '@/hooks/core/useToast';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ==================== TYPES ====================
 
@@ -158,7 +158,7 @@ export function useModerationNotifications(
       logger.info('useModerationNotifications', 'WebSocket disconnected');
     },
     onError: (error) => {
-      logger.error('useModerationNotifications', 'WebSocket error', { error });
+      logger.error('useModerationNotifications: WebSocket error', undefined, { error });
     },
   });
 
@@ -185,9 +185,7 @@ export function useModerationNotifications(
   const playSound = useCallback(() => {
     if (soundRef.current && enableSound) {
       soundRef.current.play().catch((err) => {
-        logger.debug('useModerationNotifications', 'Sound play failed', {
-          error: err,
-        });
+        logger.debug('useModerationNotifications', { errorerr,  });
       });
     }
   }, [enableSound]);
@@ -197,10 +195,7 @@ export function useModerationNotifications(
    */
   const handleNewComment = useCallback(
     (payload: CommentEventPayload) => {
-      logger.info('useModerationNotifications', 'New comment received', {
-        commentId: payload.commentId,
-        postTitle: payload.postTitle,
-      });
+      logger.info('useModerationNotifications', { commentIdpayloadcommentId, postTitlepayloadpostTitle,  });
 
       // Custom handler
       handlers.onNewComment?.(payload);
@@ -237,10 +232,7 @@ export function useModerationNotifications(
    */
   const handleCommentApproved = useCallback(
     (payload: CommentEventPayload) => {
-      logger.info('useModerationNotifications', 'Comment approved', {
-        commentId: payload.commentId,
-        moderator: payload.moderatorName,
-      });
+      logger.info('useModerationNotifications', { commentIdpayloadcommentId, moderatorpayloadmoderatorName,  });
 
       // Custom handler
       handlers.onCommentApproved?.(payload);
@@ -264,11 +256,7 @@ export function useModerationNotifications(
    */
   const handleCommentRejected = useCallback(
     (payload: CommentEventPayload) => {
-      logger.info('useModerationNotifications', 'Comment rejected', {
-        commentId: payload.commentId,
-        moderator: payload.moderatorName,
-        reason: payload.reason,
-      });
+      logger.info('useModerationNotifications', { commentIdpayloadcommentId, moderatorpayloadmoderatorName, reasonpayloadreason,  });
 
       // Custom handler
       handlers.onCommentRejected?.(payload);
@@ -292,9 +280,7 @@ export function useModerationNotifications(
    */
   const handleCommentFlagged = useCallback(
     (payload: CommentEventPayload) => {
-      logger.info('useModerationNotifications', 'Comment flagged', {
-        commentId: payload.commentId,
-      });
+      logger.info('useModerationNotifications', { commentIdpayloadcommentId,  });
 
       // Custom handler
       handlers.onCommentFlagged?.(payload);
@@ -324,10 +310,7 @@ export function useModerationNotifications(
    */
   const handleCommentSpam = useCallback(
     (payload: CommentEventPayload) => {
-      logger.info('useModerationNotifications', 'Comment marked as spam', {
-        commentId: payload.commentId,
-        moderator: payload.moderatorName,
-      });
+      logger.info('useModerationNotifications', { commentIdpayloadcommentId, moderatorpayloadmoderatorName,  });
 
       // Custom handler
       handlers.onCommentSpam?.(payload);
@@ -351,11 +334,7 @@ export function useModerationNotifications(
    */
   const handleBulkModeration = useCallback(
     (payload: BulkModerationEventPayload) => {
-      logger.info('useModerationNotifications', 'Bulk moderation', {
-        count: payload.count,
-        action: payload.action,
-        moderator: payload.moderatorName,
-      });
+      logger.info('useModerationNotifications', { countpayloadcount, actionpayloadaction, moderatorpayloadmoderatorName,  });
 
       // Custom handler
       handlers.onBulkModeration?.(payload);
@@ -419,14 +398,10 @@ export function useModerationNotifications(
             break;
 
           default:
-            logger.debug(
-              'useModerationNotifications',
-              'Unknown event type',
-              wsMessage
-            );
+            logger.debug('useModerationNotifications', { wsMessage });
         }
       } catch (error) {
-        logger.error('useModerationNotifications', 'Failed to handle message', {
+        logger.error('useModerationNotifications: Failed to handle message', undefined, {
           error,
           message,
         });

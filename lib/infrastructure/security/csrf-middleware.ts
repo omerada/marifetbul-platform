@@ -52,11 +52,7 @@ export function validateCsrfFromRequest(
     const headerToken = request.headers.get(headerName);
 
     if (!headerToken) {
-      logger.warn('CSRF validation failed: No token in header', {
-        method: request.method,
-        url: request.url,
-        headerName,
-      });
+      logger.warn('CSRF validation failed: No token in header', { methodrequestmethod, urlrequesturl, headerName,  });
       return {
         valid: false,
         error: 'CSRF token missing from request header',
@@ -67,10 +63,7 @@ export function validateCsrfFromRequest(
     const cookieToken = getCsrfTokenFromCookie();
 
     if (!cookieToken) {
-      logger.warn('CSRF validation failed: No token in cookie', {
-        method: request.method,
-        url: request.url,
-      });
+      logger.warn('CSRF validation failed: No token in cookie', { methodrequestmethod, urlrequesturl,  });
       return {
         valid: false,
         error: 'CSRF token missing from cookie',
@@ -81,10 +74,7 @@ export function validateCsrfFromRequest(
     const isValid = validateCsrfToken(headerToken, cookieToken);
 
     if (!isValid) {
-      logger.warn('CSRF validation failed: Token mismatch', {
-        method: request.method,
-        url: request.url,
-        headerToken: headerToken.substring(0, 8) + '...',
+      logger.warn('CSRF validation failed: Token mismatch', { methodrequestmethod, urlrequesturl, headerTokenheaderTokensubstring0, 8 }) + '...',
         cookieToken: cookieToken.substring(0, 8) + '...',
       });
       return {
@@ -129,11 +119,7 @@ export function withCsrfProtection(
     const validation = validateCsrfFromRequest(request);
 
     if (!validation.valid) {
-      logger.warn('CSRF protection blocked request', {
-        method: request.method,
-        url: request.url,
-        error: validation.error,
-      });
+      logger.warn('CSRF protection blocked request', { methodrequestmethod, urlrequesturl, errorvalidationerror,  });
 
       return NextResponse.json(
         {
@@ -217,9 +203,7 @@ export function createCsrfMiddleware(
       // Check if path should skip CSRF validation
       const url = new URL(request.url);
       if (skipPaths.some((path) => url.pathname.startsWith(path))) {
-        logger.debug('CSRF validation skipped for path', {
-          path: url.pathname,
-        });
+        logger.debug('CSRF validation skipped for path', { pathurlpathname,  });
         return handler(request, context);
       }
 

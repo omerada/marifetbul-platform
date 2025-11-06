@@ -14,7 +14,7 @@ import {
   type PortfolioImageResponse,
 } from '@/lib/api/portfolio';
 import { useAuthState } from '@/hooks/shared/useAuth';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -110,11 +110,7 @@ export function usePortfolioImageUpload(): UsePortfolioImageUploadReturn {
       updateProgress(file.name, { status: 'uploading', progress: 0 });
 
       try {
-        logger.info('[usePortfolioImageUpload] Uploading image', {
-          portfolioId,
-          fileName: file.name,
-          isPrimary,
-        });
+        logger.info('[usePortfolioImageUpload] Uploading image', { portfolioId, fileNamefilename, isPrimary,  });
 
         const uploadedImage = await uploadImageApi(
           portfolioId,
@@ -128,13 +124,11 @@ export function usePortfolioImageUpload(): UsePortfolioImageUploadReturn {
         // Refresh portfolio data
         await mutate(`/portfolios/user/${user.id}`);
 
-        logger.info('[usePortfolioImageUpload] Image uploaded', {
-          imageId: uploadedImage.id,
-        });
+        logger.info('[usePortfolioImageUpload] Image uploaded', { imageIduploadedImageid,  });
 
         return uploadedImage;
       } catch (err) {
-        logger.error('[usePortfolioImageUpload] Upload failed', err);
+        logger.error('[usePortfolioImageUpload] Upload failed', err instanceof Error ? err : new Error(String(err)));
         updateProgress(file.name, {
           status: 'error',
           error: err instanceof Error ? err.message : 'Upload failed',
@@ -175,10 +169,7 @@ export function usePortfolioImageUpload(): UsePortfolioImageUploadReturn {
       const results: PortfolioImageResponse[] = [];
 
       try {
-        logger.info('[usePortfolioImageUpload] Uploading multiple images', {
-          portfolioId,
-          count: files.length,
-        });
+        logger.info('[usePortfolioImageUpload] Uploading multiple images', { portfolioId, countfileslength,  });
 
         // Upload files sequentially (to avoid overwhelming the server)
         for (let i = 0; i < files.length; i++) {
@@ -197,7 +188,7 @@ export function usePortfolioImageUpload(): UsePortfolioImageUploadReturn {
 
         return results;
       } catch (err) {
-        logger.error('[usePortfolioImageUpload] Bulk upload failed', err);
+        logger.error('[usePortfolioImageUpload] Bulk upload failed', err instanceof Error ? err : new Error(String(err)));
         toast.error('Bazı resimler yüklenemedi');
         return results;
       } finally {
@@ -218,10 +209,7 @@ export function usePortfolioImageUpload(): UsePortfolioImageUploadReturn {
       }
 
       try {
-        logger.info('[usePortfolioImageUpload] Deleting image', {
-          portfolioId,
-          imageId,
-        });
+        logger.info('[usePortfolioImageUpload] Deleting image', { portfolioId, imageId,  });
 
         await deleteImageApi(portfolioId, imageId);
 
@@ -234,7 +222,7 @@ export function usePortfolioImageUpload(): UsePortfolioImageUploadReturn {
 
         return true;
       } catch (err) {
-        logger.error('[usePortfolioImageUpload] Delete image failed', err);
+        logger.error('[usePortfolioImageUpload] Delete image failed', err instanceof Error ? err : new Error(String(err)));
         toast.error('Resim silinemedi. Lütfen tekrar deneyin.');
         return false;
       }

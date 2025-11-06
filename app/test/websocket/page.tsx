@@ -15,7 +15,7 @@ import { WebSocketState } from '@/lib/infrastructure/websocket/WebSocketService'
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export default function WebSocketTestPage() {
   const [messages, setMessages] = useState<string[]>([]);
@@ -48,7 +48,7 @@ export default function WebSocketTestPage() {
     },
     onError: (err) => {
       addLog(`⚠️ Error: ${err.message}`);
-      logger.error('WebSocketTest', 'Connection error', { error: err });
+      logger.error('WebSocketTest: Connection error', undefined, { error: err });
     },
   });
 

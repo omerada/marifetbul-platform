@@ -12,7 +12,7 @@ import {
   useAdminDashboardStore,
   useAdminDashboardSelectors,
 } from '@/lib/core/store/admin-dashboard';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * Hook for admin dashboard functionality

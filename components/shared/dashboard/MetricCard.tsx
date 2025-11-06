@@ -1,12 +1,49 @@
 /**
  * ================================================
- * METRIC CARD - Shared Component
+ * METRIC CARD - Shared Component [DEPRECATED]
  * ================================================
- * Reusable card for displaying key metrics with trends
- * Used across all dashboard widgets for consistent stat display
+ * @deprecated Use StatsCard from @/components/domains/dashboard/widgets/StatsCard instead
+ *
+ * This component is kept for backward compatibility only.
+ * All new code should use StatsCard which provides:
+ * - Better TypeScript support
+ * - More consistent API
+ * - Enhanced features (badges, tooltips, variants)
+ * - Better dark mode support
+ *
+ * Migration guide:
+ * ```tsx
+ * // Old (MetricCard)
+ * <MetricCard
+ *   label="Total Users"
+ *   value={1234}
+ *   icon={Users}
+ *   iconColor="text-blue-600"
+ *   trend="up"
+ *   description="Active users"
+ * />
+ *
+ * // New (StatsCard)
+ * <StatsCard
+ *   data={{
+ *     id: 'total-users',
+ *     title: 'Total Users',
+ *     value: '1234',
+ *     subtitle: 'Active users',
+ *     icon: Users,
+ *     iconColor: 'blue',  // No 'text-' prefix
+ *     trend: {
+ *       percentage: 12.5,
+ *       direction: 'up',
+ *       isPositive: true
+ *     }
+ *   }}
+ * />
+ * ```
  *
  * @module components/shared/dashboard
  * @since Sprint 1 - Story 4
+ * @deprecated Since Sprint 2 - Use StatsCard instead
  */
 
 'use client';

@@ -65,7 +65,7 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES
@@ -157,7 +157,7 @@ export default function AdminDisputeDetailPage({
         setTimeline(timelineData.value);
       }
     } catch (error) {
-      logger.error('Failed to fetch dispute data:', error);
+      logger.error('Failed to fetch dispute data:', error instanceof Error ? error : new Error(String(error)));
       toast.error('Veri Yüklenemedi', {
         description: 'İtiraz bilgileri yüklenirken bir hata oluştu.',
       });
@@ -193,7 +193,7 @@ export default function AdminDisputeDetailPage({
       document.body.removeChild(link);
       window.URL.revokeObjectURL(downloadUrl);
     } catch (error) {
-      logger.error('Failed to download evidence:', error);
+      logger.error('Failed to download evidence:', error instanceof Error ? error : new Error(String(error)));
       toast.error('İndirme başarısız', {
         description: 'Dosya indirilemedi.',
       });

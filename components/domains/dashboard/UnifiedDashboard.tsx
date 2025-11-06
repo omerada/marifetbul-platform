@@ -7,6 +7,7 @@
 'use client';
 
 import React, { useMemo, useCallback } from 'react';
+import { toast } from 'sonner';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { useDashboard } from '@/hooks/business/useDashboard';
 import {
@@ -14,7 +15,7 @@ import {
   rejectComment,
   markCommentAsSpam,
 } from '@/lib/api/moderation';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { DashboardSkeleton } from './DashboardSkeleton';
 import { DashboardErrorBoundary } from './DashboardErrorBoundary';
 import {
@@ -79,8 +80,13 @@ export function UnifiedDashboard({
         // Refresh dashboard data after action
         await retry();
 
-        // TODO: Show success toast notification
-        // toast.success(`Item ${action}d successfully`);
+        // Show success toast notification
+        const actionLabels = {
+          approve: 'onaylandı',
+          reject: 'reddedildi',
+          spam: 'spam olarak işaretlendi',
+        };
+        toast.success(`İçerik başarıyla ${actionLabels[action]}`);
       } catch (error) {
         logger.error(
           '[UnifiedDashboard] Moderation action failed',
@@ -88,8 +94,8 @@ export function UnifiedDashboard({
           { itemId, action }
         );
 
-        // TODO: Show error toast notification
-        // toast.error('Moderation action failed');
+        // Show error toast notification
+        toast.error('Moderasyon işlemi başarısız oldu. Lütfen tekrar deneyin.');
       }
     },
     [retry]

@@ -13,7 +13,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import type { PackageTrend } from '@/types/analytics';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface PackageTrendChartProps {
   packageId: string;
@@ -56,7 +56,7 @@ export function PackageTrendChart({
       const result = await response.json();
       setTrends(result.data || result);
     } catch (err) {
-      logger.error('Package trend fetch error:', err);
+      logger.error('Package trend fetch error:', err instanceof Error ? err : new Error(String(err)));
       setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
     } finally {
       setIsLoading(false);

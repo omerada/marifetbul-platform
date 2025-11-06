@@ -11,7 +11,7 @@ import { Card } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import { AlertCircle, RefreshCw, Home } from 'lucide-react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface Props {
   children: ReactNode;

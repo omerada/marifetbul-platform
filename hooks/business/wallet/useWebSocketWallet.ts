@@ -22,7 +22,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { WebSocketManager } from '@/lib/infrastructure/services/websocket';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { formatCurrency } from '@/lib/shared/utils/format';
 import type {
   WalletBalance,
@@ -254,9 +254,7 @@ export function useWebSocketWallet(
           onWalletUpdate(updateData.wallet);
         }
 
-        logger.info('Wallet updated via WebSocket', {
-          walletId: updateData.wallet.id,
-        });
+        logger.info('Wallet updated via WebSocket', { walletIdupdateDatawalletid,  });
       } catch (err) {
         logger.error(
           'Failed to handle wallet update',
@@ -285,9 +283,7 @@ export function useWebSocketWallet(
           showBalanceNotification(updateData.balance);
         }
 
-        logger.info('Balance updated via WebSocket', {
-          balance: updateData.balance.availableBalance,
-        });
+        logger.info('Balance updated via WebSocket', { balanceupdateDatabalanceavailableBalance,  });
       } catch (err) {
         logger.error(
           'Failed to handle balance update',
@@ -316,10 +312,7 @@ export function useWebSocketWallet(
           showTransactionNotification(updateData.transaction, updateData.isNew);
         }
 
-        logger.info('Transaction update via WebSocket', {
-          transactionId: updateData.transaction.id,
-          isNew: updateData.isNew,
-        });
+        logger.info('Transaction update via WebSocket', { transactionIdupdateDatatransactionid, isNewupdateDataisNew,  });
       } catch (err) {
         logger.error(
           'Failed to handle transaction update',
@@ -381,7 +374,7 @@ export function useWebSocketWallet(
         onConnectionChange(false);
       }
 
-      logger.error('WebSocket connection failed', error);
+      logger.error('WebSocket connection failed', error instanceof Error ? error : new Error(String(error)));
     }
   }, [
     userId,

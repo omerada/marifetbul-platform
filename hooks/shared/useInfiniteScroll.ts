@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export interface UseInfiniteScrollOptions<T> {
   initialData?: T[];
@@ -89,11 +89,7 @@ export function useInfiniteScroll<T>({
       setPage(nextPage);
       setHasMore(result.hasMore);
 
-      logger.debug('useInfiniteScroll: Loaded page', {
-        page: nextPage,
-        itemsLoaded: result.data.length,
-        hasMore: result.hasMore,
-      });
+      logger.debug('useInfiniteScroll: Loaded page', { pagenextPage, itemsLoadedresultdatalength, hasMoreresulthasMore,  });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to load more data';
@@ -125,10 +121,7 @@ export function useInfiniteScroll<T>({
       setData(result.data);
       setHasMore(result.hasMore);
 
-      logger.debug('useInfiniteScroll: Refreshed data', {
-        itemsLoaded: result.data.length,
-        hasMore: result.hasMore,
-      });
+      logger.debug('useInfiniteScroll: Refreshed data', { itemsLoadedresultdatalength, hasMoreresulthasMore,  });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to refresh data';

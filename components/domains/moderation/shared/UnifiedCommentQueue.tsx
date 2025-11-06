@@ -23,7 +23,7 @@ import {
   AlertOctagon,
 } from 'lucide-react';
 import { UnifiedButton, Badge } from '@/components/ui';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { toast } from 'sonner';
 import { useCommentModeration } from '@/hooks/business/useCommentModeration';
 import { UnifiedCommentModerationCard } from './UnifiedCommentModerationCard';
@@ -394,11 +394,7 @@ export function UnifiedCommentQueue({
                 role === 'moderator'
                   ? async (id, reason, priority) => {
                       // Escalate to admin logic
-                      logger.info('Comment escalated', {
-                        id,
-                        reason,
-                        priority,
-                      });
+                      logger.info('Comment escalated', { id, reason, priority,  });
                       toast.success('Yorum yöneticiye yükseltildi');
                       return true;
                     }

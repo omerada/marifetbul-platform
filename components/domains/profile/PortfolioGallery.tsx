@@ -8,7 +8,7 @@ import { PortfolioModal } from './PortfolioModal';
 import { PortfolioAnalytics } from './PortfolioAnalytics';
 import { PortfolioShare } from './PortfolioShare';
 import { usePortfolioStore } from '@/stores/portfolioStore';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   Plus,
   ExternalLink,
@@ -46,11 +46,11 @@ export function PortfolioGallery({
   useEffect(() => {
     if (isOwnProfile) {
       fetchMyPortfolios().catch((error) =>
-        logger.error('Failed to fetch my portfolios', error)
+        logger.error('Failed to fetch my portfolios', error instanceof Error ? error : new Error(String(error)))
       );
     } else if (userId) {
       fetchUserPortfolios(userId).catch((error) =>
-        logger.error('Failed to fetch user portfolios', error)
+        logger.error('Failed to fetch user portfolios', error instanceof Error ? error : new Error(String(error)))
       );
     }
   }, [isOwnProfile, userId, fetchMyPortfolios, fetchUserPortfolios]);
@@ -159,7 +159,7 @@ export function PortfolioGallery({
       await reorderPortfolios(newOrderIds);
       setDraggedItemId(targetItemId); // Update dragged position
     } catch (error) {
-      logger.error('Portfolio reorder failed', error);
+      logger.error('Portfolio reorder failed', error instanceof Error ? error : new Error(String(error)));
     }
   };
 

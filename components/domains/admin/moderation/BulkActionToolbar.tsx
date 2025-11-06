@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { toast } from 'sonner';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   bulkApproveComments,
   bulkRejectComments,
@@ -80,7 +80,7 @@ export function BulkActionToolbar({
       onActionComplete();
       onClearSelection();
     } catch (error) {
-      logger.error('Bulk escalate error:', error);
+      logger.error('Bulk escalate error:', error instanceof Error ? error : new Error(String(error)));
       toast.error('Yükseltme sırasında hata oluştu');
     } finally {
       setLoading(false);
@@ -115,7 +115,7 @@ export function BulkActionToolbar({
       onActionComplete();
       onClearSelection();
     } catch (error) {
-      logger.error('Bulk approve error:', error);
+      logger.error('Bulk approve error:', error instanceof Error ? error : new Error(String(error)));
       toast.error('Toplu onaylama sırasında hata oluştu');
     } finally {
       setLoading(false);
@@ -151,7 +151,7 @@ export function BulkActionToolbar({
       onActionComplete();
       onClearSelection();
     } catch (error) {
-      logger.error('Bulk reject error:', error);
+      logger.error('Bulk reject error:', error instanceof Error ? error : new Error(String(error)));
       toast.error('Toplu reddetme sırasında hata oluştu');
     } finally {
       setLoading(false);
@@ -195,7 +195,7 @@ export function BulkActionToolbar({
       onActionComplete();
       onClearSelection();
     } catch (error) {
-      logger.error('Bulk spam error:', error);
+      logger.error('Bulk spam error:', error instanceof Error ? error : new Error(String(error)));
       toast.error('Spam işaretleme sırasında hata oluştu');
     } finally {
       setLoading(false);

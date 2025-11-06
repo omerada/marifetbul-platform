@@ -28,7 +28,7 @@ import {
   type PaymentMethod,
   type AddPaymentMethodRequest,
 } from '@/lib/api/payment-method';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // HELPER FUNCTIONS

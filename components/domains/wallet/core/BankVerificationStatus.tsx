@@ -38,7 +38,7 @@ import {
   type BankAccountResponse,
   BankAccountStatus,
 } from '@/lib/api/bank-accounts';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import Link from 'next/link';
 
 // ================================================

@@ -3,7 +3,7 @@
  * Provides common functionality for all domain services
  * Handles error management, logging, and validation
  */
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export abstract class BaseService {
   protected readonly serviceName: string;

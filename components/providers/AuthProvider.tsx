@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { usePathname } from 'next/navigation';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -37,16 +37,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         '[AuthProvider] Checking auth status for authenticated user'
       );
       checkAuthStatus().catch((error) => {
-        logger.error('[AuthProvider] Auth status check failed:', error);
+        logger.error('[AuthProvider] Auth status check failed:', error instanceof Error ? error : new Error(String(error)));
         // Don't logout on auth pages - let them try to login
       });
     } else {
-      logger.debug('[AuthProvider] Skipping auth check', {
-        isMounted,
-        isAuthenticated,
-        isAuthPage,
-        pathname,
-      });
+      logger.debug('[AuthProvider] Skipping auth check', { isMounted, isAuthenticated, isAuthPage, pathname,  });
     }
   }, [isMounted, isAuthenticated, pathname, checkAuthStatus]);
 

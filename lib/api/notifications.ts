@@ -19,7 +19,7 @@
 
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { z } from 'zod';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ==================== ENUMS ====================
 
@@ -201,10 +201,7 @@ export async function getNotifications(
   page: number = 0,
   size: number = 20
 ): Promise<PaginatedNotifications> {
-  logger.debug(
-    'notifications.api',
-    `Fetching notifications: page=${page}, size=${size}`
-  );
+  logger.debug('notifications.api', { sizesize });
 
   const response = await apiClient.get<PaginatedNotifications>(
     `/v1/notifications?page=${page}&size=${size}`
@@ -224,10 +221,7 @@ export async function getUnreadNotifications(
   page: number = 0,
   size: number = 20
 ): Promise<PaginatedNotifications> {
-  logger.debug(
-    'notifications.api',
-    `Fetching unread notifications: page=${page}, size=${size}`
-  );
+  logger.debug('notifications.api', { sizesize });
 
   const response = await apiClient.get<PaginatedNotifications>(
     `/v1/notifications/unread?page=${page}&size=${size}`
@@ -288,10 +282,7 @@ export async function getNotificationsByType(
   page: number = 0,
   size: number = 20
 ): Promise<PaginatedNotifications> {
-  logger.debug(
-    'notifications.api',
-    `Fetching notifications by type: ${type}, page=${page}`
-  );
+  logger.debug('notifications.api', { pagepage });
 
   const response = await apiClient.get<PaginatedNotifications>(
     `/v1/notifications/type/${type}?page=${page}&size=${size}`

@@ -29,7 +29,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { getBalance } from '@/lib/api/wallet';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // PAGE COMPONENT

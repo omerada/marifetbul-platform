@@ -16,7 +16,7 @@
  * @version 1.0.0 - Enhanced
  */
 
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 const STORAGE_KEY = 'marifet_search_history';
 const MAX_HISTORY_SIZE = 20;
@@ -80,7 +80,7 @@ export function addToSearchHistory(
     ].slice(0, MAX_HISTORY_SIZE);
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newHistory));
-    logger.debug('Search history updated', { query, count: newHistory.length });
+    logger.debug('Search history updated', { query, countnewHistorylength });
   } catch (error) {
     logger.error(
       'Failed to add to search history',

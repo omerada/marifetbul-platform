@@ -61,7 +61,7 @@ import {
   Report,
 } from '@/hooks/business/moderation/useReportModeration';
 import { cn } from '@/lib/utils';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES

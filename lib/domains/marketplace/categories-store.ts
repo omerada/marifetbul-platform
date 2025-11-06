@@ -15,7 +15,7 @@ import {
   getCategoryById,
   getPopularCategories,
 } from '@/lib/domains/marketplace/categories-data';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ==========================================
 // MARKETPLACE CATEGORIES STORE (ZUSTAND)

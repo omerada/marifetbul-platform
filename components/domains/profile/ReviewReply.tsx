@@ -8,7 +8,7 @@ import { Send, X } from 'lucide-react';
 import { useReviews } from '@/hooks';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Textarea } from '@/components/ui/Textarea';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 const replySchema = z.object({
   content: z
@@ -52,7 +52,7 @@ export function ReviewReply({
       reset();
       onSubmit();
     } catch (error) {
-      logger.error('Yanıt gönderilirken hata:', error);
+      logger.error('Yanıt gönderilirken hata:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsSubmitting(false);
     }

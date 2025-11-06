@@ -21,7 +21,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { walletApi } from '@/lib/api/wallet';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { toast } from 'sonner';
 import type {
   Wallet,
@@ -374,10 +374,7 @@ export function useWalletDashboard(
           setLastUpdated(new Date());
           retryCountRef.current = 0; // Reset retry count on success
 
-          logger.debug('[useWalletDashboard] Data loaded successfully', {
-            availableBalance: balance.availableBalance,
-            transactionCount: transactions.length,
-          });
+          logger.debug('[useWalletDashboard] Data loaded successfully', { availableBalancebalanceavailableBalance, transactionCounttransactionslength,  });
 
           if (isRefresh) {
             toast.success('Cüzdan verileri güncellendi');
@@ -436,7 +433,7 @@ export function useWalletDashboard(
         setLastUpdated(new Date());
       }
     } catch (err) {
-      logger.error('[useWalletDashboard] Failed to refetch balance:', err);
+      logger.error('[useWalletDashboard] Failed to refetch balance:', err instanceof Error ? err : new Error(String(err)));
     }
   }, []);
 
@@ -457,7 +454,7 @@ export function useWalletDashboard(
         setLastUpdated(new Date());
       }
     } catch (err) {
-      logger.error('[useWalletDashboard] Failed to refetch transactions:', err);
+      logger.error('[useWalletDashboard] Failed to refetch transactions:', err instanceof Error ? err : new Error(String(err)));
     }
   }, [data.wallet, data.balance, processData]);
 

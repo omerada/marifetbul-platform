@@ -12,7 +12,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import type { RevenueForecast } from '@/types/analytics';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface RevenueForecastChartProps {
   forecastDays?: number;
@@ -55,7 +55,7 @@ export function RevenueForecastChart({
       const result = await response.json();
       setData(result.data || result);
     } catch (err) {
-      logger.error('Revenue forecast fetch error:', err);
+      logger.error('Revenue forecast fetch error:', err instanceof Error ? err : new Error(String(err)));
       setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
     } finally {
       setIsLoading(false);

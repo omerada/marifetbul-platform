@@ -27,7 +27,7 @@ import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/UnifiedSkeleton';
 import { formatCurrency, formatRelativeTime } from '@/lib/shared/formatters';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { Payout } from '@/lib/api/validators';
 import { payoutAdminApi } from '@/lib/api/admin/payout-admin-api';
 
@@ -175,7 +175,7 @@ export function AdminPayoutApprovalWidget({
       const data = await payoutAdminApi.getPendingPayouts();
       setPayouts(data.slice(0, maxItems) as Payout[]);
     } catch (error) {
-      logger.error('Failed to load pending payouts:', error);
+      logger.error('Failed to load pending payouts:', error instanceof Error ? error : new Error(String(error)));
       // Fallback to empty array on error
       setPayouts([]);
     } finally {
@@ -193,7 +193,7 @@ export function AdminPayoutApprovalWidget({
       // Remove from list after successful approval
       setPayouts((prev) => prev.filter((p) => p.id !== payoutId));
     } catch (error) {
-      logger.error('Failed to approve payout:', error);
+      logger.error('Failed to approve payout:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setProcessingId(null);
     }
@@ -212,7 +212,7 @@ export function AdminPayoutApprovalWidget({
       // Remove from list after successful rejection
       setPayouts((prev) => prev.filter((p) => p.id !== payoutId));
     } catch (error) {
-      logger.error('Failed to reject payout:', error);
+      logger.error('Failed to reject payout:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setProcessingId(null);
     }

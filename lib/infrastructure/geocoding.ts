@@ -10,7 +10,7 @@
  */
 
 import { getBackendApiUrl } from '@/lib/config/api';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 const API_URL = getBackendApiUrl();
 

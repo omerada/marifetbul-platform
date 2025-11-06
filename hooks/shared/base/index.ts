@@ -5,7 +5,7 @@
 // Async operations are handled by unified async system
 
 import { useEffect, useRef, useCallback, useState } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // ASYNC OPERATION HOOKS (UNIFIED SYSTEM)

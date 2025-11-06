@@ -66,10 +66,16 @@ export { paymentApi } from './payment';
 export type { Payment, PaymentIntent } from './validators';
 export type { CreatePaymentRequest, RefundRequest } from './payment';
 
-// Export Payout API
-export { payoutApi } from './payout';
-export type { Payout, PayoutEligibility } from './validators';
-export type { CreatePayoutRequest, RejectPayoutRequest } from './payout';
+// Payout API (new location - consolidated)
+export * from './payouts';
+
+// Legacy payout exports (deprecated - will be removed in Sprint 2)
+// @deprecated Use exports from './payouts' instead
+export type { RequestPayoutRequest as CreatePayoutRequest } from './payouts';
+export type {
+  PayoutResponse as Payout,
+  PayoutResponse as PayoutEligibility,
+} from './payouts';
 
 // Export Payment Method API
 export { paymentMethodApi } from './payment-method';

@@ -7,7 +7,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   ModerationAnalytics,
   AnalyticsFilters,
@@ -80,7 +80,7 @@ export function useModerationAnalytics(): UseModerationAnalyticsReturn {
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Bilinmeyen bir hata oluştu';
-      logger.error('Error fetching analytics:', err);
+      logger.error('Error fetching analytics:', err instanceof Error ? err : new Error(String(err)));
       setError(message);
     } finally {
       setIsLoading(false);
@@ -118,7 +118,7 @@ export function useModerationAnalytics(): UseModerationAnalyticsReturn {
       } catch (err) {
         const message =
           err instanceof Error ? err.message : 'Dışa aktarma başarısız';
-        logger.error('Error exporting data:', err);
+        logger.error('Error exporting data:', err instanceof Error ? err : new Error(String(err)));
         setError(message);
       }
     },

@@ -18,7 +18,7 @@ import { Card } from '@/components/ui/Card';
 import { toast } from 'sonner';
 import { usePortfolio } from '@/hooks/business/portfolio/usePortfolio';
 import { uploadImage, isCloudinaryConfigured } from '@/lib/utils/cloudinary';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   PortfolioResponse,
   PortfolioImageResponse,
@@ -171,7 +171,7 @@ export function PortfolioEditModal({
       }
     } catch (error) {
       toast.error('Görsel yüklenirken hata oluştu', { id: 'upload' });
-      logger.error('Image upload error:', error);
+      logger.error('Image upload error:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setUploadingImage(false);
     }

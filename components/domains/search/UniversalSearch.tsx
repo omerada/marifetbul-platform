@@ -13,7 +13,7 @@ import {
 import { Input } from '@/components/ui/Input';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { trackSearch } from '@/lib/api/search-analytics';
 
 interface SearchSuggestion {

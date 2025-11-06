@@ -7,7 +7,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   buildQueryParams,
   buildFetchHeaders,
@@ -57,7 +57,7 @@ export function useModerationData(
       const errorMessage =
         err instanceof Error ? err.message : 'Bilinmeyen hata';
       setError(errorMessage);
-      logger.error('Moderasyon kuyruğu alınamadı:', err);
+      logger.error('Moderasyon kuyruğu alınamadı:', err instanceof Error ? err : new Error(String(err)));
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +75,7 @@ export function useModerationData(
         setStats(data.data);
       }
     } catch (err) {
-      logger.error('Moderasyon istatistikleri alınamadı:', err);
+      logger.error('Moderasyon istatistikleri alınamadı:', err instanceof Error ? err : new Error(String(err)));
     }
   }, []);
 

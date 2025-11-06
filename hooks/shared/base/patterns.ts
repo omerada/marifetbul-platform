@@ -11,7 +11,7 @@ import {
   type MutationHookReturn as BaseMutationHookReturn,
   type PaginatedHookReturn,
 } from './index';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // HOOK RESPONSIBILITY CATEGORIES
@@ -327,7 +327,7 @@ export function withErrorBoundary<TReturn>(
     try {
       return hook();
     } catch (error) {
-      logger.error('Hook error caught:', error);
+      logger.error('Hook error caught:', error instanceof Error ? error : new Error(String(error)));
       return fallbackValue;
     }
   };

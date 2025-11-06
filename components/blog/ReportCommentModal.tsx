@@ -31,7 +31,7 @@ import { Textarea } from '@/components/ui/Textarea';
 import { AlertCircle, Flag } from 'lucide-react';
 import { toast } from 'sonner';
 import { reportComment } from '@/lib/api/blog';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES
@@ -152,7 +152,7 @@ export function ReportCommentModal({
       // Close modal
       onClose();
     } catch (error) {
-      logger.error('Failed to report comment:', error);
+      logger.error('Failed to report comment:', error instanceof Error ? error : new Error(String(error)));
       toast.error('Şikayet Gönderilemedi', {
         description:
           error instanceof Error

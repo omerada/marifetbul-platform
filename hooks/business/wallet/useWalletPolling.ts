@@ -16,7 +16,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useWallet } from './useWallet';
 import { useTransactions } from './useTransactions';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES

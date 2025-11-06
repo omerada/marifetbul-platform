@@ -13,7 +13,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import type { CategoryPerformance } from '@/types/analytics';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface CategoryGrowthTrendsProps {
   categoryId?: string;
@@ -57,7 +57,7 @@ export function CategoryGrowthTrends({
       const result = await response.json();
       setTrends(Array.isArray(result.data) ? result.data : [result.data]);
     } catch (err) {
-      logger.error('Category growth trends fetch error:', err);
+      logger.error('Category growth trends fetch error:', err instanceof Error ? err : new Error(String(err)));
       setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
     } finally {
       setIsLoading(false);

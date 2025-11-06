@@ -5,8 +5,20 @@
  * Central export point for all wallet-related hooks
  *
  * @author MarifetBul Development Team
- * @version 1.1.0 - Sprint 1 Epic 1.1: Added useWalletData
+ * @version 1.2.0 - Sprint 1 Story 2.2: Added useWalletConfig & useBankAccounts (v2)
  */
+
+// Sprint 1 - Story 2.2 - Configuration & Bank Accounts
+export { useWalletConfig } from './useWalletConfig';
+export type { UseWalletConfigReturn, WalletConfig } from './useWalletConfig';
+
+export { useBankAccounts } from './useBankAccounts';
+export type {
+  UseBankAccountsReturn,
+  BankAccount,
+  BankAccountStatus,
+  AddBankAccountRequest,
+} from './useBankAccounts';
 
 // Sprint 1 - Epic 1.1 - NEW Hook
 export { useWalletData } from './useWalletData';

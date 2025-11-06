@@ -24,7 +24,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/hooks/shared/useAuth';
 import { useToast } from '@/hooks';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   getConversationById,
   getMessages,
@@ -84,11 +84,7 @@ export default function ConversationPage() {
   const { markAsRead: _markAsRead, markAllAsRead } = useReadReceipts({
     conversationId: conversationId || '',
     onMessageRead: (event) => {
-      logger.debug('ConversationPage', 'Message read receipt received', {
-        messageId: event.messageId,
-        readBy: event.readByName,
-        readAt: event.readAt,
-      });
+      logger.debug('ConversationPage', { messageIdeventmessageId, readByeventreadByName, readAteventreadAt,  });
     },
   });
 
@@ -111,12 +107,9 @@ export default function ConversationPage() {
         // Mark all messages as read (bulk operation)
         await markAllAsRead();
 
-        logger.info('ConversationPage', 'Data loaded', {
-          conversationId,
-          messageCount: messagesData.content.length,
-        });
+        logger.info('ConversationPage', { conversationId, messageCountmessagesDatacontentlength,  });
       } catch (error) {
-        logger.error('ConversationPage', 'Failed to load data', { error });
+        logger.error('ConversationPage: Failed to load data', undefined, { error });
       } finally {
         setIsLoading(false);
       }
@@ -129,17 +122,14 @@ export default function ConversationPage() {
   useEffect(() => {
     if (!isConnected || !conversationId || !user) return;
 
-    logger.info('ConversationPage', 'Subscribing to real-time updates', {
-      conversationId,
-      userId: user.id,
-    });
+    logger.info('ConversationPage', { conversationId, userIduserid,  });
 
     // Subscribe to new messages for this user
     const messageDestination = subscribe(
       `/topic/user/${user.id}/messages`,
       (message: unknown) => {
         const event = message as WebSocketMessageEvent;
-        logger.info('ConversationPage', 'Received message event', { event });
+        logger.info('ConversationPage', { event });
 
         if (event.conversationId === conversationId) {
           if (event.type === 'NEW_MESSAGE') {
@@ -154,7 +144,7 @@ export default function ConversationPage() {
             // Mark as read if not from current user
             if (event.message.senderId !== user.id) {
               markAllAsRead().catch((err) =>
-                logger.error('ConversationPage', 'Failed to mark as read', {
+                logger.error('ConversationPage: Failed to mark as read', undefined, {
                   error: err,
                 })
               );
@@ -177,7 +167,7 @@ export default function ConversationPage() {
       `/topic/conversation/${conversationId}/typing`,
       (message: unknown) => {
         const event = message as WebSocketTypingEvent;
-        logger.debug('ConversationPage', 'Typing event', { event });
+        logger.debug('ConversationPage', { event });
 
         // Ignore own typing events
         if (event.userId === user.id) return;
@@ -291,11 +281,9 @@ export default function ConversationPage() {
       // Replace optimistic message with real one
       setMessages((prev) => prev.map((m) => (m.id === tempId ? message : m)));
 
-      logger.info('ConversationPage', 'Message sent', {
-        messageId: message.id,
-      });
+      logger.info('ConversationPage', { messageIdmessageid,  });
     } catch (error) {
-      logger.error('ConversationPage', 'Failed to send message', { error });
+      logger.error('ConversationPage: Failed to send message', undefined, { error });
 
       // Remove optimistic message on error
       setMessages((prev) => prev.filter((m) => !m.id.startsWith('temp-')));

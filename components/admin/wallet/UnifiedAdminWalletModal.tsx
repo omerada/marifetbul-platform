@@ -64,7 +64,7 @@ import {
   type AdminWalletDetail,
 } from '@/lib/api/admin/wallet-admin-api';
 import { StatusBadge } from '@/components/shared/StatusBadge';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   WalletResponse,
   Transaction,

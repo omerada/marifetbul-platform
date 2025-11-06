@@ -13,7 +13,7 @@ import { useState, useCallback } from 'react';
 import { blogApi } from '@/lib/api/blog';
 import type { BlogComment } from '@/lib/api/blog';
 import { validateCommentContent } from './useCommentSubmission';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES
@@ -62,7 +62,7 @@ export function useCommentActions(): UseCommentActionsReturn {
         });
         return updatedComment;
       } catch (err) {
-        logger.error('Failed to update comment:', err);
+        logger.error('Failed to update comment:', err instanceof Error ? err : new Error(String(err)));
 
         if (err instanceof Error) {
           if (err.message.includes('403')) {
@@ -96,7 +96,7 @@ export function useCommentActions(): UseCommentActionsReturn {
         await blogApi.deleteComment(commentId);
         return true;
       } catch (err) {
-        logger.error('Failed to delete comment:', err);
+        logger.error('Failed to delete comment:', err instanceof Error ? err : new Error(String(err)));
 
         if (err instanceof Error) {
           if (err.message.includes('403')) {

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export interface ReviewEligibility {
   canReview: boolean;
@@ -59,10 +59,7 @@ export function useReviewEligibility({
       // Backend directly returns boolean in data field
       setCanReview(data === true || data.data === true);
 
-      logger.debug('Review eligibility checked', {
-        orderId,
-        canReview: data === true || data.data === true,
-      });
+      logger.debug('Review eligibility checked', { orderId, canReviewdatatruedatadatatrue,  });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Bir hata oluştu';

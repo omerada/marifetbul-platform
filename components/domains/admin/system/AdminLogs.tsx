@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   Search,
   Download,
@@ -172,7 +172,7 @@ export function AdminLogs() {
         a.click();
       }
     } catch (error) {
-      logger.error('Failed to export logs:', error);
+      logger.error('Failed to export logs:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 

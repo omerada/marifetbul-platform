@@ -3,7 +3,7 @@
  * Handles uploading various file types to Cloudinary for order deliveries
  */
 
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // Cloudinary configuration
 const CLOUDINARY_CONFIG = {
@@ -183,13 +183,7 @@ export async function uploadFile(
     // Upload URL
     const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/${resourceType}/upload`;
 
-    logger.info('Uploading file to Cloudinary', {
-      fileName: file.name,
-      fileSize: file.size,
-      fileType: file.type,
-      resourceType,
-      folder: ORDER_DELIVERIES_FOLDER,
-    });
+    logger.info('Uploading file to Cloudinary', { fileNamefilename, fileSizefilesize, fileTypefiletype, resourceType, folderORDER_DELIVERIES_FOLDER,  });
 
     // Use XMLHttpRequest for progress tracking
     return new Promise<FileUploadResult>((resolve) => {
@@ -211,13 +205,7 @@ export async function uploadFile(
           try {
             const data: CloudinaryUploadResponse = JSON.parse(xhr.responseText);
 
-            logger.info('File uploaded successfully', {
-              publicId: data.public_id,
-              url: data.secure_url,
-              format: data.format,
-              size: data.bytes,
-              fileName: file.name,
-            });
+            logger.info('File uploaded successfully', { publicIddatapublic_id, urldatasecure_url, formatdataformat, sizedatabytes, fileNamefilename,  });
 
             resolve({
               success: true,

@@ -13,7 +13,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { moderationApi } from '@/lib/api/moderation';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   ModerationStats,
   PendingItem,
@@ -75,7 +75,7 @@ export function useModerationDashboard(
       const errorMessage =
         err instanceof Error ? err.message : 'Veri yüklenirken hata oluştu';
       setError(errorMessage);
-      logger.error('Moderation dashboard error:', err);
+      logger.error('Moderation dashboard error:', err instanceof Error ? err : new Error(String(err)));
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);

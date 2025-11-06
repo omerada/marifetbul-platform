@@ -7,7 +7,7 @@
  * For getting user data, call the /api/v1/auth/me endpoint instead of
  * decoding the JWT client-side (tokens are in httpOnly cookies).
  */
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * Get cookie value by name

@@ -15,7 +15,7 @@
 import React, { useCallback, useMemo } from 'react';
 import useSWR from 'swr';
 import { moderationApi } from '@/lib/api/moderation';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   ModeratorActivity,
   ActionType,
@@ -80,7 +80,7 @@ export function useModeratorActivity(
         logger.debug('Moderator activities fetched:', data.activities.length);
         return data;
       } catch (err) {
-        logger.error('Failed to fetch moderator activities:', err);
+        logger.error('Failed to fetch moderator activities:', err instanceof Error ? err : new Error(String(err)));
         throw err;
       }
     },

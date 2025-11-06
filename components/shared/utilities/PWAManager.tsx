@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   Download,
   Wifi,
@@ -109,7 +109,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
         setCacheSize(`${(totalSize / (1024 * 1024)).toFixed(1)} MB`);
       }
     } catch (error) {
-      logger.error('Cache size calculation failed:', error);
+      logger.error('Cache size calculation failed:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -127,7 +127,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
 
       setInstallPrompt(null);
     } catch (error) {
-      logger.error('Installation failed:', error);
+      logger.error('Installation failed:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -148,7 +148,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
         });
       }
     } catch (error) {
-      logger.error('Notification permission failed:', error);
+      logger.error('Notification permission failed:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -163,7 +163,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
         alert('Önbellek temizlendi!');
       }
     } catch (error) {
-      logger.error('Cache clearing failed:', error);
+      logger.error('Cache clearing failed:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 

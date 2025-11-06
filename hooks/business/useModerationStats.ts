@@ -15,7 +15,7 @@
 import { useCallback } from 'react';
 import useSWR from 'swr';
 import { moderationApi } from '@/lib/api/moderation';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { ModerationStats } from '@/types/business/moderation';
 
 // ============================================================================
@@ -56,7 +56,7 @@ export function useModerationStats(
         logger.debug('Moderation stats fetched:', data);
         return data;
       } catch (err) {
-        logger.error('Failed to fetch moderation stats:', err);
+        logger.error('Failed to fetch moderation stats:', err instanceof Error ? err : new Error(String(err)));
         throw err;
       }
     },

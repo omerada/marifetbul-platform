@@ -1,5 +1,5 @@
 // Production-ready performance monitoring core
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export interface PerformanceMetric {
   name: string;

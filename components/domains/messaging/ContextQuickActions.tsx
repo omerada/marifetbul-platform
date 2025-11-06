@@ -1,6 +1,6 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ExternalLink,
@@ -12,7 +12,16 @@ import {
   FileText,
   Star,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/Dialog';
 import type {
   ContextType,
   MessageContext,
@@ -25,6 +34,10 @@ interface ContextQuickActionsProps {
   userRole?: 'buyer' | 'seller' | 'employer' | 'freelancer';
   /** Compact mode (fewer buttons) */
   compact?: boolean;
+  /** Callback when accept action is triggered */
+  onAccept?: (contextId: string) => Promise<void>;
+  /** Callback when reject action is triggered */
+  onReject?: (contextId: string, reason?: string) => Promise<void>;
 }
 
 /**
@@ -210,9 +223,66 @@ export const ContextQuickActions = memo(function ContextQuickActions({
   context,
   userRole,
   compact = false,
+  onAccept,
+  onReject,
 }: ContextQuickActionsProps) {
   const router = useRouter();
+  const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+
   const actions = getQuickActions(context.type, userRole, compact);
+
+  const handleAccept = async () => {
+    if (!onAccept) {
+      // Fallback to navigation if no callback
+      router.push(`${getContextPath(context.type, context.id)}?action=accept`);
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      await onAccept(context.id);
+      toast.success('İşlem başarıyla kabul edildi');
+      setIsAcceptModalOpen(false);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Kabul işlemi başarısız oldu'
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!onReject) {
+      // Fallback to navigation if no callback
+      router.push(`${getContextPath(context.type, context.id)}?action=reject`);
+      return;
+    }
+
+    if (!rejectReason.trim()) {
+      toast.error('Lütfen reddetme sebebini belirtin');
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      await onReject(context.id, rejectReason);
+      toast.success('İşlem başarıyla reddedildi');
+      setIsRejectModalOpen(false);
+      setRejectReason('');
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Reddetme işlemi başarısız oldu'
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const handleAction = (actionType: string) => {
     const contextPath = getContextPath(context.type, context.id);
@@ -225,15 +295,12 @@ export const ContextQuickActions = memo(function ContextQuickActions({
         router.push(`${contextPath}/edit`);
         break;
       case 'accept':
-        // Open accept modal/dialog
-        // This would typically trigger a modal or inline action
-        // TODO: Implement accept modal
-        router.push(`${contextPath}?action=accept`);
+        // Open accept modal
+        setIsAcceptModalOpen(true);
         break;
       case 'reject':
-        // Open reject modal/dialog
-        // TODO: Implement reject modal
-        router.push(`${contextPath}?action=reject`);
+        // Open reject modal
+        setIsRejectModalOpen(true);
         break;
       case 'complete':
         router.push(`${contextPath}?action=complete`);
@@ -255,32 +322,116 @@ export const ContextQuickActions = memo(function ContextQuickActions({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      {actions.map((action) => {
-        const Icon = action.icon;
-        return (
-          <UnifiedButton
-            key={action.key}
-            variant={action.variant || 'outline'}
-            size={compact ? 'sm' : 'md'}
-            onClick={() => handleAction(action.action)}
-            leftIcon={<Icon className="h-4 w-4" />}
-          >
-            {action.label}
-          </UnifiedButton>
-        );
-      })}
+    <>
+      <div className="flex flex-wrap items-center gap-2">
+        {actions.map((action) => {
+          const Icon = action.icon;
+          return (
+            <UnifiedButton
+              key={action.key}
+              variant={action.variant || 'outline'}
+              size={compact ? 'sm' : 'md'}
+              onClick={() => handleAction(action.action)}
+              leftIcon={<Icon className="h-4 w-4" />}
+            >
+              {action.label}
+            </UnifiedButton>
+          );
+        })}
 
-      {/* External link to context */}
-      <UnifiedButton
-        variant="ghost"
-        size={compact ? 'sm' : 'md'}
-        onClick={() => router.push(getContextPath(context.type, context.id))}
-        leftIcon={<ExternalLink className="h-4 w-4" />}
-        aria-label="Yeni sekmede aç"
-      >
-        {compact ? '' : 'Detaylar'}
-      </UnifiedButton>
-    </div>
+        {/* External link to context */}
+        <UnifiedButton
+          variant="ghost"
+          size={compact ? 'sm' : 'md'}
+          onClick={() => router.push(getContextPath(context.type, context.id))}
+          leftIcon={<ExternalLink className="h-4 w-4" />}
+          aria-label="Yeni sekmede aç"
+        >
+          {compact ? '' : 'Detaylar'}
+        </UnifiedButton>
+      </div>
+
+      {/* Accept Modal */}
+      <Dialog open={isAcceptModalOpen} onOpenChange={setIsAcceptModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>İşlemi Onayla</DialogTitle>
+            <DialogDescription>
+              {context.type === 'ORDER' ? 'Siparişi' : 'Teklifi'} kabul etmek
+              istediğinize emin misiniz?
+              <br />
+              <strong className="mt-2 block">{context.title}</strong>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <UnifiedButton
+              variant="outline"
+              onClick={() => setIsAcceptModalOpen(false)}
+              disabled={isProcessing}
+            >
+              İptal
+            </UnifiedButton>
+            <UnifiedButton
+              variant="primary"
+              onClick={handleAccept}
+              disabled={isProcessing}
+            >
+              {isProcessing ? 'İşleniyor...' : 'Onayla'}
+            </UnifiedButton>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reject Modal */}
+      <Dialog open={isRejectModalOpen} onOpenChange={setIsRejectModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>İşlemi Reddet</DialogTitle>
+            <DialogDescription>
+              {context.type === 'ORDER' ? 'Siparişi' : 'Teklifi'} reddetmek
+              istediğinize emin misiniz?
+              <br />
+              <strong className="mt-2 block">{context.title}</strong>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="my-4">
+            <label
+              htmlFor="reject-reason"
+              className="mb-2 block text-sm font-medium"
+            >
+              Reddetme Sebebi <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              id="reject-reason"
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+              rows={4}
+              placeholder="Lütfen reddetme sebebinizi açıklayın..."
+              disabled={isProcessing}
+            />
+          </div>
+          <DialogFooter>
+            <UnifiedButton
+              variant="outline"
+              onClick={() => {
+                setIsRejectModalOpen(false);
+                setRejectReason('');
+              }}
+              disabled={isProcessing}
+            >
+              İptal
+            </UnifiedButton>
+            <UnifiedButton
+              variant="destructive"
+              onClick={handleReject}
+              disabled={isProcessing || !rejectReason.trim()}
+            >
+              {isProcessing ? 'İşleniyor...' : 'Reddet'}
+            </UnifiedButton>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 });

@@ -8,7 +8,7 @@ import { Loading } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { useFavorites } from '@/hooks/infrastructure/data/useFavorites';
 import { Freelancer, Job, ServicePackage } from '@/types';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   Heart,
   Folder,
@@ -116,7 +116,7 @@ export default function FavoritesPage() {
       setShowCreateFolder(false);
       logger.info('Folder created successfully');
     } catch (error) {
-      logger.error('Failed to create folder', error);
+      logger.error('Failed to create folder', error instanceof Error ? error : new Error(String(error)));
     }
   };
 

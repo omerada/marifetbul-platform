@@ -8,7 +8,7 @@ import {
   SavedSearch,
   SearchConfig,
 } from '@/types/shared/search';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface SearchStore extends SearchState {
   // Actions
@@ -313,18 +313,13 @@ export const useSearchStore = create<SearchStore>()(
         // Analytics
         trackSearch: (query: string, resultCount: number) => {
           // In a real app, this would send to analytics service
-          logger.debug('Search tracked', {
-            query,
-            resultCount,
-            timestamp: new Date().toISOString(),
+          logger.debug('Search tracked', { query, resultCount, timestampnewDate }).toISOString(),
           });
         },
 
         trackResultClick: (resultId: string) => {
           // In a real app, this would send to analytics service
-          logger.debug('Result click tracked', {
-            resultId,
-            timestamp: new Date().toISOString(),
+          logger.debug('Result click tracked', { resultId, timestampnewDate }).toISOString(),
           });
         },
       }),

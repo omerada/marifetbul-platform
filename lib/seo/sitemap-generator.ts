@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   BlogPost,
   Job,

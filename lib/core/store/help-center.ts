@@ -7,7 +7,7 @@ import type {
   PaginationMeta,
 } from '@/types';
 import type { ArticleSearchFormData } from '@/lib/core/validations/support';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // Base types for async state
 interface BaseAsyncState {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { NotificationSettings } from '@/types';
 
 interface NotificationSettingsProps {
@@ -98,7 +98,7 @@ export function NotificationSettingsPanel({
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);
     } catch (error) {
-      logger.error('Ayarlar kaydedilemedi:', error);
+      logger.error('Ayarlar kaydedilemedi:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsLoading(false);
     }

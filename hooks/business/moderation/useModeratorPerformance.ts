@@ -22,7 +22,7 @@
 
 import { useCallback } from 'react';
 import useSWR from 'swr';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // CONSTANTS
@@ -146,7 +146,7 @@ export function useModeratorPerformance(
   // ============================================================================
 
   if (error) {
-    logger.error('Performance metrics error:', error);
+    logger.error('Performance metrics error:', error instanceof Error ? error : new Error(String(error)));
   }
 
   // ============================================================================

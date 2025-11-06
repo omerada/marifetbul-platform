@@ -10,7 +10,7 @@
 import { Component, ReactNode } from 'react';
 import { ApiError, getUserFriendlyErrorMessage } from '@/lib/api/errors';
 import { ErrorAlert } from './ErrorAlert';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface Props {
   /**

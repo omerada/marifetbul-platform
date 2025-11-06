@@ -22,7 +22,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,9 +38,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const limit = searchParams.get('limit') || '20';
 
-    logger.debug('[Moderator Recent Activity API] GET request', {
-      limit,
-    });
+    logger.debug('[Moderator Recent Activity API] GET request', { limit,  });
 
     // Build backend URL with query params
     const backendUrl = new URL(`${BACKEND_API_URL}/moderator/recent-activity`);
@@ -58,11 +56,7 @@ export async function GET(request: NextRequest) {
 
     const data = await response.json();
 
-    logger.debug('[Moderator Recent Activity API] Backend response', {
-      status: response.status,
-      success: response.ok,
-      activityCount: data.data?.length || 0,
-    });
+    logger.debug('[Moderator Recent Activity API] Backend response', { statusresponsestatus, successresponseok, activityCountdatadatalength0,  });
 
     return NextResponse.json(data, { status: response.status });
   } catch (error) {

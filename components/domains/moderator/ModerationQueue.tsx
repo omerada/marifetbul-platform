@@ -45,7 +45,7 @@ import type {
   PendingItemType,
   Priority,
 } from '@/types/business/moderation';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -197,7 +197,7 @@ export function ModerationQueue({
 
       logger.info(`Quick ${action} successful for item: ${itemId}`);
     } catch (error) {
-      logger.error(`Quick ${action} failed for item: ${itemId}`, error);
+      logger.error(`Quick ${action} failed for item: ${itemId}`, error instanceof Error ? error : new Error(String(error)));
     } finally {
       setActionLoading((prev) => ({ ...prev, [itemId]: false }));
     }

@@ -46,7 +46,7 @@ import {
   getNotificationColor,
   isNotificationExpired,
 } from '@/lib/api/notifications';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ==================== TYPES ====================
 
@@ -151,7 +151,7 @@ export default function NotificationsList({
       setTotalElements(response.totalElements);
       setPage(pageNumber);
     } catch (err) {
-      logger.error('NotificationsList', 'Failed to fetch notifications', {
+      logger.error('NotificationsList: Failed to fetch notifications', undefined, {
         err,
       });
       setError('Bildirimler yüklenirken bir hata oluştu.');
@@ -192,7 +192,7 @@ export default function NotificationsList({
         `Marked notification ${notificationId} as read`
       );
     } catch (err) {
-      logger.error('NotificationsList', 'Failed to mark as read', { err });
+      logger.error('NotificationsList: Failed to mark as read', undefined, { err });
     }
   };
 
@@ -218,7 +218,7 @@ export default function NotificationsList({
         `Marked notification ${notificationId} as unread`
       );
     } catch (err) {
-      logger.error('NotificationsList', 'Failed to mark as unread', { err });
+      logger.error('NotificationsList: Failed to mark as unread', undefined, { err });
     }
   };
 
@@ -245,7 +245,7 @@ export default function NotificationsList({
         `Deleted notification ${notificationId}`
       );
     } catch (err) {
-      logger.error('NotificationsList', 'Failed to delete notification', {
+      logger.error('NotificationsList: Failed to delete notification', undefined, {
         err,
       });
     }
@@ -255,7 +255,7 @@ export default function NotificationsList({
     // Mark as read automatically
     if (!notification.isRead) {
       markAsRead(notification.id).catch((err) =>
-        logger.error('NotificationsList', 'Auto mark as read failed', { err })
+        logger.error('NotificationsList: Auto mark as read failed', undefined, { err })
       );
 
       // Update local state optimistically

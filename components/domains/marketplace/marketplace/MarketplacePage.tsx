@@ -41,7 +41,7 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 type MarketplaceMode = 'jobs' | 'packages';
 
@@ -118,7 +118,7 @@ export function MarketplacePage() {
           await applyPackageFilters();
         }
       } catch (error) {
-        logger.error('Error applying advanced filters:', error);
+        logger.error('Error applying advanced filters:', error instanceof Error ? error : new Error(String(error)));
       }
     },
     [mode, applyJobFilters, applyPackageFilters, updateFilters]
@@ -191,7 +191,7 @@ export function MarketplacePage() {
         await applyPackageFilters();
       }
     } catch (error) {
-      logger.error('Error clearing filters:', error);
+      logger.error('Error clearing filters:', error instanceof Error ? error : new Error(String(error)));
     }
   }, [mode, applyJobFilters, applyPackageFilters]);
 
@@ -203,7 +203,7 @@ export function MarketplacePage() {
         await applyPackageFilters();
       }
     } catch (error) {
-      logger.error('Error showing all items:', error);
+      logger.error('Error showing all items:', error instanceof Error ? error : new Error(String(error)));
     }
   }, [mode, applyJobFilters, applyPackageFilters]);
 

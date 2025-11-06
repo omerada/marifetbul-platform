@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { useSupport } from '@/hooks';
 import { cn } from '@/lib/utils';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { createTicketSchema } from '@/lib/core/validations/support';
 import { z } from 'zod';
 

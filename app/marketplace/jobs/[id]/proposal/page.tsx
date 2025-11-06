@@ -14,7 +14,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 import { useUIStore } from '@/lib/core/store/domains/ui/uiStore';
 import { useProposalEligibility } from '@/hooks/business/useProposalEligibility';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface Job {
   id: string;
@@ -69,7 +69,7 @@ export default function JobProposalPage() {
         setJob(data.data);
         logger.debug('[JobProposalPage] Job fetched:', data.data);
       } catch (error) {
-        logger.error('[JobProposalPage] Error fetching job:', error);
+        logger.error('[JobProposalPage] Error fetching job:', error instanceof Error ? error : new Error(String(error)));
         addToast({
           title: 'Hata',
           description:
@@ -156,7 +156,7 @@ export default function JobProposalPage() {
         router.push('/dashboard/freelancer/proposals');
       }, 1500);
     } catch (error) {
-      logger.error('[JobProposalPage] Error submitting proposal:', error);
+      logger.error('[JobProposalPage] Error submitting proposal:', error instanceof Error ? error : new Error(String(error)));
       addToast({
         title: 'Hata',
         description:

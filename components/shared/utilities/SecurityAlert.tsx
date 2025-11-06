@@ -16,7 +16,7 @@ import type { SecurityAlert as SecurityAlertType } from '@/types';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface SecurityAlertProps {
   alert: SecurityAlertType;
@@ -66,7 +66,7 @@ export function SecurityAlert({
     try {
       await onDismiss(alert.id);
     } catch (error) {
-      logger.error('Alert dismiss error:', error);
+      logger.error('Alert dismiss error:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsProcessing(false);
     }
@@ -79,7 +79,7 @@ export function SecurityAlert({
     try {
       await onAction(alert.id, action);
     } catch (error) {
-      logger.error('Alert action error:', error);
+      logger.error('Alert action error:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsProcessing(false);
     }

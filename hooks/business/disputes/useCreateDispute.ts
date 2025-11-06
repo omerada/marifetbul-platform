@@ -11,7 +11,7 @@ import {
 } from '@/lib/api/disputes';
 import type { DisputeRequest, DisputeResponse } from '@/types/dispute';
 import { toast } from 'sonner';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export function useCreateDispute() {
   const [isLoading, setIsLoading] = useState(false);
@@ -43,10 +43,7 @@ export function useCreateDispute() {
               description: `Uploaded evidence: ${file.name}`,
             });
           }
-          logger.info('Evidence uploaded', {
-            disputeId: dispute.id,
-            fileCount: evidenceFiles.length,
-          });
+          logger.info('Evidence uploaded', { disputeIddisputeid, fileCountevidenceFileslength,  });
         } catch (uploadError) {
           logger.error('Failed to upload evidence', { error: uploadError });
           toast.warning('İtiraz oluşturuldu ancak deliller yüklenemedi');

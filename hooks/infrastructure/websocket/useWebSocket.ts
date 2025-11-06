@@ -31,7 +31,7 @@ import {
   type WebSocketConfig,
   type SubscriptionCallback,
 } from '@/lib/infrastructure/websocket/WebSocketService';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { useMessagingStore } from '@/lib/core/store/domains/messaging/MessagingStore';
 import { useNotificationStore } from '@/lib/core/store/notification';
@@ -151,10 +151,7 @@ export function useWebSocket(
         const wsMessage = message as WebSocketMessage;
         const messageType = wsMessage.type;
 
-        logger.debug('useWebSocket', 'Handling message', {
-          type: messageType,
-          payload: wsMessage,
-        });
+        logger.debug('useWebSocket', { typemessageType, payloadwsMessage,  });
 
         switch (messageType) {
           case 'MESSAGE':
@@ -186,10 +183,7 @@ export function useWebSocket(
                 })),
               };
               messagingStore.addMessage(businessMsg);
-              logger.info('useWebSocket', 'Message added to store', {
-                messageId: businessMsg.id,
-                conversationId: businessMsg.conversationId,
-              });
+              logger.info('useWebSocket', { messageIdbusinessMsgid, conversationIdbusinessMsgconversationId,  });
             }
             break;
 
@@ -206,7 +200,7 @@ export function useWebSocket(
                 typing.conversationId,
                 true
               );
-              logger.debug('useWebSocket', 'Typing status updated', typing);
+              logger.debug('useWebSocket', { typing });
             }
             break;
 
@@ -222,7 +216,7 @@ export function useWebSocket(
                 typing.conversationId,
                 false
               );
-              logger.debug('useWebSocket', 'Typing status stopped', typing);
+              logger.debug('useWebSocket', { typing });
             }
             break;
 
@@ -239,10 +233,7 @@ export function useWebSocket(
               const isOnline =
                 messageType === 'USER_ONLINE' || presence.status === 'ONLINE';
               messagingStore.updateUserStatus(presence.userId, isOnline);
-              logger.debug('useWebSocket', 'User status updated', {
-                userId: presence.userId,
-                isOnline,
-              });
+              logger.debug('useWebSocket', { userIdpresenceuserId, isOnline,  });
             }
             break;
 
@@ -291,20 +282,13 @@ export function useWebSocket(
               notificationStore.handleRealtimeNotification(
                 enhancedNotification
               );
-              logger.info('useWebSocket', 'Notification received', {
-                id: notification.id,
-                type: notification.type,
-              });
+              logger.info('useWebSocket', { idnotificationid, typenotificationtype,  });
             }
             break;
 
           case 'ORDER_UPDATE':
             // Order status update - could trigger notification
-            logger.info(
-              'useWebSocket',
-              'Order update received',
-              wsMessage.data
-            );
+            logger.info('useWebSocket', { wsMessagedata });
 
             // Integrate with order store
             if (wsMessage.data && enableStoreIntegration) {
@@ -316,18 +300,13 @@ export function useWebSocket(
                   orderData.orderId,
                   orderData.status
                 );
-                logger.debug('useWebSocket', 'Order status updated in store', {
-                  orderId: orderData.orderId,
-                  status: orderData.status,
-                });
+                logger.debug('useWebSocket', { orderIdorderDataorderId, statusorderDatastatus,  });
               }
 
               // If full order object is provided, update the order
               if (orderData.order) {
                 orderStore.handleOrderUpdate(orderData.order);
-                logger.debug('useWebSocket', 'Full order updated in store', {
-                  orderId: orderData.order.id,
-                });
+                logger.debug('useWebSocket', { orderIdorderDataorderid,  });
               }
 
               // Add timeline entry if provided
@@ -336,9 +315,7 @@ export function useWebSocket(
                   orderData.orderId,
                   orderData.timeline
                 );
-                logger.debug('useWebSocket', 'Order timeline updated', {
-                  orderId: orderData.orderId,
-                });
+                logger.debug('useWebSocket', { orderIdorderDataorderId,  });
               }
             }
             break;
@@ -361,20 +338,15 @@ export function useWebSocket(
                   readAt: readData.readAt || new Date().toISOString(),
                 });
               });
-              logger.debug('useWebSocket', 'Messages marked as read', {
-                count: messageIds.length,
-              });
+              logger.debug('useWebSocket', { countmessageIdslength,  });
             }
             break;
 
           default:
-            logger.warn('useWebSocket', 'Unknown message type', {
-              type: messageType,
-              message: wsMessage,
-            });
+            logger.warn('useWebSocket', { typemessageType, messagewsMessage,  });
         }
       } catch (err) {
-        logger.error('useWebSocket', 'Error handling message', {
+        logger.error('useWebSocket: Error handling message', undefined, {
           error: err,
           message,
         });
@@ -391,7 +363,7 @@ export function useWebSocket(
       typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
 
     if (!token) {
-      logger.warn('useWebSocket', 'No token available, cannot connect');
+      logger.warn('useWebSocket', { cannotconnect });
       return;
     }
 
@@ -410,10 +382,7 @@ export function useWebSocket(
           ...config,
         };
 
-        logger.info('useWebSocket', 'Initializing WebSocket service', {
-          url: wsConfig.url,
-          userId: user?.id,
-        });
+        logger.info('useWebSocket', { urlwsConfigurl, userIduserid,  });
 
         serviceRef.current = initWebSocketService(wsConfig);
 
@@ -465,11 +434,7 @@ export function useWebSocket(
                 serviceRef.current.subscribe(`/topic/presence`, handleMessage);
                 logger.info('useWebSocket', 'Subscribed to user presence');
               } catch (err) {
-                logger.error(
-                  'useWebSocket',
-                  'Failed to subscribe to default topics',
-                  { error: err }
-                );
+                logger.error('useWebSocket: Failed to subscribe to default topics', undefined, { error: err });
               }
             }
 
@@ -481,7 +446,7 @@ export function useWebSocket(
             onDisconnect?.();
           },
           onError: (err) => {
-            logger.error('useWebSocket', 'WebSocket error', { error: err });
+            logger.error('useWebSocket: WebSocket error', undefined, { error: err });
             setError(err);
             onError?.(err);
           },
@@ -500,7 +465,7 @@ export function useWebSocket(
       isInitialized.current = true;
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to connect');
-      logger.error('useWebSocket', 'Connection failed', { error });
+      logger.error('useWebSocket: Connection failed', undefined, { error });
       setError(error);
       setState(WebSocketState.ERROR);
     }

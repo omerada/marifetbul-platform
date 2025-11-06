@@ -7,7 +7,7 @@
 
 import { useEffect, useCallback, useMemo } from 'react';
 import { useUnifiedPerformanceStore } from '../../../lib/core/store/unified-performance';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export interface UsePerformanceOptions {
   autoStart?: boolean;

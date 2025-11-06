@@ -16,7 +16,7 @@ import {
   type UpdatePaymentMethodRequest,
 } from '@/lib/api/payment-method';
 import { useToast } from '@/hooks';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -90,7 +90,7 @@ export function usePaymentMethods(
       const errorMsg =
         err instanceof Error ? err.message : 'Ödeme yöntemleri yüklenemedi';
       setError(errorMsg);
-      logger.error('Failed to load payment methods:', err);
+      logger.error('Failed to load payment methods:', err instanceof Error ? err : new Error(String(err)));
     } finally {
       setIsLoading(false);
     }

@@ -30,7 +30,7 @@ import { useEffect, useCallback, useRef } from 'react';
 import { useWebSocket } from '@/hooks/infrastructure/websocket';
 import { useMessagingStore } from '@/lib/core/store/domains/messaging/MessagingStore';
 import { markMessageAsRead, markConversationAsRead } from '@/lib/api/messaging';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ==================== TYPES ====================
 
@@ -104,12 +104,7 @@ export function useReadReceipts(
       try {
         const event = message as ReadReceiptEvent;
 
-        logger.debug('useReadReceipts', 'Read receipt received', {
-          conversationId: event.conversationId,
-          messageId: event.messageId,
-          readBy: event.readBy,
-          readAt: event.readAt,
-        });
+        logger.debug('useReadReceipts', { conversationIdeventconversationId, messageIdeventmessageId, readByeventreadBy, readAteventreadAt,  });
 
         // Update message in store
         messagingStore.updateMessage(event.messageId, {
@@ -120,7 +115,7 @@ export function useReadReceipts(
         // Callback
         onMessageRead?.(event);
       } catch (err) {
-        logger.error('useReadReceipts', 'Error handling read receipt', {
+        logger.error('useReadReceipts: Error handling read receipt', undefined, {
           error: err,
           message,
         });
@@ -146,21 +141,15 @@ export function useReadReceipts(
     // Subscribe to read receipt topic
     const destination = `/topic/conversation/${conversationId}/read-receipt`;
 
-    logger.debug('useReadReceipts', 'Subscribing to read receipts', {
-      destination,
-      conversationId,
-    });
+    logger.debug('useReadReceipts', { destination, conversationId,  });
 
     try {
       const subId = subscribe(destination, handleReadReceipt);
       subscriptionIdRef.current = subId;
 
-      logger.info('useReadReceipts', 'Subscribed to read receipts', {
-        subscriptionId: subId,
-        conversationId,
-      });
+      logger.info('useReadReceipts', { subscriptionIdsubId, conversationId,  });
     } catch (err) {
-      logger.error('useReadReceipts', 'Subscription failed', {
+      logger.error('useReadReceipts: Subscription failed', undefined, {
         error: err,
         conversationId,
       });
@@ -169,10 +158,7 @@ export function useReadReceipts(
     // Cleanup on unmount or conversation change
     return () => {
       if (subscriptionIdRef.current) {
-        logger.debug('useReadReceipts', 'Unsubscribing from read receipts', {
-          subscriptionId: subscriptionIdRef.current,
-          conversationId,
-        });
+        logger.debug('useReadReceipts', { subscriptionIdsubscriptionIdRefcurrent, conversationId,  });
         unsubscribe(subscriptionIdRef.current);
         subscriptionIdRef.current = null;
       }
@@ -201,19 +187,14 @@ export function useReadReceipts(
       isMarkingRef.current = true;
 
       try {
-        logger.debug('useReadReceipts', 'Marking message as read', {
-          messageId,
-          conversationId,
-        });
+        logger.debug('useReadReceipts', { messageId, conversationId,  });
 
         // Call API (backend will broadcast WebSocket event)
         await markMessageAsRead(messageId);
 
-        logger.info('useReadReceipts', 'Message marked as read', {
-          messageId,
-        });
+        logger.info('useReadReceipts', { messageId,  });
       } catch (err) {
-        logger.error('useReadReceipts', 'Failed to mark message as read', {
+        logger.error('useReadReceipts: Failed to mark message as read', undefined, {
           error: err,
           messageId,
         });
@@ -237,19 +218,14 @@ export function useReadReceipts(
     isMarkingRef.current = true;
 
     try {
-      logger.debug('useReadReceipts', 'Marking all messages as read', {
-        conversationId,
-      });
+      logger.debug('useReadReceipts', { conversationId,  });
 
       // Call API (backend will broadcast WebSocket events for each message)
       const result = await markConversationAsRead(conversationId);
 
-      logger.info('useReadReceipts', 'All messages marked as read', {
-        conversationId,
-        count: result.count || 0,
-      });
+      logger.info('useReadReceipts', { conversationId, countresultcount0,  });
     } catch (err) {
-      logger.error('useReadReceipts', 'Failed to mark all messages as read', {
+      logger.error('useReadReceipts: Failed to mark all messages as read', undefined, {
         error: err,
         conversationId,
       });

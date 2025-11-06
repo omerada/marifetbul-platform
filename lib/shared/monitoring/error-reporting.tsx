@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useCallback } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export interface ErrorReport {
   id: string;

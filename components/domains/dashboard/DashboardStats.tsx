@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { User } from '@/types';
 import { Card } from '@/components/ui/Card';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   Briefcase,
   Star,
@@ -103,7 +103,7 @@ export function DashboardStats({ user }: DashboardStatsProps) {
         const data = await response.json();
         setStats(data.data || null);
       } catch (error) {
-        logger.error('Error fetching stats:', error);
+        logger.error('Error fetching stats:', error instanceof Error ? error : new Error(String(error)));
       } finally {
         setLoading(false);
       }

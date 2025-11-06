@@ -3,7 +3,7 @@
 // ==========================================
 
 import { CategoryAnalyticsEvent } from '@/types/business/features/marketplace-categories';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // Analytics service for category interactions
 export class CategoryAnalytics {

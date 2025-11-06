@@ -17,7 +17,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Send, X, File, Image as ImageIcon } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   useMessageAttachments,
   type MessageAttachment,
@@ -135,12 +135,10 @@ export function MessageInput({
       if (selectedFiles.length > 0) {
         try {
           attachments = await uploadFiles(selectedFiles);
-          logger.info('MessageInput', 'Files uploaded', {
-            count: attachments.length,
-          });
+          logger.info('MessageInput', { countattachmentslength,  });
         } catch (error) {
           toast.error('Dosyalar yüklenemedi');
-          logger.error('MessageInput', 'File upload failed', { error });
+          logger.error('MessageInput: File upload failed', undefined, { error });
           return; // Don't send message if files fail to upload
         }
       }
@@ -161,11 +159,9 @@ export function MessageInput({
       // Send message with attachments
       await onSend(content, attachments);
 
-      logger.info('MessageInput', 'Message sent successfully', {
-        hasAttachments: !!attachments,
-      });
+      logger.info('MessageInput', { hasAttachmentsattachments,  });
     } catch (error) {
-      logger.error('MessageInput', 'Failed to send message', { error });
+      logger.error('MessageInput: Failed to send message', undefined, { error });
       toast.error('Mesaj gönderilemedi');
       // Restore text on error (but not files - they're already uploaded)
       setText(content);

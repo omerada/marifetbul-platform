@@ -24,7 +24,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,10 +41,7 @@ export async function GET(request: NextRequest) {
     const page = searchParams.get('page') || '0';
     const size = searchParams.get('size') || '20';
 
-    logger.debug('[Moderator Pending Items API] GET request', {
-      page,
-      size,
-    });
+    logger.debug('[Moderator Pending Items API] GET request', { page, size,  });
 
     // Build backend URL with query params
     const backendUrl = new URL(`${BACKEND_API_URL}/moderator/pending-items`);
@@ -63,11 +60,7 @@ export async function GET(request: NextRequest) {
 
     const data = await response.json();
 
-    logger.debug('[Moderator Pending Items API] Backend response', {
-      status: response.status,
-      success: response.ok,
-      itemCount: data.data?.items?.length || 0,
-    });
+    logger.debug('[Moderator Pending Items API] Backend response', { statusresponsestatus, successresponseok, itemCountdatadataitemslength0,  });
 
     return NextResponse.json(data, { status: response.status });
   } catch (error) {

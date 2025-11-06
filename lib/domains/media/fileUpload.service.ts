@@ -4,7 +4,7 @@
  */
 
 import { FileAttachment } from '@/types';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export interface UploadOptions {
   provider?: 'aws-s3' | 'cloudinary' | 'local';
@@ -117,7 +117,7 @@ export class FileUploadService {
           return await this.uploadToLocal(file);
       }
     } catch (error) {
-      logger.error('File upload failed', error);
+      logger.error('File upload failed', error instanceof Error ? error : new Error(String(error)));
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Upload failed',

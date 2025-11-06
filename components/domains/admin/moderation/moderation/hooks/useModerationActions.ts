@@ -7,7 +7,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   ModerationItem,
   ModerationAction,
@@ -72,7 +72,7 @@ export function useModerationActions(
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Bilinmeyen hata';
-      logger.error('Moderation action failed:', err);
+      logger.error('Moderation action failed:', err instanceof Error ? err : new Error(String(err)));
       throw new Error(errorMessage);
     }
   }, [selectedItem, actionType, actionNotes, onActionComplete]);

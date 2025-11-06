@@ -1,7 +1,7 @@
 // Production-ready security utilities
 'use client';
 
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // Content Security Policy helper
 export interface CSPDirectives {
@@ -565,9 +565,7 @@ export class SecurityMonitor {
       this.sendViolationReport(violation);
     }
 
-    logger.warn(
-      'Security violation detected',
-      new Error(`Type: ${violation.type}, Details: ${violation.details}`)
+    logger.warn('Security violation detected', { newErrorTypeviolationtype, Detailsviolationdetails })
     );
   }
 

@@ -2,7 +2,7 @@
  * Push Notification Utilities
  * Tarayıcı push notification yönetimi
  */
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export class PushNotificationManager {
   private static instance: PushNotificationManager;

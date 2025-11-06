@@ -11,7 +11,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { useUnifiedLocation } from '@/hooks';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { Coordinates } from '@/types';
 
 interface LocationPickerProps {
@@ -88,7 +88,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
         setSearchResults(results);
         setShowResults(true);
       } catch (error) {
-        logger.error('Geocoding search error:', error);
+        logger.error('Geocoding search error:', error instanceof Error ? error : new Error(String(error)));
         setSearchResults([]);
         setShowResults(false);
       }
@@ -135,7 +135,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
       setSearchQuery(address);
       setShowResults(false);
     } catch (error) {
-      logger.error('Current location error:', error);
+      logger.error('Current location error:', error instanceof Error ? error : new Error(String(error)));
     }
   }, [getCurrentPosition, unifiedLocation.currentPosition, onLocationSelect]);
 

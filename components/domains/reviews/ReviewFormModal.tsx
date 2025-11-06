@@ -31,7 +31,7 @@ import { reviewApi } from '@/lib/api/review';
 import { ReviewType, type Review } from '@/types/business/review';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export interface ReviewFormModalProps {
   open: boolean;
@@ -93,7 +93,7 @@ export function ReviewFormModal({
           canReviewOrder ? null : 'Değerlendirme yapamazsınız'
         );
       } catch (error) {
-        logger.error('Error checking review eligibility:', error);
+        logger.error('Error checking review eligibility:', error instanceof Error ? error : new Error(String(error)));
         setCanReview(false);
         setIneligibilityReason('Değerlendirme uygunluğu kontrol edilemedi');
       } finally {

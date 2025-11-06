@@ -24,7 +24,21 @@ import {
   rejectBankAccount,
   getBankAccountStatistics,
 } from '@/lib/api/bank-accounts';
-import { Building2, RefreshCw } from 'lucide-react';
+import {
+  Building2,
+  RefreshCw,
+  X,
+  User,
+  Calendar,
+  CheckCircle,
+  XCircle,
+} from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/Dialog';
 
 // ================================================
 // TYPES
@@ -59,6 +73,9 @@ export default function AdminBankAccountVerificationPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
+  const [selectedAccount, setSelectedAccount] = useState<BankAccount | null>(
+    null
+  );
 
   // ==================== DATA FETCHING ====================
 
@@ -133,8 +150,8 @@ export default function AdminBankAccountVerificationPage() {
     }
   };
 
-  const handleViewDetails = (_account: BankAccount) => {
-    // TODO: Open detail modal
+  const handleViewDetails = (account: BankAccount) => {
+    setSelectedAccount(account);
   };
 
   const handlePageChange = (page: number) => {
@@ -224,6 +241,163 @@ export default function AdminBankAccountVerificationPage() {
             </li>
           </ul>
         </div>
+
+        {/* Bank Account Detail Modal */}
+        <Dialog
+          open={!!selectedAccount}
+          onOpenChange={(open) => !open && setSelectedAccount(null)}
+        >
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <div className="flex items-center justify-between">
+                <DialogTitle>Banka Hesabı Detayları</DialogTitle>
+                <button
+                  onClick={() => setSelectedAccount(null)}
+                  className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </DialogHeader>
+
+            {selectedAccount && (
+              <div className="space-y-6">
+                {/* Status Badge */}
+                <div className="flex items-center justify-center">
+                  {selectedAccount.status === 'PENDING' && (
+                    <div className="inline-flex items-center space-x-2 rounded-full bg-yellow-100 px-4 py-2 text-yellow-800">
+                      <div className="h-2 w-2 animate-pulse rounded-full bg-yellow-600" />
+                      <span className="font-medium">Onay Bekliyor</span>
+                    </div>
+                  )}
+                  {selectedAccount.status === 'VERIFIED' && (
+                    <div className="inline-flex items-center space-x-2 rounded-full bg-green-100 px-4 py-2 text-green-800">
+                      <CheckCircle className="h-5 w-5" />
+                      <span className="font-medium">Onaylandı</span>
+                    </div>
+                  )}
+                  {selectedAccount.status === 'REJECTED' && (
+                    <div className="inline-flex items-center space-x-2 rounded-full bg-red-100 px-4 py-2 text-red-800">
+                      <XCircle className="h-5 w-5" />
+                      <span className="font-medium">Reddedildi</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Account Information */}
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Account Holder */}
+                    <div className="col-span-2">
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <User className="mb-1 inline h-4 w-4" /> Hesap Sahibi
+                      </label>
+                      <div className="rounded-lg border border-gray-300 bg-gray-50 p-3 font-medium text-gray-900">
+                        {selectedAccount.accountHolder}
+                      </div>
+                    </div>
+
+                    {/* Bank Name */}
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <Building2 className="mb-1 inline h-4 w-4" /> Banka Adı
+                      </label>
+                      <div className="rounded-lg border border-gray-300 bg-gray-50 p-3 text-gray-900">
+                        {selectedAccount.bankName}
+                      </div>
+                    </div>
+
+                    {/* Bank Code */}
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        Banka Kodu
+                      </label>
+                      <div className="rounded-lg border border-gray-300 bg-gray-50 p-3 font-mono text-gray-900">
+                        {selectedAccount.bankCode}
+                      </div>
+                    </div>
+
+                    {/* IBAN */}
+                    <div className="col-span-2">
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        IBAN
+                      </label>
+                      <div className="rounded-lg border border-gray-300 bg-gray-50 p-3 font-mono text-gray-900">
+                        {selectedAccount.formattedIban || selectedAccount.iban}
+                      </div>
+                    </div>
+
+                    {/* Created Date */}
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <Calendar className="mb-1 inline h-4 w-4" /> Oluşturma
+                        Tarihi
+                      </label>
+                      <div className="rounded-lg border border-gray-300 bg-gray-50 p-3 text-gray-900">
+                        {new Date(selectedAccount.createdAt).toLocaleString(
+                          'tr-TR'
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Verified Date */}
+                    {selectedAccount.verifiedAt && (
+                      <div>
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                          <CheckCircle className="mb-1 inline h-4 w-4" /> Onay
+                          Tarihi
+                        </label>
+                        <div className="rounded-lg border border-gray-300 bg-gray-50 p-3 text-gray-900">
+                          {new Date(selectedAccount.verifiedAt).toLocaleString(
+                            'tr-TR'
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Rejection Reason */}
+                    {selectedAccount.rejectionReason && (
+                      <div className="col-span-2">
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                          <XCircle className="mb-1 inline h-4 w-4" /> Ret Nedeni
+                        </label>
+                        <div className="rounded-lg border border-red-300 bg-red-50 p-3 text-red-900">
+                          {selectedAccount.rejectionReason}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                {selectedAccount.status === 'PENDING' && (
+                  <div className="flex items-center justify-end space-x-3 border-t border-gray-200 pt-4">
+                    <button
+                      onClick={() => {
+                        handleReject(selectedAccount.id, '');
+                        setSelectedAccount(null);
+                      }}
+                      className="inline-flex items-center space-x-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+                    >
+                      <XCircle className="h-4 w-4" />
+                      <span>Reddet</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleVerify(selectedAccount.id);
+                        setSelectedAccount(null);
+                      }}
+                      className="inline-flex items-center space-x-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
+                    >
+                      <CheckCircle className="h-4 w-4" />
+                      <span>Onayla</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

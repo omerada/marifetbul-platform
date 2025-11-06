@@ -101,11 +101,7 @@ export async function middleware(request: NextRequest) {
 
   // Debug logging in development
   if (process.env.NODE_ENV === 'development') {
-    logger.debug('[Middleware] Request', {
-      pathname,
-      hasToken: !!token,
-      userRole: userRole || 'none',
-    });
+    logger.debug('[Middleware] Request', { pathname, hasTokentoken, userRoleuserRolenone,  });
   }
 
   // Allow public profile viewing: /profile/[id] but not /profile/edit
@@ -117,9 +113,7 @@ export async function middleware(request: NextRequest) {
   // Block test routes in production
   if (isTestRoute(pathname)) {
     if (process.env.NODE_ENV === 'production') {
-      logger.warn('[Middleware] Test route blocked in production', {
-        pathname,
-      });
+      logger.warn('[Middleware] Test route blocked in production', { pathname,  });
       return NextResponse.redirect(new URL('/', request.url));
     }
     // Allow in development
@@ -129,11 +123,7 @@ export async function middleware(request: NextRequest) {
 
   // Admin route protection
   if (isAdminRoute(pathname)) {
-    logger.debug('[Middleware] Admin route check', {
-      pathname,
-      hasToken: !!token,
-      userRole,
-    });
+    logger.debug('[Middleware] Admin route check', { pathname, hasTokentoken, userRole,  });
 
     if (!token) {
       logger.info('[Middleware] No token found, redirecting to admin login');
@@ -156,11 +146,7 @@ export async function middleware(request: NextRequest) {
 
   // Moderator route protection (Admin also allowed - super role)
   if (isModeratorRoute(pathname)) {
-    logger.debug('[Middleware] Moderator route check', {
-      pathname,
-      hasToken: !!token,
-      userRole,
-    });
+    logger.debug('[Middleware] Moderator route check', { pathname, hasTokentoken, userRole,  });
 
     if (!token) {
       logger.info('[Middleware] No token found, redirecting to login');
@@ -171,16 +157,11 @@ export async function middleware(request: NextRequest) {
     // Allow both MODERATOR and ADMIN roles (admin is super role)
     const normalizedRole = userRole?.toUpperCase();
     if (normalizedRole !== 'MODERATOR' && normalizedRole !== 'ADMIN') {
-      logger.info(
-        '[Middleware] User is not moderator or admin, redirecting to dashboard',
-        { userRole }
-      );
+      logger.info('[Middleware] User is not moderator or admin, { redirectingtodashboard, userRole });
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
-    logger.debug('[Middleware] Moderator access granted', {
-      role: normalizedRole,
-    });
+    logger.debug('[Middleware] Moderator access granted', { rolenormalizedRole,  });
     const response = NextResponse.next();
     return addSecurityHeaders(response);
   }

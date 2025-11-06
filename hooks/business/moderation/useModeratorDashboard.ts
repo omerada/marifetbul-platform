@@ -18,7 +18,7 @@
 
 import { useState, useCallback } from 'react';
 import useSWR from 'swr';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -177,7 +177,7 @@ export function useModeratorDashboard(
 
   const error = statsError || itemsError;
   if (error) {
-    logger.error('Dashboard error:', error);
+    logger.error('Dashboard error:', error instanceof Error ? error : new Error(String(error)));
   }
 
   // ============================================================================

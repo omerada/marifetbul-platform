@@ -13,7 +13,7 @@
 import { useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useWebSocket } from '@/hooks/infrastructure/websocket/useWebSocket';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { useNotifications } from '@/hooks/business/useNotifications';
 import type {
   OrderWebSocketEventType,
@@ -58,9 +58,7 @@ export function useOrderNotifications(
           });
         }
       } catch (err) {
-        logger.warn('useOrderNotifications', 'Desktop notification failed', {
-          err,
-        });
+        logger.warn('useOrderNotifications', { err,  });
       }
     },
     [enableDesktop]

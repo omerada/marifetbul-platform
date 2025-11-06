@@ -19,7 +19,7 @@ import { Card } from '@/components/ui/Card';
 import { LocationPicker } from '@/components/shared/utilities';
 import { Coordinates, LocationSearchParams, LocationData } from '@/types';
 import { useUnifiedLocation } from '@/hooks';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface LocationSearchProps {
   onResults?: (results: LocationData[]) => void;

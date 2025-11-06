@@ -3,7 +3,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchStore } from '@/lib/core/store/search';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   SearchFilters,
   AdvancedSearchRequest,
@@ -150,7 +150,7 @@ export function useUnifiedSearch(
           store.addToHistory(searchQuery, searchFilters, store.results.length);
         }
       } catch (error) {
-        logger.error('Search failed:', error);
+        logger.error('Search failed:', error instanceof Error ? error : new Error(String(error)));
       }
     },
     [store, currentFilters, autoHistory]
@@ -184,7 +184,7 @@ export function useUnifiedSearch(
         try {
           await store.fetchSuggestions(query);
         } catch (error) {
-          logger.error('Suggestions failed:', error);
+          logger.error('Suggestions failed:', error instanceof Error ? error : new Error(String(error)));
         } finally {
           setIsTyping(false);
         }
@@ -262,7 +262,7 @@ export function useUnifiedSearch(
       try {
         store.saveSearch(name, store.query, currentFilters);
       } catch (error) {
-        logger.error('Save search failed:', error);
+        logger.error('Save search failed:', error instanceof Error ? error : new Error(String(error)));
       }
     },
     [store, currentFilters]

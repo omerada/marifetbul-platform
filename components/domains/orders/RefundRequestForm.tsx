@@ -18,7 +18,7 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Input } from '@/components/ui/Input';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   createRefund,
   RefundReasonCategory,
@@ -102,7 +102,7 @@ export function RefundRequestForm({
         onSuccess();
       }
     } catch (error) {
-      logger.error('Failed to create refund:', error);
+      logger.error('Failed to create refund:', error instanceof Error ? error : new Error(String(error)));
       toast.error('İade talebi oluşturulamadı. Lütfen tekrar deneyin.');
     } finally {
       setIsSubmitting(false);

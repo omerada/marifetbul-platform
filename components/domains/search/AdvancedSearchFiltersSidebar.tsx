@@ -48,7 +48,7 @@ import {
   Save,
   FolderOpen,
 } from 'lucide-react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface FilterState {
   categories: string[];

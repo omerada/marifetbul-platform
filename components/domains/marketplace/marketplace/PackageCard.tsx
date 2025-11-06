@@ -19,7 +19,7 @@ import Image from 'next/image';
 import type { ServicePackage } from '@/types';
 import { cn } from '@/lib/utils';
 import { trackClick } from '@/lib/api/search-analytics';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface PackageCardProps {
   package: ServicePackage;

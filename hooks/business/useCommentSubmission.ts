@@ -11,7 +11,7 @@
 
 import { useState, useCallback } from 'react';
 import { blogApi } from '@/lib/api/blog';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { BlogComment } from '@/lib/api/blog';
 
 // ================================================
@@ -111,7 +111,7 @@ export function useCommentSubmission(): UseCommentSubmissionReturn {
         setSuccess(true);
         return comment;
       } catch (err) {
-        logger.error('Failed to submit comment:', err);
+        logger.error('Failed to submit comment:', err instanceof Error ? err : new Error(String(err)));
 
         // Handle specific error cases
         if (err instanceof Error) {

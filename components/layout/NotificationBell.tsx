@@ -25,7 +25,7 @@ import {
   formatNotificationTime,
   isNotificationExpired,
 } from '@/lib/api/notifications';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ==================== TYPES ====================
 
@@ -62,7 +62,7 @@ export default function NotificationBell({
       const count = await getUnreadCount();
       setUnreadCount(count);
     } catch (err) {
-      logger.error('NotificationBell', 'Failed to fetch unread count', { err });
+      logger.error('NotificationBell: Failed to fetch unread count', undefined, { err });
     }
   };
 
@@ -78,7 +78,7 @@ export default function NotificationBell({
         setUnreadCount(count);
       }
     } catch (err) {
-      logger.error('NotificationBell', 'Failed to fetch recent notifications', {
+      logger.error('NotificationBell: Failed to fetch recent notifications', undefined, {
         err,
       });
     } finally {
@@ -183,7 +183,7 @@ export default function NotificationBell({
         `Marked notification ${notificationId} as read`
       );
     } catch (err) {
-      logger.error('NotificationBell', 'Failed to mark as read', { err });
+      logger.error('NotificationBell: Failed to mark as read', undefined, { err });
     }
   };
 
@@ -203,7 +203,7 @@ export default function NotificationBell({
 
       logger.info('NotificationBell', `Marked ${count} notifications as read`);
     } catch (err) {
-      logger.error('NotificationBell', 'Failed to mark all as read', { err });
+      logger.error('NotificationBell: Failed to mark all as read', undefined, { err });
     }
   };
 
@@ -211,7 +211,7 @@ export default function NotificationBell({
     // Mark as read if unread
     if (!notification.isRead) {
       markAsRead(notification.id).catch((err) =>
-        logger.error('NotificationBell', 'Auto mark as read failed', { err })
+        logger.error('NotificationBell: Auto mark as read failed', undefined, { err })
       );
 
       // Update unread count

@@ -25,7 +25,7 @@ import { favoritesApi } from '@/lib/api/favorites';
 import { OrderModal } from './OrderModal';
 import { ReviewList } from '@/components/shared/ReviewList';
 import { usePackageReviewsHook } from '@/hooks';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface PublicPackageDetailProps {
   package: Package;
@@ -102,7 +102,7 @@ export function PublicPackageDetail({
       const response = await favoritesApi.togglePackageFavorite(pkg.id);
       setIsFavorited(response.isFavorited);
     } catch (error) {
-      logger.error('Failed to toggle favorite:', error);
+      logger.error('Failed to toggle favorite:', error instanceof Error ? error : new Error(String(error)));
       // Revert on error
       setIsFavorited(!isFavorited);
     } finally {

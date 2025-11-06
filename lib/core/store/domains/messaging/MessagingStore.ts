@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   Message,
   Conversation,
@@ -523,10 +523,7 @@ export const useMessagingStore = create<MessagingState>()(
               response.status === 404
             ) {
               if (process.env.NODE_ENV === 'development') {
-                logger.debug(
-                  '[MessagingStore] Conversations endpoint not ready or not authenticated, status:',
-                  response.status
-                );
+                logger.debug('[MessagingStore] Conversations endpoint not ready or not authenticated, { status, responsestatus });
               }
               set((state) => {
                 state.conversations = [];

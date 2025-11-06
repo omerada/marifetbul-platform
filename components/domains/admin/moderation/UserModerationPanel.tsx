@@ -28,7 +28,7 @@ import { useUserModeration } from '@/hooks/business/useUserModeration';
 import { UserWarningModal } from './UserWarningModal';
 import { UserSuspensionModal } from './UserSuspensionModal';
 import { UserModerationHistory } from './UserModerationHistory';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { UserWarning, UserSuspension } from '@/lib/api/moderation';
 
 /**
@@ -77,11 +77,7 @@ export function UserModerationPanel() {
     const suspension = await checkSuspensionStatus(searchUserId);
     setActiveSuspension(suspension);
 
-    logger.info('User moderation data loaded', {
-      userId: searchUserId,
-      warningsCount: warnings.length,
-      isSuspended: !!suspension,
-    });
+    logger.info('User moderation data loaded', { userIdsearchUserId, warningsCountwarningslength, isSuspendedsuspension,  });
   }, [searchUserId, fetchActiveWarnings, checkSuspensionStatus]);
 
   /**

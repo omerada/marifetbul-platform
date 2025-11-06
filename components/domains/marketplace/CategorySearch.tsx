@@ -12,7 +12,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { Input, Badge } from '@/components/ui';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { CategorySearchProps } from '@/types/business/features/marketplace-categories';
 
 // Animation variants

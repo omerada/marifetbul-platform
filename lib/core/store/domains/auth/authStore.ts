@@ -9,7 +9,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { devtools } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { User } from '@/types';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================
 // TYPES & INTERFACES
@@ -93,9 +93,7 @@ export const useAuthStore = create<AuthStore>()(
 
         // Login with credentials
         login: async (credentials: LoginCredentials) => {
-          logger.debug('Auth Store: Login attempt', {
-            email: credentials.email,
-          });
+          logger.debug('Auth Store: Login attempt', { emailcredentialsemail,  });
 
           set((draft) => {
             draft.isLoading = true;
@@ -117,10 +115,7 @@ export const useAuthStore = create<AuthStore>()(
               }),
             });
 
-            logger.debug('Auth Store: Response received', {
-              status: response.status,
-              ok: response.ok,
-            });
+            logger.debug('Auth Store: Response received', { statusresponsestatus, okresponseok,  });
 
             if (!response.ok) {
               throw new Error(
@@ -129,25 +124,16 @@ export const useAuthStore = create<AuthStore>()(
             }
 
             const result = await response.json();
-            logger.debug('Auth Store: Response data received', {
-              success: result.success,
-              hasUser: !!result.data?.user,
-            });
+            logger.debug('Auth Store: Response data received', { successresultsuccess, hasUserresultdatauser,  });
 
             if (!result.success) {
-              logger.warn('Auth Store: API returned error', {
-                error: result.error,
-              });
+              logger.warn('Auth Store: API returned error', { errorresulterror,  });
               throw new Error(result.error || 'Giriş başarısız');
             }
 
             const { user } = result.data;
             // NOTE: Token is now in httpOnly cookie, not returned in response
-            logger.debug('Auth Store: User data received', {
-              userId: user.id,
-              email: user.email,
-              role: user.role,
-            });
+            logger.debug('Auth Store: User data received', { userIduserid, emailuseremail, roleuserrole,  });
 
             const now = Date.now();
             const expiry =

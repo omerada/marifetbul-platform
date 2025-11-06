@@ -9,7 +9,7 @@
 import { useState, useCallback } from 'react';
 import { useUserManagement } from '@/hooks';
 import { UserFilters } from '../types/userTableTypes';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export function useUserTableActions() {
   const { onUserAction } = useUserManagement();
@@ -28,7 +28,7 @@ export function useUserTableActions() {
       } catch (err) {
         const errorMessage = 'Kullanıcı aktifleştirilemedi';
         setError(errorMessage);
-        logger.error('Error activating user:', err);
+        logger.error('Error activating user:', err instanceof Error ? err : new Error(String(err)));
         throw err;
       } finally {
         setIsProcessing(false);
@@ -49,7 +49,7 @@ export function useUserTableActions() {
       } catch (err) {
         const errorMessage = 'Kullanıcı askıya alınamadı';
         setError(errorMessage);
-        logger.error('Error suspending user:', err);
+        logger.error('Error suspending user:', err instanceof Error ? err : new Error(String(err)));
         throw err;
       } finally {
         setIsProcessing(false);
@@ -70,7 +70,7 @@ export function useUserTableActions() {
       } catch (err) {
         const errorMessage = 'Kullanıcı yasaklanamadı';
         setError(errorMessage);
-        logger.error('Error banning user:', err);
+        logger.error('Error banning user:', err instanceof Error ? err : new Error(String(err)));
         throw err;
       } finally {
         setIsProcessing(false);
@@ -91,7 +91,7 @@ export function useUserTableActions() {
       } catch (err) {
         const errorMessage = 'Kullanıcı doğrulanamadı';
         setError(errorMessage);
-        logger.error('Error verifying user:', err);
+        logger.error('Error verifying user:', err instanceof Error ? err : new Error(String(err)));
         throw err;
       } finally {
         setIsProcessing(false);
@@ -126,7 +126,7 @@ export function useUserTableActions() {
     } catch (err) {
       const errorMessage = 'Kullanıcı silinemedi';
       setError(errorMessage);
-      logger.error('Error deleting user:', err);
+      logger.error('Error deleting user:', err instanceof Error ? err : new Error(String(err)));
       throw err;
     } finally {
       setIsProcessing(false);
@@ -162,7 +162,7 @@ export function useUserTableActions() {
       } catch (err) {
         const errorMessage = 'Dışa aktarma başarısız oldu';
         setError(errorMessage);
-        logger.error('Error exporting users:', err);
+        logger.error('Error exporting users:', err instanceof Error ? err : new Error(String(err)));
         throw err;
       } finally {
         setIsProcessing(false);

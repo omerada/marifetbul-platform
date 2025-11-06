@@ -16,7 +16,7 @@ import { Bell, BellOff, Volume2, VolumeX, Monitor } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton } from '@/components/ui';
 import { useBrowserNotifications } from '@/hooks/shared/useBrowserNotifications';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ==================== TYPES ====================
 
@@ -97,7 +97,7 @@ export function NotificationPreferences({
           return { ...DEFAULT_PREFERENCES, ...parsed, ...initialPreferences };
         }
       } catch (error) {
-        logger.error('NotificationPreferences', 'Failed to load preferences', {
+        logger.error('NotificationPreferences: Failed to load preferences', undefined, {
           error,
         });
       }
@@ -127,11 +127,9 @@ export function NotificationPreferences({
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
-        logger.debug('NotificationPreferences', 'Saved to localStorage', {
-          preferences,
-        });
+        logger.debug('NotificationPreferences', { preferences,  });
       } catch (error) {
-        logger.error('NotificationPreferences', 'Failed to save preferences', {
+        logger.error('NotificationPreferences: Failed to save preferences', undefined, {
           error,
         });
       }
@@ -171,12 +169,10 @@ export function NotificationPreferences({
           'Browser permission granted and enabled'
         );
       } else {
-        logger.warn('NotificationPreferences', 'Browser permission denied', {
-          result,
-        });
+        logger.warn('NotificationPreferences', { result,  });
       }
     } catch (error) {
-      logger.error('NotificationPreferences', 'Failed to request permission', {
+      logger.error('NotificationPreferences: Failed to request permission', undefined, {
         error,
       });
     }
@@ -201,7 +197,7 @@ export function NotificationPreferences({
         setSaveSuccess(false);
       }, 3000);
     } catch (error) {
-      logger.error('NotificationPreferences', 'Failed to save preferences', {
+      logger.error('NotificationPreferences: Failed to save preferences', undefined, {
         error,
       });
     } finally {

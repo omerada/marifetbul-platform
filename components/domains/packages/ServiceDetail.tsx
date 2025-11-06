@@ -26,7 +26,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { Loading } from '@/components/ui';
 import { OrderForm } from './OrderForm';
 import { PackageReviewsTab } from './PackageReviewsTab';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // Helper function to get image source as string
 const getPackageImageSrc = (

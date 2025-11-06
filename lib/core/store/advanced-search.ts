@@ -12,7 +12,7 @@ import {
   User,
   SaveSearchRequest,
 } from '@/types';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface AdvancedSearchStore {
   // State properties

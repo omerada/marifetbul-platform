@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { packageApi } from '@/lib/api/packages';
 import { PackageCreationWizard } from '@/components/packages/create';
 import { Button } from '@/components/ui';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { Package } from '@/types/business/features/package';
 import type { CreatePackageFormData } from '@/lib/validation/package';
 
@@ -33,7 +33,7 @@ export function PackageEditContainer() {
       setPkg(packageData as any);
     } catch (err) {
       setError('Paket yüklenirken bir hata oluştu');
-      logger.error('Failed to fetch package:', err);
+      logger.error('Failed to fetch package:', err instanceof Error ? err : new Error(String(err)));
     } finally {
       setLoading(false);
     }

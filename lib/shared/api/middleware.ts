@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ZodError, z } from 'zod';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { getBackendApiUrl } from '@/lib/config/api';
 
 // Simple rate limiting implementation
@@ -396,24 +396,13 @@ export function loggingMiddleware() {
     return async (ctx: ApiContext) => {
       const startTime = Date.now();
 
-      logger.info('API Request', {
-        requestId: ctx.metadata.requestId,
-        method: ctx.req.method,
-        url: ctx.req.url,
-        userAgent: ctx.metadata.userAgent,
-        ip: ctx.metadata.ip,
-        userId: ctx.user?.id,
-      });
+      logger.info('API Request', { requestIdctxmetadatarequestId, methodctxreqmethod, urlctxrequrl, userAgentctxmetadatauserAgent, ipctxmetadataip, userIdctxuserid,  });
 
       const response = await handler(ctx);
 
       const duration = Date.now() - startTime;
 
-      logger.info('API Response', {
-        requestId: ctx.metadata.requestId,
-        status: response.status,
-        duration: `${duration}ms`,
-      });
+      logger.info('API Response', { requestIdctxmetadatarequestId, statusresponsestatus, durationdurationms,  });
 
       return response;
     };

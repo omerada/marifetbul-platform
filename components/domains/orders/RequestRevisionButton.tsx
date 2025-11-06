@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/Dialog';
 import { Textarea } from '@/components/ui/Textarea';
 import { orderApi } from '@/lib/api/orders';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 const revisionSchema = z.object({
   reason: z

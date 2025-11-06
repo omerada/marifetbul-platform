@@ -40,6 +40,9 @@ import { WalletAnalytics } from './WalletAnalytics';
 import { PayoutRequestFlow } from './PayoutRequestFlow';
 import { useWalletData } from '@/hooks/business/wallet/useWalletData';
 import { useWebSocketWallet } from '@/hooks/business/wallet/useWebSocketWallet';
+import { useWalletConfig } from '@/hooks/business/wallet/useWalletConfig';
+import { useBankAccounts } from '@/hooks/business/wallet/useBankAccounts';
+import { usePayout } from '@/hooks/business/wallet/usePayout';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
@@ -317,6 +320,16 @@ export function WalletDashboard({
   // ========================================================================
 
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+
+  // ========================================================================
+  // HOOKS - Wallet Configuration & Bank Accounts (Sprint 1 - Story 2.2)
+  // ========================================================================
+
+  const { config: walletConfig } = useWalletConfig();
+  const { verifiedAccounts, refresh: refreshBankAccounts } = useBankAccounts();
+  const { request: requestPayout } = usePayout({
+    autoLoad: false,
+  });
 
   // ========================================================================
   // HOOKS - Internal data fetching (only if external data not provided)
@@ -640,23 +653,54 @@ export function WalletDashboard({
       {/* Withdraw Modal - Using PayoutRequestFlow */}
       <PayoutRequestFlow
         isOpen={isWithdrawModalOpen}
-        onClose={() => setIsWithdrawModalOpen(false)}
+        onClose={() => {
+          setIsWithdrawModalOpen(false);
+          refreshBankAccounts(); // Refresh bank accounts when modal closes
+        }}
         availableBalance={availableBalance}
         limits={{
-          minimum: 50, // TODO: Get from backend config
-          maximum: 10000, // TODO: Get from backend config
+          minimum: walletConfig?.payout.minAmount ?? 50,
+          maximum: walletConfig?.payout.maxAmount ?? 10000,
         }}
-        bankAccounts={[]} // TODO: Load bank accounts
-        onSubmit={async (_data) => {
+        bankAccounts={verifiedAccounts.map((account) => ({
+          id: account.id,
+          bankName: account.bankName,
+          iban: account.iban,
+          accountHolder: account.accountHolder,
+          isDefault: account.isDefault,
+        }))}
+        onSubmit={async (data) => {
           try {
-            // TODO: Implement actual payout API call with _data
-            // logger.info('Payout request submitted', _data);
+            // Validate bank account ID
+            if (!data.bankAccountId) {
+              throw new Error('Lütfen bir banka hesabı seçiniz');
+            }
+
+            // Request payout with validated data
+            await requestPayout({
+              amount: data.amount,
+              bankAccountId: data.bankAccountId,
+              description: data.description || 'Para çekme talebi',
+            });
+
+            // Success handling
             handleWithdrawSuccess();
             setIsWithdrawModalOpen(false);
+
+            // Refresh wallet data and bank accounts
+            refresh();
+            refreshBankAccounts();
+
+            toast.success('Başarılı', {
+              description: 'Para çekme talebiniz oluşturuldu',
+            });
           } catch (error) {
             console.error('Payout failed:', error);
             toast.error('Hata', {
-              description: 'Para çekme talebi oluşturulamadı',
+              description:
+                error instanceof Error
+                  ? error.message
+                  : 'Para çekme talebi oluşturulamadı',
             });
           }
         }}

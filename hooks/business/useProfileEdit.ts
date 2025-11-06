@@ -6,7 +6,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import useProfileStore from '@/lib/core/store/profile';
 import { useUIStore } from '@/lib/core/store/domains/ui/uiStore';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface UseProfileEditOptions {
   autoSaveDelay?: number; // milliseconds
@@ -59,10 +59,7 @@ export function useProfileEdit(options: UseProfileEditOptions = {}) {
 
       onSaveSuccess?.();
 
-      logger.info('Profile auto-saved successfully', {
-        timestamp: item.timestamp,
-        retryCount: item.retryCount,
-      });
+      logger.info('Profile auto-saved successfully', { timestampitemtimestamp, retryCountitemretryCount,  });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Save failed';
@@ -70,10 +67,7 @@ export function useProfileEdit(options: UseProfileEditOptions = {}) {
       // Retry logic
       if (item.retryCount < 3) {
         item.retryCount++;
-        logger.warn('Profile save failed, retrying...', {
-          error: errorMessage,
-          retryCount: item.retryCount,
-        });
+        logger.warn('Profile save failed, { retrying, errorerrorMessage, retryCountitemretryCount,  });
 
         // Move to end of queue for retry
         saveQueueRef.current.shift();

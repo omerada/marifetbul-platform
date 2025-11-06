@@ -1,7 +1,7 @@
 import React, { memo, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import { shallowEqual } from '@/lib/core/store/optimized';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // PERFORMANCE OPTIMIZED COMPONENTS

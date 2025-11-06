@@ -40,7 +40,7 @@ import {
   importSearchHistory,
   type SearchHistoryItem,
 } from '@/lib/services/search-history.service';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface SearchHistoryPanelProps {
   onSearch?: (query: string) => void;

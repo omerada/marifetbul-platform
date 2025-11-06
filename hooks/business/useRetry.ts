@@ -10,7 +10,7 @@
  */
 
 import { useCallback, useState } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES
@@ -151,7 +151,7 @@ function sleep(ms: number): Promise<void> {
  *     });
  *     logger.debug('Success:', result);
  *   } catch (error) {
- *     logger.error('All retries failed:', error);
+ *     logger.error('All retries failed:', error instanceof Error ? error : new Error(String(error)));
  *   }
  * };
  * ```

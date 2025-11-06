@@ -12,7 +12,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { reviewApi } from '@/lib/api/review';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   Review,
   ReviewStats,
@@ -118,11 +118,7 @@ export function usePackageReviewsHook({
           setStats(response.stats);
         }
 
-        logger.info('usePackageReviewsHook: Reviews fetched', {
-          packageId,
-          page,
-          total: response.pagination.totalElements,
-        });
+        logger.info('usePackageReviewsHook: Reviews fetched', { packageId, page, totalresponsepaginationtotalElements,  });
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to fetch reviews';

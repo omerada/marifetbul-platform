@@ -9,7 +9,7 @@ import type {
   OrderDispute,
   PaginationMeta,
 } from '@/types';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface OrderFilters {
   status?: string;
@@ -184,9 +184,7 @@ export const useOrderStore = create<OrderStore>()(
 
           const data: OrdersResponse = await response.json();
 
-          logger.debug('Orders Store: Orders loaded', {
-            count: data.data?.length,
-          });
+          logger.debug('Orders Store: Orders loaded', { countdatadatalength,  });
 
           set((state) => {
             state.orders = data.data || [];

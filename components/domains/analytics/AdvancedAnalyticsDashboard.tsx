@@ -22,7 +22,7 @@ import type { FreelancerAnalytics, EmployerAnalytics } from '@/types';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface Sprint8AnalyticsDashboardProps {
   userType: 'freelancer' | 'employer';
@@ -60,7 +60,7 @@ export function Sprint8AnalyticsDashboard({
         includeRawData: false,
       });
     } catch (error) {
-      logger.error('Export error:', error);
+      logger.error('Export error:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 

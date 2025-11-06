@@ -16,7 +16,7 @@ import { followApi } from '@/lib/api/follow';
 import type { User } from '@/types/core/base';
 import type { PaginationMeta } from '@/types';
 import { transformUserResponses } from '@/lib/transformers/user.transformer';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface UseFollowersListOptions {
   userId: string;
@@ -81,7 +81,7 @@ export function useFollowersList({
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to load followers';
         setError(errorMessage);
-        logger.error('Error fetching followers:', err);
+        logger.error('Error fetching followers:', err instanceof Error ? err : new Error(String(err)));
       } finally {
         setIsLoading(false);
       }

@@ -13,7 +13,7 @@ import {
 } from '@/lib/core/validations/payment';
 import { useToast } from '@/hooks/shared/ui';
 import { ZodError } from 'zod';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 type PaymentStatus =
   | 'pending'

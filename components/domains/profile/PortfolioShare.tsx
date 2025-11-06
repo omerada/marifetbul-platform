@@ -4,7 +4,7 @@ import React from 'react';
 import { Share2, Copy, Check, Facebook, Twitter, Linkedin } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { PortfolioItem } from '@/types';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface PortfolioShareProps {
   portfolio: PortfolioItem;
@@ -27,13 +27,11 @@ export function PortfolioShare({ portfolio, userId }: PortfolioShareProps) {
     try {
       await navigator.clipboard.writeText(portfolioUrl);
       setCopied(true);
-      logger.info('Portfolio link copied to clipboard', {
-        portfolioId: portfolio.id,
-      });
+      logger.info('Portfolio link copied to clipboard', { portfolioIdportfolioid,  });
 
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      logger.error('Failed to copy portfolio link', error);
+      logger.error('Failed to copy portfolio link', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -66,13 +64,11 @@ export function PortfolioShare({ portfolio, userId }: PortfolioShareProps) {
           text: portfolio.description,
           url: portfolioUrl,
         });
-        logger.info('Portfolio shared via native API', {
-          portfolioId: portfolio.id,
-        });
+        logger.info('Portfolio shared via native API', { portfolioIdportfolioid,  });
       } catch (error) {
         // User cancelled or error occurred
         if ((error as Error).name !== 'AbortError') {
-          logger.error('Native share failed', error);
+          logger.error('Native share failed', error instanceof Error ? error : new Error(String(error)));
         }
       }
     } else {

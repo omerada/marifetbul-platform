@@ -50,7 +50,7 @@ import {
   getBankFromIBAN,
   type BankInfo,
 } from '@/lib/services/bank-info-service';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES

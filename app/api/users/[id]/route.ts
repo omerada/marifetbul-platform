@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,7 +57,7 @@ export async function GET(
       headers: responseHeaders,
     });
   } catch (error) {
-    logger.error('[User API] Error:', error);
+    logger.error('[User API] Error:', error instanceof Error ? error : new Error(String(error)));
 
     return NextResponse.json(
       {
@@ -129,7 +129,7 @@ export async function PATCH(
       headers: responseHeaders,
     });
   } catch (error) {
-    logger.error('[User API] Update error:', error);
+    logger.error('[User API] Update error:', error instanceof Error ? error : new Error(String(error)));
 
     return NextResponse.json(
       {

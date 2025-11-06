@@ -3,7 +3,7 @@
 // ================================================
 // Advanced bundle optimization for production performance
 
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export interface BundleAnalysisReport {
   totalSize: number;

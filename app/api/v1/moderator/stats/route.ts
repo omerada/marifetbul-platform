@@ -18,7 +18,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,9 +31,7 @@ const BACKEND_API_URL =
  */
 export async function GET(request: NextRequest) {
   try {
-    logger.debug('[Moderator Stats API] GET request', {
-      url: request.url,
-    });
+    logger.debug('[Moderator Stats API] GET request', { urlrequesturl,  });
 
     // Forward to backend
     const response = await fetch(`${BACKEND_API_URL}/moderator/stats`, {
@@ -47,10 +45,7 @@ export async function GET(request: NextRequest) {
 
     const data = await response.json();
 
-    logger.debug('[Moderator Stats API] Backend response', {
-      status: response.status,
-      success: response.ok,
-    });
+    logger.debug('[Moderator Stats API] Backend response', { statusresponsestatus, successresponseok,  });
 
     return NextResponse.json(data, { status: response.status });
   } catch (error) {

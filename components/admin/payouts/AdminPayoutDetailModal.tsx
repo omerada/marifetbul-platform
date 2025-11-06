@@ -29,7 +29,7 @@ import {
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/api/admin/payout-admin-api';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES
@@ -70,7 +70,7 @@ export const AdminPayoutDetailModal: React.FC<AdminPayoutDetailModalProps> = ({
       await action();
       onClose();
     } catch (error) {
-      logger.error('Action failed:', error);
+      logger.error('Action failed:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsProcessing(false);
     }

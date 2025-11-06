@@ -225,10 +225,7 @@ export function withValidation(
     try {
       // Check if should skip
       if (skip && (await skip(request))) {
-        logger.debug('Validation skipped', {
-          url: request.url,
-          method: request.method,
-        });
+        logger.debug('Validation skipped', { urlrequesturl, methodrequestmethod,  });
 
         // Add empty validated data
         const requestWithValidation = request as NextRequest & ValidatedRequest;
@@ -287,11 +284,7 @@ export function withValidation(
 
       // Check if there are any validation errors
       if (allErrors.length > 0) {
-        logger.warn('Validation failed', {
-          url: request.url,
-          method: request.method,
-          errors: allErrors,
-        });
+        logger.warn('Validation failed', { urlrequesturl, methodrequestmethod, errorsallErrors,  });
 
         // Call failure callback
         if (onValidationFailure) {
@@ -323,11 +316,7 @@ export function withValidation(
     } catch (error) {
       // Handle validation exceptions
       if (error instanceof ValidationException) {
-        logger.warn('Validation exception thrown', {
-          url: request.url,
-          method: request.method,
-          errors: error.errors,
-        });
+        logger.warn('Validation exception thrown', { urlrequesturl, methodrequestmethod, errorserrorerrors,  });
 
         return NextResponse.json(
           {

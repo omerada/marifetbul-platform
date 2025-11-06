@@ -14,7 +14,7 @@
 
 import { useCallback, useState } from 'react';
 import { moderationApi } from '@/lib/api/moderation';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { toast } from 'sonner';
 import { ActionType } from '@/types/business/moderation';
 
@@ -111,7 +111,7 @@ export function useModerationActions(): UseModerationActionsReturn {
         logger.info('Comment approved:', commentId);
       } catch (error) {
         stopProcessing();
-        logger.error('Failed to approve comment:', error);
+        logger.error('Failed to approve comment:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Yorum onaylanamadı');
         throw error;
       }
@@ -126,10 +126,10 @@ export function useModerationActions(): UseModerationActionsReturn {
         await moderationApi.rejectComment(commentId, reason);
         updateActionState(ActionType.REJECT);
         toast.success('Yorum reddedildi');
-        logger.info('Comment rejected:', commentId, 'Reason:', reason);
+        logger.info('Comment rejected:', { commentId, reason });
       } catch (error) {
         stopProcessing();
-        logger.error('Failed to reject comment:', error);
+        logger.error('Failed to reject comment:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Yorum reddedilemedi');
         throw error;
       }
@@ -147,7 +147,7 @@ export function useModerationActions(): UseModerationActionsReturn {
         logger.info('Comment marked as spam:', commentId);
       } catch (error) {
         stopProcessing();
-        logger.error('Failed to mark comment as spam:', error);
+        logger.error('Failed to mark comment as spam:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Yorum spam olarak işaretlenemedi');
         throw error;
       }
@@ -169,7 +169,7 @@ export function useModerationActions(): UseModerationActionsReturn {
         logger.info('Review approved:', reviewId);
       } catch (error) {
         stopProcessing();
-        logger.error('Failed to approve review:', error);
+        logger.error('Failed to approve review:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Değerlendirme onaylanamadı');
         throw error;
       }
@@ -184,10 +184,10 @@ export function useModerationActions(): UseModerationActionsReturn {
         await moderationApi.rejectReview(reviewId, reason);
         updateActionState(ActionType.REJECT);
         toast.success('Değerlendirme reddedildi');
-        logger.info('Review rejected:', reviewId, 'Reason:', reason);
+        logger.info('Review rejected:', { reviewId, reason });
       } catch (error) {
         stopProcessing();
-        logger.error('Failed to reject review:', error);
+        logger.error('Failed to reject review:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Değerlendirme reddedilemedi');
         throw error;
       }
@@ -206,10 +206,10 @@ export function useModerationActions(): UseModerationActionsReturn {
         await moderationApi.resolveReport(reportId, action, notes);
         updateActionState(ActionType.RESOLVE);
         toast.success('Şikayet çözüldü');
-        logger.info('Report resolved:', reportId, 'Action:', action);
+        logger.info('Report resolved:', { reportId, action });
       } catch (error) {
         stopProcessing();
-        logger.error('Failed to resolve report:', error);
+        logger.error('Failed to resolve report:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Şikayet çözülemedi');
         throw error;
       }
@@ -224,10 +224,10 @@ export function useModerationActions(): UseModerationActionsReturn {
         await moderationApi.dismissReport(reportId, reason);
         updateActionState(ActionType.REJECT);
         toast.success('Şikayet reddedildi');
-        logger.info('Report dismissed:', reportId, 'Reason:', reason);
+        logger.info('Report dismissed:', { reportId, reason });
       } catch (error) {
         stopProcessing();
-        logger.error('Failed to dismiss report:', error);
+        logger.error('Failed to dismiss report:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Şikayet reddedilemedi');
         throw error;
       }
@@ -249,7 +249,7 @@ export function useModerationActions(): UseModerationActionsReturn {
         logger.info('Warning issued to user:', userId);
       } catch (error) {
         stopProcessing();
-        logger.error('Failed to issue warning:', error);
+        logger.error('Failed to issue warning:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Uyarı verilemedi');
         throw error;
       }
@@ -274,15 +274,10 @@ export function useModerationActions(): UseModerationActionsReturn {
         await moderationApi.suspendUser(request);
         updateActionState(ActionType.BAN);
         toast.success('Kullanıcı askıya alındı');
-        logger.info(
-          'User suspended:',
-          request.userId,
-          'Type:',
-          request.suspensionType
-        );
+        logger.info('User suspended:', { requestuserId, requestsuspensionType });
       } catch (error) {
         stopProcessing();
-        logger.error('Failed to suspend user:', error);
+        logger.error('Failed to suspend user:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Kullanıcı askıya alınamadı');
         throw error;
       }

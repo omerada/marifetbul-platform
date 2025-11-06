@@ -33,7 +33,7 @@ import {
   X,
 } from 'lucide-react';
 import { trackSearch } from '@/lib/api/search-analytics';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 type SearchTab = 'all' | 'services' | 'jobs' | 'freelancers';
 

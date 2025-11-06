@@ -1,7 +1,7 @@
 import type { Job, PaginatedResponse } from '@/types';
 import type { ApiResponse } from '@/types/shared/api';
 import { apiClient } from '@/lib/infrastructure/api/client';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export interface JobFilters {
   search?: string;

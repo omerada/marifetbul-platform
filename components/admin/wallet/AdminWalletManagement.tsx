@@ -53,7 +53,7 @@ import {
 } from 'lucide-react';
 import { UnifiedAdminWalletModal } from './UnifiedAdminWalletModal';
 import { AdminWalletFilters } from './AdminWalletFilters';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES

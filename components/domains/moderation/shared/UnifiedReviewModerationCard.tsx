@@ -38,7 +38,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { UnifiedButton, Badge } from '@/components/ui';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { ReviewResponse } from '@/lib/api/admin/moderation';
 
 // ============================================================================
@@ -141,10 +141,7 @@ export function UnifiedReviewModerationCard({
       if (onReject) {
         const success = await onReject(review.id, rejectReason);
         if (success) {
-          logger.info('Review rejected', {
-            reviewId: review.id,
-            reason: rejectReason,
-          });
+          logger.info('Review rejected', { reviewIdreviewid, reasonrejectReason,  });
           setShowRejectDialog(false);
           setRejectReason('');
           onUpdated?.();
@@ -179,10 +176,7 @@ export function UnifiedReviewModerationCard({
           escalatePriority
         );
         if (success) {
-          logger.info('Review escalated', {
-            reviewId: review.id,
-            priority: escalatePriority,
-          });
+          logger.info('Review escalated', { reviewIdreviewid, priorityescalatePriority,  });
           setShowEscalateDialog(false);
           setEscalateReason('');
           setEscalatePriority('MEDIUM');

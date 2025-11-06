@@ -18,7 +18,7 @@
 
 import { Client, IFrame, IMessage, StompSubscription } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ==================== TYPES ====================
 
@@ -99,9 +99,7 @@ export class WebSocketService {
     }
 
     this.setState(WebSocketState.CONNECTING);
-    logger.info('WebSocketService', 'Connecting to WebSocket...', {
-      url: this.config.url,
-    });
+    logger.info('WebSocketService', { urlthisconfigurl,  });
 
     try {
       // Create STOMP client with SockJS
@@ -135,7 +133,7 @@ export class WebSocketService {
       // Activate the client
       this.client.activate();
     } catch (error) {
-      logger.error('WebSocketService', 'Failed to create client', { error });
+      logger.error('WebSocketService: Failed to create client', undefined, { error });
       this.setState(WebSocketState.ERROR);
       this.handleReconnect();
     }
@@ -210,7 +208,7 @@ export class WebSocketService {
           const data = JSON.parse(message.body);
           callback(data);
         } catch (error) {
-          logger.error('WebSocketService', 'Failed to parse message', {
+          logger.error('WebSocketService: Failed to parse message', undefined, {
             error,
             body: message.body,
           });
@@ -266,9 +264,7 @@ export class WebSocketService {
       throw new Error('WebSocket not connected');
     }
 
-    logger.debug('WebSocketService', `Sending message to ${destination}`, {
-      body,
-    });
+    logger.debug('WebSocketService', { body,  });
 
     this.client.publish({
       destination,
@@ -295,7 +291,7 @@ export class WebSocketService {
   // ==================== PRIVATE METHODS ====================
 
   private onConnect(frame: IFrame): void {
-    logger.info('WebSocketService', 'Connected to WebSocket', { frame });
+    logger.info('WebSocketService', { frame });
     this.setState(WebSocketState.CONNECTED);
     this.reconnectAttempts = 0;
 
@@ -322,7 +318,7 @@ export class WebSocketService {
   }
 
   private onStompError(frame: IFrame): void {
-    logger.error('WebSocketService', 'STOMP error', { frame });
+    logger.error('WebSocketService: STOMP error', undefined, { frame });
     this.setState(WebSocketState.ERROR);
 
     const error = new Error(`STOMP Error: ${frame.headers['message']}`);
@@ -333,7 +329,7 @@ export class WebSocketService {
   }
 
   private onWebSocketError(event: Event): void {
-    logger.error('WebSocketService', 'WebSocket error', { event });
+    logger.error('WebSocketService: WebSocket error', undefined, { event });
     this.setState(WebSocketState.ERROR);
 
     const error = new Error('WebSocket Error');
@@ -428,10 +424,7 @@ export function initWebSocketService(
   config: WebSocketConfig
 ): WebSocketService {
   if (webSocketServiceInstance) {
-    logger.warn(
-      'WebSocketService',
-      'Already initialized, disconnecting old instance'
-    );
+    logger.warn('WebSocketService', { disconnectingoldinstance });
     webSocketServiceInstance.disconnect();
   }
 

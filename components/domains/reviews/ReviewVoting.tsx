@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { ThumbsUp, ThumbsDown, Loader2 } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { cn } from '@/lib/utils';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { VoteType } from '@/types/business/review';
 
 export interface ReviewVotingProps {
@@ -94,7 +94,7 @@ export function ReviewVoting({
       setHelpfulCount(prevHelpfulCount);
       setNotHelpfulCount(prevNotHelpfulCount);
       setUserVote(prevUserVote);
-      logger.error('Failed to vote:', error);
+      logger.error('Failed to vote:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsVoting(false);
     }

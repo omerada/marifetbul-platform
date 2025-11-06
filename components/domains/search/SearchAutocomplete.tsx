@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
 import { useUnifiedSearch } from '@/hooks';
 import type { SearchSuggestion } from '@/types/shared/search';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface SearchAutocompleteProps {
   placeholder?: string;

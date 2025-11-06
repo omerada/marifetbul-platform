@@ -31,7 +31,7 @@ import type { Message as ApiMessage } from '@/types/message';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES
@@ -161,7 +161,7 @@ export function OrderMessagingPanel({
         const mappedMessages = response.content.map(mapApiMessage);
         setMessages(mappedMessages);
       } catch (error) {
-        logger.error('Failed to load messages:', error);
+        logger.error('Failed to load messages:', error instanceof Error ? error : new Error(String(error)));
         showErrorToast('Mesajlar yüklenemedi');
       } finally {
         setIsLoading(false);
@@ -235,7 +235,7 @@ export function OrderMessagingPanel({
             }
           }
         } catch (error) {
-          logger.error('Failed to parse message:', error);
+          logger.error('Failed to parse message:', error instanceof Error ? error : new Error(String(error)));
         }
       }
     );
@@ -263,7 +263,7 @@ export function OrderMessagingPanel({
           activeConversationId = conversation.id;
           setConversationId(conversation.id);
         } catch (error) {
-          logger.error('Failed to create conversation:', error);
+          logger.error('Failed to create conversation:', error instanceof Error ? error : new Error(String(error)));
           showErrorToast(
             'Konuşma başlatılamadı',
             'Lütfen tekrar deneyin veya sayfayı yenileyin.'
@@ -301,7 +301,7 @@ export function OrderMessagingPanel({
             size: result.fileSize,
           }));
         } catch (error) {
-          logger.error('File upload failed:', error);
+          logger.error('File upload failed:', error instanceof Error ? error : new Error(String(error)));
           // Continue sending message without attachments
         } finally {
           setIsUploadingFiles(false);
@@ -340,7 +340,7 @@ export function OrderMessagingPanel({
       setMessage('');
       setAttachments([]);
     } catch (error) {
-      logger.error('Failed to send message:', error);
+      logger.error('Failed to send message:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsSending(false);
     }

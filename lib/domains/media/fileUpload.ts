@@ -5,7 +5,7 @@
 
 import { FileAttachment } from '@/types';
 import { getFileUploadService } from './fileUpload.service';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // Allowed file types
 export const ALLOWED_FILE_TYPES = {

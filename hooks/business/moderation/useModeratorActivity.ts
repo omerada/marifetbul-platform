@@ -18,7 +18,7 @@
 
 import { useCallback } from 'react';
 import useSWR from 'swr';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -118,7 +118,7 @@ export function useModeratorActivity(
   // ============================================================================
 
   if (error) {
-    logger.error('Activity fetch error:', error);
+    logger.error('Activity fetch error:', error instanceof Error ? error : new Error(String(error)));
   }
 
   // ============================================================================

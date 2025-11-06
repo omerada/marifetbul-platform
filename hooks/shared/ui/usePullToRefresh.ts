@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface UsePullToRefreshOptions {
   onRefresh: () => Promise<void> | void;
@@ -68,7 +68,7 @@ export function usePullToRefresh({
       try {
         await onRefresh();
       } catch (error) {
-        logger.error('Refresh failed:', error);
+        logger.error('Refresh failed:', error instanceof Error ? error : new Error(String(error)));
       } finally {
         setIsRefreshing(false);
       }

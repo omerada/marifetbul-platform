@@ -30,7 +30,7 @@ import {
   resetNotificationPreferences,
   setDoNotDisturb,
 } from '@/lib/api/notifications';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ==================== TYPES ====================
 
@@ -131,7 +131,7 @@ export default function NotificationPreferences() {
         'Preferences fetched successfully'
       );
     } catch (err) {
-      logger.error('NotificationPreferences', 'Failed to fetch preferences', {
+      logger.error('NotificationPreferences: Failed to fetch preferences', undefined, {
         err,
       });
       setError('Bildirim tercihleri yüklenirken bir hata oluştu.');
@@ -179,7 +179,7 @@ export default function NotificationPreferences() {
         'Preferences updated successfully'
       );
     } catch (err) {
-      logger.error('NotificationPreferences', 'Failed to update preferences', {
+      logger.error('NotificationPreferences: Failed to update preferences', undefined, {
         err,
       });
       setError('Tercihler kaydedilirken bir hata oluştu.');
@@ -213,7 +213,7 @@ export default function NotificationPreferences() {
 
       logger.info('NotificationPreferences', 'Preferences reset to defaults');
     } catch (err) {
-      logger.error('NotificationPreferences', 'Failed to reset preferences', {
+      logger.error('NotificationPreferences: Failed to reset preferences', undefined, {
         err,
       });
       setError('Tercihler sıfırlanırken bir hata oluştu.');
@@ -249,7 +249,7 @@ export default function NotificationPreferences() {
         `DND ${newEnabled ? 'enabled' : 'disabled'}`
       );
     } catch (err) {
-      logger.error('NotificationPreferences', 'Failed to toggle DND', { err });
+      logger.error('NotificationPreferences: Failed to toggle DND', undefined, { err });
       setError('Rahatsız Etme Modu ayarlanırken bir hata oluştu.');
     } finally {
       setSaving(false);
@@ -272,7 +272,7 @@ export default function NotificationPreferences() {
 
       logger.info('NotificationPreferences', 'DND times updated');
     } catch (err) {
-      logger.error('NotificationPreferences', 'Failed to update DND times', {
+      logger.error('NotificationPreferences: Failed to update DND times', undefined, {
         err,
       });
       setError('Saatler güncellenirken bir hata oluştu.');

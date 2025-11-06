@@ -9,7 +9,7 @@
  */
 
 import { getWebSocketService } from './WebSocketService';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { InAppNotification } from '@/types/business/features/notifications';
 
 export interface NotificationWebSocketPayload {
@@ -39,9 +39,7 @@ export function subscribeToNotifications(
   userId: string,
   callbacks: NotificationWebSocketCallbacks
 ): () => void {
-  logger.info('NotificationWebSocket', 'Subscribing to notifications', {
-    userId,
-  });
+  logger.info('NotificationWebSocket', { userId,  });
 
   try {
     const ws = getWebSocketService();
@@ -60,9 +58,7 @@ export function subscribeToNotifications(
       try {
         const payload = message as NotificationWebSocketPayload;
 
-        logger.debug('NotificationWebSocket', 'Received notification', {
-          payload,
-        });
+        logger.debug('NotificationWebSocket', { payload,  });
 
         // Transform payload to InAppNotification format
         const notification: InAppNotification = {
@@ -86,16 +82,9 @@ export function subscribeToNotifications(
         // Call the notification callback
         callbacks.onNotification(notification);
 
-        logger.info(
-          'NotificationWebSocket',
-          'Notification processed successfully',
-          {
-            notificationId: notification.id,
-            type: notification.type,
-          }
-        );
+        logger.info('NotificationWebSocket', { notificationIdnotificationid, typenotificationtype,  });
       } catch (error) {
-        logger.error('NotificationWebSocket', 'Error processing notification', {
+        logger.error('NotificationWebSocket: Error processing notification', undefined, {
           error,
         });
         callbacks.onError?.(
@@ -104,11 +93,7 @@ export function subscribeToNotifications(
       }
     });
 
-    logger.info(
-      'NotificationWebSocket',
-      'Successfully subscribed to notifications',
-      { topic, subscriptionId }
-    );
+    logger.info('NotificationWebSocket', { topic, subscriptionId });
 
     // Return unsubscribe function
     return () => {
@@ -116,11 +101,7 @@ export function subscribeToNotifications(
       ws.unsubscribe(subscriptionId);
     };
   } catch (error) {
-    logger.error(
-      'NotificationWebSocket',
-      'Failed to subscribe to notifications',
-      { error }
-    );
+    logger.error('NotificationWebSocket: Failed to subscribe to notifications', undefined, { error });
     callbacks.onError?.(
       error instanceof Error ? error : new Error(String(error))
     );
@@ -156,11 +137,7 @@ export function subscribeToBroadcastNotifications(
       try {
         const payload = message as NotificationWebSocketPayload;
 
-        logger.debug(
-          'NotificationWebSocket',
-          'Received broadcast notification',
-          { payload }
-        );
+        logger.debug('NotificationWebSocket', { payload });
 
         const notification: InAppNotification = {
           id: payload.notificationId,
@@ -182,30 +159,16 @@ export function subscribeToBroadcastNotifications(
 
         callbacks.onNotification(notification);
 
-        logger.info(
-          'NotificationWebSocket',
-          'Broadcast notification processed',
-          {
-            notificationId: notification.id,
-          }
-        );
+        logger.info('NotificationWebSocket', { notificationIdnotificationid,  });
       } catch (error) {
-        logger.error(
-          'NotificationWebSocket',
-          'Error processing broadcast notification',
-          { error }
-        );
+        logger.error('NotificationWebSocket: Error processing broadcast notification', undefined, { error });
         callbacks.onError?.(
           error instanceof Error ? error : new Error(String(error))
         );
       }
     });
 
-    logger.info(
-      'NotificationWebSocket',
-      'Successfully subscribed to broadcast notifications',
-      { topic, subscriptionId }
-    );
+    logger.info('NotificationWebSocket', { topic, subscriptionId });
 
     return () => {
       logger.info(
@@ -215,11 +178,7 @@ export function subscribeToBroadcastNotifications(
       ws.unsubscribe(subscriptionId);
     };
   } catch (error) {
-    logger.error(
-      'NotificationWebSocket',
-      'Failed to subscribe to broadcast notifications',
-      { error }
-    );
+    logger.error('NotificationWebSocket: Failed to subscribe to broadcast notifications', undefined, { error });
     callbacks.onError?.(
       error instanceof Error ? error : new Error(String(error))
     );

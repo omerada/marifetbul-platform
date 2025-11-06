@@ -9,7 +9,7 @@ export interface GeocodeResult {
   formattedAddress: string;
 }
 
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export interface GoogleGeocodeComponent {
   long_name: string;

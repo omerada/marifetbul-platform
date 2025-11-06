@@ -53,7 +53,7 @@ import {
   type BankAccountResponse,
 } from '@/lib/api/bank-accounts';
 import { maskIBAN } from '@/lib/services/bank-info-service';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES

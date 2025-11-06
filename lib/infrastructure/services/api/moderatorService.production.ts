@@ -21,7 +21,7 @@
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { ApiResponse } from '@/types/backend-aligned';
 import type { PerformanceMetrics } from '@/hooks/business/moderation/useModeratorPerformance';
 
@@ -346,10 +346,7 @@ class ModeratorService {
     commentId: string,
     reason: string
   ): Promise<ApiResponse<void>> {
-    logger.debug('[ModeratorService] Escalating comment', {
-      commentId,
-      reason,
-    });
+    logger.debug('[ModeratorService] Escalating comment', { commentId, reason,  });
 
     // Encode reason as query parameter
     const encodedReason = encodeURIComponent(reason);
@@ -375,10 +372,7 @@ class ModeratorService {
     commentIds: string[],
     reason: string
   ): Promise<ApiResponse<BulkActionResponse>> {
-    logger.debug('[ModeratorService] Bulk escalating comments', {
-      count: commentIds.length,
-      reason,
-    });
+    logger.debug('[ModeratorService] Bulk escalating comments', { countcommentIdslength, reason,  });
 
     return apiClient.post<ApiResponse<BulkActionResponse>>(
       '/api/v1/moderator/comments/bulk/escalate',
@@ -398,9 +392,7 @@ class ModeratorService {
   async bulkApproveComments(
     commentIds: string[]
   ): Promise<ApiResponse<BulkActionResponse>> {
-    logger.debug('[ModeratorService] Bulk approving comments', {
-      count: commentIds.length,
-    });
+    logger.debug('[ModeratorService] Bulk approving comments', { countcommentIdslength,  });
 
     return apiClient.post<ApiResponse<BulkActionResponse>>(
       '/api/v1/blog/admin/comments/bulk/approve',
@@ -422,10 +414,7 @@ class ModeratorService {
     commentIds: string[],
     reason?: string
   ): Promise<ApiResponse<BulkActionResponse>> {
-    logger.debug('[ModeratorService] Bulk rejecting comments', {
-      count: commentIds.length,
-      reason,
-    });
+    logger.debug('[ModeratorService] Bulk rejecting comments', { countcommentIdslength, reason,  });
 
     return apiClient.post<ApiResponse<BulkActionResponse>>(
       '/api/v1/blog/admin/comments/bulk/reject',
@@ -445,9 +434,7 @@ class ModeratorService {
   async bulkMarkCommentsAsSpam(
     commentIds: string[]
   ): Promise<ApiResponse<BulkActionResponse>> {
-    logger.debug('[ModeratorService] Bulk marking comments as spam', {
-      count: commentIds.length,
-    });
+    logger.debug('[ModeratorService] Bulk marking comments as spam', { countcommentIdslength,  });
 
     return apiClient.post<ApiResponse<BulkActionResponse>>(
       '/api/v1/blog/admin/comments/bulk/spam',
@@ -509,9 +496,7 @@ class ModeratorService {
   async bulkApproveReviews(
     reviewIds: string[]
   ): Promise<ApiResponse<BulkActionResponse>> {
-    logger.debug('[ModeratorService] Bulk approving reviews', {
-      count: reviewIds.length,
-    });
+    logger.debug('[ModeratorService] Bulk approving reviews', { countreviewIdslength,  });
 
     return apiClient.post<ApiResponse<BulkActionResponse>>(
       '/api/v1/review/moderation/bulk/approve',
@@ -533,10 +518,7 @@ class ModeratorService {
     reviewIds: string[],
     reason?: string
   ): Promise<ApiResponse<BulkActionResponse>> {
-    logger.debug('[ModeratorService] Bulk rejecting reviews', {
-      count: reviewIds.length,
-      reason,
-    });
+    logger.debug('[ModeratorService] Bulk rejecting reviews', { countreviewIdslength, reason,  });
 
     return apiClient.post<ApiResponse<BulkActionResponse>>(
       '/api/v1/review/moderation/bulk/reject',

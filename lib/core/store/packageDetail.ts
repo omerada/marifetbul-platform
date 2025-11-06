@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { PackageDetail, ServicePackage, Review } from '@/types';
 import { OrderFormData } from '@/lib/core/validations/details';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface PackageDetailStore {
   // State properties
@@ -161,9 +161,7 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
           if (data.success) {
             set({ isOrdering: false }, false, 'packageDetail/orderSuccess');
 
-            logger.info('Order created successfully', {
-              orderId: data.data.id,
-            });
+            logger.info('Order created successfully', { orderIddatadataid,  });
             return data.data.id;
           } else {
             set(

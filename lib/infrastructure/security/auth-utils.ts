@@ -16,7 +16,7 @@
 
 import { NextRequest } from 'next/server';
 import { getBackendApiUrl } from '@/lib/config/api';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { UserRole } from '@/types/backend-aligned';
 
 // ================================================
@@ -177,9 +177,7 @@ export async function validateToken(
     });
 
     if (!response.ok) {
-      logger.warn('Token validation failed', {
-        status: response.status,
-      });
+      logger.warn('Token validation failed', { statusresponsestatus,  });
       return null;
     }
 
@@ -284,7 +282,7 @@ export function normalizeRole(role: string): UserRole {
 
   // Default to FREELANCER for unknown roles
   // (Backend doesn't have 'USER' role, FREELANCER is the default user type)
-  logger.warn('Unknown role, defaulting to FREELANCER', { role });
+  logger.warn('Unknown role, { defaultingtoFREELANCER, role });
   return 'FREELANCER';
 }
 

@@ -10,7 +10,7 @@
 
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { ActionType } from '@/types/business/moderation';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * Activity log entry
@@ -57,11 +57,7 @@ export async function logModerationActivity(
       }
     );
 
-    logger.info('Moderation activity logged', {
-      activityId: response.activityId,
-      actionType: activity.actionType,
-      targetType: activity.targetType,
-    });
+    logger.info('Moderation activity logged', { activityIdresponseactivityId, actionTypeactivityactionType, targetTypeactivitytargetType,  });
 
     return response;
   } catch (error) {

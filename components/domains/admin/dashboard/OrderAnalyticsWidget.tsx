@@ -23,7 +23,7 @@ import {
   XCircle,
   Activity,
 } from 'lucide-react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * Order Analytics Widget Component

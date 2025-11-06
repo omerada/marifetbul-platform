@@ -16,7 +16,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface SearchAnalytics {
   totalSearches: number;
@@ -65,7 +65,7 @@ export function SearchAnalyticsDashboard({
       setAnalytics(data);
       setLastUpdated(new Date());
     } catch (error) {
-      logger.error('Failed to fetch search analytics:', error);
+      logger.error('Failed to fetch search analytics:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);

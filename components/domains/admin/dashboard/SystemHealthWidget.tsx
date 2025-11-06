@@ -22,7 +22,7 @@ import {
   Globe,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { useAdminDashboard } from '@/hooks';
 
 interface SystemHealthWidgetProps {
@@ -76,10 +76,7 @@ export function SystemHealthWidget({
 
   useMemo(() => {
     if (systemHealth) {
-      logger.debug('SystemHealthWidget: Data from store', {
-        status: systemHealth.status,
-        uptime: systemHealth.uptime,
-      });
+      logger.debug('SystemHealthWidget: Data from store', { statussystemHealthstatus, uptimesystemHealthuptime,  });
     }
   }, [systemHealth]);
 

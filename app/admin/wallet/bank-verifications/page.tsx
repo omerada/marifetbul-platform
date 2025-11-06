@@ -16,7 +16,7 @@ import { BankAccountVerificationList } from '@/components/admin/BankAccountVerif
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Building2, Shield, CheckCircle2 } from 'lucide-react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // PAGE COMPONENT

@@ -15,7 +15,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import useSWR from 'swr';
 import { moderationApi } from '@/lib/api/moderation';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { toast } from 'sonner';
 import type {
   PendingItem,
@@ -143,7 +143,7 @@ export function useModerationQueue(): UseModerationQueueReturn {
         toast.success('İçerik onaylandı');
         logger.info(`Approved ${item.itemType}:`, itemId);
       } catch (error) {
-        logger.error('Failed to approve item:', error);
+        logger.error('Failed to approve item:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Onaylama başarısız oldu');
         throw error;
       }
@@ -172,9 +172,9 @@ export function useModerationQueue(): UseModerationQueueReturn {
         mutate();
 
         toast.success('İçerik reddedildi');
-        logger.info(`Rejected ${item.itemType}:`, itemId, 'Reason:', reason);
+        logger.info(`Rejected ${item.itemType}:`, { itemId, reason });
       } catch (error) {
-        logger.error('Failed to reject item:', error);
+        logger.error('Failed to reject item:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Reddetme başarısız oldu');
         throw error;
       }
@@ -230,7 +230,7 @@ export function useModerationQueue(): UseModerationQueueReturn {
 
         logger.info('Bulk approved items:', itemIds);
       } catch (error) {
-        logger.error('Failed to bulk approve:', error);
+        logger.error('Failed to bulk approve:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Toplu onaylama başarısız oldu');
         throw error;
       }
@@ -268,9 +268,9 @@ export function useModerationQueue(): UseModerationQueueReturn {
         clearSelection();
         mutate();
 
-        logger.info('Bulk rejected items:', itemIds, 'Reason:', reason);
+        logger.info('Bulk rejected items:', { itemIds, reason });
       } catch (error) {
-        logger.error('Failed to bulk reject:', error);
+        logger.error('Failed to bulk reject:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Toplu reddetme başarısız oldu');
         throw error;
       }
@@ -298,7 +298,7 @@ export function useModerationQueue(): UseModerationQueueReturn {
 
         logger.info('Bulk marked as spam:', itemIds);
       } catch (error) {
-        logger.error('Failed to bulk mark as spam:', error);
+        logger.error('Failed to bulk mark as spam:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Toplu spam işaretleme başarısız oldu');
         throw error;
       }

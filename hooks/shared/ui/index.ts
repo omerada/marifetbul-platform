@@ -15,7 +15,7 @@ import {
   useIntersectionObserver,
   usePrevious,
 } from '../../../lib/shared/base';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // MODAL HOOKS
@@ -411,7 +411,7 @@ export function useClipboard() {
       setTimeout(() => setCopied(false), 2000);
       return true;
     } catch (error) {
-      logger.error('Failed to copy text:', error);
+      logger.error('Failed to copy text:', error instanceof Error ? error : new Error(String(error)));
       return false;
     }
   }, []);

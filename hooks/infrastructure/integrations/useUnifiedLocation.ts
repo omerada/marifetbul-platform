@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useLocationStore } from '@/lib/core/store';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { Coordinates, LocationData } from '@/types/core/base';
 
 interface UseUnifiedLocationOptions {
@@ -116,7 +116,7 @@ export function useUnifiedLocation(
       await store.getCurrentLocation();
       setAccuracy(position.coords.accuracy);
     } catch (error) {
-      logger.error('Failed to get current position:', error);
+      logger.error('Failed to get current position:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsLoadingPosition(false);
     }
@@ -140,7 +140,7 @@ export function useUnifiedLocation(
         setAccuracy(position.coords.accuracy);
       },
       (error) => {
-        logger.error('Position watch error:', error);
+        logger.error('Position watch error:', error instanceof Error ? error : new Error(String(error)));
       },
       positionOptions
     );
@@ -173,7 +173,7 @@ export function useUnifiedLocation(
 
         await store.searchLocations(request);
       } catch (error) {
-        logger.error('Location search failed:', error);
+        logger.error('Location search failed:', error instanceof Error ? error : new Error(String(error)));
       }
     },
     [store]
@@ -205,7 +205,7 @@ export function useUnifiedLocation(
 
           await store.getAutocomplete(request);
         } catch (error) {
-          logger.error('Autocomplete failed:', error);
+          logger.error('Autocomplete failed:', error instanceof Error ? error : new Error(String(error)));
         }
       }, autocompleteDelay);
     },

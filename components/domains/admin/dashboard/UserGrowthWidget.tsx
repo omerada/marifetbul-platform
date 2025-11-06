@@ -15,7 +15,7 @@ import {
   getMonthlyNewUserTrend,
 } from '@/lib/api/admin-analytics';
 import { TrendingUp, Users, Calendar, BarChart3 } from 'lucide-react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 type TimeFrame = 'daily' | 'monthly';
 

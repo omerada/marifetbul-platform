@@ -11,7 +11,7 @@
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES
@@ -81,7 +81,7 @@ export async function bulkApproveComments(
 
     return response;
   } catch (error) {
-    logger.error('Bulk approve failed:', error);
+    logger.error('Bulk approve failed:', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -115,7 +115,7 @@ export async function bulkRejectComments(
 
     return response;
   } catch (error) {
-    logger.error('Bulk reject failed:', error);
+    logger.error('Bulk reject failed:', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -146,7 +146,7 @@ export async function bulkMarkAsSpam(
 
     return response;
   } catch (error) {
-    logger.error('Bulk spam failed:', error);
+    logger.error('Bulk spam failed:', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -186,7 +186,7 @@ export async function escalateComments(
 
     return response;
   } catch (error) {
-    logger.error('Escalation failed:', error);
+    logger.error('Escalation failed:', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }

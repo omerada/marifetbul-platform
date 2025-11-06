@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
 import { formatDate } from '@/lib/shared/utils/date';
 import { TicketChat } from './TicketChat';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface TicketDetailProps {
   ticketId: string;

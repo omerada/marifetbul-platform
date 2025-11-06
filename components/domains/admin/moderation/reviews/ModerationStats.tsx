@@ -15,7 +15,7 @@ import {
   type PlatformReviewStats,
   adminModerationApi,
 } from '@/lib/api/admin/moderation';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   CheckCircle,
   XCircle,

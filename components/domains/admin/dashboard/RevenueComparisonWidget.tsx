@@ -14,7 +14,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import type { RevenueComparison } from '@/types/analytics';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface RevenueComparisonWidgetProps {
   comparisonType?: 'today' | 'week' | 'month';
@@ -62,7 +62,7 @@ export function RevenueComparisonWidget({
       const result = await response.json();
       setData(result.data || result);
     } catch (err) {
-      logger.error('Revenue comparison fetch error:', err);
+      logger.error('Revenue comparison fetch error:', err instanceof Error ? err : new Error(String(err)));
       setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
     } finally {
       setIsLoading(false);

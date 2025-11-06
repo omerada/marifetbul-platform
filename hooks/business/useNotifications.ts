@@ -8,7 +8,7 @@ import {
   markAllAsRead,
 } from '@/lib/api/notification';
 import { subscribeToNotifications } from '@/lib/infrastructure/websocket/notificationWebSocket';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { playNotificationAlert } from '@/lib/utils/notificationSound';
 import { useNotificationPreferences } from './useNotificationPreferences';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
@@ -116,27 +116,16 @@ export function useNotifications() {
   // WebSocket listener for real-time notifications
   useEffect(() => {
     if (!user?.id) {
-      logger.warn(
-        'useNotifications',
-        'No user ID, skipping WebSocket subscription'
-      );
+      logger.warn('useNotifications', { skippingWebSocketsubscription });
       return;
     }
 
-    logger.info('useNotifications', 'Setting up WebSocket subscription', {
-      userId: user.id,
-    });
+    logger.info('useNotifications', { userIduserid,  });
 
     try {
       const unsubscribe = subscribeToNotifications(user.id, {
         onNotification: (notification) => {
-          logger.debug(
-            'useNotifications',
-            'Received notification via WebSocket',
-            {
-              notification,
-            }
-          );
+          logger.debug('useNotifications', { notification,  });
 
           // Update recent notifications list (add to beginning)
           setRecentNotifications((prev) => [notification, ...prev.slice(0, 4)]);
@@ -188,7 +177,7 @@ export function useNotifications() {
           });
         },
         onError: (error) => {
-          logger.error('useNotifications', 'WebSocket notification error', {
+          logger.error('useNotifications: WebSocket notification error', undefined, {
             error,
           });
         },
@@ -202,13 +191,9 @@ export function useNotifications() {
         unsubscribe();
       };
     } catch (error) {
-      logger.error(
-        'useNotifications',
-        'Failed to setup WebSocket subscription',
-        {
+      logger.error('useNotifications: Failed to setup WebSocket subscription', undefined, {
           error,
-        }
-      );
+        });
     }
   }, [user?.id, preferences, mutate, mutateCount]);
 
@@ -232,7 +217,7 @@ export function useNotifications() {
         mutate();
         mutateCount();
       } catch (error) {
-        logger.error('Failed to mark notification as read:', error);
+        logger.error('Failed to mark notification as read:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Bildirim okundu olarak işaretlenemedi');
       }
     },
@@ -256,7 +241,7 @@ export function useNotifications() {
 
       toast.success(`${updatedCount} bildirim okundu olarak işaretlendi`);
     } catch (error) {
-      logger.error('Failed to mark all as read:', error);
+      logger.error('Failed to mark all as read:', error instanceof Error ? error : new Error(String(error)));
       toast.error('Bildirimler işaretlenemedi');
     }
   }, [mutate, mutateCount]);

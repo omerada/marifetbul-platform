@@ -17,7 +17,8 @@
  * @sprint Sprint 1 - Week 1 - Day 3-4: Payout Request Flow
  */
 
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
+import { getPayoutLimits as fetchPayoutLimitsFromAPI } from '@/lib/api/payouts';
 import type { BankAccountResponse } from '@/lib/api/bank-accounts';
 import { BankAccountStatus } from '@/lib/api/bank-accounts';
 
@@ -274,9 +275,46 @@ export class PayoutService {
   }
 
   /**
-   * Get payout limits (mock - should come from backend)
+   * Get payout limits from backend API
+   * Falls back to config values on error
    */
-  getPayoutLimits(
+  async getPayoutLimits(): Promise<PayoutLimits> {
+    try {
+      // Fetch limits from backend API
+      const limits = await fetchPayoutLimitsFromAPI();
+
+      return {
+        minimumAmount: limits.minimumAmount ?? PAYOUT_CONFIG.MINIMUM_AMOUNT,
+        maximumAmount: limits.maximumAmount ?? PAYOUT_CONFIG.MAXIMUM_AMOUNT,
+        dailyLimit: limits.dailyLimit ?? PAYOUT_CONFIG.DAILY_LIMIT,
+        monthlyLimit: limits.monthlyLimit ?? PAYOUT_CONFIG.MONTHLY_LIMIT,
+        remainingDailyLimit:
+          limits.remainingDailyLimit ?? PAYOUT_CONFIG.DAILY_LIMIT,
+        remainingMonthlyLimit:
+          limits.remainingMonthlyLimit ?? PAYOUT_CONFIG.MONTHLY_LIMIT,
+        currency: limits.currency ?? PAYOUT_CONFIG.CURRENCY,
+      };
+    } catch (error) {
+      // Fallback to config values if API call fails
+      logger.warn('Failed to fetch payout limits from API, { usingconfigvalues, errorerrorinstanceofErrorerrormessageUnknownerror,  });
+
+      return {
+        minimumAmount: PAYOUT_CONFIG.MINIMUM_AMOUNT,
+        maximumAmount: PAYOUT_CONFIG.MAXIMUM_AMOUNT,
+        dailyLimit: PAYOUT_CONFIG.DAILY_LIMIT,
+        monthlyLimit: PAYOUT_CONFIG.MONTHLY_LIMIT,
+        remainingDailyLimit: PAYOUT_CONFIG.DAILY_LIMIT,
+        remainingMonthlyLimit: PAYOUT_CONFIG.MONTHLY_LIMIT,
+        currency: PAYOUT_CONFIG.CURRENCY,
+      };
+    }
+  }
+
+  /**
+   * Get payout limits synchronously (deprecated - use getPayoutLimits instead)
+   * @deprecated Use async getPayoutLimits() instead
+   */
+  getPayoutLimitsSync(
     dailyUsed: number = 0,
     monthlyUsed: number = 0
   ): PayoutLimits {

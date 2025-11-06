@@ -10,7 +10,7 @@ import type {
   DisputeResponse,
 } from '@/types/dispute';
 import { toast } from 'sonner';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export function useDisputeResolution() {
   const [isResolving, setIsResolving] = useState(false);
@@ -25,10 +25,7 @@ export function useDisputeResolution() {
 
     try {
       const result = await resolveDispute(disputeId, resolution);
-      logger.info('Dispute resolved', {
-        disputeId,
-        resolutionType: resolution.resolutionType,
-      });
+      logger.info('Dispute resolved', { disputeId, resolutionTyperesolutionresolutionType,  });
       toast.success('İtiraz başarıyla çözümlendi');
       return result;
     } catch (err) {

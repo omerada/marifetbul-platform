@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import useDashboardStore from '@/lib/core/store/dashboard';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * Main dashboard hook with role-based data fetching
@@ -29,10 +29,7 @@ export function useDashboard() {
       normalizedUserType &&
       normalizedUserType !== 'admin'
     ) {
-      logger.debug('[useDashboard] Initializing dashboard', {
-        role: user?.role,
-        userType: normalizedUserType,
-      });
+      logger.debug('[useDashboard] Initializing dashboard', { roleuserrole, userTypenormalizedUserType,  });
 
       store.fetchDashboard(normalizedUserType);
       store.startAutoRefresh();

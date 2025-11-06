@@ -12,7 +12,7 @@
 import { useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
 import { AlertTriangle, FileText, UserX } from 'lucide-react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   ModerationHeader,
   ModerationStats,

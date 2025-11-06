@@ -21,7 +21,7 @@ import {
 import { cn } from '@/lib/utils';
 import type { SearchResult, SearchFilters } from '@/types/shared/search';
 import { trackSearch } from '@/lib/api/search-analytics';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface EnhancedSearchSystemProps {
   className?: string;

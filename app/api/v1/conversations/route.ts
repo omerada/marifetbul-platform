@@ -6,7 +6,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 const BACKEND_API_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      logger.error('[Conversations API] Backend error:', {
+      logger.error('[Conversations API] Backend error:', undefined, {
         status: response.status,
         error: errorText,
       });
@@ -78,10 +78,10 @@ export async function GET(request: NextRequest) {
         response.status === 401
       ) {
         if (process.env.NODE_ENV === 'development') {
-          logger.debug(
-            '[Conversations API] Backend not ready or auth issue, returning empty data. Status:',
-            response.status
-          );
+          logger.debug('[Conversations API] Backend not ready or auth issue', {
+            returningEmptyData: true,
+            status: response.status,
+          });
         }
         return NextResponse.json({
           success: true,
@@ -136,7 +136,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(data);
   } catch (error) {
-    logger.error('[Conversations API] Error:', error);
+    logger.error(
+      '[Conversations API] Error:',
+      error instanceof Error ? error : new Error(String(error))
+    );
 
     // Return empty array instead of error to prevent blocking the UI
     return NextResponse.json({
@@ -202,7 +205,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(data, { status: 201 });
   } catch (error) {
-    logger.error('[Conversations API] POST Error:', error);
+    logger.error(
+      '[Conversations API] POST Error:',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return NextResponse.json(
       {
         success: false,

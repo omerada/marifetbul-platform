@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 import { Button, Input, Label } from '@/components/ui';
 import { usePayoutAdmin } from '@/hooks/business/wallet/usePayout';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -77,7 +77,7 @@ export function AdminPayoutApproval({
       setApprovalNotes('');
       await load();
     } catch (err) {
-      logger.error('Approve payout error:', err);
+      logger.error('Approve payout error:', err instanceof Error ? err : new Error(String(err)));
     } finally {
       setProcessingId(null);
     }
@@ -102,7 +102,7 @@ export function AdminPayoutApproval({
       setRejectReason('');
       await load();
     } catch (err) {
-      logger.error('Reject payout error:', err);
+      logger.error('Reject payout error:', err instanceof Error ? err : new Error(String(err)));
     } finally {
       setRejectingId(null);
     }

@@ -7,7 +7,7 @@ import { cookies } from 'next/headers';
  * Server action to release payment from escrow
  *
  * Story 2.1: Escrow Payment Release Flow
- * TODO: Sprint 10 - Implement proper authentication with cookie-based session
+ * ✅ COMPLETED: Cookie-based authentication implemented
  *
  * @param orderId - Order ID containing the payment
  * @returns Success or error message

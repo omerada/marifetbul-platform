@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface ProposalEligibility {
   canPropose: boolean;
@@ -66,7 +66,7 @@ export function useProposalEligibility({
       const errorMessage =
         err instanceof Error ? err.message : 'Bir hata oluştu';
       setError(errorMessage);
-      logger.error('[useProposalEligibility] Error:', err);
+      logger.error('[useProposalEligibility] Error:', err instanceof Error ? err : new Error(String(err)));
     } finally {
       setIsLoading(false);
     }

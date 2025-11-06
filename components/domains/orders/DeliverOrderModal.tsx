@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/Label';
 import FileUpload from '@/components/ui/FileUpload';
 import { useOrder } from '@/hooks/business/useOrder';
 import { uploadFile } from '@/lib/domains/media/fileUpload';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface DeliverOrderModalProps {
   orderId: string;

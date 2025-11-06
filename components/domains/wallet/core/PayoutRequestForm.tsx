@@ -57,7 +57,7 @@ import {
   PAYOUT_CONFIG,
   type PayoutFeeCalculation,
 } from '@/lib/services/payout-service';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES

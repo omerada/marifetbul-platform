@@ -13,7 +13,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * Proposal notification types
@@ -174,10 +174,7 @@ export function useProposalNotifications({
       setNotifications(transformedNotifications);
       setUnreadCount(result.data.unreadCount);
 
-      logger.info('useProposalNotifications: Notifications fetched', {
-        count: transformedNotifications.length,
-        unreadCount: result.data.unreadCount,
-      });
+      logger.info('useProposalNotifications: Notifications fetched', { counttransformedNotificationslength, unreadCountresultdataunreadCount,  });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Bir hata oluştu';
@@ -220,9 +217,7 @@ export function useProposalNotifications({
 
         setUnreadCount((prev) => Math.max(0, prev - 1));
 
-        logger.info('useProposalNotifications: Notification marked as read', {
-          notificationId,
-        });
+        logger.info('useProposalNotifications: Notification marked as read', { notificationId,  });
       } catch (err) {
         logger.error('useProposalNotifications: Error marking as read', {
           error: err,

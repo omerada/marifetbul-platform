@@ -21,7 +21,7 @@
 
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { AUTH_ENDPOINTS } from '@/lib/api/endpoints';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   ApiResponse,
   AuthResponse,
@@ -136,9 +136,7 @@ class UnifiedAuthService {
       );
 
       if (response.success && response.data) {
-        logger.info('Auth: Registration successful', {
-          userId: response.data.user.id,
-        });
+        logger.info('Auth: Registration successful', { userIdresponsedatauserid,  });
       }
 
       return response;
@@ -160,9 +158,7 @@ class UnifiedAuthService {
    * @throws Error on invalid credentials or account locked
    */
   async login(request: LoginRequest): Promise<ApiResponse<AuthResponse>> {
-    logger.info('Auth: Login attempt', {
-      usernameOrEmail: request.usernameOrEmail,
-    });
+    logger.info('Auth: Login attempt', { usernameOrEmailrequestusernameOrEmail,  });
 
     try {
       const response = await apiClient.post<ApiResponse<AuthResponse>>(
@@ -174,10 +170,7 @@ class UnifiedAuthService {
       );
 
       if (response.success && response.data) {
-        logger.info('Auth: Login successful', {
-          userId: response.data.user.id,
-          roles: response.data.user.roles,
-        });
+        logger.info('Auth: Login successful', { userIdresponsedatauserid, rolesresponsedatauserroles,  });
 
         // Clear any cached user data
         this.invalidateUserCache();
@@ -469,9 +462,7 @@ class UnifiedAuthService {
       );
 
       if (response.success && response.data) {
-        logger.debug('Auth: Current user fetched', {
-          userId: response.data.id,
-        });
+        logger.debug('Auth: Current user fetched', { userIdresponsedataid,  });
       }
 
       return response;

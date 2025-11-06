@@ -1,5 +1,5 @@
 // Production-ready caching system with multiple strategies
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export interface CacheConfig {
   ttl?: number; // Time to live in milliseconds

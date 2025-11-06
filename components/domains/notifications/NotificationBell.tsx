@@ -24,7 +24,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { useNotifications } from '@/hooks/business/useNotifications';
 import { NotificationItem } from './NotificationItem';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { InAppNotification } from '@/types/business/features/notifications';
 
 export interface NotificationBellProps {
@@ -82,11 +82,11 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
-    logger.debug('NotificationBell', 'Dropdown toggled', { isOpen: !isOpen });
+    logger.debug('NotificationBell', { isOpenisOpen });
   };
 
   const handleNotificationClick = async (notification: InAppNotification) => {
-    logger.debug('NotificationBell', 'Notification clicked', { notification });
+    logger.debug('NotificationBell', { notification });
 
     // Mark as read if unread
     if (!notification.isRead) {

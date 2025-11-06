@@ -18,7 +18,7 @@ import {
 import { Textarea } from '@/components/ui/Textarea';
 import FileUpload from '@/components/ui/FileUpload';
 import { orderApi } from '@/lib/api/orders';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   uploadMultipleFiles,
   formatFileSize,
@@ -109,10 +109,7 @@ export function DeliverOrderButton({
     setUploadProgress(0);
 
     try {
-      logger.info('Starting file uploads', {
-        orderId,
-        filesCount: uploadedFiles.length,
-      });
+      logger.info('Starting file uploads', { orderId, filesCountuploadedFileslength,  });
 
       // Upload files to Cloudinary
       const uploadResults = await uploadMultipleFiles(
@@ -148,10 +145,7 @@ export function DeliverOrderButton({
         .filter((r) => r.success && r.url)
         .map((r) => r.url!);
 
-      logger.info('Files uploaded successfully', {
-        orderId,
-        uploadedCount: attachmentUrls.length,
-      });
+      logger.info('Files uploaded successfully', { orderId, uploadedCountattachmentUrlslength,  });
 
       setIsUploading(false);
 

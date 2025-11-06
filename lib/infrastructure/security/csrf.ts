@@ -78,8 +78,7 @@ export function getOrCreateCsrfToken(): string {
   if (!token) {
     token = generateCsrfToken();
     setCsrfTokenCookie(token);
-    logger.debug('CSRF token generated', {
-      token: token.substring(0, 8) + '...',
+    logger.debug('CSRF token generated', { tokentokensubstring0, 8 }) + '...',
     });
   }
 
@@ -95,18 +94,14 @@ export function validateCsrfToken(
   cookieToken: string | null
 ): boolean {
   if (!headerToken || !cookieToken) {
-    logger.warn('CSRF validation failed: missing token', {
-      hasHeader: !!headerToken,
-      hasCookie: !!cookieToken,
-    });
+    logger.warn('CSRF validation failed: missing token', { hasHeaderheaderToken, hasCookiecookieToken,  });
     return false;
   }
 
   const isValid = headerToken === cookieToken;
 
   if (!isValid) {
-    logger.warn('CSRF validation failed: token mismatch', {
-      headerToken: headerToken.substring(0, 8) + '...',
+    logger.warn('CSRF validation failed: token mismatch', { headerTokenheaderTokensubstring0, 8 }) + '...',
       cookieToken: cookieToken.substring(0, 8) + '...',
     });
   }

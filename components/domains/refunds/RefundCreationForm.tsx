@@ -41,7 +41,7 @@ import {
   RefundReasonCategory,
   getRefundReasonLabel,
 } from '@/types/business/features/refund';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // VALIDATION SCHEMA

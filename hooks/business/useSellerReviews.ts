@@ -13,7 +13,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   type Review,
   type ReviewStats,
@@ -140,11 +140,7 @@ export function useSellerReviews({
         setTotalPages(result.data.totalPages);
         setTotalElements(result.data.totalElements);
 
-        logger.info('useSellerReviews: Reviews fetched', {
-          sellerId,
-          page,
-          count: result.data.content.length,
-        });
+        logger.info('useSellerReviews: Reviews fetched', { sellerId, page, countresultdatacontentlength,  });
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Bir hata oluştu';
@@ -182,9 +178,7 @@ export function useSellerReviews({
       );
 
       if (!response.ok) {
-        logger.warn('useSellerReviews: Failed to fetch stats', {
-          status: response.status,
-        });
+        logger.warn('useSellerReviews: Failed to fetch stats', { statusresponsestatus,  });
         return;
       }
 

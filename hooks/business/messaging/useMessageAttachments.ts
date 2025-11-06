@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export interface MessageAttachment {
   id: string;
@@ -68,7 +68,7 @@ export function useMessageAttachments() {
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Dosya yüklenemedi');
       setError(error);
-      logger.error('File upload failed:', error);
+      logger.error('File upload failed:', error instanceof Error ? error : new Error(String(error)));
       throw error;
     } finally {
       setIsUploading(false);

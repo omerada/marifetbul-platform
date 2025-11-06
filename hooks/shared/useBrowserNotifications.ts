@@ -18,7 +18,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ==================== TYPES ====================
 
@@ -160,10 +160,7 @@ export function useBrowserNotifications(
     const currentPermission = Notification.permission;
     setPermission(currentPermission as NotificationPermission);
 
-    logger.info('useBrowserNotifications', 'Initialized', {
-      permission: currentPermission,
-      supported: true,
-    });
+    logger.info('useBrowserNotifications', { permissioncurrentPermission, supportedtrue,  });
 
     // Auto-request permission if enabled
     if (
@@ -173,9 +170,7 @@ export function useBrowserNotifications(
     ) {
       Notification.requestPermission().then((result) => {
         setPermission(result as NotificationPermission);
-        logger.info('useBrowserNotifications', 'Permission requested', {
-          result,
-        });
+        logger.info('useBrowserNotifications', { result,  });
       });
     }
   }, [autoRequestPermission, enableInDev]);
@@ -225,17 +220,11 @@ export function useBrowserNotifications(
         const result = await Notification.requestPermission();
         setPermission(result as NotificationPermission);
 
-        logger.info('useBrowserNotifications', 'Permission request result', {
-          result,
-        });
+        logger.info('useBrowserNotifications', { result,  });
 
         return result as NotificationPermission;
       } catch (error) {
-        logger.error(
-          'useBrowserNotifications',
-          'Failed to request permission',
-          { error }
-        );
+        logger.error('useBrowserNotifications: Failed to request permission', undefined, { error });
         return 'denied';
       }
     }, [isSupported, permission]);
@@ -258,21 +247,13 @@ export function useBrowserNotifications(
 
       // Check permission
       if (permission !== 'granted') {
-        logger.warn(
-          'useBrowserNotifications',
-          'Cannot show notification: Permission not granted',
-          { permission }
-        );
+        logger.warn('useBrowserNotifications', { permission });
         return;
       }
 
       // Skip in development unless enabled
       if (process.env.NODE_ENV === 'development' && !enableInDev) {
-        logger.debug(
-          'useBrowserNotifications',
-          'Skipping notification in development',
-          opts
-        );
+        logger.debug('useBrowserNotifications', { opts });
         return;
       }
 
@@ -307,10 +288,7 @@ export function useBrowserNotifications(
         // Handle click
         notification.onclick = (event) => {
           event.preventDefault();
-          logger.info('useBrowserNotifications', 'Notification clicked', {
-            tag: opts.tag,
-            data: opts.data,
-          });
+          logger.info('useBrowserNotifications', { tagoptstag, dataoptsdata,  });
 
           // Focus window
           if (typeof window !== 'undefined') {
@@ -331,28 +309,23 @@ export function useBrowserNotifications(
 
         // Handle close
         notification.onclose = () => {
-          logger.debug('useBrowserNotifications', 'Notification closed', {
-            tag: opts.tag,
-          });
+          logger.debug('useBrowserNotifications', { tagoptstag,  });
           activeNotificationsRef.current.delete(key);
           onNotificationClose?.();
         };
 
         // Handle error
         notification.onerror = (error) => {
-          logger.error('useBrowserNotifications', 'Notification error', {
+          logger.error('useBrowserNotifications: Notification error', undefined, {
             error,
             tag: opts.tag,
           });
           activeNotificationsRef.current.delete(key);
         };
 
-        logger.info('useBrowserNotifications', 'Notification shown', {
-          title: opts.title,
-          tag: opts.tag,
-        });
+        logger.info('useBrowserNotifications', { titleoptstitle, tagoptstag,  });
       } catch (error) {
-        logger.error('useBrowserNotifications', 'Failed to show notification', {
+        logger.error('useBrowserNotifications: Failed to show notification', undefined, {
           error,
           options: opts,
         });
@@ -381,9 +354,7 @@ export function useBrowserNotifications(
       if (notification) {
         notification.close();
         activeNotificationsRef.current.delete(tag);
-        logger.debug('useBrowserNotifications', 'Notification cleared', {
-          tag,
-        });
+        logger.debug('useBrowserNotifications', { tag,  });
       }
     } else {
       // Clear all

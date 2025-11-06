@@ -186,49 +186,87 @@ export default function AdminWalletTransactionsPage() {
    */
   const handleExport = async (format: 'csv' | 'excel') => {
     try {
-      if (format === 'csv') {
-        // Create CSV content
-        const headers = [
-          'ID',
-          'Wallet ID',
-          'Type',
-          'Amount',
-          'Balance Before',
-          'Balance After',
-          'Description',
-          'Date',
-        ];
-        const rows = transactions.map((t) => [
-          t.id,
-          t.walletId,
-          t.type,
-          t.amount.toString(),
-          t.balanceBefore.toString(),
-          t.balanceAfter.toString(),
-          t.description,
-          new Date(t.createdAt).toLocaleString('tr-TR'),
-        ]);
+      // Prepare headers with Turkish labels
+      const headers = [
+        'İşlem ID',
+        'Cüzdan ID',
+        'İşlem Tipi',
+        'Tutar (₺)',
+        'Önceki Bakiye (₺)',
+        'Sonraki Bakiye (₺)',
+        'Açıklama',
+        'Ödeme Referansı',
+        'Tarih',
+      ];
 
-        const csvContent = [
-          headers.join(','),
-          ...rows.map((row) => row.map((cell) => `"${cell}"`).join(',')),
+      // Type labels in Turkish
+      const typeLabels: Record<string, string> = {
+        CREDIT: 'Ödeme Alındı',
+        DEBIT: 'Ödeme Gönderildi',
+        ESCROW_HOLD: 'Escrow Beklemede',
+        ESCROW_RELEASE: 'Escrow Serbest Bırakıldı',
+        COMMISSION: 'Komisyon',
+        REFUND: 'İade',
+        WITHDRAWAL: 'Para Çekimi',
+        DEPOSIT: 'Para Yatırma',
+        PAYOUT: 'Ödeme Talebi',
+      };
+
+      // Map transactions to CSV rows
+      const rows = transactions.map((t) => [
+        t.id,
+        t.walletId,
+        typeLabels[t.type] || t.type,
+        t.amount.toFixed(2),
+        t.balanceBefore.toFixed(2),
+        t.balanceAfter.toFixed(2),
+        t.description || '-',
+        t.referenceId || t.paymentId || '-',
+        new Date(t.createdAt).toLocaleString('tr-TR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+      ]);
+
+      // Escape CSV values properly
+      const escapeCSV = (value: string): string => {
+        const str = String(value);
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+      };
+
+      // Create CSV content with BOM for Excel UTF-8 support
+      const csvContent =
+        '\uFEFF' +
+        [
+          headers.map(escapeCSV).join(','),
+          ...rows.map((row) => row.map(escapeCSV).join(',')),
         ].join('\n');
 
-        // Download CSV
-        const blob = new Blob([csvContent], {
-          type: 'text/csv;charset=utf-8;',
-        });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', `transactions-${Date.now()}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        alert('Excel export coming soon');
-      }
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().split('T')[0];
+      const filename = `marifetbul_${format === 'excel' ? 'excel_' : ''}islemler_${timestamp}.csv`;
+
+      // Download CSV
+      const blob = new Blob([csvContent], {
+        type: 'text/csv;charset=utf-8;',
+      });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Cleanup
+      setTimeout(() => URL.revokeObjectURL(url), 100);
     } catch (err) {
       console.error('Export failed:', err);
       alert('Export işlemi başarısız oldu.');

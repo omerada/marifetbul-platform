@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { FreelancerDashboard, EmployerDashboard } from '@/types';
 import type { ModeratorDashboard } from '@/components/domains/dashboard/types/dashboard.types';
 import { useAuthStore } from './domains/auth/authStore';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { sellerDashboardApi } from '@/lib/api/seller-dashboard';
 import { buyerDashboardApi } from '@/lib/api/buyer-dashboard';
 import {
@@ -90,11 +90,7 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
         throw new Error('Kullanıcı girişi gerekli');
       }
 
-      logger.debug('[Dashboard Store] Fetching dashboard', {
-        userType,
-        days,
-        isRetry,
-      });
+      logger.debug('[Dashboard Store] Fetching dashboard', { userType, days, isRetry,  });
 
       // Use appropriate API client based on user type
       let dashboardData: UnifiedDashboardData;
@@ -169,10 +165,7 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
       user?.role === 'MODERATOR' ? 'moderator' : user?.userType;
 
     if (normalizedUserType && normalizedUserType !== 'admin') {
-      logger.debug('[Dashboard Store] Refreshing dashboard', {
-        role: user?.role,
-        userType: normalizedUserType,
-      });
+      logger.debug('[Dashboard Store] Refreshing dashboard', { roleuserrole, userTypenormalizedUserType,  });
 
       set({ isRefreshing: true, retryCount: retryCount + 1 });
       await get().fetchDashboard(normalizedUserType);
@@ -185,10 +178,7 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
     const { retryCount, maxRetries } = get();
 
     if (retryCount >= maxRetries) {
-      logger.warn('[Dashboard Store] Max retry attempts reached', {
-        retryCount,
-        maxRetries,
-      });
+      logger.warn('[Dashboard Store] Max retry attempts reached', { retryCount, maxRetries,  });
 
       set({
         error: {
@@ -206,12 +196,7 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
       user?.role === 'MODERATOR' ? 'moderator' : user?.userType;
 
     if (normalizedUserType && normalizedUserType !== 'admin') {
-      logger.debug('[Dashboard Store] Retry attempt', {
-        role: user?.role,
-        userType: normalizedUserType,
-        attempt: retryCount + 1,
-        maxRetries,
-      });
+      logger.debug('[Dashboard Store] Retry attempt', { roleuserrole, userTypenormalizedUserType, attemptretryCount1, maxRetries,  });
 
       set({ retryCount: retryCount + 1 });
       await get().fetchDashboard(normalizedUserType);

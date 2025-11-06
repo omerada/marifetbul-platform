@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { useToast } from '@/hooks';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { Shield, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 export default function AdminLoginPage() {
@@ -45,9 +45,7 @@ export default function AdminLoginPage() {
   // Login sonrası yönlendirme kontrolü
   useEffect(() => {
     if (isAuthenticated && user) {
-      logger.debug('Admin login: User authenticated', {
-        role: user.role,
-      });
+      logger.debug('Admin login: User authenticated', { roleuserrole,  });
 
       if (user.role?.toUpperCase() === 'ADMIN') {
         logger.debug('Admin login: Admin role confirmed, redirecting');
@@ -61,9 +59,7 @@ export default function AdminLoginPage() {
 
           // Check if backend token cookie exists
           const hasBackendToken = document.cookie.includes('marifetbul_token');
-          logger.debug('Admin login: Backend token cookie status', {
-            hasBackendToken,
-          });
+          logger.debug('Admin login: Backend token cookie status', { hasBackendToken,  });
         }
 
         // Hard redirect için window.location kullan - middleware ve client-side routing sorunlarını çözer

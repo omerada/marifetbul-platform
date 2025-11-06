@@ -51,7 +51,7 @@ import {
   canCancelRefund,
   isRefundFinal,
 } from '@/types/business/features/refund';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // COMPONENT

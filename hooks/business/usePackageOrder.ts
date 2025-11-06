@@ -5,7 +5,7 @@ import { usePackageDetailStore } from '@/lib/core/store';
 import { OrderFormData, orderSchema } from '@/lib/core/validations/details';
 import { useRouter } from 'next/navigation';
 import type { PackageDetail, ServicePackage } from '@/types';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export function usePackageOrder(packageId: string) {
   const router = useRouter();

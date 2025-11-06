@@ -3,7 +3,7 @@
  * Initialize production optimizations in the main application
  */
 
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * Initialize production optimizations when app starts
@@ -29,10 +29,7 @@ export async function initializeProductionApp() {
 
     // In development, show optimization status
     if (process.env.NODE_ENV === 'development') {
-      logger.debug('🔧 Production Optimization Status:', {
-        deploymentReady: deploymentResult.readyForDeployment,
-        optimizationScore: deploymentResult.report.overallScore,
-        nextSteps: deploymentResult.nextSteps.slice(0, 3),
+      logger.debug('🔧 Production Optimization Status:', { deploymentReadydeploymentResultreadyForDeployment, optimizationScoredeploymentResultreportoverallScore, nextStepsdeploymentResultnextStepsslice0, 3 }),
       });
     }
 

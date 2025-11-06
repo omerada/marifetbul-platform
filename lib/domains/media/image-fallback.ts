@@ -3,7 +3,7 @@
  * Provides local fallback when external services are unavailable
  */
 
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export interface PlaceholderConfig {
   width?: number;

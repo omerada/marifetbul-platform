@@ -28,7 +28,7 @@ import {
 } from '@/hooks/business/useModeration';
 import { useToast } from '@/hooks/core/useToast';
 import type { PendingItemType } from '@/types/business/moderation';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -141,7 +141,7 @@ export function ModerationQueueContainer({
         // Remove from selection if selected
         setSelectedItems((prev) => prev.filter((id) => id !== itemId));
       } catch (err) {
-        logger.error('Approve failed', err);
+        logger.error('Approve failed', err instanceof Error ? err : new Error(String(err)));
         showError('Onaylama sırasında bir hata oluştu');
       } finally {
         setActionInProgress(false);
@@ -189,7 +189,7 @@ export function ModerationQueueContainer({
         // Remove from selection if selected
         setSelectedItems((prev) => prev.filter((id) => id !== itemId));
       } catch (err) {
-        logger.error('Reject failed', err);
+        logger.error('Reject failed', err instanceof Error ? err : new Error(String(err)));
         showError('Reddetme sırasında bir hata oluştu');
       } finally {
         setActionInProgress(false);
@@ -265,7 +265,7 @@ export function ModerationQueueContainer({
                 break;
             }
           } catch (err) {
-            logger.error('Bulk comment action failed', err);
+            logger.error('Bulk comment action failed', err instanceof Error ? err : new Error(String(err)));
             failCount += commentIds.length;
           }
         }
@@ -300,7 +300,7 @@ export function ModerationQueueContainer({
                 break;
             }
           } catch (err) {
-            logger.error('Bulk review action failed', err);
+            logger.error('Bulk review action failed', err instanceof Error ? err : new Error(String(err)));
             failCount += reviewIds.length;
           }
         }
@@ -326,7 +326,7 @@ export function ModerationQueueContainer({
         // Clear selection
         setSelectedItems([]);
       } catch (err) {
-        logger.error('Bulk action failed', err);
+        logger.error('Bulk action failed', err instanceof Error ? err : new Error(String(err)));
         showError('Toplu işlem sırasında bir hata oluştu');
       } finally {
         setActionInProgress(false);

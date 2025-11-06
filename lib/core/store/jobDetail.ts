@@ -4,7 +4,7 @@ import { immer } from 'zustand/middleware/immer';
 import { JobDetail } from '@/types';
 import { Proposal } from '@/types/core/jobs';
 import { ProposalFormData } from '@/lib/core/validations/details';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // Cache timeout for preventing excessive API calls
 const CACHE_TIMEOUT = 5 * 60 * 1000; // 5 minutes

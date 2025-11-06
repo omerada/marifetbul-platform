@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useUIStore } from '@/lib/core/store/domains/ui/uiStore';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export type ProposalStatus =
   | 'PENDING'
@@ -193,16 +193,12 @@ export function useFreelancerProposals(
         setStats(calculateStats(proposalsData));
       }
 
-      logger.debug('[useFreelancerProposals] Proposals fetched:', {
-        count: proposalsData.length,
-        status: statusFilter,
-        page,
-      });
+      logger.debug('[useFreelancerProposals] Proposals fetched:', { countproposalsDatalength, statusstatusFilter, page,  });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Bir hata oluştu';
       setError(errorMessage);
-      logger.error('[useFreelancerProposals] Error:', err);
+      logger.error('[useFreelancerProposals] Error:', err instanceof Error ? err : new Error(String(err)));
 
       addToast({
         title: 'Hata',
@@ -276,7 +272,7 @@ export function useFreelancerProposals(
           duration: 5000,
         });
 
-        logger.error('[useFreelancerProposals] Withdraw error:', err);
+        logger.error('[useFreelancerProposals] Withdraw error:', err instanceof Error ? err : new Error(String(err)));
         throw err;
       }
     },

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { User } from '@/types';
 import { Card } from '@/components/ui/Card';
 import { TrendingUp, TrendingDown } from 'lucide-react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface ChartData {
   period: string;
@@ -92,7 +92,7 @@ export function DashboardCharts({ user }: DashboardChartsProps) {
           }
         }
       } catch (error) {
-        logger.error('Error fetching chart data:', error);
+        logger.error('Error fetching chart data:', error instanceof Error ? error : new Error(String(error)));
       } finally {
         setLoading(false);
       }

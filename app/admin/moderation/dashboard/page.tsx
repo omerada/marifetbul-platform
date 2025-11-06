@@ -39,7 +39,7 @@ import { useBrowserNotifications } from '@/hooks/shared/useBrowserNotifications'
 import { getModerationStats } from '@/lib/api/moderation';
 import { getActivityStatistics } from '@/lib/api/moderation-activity';
 import type { ModerationStats } from '@/types/business/moderation';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   PerformanceData,
   ModeratorStats as ModeratorStatsType,
@@ -202,11 +202,7 @@ export default function BlogModerationDashboard() {
 
       setStats(data);
       setLastUpdated(new Date());
-      logger.debug(
-        'BlogModerationDashboard',
-        'Stats fetched successfully',
-        data
-      );
+      logger.debug('BlogModerationDashboard', { data });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'İstatistikler yüklenemedi';
@@ -264,11 +260,7 @@ export default function BlogModerationDashboard() {
 
       setModeratorStats(activityData.topModerators);
 
-      logger.debug(
-        'BlogModerationDashboard',
-        'Analytics fetched',
-        activityData
-      );
+      logger.debug('BlogModerationDashboard', { activityData });
     } catch (err) {
       logger.error('BlogModerationDashboard', 'Failed to fetch analytics', err);
     } finally {
@@ -377,11 +369,7 @@ export default function BlogModerationDashboard() {
         setCustomStartDate(startDate);
         setCustomEndDate(endDate);
       }
-      logger.debug('BlogModerationDashboard', 'Time range changed', {
-        range,
-        startDate,
-        endDate,
-      });
+      logger.debug('BlogModerationDashboard', { range, startDate, endDate,  });
     },
     []
   );
@@ -541,11 +529,7 @@ export default function BlogModerationDashboard() {
                 initialPreferences={notificationPrefs}
                 onChange={(prefs) => {
                   setNotificationPrefs(prefs);
-                  logger.debug(
-                    'BlogModerationDashboard',
-                    'Preferences updated',
-                    prefs
-                  );
+                  logger.debug('BlogModerationDashboard', { prefs });
                 }}
                 showSaveButton={false}
               />

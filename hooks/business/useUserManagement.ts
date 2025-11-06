@@ -3,7 +3,7 @@ import {
   useAdminUserStore,
   useAdminUserSelectors,
 } from '@/lib/core/store/admin-users';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   UserFilters,
   UserActionRequest,
@@ -69,7 +69,7 @@ export function useUserManagement() {
           search: selectors.filters.search || '',
         });
       } catch (error) {
-        logger.error('User action failed:', error);
+        logger.error('User action failed:', error instanceof Error ? error : new Error(String(error)));
       } finally {
         setIsActionLoading(false);
       }
@@ -84,7 +84,7 @@ export function useUserManagement() {
         await performBulkAction(action);
         clearBulkSelection();
       } catch (error) {
-        logger.error('Bulk action failed:', error);
+        logger.error('Bulk action failed:', error instanceof Error ? error : new Error(String(error)));
       } finally {
         setIsActionLoading(false);
       }
@@ -97,7 +97,7 @@ export function useUserManagement() {
       try {
         await fetchUserById(userId);
       } catch (error) {
-        logger.error('User fetch failed:', error);
+        logger.error('User fetch failed:', error instanceof Error ? error : new Error(String(error)));
       }
     },
     [fetchUserById]

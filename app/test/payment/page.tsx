@@ -14,7 +14,7 @@
 import { useState, useEffect } from 'react';
 import { PaymentModal } from '@/components/shared/PaymentModal';
 import { CreditCard, AlertTriangle } from 'lucide-react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { useRouter } from 'next/navigation';
 
 export default function PaymentTestPage() {

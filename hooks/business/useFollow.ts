@@ -16,7 +16,7 @@ import { followApi } from '@/lib/api/follow';
 import type { FollowStatusResponse } from '@/types/core/base';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/shared/useAuth';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface UseFollowOptions {
   userId: string;
@@ -72,7 +72,7 @@ export function useFollow({
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to load follow status';
       setError(errorMessage);
-      logger.error('Error fetching follow status:', err);
+      logger.error('Error fetching follow status:', err instanceof Error ? err : new Error(String(err)));
     } finally {
       setIsLoading(false);
     }
@@ -134,7 +134,7 @@ export function useFollow({
         err instanceof Error ? err.message : 'İşlem başarısız';
       setError(errorMessage);
       toast.error(errorMessage);
-      logger.error('Error toggling follow:', err);
+      logger.error('Error toggling follow:', err instanceof Error ? err : new Error(String(err)));
     } finally {
       setIsLoading(false);
     }

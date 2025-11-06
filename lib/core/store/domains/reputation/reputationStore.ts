@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { getCurrentUserId } from '@/lib/shared/utils/auth';
 import { devtools } from 'zustand/middleware';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   ReputationScore,
   SecurityStatus,

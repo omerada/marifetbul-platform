@@ -14,7 +14,7 @@
 
 import React, { useState } from 'react';
 import { Calendar, ChevronDown } from 'lucide-react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ==================== TYPES ====================
 
@@ -78,19 +78,14 @@ export default function TimeRangeFilter({
       setIsOpen(false);
       setShowCustomDates(false);
     }
-    logger.debug('TimeRangeFilter', 'Time range changed', {
-      range: option.value,
-    });
+    logger.debug('TimeRangeFilter', { rangeoptionvalue,  });
   };
 
   const handleCustomDateApply = () => {
     if (startDate && endDate) {
       onChange('custom', startDate, endDate);
       setShowCustomDates(false);
-      logger.debug('TimeRangeFilter', 'Custom date range applied', {
-        startDate,
-        endDate,
-      });
+      logger.debug('TimeRangeFilter', { startDate, endDate,  });
     }
   };
 

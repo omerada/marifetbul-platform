@@ -13,7 +13,7 @@ import {
   AdminUserData,
   UserActionType,
 } from './userTable/types/userTableTypes';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import {
   Table,

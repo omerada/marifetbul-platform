@@ -25,7 +25,7 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Alert } from '@/components/ui/Alert';
 import { RatingCategory } from './RatingStars';
 import { reviewApi } from '@/lib/api/review';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   createReviewSchema,
   updateReviewSchema,
@@ -232,7 +232,7 @@ export function ReviewForm({
 
       onSuccess?.(savedReview);
     } catch (err) {
-      logger.error('Review submission failed:', err);
+      logger.error('Review submission failed:', err instanceof Error ? err : new Error(String(err)));
       setError(
         err instanceof Error
           ? err.message

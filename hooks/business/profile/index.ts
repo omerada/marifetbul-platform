@@ -8,7 +8,7 @@ import { createDataHook, createMutationHook } from '../../shared/base/patterns';
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { useAuthState } from '../../shared/useAuth';
 import type { User, Freelancer, Employer } from '@/types';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // PROFILE TYPES
@@ -221,7 +221,7 @@ export function useUpdateProfile() {
         // Profile updated successfully
       },
       onError: (error: Error) => {
-        logger.error('Failed to update profile', error);
+        logger.error('Failed to update profile', error instanceof Error ? error : new Error(String(error)));
       },
     }
   )();
@@ -253,7 +253,7 @@ export function useAvatarUpload() {
         // Avatar uploaded successfully
       },
       onError: (error: Error) => {
-        logger.error('Failed to upload avatar', error);
+        logger.error('Failed to upload avatar', error instanceof Error ? error : new Error(String(error)));
       },
     }
   )();
@@ -273,7 +273,7 @@ export function useDeleteAvatar() {
         // Avatar deleted successfully
       },
       onError: (error: Error) => {
-        logger.error('Failed to delete avatar', error);
+        logger.error('Failed to delete avatar', error instanceof Error ? error : new Error(String(error)));
       },
     }
   )();
@@ -303,7 +303,7 @@ export function useUpdateFreelancerProfile() {
         // Freelancer profile updated
       },
       onError: (error: Error) => {
-        logger.error('Failed to update freelancer profile', error);
+        logger.error('Failed to update freelancer profile', error instanceof Error ? error : new Error(String(error)));
       },
     }
   )();
@@ -329,7 +329,7 @@ export function useUpdateEmployerProfile() {
         // Employer profile updated
       },
       onError: (error: Error) => {
-        logger.error('Failed to update employer profile', error);
+        logger.error('Failed to update employer profile', error instanceof Error ? error : new Error(String(error)));
       },
     }
   )();

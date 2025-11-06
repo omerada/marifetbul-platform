@@ -7,7 +7,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { isJobBudgetObject } from '@/lib/shared/utils/typeGuards';
 
 interface ProposalModalProps {
@@ -152,7 +152,7 @@ export function ProposalModal({
       logger.debug('Submitting proposal:', formData);
       onClose();
     } catch (error) {
-      logger.error('Proposal submission error:', error);
+      logger.error('Proposal submission error:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsSubmitting(false);
     }

@@ -39,7 +39,7 @@ import {
   validateFiles,
 } from '@/lib/shared/utils';
 import { useToast } from '@/hooks';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { ContextType } from '@/types/business/features/messaging';
 
 /**
@@ -214,7 +214,7 @@ export function ChatInterface({
 
       toast.success('Mesaj gönderildi');
     } catch (error) {
-      logger.error('Failed to send message:', error);
+      logger.error('Failed to send message:', error instanceof Error ? error : new Error(String(error)));
       toast.error('Mesaj gönderilemedi');
     }
   };

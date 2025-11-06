@@ -13,7 +13,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { ReviewNotificationData } from '@/components/domains/reviews/ReviewNotificationItem';
 
 interface UseReviewNotificationsParams {
@@ -119,10 +119,7 @@ export function useReviewNotifications({
       setNotifications(transformedNotifications);
       setUnreadCount(result.data.unreadCount);
 
-      logger.info('useReviewNotifications: Notifications fetched', {
-        count: transformedNotifications.length,
-        unreadCount: result.data.unreadCount,
-      });
+      logger.info('useReviewNotifications: Notifications fetched', { counttransformedNotificationslength, unreadCountresultdataunreadCount,  });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Bir hata oluştu';
@@ -164,9 +161,7 @@ export function useReviewNotifications({
 
       setUnreadCount((prev) => Math.max(0, prev - 1));
 
-      logger.info('useReviewNotifications: Notification marked as read', {
-        notificationId,
-      });
+      logger.info('useReviewNotifications: Notification marked as read', { notificationId,  });
     } catch (err) {
       logger.error('useReviewNotifications: Error marking as read', {
         error: err,

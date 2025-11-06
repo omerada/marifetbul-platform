@@ -19,7 +19,7 @@
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ==================== TYPES ====================
 
@@ -101,21 +101,16 @@ export function useAutoMarkAsRead(
     const messageIds = Array.from(pendingMarksRef.current);
     pendingMarksRef.current.clear();
 
-    logger.debug('useAutoMarkAsRead', 'Executing pending marks', {
-      count: messageIds.length,
-      messageIds,
-    });
+    logger.debug('useAutoMarkAsRead', { countmessageIdslength, messageIds,  });
 
     // Execute marks in parallel
     await Promise.allSettled(
       messageIds.map(async (messageId) => {
         try {
           await onMarkAsRead(messageId);
-          logger.debug('useAutoMarkAsRead', 'Message marked as read', {
-            messageId,
-          });
+          logger.debug('useAutoMarkAsRead', { messageId,  });
         } catch (err) {
-          logger.error('useAutoMarkAsRead', 'Failed to mark as read', {
+          logger.error('useAutoMarkAsRead: Failed to mark as read', undefined, {
             error: err,
             messageId,
           });
@@ -168,10 +163,7 @@ export function useAutoMarkAsRead(
               entry.target.getAttribute('data-is-own-message') === 'true';
 
             if (messageId && !isRead && !isOwnMessage) {
-              logger.debug('useAutoMarkAsRead', 'Message entered viewport', {
-                messageId,
-                intersectionRatio: entry.intersectionRatio,
-              });
+              logger.debug('useAutoMarkAsRead', { messageId, intersectionRatioentryintersectionRatio,  });
 
               scheduleMarkAsRead(messageId);
             }

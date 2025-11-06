@@ -10,7 +10,7 @@ import {
   isCurrentDeviceRegistered,
 } from '@/lib/services/firebase-messaging.service';
 import { toast } from 'sonner';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * Push Notification Toggle Button
@@ -44,7 +44,7 @@ export function PushNotificationToggle() {
       const registered = await isCurrentDeviceRegistered();
       setIsRegistered(registered);
     } catch (error) {
-      logger.error('Error checking registration status:', error);
+      logger.error('Error checking registration status:', error instanceof Error ? error : new Error(String(error)));
     }
   }
 
@@ -69,7 +69,7 @@ export function PushNotificationToggle() {
         }
       }
     } catch (error) {
-      logger.error('Error toggling push notifications:', error);
+      logger.error('Error toggling push notifications:', error instanceof Error ? error : new Error(String(error)));
       toast.error('Push bildirimler ayarlanırken hata oluştu');
     } finally {
       setIsLoading(false);

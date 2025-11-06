@@ -14,7 +14,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { moderatorService } from '@/lib/infrastructure/services/api/moderatorService.production';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { toast } from 'sonner';
 import type { BlogComment } from '@/types/blog';
 
@@ -221,13 +221,9 @@ export function useCommentModeration(): UseCommentModerationReturn {
 
       setTotalPages(response.data.totalPages);
 
-      logger.debug('[useCommentModeration] Comments fetched', {
-        count: comments.length,
-        total: response.data.totalItems,
-        page,
-      });
+      logger.debug('[useCommentModeration] Comments fetched', { countcommentslength, totalresponsedatatotalItems, page,  });
     } catch (err) {
-      logger.error('[useCommentModeration] Failed to fetch comments', err);
+      logger.error('[useCommentModeration] Failed to fetch comments', err instanceof Error ? err : new Error(String(err)));
       setError('Yorumlar yüklenirken bir hata oluştu');
       toast.error('Yorumlar yüklenemedi', {
         description: 'Lütfen sayfayı yenileyerek tekrar deneyin',
@@ -338,7 +334,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
 
       return true;
     } catch (err) {
-      logger.error('[useCommentModeration] Failed to approve comment', err);
+      logger.error('[useCommentModeration] Failed to approve comment', err instanceof Error ? err : new Error(String(err)));
       setError('Yorum onaylanırken bir hata oluştu');
       toast.error('Yorum onaylanamadı', {
         description: 'Lütfen tekrar deneyin',
@@ -376,7 +372,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
 
       return true;
     } catch (err) {
-      logger.error('[useCommentModeration] Failed to reject comment', err);
+      logger.error('[useCommentModeration] Failed to reject comment', err instanceof Error ? err : new Error(String(err)));
       setError('Yorum reddedilirken bir hata oluştu');
       toast.error('Yorum reddedilemedi', {
         description: 'Lütfen tekrar deneyin',
@@ -409,7 +405,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
 
       return true;
     } catch (err) {
-      logger.error('[useCommentModeration] Failed to mark as spam', err);
+      logger.error('[useCommentModeration] Failed to mark as spam', err instanceof Error ? err : new Error(String(err)));
       setError('Yorum spam olarak işaretlenirken bir hata oluştu');
       toast.error('İşlem başarısız', {
         description: 'Yorum spam olarak işaretlenemedi',
@@ -429,11 +425,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
       priority: 'LOW' | 'MEDIUM' | 'HIGH' = 'MEDIUM'
     ): Promise<boolean> => {
       try {
-        logger.info('[useCommentModeration] Escalating comment', {
-          id,
-          reason,
-          priority,
-        });
+        logger.info('[useCommentModeration] Escalating comment', { id, reason, priority,  });
 
         // Call escalation endpoint
         await moderatorService.escalateComment(id, reason);
@@ -473,10 +465,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
       reason: string
     ): Promise<boolean> => {
       try {
-        logger.info('[useCommentModeration] Flagging comment', {
-          id,
-          flag,
-        });
+        logger.info('[useCommentModeration] Flagging comment', { id, flag,  });
 
         // Call flag endpoint
         const response = await fetch(`/api/v1/blog/comments/${id}/flag`, {
@@ -550,9 +539,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
   const bulkApprove = useCallback(
     async (ids: string[]): Promise<BulkActionResult> => {
       try {
-        logger.debug('[useCommentModeration] Bulk approving comments', {
-          count: ids.length,
-        });
+        logger.debug('[useCommentModeration] Bulk approving comments', { countidslength,  });
 
         // Call moderatorService bulk approve
         const response = await moderatorService.bulkApproveComments(ids);
@@ -587,7 +574,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
 
         return result;
       } catch (err) {
-        logger.error('[useCommentModeration] Bulk approve failed', err);
+        logger.error('[useCommentModeration] Bulk approve failed', err instanceof Error ? err : new Error(String(err)));
         toast.error('Toplu onaylama başarısız', {
           description: 'Bir hata oluştu, lütfen tekrar deneyin',
         });
@@ -606,9 +593,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
   const bulkReject = useCallback(
     async (ids: string[]): Promise<BulkActionResult> => {
       try {
-        logger.debug('[useCommentModeration] Bulk rejecting comments', {
-          count: ids.length,
-        });
+        logger.debug('[useCommentModeration] Bulk rejecting comments', { countidslength,  });
 
         // Call moderatorService bulk reject
         const response = await moderatorService.bulkRejectComments(
@@ -646,7 +631,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
 
         return result;
       } catch (err) {
-        logger.error('[useCommentModeration] Bulk reject failed', err);
+        logger.error('[useCommentModeration] Bulk reject failed', err instanceof Error ? err : new Error(String(err)));
         toast.error('Toplu reddetme başarısız', {
           description: 'Bir hata oluştu, lütfen tekrar deneyin',
         });
@@ -665,9 +650,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
   const bulkMarkAsSpam = useCallback(
     async (ids: string[]): Promise<BulkActionResult> => {
       try {
-        logger.debug('[useCommentModeration] Bulk marking as spam', {
-          count: ids.length,
-        });
+        logger.debug('[useCommentModeration] Bulk marking as spam', { countidslength,  });
 
         // Call moderatorService bulk spam
         const response = await moderatorService.bulkMarkCommentsAsSpam(ids);
@@ -702,7 +685,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
 
         return result;
       } catch (err) {
-        logger.error('[useCommentModeration] Bulk spam marking failed', err);
+        logger.error('[useCommentModeration] Bulk spam marking failed', err instanceof Error ? err : new Error(String(err)));
         toast.error('Toplu spam işaretleme başarısız', {
           description: 'Bir hata oluştu, lütfen tekrar deneyin',
         });
@@ -729,11 +712,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
       priority: 'LOW' | 'MEDIUM' | 'HIGH' = 'MEDIUM'
     ): Promise<BulkActionResult> => {
       try {
-        logger.debug('[useCommentModeration] Bulk escalating comments', {
-          count: ids.length,
-          reason,
-          priority,
-        });
+        logger.debug('[useCommentModeration] Bulk escalating comments', { countidslength, reason, priority,  });
 
         // Call moderatorService bulk escalate
         const response = await moderatorService.bulkEscalateComments(
@@ -773,7 +752,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
 
         return result;
       } catch (err) {
-        logger.error('[useCommentModeration] Bulk escalate failed', err);
+        logger.error('[useCommentModeration] Bulk escalate failed', err instanceof Error ? err : new Error(String(err)));
         toast.error('Toplu yükseltme başarısız', {
           description: 'Bir hata oluştu, lütfen tekrar deneyin',
         });

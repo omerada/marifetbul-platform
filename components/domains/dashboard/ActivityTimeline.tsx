@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { User } from '@/types';
 import { Card } from '@/components/ui/Card';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   Clock,
   DollarSign,
@@ -120,7 +120,7 @@ export function ActivityTimeline({
               ? error.message
               : 'Failed to fetch activities';
           setError(errorMessage);
-          logger.error('Error fetching activities:', error);
+          logger.error('Error fetching activities:', error instanceof Error ? error : new Error(String(error)));
 
           // Retry logic - max 3 retries with exponential backoff
           if (retryCount < 3 && !errorMessage.includes('Authentication')) {

@@ -186,11 +186,7 @@ export function sanitizeHtml(
     // Sanitize HTML
     const clean = DOMPurify.sanitize(html, purifyConfig) as string;
 
-    logger.debug('HTML sanitized', {
-      originalLength: html.length,
-      cleanLength: clean.length,
-      config: typeof config === 'string' ? config : 'custom',
-    });
+    logger.debug('HTML sanitized', { originalLengthhtmllength, cleanLengthcleanlength, configtypeofconfigstringconfigcustom,  });
 
     return clean;
   } catch (error) {
@@ -257,8 +253,7 @@ export function sanitizeUrl(url: string): string {
     const lowerUrl = trimmed.toLowerCase();
     for (const protocol of dangerousProtocols) {
       if (lowerUrl.startsWith(protocol)) {
-        logger.warn('Dangerous URL protocol blocked', {
-          url: trimmed.substring(0, 50),
+        logger.warn('Dangerous URL protocol blocked', { urltrimmedsubstring0, 50 }),
           protocol,
         });
         return '';

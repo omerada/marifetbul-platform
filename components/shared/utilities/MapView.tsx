@@ -19,7 +19,7 @@ import { Card } from '@/components/ui/Card';
 import { Coordinates, MapBounds } from '@/types';
 import { useUnifiedLocation } from '@/hooks';
 import { MapUtils, MapLocation } from '@/lib/shared/utils/map-utils';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // Helper to convert Coordinates to MapLocation
 const toMapLocation = (coords: Coordinates): MapLocation => ({
@@ -184,7 +184,7 @@ export const MapView: React.FC<MapViewProps> = ({
         setMapZoom(15);
       }
     } catch (error) {
-      logger.error('Failed to get current location:', error);
+      logger.error('Failed to get current location:', error instanceof Error ? error : new Error(String(error)));
     }
   }, [getCurrentPosition, unifiedLocation.currentPosition]);
 

@@ -14,7 +14,7 @@ import {
   type SearchFilters,
 } from '../infrastructure/api';
 import { useAuthState } from '../shared/useAuth';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // SEARCH BUSINESS LOGIC
@@ -307,9 +307,7 @@ export function useAnalyticsTracker() {
       // Production note: Analytics tracking awaiting integration with third-party service
       // (Google Analytics, Mixpanel, Segment, etc.). Currently logs to console in development.
       if (process.env.NODE_ENV === 'development') {
-        logger.debug('Analytics:', event, {
-          userId: user?.id,
-          timestamp: new Date().toISOString(),
+        logger.debug('Analytics:', { event, userIduserid, timestampnewDate }).toISOString(),
           ...properties,
         });
       }

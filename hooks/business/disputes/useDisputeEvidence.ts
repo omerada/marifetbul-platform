@@ -9,7 +9,7 @@ import {
   uploadDisputeAttachment,
 } from '@/lib/api/disputes';
 import { toast } from 'sonner';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export function useDisputeEvidence(disputeId: string) {
   const [isUploading, setIsUploading] = useState(false);
@@ -63,10 +63,7 @@ export function useDisputeEvidence(disputeId: string) {
           description: `Uploaded evidence: ${file.name}`,
         });
       }
-      logger.info('Evidence uploaded successfully', {
-        disputeId,
-        fileCount: files.length,
-      });
+      logger.info('Evidence uploaded successfully', { disputeId, fileCountfileslength,  });
       toast.success(`${files.length} dosya başarıyla yüklendi`);
       return true;
     } catch (err) {

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUIStore } from '@/lib/core/store/domains/ui/uiStore';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface UseProposalOptions {
   onSuccess?: () => void;
@@ -71,7 +71,7 @@ export function useProposal(options: UseProposalOptions = {}) {
 
         options.onError?.(errorMessage);
 
-        logger.error('[useProposal] Accept proposal error:', err);
+        logger.error('[useProposal] Accept proposal error:', err instanceof Error ? err : new Error(String(err)));
 
         throw err;
       } finally {
@@ -130,7 +130,7 @@ export function useProposal(options: UseProposalOptions = {}) {
 
         options.onError?.(errorMessage);
 
-        logger.error('[useProposal] Reject proposal error:', err);
+        logger.error('[useProposal] Reject proposal error:', err instanceof Error ? err : new Error(String(err)));
 
         throw err;
       } finally {

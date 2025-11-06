@@ -39,7 +39,7 @@ import {
   type CreatePackageFormData,
 } from '@/lib/validation/package';
 import type { CreatePackageRequest } from '@/types/business/features/package';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // Import step components (to be created)
 import { PackageBasicInfoStep } from './PackageBasicInfoStep';

@@ -53,7 +53,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/Tooltip';
 import { formatCurrency, formatPercentage } from '@/lib/shared/formatters';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { Transaction } from '@/lib/api/validators';
 
 // ============================================================================
@@ -333,7 +333,7 @@ function exportToCSV(
 
     logger.info('CSV export successful', { period, filename });
   } catch (error) {
-    logger.error('CSV export failed', error);
+    logger.error('CSV export failed', error instanceof Error ? error : new Error(String(error)));
     alert('CSV export başarısız oldu. Lütfen tekrar deneyin.');
   }
 }

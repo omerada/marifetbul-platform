@@ -14,7 +14,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import type { CategorySummary } from '@/types/analytics';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface CategoryPerformanceSummaryProps {
   startDate?: string;
@@ -65,7 +65,7 @@ export function CategoryPerformanceSummary({
       const result = await response.json();
       setSummary(result.data || result);
     } catch (err) {
-      logger.error('Category summary fetch error:', err);
+      logger.error('Category summary fetch error:', err instanceof Error ? err : new Error(String(err)));
       setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
     } finally {
       setIsLoading(false);

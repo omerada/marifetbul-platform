@@ -30,7 +30,7 @@ import {
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Badge } from '@/components/ui/Badge';
 import { useToast } from '@/hooks';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { AdminUserData } from './userTable/types/userTableTypes';
 
 interface UserExportButtonProps {
@@ -260,7 +260,10 @@ export function UserExportButton({
 
       setShowColumnSelector(false);
     } catch (error) {
-      logger.error('Export failed:', error);
+      logger.error(
+        'Export failed:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       showError('Hata', 'Dosya oluşturulurken bir hata oluştu');
     } finally {
       setIsExporting(false);

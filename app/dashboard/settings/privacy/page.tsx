@@ -20,7 +20,7 @@ import {
   type PrivacySettings,
   type UpdatePrivacySettingsRequest,
 } from '@/lib/api/privacy-settings';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export default function PrivacySettingsPage() {
   const [settings, setSettings] = useState<PrivacySettings | null>(null);

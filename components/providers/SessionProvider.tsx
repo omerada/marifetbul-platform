@@ -26,7 +26,7 @@ import { authSelectors } from '@/lib/core/auth';
 import { sessionManager } from '@/lib/core/auth/sessionManager';
 import { useSession } from '@/hooks/core/useSession';
 import { SessionTimeoutModal } from '@/components/shared/SessionTimeoutModal';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES

@@ -9,7 +9,7 @@ import React, {
   useCallback,
 } from 'react';
 import { UnifiedLoading } from '@/components/ui/UnifiedLoadingSystem';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // UNIFIED LAZY LOADING SYSTEM
@@ -170,7 +170,7 @@ export function useComponentPreloader() {
           logger.warn(`Unknown component: ${componentName}`);
       }
     } catch (error) {
-      logger.error(`Failed to preload component ${componentName}:`, error);
+      logger.error(`Failed to preload component ${componentName}:`, error instanceof Error ? error : new Error(String(error)));
     }
   }, []);
 
@@ -203,7 +203,7 @@ export function useCriticalComponentsPreloader() {
           import('@/components/ui/UnifiedImage').catch(() => {}),
         ]);
       } catch (error) {
-        logger.error('Failed to preload critical components:', error);
+        logger.error('Failed to preload critical components:', error instanceof Error ? error : new Error(String(error)));
       }
     };
 

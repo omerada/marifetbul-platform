@@ -10,7 +10,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   fetchPackageAnalytics,
   type PackageAnalyticsData,
@@ -41,19 +41,12 @@ export function PackageAnalytics() {
         setLoading(true);
         setError(null);
 
-        logger.info('[PackageAnalytics] Fetching analytics data', {
-          days,
-          component: 'PackageAnalytics',
-        });
+        logger.info('[PackageAnalytics] Fetching analytics data', { days, componentPackageAnalytics,  });
 
         const analyticsData = await fetchPackageAnalytics(days);
         setData(analyticsData);
 
-        logger.info('[PackageAnalytics] Analytics data loaded successfully', {
-          packagesCount: analyticsData.metrics.totalPackages,
-          totalRevenue: analyticsData.metrics.totalRevenue,
-          component: 'PackageAnalytics',
-        });
+        logger.info('[PackageAnalytics] Analytics data loaded successfully', { packagesCountanalyticsDatametricstotalPackages, totalRevenueanalyticsDatametricstotalRevenue, componentPackageAnalytics,  });
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to load analytics data';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { Conversation, Message } from '@/types';
 
 export type ConversationFilter = 'all' | 'active' | 'archived';
@@ -57,7 +57,7 @@ export function useConversations(filter: ConversationFilter = 'all') {
         }
         return false;
       } catch (err) {
-        logger.error('Error archiving conversation:', err);
+        logger.error('Error archiving conversation:', err instanceof Error ? err : new Error(String(err)));
         return false;
       }
     },
@@ -80,7 +80,7 @@ export function useConversations(filter: ConversationFilter = 'all') {
         }
         return false;
       } catch (err) {
-        logger.error('Error unarchiving conversation:', err);
+        logger.error('Error unarchiving conversation:', err instanceof Error ? err : new Error(String(err)));
         return false;
       }
     },
@@ -103,7 +103,7 @@ export function useConversations(filter: ConversationFilter = 'all') {
         }
         return false;
       } catch (err) {
-        logger.error('Error deleting conversation:', err);
+        logger.error('Error deleting conversation:', err instanceof Error ? err : new Error(String(err)));
         return false;
       }
     },
@@ -237,7 +237,7 @@ export function useMessaging() {
         throw new Error('Failed to send message');
       }
     } catch (error) {
-      logger.error('Error sending message:', error);
+      logger.error('Error sending message:', error instanceof Error ? error : new Error(String(error)));
       throw error;
     } finally {
       setIsLoading(false);
@@ -253,7 +253,7 @@ export function useMessaging() {
         credentials: 'include',
       });
     } catch (error) {
-      logger.error('Error marking as read:', error);
+      logger.error('Error marking as read:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -270,7 +270,7 @@ export function useMessaging() {
         return await response.json();
       }
     } catch (error) {
-      logger.error('Error creating conversation:', error);
+      logger.error('Error creating conversation:', error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   };
@@ -282,7 +282,7 @@ export function useMessaging() {
         credentials: 'include',
       });
     } catch (error) {
-      logger.error('Error deleting message:', error);
+      logger.error('Error deleting message:', error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   };

@@ -18,7 +18,7 @@ import { AlertCircle, Clock, ArrowRight, Eye } from 'lucide-react';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { useWebSocket } from '@/hooks';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export function DisputeStatsCard() {
   const router = useRouter();
@@ -37,7 +37,7 @@ export function DisputeStatsCard() {
       setStats(statsData);
       setRecentDisputes(disputesData);
     } catch (error) {
-      logger.error('Failed to fetch dispute stats:', error);
+      logger.error('Failed to fetch dispute stats:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsLoading(false);
     }
@@ -70,7 +70,7 @@ export function DisputeStatsCard() {
             fetchData();
           }
         } catch (err) {
-          logger.error('Failed to parse dispute update:', err);
+          logger.error('Failed to parse dispute update:', err instanceof Error ? err : new Error(String(err)));
         }
       }
     );

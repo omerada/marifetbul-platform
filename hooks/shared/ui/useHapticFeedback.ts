@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback } from 'react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface HapticEngine {
   impactOccurred: (intensity: HapticIntensity) => void;

@@ -103,6 +103,27 @@ const nextConfig = {
         destination: '/dashboard/orders/:id',
         permanent: true,
       },
+      // Moderation page redirects - deprecated pages to unified pages (Sprint 2)
+      {
+        source: '/admin/moderation/reviews',
+        destination: '/reviews',
+        permanent: true,
+      },
+      {
+        source: '/admin/moderation/comments',
+        destination: '/comments',
+        permanent: true,
+      },
+      {
+        source: '/moderator/reviews',
+        destination: '/reviews',
+        permanent: true,
+      },
+      {
+        source: '/moderator/comments',
+        destination: '/comments',
+        permanent: true,
+      },
       // Info & Support redirects
       {
         source: '/help',

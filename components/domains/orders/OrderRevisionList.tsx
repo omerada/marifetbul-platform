@@ -38,7 +38,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES
@@ -138,7 +138,7 @@ export function OrderRevisionList({
       toast.error('Hata', {
         description: errorMessage,
       });
-      logger.error('Failed to load revisions:', err);
+      logger.error('Failed to load revisions:', err instanceof Error ? err : new Error(String(err)));
     } finally {
       setIsLoading(false);
     }

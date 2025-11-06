@@ -40,7 +40,7 @@ import {
   type ActivityLogDto,
 } from '@/types/backend/dashboard';
 
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // LUCIDE ICONS - Required for QuickAction components

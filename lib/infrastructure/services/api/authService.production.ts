@@ -13,7 +13,7 @@
 
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { AUTH_ENDPOINTS } from '@/lib/api/endpoints';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   ApiResponse,
   AuthResponse,

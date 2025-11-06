@@ -6,7 +6,7 @@
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * Popular Search Data Types
@@ -34,10 +34,7 @@ export async function fetchPopularSearches(
   days: number = 7
 ): Promise<PopularSearch[]> {
   try {
-    logger.debug('[PopularSearches] Fetching popular searches', {
-      limit,
-      days,
-    });
+    logger.debug('[PopularSearches] Fetching popular searches', { limit, days,  });
 
     const response = await apiClient.get<PopularSearch[]>(
       '/analytics/search/popular',
@@ -53,11 +50,7 @@ export async function fetchPopularSearches(
       }
     );
 
-    logger.info('[PopularSearches] Popular searches fetched successfully', {
-      count: response.length,
-      limit,
-      days,
-    });
+    logger.info('[PopularSearches] Popular searches fetched successfully', { countresponselength, limit, days,  });
 
     return response;
   } catch (error) {
@@ -87,11 +80,7 @@ export async function fetchPopularSearchesWithCache(
   forceRefresh: boolean = false
 ): Promise<PopularSearch[]> {
   try {
-    logger.debug('[PopularSearches] Fetching with cache control', {
-      limit,
-      days,
-      forceRefresh,
-    });
+    logger.debug('[PopularSearches] Fetching with cache control', { limit, days, forceRefresh,  });
 
     const response = await apiClient.get<PopularSearch[]>(
       '/analytics/search/popular',

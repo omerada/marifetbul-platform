@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
 import { useMessageTemplates } from '@/hooks/business/messaging/useMessageTemplates';
 import { useContextMessage } from '@/hooks/business/messaging/useContextMessage';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { MessageContext } from '@/types/business/features/messaging';
 import { MESSAGE_TEMPLATE_CATEGORIES } from '@/types/business/features/messaging';
 
@@ -112,7 +112,7 @@ export function QuickMessageModal({
         });
         setMessageContent(rendered);
       } catch (err) {
-        logger.error('Failed to render template:', err);
+        logger.error('Failed to render template:', err instanceof Error ? err : new Error(String(err)));
       }
     }
   };
@@ -140,7 +140,7 @@ export function QuickMessageModal({
       }
     } catch (err) {
       // Error is handled by useContextMessage hook
-      logger.error('Failed to send message:', err);
+      logger.error('Failed to send message:', err instanceof Error ? err : new Error(String(err)));
     }
   };
 

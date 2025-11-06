@@ -31,7 +31,7 @@ import {
   type UserWarning,
   type UserSuspension,
 } from '@/lib/api/moderation';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { useToast } from '@/hooks/core/useToast';
 
 /**
@@ -127,10 +127,7 @@ export function useUserModeration(): UseUserModerationResult {
           `${warning.warningLevel} seviyesinde uyarı başarıyla verildi`
         );
 
-        logger.info('Warning issued successfully', {
-          warningId: warning.id,
-          level: warning.warningLevel,
-        });
+        logger.info('Warning issued successfully', { warningIdwarningid, levelwarningwarningLevel,  });
 
         return warning;
       } catch (err) {
@@ -246,10 +243,7 @@ export function useUserModeration(): UseUserModerationResult {
           `${suspension.suspensionTypeDescription} uygulandı`
         );
 
-        logger.info('User suspended successfully', {
-          suspensionId: suspension.id,
-          type: suspension.suspensionType,
-        });
+        logger.info('User suspended successfully', { suspensionIdsuspensionid, typesuspensionsuspensionType,  });
 
         return suspension;
       } catch (err) {

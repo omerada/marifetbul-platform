@@ -41,7 +41,7 @@ import {
   FileText,
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   getOrderAnalytics,
   getRevenueBreakdown,
@@ -211,7 +211,7 @@ export const AdminFinancialReports: React.FC = () => {
 
       toast.success('Finansal veriler yüklendi');
     } catch (error) {
-      logger.error('Failed to load financial data:', error);
+      logger.error('Failed to load financial data:', error instanceof Error ? error : new Error(String(error)));
       toast.error('Finansal veriler yüklenemedi');
     } finally {
       setIsLoading(false);

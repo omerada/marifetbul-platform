@@ -20,7 +20,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { getMessages } from '@/lib/api/messaging';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type { Message } from '@/types/message';
 
 // ==================== TYPES ====================
@@ -147,19 +147,11 @@ export function useMessagePagination(
     setError(null);
 
     try {
-      logger.debug('useMessagePagination', 'Loading initial messages', {
-        conversationId,
-        size: initialSize,
-      });
+      logger.debug('useMessagePagination', { conversationId, sizeinitialSize,  });
 
       const response = await getMessages(conversationId, 0, initialSize);
 
-      logger.info('useMessagePagination', 'Initial messages loaded', {
-        conversationId,
-        count: response.content.length,
-        totalElements: response.totalElements,
-        totalPages: response.totalPages,
-      });
+      logger.info('useMessagePagination', { conversationId, countresponsecontentlength, totalElementsresponsetotalElements, totalPagesresponsetotalPages,  });
 
       // Sort messages by createdAt (oldest first for display)
       const sortedMessages = [...response.content].sort(
@@ -182,7 +174,7 @@ export function useMessagePagination(
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to load messages';
-      logger.error('useMessagePagination', 'Failed to load messages', {
+      logger.error('useMessagePagination: Failed to load messages', undefined, {
         error: err,
         conversationId,
       });
@@ -217,11 +209,7 @@ export function useMessagePagination(
     try {
       const nextPage = pagination.page + 1;
 
-      logger.debug('useMessagePagination', 'Loading more messages', {
-        conversationId,
-        page: nextPage,
-        size: pagination.size,
-      });
+      logger.debug('useMessagePagination', { conversationId, pagenextPage, sizepaginationsize,  });
 
       const response = await getMessages(
         conversationId,
@@ -229,12 +217,7 @@ export function useMessagePagination(
         pagination.size
       );
 
-      logger.info('useMessagePagination', 'More messages loaded', {
-        conversationId,
-        page: nextPage,
-        count: response.content.length,
-        totalElements: response.totalElements,
-      });
+      logger.info('useMessagePagination', { conversationId, pagenextPage, countresponsecontentlength, totalElementsresponsetotalElements,  });
 
       // Sort new messages (oldest first)
       const sortedNewMessages = [...response.content].sort(
@@ -258,7 +241,7 @@ export function useMessagePagination(
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to load more messages';
-      logger.error('useMessagePagination', 'Failed to load more messages', {
+      logger.error('useMessagePagination: Failed to load more messages', undefined, {
         error: err,
         conversationId,
         page: pagination.page + 1,
@@ -276,9 +259,7 @@ export function useMessagePagination(
    * Refresh messages (reset to page 0)
    */
   const refresh = useCallback(async () => {
-    logger.debug('useMessagePagination', 'Refreshing messages', {
-      conversationId,
-    });
+    logger.debug('useMessagePagination', { conversationId,  });
 
     isInitializedRef.current = false;
     await load();
@@ -303,9 +284,7 @@ export function useMessagePagination(
       totalElements: prev.totalElements + 1,
     }));
 
-    logger.debug('useMessagePagination', 'Message added', {
-      messageId: message.id,
-    });
+    logger.debug('useMessagePagination', { messageIdmessageid,  });
   }, []);
 
   /**
@@ -317,10 +296,7 @@ export function useMessagePagination(
         prev.map((m) => (m.id === messageId ? { ...m, ...updates } : m))
       );
 
-      logger.debug('useMessagePagination', 'Message updated', {
-        messageId,
-        updates,
-      });
+      logger.debug('useMessagePagination', { messageId, updates,  });
     },
     []
   );
@@ -336,7 +312,7 @@ export function useMessagePagination(
       totalElements: Math.max(0, prev.totalElements - 1),
     }));
 
-    logger.debug('useMessagePagination', 'Message removed', { messageId });
+    logger.debug('useMessagePagination', { messageId });
   }, []);
 
   // ==================== RESET ====================
@@ -361,7 +337,7 @@ export function useMessagePagination(
     isInitializedRef.current = false;
     isLoadingRef.current = false;
 
-    logger.debug('useMessagePagination', 'State reset', { conversationId });
+    logger.debug('useMessagePagination', { conversationId });
   }, [conversationId, initialSize]);
 
   // ==================== AUTO-LOAD ====================

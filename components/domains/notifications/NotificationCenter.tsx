@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 import { useNotification } from '@/hooks';
 import { EnhancedNotification } from '@/types';
@@ -73,7 +73,7 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
         // Refresh notifications after archiving
         fetchNotifications();
       } catch (error) {
-        logger.error('Error archiving notification:', error);
+        logger.error('Error archiving notification:', error instanceof Error ? error : new Error(String(error)));
       }
     };
 

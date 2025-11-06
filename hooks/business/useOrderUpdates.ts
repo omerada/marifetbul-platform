@@ -21,7 +21,7 @@
 import { useEffect, useCallback } from 'react';
 import { useWebSocket } from '@/hooks/infrastructure/websocket/useWebSocket';
 import { toast } from 'sonner';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   OrderWebSocketEventType,
   OrderWebSocketUpdate,
@@ -121,10 +121,7 @@ export function useOrderUpdates(
         const msg = message as { body: string };
         const update = JSON.parse(msg.body) as OrderWebSocketUpdate;
 
-        logger.info('useOrderUpdates', 'Received order update', {
-          orderId: update.orderId,
-          type: update.type,
-        });
+        logger.info('useOrderUpdates', { orderIdupdateorderId, typeupdatetype,  });
 
         // Show toast notification if enabled
         if (enableToast) {
@@ -142,53 +139,35 @@ export function useOrderUpdates(
         switch (update.type) {
           case 'ORDER_STATUS_CHANGED': {
             const data = update.data as OrderStatusChangedData;
-            logger.info('useOrderUpdates', 'Order status changed', {
-              orderId: update.orderId,
-              previousStatus: data.previousStatus,
-              newStatus: data.newStatus,
-            });
+            logger.info('useOrderUpdates', { orderIdupdateorderId, previousStatusdatapreviousStatus, newStatusdatanewStatus,  });
             onStatusChange?.(data.order);
             break;
           }
 
           case 'ORDER_DELIVERED': {
             const data = update.data as OrderDeliveredData;
-            logger.info('useOrderUpdates', 'Order delivered', {
-              orderId: update.orderId,
-              deliveredBy: data.deliveredBy.name,
-              attachmentCount: data.attachments.length,
-            });
+            logger.info('useOrderUpdates', { orderIdupdateorderId, deliveredBydatadeliveredByname, attachmentCountdataattachmentslength,  });
             onDelivered?.(data);
             break;
           }
 
           case 'ORDER_ACCEPTED': {
             const data = update.data as OrderAcceptedData;
-            logger.info('useOrderUpdates', 'Order accepted', {
-              orderId: update.orderId,
-              acceptedBy: data.acceptedBy.name,
-              paymentReleased: data.paymentReleased,
-            });
+            logger.info('useOrderUpdates', { orderIdupdateorderId, acceptedBydataacceptedByname, paymentReleaseddatapaymentReleased,  });
             onAccepted?.(data);
             break;
           }
 
           case 'ORDER_REVISION_REQUESTED': {
             const data = update.data as RevisionRequestedData;
-            logger.info('useOrderUpdates', 'Revision requested', {
-              orderId: update.orderId,
-              requestedBy: data.requestedBy.name,
-              revisionCount: data.revisionCount,
-            });
+            logger.info('useOrderUpdates', { orderIdupdateorderId, requestedBydatarequestedByname, revisionCountdatarevisionCount,  });
             onRevisionRequested?.(data);
             break;
           }
 
           case 'ORDER_COMPLETED': {
             const data = update.data as { order: Order };
-            logger.info('useOrderUpdates', 'Order completed', {
-              orderId: update.orderId,
-            });
+            logger.info('useOrderUpdates', { orderIdupdateorderId,  });
             onCompleted?.(data.order);
             onStatusChange?.(data.order);
             break;
@@ -196,29 +175,23 @@ export function useOrderUpdates(
 
           case 'ORDER_UPDATED': {
             const data = update.data as { order: Order };
-            logger.info('useOrderUpdates', 'Order updated', {
-              orderId: update.orderId,
-            });
+            logger.info('useOrderUpdates', { orderIdupdateorderId,  });
             onOrderUpdated?.(data.order);
             break;
           }
 
           case 'ORDER_CANCELED': {
             const data = update.data as { order: Order };
-            logger.info('useOrderUpdates', 'Order canceled', {
-              orderId: update.orderId,
-            });
+            logger.info('useOrderUpdates', { orderIdupdateorderId,  });
             onStatusChange?.(data.order);
             break;
           }
 
           default:
-            logger.warn('useOrderUpdates', 'Unknown order event type', {
-              type: update.type,
-            });
+            logger.warn('useOrderUpdates', { typeupdatetype,  });
         }
       } catch (error) {
-        logger.error('useOrderUpdates', 'Failed to handle order update', {
+        logger.error('useOrderUpdates: Failed to handle order update', undefined, {
           error,
           message,
         });
@@ -243,9 +216,7 @@ export function useOrderUpdates(
       return;
     }
 
-    logger.info('useOrderUpdates', 'Subscribing to order updates', {
-      orderId,
-    });
+    logger.info('useOrderUpdates', { orderId,  });
 
     // Subscribe to order-specific topic
     const orderTopic = `/topic/orders/${orderId}`;
@@ -255,16 +226,11 @@ export function useOrderUpdates(
     const userQueueTopic = `/user/queue/orders/${orderId}`;
     subscribe(userQueueTopic, handleOrderUpdate);
 
-    logger.info('useOrderUpdates', 'Subscribed to order topics', {
-      orderId,
-      topics: [orderTopic, userQueueTopic],
-    });
+    logger.info('useOrderUpdates', { orderId, topicsorderTopic, userQueueTopic,  });
 
     // Cleanup subscriptions on unmount or when orderId changes
     return () => {
-      logger.info('useOrderUpdates', 'Unsubscribing from order updates', {
-        orderId,
-      });
+      logger.info('useOrderUpdates', { orderId,  });
       unsubscribe(orderTopic);
       unsubscribe(userQueueTopic);
     };
@@ -273,7 +239,7 @@ export function useOrderUpdates(
   // ==================== MANUAL REFRESH ====================
 
   const refresh = useCallback(() => {
-    logger.info('useOrderUpdates', 'Manual refresh requested', { orderId });
+    logger.info('useOrderUpdates', { orderId });
     // In a real implementation, this could trigger a REST API call
     // to fetch the latest order data
     // For now, it's a no-op as WebSocket handles real-time updates

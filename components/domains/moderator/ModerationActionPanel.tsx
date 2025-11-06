@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/Dialog';
 import { Label } from '@/components/ui/Label';
 import { toast } from 'sonner';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -71,7 +71,7 @@ export function ModerationActionPanel({
       toast.success('İçerik onaylandı');
       logger.info(`Approved ${itemType}:`, itemId);
     } catch (error) {
-      logger.error(`Failed to approve ${itemType}:`, error);
+      logger.error(`Failed to approve ${itemType}:`, error instanceof Error ? error : new Error(String(error)));
       toast.error('Onaylama başarısız oldu');
     } finally {
       setIsApproving(false);
@@ -91,11 +91,11 @@ export function ModerationActionPanel({
       setIsRejecting(true);
       await onReject(itemId, rejectReason);
       toast.success('İçerik reddedildi');
-      logger.info(`Rejected ${itemType}:`, itemId, 'Reason:', rejectReason);
+      logger.info(`Rejected ${itemType}:`, { itemId, rejectReason });
       setShowRejectDialog(false);
       setRejectReason('');
     } catch (error) {
-      logger.error(`Failed to reject ${itemType}:`, error);
+      logger.error(`Failed to reject ${itemType}:`, error instanceof Error ? error : new Error(String(error)));
       toast.error('Reddetme başarısız oldu');
     } finally {
       setIsRejecting(false);
@@ -112,7 +112,7 @@ export function ModerationActionPanel({
       toast.success('İçerik spam olarak işaretlendi');
       logger.info(`Marked ${itemType} as spam:`, itemId);
     } catch (error) {
-      logger.error(`Failed to mark ${itemType} as spam:`, error);
+      logger.error(`Failed to mark ${itemType} as spam:`, error instanceof Error ? error : new Error(String(error)));
       toast.error('Spam işaretleme başarısız oldu');
     } finally {
       setIsMarkingSpam(false);

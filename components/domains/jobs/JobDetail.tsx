@@ -28,7 +28,7 @@ import { JobProposalButton } from './JobProposalButton';
 import { ProposalCard } from './ProposalCard';
 import { Loading } from '@/components/ui';
 import { ErrorState } from '@/components/shared/utilities';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface JobDetailProps {
   jobId: string;
@@ -103,7 +103,7 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
     try {
       await updateProposalStatus(proposalId, action);
     } catch (error) {
-      logger.error('Proposal action error:', error);
+      logger.error('Proposal action error:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 

@@ -18,7 +18,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { walletApi } from '@/lib/api/wallet';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   Wallet,
   BalanceResponse,
@@ -143,15 +143,12 @@ export function useWalletData(
         balance,
       }));
 
-      logger.debug('✅ Wallet data fetched successfully', {
-        walletId: wallet.id,
-        balance: balance.availableBalance,
-      });
+      logger.debug('✅ Wallet data fetched successfully', { walletIdwalletid, balancebalanceavailableBalance,  });
     } catch (err) {
       const error =
         err instanceof Error ? err : new Error('Failed to fetch wallet data');
       setError(error);
-      logger.error('❌ Failed to fetch wallet data:', error);
+      logger.error('❌ Failed to fetch wallet data:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -177,15 +174,13 @@ export function useWalletData(
             page === 0 ? transactions : [...prev.transactions, ...transactions],
         }));
 
-        logger.debug('✅ Transactions fetched successfully', {
-          count: transactions.length,
-        });
+        logger.debug('✅ Transactions fetched successfully', { counttransactionslength,  });
       } catch (err) {
         const error =
           err instanceof Error
             ? err
             : new Error('Failed to fetch transactions');
-        logger.error('❌ Failed to fetch transactions:', error);
+        logger.error('❌ Failed to fetch transactions:', error instanceof Error ? error : new Error(String(error)));
         throw error;
       } finally {
         setIsLoadingTransactions(false);

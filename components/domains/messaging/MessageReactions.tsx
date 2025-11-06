@@ -18,7 +18,7 @@ import {
   toggleMessageReaction,
   type ReactionSummary,
 } from '@/lib/api/messaging';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { toast } from 'sonner';
 import type { MessageReaction } from '@/types/business/features/messaging';
 
@@ -160,14 +160,11 @@ export function MessageReactions({
         // API call
         await toggleMessageReaction(messageId, emoji);
 
-        logger.info('MessageReactions', 'Reaction toggled', {
-          messageId,
-          emoji,
-        });
+        logger.info('MessageReactions', { messageId, emoji,  });
 
         setShowPicker(false);
       } catch (error) {
-        logger.error('MessageReactions', 'Failed to toggle reaction', {
+        logger.error('MessageReactions: Failed to toggle reaction', undefined, {
           error,
         });
         toast.error('Reaksiyon eklenemedi');

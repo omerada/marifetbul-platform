@@ -12,9 +12,24 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useToast } from '@/hooks';
-import { logger } from '@/lib/shared/utils/logger';
-import { payoutApi, type CreatePayoutRequest } from '@/lib/api/payout';
-import type { Payout } from '@/lib/api/validators';
+import logger from '@/lib/infrastructure/monitoring/logger';
+import {
+  requestPayout,
+  getPayoutHistory,
+  getPendingPayouts,
+  getAllPendingPayouts,
+  cancelPayout,
+  approvePayout,
+  rejectPayout,
+  canCancelPayout,
+  canProcessPayout,
+  type RequestPayoutRequest,
+  type PayoutResponse,
+} from '@/lib/api/payouts';
+
+// Type alias for backward compatibility
+type CreatePayoutRequest = RequestPayoutRequest;
+type Payout = PayoutResponse;
 
 // ============================================================================
 // TYPES
@@ -63,13 +78,15 @@ export function usePayout(options: UsePayoutOptions = {}): UsePayoutReturn {
     setError(null);
 
     try {
-      const data = await payoutApi.getPayoutHistory(0, 50);
+      const data = await getPayoutHistory(0, 50);
       setPayouts(data);
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : 'Ödeme geçmişi yüklenemedi';
       setError(errorMessage);
-      logger.error('Load payouts error:', err);
+      if (err instanceof Error) {
+        logger.error('Load payouts error:', err instanceof Error ? err : new Error(String(err)));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -83,13 +100,15 @@ export function usePayout(options: UsePayoutOptions = {}): UsePayoutReturn {
     setError(null);
 
     try {
-      const data = await payoutApi.getPendingPayouts();
+      const data = await getPendingPayouts();
       setPendingPayouts(data);
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : 'Bekleyen ödemeler yüklenemedi';
       setError(errorMessage);
-      logger.error('Load pending payouts error:', err);
+      if (err instanceof Error) {
+        logger.error('Load pending payouts error:', err instanceof Error ? err : new Error(String(err)));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -104,7 +123,7 @@ export function usePayout(options: UsePayoutOptions = {}): UsePayoutReturn {
       setError(null);
 
       try {
-        const payout = await payoutApi.createPayout(data);
+        const payout = await requestPayout(data);
 
         // Add to pending list
         setPendingPayouts((prev) => [payout, ...prev]);
@@ -139,7 +158,10 @@ export function usePayout(options: UsePayoutOptions = {}): UsePayoutReturn {
       setError(null);
 
       try {
-        const updatedPayout = await payoutApi.cancelPayout(payoutId, reason);
+        const updatedPayout = await cancelPayout(
+          payoutId,
+          reason || 'Kullanıcı tarafından iptal edildi'
+        );
 
         // Update in both lists
         setPayouts((prev) =>
@@ -174,7 +196,7 @@ export function usePayout(options: UsePayoutOptions = {}): UsePayoutReturn {
    * Check if payout can be canceled
    */
   const canCancel = useCallback((payout: Payout) => {
-    return payoutApi.canCancelPayout(payout);
+    return canCancelPayout(payout);
   }, []);
 
   // Auto-load on mount
@@ -239,13 +261,15 @@ export function usePayoutAdmin(): UsePayoutAdminReturn {
     setError(null);
 
     try {
-      const data = await payoutApi.getPendingPayoutsAdmin(0, 100);
+      const data = await getAllPendingPayouts(0, 100);
       setPendingPayouts(data);
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : 'Bekleyen ödemeler yüklenemedi';
       setError(errorMessage);
-      logger.error('Load pending payouts error:', err);
+      if (err instanceof Error) {
+        logger.error('Load pending payouts error:', err instanceof Error ? err : new Error(String(err)));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -260,7 +284,7 @@ export function usePayoutAdmin(): UsePayoutAdminReturn {
       setError(null);
 
       try {
-        await payoutApi.approvePayout(payoutId, notes);
+        await approvePayout(payoutId, notes);
 
         // Remove from pending list
         setPendingPayouts((prev) => prev.filter((p) => p.id !== payoutId));
@@ -290,7 +314,7 @@ export function usePayoutAdmin(): UsePayoutAdminReturn {
       setError(null);
 
       try {
-        await payoutApi.rejectPayout(payoutId, { reason });
+        await rejectPayout(payoutId, reason);
 
         // Remove from pending list
         setPendingPayouts((prev) => prev.filter((p) => p.id !== payoutId));
@@ -319,10 +343,10 @@ export function usePayoutAdmin(): UsePayoutAdminReturn {
   }, [load]);
 
   /**
-   * Check if payout can be approved
+   * Check if payout can be approved/rejected
    */
   const canApprove = useCallback((payout: Payout) => {
-    return payoutApi.canApprovePayout(payout);
+    return canProcessPayout(payout);
   }, []);
 
   return {

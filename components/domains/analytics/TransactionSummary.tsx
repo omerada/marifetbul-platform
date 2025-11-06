@@ -17,7 +17,7 @@ import {
   getTransactionSummary,
   type TransactionSummaryResponse,
 } from '@/lib/api/dashboard-analytics-api';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   TrendingUp,
   TrendingDown,
@@ -50,7 +50,7 @@ export default function TransactionSummary() {
 
         setData(response);
       } catch (err) {
-        logger.error('Failed to load transaction summary:', err);
+        logger.error('Failed to load transaction summary:', err instanceof Error ? err : new Error(String(err)));
         setError('İşlem özeti yüklenemedi');
       } finally {
         setLoading(false);

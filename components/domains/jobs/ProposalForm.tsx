@@ -8,7 +8,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { Send, X, Upload, FileText } from 'lucide-react';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 const proposalSchema = z.object({
   coverLetter: z
@@ -60,13 +60,16 @@ export function ProposalForm({ jobId, onSubmit, onCancel }: ProposalFormProps) {
 
       logger.debug('Proposal submitted:', {
         jobId,
-        ...data,
+        data,
         attachments: attachments.map((f) => f.name),
       });
 
       onSubmit(data);
     } catch (error) {
-      logger.error('Error submitting proposal:', error);
+      logger.error(
+        'Error submitting proposal:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     } finally {
       setIsSubmitting(false);
     }

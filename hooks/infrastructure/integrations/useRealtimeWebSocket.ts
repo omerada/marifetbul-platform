@@ -17,7 +17,7 @@ import {
   type PresenceStatus,
   type ConnectionStats,
 } from '@/lib/infrastructure/websocket';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface UseWebSocketOptions {
   autoConnect?: boolean;
@@ -101,7 +101,7 @@ export function useWebSocket(
         setIsConnected(true);
       } catch (error) {
         if (debug) {
-          logger.error('[useWebSocket] Connection failed:', error);
+          logger.error('[useWebSocket] Connection failed:', error instanceof Error ? error : new Error(String(error)));
         }
       } finally {
         setIsConnecting(false);
@@ -157,7 +157,7 @@ export function useWebSocket(
       setIsConnected(true);
     } catch (error) {
       if (debug) {
-        logger.error('[useWebSocket] Connection failed:', error);
+        logger.error('[useWebSocket] Connection failed:', error instanceof Error ? error : new Error(String(error)));
       }
       throw error;
     } finally {

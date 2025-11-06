@@ -15,7 +15,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import type { RevenueBreakdown } from '@/types/analytics';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface RevenueBreakdownWidgetProps {
   period?: 'today' | 'week' | 'month' | 'custom';
@@ -69,7 +69,7 @@ export function RevenueBreakdownWidget({
       const result = await response.json();
       setData(result.data || result);
     } catch (err) {
-      logger.error('Revenue breakdown fetch error:', err);
+      logger.error('Revenue breakdown fetch error:', err instanceof Error ? err : new Error(String(err)));
       setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
     } finally {
       setIsLoading(false);

@@ -19,7 +19,7 @@ import {
   adminDashboardApi,
   type AdminDashboardBackendDto,
 } from '@/lib/api/admin-dashboard';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { networkStatus } from '@/lib/shared/utils/networkStatus';
 
 /**
