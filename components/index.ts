@@ -86,7 +86,11 @@ export type { WalletDashboardProps } from './domains/wallet/WalletDashboard';
 export { WalletCard } from './domains/wallet/core/WalletCard';
 export { EscrowViewer } from './domains/wallet/EscrowViewer';
 export { CommissionBreakdown } from './domains/wallet/CommissionBreakdown';
-export { PayoutRequestWizard } from './domains/wallet/PayoutRequestWizard';
+// ================================================
+// DEPRECATED - Removed in Sprint 1 Day 2 (2025-11-06)
+// ================================================
+// PayoutRequestWizard - Replaced by PayoutRequestFlow
+// ================================================
 export { PayoutStatusTracker } from './domains/wallet/PayoutStatusTracker';
 export { TransactionDisplay } from './domains/wallet/TransactionDisplay';
 export { default as TransactionExportButtons } from './domains/wallet/core/TransactionExportButtons';

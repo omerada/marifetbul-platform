@@ -37,7 +37,7 @@ import {
 } from 'lucide-react';
 import { BalanceCard } from './BalanceCard';
 import { WalletAnalytics } from './WalletAnalytics';
-import { PayoutRequestModal } from './PayoutRequestModal';
+import { PayoutRequestFlow } from './PayoutRequestFlow';
 import { useWalletData } from '@/hooks/business/wallet/useWalletData';
 import { useWebSocketWallet } from '@/hooks/business/wallet/useWebSocketWallet';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
@@ -637,11 +637,29 @@ export function WalletDashboard({
         </motion.div>
       )}
 
-      {/* Withdraw Modal */}
-      <PayoutRequestModal
+      {/* Withdraw Modal - Using PayoutRequestFlow */}
+      <PayoutRequestFlow
         isOpen={isWithdrawModalOpen}
         onClose={() => setIsWithdrawModalOpen(false)}
-        onSuccess={handleWithdrawSuccess}
+        availableBalance={availableBalance}
+        limits={{
+          minimum: 50, // TODO: Get from backend config
+          maximum: 10000, // TODO: Get from backend config
+        }}
+        bankAccounts={[]} // TODO: Load bank accounts
+        onSubmit={async (_data) => {
+          try {
+            // TODO: Implement actual payout API call with _data
+            // logger.info('Payout request submitted', _data);
+            handleWithdrawSuccess();
+            setIsWithdrawModalOpen(false);
+          } catch (error) {
+            console.error('Payout failed:', error);
+            toast.error('Hata', {
+              description: 'Para çekme talebi oluşturulamadı',
+            });
+          }
+        }}
       />
     </div>
   );

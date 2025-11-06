@@ -7,7 +7,12 @@
 
 export { DashboardLoadingState } from './DashboardLoadingState';
 export { DashboardErrorState } from './DashboardErrorState';
-export { DashboardHeader } from './DashboardHeader';
+// ================================================
+// DEPRECATED - Removed in Sprint 1 Day 3 (2025-11-06)
+// ================================================
+// DashboardHeader - DELETED (0 usage)
+// Use: @/components/domains/dashboard/widgets/DashboardHeader instead
+// ================================================
 export { SystemHealthAlert } from './SystemHealthAlert';
 export { StatsGrid } from './StatsGrid';
 export { PerformanceSection } from './PerformanceSection';

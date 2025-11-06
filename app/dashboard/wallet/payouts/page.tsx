@@ -5,27 +5,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { PayoutDashboard } from '@/components/domains/wallet/PayoutDashboard';
 import { PayoutRequestFlow } from '@/components/domains/wallet/PayoutRequestFlow';
 import { PayoutHistory } from '@/components/domains/wallet/PayoutHistory';
-import { BankAccountManager } from '@/components/domains/wallet/BankAccountManager';
+import {
+  BankAccountForm,
+  BankAccountList,
+} from '@/components/domains/wallet/core';
 import { usePayouts } from '@/hooks/business/wallet/usePayouts';
 import { useWalletStore } from '@/stores/walletStore';
-import { Download, Clock, Building2 } from 'lucide-react';
+import { Download, Clock, Building2, Plus } from 'lucide-react';
 import type { PayoutRequestData } from '@/components/domains/wallet/PayoutRequestFlow';
 import {
   getBankAccounts,
-  addBankAccount,
-  setDefaultBankAccount,
-  removeBankAccount,
   type BankAccountResponse,
-  type AddBankAccountRequest,
 } from '@/lib/api/bank-accounts';
 import { useToast } from '@/hooks/core/useToast';
-import type { BankAccount } from '@/components/domains/wallet/BankAccountManager';
+import { Button } from '@/components/ui';
 
 export default function PayoutSystemPage() {
   const [isRequestFlowOpen, setIsRequestFlowOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [bankAccounts, setBankAccounts] = useState<BankAccountResponse[]>([]);
-  const [isBankAccountsLoading, setIsBankAccountsLoading] = useState(true);
+  const [showAddAccountForm, setShowAddAccountForm] = useState(false);
   const { error: showErrorToast, success: showSuccessToast } = useToast();
 
   // Fetch payout data from hook
@@ -35,88 +33,23 @@ export default function PayoutSystemPage() {
   // Get balance from wallet store
   const balance = useWalletStore((state) => state.balance);
 
-  // Fetch bank accounts from API
+  // Fetch bank accounts from API (will be handled by BankAccountList internally)
+  const [bankAccounts, setBankAccounts] = useState<BankAccountResponse[]>([]);
+
   const loadBankAccounts = useCallback(async () => {
     try {
-      setIsBankAccountsLoading(true);
       const accounts = await getBankAccounts();
       setBankAccounts(accounts);
     } catch (error) {
       console.error('Failed to load bank accounts:', error);
       showErrorToast('Hata', 'Banka hesapları yüklenirken bir hata oluştu');
       setBankAccounts([]);
-    } finally {
-      setIsBankAccountsLoading(false);
     }
   }, [showErrorToast]);
 
   useEffect(() => {
     loadBankAccounts();
   }, [loadBankAccounts]);
-
-  // Handle add bank account
-  const handleAddBankAccount = useCallback(
-    async (account: Omit<BankAccount, 'id' | 'createdAt'>) => {
-      try {
-        const request: AddBankAccountRequest = {
-          iban: account.iban.replace(/\s/g, '').toUpperCase(),
-          accountHolder: account.accountHolder,
-          bankName: account.bankName,
-        };
-
-        await addBankAccount(request);
-        showSuccessToast(
-          'Başarılı',
-          'Banka hesabı eklendi. Admin onayı bekleniyor.'
-        );
-        await loadBankAccounts();
-      } catch (error: unknown) {
-        console.error('Failed to add bank account:', error);
-        const errorMessage =
-          error &&
-          typeof error === 'object' &&
-          'message' in error &&
-          typeof error.message === 'string'
-            ? error.message
-            : 'Banka hesabı eklenirken bir hata oluştu';
-        showErrorToast('Hata', errorMessage);
-        throw error;
-      }
-    },
-    [loadBankAccounts, showErrorToast, showSuccessToast]
-  );
-
-  // Handle set default bank account
-  const handleSetDefaultAccount = useCallback(
-    async (id: string) => {
-      try {
-        await setDefaultBankAccount(id);
-        showSuccessToast('Başarılı', 'Varsayılan hesap güncellendi');
-        await loadBankAccounts();
-      } catch (error) {
-        console.error('Failed to set default account:', error);
-        showErrorToast('Hata', 'Varsayılan hesap ayarlanırken bir hata oluştu');
-        throw error;
-      }
-    },
-    [loadBankAccounts, showErrorToast, showSuccessToast]
-  );
-
-  // Handle delete bank account
-  const handleDeleteBankAccount = useCallback(
-    async (id: string) => {
-      try {
-        await removeBankAccount(id);
-        showSuccessToast('Başarılı', 'Banka hesabı kaldırıldı');
-        await loadBankAccounts();
-      } catch (error) {
-        console.error('Failed to delete bank account:', error);
-        showErrorToast('Hata', 'Banka hesabı silinirken bir hata oluştu');
-        throw error;
-      }
-    },
-    [loadBankAccounts, showErrorToast, showSuccessToast]
-  );
 
   // Handle payout request
   const handlePayoutRequest = async (data: PayoutRequestData) => {
@@ -187,23 +120,52 @@ export default function PayoutSystemPage() {
         </TabsContent>
 
         <TabsContent value="accounts">
-          <BankAccountManager
-            accounts={bankAccounts.map((account) => ({
-              id: account.id,
-              bankName: account.bankName,
-              iban: account.iban,
-              accountHolder: account.accountHolder,
-              isDefault: account.isDefault,
-              isVerified: account.status === 'VERIFIED',
-              status: account.status,
-              rejectionReason: account.rejectionReason,
-              createdAt: account.createdAt,
-            }))}
-            isLoading={isBankAccountsLoading}
-            onAddAccount={handleAddBankAccount}
-            onDeleteAccount={handleDeleteBankAccount}
-            onSetDefault={handleSetDefaultAccount}
-          />
+          <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Banka Hesapları</h3>
+                <p className="text-muted-foreground text-sm">
+                  Çekim işlemleri için banka hesaplarınızı yönetin
+                </p>
+              </div>
+              {!showAddAccountForm && (
+                <Button onClick={() => setShowAddAccountForm(true)} size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Hesap Ekle
+                </Button>
+              )}
+            </div>
+
+            {/* Add Account Form */}
+            {showAddAccountForm && (
+              <BankAccountForm
+                mode="create"
+                onSuccess={() => {
+                  showSuccessToast(
+                    'Başarılı',
+                    'Banka hesabı eklendi. Admin onayı bekleniyor.'
+                  );
+                  setShowAddAccountForm(false);
+                  loadBankAccounts();
+                }}
+                onCancel={() => setShowAddAccountForm(false)}
+              />
+            )}
+
+            {/* Account List */}
+            <BankAccountList
+              onAddNew={() => setShowAddAccountForm(true)}
+              onAccountDeleted={() => {
+                showSuccessToast('Başarılı', 'Banka hesabı kaldırıldı');
+                loadBankAccounts();
+              }}
+              onDefaultChanged={() => {
+                showSuccessToast('Başarılı', 'Varsayılan hesap güncellendi');
+                loadBankAccounts();
+              }}
+            />
+          </div>
         </TabsContent>
       </Tabs>
 

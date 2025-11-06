@@ -121,11 +121,13 @@ export type {
 export { PayoutHistory } from './PayoutHistory';
 export type { PayoutHistoryProps, PayoutFilters } from './PayoutHistory';
 
-export { BankAccountManager } from './BankAccountManager';
-export type {
-  BankAccountManagerProps,
-  BankAccount,
-} from './BankAccountManager';
+// ================================================
+// DEPRECATED - REMOVED IN SPRINT 1 DAY 2
+// ================================================
+// BankAccountManager.tsx - DELETED
+// Replaced by: BankAccountForm + BankAccountList (in ./core/)
+// Migration complete: 2025-11-06
+// ================================================
 
 export { PayoutDashboard } from './PayoutDashboard';
 export type { PayoutDashboardProps } from './PayoutDashboard';
@@ -157,9 +159,15 @@ export type {
 export { TransactionDetailsModal } from './TransactionDetailsModal';
 export type { TransactionDetailsModalProps } from './TransactionDetailsModal';
 
-// Unified payout request modal (consolidated from 3 versions)
-export { PayoutRequestModal } from './PayoutRequestModal';
-export type { PayoutRequestModalProps } from './PayoutRequestModal';
+// ================================================
+// DEPRECATED - REMOVED IN SPRINT 1 DAY 2
+// ================================================
+// PayoutRequestModal.tsx - DELETED
+// PayoutRequestWizard.tsx - DELETED
+// Replaced by: PayoutRequestFlow (active, 800 lines)
+// Migration complete: 2025-11-06
+// Note: PayoutRequestForm (core) exists but unused - consider integration
+// ================================================
 
 // Bank account management
 export { AddBankAccountModal } from './AddBankAccountModal';

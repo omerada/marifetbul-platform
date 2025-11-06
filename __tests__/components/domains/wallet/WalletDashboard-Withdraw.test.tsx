@@ -16,13 +16,17 @@ jest.mock('@/hooks/business/wallet/useWalletData');
 jest.mock('@/hooks/business/wallet/useWebSocketWallet');
 jest.mock('sonner');
 
-// Mock PayoutRequestModal
-jest.mock('@/components/domains/wallet/PayoutRequestModal', () => ({
-  PayoutRequestModal: ({ isOpen, onClose, onSuccess }: any) =>
+// Mock PayoutRequestFlow (replacement for deprecated PayoutRequestModal)
+jest.mock('@/components/domains/wallet/PayoutRequestFlow', () => ({
+  PayoutRequestFlow: ({ isOpen, onClose, onSubmit }: any) =>
     isOpen ? (
-      <div data-testid="payout-modal">
-        <button onClick={onClose}>Close Modal</button>
-        <button onClick={onSuccess}>Submit Payout</button>
+      <div data-testid="payout-request-flow">
+        <button onClick={onClose}>Close</button>
+        <button
+          onClick={() => onSubmit({ amount: 100, method: 'BANK_TRANSFER' })}
+        >
+          Submit
+        </button>
       </div>
     ) : null,
 }));

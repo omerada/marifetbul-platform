@@ -14,6 +14,8 @@ export type { DashboardWidgetProps } from './DashboardWidgetCard';
 
 export { MetricCard, formatCurrency, formatPercentage } from './MetricCard';
 export type { MetricCardProps } from './MetricCard';
+// NOTE: MetricCard kept for SearchAnalyticsWidget compatibility
+// TODO Day 4: Refactor SearchAnalyticsWidget to use StatsCard, then deprecate MetricCard
 
 export { WidgetHeader } from './WidgetHeader';
 export type { WidgetHeaderProps } from './WidgetHeader';

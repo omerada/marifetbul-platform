@@ -44,7 +44,12 @@ export {
 // ============================================================================
 export { DashboardStats } from './DashboardStats';
 export { DashboardCharts } from './DashboardCharts';
-export { StatsCard } from './StatsCard';
+// ================================================
+// DEPRECATED - Removed in Sprint 1 Day 3 (2025-11-06)
+// ================================================
+// StatsCard - DELETED (0 usage)
+// Use: @/components/domains/dashboard/widgets (StatsCard with advanced features)
+// ================================================
 export { QuickActions } from './QuickActions';
 export { ActivityTimeline } from './ActivityTimeline';
 
