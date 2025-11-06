@@ -89,8 +89,9 @@ export { CommissionBreakdown } from './domains/wallet/CommissionBreakdown';
 export { PayoutRequestWizard } from './domains/wallet/PayoutRequestWizard';
 export { PayoutStatusTracker } from './domains/wallet/PayoutStatusTracker';
 export { TransactionDisplay } from './domains/wallet/TransactionDisplay';
+export { default as TransactionExportButtons } from './wallet/TransactionExportButtons';
 
 // ================================================
 // Admin Components
 export { AdminPayoutApprovalWidget } from './admin/payouts/AdminPayoutApprovalWidget';
-
+export { default as BatchPayoutManager } from './admin/payouts/BatchPayoutManager';
