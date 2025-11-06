@@ -1,56 +1,41 @@
 /**
  * ================================================
- * ADMIN REVIEW MODERATION PAGE
+ * ADMIN REVIEW MODERATION PAGE - DEPRECATED
  * ================================================
- * Modern admin interface for review moderation
- * Uses UnifiedReviewQueue for zero duplication
+ * 🚨 DEPRECATED: This page is replaced by unified moderation page
  *
- * Sprint 1 - EPIC 1.1: Component Deduplication
+ * New location: app/(moderation)/reviews/page.tsx
+ *
+ * This file redirects to the new unified page for backward compatibility.
+ * Will be removed in future release.
+ *
+ * SPRINT 1 - Story 1.2: Page Consolidation
+ * @deprecated Use app/(moderation)/reviews/page.tsx instead
  * @author MarifetBul Development Team
- * @version 3.0.0 - Unified Components
+ * @version 4.0.0 - Redirect Only
  * @updated November 6, 2025
  */
 
 'use client';
 
-import { UnifiedReviewQueue } from '@/components/domains/moderation/shared';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Loading } from '@/components/ui';
 
 /**
- * Admin Review Moderation Page
- *
- * Features:
- * - Unified component shared with moderator
- * - Role-based admin actions (delete, resolve flags)
- * - Stats dashboard with key metrics
- * - Tabs for pending, flagged, and all reviews
- * - Search and filter functionality
- * - Bulk operations support
- * - Individual review actions
- * - Responsive layout
+ * Redirect to unified moderation page
  */
-export default function AdminReviewModerationPage() {
-  return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto max-w-7xl px-4">
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            İnceleme Moderasyonu
-          </h1>
-          <p className="mt-2 text-gray-600">
-            İncelemeleri yönetin, onaylayın veya reddedin
-          </p>
-        </div>
+export default function AdminReviewModerationPageDeprecated() {
+  const router = useRouter();
 
-        {/* Unified Review Queue - Role: Admin */}
-        <UnifiedReviewQueue
-          role="admin"
-          initialStatus="pending"
-          showStats={true}
-          enableBulkActions={true}
-          viewMode="card"
-        />
-      </div>
+  useEffect(() => {
+    // Redirect to new unified page
+    router.replace('/reviews');
+  }, [router]);
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <Loading size="lg" text="Yönlendiriliyor..." />
     </div>
   );
 }
