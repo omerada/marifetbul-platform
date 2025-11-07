@@ -2,9 +2,10 @@
  * ================================================
  * ADMIN WALLET TRANSACTIONS PAGE
  * ================================================
- * Admin page for viewing and managing all wallet transactions
+ * Admin interface for viewing and managing all wallet transactions
  *
- * Route: /admin/wallet/transactions
+ * Route: /admin/wallets/transactions
+ * Sprint 1 - Day 1: Route consolidated from /admin/wallet -> /admin/wallets
  * Features:
  * - View all transactions across users with real-time data
  * - Advanced filtering with AdvancedTransactionFilters component

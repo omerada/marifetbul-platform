@@ -61,15 +61,15 @@ const nextConfig = {
   // ================================================
   async redirects() {
     return [
-      // Wallet redirects - cleanup duplicate routes
+      // Wallet redirects - cleanup duplicate routes (Sprint 1 - Day 1)
       {
         source: '/wallet',
         destination: '/dashboard/wallet',
         permanent: true,
       },
       {
-        source: '/admin/wallet/transactions',
-        destination: '/admin/wallets/transactions',
+        source: '/admin/wallet/:path*',
+        destination: '/admin/wallets/:path*',
         permanent: true,
       },
       // Deprecated dashboard routes - redirect to unified dashboard

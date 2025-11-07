@@ -130,6 +130,30 @@ export const NAVIGATION_ITEMS: Omit<NavigationItem, 'current'>[] = [
     ],
   },
   {
+    name: 'Cüzdan Yönetimi',
+    href: '/admin/wallets',
+    icon: CreditCard,
+    badge: null,
+    subItems: [
+      {
+        name: 'Genel Bakış',
+        href: '/admin/wallets',
+        current: false,
+      },
+      {
+        name: 'Banka Hesapları',
+        href: '/admin/wallets/bank-accounts',
+        current: false,
+        badge: 3,
+      },
+      {
+        name: 'İşlem Geçmişi',
+        href: '/admin/wallets/transactions',
+        current: false,
+      },
+    ],
+  },
+  {
     name: 'İçerik Denetimi',
     href: '/admin/moderation',
     icon: Shield,

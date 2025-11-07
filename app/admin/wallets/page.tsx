@@ -21,7 +21,8 @@ import { AdminWalletManagement } from '@/components/admin/wallet';
 
 export const metadata: Metadata = {
   title: 'Cüzdan Yönetimi | Admin - MarifetBul',
-  description: 'Kullanıcı cüzdanlarını yönetin',
+  description:
+    'Kullanıcı cüzdanlarını yönetin, işlemleri görüntüleyin ve banka hesaplarını onaylayın',
 };
 
 export default function AdminWalletsPage() {
