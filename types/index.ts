@@ -6,6 +6,9 @@
 // Core types (User, Freelancer, Employer, ApiResponse, etc.)
 export * from './core/base';
 
+// Dashboard types (FreelancerDashboard, EmployerDashboard) - Sprint 1 cleanup
+export type { FreelancerDashboard, EmployerDashboard } from './core/dashboard';
+
 // Shared utilities (Performance, SEO, Location, etc.)
 export * from './shared/performance';
 export * from './shared/seo';
@@ -33,7 +36,6 @@ export type {
   PackageTrend,
   PackageComparison,
 } from './analytics';
-export * from './analytics/dashboard';
 
 // Business features
 export * from './business/features/analytics';
@@ -72,11 +74,7 @@ export * from './message';
 
 // Import core types for internal usage
 import type { User, Freelancer, PaginationMeta } from './core/base';
-import type {
-  Job,
-  ServicePackage,
-  Proposal,
-} from './business/features/marketplace';
+import type { Job, ServicePackage } from './business/features/marketplace';
 import type {
   LocationSearchResult,
   LocationPrediction,
@@ -1474,93 +1472,9 @@ export interface AddToFavoritesRequest {
   itemId?: string; // Hook compatibility
 }
 
-// Dashboard types
-export interface FreelancerDashboard {
-  overview: {
-    totalEarnings: number;
-    completedJobs: number;
-    activeJobs: number;
-    profileViews: number;
-    successRate: number;
-    responseTime: number;
-  };
-  stats: {
-    totalEarnings: number;
-    currentMonthEarnings: number;
-    activeOrders: number;
-    completedJobs: number;
-    rating: number;
-    profileViews: number;
-    responseRate: number;
-  };
-  quickStats: {
-    messagesWaiting: number;
-    pendingProposals: number;
-    reviewsPending: number;
-  };
-  recentJobs: Job[];
-  recentOrders: Order[];
-  recentProposals: Proposal[];
-  earnings: Record<string, number>;
-  analytics: FreelancerAnalytics;
-  recommendations: Recommendation[];
-  notifications: EnhancedNotification[];
-  chartData?: {
-    earnings: Array<{ date: string; amount: number; orderCount?: number }>;
-    packages: Array<{
-      packageId: string;
-      packageName: string;
-      sales: number;
-      revenue: number;
-      views: number;
-      conversionRate: number;
-    }>;
-    clients: {
-      totalClients: number;
-      newClients: number;
-      repeatClients: number;
-      averageSatisfaction: number;
-      repeatRate: number;
-      topClients: Array<{
-        id: string;
-        name: string;
-        orders: number;
-        totalSpent: number;
-      }>;
-    };
-  };
-}
-
-export interface EmployerDashboard {
-  overview: {
-    totalSpent: number;
-    jobsPosted: number;
-    activeJobs: number;
-    completedJobs: number;
-    avgTimeToHire: number;
-    freelancerRetention: number;
-  };
-  stats: {
-    activeJobs: number;
-    totalSpent: number;
-    savedFreelancers: number;
-    completedJobs: number;
-  };
-  activeJobs: Job[];
-  recentJobs: Job[];
-  spending: Record<string, number>;
-  analytics: EmployerAnalytics;
-  recommendations: Recommendation[];
-  notifications: EnhancedNotification[];
-  chartData?: {
-    spending: Array<{ date: string; amount: number; jobCount?: number }>;
-    hiring: {
-      avgTimeToHire: number;
-      freelancerRetention: number;
-      satisfaction: number;
-    };
-  };
-}
+// Dashboard types - Sprint 1 Day 1: Removed duplicate definitions
+// Use: import type { FreelancerDashboard, EmployerDashboard } from '@/types/core/dashboard';
+// These are now exported at the top of this file from './core/dashboard'
 
 // Location search response types
 export interface LocationSearchResponse {

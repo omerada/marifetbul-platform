@@ -21,6 +21,9 @@ export { ActivityTimeline } from './ActivityTimeline';
 export { QuickActions, QuickActionsCompact } from './QuickActions';
 // export { QuickActionButton } from './QuickActionButton';
 
+// Wallet components
+export { WalletBalanceWidget } from './WalletBalanceWidget';
+
 // Chart components
 export { ChartWidget } from './ChartWidget';
 

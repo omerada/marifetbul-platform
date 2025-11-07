@@ -44,6 +44,7 @@ import {
   ChartWidget,
   ActivityTimeline,
   QuickActions,
+  WalletBalanceWidget,
 } from '../widgets';
 import type { FreelancerDashboard } from '../types/dashboard.types';
 import { formatCurrency, formatCompactNumber } from '../utils';
@@ -299,6 +300,14 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
             }}
             isLoading={isLoading}
           />
+        </DashboardSection>
+
+        {/* Wallet Balance Widget */}
+        <DashboardSection
+          title="Cüzdan & Kazançlar"
+          subtitle="Bakiye ve kazanç bilgileriniz"
+        >
+          <WalletBalanceWidget showTrend />
         </DashboardSection>
 
         {/* Charts Section */}

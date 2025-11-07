@@ -90,7 +90,10 @@ export function usePaymentMethods(
       const errorMsg =
         err instanceof Error ? err.message : 'Ödeme yöntemleri yüklenemedi';
       setError(errorMsg);
-      logger.error('Failed to load payment methods:', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Failed to load payment methods:',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
       setIsLoading(false);
     }
@@ -245,14 +248,6 @@ export function usePaymentMethods(
     setAsDefault,
     refresh,
   };
-}
-
-// ============================================================================
-// BANK ACCOUNTS SPECIFIC HOOK
-// ============================================================================
-
-export function useBankAccounts() {
-  return usePaymentMethods({ filterType: 'BANK_TRANSFER' });
 }
 
 export default usePaymentMethods;

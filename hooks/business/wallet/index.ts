@@ -55,8 +55,5 @@ export type {
 } from './useWalletPolling';
 
 // Payment methods hook
-export { usePaymentMethods, useBankAccounts } from './usePaymentMethods';
-export type {
-  UsePaymentMethodsReturn,
-  UseBankAccountsReturn,
-} from './usePaymentMethods';
+export { usePaymentMethods } from './usePaymentMethods';
+export type { UsePaymentMethodsReturn } from './usePaymentMethods';

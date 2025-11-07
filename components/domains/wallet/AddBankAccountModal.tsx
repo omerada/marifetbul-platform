@@ -12,12 +12,11 @@
 
 import { useState } from 'react';
 import { X, Building2, AlertCircle, Eye, EyeOff } from 'lucide-react';
-import { useBankAccounts } from '@/hooks/business/wallet/usePaymentMethods';
 import {
-  validateIBAN,
-  PaymentMethodType,
-  type AddPaymentMethodRequest,
-} from '@/lib/api/payment-method';
+  useBankAccounts,
+  type AddBankAccountRequest,
+} from '@/hooks/business/wallet/useBankAccounts';
+import { validateIBAN } from '@/lib/api/payment-method';
 import { formatIBAN } from '@/lib/utils/iban-validator';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 
@@ -50,7 +49,7 @@ export const AddBankAccountModal: React.FC<AddBankAccountModalProps> = ({
 }) => {
   // ==================== HOOKS ====================
 
-  const { add, bankAccounts } = useBankAccounts();
+  const { addAccount, accounts: bankAccounts } = useBankAccounts();
 
   // ==================== STATE ====================
 
@@ -113,16 +112,13 @@ export const AddBankAccountModal: React.FC<AddBankAccountModalProps> = ({
     try {
       const cleanIBAN = formData.iban.replace(/\s/g, '');
 
-      const request: AddPaymentMethodRequest = {
-        type: PaymentMethodType.BANK_TRANSFER,
-        bankName: formData.bankName.trim(),
+      const request: AddBankAccountRequest = {
         iban: cleanIBAN,
-        accountHolderName: formData.accountHolderName.trim(),
-        nickname: formData.nickname.trim() || undefined,
-        isDefault: formData.isDefault,
+        accountHolder: formData.accountHolderName.trim(),
+        setAsDefault: formData.isDefault,
       };
 
-      await add(request);
+      await addAccount(request);
 
       onSuccess?.();
       handleClose();

@@ -41,6 +41,7 @@ import {
   ChartWidget,
   ActivityTimeline,
   QuickActions,
+  WalletBalanceWidget,
 } from '../widgets';
 import type { EmployerDashboard } from '../types/dashboard.types';
 import { formatCurrency, formatCompactNumber } from '../utils';
@@ -252,6 +253,14 @@ export const EmployerDashboardView = memo<EmployerDashboardViewProps>(
             }}
             isLoading={isLoading}
           />
+        </DashboardSection>
+
+        {/* Wallet Balance Widget */}
+        <DashboardSection
+          title="Cüzdan & Bütçe"
+          subtitle="Bakiye ve harcama bilgileriniz"
+        >
+          <WalletBalanceWidget />
         </DashboardSection>
 
         {/* Charts Section */}
