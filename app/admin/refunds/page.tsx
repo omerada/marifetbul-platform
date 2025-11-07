@@ -18,7 +18,7 @@ import {
   RefundDetailsModal,
   RefundStatisticsDashboard,
   BulkRefundActions,
-} from '@/components/admin/refunds';
+} from '@/components/domains/admin/refunds';
 import {
   refundAdminApi,
   type RefundFilters,

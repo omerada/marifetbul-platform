@@ -46,5 +46,5 @@ export { default as AdminLogs } from './system/AdminLogs';
 // Support Components
 export { default as AdminSupportTickets } from './support/AdminSupportTickets';
 
-// Payout Management Components
-export * from './payouts';
+// Refund Management Components (Sprint 1)
+export * from './refunds';

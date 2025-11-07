@@ -11,11 +11,11 @@ import {
   Download,
 } from 'lucide-react';
 
-// Sprint 1: Import new analytics widgets
+// Sprint 2.2: All revenue widgets consolidated to ./widgets/
 import {
-  RevenueBreakdownWidget,
-  RevenueForecastChart,
-  RevenueComparisonWidget,
+  RevenueBreakdownContainer,
+  RevenueComparisonContainer,
+  RevenueForecastContainer,
   CategoryAnalyticsWidget,
   CategoryGrowthTrends,
   CategoryPerformanceSummary,
@@ -94,7 +94,10 @@ export function AdminAnalytics() {
 
       alert('Analytics exported successfully!');
     } catch (error) {
-      logger.error('Export failed:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Export failed:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       alert('Export failed. Please try again.');
     }
   };
@@ -181,7 +184,7 @@ export function AdminAnalytics() {
       {activeTab === 'overview' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <RevenueBreakdownWidget period={period} />
+            <RevenueBreakdownContainer period={period} />
             <CategoryAnalyticsWidget />
           </div>
           <PackagePerformanceWidget limit={5} />
@@ -190,10 +193,10 @@ export function AdminAnalytics() {
 
       {activeTab === 'revenue' && (
         <div className="space-y-6">
-          <RevenueBreakdownWidget period={period} />
+          <RevenueBreakdownContainer period={period} />
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <RevenueForecastChart />
-            <RevenueComparisonWidget comparisonType="week" />
+            <RevenueForecastContainer />
+            <RevenueComparisonContainer comparisonType="week" />
           </div>
         </div>
       )}

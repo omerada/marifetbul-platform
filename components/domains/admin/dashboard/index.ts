@@ -31,11 +31,21 @@ export { OrderAnalyticsWidget } from './OrderAnalyticsWidget';
 export { UserGrowthWidget } from './UserGrowthWidget';
 
 // Revenue Analytics Components
-export { RevenueBreakdownWidget } from './RevenueBreakdownWidget';
-export { RevenueForecastChart } from './RevenueForecastChart';
-export { RevenueComparisonWidget } from './RevenueComparisonWidget';
-
-// Category Analytics Components
+// ⚠️ UPDATED Sprint 2.2: All revenue widgets consolidated to ./widgets/
+export {
+  RevenueBreakdownWidget,
+  RevenueBreakdownContainer,
+  RevenueComparisonWidget,
+  RevenueComparisonContainer,
+  RevenueForecastWidget,
+  RevenueForecastContainer,
+  type RevenueBreakdownWidgetProps,
+  type RevenueBreakdownDto,
+  type RevenueComparisonWidgetProps,
+  type RevenueComparisonDto,
+  type RevenueForecastWidgetProps,
+  type RevenueForecastDto,
+} from './widgets'; // Category Analytics Components
 export { CategoryAnalyticsWidget } from './CategoryAnalyticsWidget';
 export { CategoryGrowthTrends } from './CategoryGrowthTrends';
 export { CategoryPerformanceSummary } from './CategoryPerformanceSummary';
