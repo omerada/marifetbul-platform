@@ -1,6 +1,28 @@
+/**
+ * Dashboard Types - DEPRECATED
+ *
+ * @deprecated Since 2025-11-07 - Sprint 3: Code Cleanup
+ * These types are simplified versions and should not be used in new code.
+ *
+ * **Migration Path:**
+ * - Use `@/types/core/dashboard` for FreelancerDashboard and EmployerDashboard
+ * - Import from `@/types` for convenience (re-exports core types)
+ *
+ * **Reason for Deprecation:**
+ * - Duplicate definitions found in 5 locations
+ * - This version is less complete than types/core/dashboard.ts
+ * - Causes type conflicts and confusion
+ *
+ * **Timeline:**
+ * - Will be removed in Sprint 4 after migration verification
+ */
+
 import { User } from '../../core/base';
 
 // Dashboard Types
+/**
+ * @deprecated Use `import type { FreelancerDashboard } from '@/types/core/dashboard'` instead
+ */
 export interface FreelancerDashboard {
   overview: {
     totalEarnings: number;
@@ -17,6 +39,9 @@ export interface FreelancerDashboard {
   notifications: DashboardNotification[];
 }
 
+/**
+ * @deprecated Use `import type { EmployerDashboard } from '@/types/core/dashboard'` instead
+ */
 export interface EmployerDashboard {
   overview: {
     totalSpent: number;

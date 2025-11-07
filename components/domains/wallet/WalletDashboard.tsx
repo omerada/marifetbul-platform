@@ -46,7 +46,7 @@ import { usePayout } from '@/hooks/business/wallet/usePayout';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
-import { formatCurrency } from '@/lib/shared/utils/format';
+import { formatCurrency } from '@/lib/shared/formatters';
 import { toast } from 'sonner';
 import { exportTransactions } from '@/lib/api/wallet';
 

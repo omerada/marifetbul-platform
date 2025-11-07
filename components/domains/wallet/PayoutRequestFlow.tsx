@@ -44,7 +44,7 @@ import {
 import { Button } from '@/components/ui';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
-import { formatCurrency } from '@/lib/shared/utils/format';
+import { formatCurrency } from '@/lib/shared/formatters';
 import { PayoutMethod } from '@/types/business/features/wallet';
 
 // ============================================================================

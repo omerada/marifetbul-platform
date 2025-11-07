@@ -1,19 +1,48 @@
 /**
  * ================================================
- * REVISION REQUEST MODAL
+ * REVISION REQUEST MODAL - DEPRECATED
  * ================================================
- * Modal for buyers to request revisions on delivered orders
+ * @deprecated Since 2025-11-07 - Sprint 3: Duplicate Cleanup
  *
- * Features:
- * - Revision limit tracking
- * - Detailed revision request form
- * - File attachment support
- * - Real-time validation
+ * **Replaced by:** RequestRevisionModal.tsx
  *
- * Backend Endpoint: POST /api/v1/orders/:id/revision
+ * **Reason for Deprecation:**
+ * - Duplicate functionality with RequestRevisionModal
+ * - RequestRevisionModal uses BaseOrderModal (standardized, refactored v2.0)
+ * - RequestRevisionModal is actively used by OrderActions.tsx
+ * - This modal is unused (no imports found in codebase)
+ * - RequestRevisionModal is more maintainable (240 lines vs 419 lines)
+ *
+ * **Comparison:**
+ * - RevisionRequestModal: 419 lines, standalone implementation
+ * - RequestRevisionModal: 240 lines, uses BaseOrderModal pattern
+ *
+ * **Migration:**
+ * ```tsx
+ * // Old (UNUSED):
+ * import { RevisionRequestModal } from '@/components/domains/orders/RevisionRequestModal';
+ * <RevisionRequestModal
+ *   isOpen={isOpen}
+ *   onClose={onClose}
+ *   order={order}
+ *   onSuccess={handleSuccess}
+ * />
+ *
+ * // New (ACTIVE):
+ * import { RequestRevisionModal } from '@/components/domains/orders/RequestRevisionModal';
+ * <RequestRevisionModal
+ *   orderId={order.id}
+ *   order={order}
+ *   isOpen={isOpen}
+ *   onClose={onClose}
+ *   onSuccess={handleSuccess}
+ * />
+ * ```
+ *
+ * **Timeline:** Will be DELETED (not just deprecated) in Sprint 4 - NO ACTIVE USAGE FOUND
  *
  * @author MarifetBul Development Team
- * @version 1.0.0 - Sprint 1.1: Revision Request Feature
+ * @version 1.0.0 - Sprint 1.1 (DEPRECATED - UNUSED)
  */
 
 'use client';

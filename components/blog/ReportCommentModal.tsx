@@ -1,17 +1,44 @@
 /**
  * ================================================
- * REPORT COMMENT MODAL
+ * REPORT COMMENT MODAL - DEPRECATED
  * ================================================
- * Modal for reporting inappropriate comments
+ * @deprecated Since 2025-11-07 - Sprint 3: Duplicate Cleanup
  *
- * Features:
- * - Pre-defined report reasons
- * - Optional description field
- * - API integration with blog.reportComment
- * - Success/error handling
+ * **Replaced by:** CommentReportModal.tsx
+ *
+ * **Reason for Deprecation:**
+ * - Duplicate functionality with CommentReportModal
+ * - CommentReportModal has better hook integration (useCommentReports)
+ * - CommentReportModal has more features (332 lines vs 280 lines)
+ * - CommentReportModal has better UX and state management
+ *
+ * **Migration:**
+ * ```tsx
+ * // Old:
+ * import { ReportCommentModal } from '@/components/blog/ReportCommentModal';
+ * <ReportCommentModal
+ *   commentId={id}
+ *   isOpen={isOpen}
+ *   onClose={onClose}
+ *   onReportSubmitted={onSubmit}
+ * />
+ *
+ * // New:
+ * import { CommentReportModal } from '@/components/blog/CommentReportModal';
+ * <CommentReportModal
+ *   commentId={id}
+ *   commentAuthor="Author Name"
+ *   commentPreview="Comment text preview"
+ *   isOpen={isOpen}
+ *   onClose={onClose}
+ *   onSuccess={onSubmit}
+ * />
+ * ```
+ *
+ * **Timeline:** Will be removed in Sprint 4 after all migrations verified
  *
  * @author MarifetBul Development Team
- * @version 1.0.0 - Sprint 4 Story 4.1
+ * @version 1.0.0 - Sprint 4 Story 4.1 (DEPRECATED)
  */
 
 'use client';
@@ -152,7 +179,10 @@ export function ReportCommentModal({
       // Close modal
       onClose();
     } catch (error) {
-      logger.error('Failed to report comment:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to report comment:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       toast.error('Şikayet Gönderilemedi', {
         description:
           error instanceof Error

@@ -44,7 +44,7 @@ import { DeliverySubmissionModal } from './DeliverySubmissionModal';
 import { ApproveDeliveryModal } from './ApproveDeliveryModal';
 import { RequestRevisionModal } from './RequestRevisionModal';
 import { CancelOrderModal } from './CancelOrderModal';
-import { DisputeModal } from '@/components/domains/orders/DisputeModal';
+import { DisputeCreationModal } from '@/components/domains/disputes/DisputeCreationModal';
 
 // ================================================
 // TYPES
@@ -353,7 +353,7 @@ export function OrderActions({
       )}
 
       {showDisputeModal && (
-        <DisputeModal
+        <DisputeCreationModal
           isOpen={showDisputeModal}
           onClose={() => setShowDisputeModal(false)}
           orderId={order.id}

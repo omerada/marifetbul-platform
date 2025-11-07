@@ -6,7 +6,7 @@ import { ArrowLeft, Wallet, TrendingUp, DollarSign, Clock } from 'lucide-react';
 import { Button, Card } from '@/components/ui';
 import { TransactionDisplay } from '@/components/domains/wallet/TransactionDisplay';
 import { payoutAdminApi } from '@/lib/api/admin/payout-admin-api';
-import { formatCurrency } from '@/lib/shared/utils/format';
+import { formatCurrency } from '@/lib/shared/formatters';
 import type { WalletResponse } from '@/types/business/features/wallet';
 import type { Transaction } from '@/types/business/features/wallet';
 

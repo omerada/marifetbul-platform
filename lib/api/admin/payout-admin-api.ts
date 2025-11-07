@@ -180,6 +180,15 @@ export const payoutAdminApi = {
 
 /**
  * Format currency for display
+ * 
+ * @deprecated Since Sprint 3 Phase 3B (Nov 2025) - Use @/lib/shared/formatters instead
+ * 
+ * **Migration:**
+ * ```ts
+ * import { formatCurrency } from '@/lib/shared/formatters';
+ * ```
+ * 
+ * **Timeline:** Will be removed in Sprint 4 (Dec 2025)
  */
 export const formatCurrency = (
   amount: number,

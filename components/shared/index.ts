@@ -14,7 +14,21 @@ export { FollowersModal } from './FollowersModal';
 export { FollowingModal } from './FollowingModal';
 
 // Notification components
-export { NotificationItem } from './NotificationItem';
+export { CopyButton } from './CopyButton';
+export { Footer } from './Footer';
+export { Header } from './Header';
+export { Hero } from './Hero';
+export { LoadingSpinner } from './LoadingSpinner';
+export { Navbar } from './Navbar';
+export { NotificationBanner } from './NotificationBanner';
+export { Pagination } from './Pagination';
+export { SearchBar } from './SearchBar';
+export { ShareButton } from './ShareButton';
+export { Sidebar } from './Sidebar';
+export { SocialLinks } from './SocialLinks';
+export { Tag } from './Tag';
+export { TagCloud } from './TagCloud';
+export { ErrorMessage } from './ErrorMessage';
 export { NotificationBadge } from './NotificationBadge';
 export { NotificationFilter } from './NotificationFilter';
 

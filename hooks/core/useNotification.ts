@@ -5,7 +5,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useNotificationStore } from '@/lib/core/store/notification';
+import { useNotificationStore } from '@/lib/core/store/notificationStore';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   EnhancedNotification,
@@ -122,7 +122,10 @@ export function useNotification(
       try {
         await store.fetchNotifications(newFilters || appliedFilters);
       } catch (error) {
-        logger.error('Failed to fetch notifications:', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'Failed to fetch notifications:',
+          error instanceof Error ? error : new Error(String(error))
+        );
       } finally {
         setLocalLoading(false);
       }
@@ -136,7 +139,10 @@ export function useNotification(
       try {
         await store.markAsRead(notificationIds);
       } catch (error) {
-        logger.error('Failed to mark as read:', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'Failed to mark as read:',
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
     },
     [store]
@@ -146,7 +152,10 @@ export function useNotification(
     try {
       await store.markAllAsRead();
     } catch (error) {
-      logger.error('Failed to mark all as read:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to mark all as read:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }, [store]);
 
@@ -155,7 +164,10 @@ export function useNotification(
       try {
         await store.deleteNotifications([notificationId]);
       } catch (error) {
-        logger.error('Failed to delete notification:', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'Failed to delete notification:',
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
     },
     [store]
@@ -171,7 +183,10 @@ export function useNotification(
         await store.deleteNotifications(readNotificationIds);
       }
     } catch (error) {
-      logger.error('Failed to delete read notifications:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to delete read notifications:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }, [store]);
 
@@ -179,7 +194,10 @@ export function useNotification(
     try {
       await store.fetchPreferences();
     } catch (error) {
-      logger.error('Failed to fetch preferences:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to fetch preferences:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }, [store]);
 
@@ -188,7 +206,10 @@ export function useNotification(
       try {
         await store.updatePreferences(preferences);
       } catch (error) {
-        logger.error('Failed to update preferences:', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'Failed to update preferences:',
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
     },
     [store]

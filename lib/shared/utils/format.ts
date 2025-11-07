@@ -83,6 +83,28 @@ export function unescapeHTML(html: string): string {
 // NUMBER FORMATTING
 // ================================================
 
+/**
+ * @deprecated Since Sprint 3 Phase 3 (Nov 2025) - Use @/lib/shared/formatters instead
+ *
+ * **Replaced by:** formatCurrency from lib/shared/formatters.ts
+ *
+ * **Why deprecated:**
+ * - Duplicate of formatters.ts implementation
+ * - formatters.ts has better null/undefined handling
+ * - formatters.ts has more flexible options
+ * - formatters.ts is the canonical source (actively maintained)
+ *
+ * **Migration:**
+ * ```ts
+ * // ❌ OLD
+ * import { formatCurrency } from '@/lib/shared/utils/format';
+ *
+ * // ✅ NEW
+ * import { formatCurrency } from '@/lib/shared/formatters';
+ * ```
+ *
+ * **Timeline:** Will be removed in Sprint 4 (Dec 2025)
+ */
 export function formatCurrency(
   amount: number,
   currency = 'TRY',

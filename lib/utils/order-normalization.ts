@@ -311,6 +311,16 @@ export function getDeliveryInfo(order: OrderSource): {
 
 /**
  * Format currency amount
+ * 
+ * @deprecated Since Sprint 3 Phase 3B (Nov 2025) - Use @/lib/shared/formatters instead
+ * This is a local utility for order normalization only. Use the canonical version for consistency.
+ * 
+ * **Migration:**
+ * ```ts
+ * import { formatCurrency } from '@/lib/shared/formatters';
+ * ```
+ * 
+ * **Timeline:** Will be removed in Sprint 4 (Dec 2025)
  */
 export function formatCurrency(
   amount: number,

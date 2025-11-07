@@ -23,7 +23,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { WebSocketManager } from '@/lib/infrastructure/services/websocket';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import { formatCurrency } from '@/lib/shared/utils/format';
+import { formatCurrency } from '@/lib/shared/formatters';
 import type {
   WalletBalance,
   Transaction,
@@ -254,7 +254,9 @@ export function useWebSocketWallet(
           onWalletUpdate(updateData.wallet);
         }
 
-        logger.info('Wallet updated via WebSocket', { walletIdupdateDatawalletid,  });
+        logger.info('Wallet updated via WebSocket', {
+          walletIdupdateDatawalletid,
+        });
       } catch (err) {
         logger.error(
           'Failed to handle wallet update',
@@ -283,7 +285,9 @@ export function useWebSocketWallet(
           showBalanceNotification(updateData.balance);
         }
 
-        logger.info('Balance updated via WebSocket', { balanceupdateDatabalanceavailableBalance,  });
+        logger.info('Balance updated via WebSocket', {
+          balanceupdateDatabalanceavailableBalance,
+        });
       } catch (err) {
         logger.error(
           'Failed to handle balance update',
@@ -312,7 +316,10 @@ export function useWebSocketWallet(
           showTransactionNotification(updateData.transaction, updateData.isNew);
         }
 
-        logger.info('Transaction update via WebSocket', { transactionIdupdateDatatransactionid, isNewupdateDataisNew,  });
+        logger.info('Transaction update via WebSocket', {
+          transactionIdupdateDatatransactionid,
+          isNewupdateDataisNew,
+        });
       } catch (err) {
         logger.error(
           'Failed to handle transaction update',
@@ -374,7 +381,10 @@ export function useWebSocketWallet(
         onConnectionChange(false);
       }
 
-      logger.error('WebSocket connection failed', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'WebSocket connection failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }, [
     userId,

@@ -1,3 +1,49 @@
+/**
+ * ================================================
+ * CREATE DISPUTE MODAL - DEPRECATED
+ * ================================================
+ * @deprecated Since 2025-11-07 - Sprint 3: Duplicate Cleanup
+ *
+ * **Replaced by:** DisputeCreationModal.tsx (components/domains/disputes/)
+ *
+ * **Reason for Deprecation:**
+ * - Duplicate functionality with DisputeCreationModal
+ * - DisputeCreationModal has more features (evidence upload, better validation)
+ * - DisputeCreationModal is actively used (2 locations found)
+ * - This modal is unused (no imports found in codebase)
+ * - DisputeCreationModal is more comprehensive (334 lines vs 179 lines)
+ *
+ * **Active Usage:**
+ * - app/dashboard/orders/[id]/page.tsx → Uses DisputeCreationModal ✓
+ * - app/dashboard/wallet/escrow/[orderId]/EscrowPageClient.tsx → Uses DisputeCreationModal ✓
+ *
+ * **Migration:**
+ * ```tsx
+ * // Old (UNUSED):
+ * import { CreateDisputeModal } from '@/components/disputes/CreateDisputeModal';
+ * <CreateDisputeModal
+ *   orderId={orderId}
+ *   isOpen={isOpen}
+ *   onClose={onClose}
+ *   onSuccess={onSuccess}
+ * />
+ *
+ * // New (ACTIVE):
+ * import { DisputeCreationModal } from '@/components/domains/disputes';
+ * <DisputeCreationModal
+ *   orderId={orderId}
+ *   orderNumber={orderNumber}
+ *   isOpen={isOpen}
+ *   onClose={onClose}
+ *   onSuccess={onSuccess}
+ * />
+ * ```
+ *
+ * **Timeline:** Will be DELETED in Sprint 4 - NO ACTIVE USAGE FOUND
+ *
+ * @version 1.0.0 (DEPRECATED - UNUSED)
+ */
+
 'use client';
 
 import React, { useState } from 'react';

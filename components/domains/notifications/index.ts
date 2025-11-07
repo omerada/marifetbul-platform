@@ -8,7 +8,18 @@
 export { NotificationBell } from './NotificationBell';
 export { NotificationCenter } from './NotificationCenter';
 export { NotificationModal } from './NotificationModal';
-export { NotificationItem } from './NotificationItem';
+export { NotificationListItem } from './NotificationListItem';
+
+// Notification Helpers
+export {
+  getNotificationIcon,
+  getNotificationBadge,
+  getBadgeVariant,
+  formatTimeAgo,
+  NOTIFICATION_FILTERS,
+  type NotificationFilterType,
+  type BadgeVariant,
+} from './notificationHelpers';
 
 // Notification Settings
 export { NotificationSettingsPanel } from './NotificationSettings';

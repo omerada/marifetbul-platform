@@ -23,7 +23,7 @@ import {
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { useNotifications } from '@/hooks/business/useNotifications';
-import { NotificationItem } from './NotificationItem';
+import { NotificationListItem } from './NotificationListItem';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import type { InAppNotification } from '@/types/business/features/notifications';
 
@@ -82,7 +82,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
-    logger.debug('NotificationBell', { isOpenisOpen });
+    logger.debug('NotificationBell', { isOpen: !isOpen });
   };
 
   const handleNotificationClick = async (notification: InAppNotification) => {
@@ -114,7 +114,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 
   const handleMarkAllAsRead = async () => {
     await markAllAsRead();
-    logger.info('NotificationBell', 'All notifications marked as read');
+    logger.info('NotificationBell', { action: 'mark_all_as_read' });
   };
 
   // Get recent notifications (limit to showRecentCount)
@@ -235,7 +235,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                 // Notification Items
                 <div className="space-y-1 p-2">
                   {recentNotifications.map((notification) => (
-                    <NotificationItem
+                    <NotificationListItem
                       key={notification.id}
                       notification={notification}
                       onClick={() => handleNotificationClick(notification)}

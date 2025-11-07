@@ -1,15 +1,43 @@
 /**
  * ================================================
- * DISPUTE MODAL COMPONENT
+ * DISPUTE MODAL COMPONENT - DEPRECATED
  * ================================================
- * Modal for creating order disputes
- * Allows buyers/sellers to raise disputes with evidence
  *
- * Features:
- * - Reason selection with descriptions
- * - Evidence file upload
- * - Validation and submission
- * - Real-time feedback
+ * @deprecated Since Sprint 3 (Nov 2025) - Will be removed in Sprint 4
+ * **Replaced by:** DisputeCreationModal.tsx (components/domains/disputes/)
+ *
+ * **Why deprecated:**
+ * - Duplicate functionality with DisputeCreationModal
+ * - DisputeCreationModal has better features (evidence upload, Zod validation)
+ * - DisputeCreationModal is actively used in 2 locations (preferred in codebase)
+ * - DisputeCreationModal follows domain-driven design pattern
+ *
+ * **Active Usage:** Only 1 file uses this (OrderActions.tsx) - needs migration
+ *
+ * **Migration Guide:**
+ * ```tsx
+ * // ❌ OLD (DisputeModal)
+ * import { DisputeModal } from '@/components/domains/orders/DisputeModal';
+ * <DisputeModal
+ *   isOpen={showModal}
+ *   onClose={() => setShowModal(false)}
+ *   orderId={order.id}
+ *   orderNumber={order.orderNumber}
+ *   onSuccess={handleSuccess}
+ * />
+ *
+ * // ✅ NEW (DisputeCreationModal)
+ * import { DisputeCreationModal } from '@/components/domains/disputes';
+ * <DisputeCreationModal
+ *   isOpen={showModal}
+ *   onClose={() => setShowModal(false)}
+ *   orderId={order.id}
+ *   orderNumber={order.orderNumber}
+ *   onSuccess={handleSuccess}
+ * />
+ * ```
+ *
+ * **Timeline:** This file will be deleted in Sprint 4 (Dec 2025)
  *
  * @author MarifetBul Development Team
  * @version 1.0.0 - Sprint 3: Production Readiness

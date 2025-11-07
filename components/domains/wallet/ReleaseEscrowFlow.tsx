@@ -32,7 +32,7 @@ import {
 } from '@/components/ui/Dialog';
 import { Button } from '@/components/ui';
 import { Textarea } from '@/components/ui/Textarea';
-import { formatCurrency } from '@/lib/shared/utils/format';
+import { formatCurrency } from '@/lib/shared/formatters';
 import type { EscrowItem } from './EscrowList';
 
 // ============================================================================

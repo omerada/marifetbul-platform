@@ -37,7 +37,7 @@ import {
 import { TrendingUp, BarChart3, Download } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
-import { formatCurrency } from '@/lib/shared/utils/format';
+import { formatCurrency } from '@/lib/shared/formatters';
 import { cn } from '@/lib/utils';
 
 // ============================================================================

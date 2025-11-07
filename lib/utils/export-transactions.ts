@@ -16,7 +16,7 @@
  * @version 1.0.0
  */
 
-import { formatCurrency } from '@/lib/shared/utils/format';
+import { formatCurrency } from '@/lib/shared/formatters';
 import type {
   Transaction,
   TransactionType,

@@ -10,25 +10,22 @@ import { useNotification } from '@/hooks';
 import { EnhancedNotification } from '@/types';
 import {
   Bell,
+  AlertCircle,
   BellOff,
   Check,
   CheckCheck,
   Trash2,
   Settings,
-  Eye,
   Archive,
   Clock,
-  AlertCircle,
-  DollarSign,
-  FileText,
-  MessageCircle,
-  Package,
-  UserPlus,
-  Heart,
-  Star,
-  Zap,
   X,
 } from 'lucide-react';
+import {
+  getNotificationIcon,
+  getNotificationBadge,
+  getBadgeVariant,
+  formatTimeAgo,
+} from './notificationHelpers';
 
 interface NotificationCenterProps {
   className?: string;
@@ -73,7 +70,10 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
         // Refresh notifications after archiving
         fetchNotifications();
       } catch (error) {
-        logger.error('Error archiving notification:', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'Error archiving notification:',
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
     };
 
@@ -88,79 +88,6 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
     useEffect(() => {
       fetchNotifications();
     }, [fetchNotifications]);
-
-    const getNotificationIcon = (type: string) => {
-      if (type.includes('payment'))
-        return <DollarSign className="h-4 w-4 text-green-600" />;
-      if (type.includes('escrow'))
-        return <DollarSign className="h-4 w-4 text-green-600" />;
-      if (type.includes('refund'))
-        return <DollarSign className="h-4 w-4 text-orange-600" />;
-      if (type.includes('invoice'))
-        return <FileText className="h-4 w-4 text-blue-600" />;
-      if (type.includes('proposal'))
-        return <MessageCircle className="h-4 w-4 text-blue-600" />;
-      if (type.includes('message'))
-        return <MessageCircle className="h-4 w-4 text-blue-600" />;
-      if (type.includes('order'))
-        return <Package className="h-4 w-4 text-blue-600" />;
-      if (type.includes('service'))
-        return <Package className="h-4 w-4 text-green-600" />;
-      if (type.includes('review'))
-        return <Star className="h-4 w-4 text-yellow-600" />;
-      if (type.includes('rating'))
-        return <Star className="h-4 w-4 text-yellow-600" />;
-      if (type.includes('follow'))
-        return <UserPlus className="h-4 w-4 text-blue-600" />;
-      if (type.includes('favorite'))
-        return <Heart className="h-4 w-4 text-red-600" />;
-      if (type.includes('promotion'))
-        return <Zap className="h-4 w-4 text-purple-600" />;
-      if (type.includes('system'))
-        return <Bell className="h-4 w-4 text-gray-600" />;
-      if (type.includes('security'))
-        return <AlertCircle className="h-4 w-4 text-red-600" />;
-      if (type.includes('profile'))
-        return <Eye className="h-4 w-4 text-blue-600" />;
-      return <Bell className="h-4 w-4 text-gray-600" />;
-    };
-
-    const getNotificationBadge = (type: string) => {
-      if (
-        type.includes('payment') ||
-        type.includes('escrow') ||
-        type.includes('refund')
-      ) {
-        return 'Ödeme';
-      }
-      if (type.includes('order') || type.includes('service')) {
-        return 'Sipariş';
-      }
-      if (type.includes('message') || type.includes('proposal')) {
-        return 'Mesaj';
-      }
-      if (type.includes('review') || type.includes('rating')) {
-        return 'Değerlendirme';
-      }
-      return 'Sistem';
-    };
-
-    const getBadgeVariant = (type: string) => {
-      if (type.includes('payment') || type.includes('escrow')) {
-        return 'success';
-      }
-      if (
-        type.includes('failed') ||
-        type.includes('rejected') ||
-        type.includes('cancelled')
-      ) {
-        return 'destructive';
-      }
-      if (type.includes('order') || type.includes('proposal')) {
-        return 'default';
-      }
-      return 'secondary';
-    };
 
     const filteredNotifications = notifications.filter(
       (notification: EnhancedNotification) => {

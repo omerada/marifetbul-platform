@@ -13,8 +13,10 @@ export type {
   AnalyticsExportResponse,
 } from '../business/features/analytics';
 
-// Re-export dashboard types from core
-export type { FreelancerDashboard, EmployerDashboard } from './dashboard';
+// Re-export dashboard types from core (Consolidated 2025-11-07)
+// OLD: export type { FreelancerDashboard, EmployerDashboard } from './dashboard';
+// NEW: Using canonical types from @/types/core/dashboard
+export type { FreelancerDashboard, EmployerDashboard } from '../core/dashboard';
 
 // Additional analytics types
 export interface AnalyticsMetrics {

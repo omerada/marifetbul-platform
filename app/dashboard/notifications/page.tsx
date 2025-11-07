@@ -2,18 +2,20 @@
  * DASHBOARD NOTIFICATIONS PAGE
  *
  * Unified notification center for all user notifications
- * Sprint 1 - Route Cleanup: Moved from root /notifications
+ * Sprint 8 - Story 6: Comprehensive Notification Center
  *
  * Features:
- * - Real-time notifications
+ * - Real-time notifications via WebSocket
+ * - Filter by type (all/unread/payment/order/message)
+ * - Bulk actions (mark all read, archive, delete)
+ * - Checkbox selection
+ * - Pagination with infinite scroll
  * - Mark as read/unread
- * - Filter by type
- * - Notification preferences link
  */
 
 import { Metadata } from 'next';
 import { Suspense } from 'react';
-import NotificationListClient from './NotificationListClient';
+import { NotificationCenter } from '@/components/domains/notifications';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const metadata: Metadata = {
@@ -25,7 +27,13 @@ export default function DashboardNotificationsPage() {
   return (
     <div className="container mx-auto px-4 py-6">
       <Suspense fallback={<NotificationsSkeleton />}>
-        <NotificationListClient />
+        <NotificationCenter
+          className="w-full"
+          maxHeight="h-[calc(100vh-12rem)]"
+          onSettingsClick={() =>
+            (window.location.href = '/dashboard/settings/notifications')
+          }
+        />
       </Suspense>
     </div>
   );

@@ -14,7 +14,7 @@ import React, { useState, useEffect } from 'react';
 import { MessageCircle, Loader2, AlertCircle } from 'lucide-react';
 import { CommentThreadView } from './CommentThreadView';
 import { CommentForm } from './CommentForm';
-import { ReportCommentModal } from './ReportCommentModal';
+import { CommentReportModal } from './CommentReportModal'; // Consolidated: was ReportCommentModal
 import { blogApi } from '@/lib/api/blog';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import type { BlogComment } from '@/lib/api/blog';
@@ -284,18 +284,23 @@ export function CommentList({
         />
       )} */}
 
-      {/* Report Comment Modal */}
+      {/* Report Comment Modal - Consolidated from ReportCommentModal */}
       {reportingCommentId && (
-        <ReportCommentModal
+        <CommentReportModal
           commentId={reportingCommentId}
+          commentAuthor="User" // TODO: Get from comment data
+          commentPreview="Comment preview" // TODO: Get from comment data
           isOpen={reportModalOpen}
           onClose={() => {
             setReportModalOpen(false);
             setReportingCommentId(null);
           }}
-          onReportSubmitted={() => {
-            // Optionally refresh comments or show a message
-            logger.info('Comment reported successfully', { commentIdreportingCommentId,  });
+          onSuccess={() => {
+            logger.info('Comment reported successfully', {
+              commentId: reportingCommentId,
+            });
+            setReportModalOpen(false);
+            setReportingCommentId(null);
           }}
         />
       )}

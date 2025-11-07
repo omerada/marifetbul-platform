@@ -6,51 +6,21 @@ import {
   getUnreadCount,
   markAsRead,
   markAllAsRead,
-} from '@/lib/api/notification';
+} from '@/lib/api/notifications';
 import { subscribeToNotifications } from '@/lib/infrastructure/websocket/notificationWebSocket';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { playNotificationAlert } from '@/lib/utils/notificationSound';
 import { useNotificationPreferences } from './useNotificationPreferences';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
-import type { Notification as BackendNotification } from '@/types/core/notification';
+import { transformToInAppNotifications } from '@/lib/transformers/notificationTransformer';
 import type { InAppNotification } from '@/types/business/features/notifications';
-
-/**
- * Transform backend notification to frontend format
- */
-function transformNotification(
-  notification: BackendNotification
-): InAppNotification {
-  return {
-    id: notification.id,
-    userId: notification.userId,
-    type: notification.type.toLowerCase() as InAppNotification['type'],
-    title: notification.title,
-    message: notification.content || notification.message || '', // Backend uses 'content', frontend uses 'message'
-    content: notification.content, // Backward compatibility
-    isRead: notification.isRead,
-    createdAt: notification.createdAt,
-    readAt: notification.readAt,
-    actionUrl: notification.actionUrl,
-    priority:
-      notification.priority.toLowerCase() as InAppNotification['priority'],
-    relatedEntityType: notification.relatedEntityType,
-    relatedEntityId: notification.relatedEntityId,
-    data: notification.relatedEntityId
-      ? {
-          relatedEntityType: notification.relatedEntityType,
-          relatedEntityId: notification.relatedEntityId,
-        }
-      : undefined,
-  };
-}
 
 /**
  * Fetcher function for SWR
  */
 async function fetchRecentNotifications(): Promise<InAppNotification[]> {
   const data = await getRecentNotifications(5);
-  return data.map(transformNotification);
+  return transformToInAppNotifications(data);
 }
 
 /**
@@ -116,16 +86,20 @@ export function useNotifications() {
   // WebSocket listener for real-time notifications
   useEffect(() => {
     if (!user?.id) {
-      logger.warn('useNotifications', { skippingWebSocketsubscription });
+      logger.warn('Skipping WebSocket subscription - no user ID', {
+        hasUser: !!user,
+      });
       return;
     }
 
-    logger.info('useNotifications', { userIduserid,  });
+    logger.info('Setting up WebSocket notification listener', {
+      userId: user.id,
+    });
 
     try {
       const unsubscribe = subscribeToNotifications(user.id, {
         onNotification: (notification) => {
-          logger.debug('useNotifications', { notification,  });
+          logger.debug('useNotifications', { notification });
 
           // Update recent notifications list (add to beginning)
           setRecentNotifications((prev) => [notification, ...prev.slice(0, 4)]);
@@ -177,25 +151,30 @@ export function useNotifications() {
           });
         },
         onError: (error) => {
-          logger.error('useNotifications: WebSocket notification error', undefined, {
-            error,
-          });
+          logger.error(
+            'useNotifications: WebSocket notification error',
+            undefined,
+            {
+              error,
+            }
+          );
         },
       });
 
-      logger.info('useNotifications', 'WebSocket subscription successful');
+      logger.info('WebSocket subscription successful');
 
       // Cleanup on unmount
       return () => {
-        logger.info('useNotifications', 'Cleaning up WebSocket subscription');
+        logger.info('Cleaning up WebSocket subscription');
         unsubscribe();
       };
     } catch (error) {
-      logger.error('useNotifications: Failed to setup WebSocket subscription', undefined, {
-          error,
-        });
+      logger.error(
+        'Failed to setup WebSocket subscription',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
-  }, [user?.id, preferences, mutate, mutateCount]);
+  }, [user, preferences, mutate, mutateCount]);
 
   // Mark notification as read
   const markNotificationAsRead = useCallback(
@@ -217,7 +196,10 @@ export function useNotifications() {
         mutate();
         mutateCount();
       } catch (error) {
-        logger.error('Failed to mark notification as read:', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'Failed to mark notification as read:',
+          error instanceof Error ? error : new Error(String(error))
+        );
         toast.error('Bildirim okundu olarak işaretlenemedi');
       }
     },
@@ -241,7 +223,10 @@ export function useNotifications() {
 
       toast.success(`${updatedCount} bildirim okundu olarak işaretlendi`);
     } catch (error) {
-      logger.error('Failed to mark all as read:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to mark all as read:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       toast.error('Bildirimler işaretlenemedi');
     }
   }, [mutate, mutateCount]);

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Package, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { Button, Card, Badge } from '@/components/ui';
-import { formatCurrency } from '@/lib/shared/utils/format';
+import { formatCurrency } from '@/lib/shared/formatters';
 import { apiClient } from '@/lib/infrastructure/api/client';
 import type {
   ApiResponse,

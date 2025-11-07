@@ -15,7 +15,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { useMarketplace, useJobProposals } from '@/hooks';
-import { formatCurrency } from '@/lib/shared/utils/payment';
+import { formatCurrency } from '@/lib/shared/formatters';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import Link from 'next/link';

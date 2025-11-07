@@ -36,7 +36,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
-import { formatCurrency } from '@/lib/shared/utils/format';
+import { formatCurrency } from '@/lib/shared/formatters';
 import type { Transaction } from '@/types/business/features/wallet';
 
 // ============================================================================

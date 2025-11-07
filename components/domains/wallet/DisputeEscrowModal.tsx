@@ -1,16 +1,42 @@
 /**
  * ================================================
- * DISPUTE ESCROW MODAL COMPONENT
+ * DISPUTE ESCROW MODAL COMPONENT - DEPRECATED
  * ================================================
- * Modal for initiating dispute on escrow payment
  *
- * Features:
- * - Dispute reason selection
- * - Detailed description input
- * - Evidence upload (future)
- * - Submit to moderators
- * - Success feedback
- * - Error handling
+ * @deprecated Since Sprint 3 (Nov 2025) - Will be removed in Sprint 4
+ * **Replaced by:** DisputeCreationModal.tsx (components/domains/disputes/)
+ *
+ * **Why deprecated:**
+ * - Duplicate functionality with DisputeCreationModal
+ * - DisputeCreationModal has better implementation (Zod validation, react-hook-form)
+ * - DisputeCreationModal is actively used in 2 locations
+ * - This modal has NO ACTIVE USAGE in codebase (safe to remove)
+ *
+ * **Active Usage:** NONE (no imports found)
+ *
+ * **Migration Guide:**
+ * ```tsx
+ * // ❌ OLD (DisputeEscrowModal)
+ * import { DisputeEscrowModal } from '@/components/domains/wallet/DisputeEscrowModal';
+ * <DisputeEscrowModal
+ *   isOpen={showModal}
+ *   onClose={() => setShowModal(false)}
+ *   escrow={escrowItem}
+ *   onSubmit={handleSubmit}
+ * />
+ *
+ * // ✅ NEW (DisputeCreationModal)
+ * import { DisputeCreationModal } from '@/components/domains/disputes';
+ * <DisputeCreationModal
+ *   isOpen={showModal}
+ *   onClose={() => setShowModal(false)}
+ *   orderId={escrow.orderId}
+ *   orderNumber={escrow.orderNumber}
+ *   onSuccess={handleSuccess}
+ * />
+ * ```
+ *
+ * **Timeline:** This file will be deleted in Sprint 4 (Dec 2025)
  *
  * Sprint 1 - Epic 1.2 - Days 4-5
  * @author MarifetBul Development Team
@@ -40,7 +66,7 @@ import {
 import { Button } from '@/components/ui';
 import { Textarea } from '@/components/ui/Textarea';
 import { Label } from '@/components/ui/Label';
-import { formatCurrency } from '@/lib/shared/utils/format';
+import { formatCurrency } from '@/lib/shared/formatters';
 import { DisputeReason } from '@/types/dispute';
 import type { EscrowItem } from './EscrowList';
 

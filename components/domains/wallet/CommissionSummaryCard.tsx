@@ -37,7 +37,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@/components/ui';
-import { formatCurrency, formatPercentage } from '@/lib/shared/utils/format';
+import { formatCurrency, formatPercentage } from '@/lib/shared/formatters';
 import { cn } from '@/lib/utils';
 
 // ============================================================================

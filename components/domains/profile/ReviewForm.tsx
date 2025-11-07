@@ -1,10 +1,60 @@
+/**
+ * ================================================
+ * REVIEW FORM COMPONENT - DEPRECATED
+ * ================================================
+ *
+ * @deprecated Since Sprint 3 (Nov 2025) - Will be removed in Sprint 4
+ * **Replaced by:** ReviewForm.tsx (components/shared/)
+ *
+ * **Why deprecated:**
+ * - Duplicate functionality with shared/ReviewForm
+ * - shared/ReviewForm is more complete (416 lines vs 289 lines)
+ * - shared/ReviewForm is actively used in 4 locations (canonical version)
+ * - This version has NO ACTIVE USAGE in codebase
+ *
+ * **Active Usage:** NONE (no imports found)
+ *
+ * **Migration Guide:**
+ * ```tsx
+ * // ❌ OLD (domains/profile/ReviewForm)
+ * import { ReviewForm } from '@/components/domains/profile/ReviewForm';
+ * <ReviewForm
+ *   orderId={order.id}
+ *   reviewerId={user.id}
+ *   revieweeId={seller.id}
+ *   revieweeName={seller.name}
+ *   projectTitle={order.title}
+ *   onSuccess={handleSuccess}
+ *   onCancel={handleCancel}
+ * />
+ *
+ * // ✅ NEW (shared/ReviewForm)
+ * import { ReviewForm } from '@/components/shared/ReviewForm';
+ * <ReviewForm
+ *   orderId={order.id}
+ *   reviewType="buyer_to_seller"
+ *   revieweeId={seller.id}
+ *   onSuccess={handleSuccess}
+ *   onCancel={handleCancel}
+ * />
+ * ```
+ *
+ * **Timeline:** This file will be deleted in Sprint 4 (Dec 2025)
+ *
+ * @author MarifetBul Development Team
+ * @version 1.0.0
+ */
+
 'use client';
 
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Star, MessageSquare, Clock, Users, DollarSign } from 'lucide-react';
-import { reviewSchema, type ReviewFormData } from '@/lib/core/validations/reviews';
+import {
+  reviewSchema,
+  type ReviewFormData,
+} from '@/lib/core/validations/reviews';
 import { useReviewForm } from '@/hooks';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -99,7 +149,10 @@ export function ReviewForm({
         onSuccess?.();
       }
     } catch (error) {
-      logger.error('Review submission error:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Review submission error:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   };
 

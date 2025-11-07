@@ -687,6 +687,19 @@ export interface NotificationResponse {
 // ADMIN TYPES
 // ================================================
 
+/**
+ * @deprecated Since 2025-11-07 - Use AdminDashboardStats from @/types/business/features/admin
+ * This is a simplified version. The comprehensive version includes system health metrics.
+ *
+ * **Migration:**
+ * ```ts
+ * // Old:
+ * import { AdminDashboardStats } from '@/types/backend-aligned';
+ *
+ * // New:
+ * import { AdminDashboardStats } from '@/types/business/features/admin';
+ * ```
+ */
 export interface AdminDashboardStats {
   totalUsers: number;
   totalOrders: number;
