@@ -32,18 +32,18 @@ export interface PaymentOptions {
 
 /**
  * @deprecated Since Sprint 3 Phase 3B (Nov 2025) - Use @/lib/shared/formatters instead
- * 
+ *
  * **Replaced by:** formatCurrency from lib/shared/formatters.ts
- * 
+ *
  * **Migration:**
  * ```ts
  * // ❌ OLD
  * import { formatCurrency } from '@/lib/shared/utils/payment';
- * 
+ *
  * // ✅ NEW
  * import { formatCurrency } from '@/lib/shared/formatters';
  * ```
- * 
+ *
  * **Timeline:** Will be removed in Sprint 4 (Dec 2025)
  */
 export const formatCurrency = (
