@@ -3,7 +3,7 @@ import type { ApiResponse } from '@/types/shared/api';
 import { apiClient } from '@/lib/infrastructure/api/client';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
-interface PackageSearchParams {
+export interface PackageSearchParams {
   keyword?: string;
   category?: string;
   minPrice?: number;
@@ -17,7 +17,7 @@ interface PackageSearchParams {
   limit?: number;
 }
 
-interface PackageStats {
+export interface PackageStats {
   totalPackages: number;
   activePackages: number;
   averageRating: number;

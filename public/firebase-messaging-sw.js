@@ -20,6 +20,11 @@ const firebaseConfig = {
   appId: 'YOUR_APP_ID',
 };
 
+// Simple logger for service worker (can't use main app logger)
+const isDev = self.location.hostname === 'localhost';
+const swLog = isDev ? console.log.bind(console) : () => {};
+const swError = console.error.bind(console); // Always log errors
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
@@ -28,10 +33,7 @@ const messaging = firebase.messaging();
 
 // Handle background messages
 messaging.onBackgroundMessage((payload) => {
-  console.log(
-    '[firebase-messaging-sw.js] Received background message:',
-    payload
-  );
+  swLog('[firebase-messaging-sw.js] Received background message:', payload);
 
   const notificationTitle =
     payload.notification?.title || 'MarifetBul Bildirimi';
@@ -102,7 +104,7 @@ messaging.onBackgroundMessage((payload) => {
 
 // Handle notification click events
 self.addEventListener('notificationclick', (event) => {
-  console.log(
+  swLog(
     '[firebase-messaging-sw.js] Notification click:',
     event.notification.tag
   );
@@ -172,14 +174,14 @@ self.addEventListener('notificationclick', (event) => {
 
 // Handle push subscription changes
 self.addEventListener('pushsubscriptionchange', (event) => {
-  console.log('[firebase-messaging-sw.js] Push subscription changed');
+  swLog('[firebase-messaging-sw.js] Push subscription changed');
 
   event.waitUntil(
     // Re-subscribe and send new token to backend
     self.registration.pushManager
       .subscribe(event.oldSubscription.options)
       .then((subscription) => {
-        console.log('[firebase-messaging-sw.js] Re-subscribed:', subscription);
+        swLog('[firebase-messaging-sw.js] Re-subscribed:', subscription);
         // Send new subscription to backend
         return fetch('/api/v1/notifications/push/subscribe', {
           method: 'POST',
@@ -193,21 +195,18 @@ self.addEventListener('pushsubscriptionchange', (event) => {
         });
       })
       .catch((error) => {
-        console.error(
-          '[firebase-messaging-sw.js] Re-subscription failed:',
-          error
-        );
+        swError('[firebase-messaging-sw.js] Re-subscription failed:', error);
       })
   );
 });
 
 // Log service worker activation
 self.addEventListener('activate', (event) => {
-  console.log('[firebase-messaging-sw.js] Service Worker activated');
+  swLog('[firebase-messaging-sw.js] Service Worker activated');
 });
 
 // Log service worker installation
 self.addEventListener('install', (event) => {
-  console.log('[firebase-messaging-sw.js] Service Worker installed');
+  swLog('[firebase-messaging-sw.js] Service Worker installed');
   self.skipWaiting();
 });

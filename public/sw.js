@@ -1,3 +1,8 @@
+// Simple logger for service worker (can't use main app logger)
+const isDev = self.location.hostname === 'localhost';
+const swLog = isDev ? console.log.bind(console) : () => {};
+const swError = console.error.bind(console); // Always log errors
+
 self.addEventListener('push', function (event) {
   if (!event.data) {
     return;
@@ -41,7 +46,7 @@ self.addEventListener('push', function (event) {
 });
 
 self.addEventListener('notificationclick', function (event) {
-  console.log('Notification click received:', event);
+  swLog('Notification click received:', event);
 
   event.notification.close();
 
@@ -86,13 +91,13 @@ self.addEventListener('notificationclick', function (event) {
         timestamp: Date.now(),
       }),
     }).catch(function (error) {
-      console.error('Error tracking notification click:', error);
+      swError('Error tracking notification click:', error);
     });
   }
 });
 
 self.addEventListener('notificationclose', function (event) {
-  console.log('Notification closed:', event);
+  swLog('Notification closed:', event);
 
   const data = event.notification.data;
 
@@ -107,7 +112,7 @@ self.addEventListener('notificationclose', function (event) {
         timestamp: Date.now(),
       }),
     }).catch(function (error) {
-      console.error('Error tracking notification dismissal:', error);
+      swError('Error tracking notification dismissal:', error);
     });
   }
 });
@@ -139,7 +144,7 @@ self.addEventListener('sync', function (event) {
           }
         })
         .catch(function (error) {
-          console.error('Background sync failed:', error);
+          swError('Background sync failed:', error);
         })
     );
   }
@@ -147,13 +152,13 @@ self.addEventListener('sync', function (event) {
 
 // Install event
 self.addEventListener('install', function () {
-  console.log('Service Worker installing');
+  swLog('Service Worker installing');
   self.skipWaiting();
 });
 
 // Activate event
 self.addEventListener('activate', function (event) {
-  console.log('Service Worker activating');
+  swLog('Service Worker activating');
   event.waitUntil(self.clients.claim());
 });
 
@@ -163,7 +168,7 @@ self.addEventListener('message', function (event) {
     self.registration.sync
       .register('background-sync-notifications')
       .catch(function (error) {
-        console.error('Background sync registration failed:', error);
+        swError('Background sync registration failed:', error);
       });
   }
 });

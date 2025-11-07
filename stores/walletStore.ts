@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { walletApi, payoutApi } from '@/lib/api';
+import { walletApi } from '@/lib/api';
+import * as payoutApi from '@/lib/api/payouts';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   Wallet,
   BalanceResponse,
@@ -128,7 +130,11 @@ export const useWalletStore = create<WalletStore>()(
           const balanceData = await walletApi.getBalance();
           set({ balance: balanceData });
         } catch (error) {
-          console.error('Failed to fetch balance:', error);
+          logger.error(
+            'Failed to fetch balance',
+            error instanceof Error ? error : undefined,
+            { operation: 'fetchBalance' }
+          );
           throw error;
         }
       },
@@ -199,10 +205,23 @@ export const useWalletStore = create<WalletStore>()(
 
       fetchEligibility: async () => {
         try {
-          const data = await payoutApi.checkPayoutEligibility();
-          set({ eligibility: data });
+          // Note: Eligibility check is calculated from limits
+          const limitsData = await payoutApi.getPayoutLimits();
+          const eligibilityData: PayoutEligibilityResponse = {
+            eligible: limitsData.remainingDailyLimit > 0,
+            reason:
+              limitsData.remainingDailyLimit <= 0 ? 'Daily limit reached' : '',
+            availableBalance: get().balance?.availableBalance || 0,
+            pendingPayouts: 0, // Will be calculated from pending payouts count
+            minimumAmount: limitsData.minimumAmount,
+          };
+          set({ eligibility: eligibilityData });
         } catch (error) {
-          console.error('Failed to fetch eligibility:', error);
+          logger.error(
+            'Failed to fetch eligibility',
+            error instanceof Error ? error : undefined,
+            { operation: 'fetchEligibility' }
+          );
           throw error;
         }
       },
@@ -224,7 +243,11 @@ export const useWalletStore = create<WalletStore>()(
 
           set({ limits });
         } catch (error) {
-          console.error('Failed to fetch limits:', error);
+          logger.error(
+            'Failed to fetch limits',
+            error instanceof Error ? error : undefined,
+            { operation: 'fetchLimits' }
+          );
           throw error;
         }
       },
@@ -235,10 +258,10 @@ export const useWalletStore = create<WalletStore>()(
         }));
 
         try {
-          const responseData = await payoutApi.createPayout({
+          const responseData = await payoutApi.requestPayout({
             amount: data.amount,
-            method: data.method as 'BANK_TRANSFER' | 'IYZICO',
-            bankAccountId: data.bankAccountId,
+            bankAccountId: data.bankAccountId!,
+            description: data.notes,
           });
 
           // Transform backend payout to frontend type
@@ -277,7 +300,7 @@ export const useWalletStore = create<WalletStore>()(
 
       cancelPayout: async (payoutId: string) => {
         try {
-          await payoutApi.cancelPayout(payoutId);
+          await payoutApi.cancelPayout(payoutId, 'User requested cancellation');
 
           // Update payout status in list
           set((state) => ({
@@ -311,7 +334,11 @@ export const useWalletStore = create<WalletStore>()(
             | 'pdf';
           return await walletApi.exportTransactions(format);
         } catch (error) {
-          console.error('Failed to export transactions:', error);
+          logger.error(
+            'Failed to export transactions',
+            error instanceof Error ? error : undefined,
+            { operation: 'exportTransactions', format: options.format }
+          );
           // Fallback to client-side CSV generation
           const { transactions } = get();
           const csv = generateCSV(transactions);

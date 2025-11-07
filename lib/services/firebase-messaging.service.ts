@@ -1,8 +1,6 @@
 // Firebase Cloud Messaging Service
 // Handles FCM token generation, subscription, and foreground notifications
 
-/* eslint-disable no-console */
-
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import {
   getMessaging,
@@ -18,6 +16,7 @@ import {
 } from '@/lib/config/firebase.config';
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { toast } from 'sonner';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 let firebaseApp: FirebaseApp | null = null;
 let messaging: Messaging | null = null;
@@ -120,10 +119,13 @@ async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null
         scope: '/',
       }
     );
-    console.log('Service Worker registered:', registration);
+    logger.info('Service Worker registered', { scope: registration.scope });
     return registration;
   } catch (error) {
-    console.error('Service Worker registration failed:', error);
+    logger.error(
+      'Service Worker registration failed',
+      error instanceof Error ? error : undefined
+    );
     return null;
   }
 }
@@ -163,10 +165,15 @@ export async function getFCMToken(): Promise<string | null> {
       serviceWorkerRegistration: registration,
     });
 
-    console.log('FCM Token obtained:', token.substring(0, 20) + '...');
+    logger.info('FCM Token obtained', {
+      tokenPrefix: token.substring(0, 20),
+    });
     return token;
   } catch (error) {
-    console.error('Error getting FCM token:', error);
+    logger.error(
+      'Error getting FCM token',
+      error instanceof Error ? error : undefined
+    );
     return null;
   }
 }
@@ -204,16 +211,21 @@ export async function subscribeToPushNotifications(): Promise<boolean> {
     );
 
     if (response.success) {
-      console.log('Successfully subscribed to push notifications');
+      logger.info('Successfully subscribed to push notifications');
       toast.success('Push bildirimleri aktif edildi');
       return true;
     } else {
-      console.error('Failed to subscribe:', response.message);
+      logger.error('Failed to subscribe', undefined, {
+        message: response.message,
+      });
       toast.error('Push bildirim kaydı başarısız oldu');
       return false;
     }
   } catch (error) {
-    console.error('Error subscribing to push notifications:', error);
+    logger.error(
+      'Error subscribing to push notifications',
+      error instanceof Error ? error : undefined
+    );
     toast.error('Push bildirimlere abone olurken hata oluştu');
     return false;
   }
@@ -234,16 +246,21 @@ export async function unsubscribeFromPushNotifications(): Promise<boolean> {
     );
 
     if (response.success) {
-      console.log('Successfully unsubscribed from push notifications');
+      logger.info('Successfully unsubscribed from push notifications');
       toast.success('Push bildirimleri devre dışı bırakıldı');
       return true;
     } else {
-      console.error('Failed to unsubscribe:', response.message);
+      logger.error('Failed to unsubscribe', undefined, {
+        message: response.message,
+      });
       toast.error('Push bildirim kaydı kaldırılamadı');
       return false;
     }
   } catch (error) {
-    console.error('Error unsubscribing from push notifications:', error);
+    logger.error(
+      'Error unsubscribing from push notifications',
+      error instanceof Error ? error : undefined
+    );
     toast.error('Push bildirimlerden çıkarken hata oluştu');
     return false;
   }
@@ -284,7 +301,10 @@ export function setupForegroundMessageListener(
   }
 
   const unsubscribe = onMessage(messagingInstance, (payload) => {
-    console.log('Foreground message received:', payload);
+    logger.info('Foreground message received', {
+      title: payload.notification?.title,
+      hasData: !!payload.data,
+    });
 
     // Show toast notification
     if (payload.notification) {

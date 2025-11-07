@@ -10,7 +10,11 @@
  * @version 3.0.0 - Unified API Architecture
  */
 
-import { PackageService } from '@/lib/infrastructure/services/api/packageService';
+import {
+  PackageService,
+  type PackageSearchParams,
+  type PackageStats,
+} from '@/lib/infrastructure/services/api/packageService';
 import type { ServicePackage, PaginatedResponse } from '@/types';
 
 // Re-export types for backward compatibility
@@ -18,33 +22,8 @@ export type { ServicePackage, PaginatedResponse };
 export type Package = ServicePackage;
 export type PackageSummary = ServicePackage;
 
-export interface PackageSearchParams {
-  keyword?: string;
-  category?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  deliveryTime?: number;
-  rating?: number;
-  featured?: boolean;
-  verified?: boolean;
-  sort?: 'newest' | 'popular' | 'rating' | 'price_low' | 'price_high';
-  page?: number;
-  limit?: number;
-}
-
-export interface PackageStats {
-  totalPackages: number;
-  activePackages: number;
-  averageRating: number;
-  totalRevenue: number;
-}
-
-export interface PaginationParams {
-  page?: number;
-  size?: number;
-  sortBy?: string;
-  sortDir?: 'ASC' | 'DESC';
-}
+// Re-export from PackageService for single source of truth
+export type { PackageSearchParams, PackageStats };
 
 export interface CreatePackageRequest extends Partial<ServicePackage> {
   title: string;

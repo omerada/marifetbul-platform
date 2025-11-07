@@ -4,11 +4,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { PayoutDashboard } from '@/components/domains/wallet/PayoutDashboard';
 import { PayoutRequestFlow } from '@/components/domains/wallet/PayoutRequestFlow';
-import { PayoutHistory } from '@/components/domains/wallet/PayoutHistory';
 import {
+  UnifiedPayoutHistory,
   BankAccountForm,
   BankAccountList,
-} from '@/components/domains/wallet/core';
+} from '@/components/domains/wallet';
 import { usePayouts } from '@/hooks/business/wallet/usePayouts';
 import { useWalletStore } from '@/stores/walletStore';
 import { Download, Clock, Building2, Plus } from 'lucide-react';
@@ -116,7 +116,11 @@ export default function PayoutSystemPage() {
         </TabsContent>
 
         <TabsContent value="history">
-          <PayoutHistory payouts={payouts} isLoading={isLoading} />
+          <UnifiedPayoutHistory
+            variant="advanced"
+            payouts={payouts}
+            isLoading={isLoading}
+          />
         </TabsContent>
 
         <TabsContent value="accounts">
