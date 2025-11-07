@@ -1,65 +1,43 @@
+/**
+ * ================================================
+ * PROFILE PAGE
+ * ================================================
+ * User profile display page with role-based views
+ *
+ * Features:
+ * - Profile data fetching with hooks
+ * - Role-based display (Freelancer/Employer)
+ * - Loading and error states
+ * - Own profile detection
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0 - Sprint 3: Profile System Refactor
+ */
+
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { User, Freelancer, Employer } from '@/types';
+import { Freelancer, Employer } from '@/types';
 import { AppLayout } from '@/components/layout';
 import { ProfileView } from '@/components/shared/features';
 import { EmployerProfile } from '@/components/shared/features';
 import { Loading } from '@/components/ui';
-import { useProfile } from '@/hooks';
+import { useProfile, useProfilePermissions } from '@/hooks/business/profile';
+import { AlertCircle } from 'lucide-react';
+import { Card } from '@/components/ui/Card';
 
 export default function ProfilePage() {
   const params = useParams();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { profile: currentUser } = useProfile();
+  const userId = params.id as string;
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  // Fetch profile data using hook
+  const { data: user, isLoading, error } = useProfile(userId);
 
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/users/${params.id}/profile`,
-          {
-            cache: 'no-cache',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+  // Get profile permissions
+  const { isOwnProfile } = useProfilePermissions(userId);
 
-        if (!response.ok) {
-          if (response.status === 404) {
-            setError('Kullanıcı bulunamadı');
-            return;
-          }
-          throw new Error('Profil yüklenirken bir hata oluştu');
-        }
-
-        const data = await response.json();
-        setUser(data.data);
-      } catch (err) {
-        // Log error for monitoring (will be sent to error tracking service)
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('Bir hata oluştu');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (params.id) {
-      fetchUser();
-    }
-  }, [params.id]);
-
-  if (loading) {
+  // Loading state
+  if (isLoading) {
     return (
       <AppLayout>
         <div className="flex min-h-screen items-center justify-center">
@@ -69,22 +47,27 @@ export default function ProfilePage() {
     );
   }
 
+  // Error state
   if (error || !user) {
+    const errorMessage =
+      error instanceof Error ? error.message : error || 'Kullanıcı bulunamadı';
+
     return (
       <AppLayout>
-        <div className="container mx-auto px-4 py-12 text-center">
-          <h1 className="mb-4 text-2xl font-bold text-gray-900">
-            {error || 'Kullanıcı bulunamadı'}
-          </h1>
-          <p className="text-gray-600">
-            Aradığınız profil mevcut değil veya kaldırılmış olabilir.
-          </p>
+        <div className="container mx-auto px-4 py-12">
+          <Card className="mx-auto max-w-md p-8 text-center">
+            <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
+            <h1 className="mb-2 text-2xl font-bold text-gray-900">
+              {errorMessage}
+            </h1>
+            <p className="text-gray-600">
+              Aradığınız profil mevcut değil veya kaldırılmış olabilir.
+            </p>
+          </Card>
         </div>
       </AppLayout>
     );
   }
-
-  const isOwnProfile = currentUser?.id === user.id;
 
   return (
     <AppLayout>

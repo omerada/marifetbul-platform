@@ -1,112 +1,93 @@
 /**
- * My Jobs Dashboard Page
+ * ================================================
+ * MY JOBS DASHBOARD PAGE
+ * ================================================
  * Employer's job management dashboard
+ *
+ * Features:
+ * - Job listing with filters
+ * - Status-based filtering
+ * - Pagination
+ * - Quick actions (close, reopen, delete)
+ * - Statistics cards
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0 - Sprint 1: Refactored with useJobs hook
  */
 
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Briefcase, Loader2, Filter } from 'lucide-react';
+import { Plus, Briefcase, Loader2, Filter, AlertCircle } from 'lucide-react';
 import { MyJobCard } from '@/components/domains/jobs/MyJobCard';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
-import { useToast } from '@/hooks';
-import {
-  getMyJobs,
-  closeJob,
-  reopenJob,
-  deleteJob,
-  type JobFilters,
-} from '@/lib/api/jobs';
-import type {
-  JobResponse,
-  PageResponse,
-  JobStatus,
-} from '@/types/backend-aligned';
+import { useJobs } from '@/hooks/business/useJobs';
+import type { JobStatus } from '@/types/backend-aligned';
 
 export default function MyJobsPage() {
   const router = useRouter();
-  const toast = useToast();
 
   // State
-  const [jobs, setJobs] = useState<JobResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalElements, setTotalElements] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState<JobStatus | 'all'>(
     'all'
   );
+  const [currentPage, setCurrentPage] = useState(0);
 
-  const [filters, setFilters] = useState<JobFilters>({
-    page: 0,
-    size: 20,
-    sortBy: 'latest',
-  });
-
-  // Load jobs
-  const loadJobs = async (newFilters?: JobFilters) => {
-    try {
-      setIsLoading(true);
-      const filtersToUse = newFilters || filters;
-
-      const response: PageResponse<JobResponse> = await getMyJobs(filtersToUse);
-
-      setJobs(response.content);
-      setCurrentPage(response.page || 0);
-      setTotalPages(response.totalPages);
-      setTotalElements(response.totalElements);
-    } catch (error) {
-      console.error('Failed to load my jobs:', error);
-      toast.error('İşleriniz yüklenirken bir hata oluştu');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Use Jobs Hook
+  const {
+    jobs,
+    isLoading,
+    error,
+    pagination,
+    fetchMyJobs,
+    closeJob,
+    reopenJob,
+    deleteJob,
+  } = useJobs();
 
   // Initial load
   useEffect(() => {
-    loadJobs();
+    fetchMyJobs({
+      page: currentPage,
+      size: 20,
+      status: selectedStatus === 'all' ? undefined : selectedStatus,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [currentPage, selectedStatus]);
 
   // Handle status filter
   const handleStatusFilter = (status: JobStatus | 'all') => {
     setSelectedStatus(status);
-    const newFilters: JobFilters = {
-      ...filters,
-      status: status === 'all' ? undefined : status,
-      page: 0,
-    };
-    setFilters(newFilters);
-    loadJobs(newFilters);
+    setCurrentPage(0);
   };
 
   // Handle close job
   const handleCloseJob = async (jobId: string) => {
     if (!confirm('Bu işi kapatmak istediğinizden emin misiniz?')) return;
 
-    try {
-      await closeJob(jobId);
-      toast.success('İş başarıyla kapatıldı');
-      loadJobs();
-    } catch (error) {
-      console.error('Failed to close job:', error);
-      toast.error('İş kapatılırken bir hata oluştu');
+    const success = await closeJob(jobId);
+    if (success) {
+      // Reload jobs
+      fetchMyJobs({
+        page: currentPage,
+        size: 20,
+        status: selectedStatus === 'all' ? undefined : selectedStatus,
+      });
     }
   };
 
   // Handle reopen job
   const handleReopenJob = async (jobId: string) => {
-    try {
-      await reopenJob(jobId);
-      toast.success('İş yeniden açıldı');
-      loadJobs();
-    } catch (error) {
-      console.error('Failed to reopen job:', error);
-      toast.error('İş yeniden açılırken bir hata oluştu');
+    const success = await reopenJob(jobId);
+    if (success) {
+      fetchMyJobs({
+        page: currentPage,
+        size: 20,
+        status: selectedStatus === 'all' ? undefined : selectedStatus,
+      });
     }
   };
 
@@ -119,20 +100,20 @@ export default function MyJobsPage() {
     )
       return;
 
-    try {
-      await deleteJob(jobId);
-      toast.success('İş başarıyla silindi');
-      loadJobs();
-    } catch (error) {
-      console.error('Failed to delete job:', error);
-      toast.error('İş silinirken bir hata oluştu');
+    const success = await deleteJob(jobId);
+    if (success) {
+      fetchMyJobs({
+        page: currentPage,
+        size: 20,
+        status: selectedStatus === 'all' ? undefined : selectedStatus,
+      });
     }
   };
 
   // Get job counts by status
   const getStatusCounts = () => {
     const counts = {
-      all: totalElements,
+      all: pagination?.totalElements || 0,
       DRAFT: 0,
       OPEN: 0,
       IN_PROGRESS: 0,
@@ -142,7 +123,7 @@ export default function MyJobsPage() {
 
     // This would ideally come from an API endpoint
     // For now, we calculate from current page
-    jobs.forEach((job) => {
+    jobs?.forEach((job) => {
       if (counts[job.status as keyof typeof counts] !== undefined) {
         counts[job.status as keyof typeof counts]++;
       }
@@ -265,6 +246,19 @@ export default function MyJobsPage() {
           </div>
         )}
 
+        {/* Error State */}
+        {error && (
+          <Card className="p-6">
+            <div className="flex items-center gap-3 text-red-600">
+              <AlertCircle className="h-5 w-5" />
+              <div>
+                <p className="font-semibold">Bir hata oluştu</p>
+                <p className="text-sm">{error}</p>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* Loading State */}
         {isLoading && (
           <div className="flex items-center justify-center py-12">
@@ -273,7 +267,7 @@ export default function MyJobsPage() {
         )}
 
         {/* Empty State */}
-        {!isLoading && jobs.length === 0 && (
+        {!isLoading && !error && (!jobs || jobs.length === 0) && (
           <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-white py-16 text-center">
             <Briefcase className="mb-4 h-16 w-16 text-gray-400" />
             <h3 className="mb-2 text-lg font-semibold text-gray-900">
@@ -306,7 +300,7 @@ export default function MyJobsPage() {
         )}
 
         {/* Jobs List */}
-        {!isLoading && jobs.length > 0 && (
+        {!isLoading && !error && jobs && jobs.length > 0 && (
           <div className="space-y-4">
             {jobs.map((job) => (
               <MyJobCard
@@ -326,37 +320,34 @@ export default function MyJobsPage() {
         )}
 
         {/* Pagination */}
-        {!isLoading && jobs.length > 0 && totalPages > 1 && (
-          <div className="mt-8 flex items-center justify-center gap-2">
-            <Button
-              variant="outline"
-              onClick={() => {
-                const newFilters = { ...filters, page: currentPage - 1 };
-                setFilters(newFilters);
-                loadJobs(newFilters);
-              }}
-              disabled={currentPage === 0}
-            >
-              Önceki
-            </Button>
+        {!isLoading &&
+          !error &&
+          jobs &&
+          jobs.length > 0 &&
+          pagination &&
+          pagination.totalPages > 1 && (
+            <div className="mt-8 flex items-center justify-center gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage((prev) => prev - 1)}
+                disabled={currentPage === 0}
+              >
+                Önceki
+              </Button>
 
-            <span className="text-sm text-gray-600">
-              Sayfa {currentPage + 1} / {totalPages}
-            </span>
+              <span className="text-sm text-gray-600">
+                Sayfa {currentPage + 1} / {pagination.totalPages}
+              </span>
 
-            <Button
-              variant="outline"
-              onClick={() => {
-                const newFilters = { ...filters, page: currentPage + 1 };
-                setFilters(newFilters);
-                loadJobs(newFilters);
-              }}
-              disabled={currentPage >= totalPages - 1}
-            >
-              Sonraki
-            </Button>
-          </div>
-        )}
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+                disabled={currentPage >= pagination.totalPages - 1}
+              >
+                Sonraki
+              </Button>
+            </div>
+          )}
       </div>
     </div>
   );

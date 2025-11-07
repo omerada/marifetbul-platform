@@ -1,3 +1,19 @@
+/**
+ * ================================================
+ * BLOG POST DETAIL PAGE
+ * ================================================
+ * Server-side rendered blog post detail page
+ *
+ * Features:
+ * - SEO optimized metadata
+ * - Related posts
+ * - Comments section
+ * - Social sharing
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0 - Sprint 5: Blog System Refactor
+ */
+
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Link from 'next/link';
@@ -17,7 +33,13 @@ import {
   Tag,
   Heart,
 } from 'lucide-react';
-import { type BlogPost } from '@/lib/api/blog';
+import {
+  getPostBySlug,
+  getRelatedPosts,
+  type BlogPost,
+  type BlogPostSummary,
+} from '@/lib/api/blog';
+import { logger } from '@/lib/shared/utils/logger';
 
 // Dynamic rendering
 export const dynamicParams = true;
@@ -27,42 +49,39 @@ const BlogComments = dynamic(() => import('./comments'));
 
 async function getPost(slug: string): Promise<BlogPost | null> {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/blog/posts/${slug}`,
-      {
-        next: { revalidate: 60 },
-      }
+    const post = await getPostBySlug(slug);
+    logger.info('Blog post fetched', { slug, postId: post.id });
+    // Handle null fields from API
+    return {
+      ...post,
+      metaTitle: post.metaTitle ?? undefined,
+      metaDescription: post.metaDescription ?? undefined,
+      metaKeywords: post.metaKeywords ?? undefined,
+    } as BlogPost;
+  } catch (err) {
+    logger.error(
+      'Failed to fetch blog post',
+      err instanceof Error ? err : new Error(String(err))
     );
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    return data.data as BlogPost;
-  } catch {
     return null;
   }
 }
 
-async function getRelatedPosts(currentPost: BlogPost): Promise<BlogPost[]> {
+async function fetchRelatedPosts(postId: number): Promise<BlogPostSummary[]> {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/blog/posts?categoryId=${currentPost.category?.id}&limit=3`,
-      {
-        next: { revalidate: 300 },
-      }
+    const relatedPosts = await getRelatedPosts(postId, 3);
+
+    logger.info('Related posts fetched', {
+      postId,
+      count: relatedPosts.length,
+    });
+
+    return relatedPosts;
+  } catch (err) {
+    logger.error(
+      'Failed to fetch related posts',
+      err instanceof Error ? err : new Error(String(err))
     );
-
-    if (!response.ok) {
-      return [];
-    }
-
-    const data = await response.json();
-    return (data.data?.content || [])
-      .filter((post: BlogPost) => post.id !== currentPost.id)
-      .slice(0, 3);
-  } catch {
     return [];
   }
 }
@@ -113,7 +132,7 @@ export default async function BlogDetailPage({
   const post = await getPost(slug);
   if (!post) return notFound();
 
-  const relatedPosts = await getRelatedPosts(post);
+  const relatedPosts = await fetchRelatedPosts(post.id);
 
   return (
     <AppLayout>

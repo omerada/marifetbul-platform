@@ -117,3 +117,10 @@ export const ShoppingBag = createMockIcon('ShoppingBag');
 // Orders & Disputes
 export const RotateCcw = createMockIcon('RotateCcw');
 export const Flag = createMockIcon('Flag');
+
+// Jobs & Proposals
+export const Briefcase = createMockIcon('Briefcase');
+export const MapPin = createMockIcon('MapPin');
+export const MessageCircle = createMockIcon('MessageCircle');
+export const ListTodo = createMockIcon('ListTodo');
+export const Inbox = createMockIcon('Inbox');

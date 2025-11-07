@@ -103,7 +103,10 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
     try {
       await updateProposalStatus(proposalId, action);
     } catch (error) {
-      logger.error('Proposal action error:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Proposal action error:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   };
 

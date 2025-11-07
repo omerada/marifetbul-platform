@@ -1,3 +1,19 @@
+/**
+ * ================================================
+ * GENERAL SETTINGS PAGE
+ * ================================================
+ * User profile settings management
+ *
+ * Features:
+ * - Profile information updates
+ * - Real-time form validation
+ * - Loading states
+ * - Success/Error notifications
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0 - Sprint 4: Settings System Refactor
+ */
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -12,8 +28,12 @@ import {
   MapPin,
   Link2,
   Save,
+  CheckCircle,
+  AlertCircle,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useSettings } from '@/hooks/business/useSettings';
 
 interface UserProfile {
   firstName: string;
@@ -25,8 +45,10 @@ interface UserProfile {
 }
 
 export default function GeneralSettingsPage() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuthStore();
+  const { updateProfile, isUpdatingProfile, profileError, clearErrors } =
+    useSettings();
+
   const [success, setSuccess] = useState(false);
 
   // Form state
@@ -41,33 +63,17 @@ export default function GeneralSettingsPage() {
 
   // Load current user profile
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const API_BASE_URL =
-          process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-        const response = await fetch(`${API_BASE_URL}/api/v1/auth/me`, {
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          const user = data.data;
-          setFormData({
-            firstName: user.firstName || '',
-            lastName: user.lastName || '',
-            bio: user.bio || '',
-            location: user.location || '',
-            phone: user.phone || '',
-            website: user.website || '',
-          });
-        }
-      } catch {
-        // Silent fail - form will be empty
-      }
-    };
-
-    fetchProfile();
-  }, []);
+    if (user) {
+      setFormData({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        bio: user.bio || '',
+        location: user.location || '',
+        phone: user.phone || '',
+        website: user.website || '',
+      });
+    }
+  }, [user]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -81,35 +87,14 @@ export default function GeneralSettingsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    clearErrors();
     setSuccess(false);
-    setIsLoading(true);
 
-    try {
-      const API_BASE_URL =
-        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-      const response = await fetch(`${API_BASE_URL}/api/v1/auth/profile`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+    const success = await updateProfile(formData);
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Profil güncellenemedi');
-      }
-
+    if (success) {
       setSuccess(true);
       setTimeout(() => setSuccess(false), 5000);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Profil güncellenirken hata oluştu'
-      );
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -305,14 +290,16 @@ export default function GeneralSettingsPage() {
         </Card>
 
         {/* Error/Success Messages */}
-        {error && (
-          <div className="rounded-md bg-red-50 p-4">
-            <p className="text-sm text-red-800">{error}</p>
+        {profileError && (
+          <div className="flex items-center gap-2 rounded-md bg-red-50 p-4">
+            <AlertCircle className="h-5 w-5 text-red-600" />
+            <p className="text-sm text-red-800">{profileError}</p>
           </div>
         )}
 
         {success && (
-          <div className="rounded-md bg-green-50 p-4">
+          <div className="flex items-center gap-2 rounded-md bg-green-50 p-4">
+            <CheckCircle className="h-5 w-5 text-green-600" />
             <p className="text-sm text-green-800">
               Ayarlarınız başarıyla kaydedildi
             </p>
@@ -324,8 +311,12 @@ export default function GeneralSettingsPage() {
           <Link href="/dashboard/settings">
             <Button variant="outline">İptal</Button>
           </Link>
-          <Button type="submit" disabled={isLoading} className="min-w-[120px]">
-            {isLoading ? (
+          <Button
+            type="submit"
+            disabled={isUpdatingProfile}
+            className="min-w-[120px]"
+          >
+            {isUpdatingProfile ? (
               <>
                 <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 Kaydediliyor...

@@ -1,77 +1,80 @@
+/**
+ * ================================================
+ * SECURITY SETTINGS PAGE
+ * ================================================
+ * User security and password management
+ *
+ * Features:
+ * - Password change
+ * - Two-factor authentication (placeholder)
+ * - Session management (placeholder)
+ * - Real-time validation
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0 - Sprint 4: Settings System Refactor
+ */
+
 'use client';
 
 import React, { useState } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
-import { ArrowLeft, Lock, Shield, Key, Smartphone } from 'lucide-react';
+import {
+  ArrowLeft,
+  Lock,
+  Shield,
+  Key,
+  Smartphone,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react';
 import Link from 'next/link';
+import { useSettings } from '@/hooks/business/useSettings';
 
 export default function SecuritySettingsPage() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  const { changePassword, isChangingPassword, passwordError, clearErrors } =
+    useSettings();
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    setValidationError(null);
+    clearErrors();
     setSuccess(false);
 
     // Validation
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setError('Tüm alanları doldurun');
+      setValidationError('Tüm alanları doldurun');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError('Yeni şifreler eşleşmiyor');
+      setValidationError('Yeni şifreler eşleşmiyor');
       return;
     }
 
     if (newPassword.length < 8) {
-      setError('Yeni şifre en az 8 karakter olmalıdır');
+      setValidationError('Yeni şifre en az 8 karakter olmalıdır');
       return;
     }
 
-    setIsLoading(true);
+    const success = await changePassword({
+      currentPassword,
+      newPassword,
+    });
 
-    try {
-      const API_BASE_URL =
-        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-      const response = await fetch(`${API_BASE_URL}/api/v1/auth/password`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          currentPassword,
-          newPassword,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.message || 'Şifre değiştirilirken hata oluştu'
-        );
-      }
-
+    if (success) {
       setSuccess(true);
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-
       setTimeout(() => setSuccess(false), 5000);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Şifre değiştirilirken hata oluştu'
-      );
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -154,22 +157,30 @@ export default function SecuritySettingsPage() {
               />
             </div>
 
-            {error && (
-              <div className="rounded-md bg-red-50 p-3">
-                <p className="text-sm text-red-800">{error}</p>
+            {(validationError || passwordError) && (
+              <div className="flex items-center gap-2 rounded-md bg-red-50 p-3">
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <p className="text-sm text-red-800">
+                  {validationError || passwordError}
+                </p>
               </div>
             )}
 
             {success && (
-              <div className="rounded-md bg-green-50 p-3">
+              <div className="flex items-center gap-2 rounded-md bg-green-50 p-3">
+                <CheckCircle className="h-4 w-4 text-green-600" />
                 <p className="text-sm text-green-800">
                   Şifreniz başarıyla değiştirildi
                 </p>
               </div>
             )}
 
-            <Button type="submit" disabled={isLoading} className="w-full">
-              {isLoading ? 'Kaydediliyor...' : 'Şifreyi Değiştir'}
+            <Button
+              type="submit"
+              disabled={isChangingPassword}
+              className="w-full"
+            >
+              {isChangingPassword ? 'Kaydediliyor...' : 'Şifreyi Değiştir'}
             </Button>
           </form>
 

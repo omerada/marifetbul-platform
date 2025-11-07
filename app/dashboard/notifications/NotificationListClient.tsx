@@ -1,62 +1,98 @@
-'use client';
-
 /**
+ * ================================================
  * NOTIFICATION LIST CLIENT COMPONENT
- * Sprint 1 - Route Cleanup
- *
+ * ================================================
  * Displays user notifications with filtering and actions
+ *
+ * Features:
+ * - Real-time notification updates
+ * - Filter by all/unread
+ * - Mark all as read
+ * - Notification preferences link
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0 - Sprint 4: Settings System Refactor
  */
 
-import { useState, useEffect } from 'react';
-import { Bell, CheckCheck, Filter, Settings } from 'lucide-react';
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { Bell, CheckCheck, Filter, Settings, AlertCircle } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import Link from 'next/link';
+import {
+  getNotifications,
+  getUnreadNotifications,
+  markAllAsRead,
+} from '@/lib/api/notification';
+import { logger } from '@/lib/shared/utils/logger';
+import type { Notification } from '@/types/core/notification';
 
 export default function NotificationListClient() {
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
 
-  useEffect(() => {
-    fetchNotifications();
-  }, [filter]);
-
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       setIsLoading(true);
-      const params = new URLSearchParams();
-      if (filter === 'unread') {
-        params.append('isRead', 'false');
-      }
+      setError(null);
 
-      const response = await fetch(`/api/v1/notifications?${params}`);
-      if (response.ok) {
-        const data = await response.json();
-        setNotifications(data.data || []);
-      }
-    } catch (error) {
-      console.error('Failed to fetch notifications:', error);
+      const response =
+        filter === 'unread'
+          ? await getUnreadNotifications()
+          : await getNotifications();
+
+      setNotifications(response.content || []);
+      logger.info('Notifications fetched', {
+        count: response.content?.length,
+        filter,
+      });
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Bildirimler yüklenemedi';
+      setError(errorMessage);
+      logger.error(
+        'Failed to fetch notifications',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filter]);
 
-  const markAllAsRead = async () => {
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
+
+  const handleMarkAllAsRead = async () => {
     try {
-      const response = await fetch('/api/v1/notifications/mark-all-read', {
-        method: 'POST',
-      });
-
-      if (response.ok) {
-        fetchNotifications();
-      }
-    } catch (error) {
-      console.error('Failed to mark as read:', error);
+      setError(null);
+      const count = await markAllAsRead();
+      logger.info('All notifications marked as read', { count });
+      fetchNotifications();
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Bildirimler güncellenemedi';
+      setError(errorMessage);
+      logger.error(
+        'Failed to mark all as read',
+        err instanceof Error ? err : new Error(String(err))
+      );
     }
   };
 
   return (
     <div className="space-y-6">
+      {/* Error Display */}
+      {error && (
+        <div className="flex items-center gap-2 rounded-md bg-red-50 p-3">
+          <AlertCircle className="h-4 w-4 text-red-600" />
+          <p className="text-sm text-red-800">{error}</p>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -68,7 +104,7 @@ export default function NotificationListClient() {
           <Button
             variant="outline"
             size="sm"
-            onClick={markAllAsRead}
+            onClick={handleMarkAllAsRead}
             className="flex items-center gap-2"
           >
             <CheckCheck className="h-4 w-4" />

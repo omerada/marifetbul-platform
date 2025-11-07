@@ -59,7 +59,10 @@ export function useProfileEdit(options: UseProfileEditOptions = {}) {
 
       onSaveSuccess?.();
 
-      logger.info('Profile auto-saved successfully', { timestampitemtimestamp, retryCountitemretryCount,  });
+      logger.info('Profile auto-saved successfully', {
+        timestamp: item.timestamp,
+        retryCount: item.retryCount,
+      });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Save failed';
@@ -67,7 +70,10 @@ export function useProfileEdit(options: UseProfileEditOptions = {}) {
       // Retry logic
       if (item.retryCount < 3) {
         item.retryCount++;
-        logger.warn('Profile save failed, { retrying, errorerrorMessage, retryCountitemretryCount,  });
+        logger.warn('Profile save failed, retrying', {
+          error: errorMessage,
+          retryCount: item.retryCount,
+        });
 
         // Move to end of queue for retry
         saveQueueRef.current.shift();

@@ -1,68 +1,49 @@
 /**
- * Job Listing Page
- * Browse and search job postings
+ * ================================================
+ * JOB LISTING PAGE
+ * ================================================
+ * Browse and search job postings with filters
+ *
+ * Features:
+ * - Job listing with pagination
+ * - Advanced filters (category, budget, location, skills)
+ * - Search functionality
+ * - Integration with useJobs hook
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0 - Sprint 2: Refactored with useJobs hook
  */
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Briefcase, Loader2 } from 'lucide-react';
 import { JobCard, JobFilters } from '@/components/domains/jobs';
 import { Button } from '@/components/ui';
-import { useToast } from '@/hooks';
-import { getJobs, type JobFilters as JobFiltersType } from '@/lib/api/jobs';
-import type { JobResponse, PageResponse } from '@/types/backend-aligned';
+import { useJobs } from '@/hooks/business/useJobs';
+import type { JobFilters as JobFiltersType } from '@/lib/api/jobs';
 
 export default function JobsPage() {
   const router = useRouter();
-  const toast = useToast();
-
-  // State
-  const [jobs, setJobs] = useState<JobResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalElements, setTotalElements] = useState(0);
-
-  const [filters, setFilters] = useState<JobFiltersType>({
+  const [filters, setFiltersState] = useState<JobFiltersType>({
     status: 'OPEN',
-    page: 0,
     size: 20,
     sortBy: 'latest',
   });
 
-  // Load jobs
-  const loadJobs = async (newFilters?: JobFiltersType) => {
-    try {
-      setIsLoading(true);
-      const filtersToUse = newFilters || filters;
+  // Use the new useJobs hook
+  const { jobs, isLoading, pagination, fetchJobs } = useJobs();
 
-      const response: PageResponse<JobResponse> = await getJobs(filtersToUse);
-
-      setJobs(response.content);
-      setCurrentPage(response.page || 0);
-      setTotalPages(response.totalPages);
-      setTotalElements(response.totalElements);
-    } catch (error) {
-      console.error('Failed to load jobs:', error);
-      toast.error('İşler yüklenirken bir hata oluştu');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Initial load
+  // Load jobs when filters change
   useEffect(() => {
-    loadJobs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    fetchJobs(filters);
+  }, [filters, fetchJobs]);
 
   // Handle filter change
-  const handleFilterChange = (newFilters: JobFiltersType) => {
-    setFilters(newFilters);
-    loadJobs(newFilters);
-  };
+  const handleFilterChange = useCallback((newFilters: JobFiltersType) => {
+    setFiltersState({ ...newFilters, page: 0 }); // Reset to first page on filter change
+  }, []);
 
   // Handle job click
   const handleJobClick = (jobId: string) => {
@@ -70,12 +51,10 @@ export default function JobsPage() {
   };
 
   // Handle page change
-  const handlePageChange = (page: number) => {
-    const newFilters = { ...filters, page };
-    setFilters(newFilters);
-    loadJobs(newFilters);
+  const handlePageChange = useCallback((page: number) => {
+    setFiltersState((prev) => ({ ...prev, page }));
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -108,7 +87,7 @@ export default function JobsPage() {
                 ) : (
                   <span>
                     <span className="font-semibold text-gray-900">
-                      {totalElements}
+                      {pagination?.totalElements || 0}
                     </span>{' '}
                     iş ilanı bulundu
                   </span>
@@ -124,32 +103,21 @@ export default function JobsPage() {
             )}
 
             {/* Empty State */}
-            {!isLoading && jobs.length === 0 && (
+            {!isLoading && (!jobs || jobs.length === 0) && (
               <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-white py-16 text-center">
                 <Briefcase className="mb-4 h-16 w-16 text-gray-400" />
                 <h3 className="mb-2 text-lg font-semibold text-gray-900">
                   İş ilanı bulunamadı
                 </h3>
                 <p className="mb-6 max-w-md text-gray-600">
-                  {filters.search || filters.categoryId
-                    ? 'Filtrelerinize uygun iş ilanı bulunamadı. Filtreleri değiştirmeyi deneyin.'
-                    : 'Henüz yayınlanmış iş ilanı bulunmuyor.'}
+                  Filtrelerinize uygun iş ilanı bulunamadı veya henüz
+                  yayınlanmış iş ilanı bulunmuyor.
                 </p>
-                {(filters.search || filters.categoryId) && (
-                  <Button
-                    onClick={() =>
-                      handleFilterChange({ status: 'OPEN', page: 0, size: 20 })
-                    }
-                    variant="outline"
-                  >
-                    Filtreleri Temizle
-                  </Button>
-                )}
               </div>
             )}
 
             {/* Jobs Grid */}
-            {!isLoading && jobs.length > 0 && (
+            {!isLoading && jobs && jobs.length > 0 && (
               <div className="space-y-4">
                 {jobs.map((job) => (
                   <JobCard
@@ -163,59 +131,75 @@ export default function JobsPage() {
             )}
 
             {/* Pagination */}
-            {!isLoading && jobs.length > 0 && totalPages > 1 && (
-              <div className="mt-8 flex items-center justify-center gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 0 || isLoading}
-                >
-                  Önceki
-                </Button>
+            {!isLoading &&
+              jobs &&
+              jobs.length > 0 &&
+              pagination &&
+              pagination.totalPages > 1 && (
+                <div className="mt-8 flex items-center justify-center gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => handlePageChange(pagination.page - 1)}
+                    disabled={pagination.page === 0 || isLoading}
+                  >
+                    Önceki
+                  </Button>
 
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNum = i;
+                  <div className="flex items-center gap-1">
+                    {Array.from(
+                      {
+                        length: Math.min(5, pagination.totalPages),
+                      },
+                      (_, i) => {
+                        let pageNum = i;
 
-                    // Show pages around current page
-                    if (totalPages > 5) {
-                      if (currentPage < 3) {
-                        pageNum = i;
-                      } else if (currentPage >= totalPages - 3) {
-                        pageNum = totalPages - 5 + i;
-                      } else {
-                        pageNum = currentPage - 2 + i;
+                        // Show pages around current page
+                        if (pagination.totalPages > 5) {
+                          if (pagination.page < 3) {
+                            pageNum = i;
+                          } else if (
+                            pagination.page >=
+                            pagination.totalPages - 3
+                          ) {
+                            pageNum = pagination.totalPages - 5 + i;
+                          } else {
+                            pageNum = pagination.page - 2 + i;
+                          }
+                        }
+
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={
+                              pagination.page === pageNum ? 'primary' : 'ghost'
+                            }
+                            size="sm"
+                            onClick={() => handlePageChange(pageNum)}
+                            disabled={isLoading}
+                          >
+                            {pageNum + 1}
+                          </Button>
+                        );
                       }
+                    )}
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    onClick={() => handlePageChange(pagination.page + 1)}
+                    disabled={
+                      pagination.page >= pagination.totalPages - 1 || isLoading
                     }
-
-                    return (
-                      <Button
-                        key={pageNum}
-                        variant={currentPage === pageNum ? 'primary' : 'ghost'}
-                        size="sm"
-                        onClick={() => handlePageChange(pageNum)}
-                        disabled={isLoading}
-                      >
-                        {pageNum + 1}
-                      </Button>
-                    );
-                  })}
+                  >
+                    Sonraki
+                  </Button>
                 </div>
-
-                <Button
-                  variant="outline"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage >= totalPages - 1 || isLoading}
-                >
-                  Sonraki
-                </Button>
-              </div>
-            )}
+              )}
 
             {/* Page Info */}
-            {!isLoading && jobs.length > 0 && (
+            {!isLoading && jobs && jobs.length > 0 && pagination && (
               <div className="mt-4 text-center text-sm text-gray-600">
-                Sayfa {currentPage + 1} / {totalPages}
+                Sayfa {pagination.page + 1} / {pagination.totalPages}
               </div>
             )}
           </div>

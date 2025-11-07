@@ -69,6 +69,30 @@ global.ResizeObserver = class ResizeObserver {
   unobserve() {}
 };
 
+// Mock logger globally for all tests
+jest.mock('@/lib/infrastructure/monitoring/logger', () => ({
+  default: {
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
+  },
+  logger: {
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
+  },
+}));
+
+// Mock shared utils logger
+jest.mock('@/lib/shared/utils/logger', () => ({
+  debug: jest.fn(),
+  info: jest.fn(),
+  warn: jest.fn(),
+  error: jest.fn(),
+}));
+
 // Suppress console errors in tests (optional - remove if you want to see all errors)
 const originalError = console.error;
 beforeAll(() => {

@@ -159,9 +159,14 @@ function SearchContent() {
 
   useEffect(() => {
     const fetchSearchCounts = async () => {
+      if (!searchParams?.get('query')) {
+        setSearchResults({ all: 0, services: 0, jobs: 0, freelancers: 0 });
+        return;
+      }
+
       try {
         const response = await fetch(
-          `/api/v1/search/counts?query=${searchParams?.get('query') || ''}`,
+          `/api/v1/search/counts?query=${encodeURIComponent(searchParams.get('query') || '')}`,
           {
             method: 'GET',
             credentials: 'include',
@@ -173,10 +178,21 @@ function SearchContent() {
           setSearchResults(
             data.data || { all: 0, services: 0, jobs: 0, freelancers: 0 }
           );
+          logger.info('Search counts fetched', {
+            query: searchParams.get('query'),
+            results: data.data,
+          });
+        } else {
+          logger.warn('Search counts fetch failed', {
+            status: response.status,
+          });
+          setSearchResults({ all: 0, services: 0, jobs: 0, freelancers: 0 });
         }
-      } catch {
-        // Silently fail - counts are not critical for user experience
-        // Error will be caught by global error handler
+      } catch (err) {
+        logger.error(
+          'Search counts fetch error',
+          err instanceof Error ? err : new Error(String(err))
+        );
         setSearchResults({ all: 0, services: 0, jobs: 0, freelancers: 0 });
       }
     };

@@ -1,6 +1,22 @@
+/**
+ * ================================================
+ * JOB PROPOSAL SUBMISSION PAGE
+ * ================================================
+ * Freelancer proposal submission form with job summary
+ *
+ * Features:
+ * - Job details display
+ * - Proposal form with validation
+ * - Eligibility checking
+ * - Integration with useJobs and useProposals hooks
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0 - Sprint 2: Refactored with hooks
+ */
+
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   ArrowLeft,
@@ -8,28 +24,17 @@ import {
   DollarSign,
   Clock,
   CheckCircle2,
+  Loader2,
+  AlertCircle,
 } from 'lucide-react';
 import { ProposalForm } from '@/components/domains/jobs/ProposalForm';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
-import { useUIStore } from '@/lib/core/store/domains/ui/uiStore';
+import { useJobs } from '@/hooks/business/useJobs';
+import { useProposals } from '@/hooks/business/proposals';
 import { useProposalEligibility } from '@/hooks/business/useProposalEligibility';
 import logger from '@/lib/infrastructure/monitoring/logger';
-
-interface Job {
-  id: string;
-  title: string;
-  description: string;
-  category?: { name: string };
-  location?: string;
-  budget?: { min: number; max: number; type: string };
-  deliveryTime?: number;
-  employer?: {
-    firstName: string;
-    lastName: string;
-    avatar?: string;
-  };
-}
+import { toast } from 'sonner';
 
 /**
  * Job Proposal Submission Page
@@ -42,9 +47,14 @@ export default function JobProposalPage() {
   const router = useRouter();
   const jobId = params.id as string;
 
-  const [job, setJob] = useState<Job | null>(null);
-  const [isLoadingJob, setIsLoadingJob] = useState(true);
-  const { addToast } = useUIStore();
+  // Hooks
+  const {
+    currentJob,
+    isLoading: isLoadingJob,
+    error: jobError,
+    fetchJobById,
+  } = useJobs();
+  const { createProposal, isLoading: isSubmitting } = useProposals();
 
   const { eligibility, isLoading: isCheckingEligibility } =
     useProposalEligibility({
@@ -54,61 +64,31 @@ export default function JobProposalPage() {
 
   // Fetch job details
   useEffect(() => {
-    const fetchJob = async () => {
-      try {
-        const response = await fetch(`/api/v1/jobs/${jobId}`, {
-          credentials: 'include',
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.message || 'İş ilanı yüklenemedi');
-        }
-
-        setJob(data.data);
-        logger.debug('[JobProposalPage] Job fetched:', data.data);
-      } catch (error) {
-        logger.error('[JobProposalPage] Error fetching job:', error instanceof Error ? error : new Error(String(error)));
-        addToast({
-          title: 'Hata',
-          description:
-            error instanceof Error ? error.message : 'İş ilanı yüklenemedi',
-          type: 'error',
-          duration: 5000,
-        });
-        router.push(`/marketplace/jobs/${jobId}`);
-      } finally {
-        setIsLoadingJob(false);
-      }
-    };
-
     if (jobId) {
-      fetchJob();
+      fetchJobById(jobId);
     }
-  }, [jobId, router, addToast]);
+  }, [jobId, fetchJobById]);
 
   // Check eligibility and redirect if cannot propose
   useEffect(() => {
     if (!isCheckingEligibility && eligibility && !eligibility.canPropose) {
-      addToast({
-        title: 'Teklif Gönderilemez',
-        description:
-          eligibility.reason || 'Bu iş ilanı için teklif gönderemezsiniz',
-        type: 'warning',
-        duration: 5000,
-      });
+      toast.warning(
+        eligibility.reason || 'Bu iş ilanı için teklif gönderemezsiniz',
+        {
+          description: 'Teklif Gönderilemez',
+        }
+      );
 
       // If already proposed, redirect to proposals page
       if (eligibility.hasExistingProposal && eligibility.existingProposalId) {
         router.push(
-          `/dashboard/freelancer/proposals?proposalId=${eligibility.existingProposalId}`
+          `/dashboard/my-proposals?highlight=${eligibility.existingProposalId}`
         );
       } else {
         router.push(`/marketplace/jobs/${jobId}`);
       }
     }
-  }, [eligibility, isCheckingEligibility, jobId, router, addToast]);
+  }, [eligibility, isCheckingEligibility, jobId, router]);
 
   const handleSubmit = async (proposalData: {
     coverLetter: string;
@@ -117,53 +97,29 @@ export default function JobProposalPage() {
     milestones?: string;
   }) => {
     try {
-      const response = await fetch('/api/v1/proposals', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          jobId,
-          coverLetter: proposalData.coverLetter,
-          bidAmount: proposalData.bidAmount,
-          deliveryTime: proposalData.deliveryTime,
-          milestones: proposalData.milestones,
-        }),
+      await createProposal({
+        jobId,
+        coverLetter: proposalData.coverLetter,
+        bidAmount: proposalData.bidAmount,
+        deliveryTime: proposalData.deliveryTime,
+        milestones: proposalData.milestones
+          ? JSON.parse(proposalData.milestones)
+          : undefined,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Teklif gönderilemedi');
-      }
-
-      // Success
-      addToast({
-        title: 'Başarılı!',
-        description: 'Teklifiniz başarıyla gönderildi',
-        type: 'success',
-        duration: 5000,
-      });
-
-      logger.info(
-        '[JobProposalPage] Proposal submitted successfully:',
-        data.data
-      );
+      // Success - toast handled by hook
+      logger.info('[JobProposalPage] Proposal submitted successfully');
 
       // Redirect to freelancer proposals page
       setTimeout(() => {
-        router.push('/dashboard/freelancer/proposals');
+        router.push('/dashboard/my-proposals');
       }, 1500);
     } catch (error) {
-      logger.error('[JobProposalPage] Error submitting proposal:', error instanceof Error ? error : new Error(String(error)));
-      addToast({
-        title: 'Hata',
-        description:
-          error instanceof Error ? error.message : 'Teklif gönderilemedi',
-        type: 'error',
-        duration: 5000,
-      });
+      logger.error(
+        '[JobProposalPage] Error submitting proposal:',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      // Error toast handled by hook
     }
   };
 
@@ -176,36 +132,26 @@ export default function JobProposalPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="mx-auto max-w-4xl">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 w-48 rounded bg-gray-200"></div>
-            <Card className="p-6">
-              <div className="space-y-4">
-                <div className="h-6 w-3/4 rounded bg-gray-200"></div>
-                <div className="h-4 w-full rounded bg-gray-200"></div>
-                <div className="h-4 w-full rounded bg-gray-200"></div>
-              </div>
-            </Card>
-            <Card className="p-6">
-              <div className="h-96 rounded bg-gray-200"></div>
-            </Card>
+          <div className="flex items-center justify-center gap-3 py-12">
+            <Loader2 className="text-primary h-8 w-8 animate-spin" />
+            <p className="text-sm text-gray-600">Yükleniyor...</p>
           </div>
         </div>
       </div>
     );
   }
 
-  // Job not found
-  if (!job) {
+  // Job not found or error
+  if (jobError || !currentJob) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="mx-auto max-w-4xl text-center">
-          <h2 className="text-2xl font-bold text-gray-900">
+          <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
+          <h2 className="mb-2 text-2xl font-bold text-gray-900">
             İş ilanı bulunamadı
           </h2>
-          <Button
-            onClick={() => router.push('/marketplace/jobs')}
-            className="mt-4"
-          >
+          <p className="mb-4 text-gray-600">{jobError || 'Bir hata oluştu'}</p>
+          <Button onClick={() => router.push('/marketplace/jobs')}>
             İş İlanlarına Dön
           </Button>
         </div>
@@ -230,50 +176,52 @@ export default function JobProposalPage() {
           <div className="mb-4 flex items-start justify-between">
             <div className="flex-1">
               <h2 className="mb-2 text-xl font-semibold text-gray-900">
-                {job.title}
+                {currentJob.title}
               </h2>
-              {job.employer && (
+              {currentJob.employerName && (
                 <p className="text-sm text-gray-600">
-                  {job.employer.firstName} {job.employer.lastName}
+                  {currentJob.employerName}
                 </p>
               )}
             </div>
-            {job.category && (
+            {currentJob.category && (
               <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800">
-                {job.category.name}
+                {currentJob.category.name}
               </span>
             )}
           </div>
 
-          <p className="mb-4 line-clamp-3 text-gray-700">{job.description}</p>
+          <p className="mb-4 line-clamp-3 text-gray-700">
+            {currentJob.description}
+          </p>
 
           {/* Job Details Grid */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            {job.budget && (
+            {currentJob.budgetType && (
               <div className="flex items-center text-sm">
                 <DollarSign className="mr-2 h-4 w-4 text-gray-400" />
                 <span className="text-gray-600">
-                  {job.budget.type === 'FIXED' ? 'Sabit:' : 'Aralık:'}{' '}
-                  {job.budget.min?.toLocaleString('tr-TR')}
-                  {job.budget.max &&
-                    job.budget.max !== job.budget.min &&
-                    ` - ${job.budget.max?.toLocaleString('tr-TR')}`}
+                  {currentJob.budgetType === 'FIXED' ? 'Sabit: ' : 'Aralık: '}
+                  {currentJob.budgetMin?.toLocaleString('tr-TR')}
+                  {currentJob.budgetMax &&
+                    currentJob.budgetMax !== currentJob.budgetMin &&
+                    ` - ${currentJob.budgetMax?.toLocaleString('tr-TR')}`}
                   {' TL'}
                 </span>
               </div>
             )}
 
-            {job.deliveryTime && (
+            {currentJob.duration && (
               <div className="flex items-center text-sm">
                 <Clock className="mr-2 h-4 w-4 text-gray-400" />
-                <span className="text-gray-600">{job.deliveryTime} gün</span>
+                <span className="text-gray-600">{currentJob.duration}</span>
               </div>
             )}
 
-            {job.location && (
+            {currentJob.location && (
               <div className="flex items-center text-sm">
                 <MapPin className="mr-2 h-4 w-4 text-gray-400" />
-                <span className="text-gray-600">{job.location}</span>
+                <span className="text-gray-600">{currentJob.location}</span>
               </div>
             )}
           </div>
@@ -286,8 +234,9 @@ export default function JobProposalPage() {
           </h3>
           <ProposalForm
             jobId={jobId}
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit as (data: unknown) => void}
             onCancel={handleCancel}
+            isSubmitting={isSubmitting}
           />
         </Card>
 

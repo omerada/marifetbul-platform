@@ -18,8 +18,9 @@ jest.mock('@/lib/core/store/domains/ui/uiStore', () => ({
   useUIStore: jest.fn(),
 }));
 
-jest.mock('@/lib/shared/utils/logger', () => ({
-  logger: {
+jest.mock('@/lib/infrastructure/monitoring/logger', () => ({
+  __esModule: true,
+  default: {
     info: jest.fn(),
     error: jest.fn(),
     warn: jest.fn(),
