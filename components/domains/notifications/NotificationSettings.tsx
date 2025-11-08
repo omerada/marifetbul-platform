@@ -98,7 +98,10 @@ export function NotificationSettingsPanel({
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);
     } catch (error) {
-      logger.error('Ayarlar kaydedilemedi:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Ayarlar kaydedilemedi:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     } finally {
       setIsLoading(false);
     }

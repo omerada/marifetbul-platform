@@ -414,18 +414,12 @@ export class UserRepository extends BaseRepository<
   }
 
   protected override validateUpdateData(data: UpdateUserDTO): void {
-    if (data.email && !this.isValidEmail(data.email)) {
+    if (data.email && !isEmail(data.email)) {
       throw new RepositoryError('VALIDATION_ERROR', 'Invalid email format');
     }
   }
 
-  /**
-   * Email validation helper
-   * @deprecated Sprint 7 - Use isEmail from @/lib/shared/utils/validation
-   */
-  private isValidEmail(email: string): boolean {
-    return isEmail(email);
-  }
+  // Sprint 2: isValidEmail private method removed - using isEmail from @/lib/shared/utils/validation directly
 }
 
 // Job Repository

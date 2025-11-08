@@ -1,5 +1,5 @@
 import logger from '@/lib/infrastructure/monitoring/logger';
-import { isEmail } from '@/lib/shared/utils/validation';
+// Sprint 2: Removed isEmail import - no longer needed after removing deprecated isValidEmail
 
 export interface BaseServiceConfig {
   retryAttempts?: number;
@@ -192,13 +192,7 @@ export abstract class BaseService {
     return input.trim().replace(/[<>]/g, '');
   }
 
-  /**
-   * Email validation
-   * @deprecated Sprint 7 - Use isEmail from @/lib/shared/utils/validation
-   */
-  protected isValidEmail(email: string): boolean {
-    return isEmail(email);
-  }
+  // Sprint 2: isValidEmail removed - use isEmail from @/lib/shared/utils/validation directly
 
   protected isValidUrl(url: string): boolean {
     try {

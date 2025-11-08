@@ -2,26 +2,36 @@ import { create } from 'zustand';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
 import { getWebSocketManager } from '@/lib/infrastructure/services';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import {
+import type {
   EnhancedNotification,
-  NotificationCenter,
+  NotificationCenterState,
   NotificationPreferences,
   NotificationFilters,
   NotificationError,
   PushSubscriptionData,
   NotificationBatch,
-} from '@/types';
+} from '@/types/domains/notification';
+
+// Extended PushSubscriptionData for store
+interface ExtendedPushSubscriptionData extends PushSubscriptionData {
+  id?: string;
+  userId?: string;
+  deviceType?: 'mobile' | 'desktop';
+  isActive?: boolean;
+  failureCount?: number;
+  updatedAt?: string;
+}
 
 interface NotificationState {
   // Notification data
   notifications: EnhancedNotification[];
-  notificationCenter: NotificationCenter | null;
+  notificationCenter: NotificationCenterState | null;
 
   // Preferences
   preferences: NotificationPreferences | null;
 
   // Push notification data
-  pushSubscription: PushSubscriptionData | null;
+  pushSubscription: ExtendedPushSubscriptionData | null;
   isPushSupported: boolean;
   pushPermission: NotificationPermission;
 
@@ -465,73 +475,77 @@ export const useNotificationStore = create<NotificationStore>()(
         }
       },
 
-      subscribeToPush: async (): Promise<PushSubscriptionData | null> => {
-        set({ isSubscribingToPush: true });
+      subscribeToPush:
+        async (): Promise<ExtendedPushSubscriptionData | null> => {
+          set({ isSubscribingToPush: true });
 
-        try {
-          if (!get().isPushSupported) {
-            throw new Error('Push notification desteklenmiyor');
-          }
+          try {
+            if (!get().isPushSupported) {
+              throw new Error('Push notification desteklenmiyor');
+            }
 
-          const registration = await navigator.serviceWorker.ready;
-          const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-          });
+            const registration = await navigator.serviceWorker.ready;
+            const subscription = await registration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+            });
 
-          const subscriptionData: Omit<
-            PushSubscriptionData,
-            'id' | 'userId' | 'createdAt' | 'updatedAt'
-          > = {
-            endpoint: subscription.endpoint,
-            keys: {
-              p256dh: btoa(
-                String.fromCharCode(
-                  ...new Uint8Array(subscription.getKey('p256dh')!)
-                )
-              ),
-              auth: btoa(
-                String.fromCharCode(
-                  ...new Uint8Array(subscription.getKey('auth')!)
-                )
-              ),
-            },
-            userAgent: navigator.userAgent,
-            deviceType: /Mobile|Android|iPhone|iPad/.test(navigator.userAgent)
-              ? 'mobile'
-              : 'desktop',
-            isActive: true,
-            failureCount: 0,
-          };
+            const subscriptionData: Omit<
+              ExtendedPushSubscriptionData,
+              'id' | 'userId' | 'createdAt' | 'updatedAt'
+            > = {
+              endpoint: subscription.endpoint,
+              keys: {
+                p256dh: btoa(
+                  String.fromCharCode(
+                    ...new Uint8Array(subscription.getKey('p256dh')!)
+                  )
+                ),
+                auth: btoa(
+                  String.fromCharCode(
+                    ...new Uint8Array(subscription.getKey('auth')!)
+                  )
+                ),
+              },
+              userAgent: navigator.userAgent,
+              deviceType: /Mobile|Android|iPhone|iPad/.test(navigator.userAgent)
+                ? 'mobile'
+                : 'desktop',
+              isActive: true,
+              failureCount: 0,
+            };
 
-          // Send subscription to server
-          const response = await fetch('/api/v1/notifications/push/subscribe', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(subscriptionData),
-          });
-
-          const result = await response.json();
-
-          if (result.success) {
-            set({ pushSubscription: result.data });
-            return result.data;
-          } else {
-            throw new Error(
-              result.error || 'Push notification aboneliği oluşturulamadı'
+            // Send subscription to server
+            const response = await fetch(
+              '/api/v1/notifications/push/subscribe',
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(subscriptionData),
+              }
             );
+
+            const result = await response.json();
+
+            if (result.success) {
+              set({ pushSubscription: result.data });
+              return result.data;
+            } else {
+              throw new Error(
+                result.error || 'Push notification aboneliği oluşturulamadı'
+              );
+            }
+          } catch (error) {
+            const errorMessage =
+              error instanceof Error
+                ? error.message
+                : 'Push notification aboneliği başarısız';
+            set({ lastError: errorMessage });
+            return null;
+          } finally {
+            set({ isSubscribingToPush: false });
           }
-        } catch (error) {
-          const errorMessage =
-            error instanceof Error
-              ? error.message
-              : 'Push notification aboneliği başarısız';
-          set({ lastError: errorMessage });
-          return null;
-        } finally {
-          set({ isSubscribingToPush: false });
-        }
-      },
+        },
 
       unsubscribeFromPush: async (): Promise<void> => {
         set({ isLoading: true });
@@ -773,7 +787,7 @@ export const useNotificationSelectors = () => {
 
     // Error states
     hasError: !!store.error || !!store.lastError,
-    errorMessage: store.error?.userMessage || store.lastError,
+    errorMessage: store.error?.message || store.lastError,
 
     // Filters
     hasActiveFilters: Object.keys(store.filters).length > 0,

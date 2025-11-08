@@ -4,30 +4,19 @@
  * ================================================
  * Handles WebSocket subscriptions for real-time notifications
  *
- * Sprint Day 2 - WebSocket Integration
- * @version 1.0.0
+ * Sprint 1 - WebSocket Integration (Migrated to canonical types)
+ * @version 2.0.0
  */
 
 import { getWebSocketService } from './WebSocketService';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import type { InAppNotification } from '@/types/business/features/notifications';
-
-export interface NotificationWebSocketPayload {
-  notificationId: string;
-  userId: string;
-  type: string;
-  title: string;
-  message: string;
-  actionUrl?: string;
-  actionLabel?: string;
-  priority: string;
-  relatedEntityType?: string;
-  relatedEntityId?: string;
-  createdAt: string;
-}
+import type {
+  Notification,
+  WebSocketNotificationPayload,
+} from '@/types/domains/notification';
 
 export interface NotificationWebSocketCallbacks {
-  onNotification: (notification: InAppNotification) => void;
+  onNotification: (notification: Notification) => void;
   onError?: (error: Error) => void;
 }
 
@@ -39,14 +28,14 @@ export function subscribeToNotifications(
   userId: string,
   callbacks: NotificationWebSocketCallbacks
 ): () => void {
-  logger.info('NotificationWebSocket', { userId,  });
+  logger.info('NotificationWebSocket', { userId });
 
   try {
     const ws = getWebSocketService();
 
     if (!ws) {
       const error = new Error('WebSocket service not initialized');
-      logger.error('NotificationWebSocket', error.message);
+      logger.error('NotificationWebSocket', error);
       callbacks.onError?.(error);
       throw error;
     }
@@ -56,37 +45,40 @@ export function subscribeToNotifications(
 
     const subscriptionId = ws.subscribe(topic, (message) => {
       try {
-        const payload = message as NotificationWebSocketPayload;
+        const payload = message as WebSocketNotificationPayload;
 
-        logger.debug('NotificationWebSocket', { payload,  });
+        logger.debug('NotificationWebSocket', { payload });
 
-        // Transform payload to InAppNotification format
-        const notification: InAppNotification = {
+        // Transform payload to Notification format
+        const notification: Notification = {
           id: payload.notificationId,
-          userId: payload.userId,
-          type: transformNotificationType(payload.type),
+          userId: userId,
+          type: payload.type,
           title: payload.title,
-          message: payload.message,
+          content: payload.content,
           actionUrl: payload.actionUrl,
-          priority: transformPriority(payload.priority),
+          priority: payload.priority,
           isRead: false, // New notifications are always unread
-          createdAt: payload.createdAt,
-          data: payload.relatedEntityId
-            ? {
-                relatedEntityType: payload.relatedEntityType,
-                relatedEntityId: payload.relatedEntityId,
-              }
-            : undefined,
+          createdAt: new Date().toISOString(),
+          relatedEntityType: payload.data?.relatedEntityType as
+            | string
+            | undefined,
+          relatedEntityId: payload.data?.relatedEntityId as string | undefined,
+          data: payload.data,
         };
 
         // Call the notification callback
         callbacks.onNotification(notification);
 
-        logger.info('NotificationWebSocket', { notificationIdnotificationid, typenotificationtype,  });
-      } catch (error) {
-        logger.error('NotificationWebSocket: Error processing notification', undefined, {
-          error,
+        logger.info('NotificationWebSocket', {
+          notificationId: notification.id,
+          type: notification.type,
         });
+      } catch (error) {
+        logger.error(
+          'NotificationWebSocket: Error processing notification',
+          error as Error
+        );
         callbacks.onError?.(
           error instanceof Error ? error : new Error(String(error))
         );
@@ -97,11 +89,11 @@ export function subscribeToNotifications(
 
     // Return unsubscribe function
     return () => {
-      logger.info('NotificationWebSocket', 'Unsubscribing from notifications');
+      logger.info('NotificationWebSocket', { action: 'Unsubscribing' });
       ws.unsubscribe(subscriptionId);
     };
   } catch (error) {
-    logger.error('NotificationWebSocket: Failed to subscribe to notifications', undefined, { error });
+    logger.error('NotificationWebSocket: Failed to subscribe', error as Error);
     callbacks.onError?.(
       error instanceof Error ? error : new Error(String(error))
     );
@@ -116,17 +108,14 @@ export function subscribeToNotifications(
 export function subscribeToBroadcastNotifications(
   callbacks: NotificationWebSocketCallbacks
 ): () => void {
-  logger.info(
-    'NotificationWebSocket',
-    'Subscribing to broadcast notifications'
-  );
+  logger.info('NotificationWebSocket', { action: 'Subscribing to broadcast' });
 
   try {
     const ws = getWebSocketService();
 
     if (!ws) {
       const error = new Error('WebSocket service not initialized');
-      logger.error('NotificationWebSocket', error.message);
+      logger.error('NotificationWebSocket', error);
       callbacks.onError?.(error);
       throw error;
     }
@@ -135,33 +124,39 @@ export function subscribeToBroadcastNotifications(
 
     const subscriptionId = ws.subscribe(topic, (message) => {
       try {
-        const payload = message as NotificationWebSocketPayload;
+        const payload = message as WebSocketNotificationPayload;
 
         logger.debug('NotificationWebSocket', { payload });
 
-        const notification: InAppNotification = {
+        const notification: Notification = {
           id: payload.notificationId,
-          userId: payload.userId,
-          type: transformNotificationType(payload.type),
+          userId: '', // Broadcast notifications don't have specific user
+          type: payload.type,
           title: payload.title,
-          message: payload.message,
+          content: payload.content,
           actionUrl: payload.actionUrl,
-          priority: transformPriority(payload.priority),
+          priority: payload.priority,
           isRead: false,
-          createdAt: payload.createdAt,
-          data: payload.relatedEntityId
-            ? {
-                relatedEntityType: payload.relatedEntityType,
-                relatedEntityId: payload.relatedEntityId,
-              }
+          createdAt: new Date().toISOString(),
+          relatedEntityType: payload.data
+            ? String(payload.data.relatedEntityType || '')
             : undefined,
+          relatedEntityId: payload.data
+            ? String(payload.data.relatedEntityId || '')
+            : undefined,
+          data: payload.data,
         };
 
         callbacks.onNotification(notification);
 
-        logger.info('NotificationWebSocket', { notificationIdnotificationid,  });
+        logger.info('NotificationWebSocket', {
+          notificationId: notification.id,
+        });
       } catch (error) {
-        logger.error('NotificationWebSocket: Error processing broadcast notification', undefined, { error });
+        logger.error(
+          'NotificationWebSocket: Error processing broadcast',
+          error as Error
+        );
         callbacks.onError?.(
           error instanceof Error ? error : new Error(String(error))
         );
@@ -171,61 +166,21 @@ export function subscribeToBroadcastNotifications(
     logger.info('NotificationWebSocket', { topic, subscriptionId });
 
     return () => {
-      logger.info(
-        'NotificationWebSocket',
-        'Unsubscribing from broadcast notifications'
-      );
+      logger.info('NotificationWebSocket', {
+        action: 'Unsubscribing from broadcast',
+      });
       ws.unsubscribe(subscriptionId);
     };
   } catch (error) {
-    logger.error('NotificationWebSocket: Failed to subscribe to broadcast notifications', undefined, { error });
+    logger.error(
+      'NotificationWebSocket: Failed to subscribe to broadcast',
+      error as Error
+    );
     callbacks.onError?.(
       error instanceof Error ? error : new Error(String(error))
     );
     throw error;
   }
-}
-
-/**
- * Transform backend notification type to frontend format
- */
-function transformNotificationType(type: string): InAppNotification['type'] {
-  const typeMap: Record<string, InAppNotification['type']> = {
-    NEW_MESSAGE: 'message_received',
-    MESSAGE: 'message_received',
-    NEW_ORDER: 'job_accepted',
-    ORDER: 'job_accepted',
-    ORDER_STATUS_CHANGED: 'job_completed',
-    PAYMENT_RECEIVED: 'payment_received',
-    PAYMENT: 'payment_received',
-    REVIEW_RECEIVED: 'review_received',
-    REVIEW: 'review_received',
-    PROPOSAL_RECEIVED: 'job_application',
-    PROPOSAL: 'job_application',
-    JOB_APPLICATION: 'job_application',
-    SYSTEM_ANNOUNCEMENT: 'system_update',
-    SYSTEM: 'system_update',
-    PROMOTION: 'promotion',
-  };
-
-  const normalized = type.toUpperCase();
-  return typeMap[normalized] || 'system_update';
-}
-
-/**
- * Transform backend priority to frontend format
- */
-function transformPriority(priority: string): InAppNotification['priority'] {
-  const normalized = priority.toLowerCase();
-  if (
-    normalized === 'low' ||
-    normalized === 'medium' ||
-    normalized === 'high' ||
-    normalized === 'urgent'
-  ) {
-    return normalized;
-  }
-  return 'medium'; // Default
 }
 
 /**

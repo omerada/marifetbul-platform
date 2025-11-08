@@ -54,11 +54,8 @@ import {
   ArrowDownRight,
   X,
 } from 'lucide-react';
-import {
-  payoutAdminApi,
-  formatCurrency,
-  formatDate,
-} from '@/lib/api/admin/payout-admin-api';
+import { payoutAdminApi } from '@/lib/api/admin/payout-admin-api';
+import { formatCurrency, formatDate } from '@/lib/shared/formatters'; // Sprint 2: Use canonical formatters
 import {
   walletAdminApi,
   type AdminWalletDetail,

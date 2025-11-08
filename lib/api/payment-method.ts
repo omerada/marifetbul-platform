@@ -10,11 +10,8 @@
 
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { z } from 'zod';
-import {
-  isValidCreditCard as validateCreditCardCanonical,
-  getCreditCardType,
-  isValidIBAN as validateIBANCanonical,
-} from '@/lib/shared/utils/validation';
+
+// Sprint 2: Removed unused canonical imports - use directly from @/lib/shared/utils/validation where needed
 
 // ============================================================================
 // TYPES & SCHEMAS
@@ -299,22 +296,11 @@ export async function addBankAccount(data: {
 // ============================================================================
 // VALIDATION HELPERS
 // ============================================================================
-
-/**
- * Luhn Algorithm for credit card validation
- * @deprecated Sprint 7 - Use isValidCreditCard from @/lib/shared/utils/validation
- */
-export function validateCreditCard(cardNumber: string): boolean {
-  return validateCreditCardCanonical(cardNumber);
-}
-
-/**
- * Detect card brand from card number
- * @deprecated Sprint 7 - Use getCreditCardType from @/lib/shared/utils/validation
- */
-export function detectCardBrand(cardNumber: string): string | null {
-  return getCreditCardType(cardNumber);
-}
+// Sprint 2: Deprecated validation wrappers removed
+// Use functions directly from @/lib/shared/utils/validation:
+// - isValidCreditCard (was: validateCreditCard)
+// - getCreditCardType (was: detectCardBrand)
+// - isValidIBAN (was: validateIBAN)
 
 /**
  * Validate card expiry date
@@ -357,13 +343,7 @@ export function validateCVV(cvv: string, cardType?: string): boolean {
   return cleanCVV.length === 3;
 }
 
-/**
- * Validate Turkish IBAN
- * @deprecated Sprint 7 - Use isValidIBAN from @/lib/shared/utils/validation
- */
-export function validateIBAN(iban: string): boolean {
-  return validateIBANCanonical(iban);
-}
+// Sprint 2: validateIBAN wrapper removed - use isValidIBAN from @/lib/shared/utils/validation directly
 
 // ============================================================================
 // EXPORT API OBJECT
@@ -384,14 +364,14 @@ export const paymentMethodApi = {
   getDefaultBankAccount,
   addBankAccount,
 
-  // Card validation helpers
-  validateCreditCard,
-  detectCardBrand,
+  // Validation helpers (non-deprecated)
   validateCardExpiry,
   validateCVV,
 
-  // IBAN validation helpers
-  validateIBAN,
+  // Sprint 2: Removed deprecated exports:
+  // - validateCreditCard → use isValidCreditCard from @/lib/shared/utils/validation
+  // - detectCardBrand → use getCreditCardType from @/lib/shared/utils/validation
+  // - validateIBAN → use isValidIBAN from @/lib/shared/utils/validation
 };
 
 export default paymentMethodApi;

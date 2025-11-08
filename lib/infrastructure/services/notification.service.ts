@@ -1,4 +1,7 @@
-import { Notification } from '@/types';
+import type {
+  Notification,
+  NotificationType,
+} from '@/types/domains/notification';
 import type { ApiResponse } from '@/types/shared/api';
 import { apiClient } from '@/lib/infrastructure/api/client';
 
@@ -6,15 +9,7 @@ export interface CreateNotificationRequest {
   userId: string;
   title: string;
   content: string;
-  type:
-    | 'info'
-    | 'success'
-    | 'warning'
-    | 'error'
-    | 'job'
-    | 'package'
-    | 'message'
-    | 'payment';
+  type: NotificationType;
   actionUrl?: string;
   metadata?: Record<string, unknown>;
 }

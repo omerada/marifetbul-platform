@@ -19,7 +19,8 @@
  */
 
 import { apiClient } from '../infrastructure/api/client';
-import { validateTurkishIBAN } from '@/lib/utils/iban-validator';
+
+// Sprint 2: Removed unused import - validateTurkishIBAN (use directly from @/lib/utils/iban-validator where needed)
 
 // ================================================
 // TYPES
@@ -254,27 +255,9 @@ export async function rejectBankAccount(
 // HELPERS
 // ================================================
 
-/**
- * Validate Turkish IBAN format (client-side)
- * @deprecated Sprint 7 - Use validateTurkishIBAN from @/lib/utils/iban-validator
- */
-export function isValidTurkishIban(iban: string): boolean {
-  const result = validateTurkishIBAN(iban);
-  return result.isValid;
-}
-
-/**
- * Format IBAN with spaces for display
- * TR33 0006 1005 1978 6457 8413 26
- *
- * @deprecated Sprint 1 - Use formatIBAN from @/lib/shared/formatters
- * @param iban IBAN to format
- * @returns Formatted IBAN with spaces
- */
-export function formatIban(iban: string): string {
-  const cleanIban = iban.replace(/\s/g, '').toUpperCase();
-  return cleanIban.replace(/(.{4})/g, '$1 ').trim();
-}
+// Sprint 2: Removed deprecated wrappers:
+// - isValidTurkishIban → use validateTurkishIBAN from @/lib/utils/iban-validator
+// - formatIban → use formatIBAN from @/lib/shared/formatters
 
 /**
  * Mask IBAN for security

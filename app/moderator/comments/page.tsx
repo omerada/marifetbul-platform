@@ -3,16 +3,13 @@
  * UNIFIED COMMENT MODERATION PAGE
  * ================================================
  * Single page for both Admin and Moderator comment moderation
- * Replaces:
- * - app/admin/moderation/comments/page.tsx
- * - app/moderator/comments/page.tsx
  *
- * Route: /comments (with role-based access control)
+ * Route: /moderator/comments (with role-based access control)
  *
- * SPRINT 1 - Story 1.2: Page Consolidation
+ * SPRINT 1 - Story 1.2: Route Consolidation
  * @author MarifetBul Development Team
- * @version 1.0.0 - Production Ready
- * @created November 6, 2025
+ * @version 2.0.0 - Production Ready
+ * @created November 8, 2025
  */
 
 'use client';

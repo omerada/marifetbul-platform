@@ -10,14 +10,7 @@
  */
 
 // Main hooks
-export { useDashboard, useDashboardRefresh } from './useDashboard';
-export type {
-  UseDashboardConfig,
-  UseDashboardReturn,
-  DashboardData,
-  UserRole,
-  DashboardPeriod,
-} from './useDashboard';
+export { useDashboard } from '@/hooks/business/useDashboard'; // Sprint 2: Removed useDashboardRefresh deprecated export
 
 export {
   useDashboardPermissions,

@@ -10,13 +10,15 @@
  */
 
 import { apiClient } from '@/lib/api';
-import { formatCurrency as canonicalFormatCurrency } from '@/lib/shared/formatters';
 import type {
   Payout,
   PayoutStatus,
   WalletResponse,
   Transaction,
 } from '@/types/business/features/wallet';
+
+// Sprint 2: Removed unused canonical formatter import
+// Use directly from @/lib/shared/formatters where needed
 
 // ================================================
 // TYPES
@@ -179,22 +181,8 @@ export const payoutAdminApi = {
 // HELPER FUNCTIONS
 // ================================================
 
-/**
- * Format currency for display
- *
- * @deprecated Since Sprint 3 Phase 3B (Nov 2025) - Use @/lib/shared/formatters instead
- * Re-exported for backward compatibility
- *
- * **Timeline:** Will be removed in Sprint 4 (Dec 2025)
- */
-export const formatCurrency = canonicalFormatCurrency;
-
-// ================================================
-// REMOVED: formatDate (Sprint 1 - Cleanup)
-// ================================================
-// Use canonical formatter instead:
-// import { formatDate } from '@/lib/shared/formatters';
-// ================================================
+// Sprint 2: Removed deprecated formatCurrency wrapper
+// Use formatCurrency from @/lib/shared/formatters directly
 
 /**
  * Mask IBAN for display

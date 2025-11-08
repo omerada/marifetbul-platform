@@ -103,25 +103,27 @@ const nextConfig = {
         destination: '/dashboard/orders/:id',
         permanent: true,
       },
-      // Moderation page redirects - deprecated pages to unified pages (Sprint 2)
+      // Moderation page redirects - Sprint 1: Route Consolidation (Nov 8, 2025)
+      // Old route group format redirects to new canonical moderator routes
+      {
+        source: '/reviews',
+        destination: '/moderator/reviews',
+        permanent: true,
+      },
+      {
+        source: '/comments',
+        destination: '/moderator/comments',
+        permanent: true,
+      },
+      // Admin moderation pages redirect to moderator routes (role-based access inside)
       {
         source: '/admin/moderation/reviews',
-        destination: '/reviews',
+        destination: '/moderator/reviews',
         permanent: true,
       },
       {
         source: '/admin/moderation/comments',
-        destination: '/comments',
-        permanent: true,
-      },
-      {
-        source: '/moderator/reviews',
-        destination: '/reviews',
-        permanent: true,
-      },
-      {
-        source: '/moderator/comments',
-        destination: '/comments',
+        destination: '/moderator/comments',
         permanent: true,
       },
       // Info & Support redirects

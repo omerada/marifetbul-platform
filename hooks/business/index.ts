@@ -503,7 +503,7 @@ export {
   useAvatarUpload,
   useProfileValidation,
 } from './useProfile';
-export { useDashboard, useDashboardRefresh } from './useDashboard';
+export { useDashboard } from './useDashboard'; // Sprint 2: Removed useDashboardRefresh deprecated export
 export { useDashboardStats } from './dashboard/useDashboardStats';
 export {
   usePlatformSnapshot,

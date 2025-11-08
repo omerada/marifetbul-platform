@@ -1,6 +1,7 @@
 // Payment utilities
 import { formatCurrency as formatCurrencyCanonical } from '@/lib/shared/formatters';
-import { isValidCreditCard } from '@/lib/shared/utils/validation';
+
+// Sprint 2: isValidCreditCard import removed - use directly from @/lib/shared/utils/validation when needed
 
 // ============================================================================
 // Sprint 8: Import canonical types from business domain
@@ -66,13 +67,7 @@ export const maskCardNumber = (cardNumber: string): string => {
   return `**** **** **** ${last4}`;
 };
 
-/**
- * Validate card number using Luhn algorithm
- * @deprecated Sprint 7 - Use isValidCreditCard from @/lib/shared/utils/validation
- */
-export const validateCardNumber = (cardNumber: string): boolean => {
-  return isValidCreditCard(cardNumber);
-};
+// Sprint 2: validateCardNumber removed - use isValidCreditCard from @/lib/shared/utils/validation directly
 
 export const getCardBrand = (cardNumber: string): string => {
   const cleaned = cardNumber.replace(/\D/g, '');

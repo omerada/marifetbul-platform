@@ -25,11 +25,8 @@ import {
   ChevronRight,
   Loader2,
 } from 'lucide-react';
-import {
-  formatCurrency,
-  formatDate,
-  maskIBAN,
-} from '@/lib/api/admin/payout-admin-api';
+import { maskIBAN } from '@/lib/api/admin/payout-admin-api';
+import { formatCurrency, formatDate } from '@/lib/shared/formatters'; // Sprint 2: Use canonical formatters
 import { Skeleton } from '@/components/ui/UnifiedSkeleton';
 
 // ================================================

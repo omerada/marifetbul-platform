@@ -26,14 +26,13 @@ import { toast } from 'sonner';
 import Image from 'next/image';
 import {
   walletAdminApi,
-  formatCurrency,
-  formatDate,
   getWalletStatusColor,
   getWalletStatusLabel,
   type WalletFilters,
   type AdminWalletDetail,
   type PageResponse,
 } from '@/lib/api/admin/wallet-admin-api';
+import { formatCurrency, formatDate } from '@/lib/shared/formatters'; // Sprint 2: Use canonical formatters
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';

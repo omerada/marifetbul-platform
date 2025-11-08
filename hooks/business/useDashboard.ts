@@ -29,7 +29,10 @@ export function useDashboard() {
       normalizedUserType &&
       normalizedUserType !== 'admin'
     ) {
-      logger.debug('[useDashboard] Initializing dashboard', { roleuserrole, userTypenormalizedUserType,  });
+      logger.debug('[useDashboard] Initializing dashboard', {
+        role: user?.role,
+        userType: normalizedUserType,
+      });
 
       store.fetchDashboard(normalizedUserType);
       store.startAutoRefresh();
@@ -73,19 +76,5 @@ export function useDashboard() {
   };
 }
 
-/**
- * Simplified refresh hook
- * @deprecated Use useDashboard().refreshDashboard instead
- */
-export function useDashboardRefresh() {
-  const { refreshDashboard, isRefreshing } = useDashboardStore();
-
-  logger.warn(
-    '[useDashboardRefresh] This hook is deprecated. Use useDashboard().refreshDashboard instead.'
-  );
-
-  return {
-    refresh: refreshDashboard,
-    isRefreshing,
-  };
-}
+// Sprint 2: Removed useDashboardRefresh deprecated hook
+// Use useDashboard().refreshDashboard directly

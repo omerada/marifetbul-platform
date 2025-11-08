@@ -16,11 +16,9 @@ import type {
   Payout,
   WalletStatus,
 } from '@/types/business/features/wallet';
-// Sprint 1: Re-export canonical formatters for backward compatibility
-import {
-  formatCurrency as canonicalFormatCurrency,
-  formatRelativeTime as canonicalFormatRelativeTime,
-} from '@/lib/shared/formatters';
+
+// Sprint 2: Removed unused canonical formatter imports
+// Use directly from @/lib/shared/formatters where needed
 
 // ================================================
 // TYPES
@@ -293,31 +291,13 @@ export const walletAdminApi = {
 // ================================================
 // UTILITY FUNCTIONS
 // ================================================
-// Sprint 1: Migrated to canonical formatters from @/lib/shared/formatters
-// Re-exported here for backward compatibility
-
-/**
- * Format currency with Turkish Lira symbol
- *
- * @deprecated Use formatCurrency from @/lib/shared/formatters directly
- * Re-exported for backward compatibility
- */
-export const formatCurrency = canonicalFormatCurrency;
-
+// Sprint 2: Removed deprecated formatter wrappers
 // ================================================
-// REMOVED: formatDate, formatShortDate (Sprint 1 - Cleanup)
+// Use canonical formatters directly:
+// - formatCurrency from @/lib/shared/formatters
+// - formatRelativeTime from @/lib/shared/formatters
+// - formatDate from @/lib/shared/formatters
 // ================================================
-// Use canonical formatters instead:
-// import { formatDate } from '@/lib/shared/formatters';
-// ================================================
-
-/**
- * Get relative time (e.g., "2 saat önce")
- *
- * @deprecated Use formatRelativeTime from @/lib/shared/formatters directly
- * Re-exported for backward compatibility
- */
-export const getRelativeTime = canonicalFormatRelativeTime;
 
 /**
  * Get wallet status color

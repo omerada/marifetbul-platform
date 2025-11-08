@@ -65,7 +65,10 @@ export function NotificationModal({
           setPage(pageNum);
         }
       } catch (error) {
-        logger.error('Bildirimler yüklenemedi:', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'Bildirimler yüklenemedi:',
+          error instanceof Error ? error : new Error(String(error))
+        );
       } finally {
         setIsLoading(false);
       }
@@ -107,7 +110,10 @@ export function NotificationModal({
         );
       }
     } catch (error) {
-      logger.error('Bildirim okundu olarak işaretlenemedi:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Bildirim okundu olarak işaretlenemedi:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   };
 

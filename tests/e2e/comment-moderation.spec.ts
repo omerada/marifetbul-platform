@@ -60,7 +60,7 @@ test.describe('Comment Moderation System', () => {
     });
 
     test('should display comment statistics', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       // Check stats cards
       await expect(page.locator('[data-testid="stat-pending"]')).toBeVisible();
@@ -78,7 +78,7 @@ test.describe('Comment Moderation System', () => {
 
   test.describe('Approve Comment', () => {
     test('should approve single comment', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       // Wait for comments to load
       await page.waitForSelector('[data-comment-status="pending"]');
@@ -119,7 +119,7 @@ test.describe('Comment Moderation System', () => {
     test('should show confirmation dialog before approval', async ({
       page,
     }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       const firstComment = page
         .locator('[data-comment-status="pending"]')
@@ -140,7 +140,7 @@ test.describe('Comment Moderation System', () => {
 
   test.describe('Reject Comment', () => {
     test('should reject comment with reason', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       const firstComment = page
         .locator('[data-comment-status="pending"]')
@@ -180,7 +180,7 @@ test.describe('Comment Moderation System', () => {
     });
 
     test('should require reason for rejection', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       const firstComment = page
         .locator('[data-comment-status="pending"]')
@@ -200,7 +200,7 @@ test.describe('Comment Moderation System', () => {
 
   test.describe('Mark as Spam', () => {
     test('should mark comment as spam', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       const firstComment = page
         .locator('[data-comment-status="pending"]')
@@ -239,7 +239,7 @@ test.describe('Comment Moderation System', () => {
 
   test.describe('Bulk Operations', () => {
     test('should select multiple comments', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       // Select first 3 comments
       await page.click('[data-comment-id="1"] input[type="checkbox"]');
@@ -253,7 +253,7 @@ test.describe('Comment Moderation System', () => {
     });
 
     test('should bulk approve comments', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       // Select comments
       await page.click('[data-comment-id="1"] input[type="checkbox"]');
@@ -284,7 +284,7 @@ test.describe('Comment Moderation System', () => {
     });
 
     test('should bulk reject comments', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       // Select comments
       await page.click('[data-comment-id="1"] input[type="checkbox"]');
@@ -305,7 +305,7 @@ test.describe('Comment Moderation System', () => {
     });
 
     test('should select all comments on page', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       // Click select all checkbox
       await page.click('[data-testid="select-all-checkbox"]');
@@ -327,7 +327,7 @@ test.describe('Comment Moderation System', () => {
     });
 
     test('should deselect all comments', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       // Select all
       await page.click('[data-testid="select-all-checkbox"]');
@@ -344,7 +344,7 @@ test.describe('Comment Moderation System', () => {
 
   test.describe('Filtering and Search', () => {
     test('should filter comments by status', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       // Click filter dropdown
       await page.click('[data-testid="status-filter"]');
@@ -371,7 +371,7 @@ test.describe('Comment Moderation System', () => {
     });
 
     test('should search comments by content', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       // Type search query
       await page.fill('[data-testid="search-input"]', 'Great article');
@@ -400,7 +400,7 @@ test.describe('Comment Moderation System', () => {
     });
 
     test('should filter by date range', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       // Open filters
       await page.click('button:has-text("Filtreler")');
@@ -422,7 +422,7 @@ test.describe('Comment Moderation System', () => {
     });
 
     test('should clear all filters', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       // Apply some filters
       await page.click('[data-testid="status-filter"]');
@@ -447,7 +447,7 @@ test.describe('Comment Moderation System', () => {
 
   test.describe('Pagination', () => {
     test('should navigate between pages', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       // Wait for initial load
       await page.waitForSelector('[data-comment-status]');
@@ -469,7 +469,7 @@ test.describe('Comment Moderation System', () => {
     });
 
     test('should change items per page', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       // Change items per page
       await page.selectOption('[data-testid="items-per-page"]', '20');
@@ -485,7 +485,7 @@ test.describe('Comment Moderation System', () => {
 
   test.describe('Auto-refresh', () => {
     test('should auto-refresh comments queue', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       // Get initial comment count
       const initialCount = await page.locator('[data-comment-status]').count();
@@ -502,7 +502,7 @@ test.describe('Comment Moderation System', () => {
     });
 
     test('should manually refresh comments', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       // Click refresh button
       await page.click('[data-testid="refresh-button"]');
@@ -524,7 +524,7 @@ test.describe('Comment Moderation System', () => {
 
   test.describe('Comment Details', () => {
     test('should view comment post context', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       const firstComment = page
         .locator('[data-comment-status="pending"]')
@@ -543,7 +543,7 @@ test.describe('Comment Moderation System', () => {
     });
 
     test('should display comment author info', async ({ page }) => {
-      await page.goto('/admin/moderation/comments');
+      await page.goto('/moderator/comments');
 
       const firstComment = page
         .locator('[data-comment-status="pending"]')

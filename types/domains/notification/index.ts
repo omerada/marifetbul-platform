@@ -1,12 +1,18 @@
 /**
  * ================================================
- * CORE NOTIFICATION TYPES - CANONICAL EXPORTS
+ * NOTIFICATION DOMAIN - UNIFIED EXPORTS
  * ================================================
- * Re-exports from domains/notification for easier imports
+ * Centralized notification type exports
+ * Single source of truth
+ *
  * @version 2.0.0 - Sprint 1: Notification System Unification
+ * @author MarifetBul Development Team
  */
 
-// Export all canonical notification types
+// Export all notification types from canonical source
+export * from './notification.types';
+
+// Re-export for backward compatibility (will be removed in Sprint 2)
 export type {
   Notification,
   NotificationType,
@@ -19,13 +25,7 @@ export type {
   NotificationCountResponse,
   NotificationStats,
   PushNotificationPayload,
-  NotificationAction,
-  PushSubscriptionData,
   WebSocketNotificationPayload,
-  NotificationTemplate,
-  NotificationHistory,
   FailedNotificationDelivery,
   DLQStats,
-  NotificationCenterState,
-  NotificationUpdate,
-} from '../domains/notification';
+} from './notification.types';

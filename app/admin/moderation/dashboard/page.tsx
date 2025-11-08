@@ -332,7 +332,7 @@ export default function BlogModerationDashboard() {
             body: `${payload.authorName || 'Bilinmeyen'} yeni yorum gönderdi: "${payload.postTitle}"`,
             tag: 'new-comment',
             requireInteraction: false,
-            actionUrl: '/admin/moderation/comments',
+            actionUrl: '/moderator/comments',
             data: { commentId: payload.commentId },
           });
         }
@@ -345,7 +345,7 @@ export default function BlogModerationDashboard() {
             body: 'Bir yorum kullanıcı tarafından bildirildi. Acil inceleme gerekiyor.',
             tag: 'flagged-comment',
             requireInteraction: true,
-            actionUrl: '/admin/moderation/comments',
+            actionUrl: '/moderator/comments',
             data: { commentId: payload.commentId, urgent: true },
           });
         }
@@ -369,7 +369,7 @@ export default function BlogModerationDashboard() {
         setCustomStartDate(startDate);
         setCustomEndDate(endDate);
       }
-      logger.debug('BlogModerationDashboard', { range, startDate, endDate,  });
+      logger.debug('BlogModerationDashboard', { range, startDate, endDate });
     },
     []
   );

@@ -296,7 +296,10 @@ export class PayoutService {
       };
     } catch (error) {
       // Fallback to config values if API call fails
-      logger.warn('Failed to fetch payout limits from API, { usingconfigvalues, errorerrorinstanceofErrorerrormessageUnknownerror,  });
+      logger.warn('Failed to fetch payout limits from API', {
+        usingConfigValues: true,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
 
       return {
         minimumAmount: PAYOUT_CONFIG.MINIMUM_AMOUNT,
@@ -310,27 +313,7 @@ export class PayoutService {
     }
   }
 
-  /**
-   * Get payout limits synchronously (deprecated - use getPayoutLimits instead)
-   * @deprecated Use async getPayoutLimits() instead
-   */
-  getPayoutLimitsSync(
-    dailyUsed: number = 0,
-    monthlyUsed: number = 0
-  ): PayoutLimits {
-    return {
-      minimumAmount: PAYOUT_CONFIG.MINIMUM_AMOUNT,
-      maximumAmount: PAYOUT_CONFIG.MAXIMUM_AMOUNT,
-      dailyLimit: PAYOUT_CONFIG.DAILY_LIMIT,
-      monthlyLimit: PAYOUT_CONFIG.MONTHLY_LIMIT,
-      remainingDailyLimit: Math.max(0, PAYOUT_CONFIG.DAILY_LIMIT - dailyUsed),
-      remainingMonthlyLimit: Math.max(
-        0,
-        PAYOUT_CONFIG.MONTHLY_LIMIT - monthlyUsed
-      ),
-      currency: PAYOUT_CONFIG.CURRENCY,
-    };
-  }
+  // Sprint 2: getPayoutLimitsSync removed - use async getPayoutLimits() instead
 
   /**
    * Estimate processing time based on amount

@@ -24,7 +24,6 @@ import {
   getNotificationIcon,
   getNotificationBadge,
   getBadgeVariant,
-  formatTimeAgo,
 } from './notificationHelpers';
 
 interface NotificationCenterProps {
