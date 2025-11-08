@@ -9,6 +9,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { getAllDisputes, getDisputeStatistics } from '@/lib/api/disputes';
 import { orderApi } from '@/lib/api/orders';
 import type {
@@ -56,7 +57,16 @@ export default function AdminDisputesPage() {
       setDisputes(disputesData);
       setStatistics(statsData);
     } catch (error) {
-      console.error('Failed to fetch disputes:', error);
+      logger.error(
+        'Failed to fetch admin disputes data',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'AdminDisputesPage',
+          action: 'fetchData',
+          currentPage,
+          filters: activeFilters,
+        }
+      );
       toast.error('Veri Yüklenemedi', {
         description: 'İtirazlar yüklenirken bir hata oluştu.',
       });
@@ -128,7 +138,11 @@ export default function AdminDisputesPage() {
             handleDisputeEvent(payload);
           }
         } catch (err) {
-          console.error('Failed to parse dispute update:', err);
+          logger.error(
+            'Failed to parse dispute WebSocket update',
+            err instanceof Error ? err : new Error(String(err)),
+            { component: 'AdminDisputesPage', action: 'handleWebSocketMessage' }
+          );
         }
       }
     );
@@ -156,7 +170,16 @@ export default function AdminDisputesPage() {
         const orderResponse = await orderApi.getOrderById(dispute.orderId);
         setOrderTotalAmount(orderResponse.data.totalAmount);
       } catch (error) {
-        console.error('Failed to fetch order:', error);
+        logger.error(
+          'Failed to fetch order details for dispute resolution',
+          error instanceof Error ? error : new Error(String(error)),
+          {
+            component: 'AdminDisputesPage',
+            action: 'handleResolveDispute',
+            disputeId,
+            orderId: dispute.orderId,
+          }
+        );
         toast.error('Sipariş bilgileri yüklenemedi');
         setOrderTotalAmount(0);
       }

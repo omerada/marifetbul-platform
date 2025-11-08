@@ -12,6 +12,7 @@ import {
   AlertCircle,
   Calendar,
 } from 'lucide-react';
+import { formatCurrency } from '@/lib/shared/formatters';
 import type { PackageTrend } from '@/types/analytics';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
@@ -56,7 +57,10 @@ export function PackageTrendChart({
       const result = await response.json();
       setTrends(result.data || result);
     } catch (err) {
-      logger.error('Package trend fetch error:', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Package trend fetch error:',
+        err instanceof Error ? err : new Error(String(err))
+      );
       setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
     } finally {
       setIsLoading(false);
@@ -67,15 +71,6 @@ export function PackageTrendChart({
     fetchTrends();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [packageId, days]);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);

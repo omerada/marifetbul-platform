@@ -17,6 +17,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button, Loading } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
@@ -55,7 +56,11 @@ export default function AdminDisputeOrdersPage() {
       ) as PageResponse<OrderSummaryResponse>;
       setOrders(data.content || []);
     } catch (err) {
-      console.error('Failed to load disputed orders:', err);
+      logger.error(
+        'Failed to load disputed orders',
+        err instanceof Error ? err : new Error(String(err)),
+        { component: 'AdminDisputeOrdersPage', action: 'loadDisputedOrders' }
+      );
       setError(
         err instanceof Error
           ? err.message

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { formatCurrency } from '@/lib/shared/formatters';
 import {
   Download,
   Eye,
@@ -59,13 +60,6 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
     const config =
       statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
     return <Badge variant={config.variant}>{config.label}</Badge>;
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: payment.currency || 'TRY',
-    }).format(amount);
   };
 
   const formatDate = (dateString: string) => {

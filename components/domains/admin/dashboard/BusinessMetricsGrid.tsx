@@ -18,6 +18,7 @@ import {
   Users,
   RefreshCw,
 } from 'lucide-react';
+import { formatCurrency, formatNumber } from '@/lib/shared/formatters';
 import type { BusinessMetrics } from '@/types/business/admin-dashboard';
 
 interface BusinessMetricsGridProps {
@@ -41,19 +42,6 @@ export function BusinessMetricsGrid({
       </div>
     );
   }
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: data.revenue.currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const formatNumber = (num: number) => {
-    return new Intl.NumberFormat('tr-TR').format(num);
-  };
 
   const renderTrend = (percentage: number) => {
     const isPositive = percentage >= 0;

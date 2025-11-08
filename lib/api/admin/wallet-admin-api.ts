@@ -16,6 +16,12 @@ import type {
   Payout,
   WalletStatus,
 } from '@/types/business/features/wallet';
+// Sprint 1: Re-export canonical formatters for backward compatibility
+import {
+  formatCurrency as canonicalFormatCurrency,
+  formatDate as canonicalFormatDate,
+  formatRelativeTime as canonicalFormatRelativeTime,
+} from '@/lib/shared/formatters';
 
 // ================================================
 // TYPES
@@ -288,69 +294,44 @@ export const walletAdminApi = {
 // ================================================
 // UTILITY FUNCTIONS
 // ================================================
+// Sprint 1: Migrated to canonical formatters from @/lib/shared/formatters
+// Re-exported here for backward compatibility
 
 /**
  * Format currency with Turkish Lira symbol
  *
- * @deprecated Since Sprint 3 Phase 3B (Nov 2025) - Use @/lib/shared/formatters instead
- *
- * **Migration:**
- * ```ts
- * import { formatCurrency } from '@/lib/shared/formatters';
- * ```
- *
- * **Timeline:** Will be removed in Sprint 4 (Dec 2025)
+ * @deprecated Use formatCurrency from @/lib/shared/formatters directly
+ * Re-exported for backward compatibility
  */
-export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency: 'TRY',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-};
+export const formatCurrency = canonicalFormatCurrency;
 
 /**
  * Format date in Turkish locale
+ *
+ * @deprecated Use formatDate from @/lib/shared/formatters directly
+ * Re-exported for backward compatibility
  */
 export const formatDate = (dateString: string): string => {
-  return new Intl.DateTimeFormat('tr-TR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(dateString));
+  return canonicalFormatDate(dateString, 'LONG', { includeTime: true });
 };
 
 /**
- * Format short date
+ * Format short date in Turkish locale
+ *
+ * @example
+ * formatShortDate('2025-11-08T14:30:00') // "8 Kas 2025"
  */
 export const formatShortDate = (dateString: string): string => {
-  return new Intl.DateTimeFormat('tr-TR', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(new Date(dateString));
+  return canonicalFormatDate(dateString, 'SHORT');
 };
 
 /**
  * Get relative time (e.g., "2 saat önce")
+ *
+ * @deprecated Use formatRelativeTime from @/lib/shared/formatters directly
+ * Re-exported for backward compatibility
  */
-export const getRelativeTime = (dateString: string): string => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 1) return 'Az önce';
-  if (diffMins < 60) return `${diffMins} dakika önce`;
-  if (diffHours < 24) return `${diffHours} saat önce`;
-  if (diffDays < 7) return `${diffDays} gün önce`;
-  return formatShortDate(dateString);
-};
+export const getRelativeTime = canonicalFormatRelativeTime;
 
 /**
  * Get wallet status color

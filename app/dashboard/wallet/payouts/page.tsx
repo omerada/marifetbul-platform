@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { PayoutDashboard } from '@/components/domains/wallet/PayoutDashboard';
 import { PayoutRequestFlow } from '@/components/domains/wallet/PayoutRequestFlow';
@@ -41,7 +42,11 @@ export default function PayoutSystemPage() {
       const accounts = await getBankAccounts();
       setBankAccounts(accounts);
     } catch (error) {
-      console.error('Failed to load bank accounts:', error);
+      logger.error(
+        'Failed to load bank accounts for payout',
+        error instanceof Error ? error : new Error(String(error)),
+        { component: 'PayoutSystemPage', action: 'loadBankAccounts' }
+      );
       showErrorToast('Hata', 'Banka hesapları yüklenirken bir hata oluştu');
       setBankAccounts([]);
     }

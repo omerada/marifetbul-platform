@@ -22,6 +22,7 @@
 'use client';
 
 import { useState } from 'react';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { Card } from '@/components/ui/Card';
 import { Calendar, Download, RefreshCw } from 'lucide-react';
 import { useRevenueAnalytics } from '@/hooks';
@@ -93,7 +94,11 @@ export default function AdminRevenueAnalyticsPage() {
 
       toast.success('CSV raporu başarıyla indirildi');
     } catch (err) {
-      console.error('Export failed:', err);
+      logger.error(
+        'Failed to export revenue analytics report',
+        err instanceof Error ? err : new Error(String(err)),
+        { component: 'AdminRevenueAnalyticsPage', action: 'handleExport' }
+      );
       toast.error('Rapor indirme başarısız');
     }
   };

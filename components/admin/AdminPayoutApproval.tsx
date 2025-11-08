@@ -28,6 +28,7 @@ import {
 import { Button, Input, Label } from '@/components/ui';
 import { usePayoutAdmin } from '@/hooks/business/wallet/usePayout';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import { formatCurrency } from '@/lib/shared/formatters';
 
 // ============================================================================
 // TYPES
@@ -77,7 +78,10 @@ export function AdminPayoutApproval({
       setApprovalNotes('');
       await load();
     } catch (err) {
-      logger.error('Approve payout error:', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Approve payout error:',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
       setProcessingId(null);
     }
@@ -102,20 +106,13 @@ export function AdminPayoutApproval({
       setRejectReason('');
       await load();
     } catch (err) {
-      logger.error('Reject payout error:', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Reject payout error:',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
       setRejectingId(null);
     }
-  };
-
-  /**
-   * Format currency
-   */
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
   };
 
   /**

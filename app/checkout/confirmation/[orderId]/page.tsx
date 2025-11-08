@@ -34,6 +34,7 @@ import {
   unwrapOrderResponse,
   type OrderWithComputed,
 } from '@/lib/api/orders';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export default function OrderConfirmationPage() {
   const params = useParams();
@@ -53,7 +54,15 @@ export default function OrderConfirmationPage() {
         const data = unwrapOrderResponse(response);
         setOrder(enrichOrder(data));
       } catch (err) {
-        console.error('Failed to load order:', err);
+        logger.error(
+          'Failed to load order for confirmation page',
+          err instanceof Error ? err : new Error(String(err)),
+          {
+            orderId,
+            component: 'OrderConfirmationPage',
+            action: 'load-order',
+          }
+        );
         setError('Sipariş bilgileri yüklenemedi');
       } finally {
         setLoading(false);

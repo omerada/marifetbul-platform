@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { ArrowLeft, Save, Ban, Shield, AlertTriangle } from 'lucide-react';
 import { Button, Card, Input, Label, Badge } from '@/components/ui';
 import { useToast } from '@/hooks';
@@ -65,7 +66,11 @@ export default function AdminUserEditPage({ params }: Props) {
           role: userData.role || 'FREELANCER',
         });
       } catch (err) {
-        console.error('Failed to fetch user:', err);
+        logger.error(
+          'Failed to fetch user details in admin edit page',
+          err instanceof Error ? err : new Error(String(err)),
+          { component: 'AdminUserEditPage', action: 'fetchUser', userId }
+        );
         setError('Kullanıcı bilgileri yüklenemedi');
       } finally {
         setIsLoading(false);
@@ -96,7 +101,16 @@ export default function AdminUserEditPage({ params }: Props) {
         setUser(response.data);
       }
     } catch (err) {
-      console.error('Failed to update user:', err);
+      logger.error(
+        'Failed to update user details',
+        err instanceof Error ? err : new Error(String(err)),
+        {
+          component: 'AdminUserEditPage',
+          action: 'handleSave',
+          userId,
+          formData,
+        }
+      );
       showError('Hata', 'Kullanıcı bilgileri güncellenemedi');
     } finally {
       setIsSaving(false);
@@ -126,7 +140,16 @@ export default function AdminUserEditPage({ params }: Props) {
         setUser(response.data);
       }
     } catch (err) {
-      console.error('Failed to suspend user:', err);
+      logger.error(
+        'Failed to suspend user',
+        err instanceof Error ? err : new Error(String(err)),
+        {
+          component: 'AdminUserEditPage',
+          action: 'handleSuspend',
+          userId,
+          reason,
+        }
+      );
       showError('Hata', 'Kullanıcı askıya alınamadı');
     }
   };
@@ -161,7 +184,11 @@ export default function AdminUserEditPage({ params }: Props) {
         setUser(response.data);
       }
     } catch (err) {
-      console.error('Failed to ban user:', err);
+      logger.error(
+        'Failed to ban user',
+        err instanceof Error ? err : new Error(String(err)),
+        { component: 'AdminUserEditPage', action: 'handleBan', userId, reason }
+      );
       showError('Hata', 'Kullanıcı engellenemedi');
     }
   };
@@ -190,7 +217,11 @@ export default function AdminUserEditPage({ params }: Props) {
         setUser(response.data);
       }
     } catch (err) {
-      console.error('Failed to unban user:', err);
+      logger.error(
+        'Failed to unban user',
+        err instanceof Error ? err : new Error(String(err)),
+        { component: 'AdminUserEditPage', action: 'handleUnban', userId }
+      );
       showError('Hata', 'Kullanıcının engeli kaldırılamadı');
     }
   };

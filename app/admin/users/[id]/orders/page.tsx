@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { ArrowLeft, Package, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { Button, Card, Badge } from '@/components/ui';
 import { formatCurrency } from '@/lib/shared/formatters';
@@ -59,7 +60,11 @@ export default function AdminUserOrdersPage({ params }: Props) {
         setBuyerOrders(response.data.buyerOrders.content || []);
         setSellerOrders(response.data.sellerOrders.content || []);
       } catch (err) {
-        console.error('Failed to fetch user orders:', err);
+        logger.error(
+          'Failed to fetch user orders in admin panel',
+          err instanceof Error ? err : new Error(String(err)),
+          { component: 'AdminUserOrdersPage', action: 'fetchOrders', userId }
+        );
         setError('Kullanıcı siparişleri yüklenemedi');
         setBuyerOrders([]);
         setSellerOrders([]);

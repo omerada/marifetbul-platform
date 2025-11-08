@@ -15,6 +15,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { formatNumber } from '@/lib/shared/formatters';
 
 interface FilterOption {
   id: string;
@@ -376,7 +377,7 @@ export function MobileFiltersSheet({
         <div className="border-t border-gray-200 bg-white p-4">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-sm text-gray-600">
-              {resultCount.toLocaleString()} sonuç bulundu
+              {formatNumber(resultCount)} sonuç bulundu
             </span>
             <Button variant="ghost" size="sm" onClick={handleClearAll}>
               Tümünü Temizle

@@ -19,6 +19,7 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { ArrowLeft, Package, Calendar, TrendingUp } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
@@ -52,7 +53,15 @@ export default async function EscrowDetailPage({
   try {
     escrowData = await getEscrowPaymentDetails(params.orderId);
   } catch (error) {
-    console.error('Failed to fetch escrow details:', error);
+    logger.error(
+      'Failed to fetch escrow payment details',
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        component: 'EscrowDetailPage',
+        action: 'fetchEscrowDetails',
+        orderId: params.orderId,
+      }
+    );
     notFound();
   }
 

@@ -24,6 +24,7 @@ import {
   XCircle,
   RefreshCw,
 } from 'lucide-react';
+import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 
 interface PaymentTransaction {
   id: string;
@@ -98,23 +99,6 @@ export function PaymentHistory({
     }
   };
 
-  // Format currency
-  const formatCurrency = (amount: number, currency: string) => {
-    const symbol = currency === 'TRY' ? '₺' : currency;
-    return `${symbol}${amount.toFixed(2)}`;
-  };
-
-  // Format date
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('tr-TR', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
   if (transactions.length === 0) {
     return (
       <div className={`rounded-lg bg-white p-6 shadow-md ${className}`}>
@@ -174,7 +158,7 @@ export function PaymentHistory({
                       }`}
                     >
                       {isRefund && '+'}
-                      {formatCurrency(transaction.amount, transaction.currency)}
+                      {formatCurrency(transaction.amount)}
                     </div>
                   </div>
                 </div>
@@ -195,7 +179,7 @@ export function PaymentHistory({
 
                   {/* Date */}
                   <span className="text-gray-500">
-                    {formatDate(transaction.createdAt)}
+                    {formatDate(transaction.createdAt, 'DATETIME')}
                   </span>
                 </div>
               </div>

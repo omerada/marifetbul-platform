@@ -13,6 +13,7 @@ import {
   RefreshCw,
   AlertCircle,
 } from 'lucide-react';
+import { formatCurrency } from '@/lib/shared/formatters';
 import type { CategorySummary } from '@/types/analytics';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
@@ -65,7 +66,10 @@ export function CategoryPerformanceSummary({
       const result = await response.json();
       setSummary(result.data || result);
     } catch (err) {
-      logger.error('Category summary fetch error:', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Category summary fetch error:',
+        err instanceof Error ? err : new Error(String(err))
+      );
       setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
     } finally {
       setIsLoading(false);
@@ -76,15 +80,6 @@ export function CategoryPerformanceSummary({
     fetchSummary();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate]);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const calculateTotals = () => {
     return summary.reduce(

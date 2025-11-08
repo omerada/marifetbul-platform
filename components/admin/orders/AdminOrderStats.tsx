@@ -9,6 +9,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import { formatCurrency } from '@/lib/shared/formatters';
 import {
   Package,
   CheckCircle,
@@ -46,7 +47,10 @@ export function AdminOrderStats({ className }: AdminOrderStatsProps) {
           setStats(data.data);
         }
       } catch (err) {
-        logger.error('Failed to fetch stats:', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Failed to fetch stats:',
+          err instanceof Error ? err : new Error(String(err))
+        );
       } finally {
         setIsLoading(false);
       }
@@ -75,15 +79,6 @@ export function AdminOrderStats({ className }: AdminOrderStatsProps) {
   if (!stats) {
     return null;
   }
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   return (
     <div

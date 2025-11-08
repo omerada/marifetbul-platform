@@ -42,10 +42,10 @@ import {
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import { formatCurrency, formatNumber } from '@/lib/shared/formatters';
 import {
   getOrderAnalytics,
   getRevenueBreakdown,
-  type OrderAnalyticsDto,
 } from '@/lib/api/admin-analytics';
 
 // ================================================
@@ -211,7 +211,10 @@ export const AdminFinancialReports: React.FC = () => {
 
       toast.success('Finansal veriler yüklendi');
     } catch (error) {
-      logger.error('Failed to load financial data:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to load financial data:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       toast.error('Finansal veriler yüklenemedi');
     } finally {
       setIsLoading(false);
@@ -230,17 +233,6 @@ export const AdminFinancialReports: React.FC = () => {
 
   const handleExportPDF = () => {
     toast.info('PDF export özelliği yakında eklenecek');
-  };
-
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
-    }).format(amount);
-  };
-
-  const formatNumber = (num: number): string => {
-    return new Intl.NumberFormat('tr-TR').format(num);
   };
 
   // ==================== RENDER ====================

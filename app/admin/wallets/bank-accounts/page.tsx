@@ -40,6 +40,7 @@ import {
   Calendar,
   CheckCircle,
   XCircle,
+  X,
 } from 'lucide-react';
 import {
   Dialog,
@@ -107,7 +108,11 @@ export default function AdminBankAccountVerificationPage() {
         setTotalElements(response.totalElements);
         setCurrentPage(response.number);
       } catch (error) {
-        console.error('Error fetching pending accounts:', error);
+        logger.error(
+          'Failed to fetch pending bank accounts',
+          error instanceof Error ? error : new Error(String(error)),
+          { component: 'AdminBankAccountVerificationPage', action: 'fetchPendingAccounts', page }
+        );
         showError('Hata', 'Bekleyen hesaplar yüklenirken hata oluştu');
       } finally {
         setIsLoading(false);
@@ -121,7 +126,11 @@ export default function AdminBankAccountVerificationPage() {
       const response = await getBankAccountStatistics();
       setStats(response);
     } catch (error) {
-      console.error('Error fetching statistics:', error);
+      logger.error(
+        'Failed to fetch bank account statistics',
+        error instanceof Error ? error : new Error(String(error)),
+        { component: 'AdminBankAccountVerificationPage', action: 'fetchStatistics' }
+      );
     }
   }, []);
 
@@ -145,7 +154,11 @@ export default function AdminBankAccountVerificationPage() {
       success('Başarılı', 'Banka hesabı onaylandı');
       await refreshData();
     } catch (error) {
-      console.error('Error verifying account:', error);
+      logger.error(
+        'Failed to verify bank account',
+        error instanceof Error ? error : new Error(String(error)),
+        { component: 'AdminBankAccountVerificationPage', action: 'handleVerify', accountId }
+      );
       showError('Hata', 'Hesap onaylanırken hata oluştu');
     }
   };
@@ -156,7 +169,11 @@ export default function AdminBankAccountVerificationPage() {
       success('Başarılı', 'Banka hesabı reddedildi');
       await refreshData();
     } catch (error) {
-      console.error('Error rejecting account:', error);
+      logger.error(
+        'Failed to reject bank account',
+        error instanceof Error ? error : new Error(String(error)),
+        { component: 'AdminBankAccountVerificationPage', action: 'handleReject', accountId, reason }
+      );
       showError('Hata', 'Hesap reddedilirken hata oluştu');
     }
   };

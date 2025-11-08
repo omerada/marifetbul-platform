@@ -13,6 +13,7 @@ import {
   TrendingUp,
   Sparkles,
 } from 'lucide-react';
+import { formatNumber } from '@/lib/shared/formatters';
 
 interface AnimatedInteractionProps {
   className?: string;
@@ -379,7 +380,7 @@ function InteractionCard({ icon, title, count, color }: InteractionCardProps) {
               isHovered ? 'scale-110 transform' : ''
             }`}
           >
-            {count.toLocaleString()}
+            {formatNumber(count)}
           </p>
         </div>
       </div>

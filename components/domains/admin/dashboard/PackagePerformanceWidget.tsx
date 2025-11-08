@@ -15,6 +15,7 @@ import {
   AlertCircle,
   Award,
 } from 'lucide-react';
+import { formatCurrency, formatNumber } from '@/lib/shared/formatters';
 import type { PackagePerformance } from '@/types/analytics';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
@@ -60,7 +61,10 @@ export function PackagePerformanceWidget({
       const result = await response.json();
       setPackages(result.data || result);
     } catch (err) {
-      logger.error('Package performance fetch error:', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Package performance fetch error:',
+        err instanceof Error ? err : new Error(String(err))
+      );
       setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
     } finally {
       setIsLoading(false);
@@ -71,15 +75,6 @@ export function PackagePerformanceWidget({
     fetchPerformance();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryId, limit]);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600 bg-green-100';
@@ -204,7 +199,7 @@ export function PackagePerformanceWidget({
                   <div>
                     <p className="text-xs text-gray-600">Sipariş</p>
                     <p className="text-sm font-semibold">
-                      {pkg.metrics.orderCount.toLocaleString('tr-TR')}
+                      {formatNumber(pkg.metrics.orderCount)}
                     </p>
                   </div>
                 </div>
@@ -234,7 +229,7 @@ export function PackagePerformanceWidget({
                   <div>
                     <p className="text-xs text-gray-600">Görüntülenme</p>
                     <p className="text-sm font-semibold">
-                      {pkg.metrics.viewCount.toLocaleString('tr-TR')}
+                      {formatNumber(pkg.metrics.viewCount)}
                     </p>
                   </div>
                 </div>

@@ -52,6 +52,7 @@ import {
   DisputeTimeline,
   createTimelineEvents,
 } from '@/components/domains/disputes';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // HELPER FUNCTIONS
@@ -104,7 +105,15 @@ export default function DisputeDetailPage() {
             'data' in orderResponse ? orderResponse.data : orderResponse;
           setOrder(orderData);
         } catch (orderErr) {
-          console.error('Failed to load order:', orderErr);
+          logger.error(
+            'Failed to load order for dispute',
+            orderErr instanceof Error ? orderErr : new Error(String(orderErr)),
+            {
+              disputeId,
+              orderId: disputeData.orderId,
+              component: 'DisputeDetailPage',
+            }
+          );
           // Continue even if order fails to load
         }
       }
@@ -145,8 +154,16 @@ export default function DisputeDetailPage() {
             });
             loadDispute();
           }
-        } catch (_err) {
-          console.error('Failed to parse dispute update');
+        } catch (err) {
+          logger.error(
+            'Failed to parse dispute WebSocket update',
+            err instanceof Error ? err : new Error(String(err)),
+            {
+              disputeId,
+              component: 'DisputeDetailPage',
+              action: 'websocket-update',
+            }
+          );
         }
       }
     );

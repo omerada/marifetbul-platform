@@ -19,6 +19,7 @@ import {
   DollarSign,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { formatNumber } from '@/lib/shared/formatters';
 
 /**
  * SortOptions Component - Sprint 4 Day 2
@@ -139,7 +140,7 @@ export function SortOptions({
                 variant="outline"
                 className="border-gray-300 bg-gray-50 px-2.5 py-1 text-sm font-medium text-gray-700"
               >
-                {resultCount.toLocaleString('tr-TR')}
+                {formatNumber(resultCount)}
               </Badge>
               <span className="text-sm text-gray-600">
                 {resultCount === 1 ? 'sonuç' : 'sonuç'}

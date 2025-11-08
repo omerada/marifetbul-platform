@@ -21,6 +21,7 @@
 
 import React from 'react';
 import { Card } from '@/components/ui/Card';
+import { formatCurrency } from '@/lib/shared/formatters';
 import {
   Package,
   CheckCircle,
@@ -144,15 +145,6 @@ export function OrderStatsWidget({
   // ================================================
   // FORMAT HELPERS
   // ================================================
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   // ================================================
   // RENDER

@@ -268,7 +268,15 @@ export default function OrderDetailPage() {
             }
           }
         } catch (err) {
-          console.error('Failed to parse order update:', err);
+          logger.error(
+            'Failed to parse order WebSocket update',
+            err instanceof Error ? err : new Error(String(err)),
+            {
+              orderId,
+              component: 'OrderDetailPage',
+              action: 'websocket-update',
+            }
+          );
         }
       }
     );

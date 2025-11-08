@@ -12,6 +12,7 @@ import {
   AlertCircle,
   BarChart3,
 } from 'lucide-react';
+import { formatCurrency } from '@/lib/shared/formatters';
 import { useAdminDashboard } from '@/hooks/business/useAdminDashboard';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
@@ -107,7 +108,11 @@ export function CategoryAnalyticsWidget({
       .sort((a, b) => b.totalOrders - a.totalOrders)
       .slice(0, limit);
 
-    logger.debug('[CategoryAnalyticsWidget] Transformed data:', { categoriesCountcategoryMapsize, topByRevenueCountbyRevenuelength, topByOrdersCountbyOrderslength,  });
+    logger.debug('[CategoryAnalyticsWidget] Transformed data:', {
+      categoriesCount: categoryMap.size,
+      topByRevenueCount: byRevenue.length,
+      topByOrdersCount: byOrders.length,
+    });
 
     return { topByRevenue: byRevenue, topByOrders: byOrders };
   }, [topPackages, limit]);
@@ -116,15 +121,6 @@ export function CategoryAnalyticsWidget({
   const [selectedView, setSelectedView] = React.useState<'revenue' | 'orders'>(
     'revenue'
   );
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const formatPercentage = (value: number) => {
     return `${value.toFixed(1)}%`;

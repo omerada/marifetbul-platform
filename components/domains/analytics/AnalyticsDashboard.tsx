@@ -17,6 +17,7 @@ import {
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import { formatCurrency, formatNumber } from '@/lib/shared/formatters';
 
 interface AnalyticsData {
   period: 'day' | 'week' | 'month' | 'year';
@@ -77,7 +78,10 @@ const fetchAnalyticsData = async (
 
     return await response.json();
   } catch (error) {
-    logger.error('Analytics fetch error:', error instanceof Error ? error : new Error(String(error)));
+    logger.error(
+      'Analytics fetch error:',
+      error instanceof Error ? error : new Error(String(error))
+    );
     // Return empty data structure on error
     return {
       period,
@@ -116,7 +120,10 @@ export function AnalyticsDashboard({
       const analyticsData = await fetchAnalyticsData(selectedPeriod);
       setData(analyticsData);
     } catch (error) {
-      logger.error('Failed to load analytics:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to load analytics:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     } finally {
       setIsLoading(false);
     }
@@ -130,18 +137,6 @@ export function AnalyticsDashboard({
 
   const handlePeriodChange = (period: AnalyticsData['period']) => {
     setSelectedPeriod(period);
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const formatNumber = (num: number) => {
-    return new Intl.NumberFormat('tr-TR').format(num);
   };
 
   if (!data) {

@@ -22,6 +22,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { motion } from 'framer-motion';
 import {
   ArrowUpRight,
@@ -142,7 +143,16 @@ export default function AdminWalletTransactionsPage() {
           uniqueUsers: uniqueWallets,
         });
       } catch (err) {
-        console.error('Failed to fetch transactions:', err);
+        logger.error(
+          'Failed to fetch wallet transactions',
+          err instanceof Error ? err : new Error(String(err)),
+          {
+            component: 'AdminWalletTransactionsPage',
+            action: 'fetchTransactions',
+            page,
+            filters,
+          }
+        );
         setError(
           'İşlemler yüklenirken bir hata oluştu. Lütfen tekrar deneyin.'
         );
@@ -269,7 +279,15 @@ export default function AdminWalletTransactionsPage() {
       // Cleanup
       setTimeout(() => URL.revokeObjectURL(url), 100);
     } catch (err) {
-      console.error('Export failed:', err);
+      logger.error(
+        'Failed to export transactions',
+        err instanceof Error ? err : new Error(String(err)),
+        {
+          component: 'AdminWalletTransactionsPage',
+          action: 'handleExport',
+          format,
+        }
+      );
       alert('Export işlemi başarısız oldu.');
     }
   };

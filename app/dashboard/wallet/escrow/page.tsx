@@ -33,6 +33,7 @@ import { useWalletData } from '@/hooks/business/wallet';
 import { Card } from '@/components/ui/Card';
 import { releaseEscrowPayment } from '@/lib/api/payment';
 import type { Transaction } from '@/types/business/features/wallet';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // MAIN COMPONENT
@@ -81,7 +82,15 @@ export default function EscrowManagementPage() {
       setIsReleaseOpen(false);
       setIsDetailsOpen(false);
     } catch (error) {
-      console.error('Failed to release escrow:', error);
+      logger.error(
+        'Failed to release escrow payment',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          escrowId,
+          component: 'EscrowManagementPage',
+          action: 'release-escrow',
+        }
+      );
 
       toast.error('Ödeme Serbest Bırakılamadı', {
         description: 'Bir hata oluştu. Lütfen tekrar deneyin.',

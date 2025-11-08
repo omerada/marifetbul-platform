@@ -4,6 +4,7 @@ import React from 'react';
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { UnifiedButton as Button } from './UnifiedButton';
 import { cn } from '@/lib/utils';
+import { formatNumber } from '@/lib/shared/formatters';
 
 export interface PaginationProps {
   currentPage: number;
@@ -121,7 +122,7 @@ export function Pagination({
       {/* Total count */}
       {showTotal && total > 0 && (
         <div className="text-sm text-gray-600">
-          <span className="font-medium">{total.toLocaleString()}</span> sonuç
+          <span className="font-medium">{formatNumber(total)}</span> sonuç
           bulundu
           {pageSize && (
             <>
@@ -271,7 +272,7 @@ export function MobilePagination({
       {/* Total and page info */}
       {showTotal && total > 0 && (
         <div className="text-center text-sm text-gray-600">
-          <span className="font-medium">{total.toLocaleString()}</span> sonuç
+          <span className="font-medium">{formatNumber(total)}</span> sonuç
           <span className="mx-2">•</span>
           Sayfa {currentPage} / {totalPages}
         </div>

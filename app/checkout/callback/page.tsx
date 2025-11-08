@@ -20,6 +20,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useIyzicoCheckout } from '@/hooks/business/payment/useIyzicoCheckout';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export default function CheckoutCallbackPage() {
   const router = useRouter();
@@ -57,7 +58,16 @@ export default function CheckoutCallbackPage() {
           throw new Error(result.error?.message || 'Ödeme doğrulama başarısız');
         }
       } catch (error) {
-        console.error('Payment confirmation error:', error);
+        logger.error(
+          'Payment confirmation error during callback',
+          error instanceof Error ? error : new Error(String(error)),
+          {
+            token: searchParams.get('token'),
+            orderId: searchParams.get('orderId'),
+            component: 'CheckoutCallbackPage',
+            action: 'confirm-payment',
+          }
+        );
         setStatus('error');
         setErrorMessage(
           error instanceof Error

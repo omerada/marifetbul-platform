@@ -11,6 +11,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import { formatCurrency, formatNumber } from '@/lib/shared/formatters';
 import {
   fetchPackageAnalytics,
   type PackageAnalyticsData,
@@ -41,21 +42,27 @@ export function PackageAnalytics() {
         setLoading(true);
         setError(null);
 
-        logger.info('[PackageAnalytics] Fetching analytics data', { days, componentPackageAnalytics,  });
+        logger.info('[PackageAnalytics] Fetching analytics data', { days });
 
         const analyticsData = await fetchPackageAnalytics(days);
         setData(analyticsData);
 
-        logger.info('[PackageAnalytics] Analytics data loaded successfully', { packagesCountanalyticsDatametricstotalPackages, totalRevenueanalyticsDatametricstotalRevenue, componentPackageAnalytics,  });
+        logger.info('[PackageAnalytics] Analytics data loaded successfully', {
+          packagesCount: analyticsData.metrics.totalPackages,
+          totalRevenue: analyticsData.metrics.totalRevenue,
+        });
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to load analytics data';
         setError(errorMessage);
-        logger.error('[PackageAnalytics] Failed to load analytics', {
-          error: err,
-          days,
-          component: 'PackageAnalytics',
-        });
+        logger.error(
+          '[PackageAnalytics] Failed to load analytics',
+          err instanceof Error ? err : new Error(String(err)),
+          {
+            days,
+            component: 'PackageAnalytics',
+          }
+        );
       } finally {
         setLoading(false);
       }
@@ -110,17 +117,6 @@ export function PackageAnalytics() {
     if (trend > 0) return 'text-green-600';
     if (trend < 0) return 'text-red-600';
     return 'text-gray-600';
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
-    }).format(amount);
-  };
-
-  const formatNumber = (num: number) => {
-    return new Intl.NumberFormat('tr-TR').format(num);
   };
 
   return (

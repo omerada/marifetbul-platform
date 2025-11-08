@@ -39,7 +39,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { useProposals } from '@/hooks/business/proposals/useProposals';
 import type { ProposalResponse } from '@/types/backend-aligned';
 import { getProposalsByJob } from '@/lib/api/proposals';
-import { logger } from '@/lib/infrastructure/monitoring/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
+import { formatCurrency } from '@/lib/shared/formatters';
 import { toast } from 'sonner';
 
 // ================================================
@@ -163,13 +164,6 @@ export function ProposalList({ jobId, canManage = false }: ProposalListProps) {
         {labels[status] || status}
       </Badge>
     );
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
-    }).format(amount);
   };
 
   // ==================== RENDER ====================

@@ -27,6 +27,7 @@ import {
   RefundStatus,
 } from '@/lib/api/admin/refund-admin-api';
 import { DollarSign, TrendingUp, Clock, CheckCircle2 } from 'lucide-react';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // PAGE COMPONENT
@@ -76,7 +77,16 @@ export default function AdminRefundsPage() {
       setRefunds(response.content);
       setTotalPages(response.totalPages);
     } catch (error) {
-      console.error('Failed to fetch refunds:', error);
+      logger.error(
+        'Failed to fetch admin refunds list',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'AdminRefundsPage',
+          action: 'fetch-refunds',
+          filters,
+          currentPage,
+        }
+      );
       toast.error('İade talepleri yüklenemedi');
     } finally {
       setIsLoading(false);
@@ -93,7 +103,14 @@ export default function AdminRefundsPage() {
         totalAmountPending: statistics.pendingAmount,
       });
     } catch (error) {
-      console.error('Failed to fetch statistics:', error);
+      logger.error(
+        'Failed to fetch refund statistics',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'AdminRefundsPage',
+          action: 'fetch-statistics',
+        }
+      );
     }
   };
 
@@ -118,7 +135,16 @@ export default function AdminRefundsPage() {
       fetchStatistics();
       setIsDetailModalOpen(false);
     } catch (error) {
-      console.error('Failed to approve refund:', error);
+      logger.error(
+        'Failed to approve refund',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          refundId,
+          notes,
+          component: 'AdminRefundsPage',
+          action: 'approve-refund',
+        }
+      );
       toast.error('İade talebi onaylanamadı');
     }
   };
@@ -138,7 +164,17 @@ export default function AdminRefundsPage() {
       fetchStatistics();
       setIsDetailModalOpen(false);
     } catch (error) {
-      console.error('Failed to reject refund:', error);
+      logger.error(
+        'Failed to reject refund',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          refundId,
+          reason,
+          notes,
+          component: 'AdminRefundsPage',
+          action: 'reject-refund',
+        }
+      );
       toast.error('İade talebi reddedilemedi');
     }
   };
@@ -159,7 +195,16 @@ export default function AdminRefundsPage() {
       fetchRefunds();
       fetchStatistics();
     } catch (error) {
-      console.error('Failed to bulk approve refunds:', error);
+      logger.error(
+        'Failed to bulk approve refunds',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          selectedCount: selectedRefundIds.size,
+          notes,
+          component: 'AdminRefundsPage',
+          action: 'bulk-approve',
+        }
+      );
       toast.error('Toplu onaylama işlemi başarısız oldu');
     }
   };
@@ -172,7 +217,15 @@ export default function AdminRefundsPage() {
       fetchStatistics();
       setIsDetailModalOpen(false);
     } catch (error) {
-      console.error('Failed to process refund:', error);
+      logger.error(
+        'Failed to process refund',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          refundId,
+          component: 'AdminRefundsPage',
+          action: 'process-refund',
+        }
+      );
       toast.error('İade işleme alınamadı');
     }
   };

@@ -25,6 +25,7 @@ import { Alert } from '@/components/ui/Alert';
 import { ReviewList } from '@/components/shared/ReviewList';
 import { ReviewForm } from '@/components/shared/ReviewForm';
 import type { Review, ReviewType } from '@/types/business/review';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export default function DashboardReviewsPage() {
   const {
@@ -82,7 +83,15 @@ export default function DashboardReviewsPage() {
         setDeleteConfirmId(null);
         fetchReviews({ page: currentPage - 1, pageSize: 10 });
       } catch (err) {
-        console.error('Failed to delete review:', err);
+        logger.error(
+          'Failed to delete review',
+          err instanceof Error ? err : new Error(String(err)),
+          {
+            reviewId,
+            component: 'DashboardReviewsPage',
+            action: 'delete-review',
+          }
+        );
       }
     }
   };

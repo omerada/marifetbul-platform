@@ -40,6 +40,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import Link from 'next/link';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // PAGE COMPONENT
@@ -58,7 +59,14 @@ export default function UserRefundsPage() {
       const data = await getMyRefunds();
       setRefunds(data);
     } catch (error) {
-      console.error('Failed to fetch refunds:', error);
+      logger.error(
+        'Failed to fetch user refunds',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'UserRefundsPage',
+          action: 'fetch-refunds',
+        }
+      );
       toast.error('İade talepleri yüklenemedi');
     } finally {
       setIsLoading(false);
@@ -82,7 +90,15 @@ export default function UserRefundsPage() {
       toast.success('İade talebi iptal edildi');
       fetchRefunds();
     } catch (error) {
-      console.error('Failed to cancel refund:', error);
+      logger.error(
+        'Failed to cancel refund request',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          refundId,
+          component: 'UserRefundsPage',
+          action: 'cancel-refund',
+        }
+      );
       toast.error('İade talebi iptal edilemedi');
     } finally {
       setCancellingId(null);

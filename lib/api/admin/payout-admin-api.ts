@@ -10,6 +10,10 @@
  */
 
 import { apiClient } from '@/lib/api';
+import {
+  formatCurrency as canonicalFormatCurrency,
+  formatDate as canonicalFormatDate,
+} from '@/lib/shared/formatters';
 import type {
   Payout,
   PayoutStatus,
@@ -182,35 +186,20 @@ export const payoutAdminApi = {
  * Format currency for display
  *
  * @deprecated Since Sprint 3 Phase 3B (Nov 2025) - Use @/lib/shared/formatters instead
- *
- * **Migration:**
- * ```ts
- * import { formatCurrency } from '@/lib/shared/formatters';
- * ```
+ * Re-exported for backward compatibility
  *
  * **Timeline:** Will be removed in Sprint 4 (Dec 2025)
  */
-export const formatCurrency = (
-  amount: number,
-  currency: string = 'TRY'
-): string => {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency,
-  }).format(amount);
-};
+export const formatCurrency = canonicalFormatCurrency;
 
 /**
  * Format date for display
+ *
+ * @deprecated Use formatDate from @/lib/shared/formatters directly
+ * Re-exported for backward compatibility
  */
 export const formatDate = (dateString: string): string => {
-  return new Intl.DateTimeFormat('tr-TR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(dateString));
+  return canonicalFormatDate(dateString, 'DATETIME');
 };
 
 /**

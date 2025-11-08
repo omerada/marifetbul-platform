@@ -22,6 +22,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import {
   Star,
@@ -121,7 +122,11 @@ export default function AdminQualityDashboard() {
         }))
       );
     } catch (error) {
-      console.error('Failed to fetch dashboard data:', error);
+      logger.error(
+        'Failed to fetch quality dashboard data',
+        error instanceof Error ? error : new Error(String(error)),
+        { component: 'AdminQualityDashboard', action: 'fetchDashboardData' }
+      );
       toast.error('Veri Yüklenemedi', {
         description: 'Kalite verileri yüklenirken bir hata oluştu.',
       });

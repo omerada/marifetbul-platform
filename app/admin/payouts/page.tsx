@@ -13,6 +13,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   AdminPayoutTable,
   AdminPayoutFilters,
@@ -73,7 +74,11 @@ export default function AdminPayoutsPage() {
       setPayouts(response.content);
       setTotalPages(response.totalPages);
     } catch (error) {
-      console.error('Failed to fetch payouts:', error);
+      logger.error(
+        'Failed to fetch admin payouts',
+        error instanceof Error ? error : new Error(String(error)),
+        { component: 'AdminPayoutsPage', action: 'fetchPayouts', filters }
+      );
       toast.error('Para çekme talepleri yüklenemedi');
     } finally {
       setIsLoading(false);
@@ -85,7 +90,11 @@ export default function AdminPayoutsPage() {
       const data = await payoutAdminApi.getPayoutStats();
       setStats(data);
     } catch (error) {
-      console.error('Failed to fetch stats:', error);
+      logger.error(
+        'Failed to fetch payout statistics',
+        error instanceof Error ? error : new Error(String(error)),
+        { component: 'AdminPayoutsPage', action: 'fetchStats' }
+      );
     }
   };
 
@@ -110,7 +119,11 @@ export default function AdminPayoutsPage() {
       fetchStats();
       setIsDetailModalOpen(false);
     } catch (error) {
-      console.error('Failed to process payout:', error);
+      logger.error(
+        'Failed to process payout',
+        error instanceof Error ? error : new Error(String(error)),
+        { component: 'AdminPayoutsPage', action: 'handleProcess', payoutId }
+      );
       toast.error('Ödeme onaylanamadı');
     }
   };
@@ -123,7 +136,11 @@ export default function AdminPayoutsPage() {
       fetchStats();
       setIsDetailModalOpen(false);
     } catch (error) {
-      console.error('Failed to complete payout:', error);
+      logger.error(
+        'Failed to complete payout',
+        error instanceof Error ? error : new Error(String(error)),
+        { component: 'AdminPayoutsPage', action: 'handleComplete', payoutId }
+      );
       toast.error('İşlem başarısız');
     }
   };
@@ -136,7 +153,16 @@ export default function AdminPayoutsPage() {
       fetchStats();
       setIsDetailModalOpen(false);
     } catch (error) {
-      console.error('Failed to fail payout:', error);
+      logger.error(
+        'Failed to mark payout as failed',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'AdminPayoutsPage',
+          action: 'handleFail',
+          payoutId,
+          reason,
+        }
+      );
       toast.error('İşlem başarısız');
     }
   };
@@ -149,7 +175,11 @@ export default function AdminPayoutsPage() {
       fetchStats();
       setIsDetailModalOpen(false);
     } catch (error) {
-      console.error('Failed to cancel payout:', error);
+      logger.error(
+        'Failed to cancel payout',
+        error instanceof Error ? error : new Error(String(error)),
+        { component: 'AdminPayoutsPage', action: 'handleCancel', payoutId }
+      );
       toast.error('İşlem başarısız');
     }
   };
