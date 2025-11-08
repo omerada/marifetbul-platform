@@ -82,49 +82,22 @@ export function unescapeHTML(html: string): string {
 // ================================================
 // NUMBER FORMATTING
 // ================================================
+// ============================================================================
+// Sprint 10: Migrated to canonical formatters
+// ============================================================================
+// Use @/lib/shared/formatters for comprehensive number formatting
 
 /**
- * @deprecated Since Sprint 3 Phase 3 (Nov 2025) - Use @/lib/shared/formatters instead
+ * Format number with locale support
  *
- * **Replaced by:** formatCurrency from lib/shared/formatters.ts
- *
- * **Why deprecated:**
- * - Duplicate of formatters.ts implementation
- * - formatters.ts has better null/undefined handling
- * - formatters.ts has more flexible options
- * - formatters.ts is the canonical source (actively maintained)
- *
- * **Migration:**
- * ```ts
- * // ❌ OLD
- * import { formatCurrency } from '@/lib/shared/utils/format';
- *
- * // ✅ NEW
- * import { formatCurrency } from '@/lib/shared/formatters';
- * ```
- *
- * **Timeline:** Will be removed in Sprint 4 (Dec 2025)
+ * @deprecated Sprint 10 - Use @/lib/shared/formatters::formatNumber for full feature set
+ * @see {@link @/lib/shared/formatters#formatNumber}
  */
-export function formatCurrency(
-  amount: number,
-  currency = 'TRY',
-  options?: Intl.NumberFormatOptions
-): string {
-  const defaultOptions: Intl.NumberFormatOptions = {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-    ...options,
-  };
-
-  return new Intl.NumberFormat('tr-TR', defaultOptions).format(amount);
-}
-
 export function formatNumber(
   num: number,
   options?: Intl.NumberFormatOptions
 ): string {
+  // Simple wrapper for backward compatibility
   return new Intl.NumberFormat('tr-TR', options).format(num);
 }
 
@@ -212,25 +185,8 @@ export function maskString(
 // ================================================
 // VALIDATION HELPERS
 // ================================================
-
-export function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
-
-export function isValidPhone(phone: string): boolean {
-  const cleaned = phone.replace(/\D/g, '');
-  return cleaned.length === 11 && cleaned.startsWith('0');
-}
-
-export function isValidUrl(url: string): boolean {
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
-  }
-}
+// Sprint 7: Moved to lib/shared/utils/validation.ts
+// Use: import { isValidEmail, isValidPhone, isValidUrl } from '@/lib/shared/utils/validation'
 
 // ================================================
 // TEXT PROCESSING
@@ -284,7 +240,6 @@ export const FormatUtils = {
   unescapeHTML,
 
   // Number formatting
-  formatCurrency,
   formatNumber,
   formatBytes,
   formatPercentage,
@@ -296,11 +251,6 @@ export const FormatUtils = {
   formatEmailDomain,
   formatCreditCard,
   maskString,
-
-  // Validation helpers
-  isValidEmail,
-  isValidPhone,
-  isValidUrl,
 
   // Text processing
   removeExtraSpaces,

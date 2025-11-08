@@ -768,22 +768,19 @@ export interface PaymentError {
   userMessage?: string; // Store compatibility
 }
 
-export interface PaymentMethod {
-  id: string;
-  type: 'card' | 'bank' | 'credit_card'; // Added 'credit_card' for MSW handler compatibility
-  isDefault: boolean;
-  metadata?: Record<string, unknown>; // Made optional for MSW handler compatibility
-  createdAt?: string; // MSW handler compatibility
-  updatedAt?: string; // MSW handler compatibility
-  name?: string; // MSW handler compatibility - display name like "Visa ****1234"
-  cardNumber?: string; // MSW handler compatibility
-  expiryDate?: string; // MSW handler compatibility - card expiry date
-  cardHolderName?: string; // MSW handler compatibility
-  isValid?: boolean; // MSW handler compatibility
-}
+// ================================================
+// Sprint 8: Import canonical payment types
+// ================================================
+import type { PaymentMethod as CanonicalPaymentMethod } from './business/features/payments';
+
+export type {
+  PaymentMethod,
+  PaymentMethodDetails,
+  PaymentTransaction,
+} from './business/features/payments';
 
 // Payment method type alias for compatibility
-export type PaymentMethodType = PaymentMethod;
+export type PaymentMethodType = CanonicalPaymentMethod;
 
 // Notification interface for compatibility
 export interface InAppNotification {

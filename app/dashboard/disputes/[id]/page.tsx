@@ -55,6 +55,7 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import { formatDate } from '@/lib/shared/formatters';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
@@ -63,21 +64,6 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface UserDisputeDetailPageProps {
   params: Promise<{ id: string }>;
-}
-
-// ================================================
-// HELPER FUNCTIONS
-// ================================================
-
-function formatDate(dateStr: string | null | undefined): string {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('tr-TR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
 }
 
 // ================================================
@@ -128,7 +114,10 @@ export default function UserDisputeDetailPage({
       setEvidence(evidenceData);
       setTimeline(timelineData);
     } catch (error) {
-      logger.error('Failed to fetch dispute data:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to fetch dispute data:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       toast.error('Veri Yüklenemedi', {
         description: 'İtiraz bilgileri yüklenirken bir hata oluştu.',
       });
@@ -153,7 +142,10 @@ export default function UserDisputeDetailPage({
       });
       fetchDisputeData(); // Refresh data
     } catch (error) {
-      logger.error('Failed to escalate dispute:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to escalate dispute:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       toast.error('İşlem Başarısız', {
         description: 'İtiraz yükseltilirken bir hata oluştu.',
       });

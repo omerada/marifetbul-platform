@@ -1,7 +1,35 @@
+/**
+ * ================================================
+ * FILE UPLOAD COMPONENT (SIMPLE)
+ * ================================================
+ * Simple drag-and-drop file upload component
+ *
+ * Use Cases:
+ * - Basic file uploads without preview
+ * - Order deliveries, message attachments
+ * - When you need simple file selection UI
+ *
+ * For Images: Use @/components/shared/ImageUpload for image uploads with preview
+ * For Disputes: Use @/components/domains/disputes/EvidenceUpload for dispute evidence
+ *
+ * @example
+ * <FileUpload
+ *   onFileSelect={(files) => handleFiles(files)}
+ *   accept="application/pdf,image/*"
+ *   multiple
+ *   maxSize={10}
+ *   maxFiles={5}
+ * />
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0 - Sprint 2: Documentation Enhanced
+ */
+
 'use client';
 
 import React, { useCallback, useState } from 'react';
 import { Upload, X, File, Image } from 'lucide-react';
+import { formatFileSize } from '@/lib/shared/formatters';
 
 interface FileUploadProps {
   onFileSelect: (files: File[]) => void;
@@ -107,14 +135,6 @@ export default function FileUpload({
     const newFiles = selectedFiles.filter((_, i) => i !== index);
     setSelectedFiles(newFiles);
     onFileSelect(newFiles);
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   const getFileIcon = (fileType: string) => {

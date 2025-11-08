@@ -16,6 +16,7 @@ import {
   ROLE_COLORS,
   MAX_PAGE_BUTTONS,
 } from '../constants/userTableConstants';
+import { formatDate as formatDateCanonical } from '@/lib/shared/formatters';
 
 // ============================================================================
 // Color Helpers
@@ -67,17 +68,14 @@ export function getUserInitial(user: AdminUserData): string {
 
 /**
  * Format date to localized string
+ *
+ * @deprecated Sprint 6 - Use formatDate from @/lib/shared/formatters
  */
 export function formatDate(date: string | Date | undefined): string {
   if (!date) return 'N/A';
 
   try {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleDateString('tr-TR', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+    return formatDateCanonical(date, 'SHORT');
   } catch {
     return 'N/A';
   }

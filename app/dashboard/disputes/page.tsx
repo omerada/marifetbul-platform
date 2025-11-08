@@ -47,6 +47,7 @@ import {
 } from '@/types/dispute';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import { formatDate } from '@/lib/shared/formatters';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
@@ -54,19 +55,6 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 // ================================================
 
 type FilterStatus = 'all' | 'OPEN' | 'UNDER_REVIEW' | 'ESCALATED' | 'RESOLVED';
-
-// ================================================
-// HELPER FUNCTIONS
-// ================================================
-
-function formatDate(dateStr: string | null | undefined): string {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('tr-TR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
-}
 
 // ================================================
 // COMPONENT
@@ -89,7 +77,10 @@ export default function UserDisputeDashboard() {
       const data = await getMyDisputes();
       setDisputes(data);
     } catch (error) {
-      logger.error('Failed to fetch disputes:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to fetch disputes:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       toast.error('Veri Yüklenemedi', {
         description: 'İtirazlar yüklenirken bir hata oluştu.',
       });

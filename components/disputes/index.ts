@@ -5,9 +5,13 @@
  * Use @/components/domains/disputes instead
  *
  * Sprint 1.1: DisputeList removed, use UnifiedDisputeList
+ * Sprint 1 Task 1.1: CreateDisputeModal removed (Nov 2025)
  */
 
-export { CreateDisputeModal } from './CreateDisputeModal';
+// ⚠️ DEPRECATED: CreateDisputeModal removed (Sprint 1 Task 1.1)
+// Use DisputeCreationModal from '@/components/domains/disputes' instead
+// export { CreateDisputeModal } from './CreateDisputeModal';
+
 export { DisputeCard } from './DisputeCard';
 export { DisputeMessaging } from './DisputeMessaging';
 export { DisputeEvidence } from './DisputeEvidence';

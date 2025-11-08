@@ -14,31 +14,12 @@ import {
   PRIORITY_CONFIG,
   STAT_CARDS_CONFIG,
 } from './dashboardConstants';
+import { formatNumber, formatCurrency } from '@/lib/shared/formatters';
 
 // ============================================================================
-// Formatting Helpers
+// Formatting Helpers - Using Canonical Formatters
 // ============================================================================
-
-/**
- * Format number with Turkish locale
- */
-export function formatNumber(num: number): string {
-  return new Intl.NumberFormat('tr-TR').format(num);
-}
-
-/**
- * Format currency in Turkish Lira
- */
-export function formatCurrency(amount: number): string {
-  return `₺${new Intl.NumberFormat('tr-TR').format(amount)}`;
-}
-
-/**
- * Format percentage
- */
-export function formatPercentage(value: number): string {
-  return `%${value}`;
-}
+// All formatting functions migrated to @/lib/shared/formatters (Sprint 6)
 
 // ============================================================================
 // Color Configuration Helpers

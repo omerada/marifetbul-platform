@@ -156,26 +156,15 @@ export interface LocationData {
 }
 
 // Common API response types
-export interface ApiResponse<T = unknown> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  error?: string;
-}
-
-export interface PaginatedResponse<T = unknown> {
-  data: T[];
-  pagination: PaginationMeta;
-}
-
-export interface PaginationMeta {
-  page: number;
-  pageSize: number;
-  total: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrev: boolean;
-}
+// ============================================================================
+// Sprint 9: Import canonical API response types
+// ============================================================================
+export type {
+  ApiResponse,
+  PaginatedResponse,
+  PaginationMeta,
+  ApiError,
+} from '../infrastructure/api';
 
 // File types
 export interface FileAttachment {

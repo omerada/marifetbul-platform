@@ -18,6 +18,7 @@
 'use client';
 
 import { Card } from '@/components/ui/Card';
+import { formatCurrency } from '@/lib/shared/formatters';
 import { RefundStatisticsDto } from '@/lib/api/admin/refund-admin-api';
 
 interface RefundTrendChartProps {
@@ -207,15 +208,4 @@ function LoadingSkeleton() {
       <div className="h-96 rounded-lg bg-gray-200" />
     </div>
   );
-}
-
-/**
- * Format currency helper
- */
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency: 'TRY',
-    minimumFractionDigits: 2,
-  }).format(amount);
 }

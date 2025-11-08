@@ -10,6 +10,7 @@ import {
   FileAudio,
 } from 'lucide-react';
 import Image from 'next/image';
+import { formatFileSize } from '@/lib/shared/formatters';
 import type { FileAttachment } from '@/types/core/base';
 
 interface MessageAttachmentProps {
@@ -28,19 +29,6 @@ function getFileIcon(mimeType: string) {
   if (mimeType.includes('pdf') || mimeType.includes('document'))
     return FileText;
   return File;
-}
-
-/**
- * Format file size to human-readable format
- */
-function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 B';
-
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 
 /**

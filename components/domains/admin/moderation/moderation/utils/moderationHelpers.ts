@@ -11,6 +11,7 @@ import {
   TYPE_ICONS,
 } from './moderationConstants';
 import type { ModerationFilters } from '../types/moderationTypes';
+import { formatDate as formatDateCanonical } from '@/lib/shared/formatters';
 
 // ============================================================================
 // Color & Style Helpers
@@ -50,10 +51,13 @@ export function getStatusIconComponent(status: string) {
 
 /**
  * Format date to Turkish locale
+ *
+ * @deprecated Sprint 6 - Use formatDate from @/lib/shared/formatters
+ * Kept as wrapper for error handling during migration
  */
 export function formatDate(dateString: string): string {
   try {
-    return new Date(dateString).toLocaleDateString('tr-TR');
+    return formatDateCanonical(dateString, 'SHORT');
   } catch {
     return 'Bilinmeyen tarih';
   }
@@ -61,10 +65,13 @@ export function formatDate(dateString: string): string {
 
 /**
  * Format datetime to Turkish locale with time
+ *
+ * @deprecated Sprint 6 - Use formatDate(..., 'DATETIME') from @/lib/shared/formatters
+ * Kept as wrapper for error handling during migration
  */
 export function formatDateTime(dateString: string): string {
   try {
-    return new Date(dateString).toLocaleString('tr-TR');
+    return formatDateCanonical(dateString, 'DATETIME');
   } catch {
     return 'Bilinmeyen tarih';
   }

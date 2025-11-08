@@ -19,10 +19,8 @@ import { Textarea } from '@/components/ui/Textarea';
 import FileUpload from '@/components/ui/FileUpload';
 import { orderApi } from '@/lib/api/orders';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import {
-  uploadMultipleFiles,
-  formatFileSize,
-} from '@/lib/services/fileUploadService';
+import { fileUploadService } from '@/lib/services/file-upload.service';
+import { formatFileSize } from '@/lib/shared/formatters';
 
 // ================================================
 // VALIDATION SCHEMA
@@ -109,45 +107,41 @@ export function DeliverOrderButton({
     setUploadProgress(0);
 
     try {
-      logger.info('Starting file uploads', { orderId, filesCountuploadedFileslength,  });
+      logger.info('Starting file uploads', {
+        orderId,
+        filesCount: uploadedFiles.length,
+      });
 
-      // Upload files to Cloudinary
-      const uploadResults = await uploadMultipleFiles(
-        uploadedFiles,
-        (fileIndex, progress) => {
-          // Individual file progress can be tracked here if needed
-          logger.debug('File upload progress', { fileIndex, progress });
-        },
-        (overallProgress) => {
-          // Update overall progress
-          setUploadProgress(overallProgress);
-        }
+      // Upload files using canonical service
+      const uploadPromises = uploadedFiles.map((file, index) =>
+        fileUploadService.uploadFile(file, {
+          onProgress: (progress) => {
+            logger.debug('File upload progress', {
+              fileIndex: index,
+              progress: progress.progress,
+            });
+            // Update overall progress (average across all files)
+            const overallProgress =
+              ((index + progress.progress / 100) / uploadedFiles.length) * 100;
+            setUploadProgress(Math.min(overallProgress, 99));
+          },
+          backend: 'cloudinary',
+          folder: 'marifetbul/order-deliveries',
+        })
       );
 
-      // Check for upload failures
-      const failedUploads = uploadResults.filter((r) => !r.success);
-      if (failedUploads.length > 0) {
-        const failedFiles = failedUploads
-          .map((r, i) => uploadedFiles[i]?.name)
-          .filter(Boolean)
-          .join(', ');
+      const uploadResults = await Promise.all(uploadPromises);
 
-        toast.error('Dosya yükleme hatası', {
-          description: `Şu dosyalar yüklenemedi: ${failedFiles}`,
-        });
-        setIsUploading(false);
-        setIsSubmitting(false);
-        return;
-      }
+      logger.info('Files uploaded successfully', {
+        orderId,
+        uploadedCount: uploadResults.length,
+      });
+
+      setUploadProgress(100);
+      setIsUploading(false);
 
       // Extract uploaded file URLs
-      const attachmentUrls = uploadResults
-        .filter((r) => r.success && r.url)
-        .map((r) => r.url!);
-
-      logger.info('Files uploaded successfully', { orderId, uploadedCountattachmentUrlslength,  });
-
-      setIsUploading(false);
+      const attachmentUrls = uploadResults.map((result) => result.fileUrl);
 
       // Submit delivery to backend
       logger.info('Submitting order delivery', { orderId });

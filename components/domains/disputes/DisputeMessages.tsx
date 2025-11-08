@@ -46,6 +46,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { useDisputeMessages } from '@/hooks/business/disputes';
 import { uploadDisputeAttachment } from '@/lib/api/disputes';
+import { formatFileSize } from '@/lib/shared/formatters';
 import type { MessageRole } from '@/types/dispute';
 
 // ================================================
@@ -61,12 +62,6 @@ interface DisputeMessagesProps {
 // ================================================
 // HELPER FUNCTIONS
 // ================================================
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
 
 function getRoleBadgeColor(role: MessageRole): {
   bg: string;

@@ -15,7 +15,13 @@
  * @since Sprint 3 - Analytics & Reporting
  */
 
-import { apiClient } from '../infrastructure/api/client';
+import { apiRequest, handleApiError } from './client';
+import { Logger } from '@/lib/infrastructure/monitoring/logger';
+
+// ============================================================================
+// Sprint 10: Removed unused formatter imports
+// ============================================================================
+// Removed deprecated wrapper functions - consumers should import from @/lib/shared/formatters directly
 
 const API_BASE = '/api/v1/admin/analytics';
 
@@ -506,28 +512,10 @@ export async function getMonthlyNewUserTrend(
 // ================================================
 // HELPER FUNCTIONS
 // ================================================
-
-/**
- * Format currency for display
- *
- * @deprecated Since Sprint 3 Phase 3B (Nov 2025) - Use @/lib/shared/formatters instead
- * This is a local utility for admin analytics only. Use the canonical version for consistency.
- *
- * **Migration:**
- * ```ts
- * import { formatCurrency } from '@/lib/shared/formatters';
- * ```
- *
- * **Timeline:** Will be removed in Sprint 4 (Dec 2025)
- */
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency: 'TRY',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-}
+// ============================================================================
+// Sprint 10: Removed deprecated formatCurrency() wrapper
+// ============================================================================
+// Use @/lib/shared/formatters::formatCurrency directly
 
 // ==================== Export Functions ====================
 
@@ -578,20 +566,13 @@ export async function exportRevenueBreakdownCsv(
 }
 
 // ==================== Utility Functions ====================
-
-/**
- * Format number for display
- */
-export function formatNumber(num: number): string {
-  return new Intl.NumberFormat('tr-TR').format(num);
-}
-
-/**
- * Format percentage
- */
-export function formatPercentage(value: number, decimals: number = 1): string {
-  return `${value.toFixed(decimals)}%`;
-}
+// ============================================================================
+// Sprint 10: Removed deprecated formatter wrappers
+// ============================================================================
+// Removed: formatNumber() - Use @/lib/shared/formatters::formatNumber
+// Removed: formatPercentage() - Use @/lib/shared/formatters::formatPercentage
+// Removed: formatCurrency() - Use @/lib/shared/formatters::formatCurrency
+// All deprecated since Sprint 6, no active consumers found
 
 /**
  * Get trend icon/color based on trend type

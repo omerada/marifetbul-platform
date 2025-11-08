@@ -39,7 +39,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { useProposals } from '@/hooks/business/proposals/useProposals';
 import type { ProposalResponse } from '@/types/backend-aligned';
 import { getProposalsByJob } from '@/lib/api/proposals';
-import { logger } from '@/lib/shared/utils/logger';
+import { logger } from '@/lib/infrastructure/monitoring/logger';
 import { toast } from 'sonner';
 
 // ================================================

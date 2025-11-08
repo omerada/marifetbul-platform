@@ -19,6 +19,7 @@
  */
 
 import { apiClient } from '../infrastructure/api/client';
+import { validateTurkishIBAN } from '@/lib/utils/iban-validator';
 
 // ================================================
 // TYPES
@@ -255,53 +256,11 @@ export async function rejectBankAccount(
 
 /**
  * Validate Turkish IBAN format (client-side)
- * Format: TR + 2 check digits + 22 digits
- *
- * @param iban IBAN to validate
- * @returns true if format is valid
+ * @deprecated Sprint 7 - Use validateTurkishIBAN from @/lib/utils/iban-validator
  */
 export function isValidTurkishIban(iban: string): boolean {
-  // Remove spaces and convert to uppercase
-  const cleanIban = iban.replace(/\s/g, '').toUpperCase();
-
-  // Check format: TR + 24 digits
-  const ibanRegex = /^TR\d{24}$/;
-  if (!ibanRegex.test(cleanIban)) {
-    return false;
-  }
-
-  // MOD-97 checksum validation
-  return validateIbanChecksum(cleanIban);
-}
-
-/**
- * Validate IBAN checksum using MOD-97 algorithm
- *
- * @param iban Clean IBAN (no spaces)
- * @returns true if checksum is valid
- */
-function validateIbanChecksum(iban: string): boolean {
-  // Move first 4 characters to end
-  const rearranged = iban.substring(4) + iban.substring(0, 4);
-
-  // Replace letters with numbers (A=10, B=11, ..., Z=35)
-  let numericIban = '';
-  for (let i = 0; i < rearranged.length; i++) {
-    const char = rearranged[i];
-    if (char >= '0' && char <= '9') {
-      numericIban += char;
-    } else {
-      numericIban += (char.charCodeAt(0) - 55).toString();
-    }
-  }
-
-  // Calculate MOD-97
-  let remainder = 0;
-  for (let i = 0; i < numericIban.length; i++) {
-    remainder = (remainder * 10 + parseInt(numericIban[i])) % 97;
-  }
-
-  return remainder === 1;
+  const result = validateTurkishIBAN(iban);
+  return result.isValid;
 }
 
 /**

@@ -14,6 +14,7 @@ import type {
   ModerationItem,
   ModerationFilters,
 } from '../types/moderationDashboardTypes';
+import { formatDate as formatDateCanonical } from '@/lib/shared/formatters';
 
 /**
  * Get color class for severity level
@@ -89,7 +90,9 @@ export function filterItems(
 
 /**
  * Format date to Turkish locale
+ *
+ * @deprecated Sprint 6 - Use formatDate from @/lib/shared/formatters
  */
 export function formatDate(date: Date): string {
-  return date.toLocaleDateString('tr-TR');
+  return formatDateCanonical(date, 'SHORT');
 }

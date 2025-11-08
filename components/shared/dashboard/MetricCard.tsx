@@ -53,6 +53,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { TrendingUp, TrendingDown, Minus, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { formatCurrency as formatCurrencyCanonical } from '@/lib/shared/formatters';
 
 export interface MetricCardProps {
   /** Metric label */
@@ -104,14 +105,14 @@ function formatNumber(value: number): string {
 
 /**
  * Format currency
+ *
+ * @deprecated Sprint 6 - Use formatCurrency from @/lib/shared/formatters
  */
 export function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency: 'TRY',
+  return formatCurrencyCanonical(value, 'TRY', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(value);
+  });
 }
 
 /**

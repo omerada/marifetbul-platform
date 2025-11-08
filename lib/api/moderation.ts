@@ -22,15 +22,10 @@ import type {
   UserModerationHistory,
 } from '@/types/business/moderation';
 
-/**
- * API Response wrapper
- */
-interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message?: string;
-  timestamp?: string;
-}
+// ============================================================================
+// Sprint 9: Import canonical API types
+// ============================================================================
+import type { ApiResponse } from '@/types/infrastructure/api';
 
 // ============================================================================
 // STATS & DASHBOARD

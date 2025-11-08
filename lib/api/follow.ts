@@ -15,17 +15,14 @@ import type { UserProfile } from './validators';
 import type { User, FollowStatusResponse } from '@/types/core/base';
 import type { PaginationMeta } from '@/types';
 
-/**
- * API Response wrapper
- */
-interface ApiResponse<T> {
-  data: T;
-  success: boolean;
-  message?: string;
-}
+// ============================================================================
+// Sprint 9: Import canonical API types
+// ============================================================================
+import type { ApiResponse } from '@/types/infrastructure/api';
 
 /**
  * Page response type for pagination
+ * @deprecated Sprint 9 - Use PaginatedResponse from canonical
  */
 interface PageResponse<T> {
   data: T[];

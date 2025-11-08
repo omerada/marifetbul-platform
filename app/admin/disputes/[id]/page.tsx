@@ -65,6 +65,7 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
@@ -73,28 +74,6 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface DisputeDetailPageProps {
   params: Promise<{ id: string }>;
-}
-
-// ================================================
-// HELPER FUNCTIONS
-// ================================================
-
-function formatDate(dateStr: string | null | undefined): string {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('tr-TR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency: 'TRY',
-  }).format(amount);
 }
 
 // ================================================
@@ -157,7 +136,10 @@ export default function AdminDisputeDetailPage({
         setTimeline(timelineData.value);
       }
     } catch (error) {
-      logger.error('Failed to fetch dispute data:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to fetch dispute data:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       toast.error('Veri Yüklenemedi', {
         description: 'İtiraz bilgileri yüklenirken bir hata oluştu.',
       });
@@ -193,7 +175,10 @@ export default function AdminDisputeDetailPage({
       document.body.removeChild(link);
       window.URL.revokeObjectURL(downloadUrl);
     } catch (error) {
-      logger.error('Failed to download evidence:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to download evidence:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       toast.error('İndirme başarısız', {
         description: 'Dosya indirilemedi.',
       });

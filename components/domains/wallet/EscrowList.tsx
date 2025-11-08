@@ -36,7 +36,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
-import { formatCurrency } from '@/lib/shared/formatters';
+import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 import type { Transaction } from '@/types/business/features/wallet';
 
 // ============================================================================
@@ -191,18 +191,6 @@ function determineEscrowStatus(
 function calculateAutoReleaseIn(daysInEscrow: number): number {
   const remaining = AUTO_RELEASE_DAYS - daysInEscrow;
   return remaining > 0 ? remaining : 0;
-}
-
-/**
- * Format date for display
- */
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('tr-TR', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
 }
 
 // ============================================================================

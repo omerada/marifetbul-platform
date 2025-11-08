@@ -1,4 +1,11 @@
 import { FileAttachment } from '@/types';
+import { formatFileSize } from '../formatters';
+
+// ============================================================================
+// Sprint 10: File Upload Constants
+// ============================================================================
+// Note: These constants are unused in the codebase (no imports found)
+// Kept for potential future use or can be removed in future sprint
 
 // Allowed file types for uploads
 export const ALLOWED_FILE_TYPES = [
@@ -31,18 +38,8 @@ export const ALLOWED_FILE_TYPES = [
   'application/xml',
 ];
 
-/**
- * Format file size in bytes to human readable format
- */
-export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
-
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
+// Re-export formatFileSize from canonical location
+export { formatFileSize };
 
 /**
  * Get file icon based on file type

@@ -1,20 +1,41 @@
 /**
  * ================================================
- * EVIDENCE UPLOAD COMPONENT
+ * EVIDENCE UPLOAD COMPONENT (DOMAIN-SPECIFIC)
  * ================================================
  * File upload component for dispute evidence
  *
+ * This is a DOMAIN-SPECIFIC component for dispute evidence uploads.
+ * Tailored for legal/dispute scenarios with specific validation rules.
+ *
  * Features:
  * - Drag & drop file upload
- * - Multiple file selection
- * - Image preview
- * - File validation (type, size)
- * - Cloudinary integration
+ * - Multiple file selection (images + PDFs)
+ * - Image preview for visual evidence
+ * - PDF/document support for written evidence
+ * - File validation (type, size - max 10MB)
+ * - Cloudinary integration with dispute-specific folder
  * - Progress indicator
  * - Remove uploaded files
+ * - Evidence-specific file type allowlist
+ *
+ * Use Cases:
+ * - Dispute evidence submission
+ * - Complaint file attachments
+ * - Legal document uploads for disputes
+ *
+ * For General Files: Use @/components/ui/FileUpload
+ * For Images Only: Use @/components/shared/ImageUpload
+ *
+ * @example
+ * <EvidenceUpload
+ *   files={evidence}
+ *   onFilesChange={handleEvidenceChange}
+ *   maxFiles={5}
+ *   maxSizeMB={10}
+ * />
  *
  * @author MarifetBul Development Team
- * @version 1.0.0 - Story 1.3: Evidence Upload Component
+ * @version 2.0.0 - Sprint 2: Domain-Specific Documentation
  */
 
 'use client';
@@ -23,6 +44,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import { X, Upload, FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
+import { formatFileSize } from '@/lib/shared/formatters';
 
 // ================================================
 // TYPES
@@ -261,17 +283,9 @@ export function EvidenceUpload({
     toast.success('Dosya Kaldırıldı');
   };
 
-  // Format file size
-  const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
-  };
-
   return (
     <div className="space-y-4">
+      {/* Upload Area */}
       {/* Upload Area */}
       <div
         onDragEnter={handleDragEnter}

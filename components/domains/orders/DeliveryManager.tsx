@@ -44,6 +44,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { formatFileSize } from '@/lib/shared/formatters';
 import { z } from 'zod';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
@@ -112,14 +113,6 @@ const rejectionReasonSchema = z.object({
 // ================================================
 // UTILITY FUNCTIONS
 // ================================================
-
-function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
-}
 
 function getFileIcon(type: string): React.ReactNode {
   if (type.startsWith('image/')) return '🖼️';

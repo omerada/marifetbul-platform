@@ -26,7 +26,7 @@ import type {
   JobFilters,
 } from '@/lib/api/jobs';
 import { errorHandler } from '@/lib/api/error-handler';
-import { logger } from '@/lib/shared/utils/logger';
+import { logger } from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES

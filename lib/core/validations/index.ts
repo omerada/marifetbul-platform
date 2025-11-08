@@ -261,6 +261,7 @@ export async function asyncValidate<T>(
 
 /**
  * Formats file size in human readable format
+ * @deprecated Use formatFileSize from '@/lib/shared/formatters' instead
  */
 export function formatFileSize(bytes: number): string {
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];

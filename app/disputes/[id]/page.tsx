@@ -39,6 +39,7 @@ import { Button, Loading } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { getDispute } from '@/lib/api/disputes';
 import { orderApi } from '@/lib/api/orders';
+import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 import type { DisputeResponse } from '@/types/dispute';
 import type { OrderResponse } from '@/types/backend-aligned';
 import {
@@ -55,24 +56,6 @@ import {
 // ================================================
 // HELPER FUNCTIONS
 // ================================================
-
-function formatCurrency(amount: number, currency: string = 'TRY'): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency,
-  }).format(amount);
-}
-
-function formatDate(dateStr: string | null | undefined): string {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('tr-TR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
 
 function getStatusColor(status: string): string {
   const colors: Record<string, string> = {

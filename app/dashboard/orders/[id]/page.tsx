@@ -42,6 +42,7 @@ import {
 import { RefundCreationForm } from '@/components/domains/refunds';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { orderApi } from '@/lib/api/orders';
+import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 import type { OrderResponse } from '@/types/backend-aligned';
 import { enrichOrder, type OrderWithComputed } from '@/types/backend-aligned';
 import { useWebSocket, useAuth, useOrderUpdates } from '@/hooks';
@@ -52,28 +53,6 @@ import type { DisputeResponse } from '@/types/dispute';
 import { DisputeCreationModal } from '@/components/domains/disputes/DisputeCreationModal';
 import { getRefundByOrderId } from '@/lib/api/refunds';
 import type { RefundDto } from '@/types/business/features/refund';
-
-// ================================================
-// HELPER FUNCTIONS
-// ================================================
-
-function formatCurrency(amount: number, currency: string = 'TRY'): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency,
-  }).format(amount);
-}
-
-function formatDate(dateStr: string | null | undefined): string {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('tr-TR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
 
 // ================================================
 // COMPONENT

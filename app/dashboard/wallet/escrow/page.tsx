@@ -8,13 +8,14 @@
  * - EscrowList with filtering and sorting
  * - EscrowDetailsModal for full details
  * - ReleaseEscrowFlow for payment release
- * - DisputeEscrowModal for dispute initiation
+ * - DisputeCreationModal for dispute initiation (migrated from DisputeEscrowModal)
  * - Real-time updates integration
  *
  * Sprint 1 - Epic 1.2 - Days 4-5
+ * Updated: Sprint 1 Task 1.1 - Duplicate Modal Cleanup (Nov 2025)
  * Test Page: /dashboard/wallet/escrow
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 'use client';
@@ -25,15 +26,13 @@ import {
   EscrowList,
   EscrowDetailsModal,
   ReleaseEscrowFlow,
-  DisputeEscrowModal,
   type EscrowItem,
 } from '@/components/domains/wallet';
+import { DisputeCreationModal } from '@/components/domains/disputes';
 import { useWalletData } from '@/hooks/business/wallet';
 import { Card } from '@/components/ui/Card';
 import { releaseEscrowPayment } from '@/lib/api/payment';
-import { raiseDispute } from '@/lib/api/disputes';
 import type { Transaction } from '@/types/business/features/wallet';
-import { DisputeReason } from '@/types/dispute';
 
 // ============================================================================
 // MAIN COMPONENT
@@ -90,38 +89,13 @@ export default function EscrowManagementPage() {
     }
   };
 
-  const handleDisputeSubmit = async (
-    escrowId: string,
-    reason: DisputeReason,
-    description: string
-  ) => {
-    try {
-      // Call backend API to create dispute
-      await raiseDispute({
-        orderId: escrowId,
-        reason: reason,
-        description: description,
-        evidenceUrls: [],
-      });
+  const handleDisputeSuccess = async () => {
+    // Refresh data after successful dispute creation
+    await refresh();
 
-      // Show success toast
-      toast.success('İhtilaf Başlatıldı', {
-        description: 'Moderatör ekibimiz en kısa sürede inceleyecektir.',
-      });
-
-      // Refresh data
-      await refresh();
-
-      // Close modals
-      setIsDisputeOpen(false);
-      setIsDetailsOpen(false);
-    } catch (error) {
-      console.error('Failed to create dispute:', error);
-
-      toast.error('İhtilaf Başlatılamadı', {
-        description: 'Bir hata oluştu. Lütfen tekrar deneyin.',
-      });
-    }
+    // Close modals
+    setIsDisputeOpen(false);
+    setIsDetailsOpen(false);
   };
 
   // Loading state
@@ -198,15 +172,18 @@ export default function EscrowManagementPage() {
         onConfirm={handleReleaseConfirm}
       />
 
-      {/* Dispute Escrow Modal */}
-      <DisputeEscrowModal
-        escrow={selectedEscrow}
-        isOpen={isDisputeOpen}
-        onClose={() => {
-          setIsDisputeOpen(false);
-        }}
-        onSubmit={handleDisputeSubmit}
-      />
+      {/* Dispute Creation Modal */}
+      {selectedEscrow && selectedEscrow.orderId && (
+        <DisputeCreationModal
+          orderId={selectedEscrow.orderId}
+          orderNumber={selectedEscrow.orderId}
+          isOpen={isDisputeOpen}
+          onClose={() => {
+            setIsDisputeOpen(false);
+          }}
+          onSuccess={handleDisputeSuccess}
+        />
+      )}
     </div>
   );
 }

@@ -1,7 +1,8 @@
 /**
  * Moderation Constants
  *
- * Centralized constants for moderation status, priorities, types, and mappings.
+ * Sprint 8: Import shared constants from moderation-dashboard canonical
+ * Keep only moderation-queue specific constants here
  */
 
 import {
@@ -17,49 +18,26 @@ import {
 } from 'lucide-react';
 
 // ============================================================================
-// Status Options
+// Sprint 8: Import from canonical moderation-dashboard constants
 // ============================================================================
+export {
+  STATUS_OPTIONS,
+  STATUS_COLORS,
+  STATUS_LABELS,
+  DEFAULT_FILTERS,
+} from '../../moderation-dashboard/utils/moderationConstants';
 
-export const STATUS_OPTIONS = [
-  { value: 'pending', label: 'Bekleyen' },
-  { value: 'approved', label: 'Onaylandı' },
-  { value: 'rejected', label: 'Reddedildi' },
-  { value: 'escalated', label: 'Escalated' },
-] as const;
-
-// ============================================================================
-// Priority Options
-// ============================================================================
-
-export const PRIORITY_OPTIONS = [
-  { value: 'critical', label: 'Kritik' },
-  { value: 'high', label: 'Yüksek' },
-  { value: 'medium', label: 'Orta' },
-  { value: 'low', label: 'Düşük' },
-] as const;
+// Alias: PRIORITY_OPTIONS -> SEVERITY_OPTIONS from canonical
+export {
+  SEVERITY_OPTIONS as PRIORITY_OPTIONS,
+  SEVERITY_COLORS as PRIORITY_COLORS,
+  SEVERITY_LABELS as PRIORITY_LABELS,
+} from '../../moderation-dashboard/utils/moderationConstants';
 
 // ============================================================================
-// Type Options
+// Moderation Queue Specific: Status Icons
 // ============================================================================
-
-export const TYPE_OPTIONS = [
-  { value: 'review', label: 'Yorum' },
-  { value: 'job', label: 'İş İlanı' },
-  { value: 'package', label: 'Paket' },
-  { value: 'message', label: 'Mesaj' },
-  { value: 'profile', label: 'Profil' },
-] as const;
-
-// ============================================================================
-// Status Color Mappings
-// ============================================================================
-
-export const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  approved: 'bg-green-100 text-green-800',
-  rejected: 'bg-red-100 text-red-800',
-  escalated: 'bg-purple-100 text-purple-800',
-} as const;
+// Note: Dashboard doesn't use STATUS_ICONS, but moderation queue does
 
 export const STATUS_ICONS: Record<string, typeof CheckCircle> = {
   pending: Clock,
@@ -69,15 +47,18 @@ export const STATUS_ICONS: Record<string, typeof CheckCircle> = {
 } as const;
 
 // ============================================================================
-// Priority Color Mappings
+// Moderation Queue Specific: Type Options
 // ============================================================================
+// Note: Different from MODERATION_TYPE_OPTIONS in dashboard
+// This is for content type filtering (review, job, package, etc.)
 
-export const PRIORITY_COLORS: Record<string, string> = {
-  critical: 'bg-red-100 text-red-800',
-  high: 'bg-orange-100 text-orange-800',
-  medium: 'bg-yellow-100 text-yellow-800',
-  low: 'bg-gray-100 text-gray-800',
-} as const;
+export const TYPE_OPTIONS = [
+  { value: 'review', label: 'Yorum' },
+  { value: 'job', label: 'İş İlanı' },
+  { value: 'package', label: 'Paket' },
+  { value: 'message', label: 'Mesaj' },
+  { value: 'profile', label: 'Profil' },
+] as const;
 
 // ============================================================================
 // Type Icon Mappings
@@ -92,7 +73,7 @@ export const TYPE_ICONS: Record<string, typeof Star> = {
 } as const;
 
 // ============================================================================
-// Default Values
+// Pagination (moderation-queue specific)
 // ============================================================================
 
 export const DEFAULT_PAGINATION = {
@@ -100,11 +81,4 @@ export const DEFAULT_PAGINATION = {
   limit: 20,
   total: 0,
   totalPages: 0,
-} as const;
-
-export const DEFAULT_FILTERS = {
-  status: [],
-  priority: [],
-  type: [],
-  search: '',
 } as const;

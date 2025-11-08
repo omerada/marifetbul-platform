@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Label } from '@/components/ui/Label';
 import FileUpload from '@/components/ui/FileUpload';
 import { useOrder } from '@/hooks/business/useOrder';
-import { uploadFile } from '@/lib/domains/media/fileUpload';
+import { fileUploadService } from '@/lib/services/file-upload.service';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface DeliverOrderModalProps {
@@ -65,13 +65,16 @@ export function DeliverOrderModal({
 
     try {
       const uploadPromises = files.map(async (file) => {
-        const result = await uploadFile(file);
+        const result = await fileUploadService.uploadFile(file, {
+          backend: 'cloudinary',
+          folder: 'marifetbul/order-deliveries',
+        });
         return {
           id: result.id,
           name: file.name,
-          url: result.url,
-          size: file.size,
-          type: file.type,
+          url: result.fileUrl,
+          size: result.fileSize,
+          type: result.fileType,
         };
       });
 

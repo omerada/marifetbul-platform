@@ -6,6 +6,10 @@
 
 import type { LucideIcon } from 'lucide-react';
 import { ICON_MAP, DEFAULT_ICON } from './categoryCardConstants';
+import {
+  formatCurrency as formatCurrencyCanonical,
+  formatNumber as formatNumberCanonical,
+} from '@/lib/shared/formatters';
 
 // ============================================================================
 // Formatting Helpers
@@ -13,20 +17,20 @@ import { ICON_MAP, DEFAULT_ICON } from './categoryCardConstants';
 
 /**
  * Format price in Turkish Lira
+ *
+ * @deprecated Sprint 6 - Use formatCurrency from @/lib/shared/formatters
  */
 export function formatPrice(price: number): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency: 'TRY',
-    minimumFractionDigits: 0,
-  }).format(price);
+  return formatCurrencyCanonical(price, 'TRY', { minimumFractionDigits: 0 });
 }
 
 /**
  * Format number with Turkish locale
+ *
+ * @deprecated Sprint 6 - Use formatNumber from @/lib/shared/formatters
  */
 export function formatNumber(num: number): string {
-  return new Intl.NumberFormat('tr-TR').format(num);
+  return formatNumberCanonical(num);
 }
 
 /**

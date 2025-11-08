@@ -8,6 +8,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { UnifiedApiClient, type PaginationMeta } from './UnifiedApiClient';
+import { isEmail } from '@/lib/shared/utils/validation';
 import type {
   BaseEntity,
   User,
@@ -418,8 +419,12 @@ export class UserRepository extends BaseRepository<
     }
   }
 
+  /**
+   * Email validation helper
+   * @deprecated Sprint 7 - Use isEmail from @/lib/shared/utils/validation
+   */
   private isValidEmail(email: string): boolean {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    return isEmail(email);
   }
 }
 

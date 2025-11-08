@@ -19,12 +19,12 @@ import userEvent from '@testing-library/user-event';
 import { toast } from 'sonner';
 import { DeliverOrderButton } from '@/components/domains/orders/DeliverOrderButton';
 import { orderApi } from '@/lib/api/orders';
-import { uploadMultipleFiles } from '@/lib/services/fileUploadService';
+import { fileUploadService } from '@/lib/services/file-upload.service';
 
 // Mock dependencies
 jest.mock('sonner');
 jest.mock('@/lib/api/orders');
-jest.mock('@/lib/services/fileUploadService');
+jest.mock('@/lib/services/file-upload.service');
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     refresh: jest.fn(),

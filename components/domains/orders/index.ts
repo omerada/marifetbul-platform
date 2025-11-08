@@ -12,8 +12,6 @@ export { RequestRevisionButton } from './RequestRevisionButton';
 export { DeliverOrderModal } from './DeliverOrderModal';
 export { ApproveDeliveryModal } from './ApproveDeliveryModal';
 export { RequestRevisionModal } from './RequestRevisionModal';
-export { RevisionRequestModal } from './RevisionRequestModal';
-export { DisputeModal } from './DisputeModal';
 export { AcceptOrderModal } from './AcceptOrderModal';
 export { DeliverySubmissionModal } from './DeliverySubmissionModal';
 export { CancelOrderModal } from './CancelOrderModal';

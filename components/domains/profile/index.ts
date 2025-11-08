@@ -25,6 +25,5 @@ export { PortfolioModal } from './PortfolioModal';
 // Reputation & Reviews
 export { ReputationScore } from './ReputationScore';
 export { ReviewCard } from './ReviewCard';
-export { ReviewForm } from './ReviewForm';
 export { ReviewList } from './ReviewList';
 export { ReviewReply } from './ReviewReply';

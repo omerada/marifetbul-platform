@@ -1,14 +1,9 @@
 import { apiClient } from '@/lib/infrastructure/api/client';
 
-/**
- * API Response wrapper
- */
-interface ApiResponse<T> {
-  success: boolean;
-  message?: string;
-  data: T;
-  timestamp?: string;
-}
+// ============================================================================
+// Sprint 9: Import canonical API types
+// ============================================================================
+import type { ApiResponse } from '@/types/infrastructure/api';
 
 export interface PrivacySettings {
   id: string;

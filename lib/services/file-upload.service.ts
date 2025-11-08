@@ -1,12 +1,25 @@
 /**
  * ================================================
- * FILE UPLOAD SERVICE
+ * FILE UPLOAD SERVICE (CANONICAL)
  * ================================================
  * Production-ready file upload service with progress tracking
  * Supports multiple storage backends (S3, Cloudinary, local)
  *
+ * This is the CANONICAL file upload service for MarifetBul.
+ * Other file upload utilities are deprecated and will be removed in Sprint 3.
+ *
+ * @example
+ * import { fileUploadService } from '@/lib/services/file-upload.service';
+ *
+ * const result = await fileUploadService.uploadFile(file, {
+ *   onProgress: (progress) => console.log(progress.progress),
+ *   backend: 'cloudinary',
+ *   folder: 'orders'
+ * });
+ *
  * @author MarifetBul Development Team
- * @version 1.0.0 - Story 6: File Upload/Download
+ * @version 2.0.0 - Sprint 2: Canonical Service
+ * @see Documentation: Story 6 - File Upload/Download
  */
 
 import { validateFileUpload } from '@/lib/domains/order/error-handling';

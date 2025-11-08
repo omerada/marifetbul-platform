@@ -1,20 +1,43 @@
 /**
  * ================================================
- * IMAGE UPLOAD COMPONENT
+ * IMAGE UPLOAD COMPONENT (CANONICAL FOR IMAGES)
  * ================================================
  * Production-ready image upload with Cloudinary integration
+ *
+ * This is the CANONICAL component for image uploads in MarifetBul.
+ * Use this for package images, portfolio images, and any image-centric uploads.
  *
  * Features:
  * - Drag & drop support
  * - Multiple file upload
- * - Image preview
+ * - Image preview with thumbnails
  * - Crop functionality
  * - Progress indication
- * - File validation
+ * - File validation (type, size)
  * - Cloudinary direct upload
+ * - Automatic thumbnail generation
+ *
+ * Use Cases:
+ * - Package creation/editing (images)
+ * - Portfolio uploads
+ * - Profile pictures
+ * - Any scenario requiring image preview
+ *
+ * For Simple Files: Use @/components/ui/FileUpload for documents/PDFs
+ * For Disputes: Use @/components/domains/disputes/EvidenceUpload
+ *
+ * @example
+ * <ImageUpload
+ *   value={images}
+ *   onChange={handleImagesChange}
+ *   maxImages={8}
+ *   maxFileSize={5 * 1024 * 1024}
+ *   uploadPreset="marifetbul_packages"
+ *   folder="marifetbul/packages"
+ * />
  *
  * @author MarifetBul Development Team
- * @version 1.0.0 - Sprint 27
+ * @version 2.0.0 - Sprint 2: Canonical Documentation
  */
 
 'use client';
@@ -221,7 +244,10 @@ export function ImageUpload({
           const uploadedImage = await uploadToCloudinary(file);
           newImages.push(uploadedImage);
         } catch (err) {
-          logger.error('Upload failed:', err instanceof Error ? err : new Error(String(err)));
+          logger.error(
+            'Upload failed:',
+            err instanceof Error ? err : new Error(String(err))
+          );
           setError(err instanceof Error ? err.message : 'Yükleme başarısız');
         }
       }
@@ -412,6 +438,7 @@ export function ImageUpload({
 
 /**
  * Format file size to human readable
+ * @deprecated Use formatFileSize from '@/lib/shared/formatters' instead
  */
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes';

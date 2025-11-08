@@ -23,7 +23,15 @@ import {
   isWithinInterval,
 } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import type { DashboardPeriod } from '../hooks/useDashboard';
+/**
+ * Dashboard Helper Functions
+ *
+ * Pure utility functions for dashboard data processing and display
+ */
+
+import type { TimeRange } from '@/types/shared/analytics/dashboard';
+import { isValidNumber as isValidNumberCanonical } from '@/lib/shared/formatters';
+import { formatCurrency as formatCurrencyCanonical } from '@/lib/shared/formatters';
 
 // ============================================================================
 // DATE HELPERS
@@ -118,20 +126,18 @@ export function isDateInPeriod(
 
 /**
  * Format currency value
+ *
+ * @deprecated Sprint 6 - Use canonical formatCurrency from @/lib/shared/formatters
+ * Kept as wrapper for backward compatibility during migration
  */
 export function formatCurrency(
   amount: number,
   currency: string = 'TRY',
   showSymbol: boolean = true
 ): string {
-  const formatted = new Intl.NumberFormat('tr-TR', {
-    style: showSymbol ? 'currency' : 'decimal',
-    currency: currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-
-  return formatted;
+  return formatCurrencyCanonical(amount, currency, {
+    useSymbol: showSymbol,
+  });
 }
 
 /**
@@ -352,8 +358,12 @@ export function groupByPeriod<T extends { createdAt: string | Date }>(
 /**
  * Check if value is valid number
  */
+/**
+ * Type guard for valid number
+ * @deprecated Sprint 7 - Use isValidNumber from @/lib/shared/formatters
+ */
 export function isValidNumber(value: unknown): value is number {
-  return typeof value === 'number' && !isNaN(value) && isFinite(value);
+  return isValidNumberCanonical(value);
 }
 
 /**

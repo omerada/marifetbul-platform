@@ -6,7 +6,12 @@
 
 import { getBackendApiUrl } from '@/lib/config/api';
 
-// Types for standardized API responses
+// ============================================================================
+// Sprint 9: Import canonical API types (extended for this client)
+// ============================================================================
+import type { ApiError as CanonicalApiError } from '@/types/infrastructure/api';
+
+// Types for standardized API responses (extended version)
 export interface ApiResponse<T = unknown> {
   data: T;
   success: boolean;
@@ -15,7 +20,11 @@ export interface ApiResponse<T = unknown> {
   meta?: ResponseMeta;
 }
 
-export interface ApiError {
+/**
+ * Extended API Error (specific to UnifiedApiClient)
+ * Extends canonical ApiError with field and details
+ */
+export interface ApiError extends CanonicalApiError {
   code: string;
   message: string;
   field?: string;

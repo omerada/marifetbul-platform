@@ -19,6 +19,7 @@
 'use client';
 
 import { Card } from '@/components/ui/Card';
+import { formatCurrency } from '@/lib/shared/formatters';
 import {
   DollarSign,
   Clock,
@@ -259,15 +260,4 @@ function LoadingSkeleton() {
       </div>
     </div>
   );
-}
-
-/**
- * Format currency helper
- */
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency: 'TRY',
-    minimumFractionDigits: 2,
-  }).format(amount);
 }

@@ -39,10 +39,10 @@ import {
   getSellerName,
   getBuyerName,
   getRevisionInfo,
-  formatCurrency,
-  formatDate,
-  type NormalizedOrder,
 } from '@/lib/utils/order-normalization';
+
+// Import canonical formatters
+import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 
 // ================================================
 // TYPES

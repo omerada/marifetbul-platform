@@ -1,11 +1,27 @@
 /**
  * File upload utilities
  * Production-ready file upload functionality with service integration
+ *
+ * @deprecated Sprint 3 - This file will be removed in future sprint
+ * @see Use '@/lib/services/file-upload.service' for file uploads (canonical)
+ * @see Use '@/lib/shared/utils/fileUpload' for file validation utilities
+ *
+ * Sprint 10 Note: No active consumers found, safe to remove in future sprint
+ *
+ * Migration Guide:
+ * - uploadFile() -> fileUploadService.uploadFile() from '@/lib/services/file-upload.service'
+ * - uploadFiles() -> fileUploadService.uploadFiles() from '@/lib/services/file-upload.service'
  */
 
 import { FileAttachment } from '@/types';
 import { getFileUploadService } from './fileUpload.service';
 import logger from '@/lib/infrastructure/monitoring/logger';
+
+// ============================================================================
+// Sprint 10: File type constants
+// ============================================================================
+// Note: Unused, lib/shared/utils/fileUpload has similar constants
+// Can be safely removed in future sprint
 
 // Allowed file types
 export const ALLOWED_FILE_TYPES = {
@@ -113,6 +129,7 @@ export function validateFiles(
 
 /**
  * Format file size for display
+ * @deprecated Use formatFileSize from '@/lib/shared/formatters' instead
  */
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes';

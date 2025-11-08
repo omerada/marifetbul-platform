@@ -306,59 +306,6 @@ export function getDeliveryInfo(order: OrderSource): {
 }
 
 // ================================================
-// FORMATTING UTILITIES
-// ================================================
-
-/**
- * Format currency amount
- *
- * @deprecated Since Sprint 3 Phase 3B (Nov 2025) - Use @/lib/shared/formatters instead
- * This is a local utility for order normalization only. Use the canonical version for consistency.
- *
- * **Migration:**
- * ```ts
- * import { formatCurrency } from '@/lib/shared/formatters';
- * ```
- *
- * **Timeline:** Will be removed in Sprint 4 (Dec 2025)
- */
-export function formatCurrency(
-  amount: number,
-  currency: string = 'TRY'
-): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency,
-  }).format(amount);
-}
-
-/**
- * Format date string
- */
-export function formatDate(dateStr?: string | null): string {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('tr-TR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
-}
-
-/**
- * Format date and time string
- */
-export function formatDateTime(dateStr?: string | null): string {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('tr-TR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
-// ================================================
 // RE-EXPORTS
 // ================================================
 

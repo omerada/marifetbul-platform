@@ -15,6 +15,7 @@ import type {
   StatusType,
   RiskLevelType,
 } from '../types/moderationAnalytics';
+import { formatCurrency as formatCurrencyCanonical } from '@/lib/shared/formatters';
 
 /**
  * Get trend icon component based on trend value
@@ -155,13 +156,13 @@ export function calculateWorkload(actionCount: number): WorkloadType {
 
 /**
  * Format currency amount
+ *
+ * @deprecated Sprint 6 - Use formatCurrency from @/lib/shared/formatters
+ * Kept as wrapper for backward compatibility
  */
 export function formatCurrency(
   amount: number,
   currency: string = 'TRY'
 ): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency,
-  }).format(amount);
+  return formatCurrencyCanonical(amount, currency);
 }

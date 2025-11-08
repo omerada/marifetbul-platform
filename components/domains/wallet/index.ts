@@ -86,10 +86,6 @@ export type { EscrowDetailsModalProps } from './EscrowDetailsModal';
 export { ReleaseEscrowFlow } from './ReleaseEscrowFlow';
 export type { ReleaseEscrowFlowProps } from './ReleaseEscrowFlow';
 
-export { DisputeEscrowModal } from './DisputeEscrowModal';
-export type { DisputeEscrowModalProps } from './DisputeEscrowModal';
-// Note: DisputeReason is imported from @/types/dispute in DisputeEscrowModal
-
 export { EscrowTimeline } from './EscrowTimeline';
 export type {
   EscrowTimelineProps,

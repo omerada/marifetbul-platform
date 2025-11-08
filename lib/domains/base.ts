@@ -1,4 +1,5 @@
 import logger from '@/lib/infrastructure/monitoring/logger';
+import { isEmail } from '@/lib/shared/utils/validation';
 
 export interface BaseServiceConfig {
   retryAttempts?: number;
@@ -191,9 +192,12 @@ export abstract class BaseService {
     return input.trim().replace(/[<>]/g, '');
   }
 
+  /**
+   * Email validation
+   * @deprecated Sprint 7 - Use isEmail from @/lib/shared/utils/validation
+   */
   protected isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return isEmail(email);
   }
 
   protected isValidUrl(url: string): boolean {

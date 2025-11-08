@@ -4,6 +4,7 @@
 // Enhanced type safety utilities with comprehensive guards
 
 import { JobBudget } from '@/types';
+import { isPhone as isPhoneCanonical } from './validation';
 
 // ================================================
 // BASIC TYPE GUARDS
@@ -246,10 +247,13 @@ export function getBudgetRange(budget: number | JobBudget): {
 // VALIDATION HELPERS
 // ================================================
 
+/**
+ * Validate phone number (Turkish format)
+ * @deprecated Sprint 7 - Wrapper for canonical validation
+ */
 export function isValidPhone(value: unknown): value is string {
   if (!isString(value)) return false;
-  const cleaned = value.replace(/\D/g, '');
-  return /^0[5][0-9]{9}$/.test(cleaned);
+  return isPhoneCanonical(value);
 }
 
 export function isValidTurkishId(value: unknown): value is string {

@@ -10,6 +10,11 @@
 
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { z } from 'zod';
+import {
+  isValidCreditCard as validateCreditCardCanonical,
+  getCreditCardType,
+  isValidIBAN as validateIBANCanonical,
+} from '@/lib/shared/utils/validation';
 
 // ============================================================================
 // TYPES & SCHEMAS
@@ -21,7 +26,16 @@ export enum PaymentMethodType {
   BANK_TRANSFER = 'BANK_TRANSFER',
 }
 
-export interface PaymentMethod {
+// ============================================================================
+// Sprint 8: Backend API PaymentMethod (adapter type)
+// ============================================================================
+// Note: Backend API uses different structure than domain PaymentMethod
+
+/**
+ * Backend API Payment Method response structure
+ * Different from domain PaymentMethod in types/business/features/payments.ts
+ */
+export interface ApiPaymentMethod {
   id: string;
   type: PaymentMethodType;
   maskedIdentifier: string;
@@ -39,6 +53,12 @@ export interface PaymentMethod {
   createdAt: string;
   updatedAt: string;
 }
+
+/**
+ * @deprecated Sprint 8 - Use ApiPaymentMethod for backend API
+ * Type alias for backward compatibility
+ */
+export type PaymentMethod = ApiPaymentMethod;
 
 export interface AddPaymentMethodRequest {
   type: PaymentMethodType;
@@ -282,74 +302,18 @@ export async function addBankAccount(data: {
 
 /**
  * Luhn Algorithm for credit card validation
- * https://en.wikipedia.org/wiki/Luhn_algorithm
+ * @deprecated Sprint 7 - Use isValidCreditCard from @/lib/shared/utils/validation
  */
 export function validateCreditCard(cardNumber: string): boolean {
-  const cleanNumber = cardNumber.replace(/\D/g, '');
-
-  if (cleanNumber.length < 13 || cleanNumber.length > 19) {
-    return false;
-  }
-
-  let sum = 0;
-  let isEven = false;
-
-  for (let i = cleanNumber.length - 1; i >= 0; i--) {
-    let digit = parseInt(cleanNumber.charAt(i), 10);
-
-    if (isEven) {
-      digit *= 2;
-      if (digit > 9) {
-        digit -= 9;
-      }
-    }
-
-    sum += digit;
-    isEven = !isEven;
-  }
-
-  return sum % 10 === 0;
+  return validateCreditCardCanonical(cardNumber);
 }
 
 /**
  * Detect card brand from card number
+ * @deprecated Sprint 7 - Use getCreditCardType from @/lib/shared/utils/validation
  */
 export function detectCardBrand(cardNumber: string): string | null {
-  const cleanNumber = cardNumber.replace(/\D/g, '');
-
-  // Visa: starts with 4
-  if (/^4/.test(cleanNumber)) {
-    return 'Visa';
-  }
-
-  // Mastercard: starts with 51-55 or 2221-2720
-  if (
-    /^5[1-5]/.test(cleanNumber) ||
-    /^222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720/.test(cleanNumber)
-  ) {
-    return 'Mastercard';
-  }
-
-  // American Express: starts with 34 or 37
-  if (/^3[47]/.test(cleanNumber)) {
-    return 'American Express';
-  }
-
-  // Discover: starts with 6011, 622126-622925, 644-649, 65
-  if (
-    /^6(?:011|5[0-9]{2}|4[4-9][0-9]|22(?:12[6-9]|1[3-9][0-9]|[2-8][0-9]{2}|9[01][0-9]|92[0-5]))/.test(
-      cleanNumber
-    )
-  ) {
-    return 'Discover';
-  }
-
-  // Troy (Turkey): starts with 9792
-  if (/^9792/.test(cleanNumber)) {
-    return 'Troy';
-  }
-
-  return null;
+  return getCreditCardType(cardNumber);
 }
 
 /**
@@ -395,10 +359,10 @@ export function validateCVV(cvv: string, cardType?: string): boolean {
 
 /**
  * Validate Turkish IBAN
+ * @deprecated Sprint 7 - Use isValidIBAN from @/lib/shared/utils/validation
  */
 export function validateIBAN(iban: string): boolean {
-  const cleanIBAN = iban.replace(/\s/g, '');
-  return /^TR\d{2}[A-Z0-9]{22}$/.test(cleanIBAN);
+  return validateIBANCanonical(iban);
 }
 
 // ============================================================================

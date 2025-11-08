@@ -1,16 +1,20 @@
 import { apiClient } from '@/lib/infrastructure/api/client';
 
-/**
- * API Response wrapper
- */
-interface ApiResponse<T> {
-  success: boolean;
-  message?: string;
-  data: T;
-  timestamp?: string;
-}
+// ============================================================================
+// Sprint 9: Import canonical API types
+// ============================================================================
+import type { ApiResponse } from '@/types/infrastructure/api';
 
-export interface PaymentMethod {
+// ============================================================================
+// Sprint 8: Backend API PaymentMethod (keep as adapter type)
+// ============================================================================
+// Note: This is the backend API response structure, different from domain type
+
+/**
+ * Backend API Payment Method structure
+ * This matches the backend response and uses different field names than domain type
+ */
+export interface ApiPaymentMethod {
   id: string;
   userId: string;
   type: 'CREDIT_CARD' | 'DEBIT_CARD' | 'BANK_TRANSFER' | 'WALLET' | 'OTHER';
@@ -30,6 +34,12 @@ export interface PaymentMethod {
   createdAt: string;
   updatedAt: string;
 }
+
+/**
+ * @deprecated Sprint 8 - Use ApiPaymentMethod for backend API responses
+ * Type alias for backward compatibility
+ */
+export type PaymentMethod = ApiPaymentMethod;
 
 export interface AddPaymentMethodRequest {
   type: 'CREDIT_CARD' | 'DEBIT_CARD' | 'BANK_TRANSFER' | 'WALLET' | 'OTHER';

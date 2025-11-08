@@ -15,14 +15,16 @@ import type { ApiResponse } from '@/types/shared/api';
 import { z } from 'zod';
 
 // ============================================================================
-// TYPES & VALIDATION
+// Sprint 9: Backend uses different pagination format
 // ============================================================================
+// Note: Backend returns 'content' instead of 'data', Spring Boot PageImpl format
 
 /**
- * Paginated Response (Backend format)
+ * Paginated Response (Spring Boot Backend format)
+ * Different from canonical PaginatedResponse
  */
 export interface PaginatedResponse<T> {
-  content: T[];
+  content: T[]; // Backend uses 'content' instead of 'data'
   pageNumber: number;
   pageSize: number;
   totalElements: number;
