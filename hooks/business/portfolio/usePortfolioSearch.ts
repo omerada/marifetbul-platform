@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
-import { useDebounce } from '@/hooks/shared/base';
+import { useDebounce } from '@/lib/shared/base';
 import type { PortfolioResponse } from '@/lib/api/portfolio';
 
 // ============================================================================

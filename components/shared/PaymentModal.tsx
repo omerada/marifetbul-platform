@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 import { X, CreditCard, Lock, AlertCircle, CheckCircle } from 'lucide-react';
-import { formatCurrency } from '@/types/business/features/wallet';
+import { formatCurrency } from '@/lib/shared/formatters';
 import { useIyzicoCheckout } from '@/hooks/business/payment';
 
 export interface PaymentModalProps {

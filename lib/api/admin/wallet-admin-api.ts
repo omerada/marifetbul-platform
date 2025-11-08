@@ -19,7 +19,6 @@ import type {
 // Sprint 1: Re-export canonical formatters for backward compatibility
 import {
   formatCurrency as canonicalFormatCurrency,
-  formatDate as canonicalFormatDate,
   formatRelativeTime as canonicalFormatRelativeTime,
 } from '@/lib/shared/formatters';
 
@@ -305,25 +304,12 @@ export const walletAdminApi = {
  */
 export const formatCurrency = canonicalFormatCurrency;
 
-/**
- * Format date in Turkish locale
- *
- * @deprecated Use formatDate from @/lib/shared/formatters directly
- * Re-exported for backward compatibility
- */
-export const formatDate = (dateString: string): string => {
-  return canonicalFormatDate(dateString, 'LONG', { includeTime: true });
-};
-
-/**
- * Format short date in Turkish locale
- *
- * @example
- * formatShortDate('2025-11-08T14:30:00') // "8 Kas 2025"
- */
-export const formatShortDate = (dateString: string): string => {
-  return canonicalFormatDate(dateString, 'SHORT');
-};
+// ================================================
+// REMOVED: formatDate, formatShortDate (Sprint 1 - Cleanup)
+// ================================================
+// Use canonical formatters instead:
+// import { formatDate } from '@/lib/shared/formatters';
+// ================================================
 
 /**
  * Get relative time (e.g., "2 saat önce")

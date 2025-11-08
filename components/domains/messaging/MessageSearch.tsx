@@ -15,7 +15,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { Search, X, ChevronUp, ChevronDown } from 'lucide-react';
-import { useDebounce } from '@/hooks/shared/base';
+import { useDebounce } from '@/lib/shared/base';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   searchMessages as apiSearchMessages,
@@ -103,7 +103,11 @@ export function MessageSearch({
         setCurrentIndex(0);
         onSearchResults?.(searchResults);
 
-        logger.info('Search completed', { querysearchQuery, resultCountsearchResultslength, hasFilters,  });
+        logger.info('Search completed', {
+          querysearchQuery,
+          resultCountsearchResultslength,
+          hasFilters,
+        });
       } catch (error) {
         logger.error('Search failed', error as Error);
         setResults([]);

@@ -6,7 +6,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import type { AutomationMetrics } from '../types/moderationAnalytics';
-import { formatCurrency, formatDuration } from '../utils/analyticsHelpers';
+import { formatCurrency } from '@/lib/shared/formatters';
+import { formatDuration } from '../utils/analyticsHelpers';
 
 interface AutomationTabProps {
   automation: AutomationMetrics;

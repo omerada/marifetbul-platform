@@ -13,7 +13,7 @@
 
 import { useWalletStore } from '@/stores/walletStore';
 import { useEffect, useMemo } from 'react';
-import { formatCurrency } from '@/types/business/features/wallet';
+import { formatCurrency } from '@/lib/shared/formatters';
 import type { BalanceResponse } from '@/lib/api/validators';
 
 // ================================================

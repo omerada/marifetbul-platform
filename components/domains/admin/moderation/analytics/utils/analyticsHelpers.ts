@@ -15,7 +15,6 @@ import type {
   StatusType,
   RiskLevelType,
 } from '../types/moderationAnalytics';
-import { formatCurrency as formatCurrencyCanonical } from '@/lib/shared/formatters';
 
 /**
  * Get trend icon component based on trend value
@@ -35,14 +34,7 @@ export function getTrendColor(trend: number): string {
   return 'text-gray-600';
 }
 
-/**
- * Format large numbers with K/M suffix
- */
-export function formatNumber(num: number): string {
-  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-  if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-  return num.toString();
-}
+// Sprint 1 Cleanup: formatNumber removed - use @/lib/shared/formatters
 
 /**
  * Format duration from minutes to readable format
@@ -154,15 +146,9 @@ export function calculateWorkload(actionCount: number): WorkloadType {
   return 'light';
 }
 
-/**
- * Format currency amount
- *
- * @deprecated Sprint 6 - Use formatCurrency from @/lib/shared/formatters
- * Kept as wrapper for backward compatibility
- */
-export function formatCurrency(
-  amount: number,
-  currency: string = 'TRY'
-): string {
-  return formatCurrencyCanonical(amount, currency);
-}
+// ================================================
+// REMOVED: formatCurrency (Sprint 1 - Cleanup)
+// ================================================
+// Use canonical formatter instead:
+// import { formatCurrency } from '@/lib/shared/formatters';
+// ================================================

@@ -44,7 +44,7 @@ import {
 import { Button } from '@/components/ui';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
-import { formatCurrency } from '@/lib/shared/formatters';
+import { formatCurrency, formatIBAN } from '@/lib/shared/formatters';
 import { PayoutMethod } from '@/types/business/features/wallet';
 
 // ============================================================================
@@ -129,13 +129,7 @@ const PAYOUT_METHODS: {
 // HELPER FUNCTIONS
 // ============================================================================
 
-/**
- * Format IBAN for display (TR** **** **** **** **** **** **)
- */
-function formatIBAN(iban: string): string {
-  const cleaned = iban.replace(/\s/g, '');
-  return cleaned.replace(/(.{4})/g, '$1 ').trim();
-}
+// Sprint 1 Cleanup: Local formatIBAN removed - using canonical formatter
 
 /**
  * Validate amount

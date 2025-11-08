@@ -31,6 +31,7 @@ import {
   Grid,
   List,
 } from 'lucide-react';
+import { formatFileSize } from '@/lib/shared/formatters';
 
 // ================================================
 // TYPES
@@ -81,27 +82,27 @@ const getFileIcon = (fileType?: string, fileName?: string) => {
   return <File className="h-5 w-5 text-gray-400" />;
 };
 
-const formatFileSize = (bytes?: number) => {
-  if (!bytes) return '';
-
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-};
+// Sprint 1 Cleanup: Local formatFileSize removed - using canonical formatter
 
 const isImageFile = (fileType?: string, fileName?: string) => {
   if (!fileType && fileName) {
     fileType = fileName.split('.').pop()?.toLowerCase();
   }
 
-  return !!fileType?.match(/^(image\/(jpeg|jpg|png|gif|webp|svg)|jpg|jpeg|png|gif|webp|svg)$/i);
+  return !!fileType?.match(
+    /^(image\/(jpeg|jpg|png|gif|webp|svg)|jpg|jpeg|png|gif|webp|svg)$/i
+  );
 };
 
 // ================================================
 // SUB-COMPONENTS
 // ================================================
 
-function AttachmentGridItem({ attachment, showUploadInfo, enableDownload }: {
+function AttachmentGridItem({
+  attachment,
+  showUploadInfo,
+  enableDownload,
+}: {
   attachment: Attachment;
   showUploadInfo: boolean;
   enableDownload: boolean;
@@ -133,7 +134,7 @@ function AttachmentGridItem({ attachment, showUploadInfo, enableDownload }: {
         </p>
         {attachment.fileSize && (
           <p className="text-xs text-gray-500">
-            {formatFileSize(attachment.fileSize)}
+            {attachment.fileSize ? formatFileSize(attachment.fileSize) : ''}
           </p>
         )}
         {showUploadInfo && attachment.uploadedAt && (
@@ -145,7 +146,7 @@ function AttachmentGridItem({ attachment, showUploadInfo, enableDownload }: {
 
       {/* Actions */}
       {enableDownload && (
-        <div className="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+        <div className="absolute top-2 right-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
           <a
             href={attachment.fileUrl}
             target="_blank"
@@ -167,7 +168,11 @@ function AttachmentGridItem({ attachment, showUploadInfo, enableDownload }: {
   );
 }
 
-function AttachmentListItem({ attachment, showUploadInfo, enableDownload }: {
+function AttachmentListItem({
+  attachment,
+  showUploadInfo,
+  enableDownload,
+}: {
   attachment: Attachment;
   showUploadInfo: boolean;
   enableDownload: boolean;
@@ -185,11 +190,15 @@ function AttachmentListItem({ attachment, showUploadInfo, enableDownload }: {
           {attachment.fileName}
         </p>
         <div className="flex items-center gap-2 text-xs text-gray-500">
-          {attachment.fileSize && <span>{formatFileSize(attachment.fileSize)}</span>}
+          {attachment.fileSize && (
+            <span>{formatFileSize(attachment.fileSize)}</span>
+          )}
           {showUploadInfo && attachment.uploadedAt && (
             <>
               <span>•</span>
-              <span>{new Date(attachment.uploadedAt).toLocaleDateString('tr-TR')}</span>
+              <span>
+                {new Date(attachment.uploadedAt).toLocaleDateString('tr-TR')}
+              </span>
             </>
           )}
           {showUploadInfo && attachment.uploadedBy && (

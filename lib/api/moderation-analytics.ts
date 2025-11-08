@@ -14,7 +14,8 @@
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
-import { formatPercentage as formatPercentageCanonical } from '@/lib/shared/formatters';
+
+// Sprint 1: formatPercentageCanonical import removed (no longer used)
 
 // ================================================
 // TYPES & INTERFACES
@@ -485,28 +486,7 @@ export function formatDuration(minutes: number): string {
   return hours > 0 ? `${days}g ${hours}s` : `${days}g`;
 }
 
-/**
- * Format percentage with color
- *
- * @deprecated Sprint 6 - Custom showSign logic wrapper
- */
-export function formatPercentage(
-  value: number,
-  options: { decimals?: number; showSign?: boolean } = {}
-): string {
-  const decimals = options.decimals ?? 1;
-  const showSign = options.showSign ?? false;
-
-  const formatted = formatPercentageCanonical(value / 100, {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
-
-  if (showSign && value > 0) {
-    return `+${formatted}`;
-  }
-  return formatted;
-}
+// Sprint 1 Cleanup: formatPercentage removed - use @/lib/shared/formatters
 
 /**
  * Get workload status color

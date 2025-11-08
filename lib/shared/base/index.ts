@@ -1,7 +1,24 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
-// Base hooks
+// ================================================
+// CUSTOM HOOKS - RE-EXPORTED FROM CANONICAL SOURCE
+// ================================================
+// All custom hooks consolidated in @/hooks/shared/base
+// Import from there for the most up-to-date implementations
+export {
+  useDebounce,
+  useDebouncedCallback,
+  useMediaQuery,
+  usePrevious,
+  useIntersectionObserver,
+} from '@/hooks/shared/base';
+
+// ================================================
+// LOCAL UTILITY HOOKS
+// ================================================
+
+// useLocalStorage - Client-side localStorage management
 export const useLocalStorage = <T>(key: string, initialValue: T) => {
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
@@ -41,26 +58,7 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
   return [storedValue, setValue] as const;
 };
 
-// useDebounce and useThrottle moved to shared/utils/async.ts
-// Use: import { debounce, throttle } from '@/lib/shared/utils/async'
-// For React hooks, these are specific hook implementations
-
-export const useDebounce = <T>(value: T, delay: number): T => {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-};
-
+// useThrottle - Throttled callback execution
 export const useThrottle = <T extends (...args: unknown[]) => unknown>(
   callback: T,
   delay: number
@@ -78,42 +76,7 @@ export const useThrottle = <T extends (...args: unknown[]) => unknown>(
   );
 };
 
-// Additional UI hooks
-export const useMediaQuery = (query: string): boolean => {
-  const [matches, setMatches] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const media = window.matchMedia(query);
-      if (media.matches !== matches) {
-        setMatches(media.matches);
-      }
-      const listener = () => setMatches(media.matches);
-      media.addEventListener('change', listener);
-      return () => media.removeEventListener('change', listener);
-    }
-  }, [matches, query]);
-
-  return matches;
-};
-
-export const useDebouncedCallback = <T extends (...args: unknown[]) => unknown>(
-  callback: T,
-  delay: number
-): T => {
-  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
-
-  return useCallback(
-    ((...args) => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      timeoutRef.current = setTimeout(() => callback(...args), delay);
-    }) as T,
-    [callback, delay]
-  );
-};
-
+// useThrottledCallback - Alias for useThrottle (for backward compatibility)
 export const useThrottledCallback = <T extends (...args: unknown[]) => unknown>(
   callback: T,
   delay: number
@@ -121,36 +84,9 @@ export const useThrottledCallback = <T extends (...args: unknown[]) => unknown>(
   return useThrottle(callback, delay);
 };
 
-export const useIntersectionObserver = (
-  elementRef: React.RefObject<Element>,
-  options?: IntersectionObserverInit
-) => {
-  const [isIntersecting, setIsIntersecting] = useState(false);
-
-  useEffect(() => {
-    if (!elementRef.current) return;
-
-    const observer = new IntersectionObserver(([entry]) => {
-      setIsIntersecting(entry.isIntersecting);
-    }, options);
-
-    observer.observe(elementRef.current);
-
-    return () => observer.disconnect();
-  }, [elementRef, options]);
-
-  return isIntersecting;
-};
-
-export const usePrevious = <T>(value: T): T | undefined => {
-  const ref = useRef<T | undefined>(undefined);
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-};
-
-// API hooks
+// ================================================
+// API & ASYNC OPERATION HOOKS
+// ================================================
 export const useAsyncOperation = <T, Args extends unknown[] = []>(
   operation: (...args: Args) => Promise<T>
 ) => {

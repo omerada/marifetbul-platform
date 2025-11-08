@@ -43,7 +43,11 @@ import {
 } from '@/components/ui/Dialog';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
-import { formatCurrency } from '@/lib/shared/formatters';
+import {
+  formatCurrency,
+  formatDate,
+  formatRelativeTime,
+} from '@/lib/shared/formatters';
 import type { EscrowItem } from './EscrowList';
 
 // ============================================================================
@@ -85,36 +89,7 @@ interface TimelineEvent {
 // HELPER FUNCTIONS
 // ============================================================================
 
-/**
- * Format date for display
- */
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('tr-TR', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
-/**
- * Format relative time
- */
-function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) return 'Bugün';
-  if (diffDays === 1) return 'Dün';
-  if (diffDays < 7) return `${diffDays} gün önce`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} hafta önce`;
-  if (diffDays < 365) return `${Math.floor(diffDays / 30)} ay önce`;
-  return `${Math.floor(diffDays / 365)} yıl önce`;
-}
+// Sprint 1 Cleanup: Local formatDate and formatRelativeTime removed - using canonical formatters
 
 /**
  * Generate timeline events from escrow data
@@ -297,7 +272,7 @@ export function EscrowDetailsModal({
                 <span>Oluşturulma Tarihi</span>
               </div>
               <div className="text-sm font-medium">
-                {formatDate(escrow.createdAt)}
+                {formatDate(escrow.createdAt, 'DATETIME')}
               </div>
               <div className="text-muted-foreground text-xs">
                 {formatRelativeTime(escrow.createdAt)}
@@ -328,7 +303,7 @@ export function EscrowDetailsModal({
                   <span>Serbest Bırakılma Tarihi</span>
                 </div>
                 <div className="text-sm font-medium">
-                  {formatDate(escrow.releaseDate)}
+                  {formatDate(escrow.releaseDate, 'DATETIME')}
                 </div>
                 <div className="text-muted-foreground text-xs">
                   {formatRelativeTime(escrow.releaseDate)}
@@ -410,7 +385,7 @@ export function EscrowDetailsModal({
                           )}
                         </div>
                         <div className="text-muted-foreground mt-2 text-xs">
-                          {formatDate(event.date)}
+                          {formatDate(event.date, 'DATETIME')}
                         </div>
                       </div>
                     </div>

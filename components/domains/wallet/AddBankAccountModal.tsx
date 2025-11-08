@@ -16,7 +16,7 @@ import {
   useBankAccounts,
   type AddBankAccountRequest,
 } from '@/hooks/business/wallet/useBankAccounts';
-import { validateIBAN } from '@/lib/api/payment-method';
+import { isValidIBAN } from '@/lib/shared/utils/validation';
 import { formatIBAN } from '@/lib/utils/iban-validator';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 
@@ -80,7 +80,7 @@ export const AddBankAccountModal: React.FC<AddBankAccountModalProps> = ({
       newErrors.iban = 'IBAN numarası gerekli';
     } else {
       const cleanIBAN = formData.iban.replace(/\s/g, '');
-      if (!validateIBAN(cleanIBAN)) {
+      if (!isValidIBAN(cleanIBAN)) {
         newErrors.iban =
           'Geçersiz IBAN formatı (TR00 0000 0000 0000 0000 0000 00)';
       }

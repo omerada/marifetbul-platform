@@ -23,10 +23,8 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { useTransactions } from '@/hooks/business/wallet';
-import {
-  TransactionType,
-  formatCurrency,
-} from '@/types/business/features/wallet';
+import { TransactionType } from '@/types/business/features/wallet';
+import { formatCurrency, formatRelativeTime } from '@/lib/shared/formatters';
 import Link from 'next/link';
 
 // ================================================
@@ -91,25 +89,7 @@ function getTransactionLabel(type: TransactionType): string {
   return labels[type] || type;
 }
 
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 1) return 'Az önce';
-  if (diffMins < 60) return `${diffMins} dakika önce`;
-  if (diffHours < 24) return `${diffHours} saat önce`;
-  if (diffDays < 7) return `${diffDays} gün önce`;
-
-  return date.toLocaleDateString('tr-TR', {
-    day: 'numeric',
-    month: 'short',
-    year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
-  });
-}
+// Sprint 1 Cleanup: Local formatDate removed - using formatRelativeTime from canonical formatters
 
 // ================================================
 // COMPONENT
@@ -202,7 +182,7 @@ export const RecentTransactionsWidget: React.FC<
                     </p>
                     <div className="mt-0.5 flex items-center gap-2">
                       <p className="text-muted-foreground text-xs">
-                        {formatDate(transaction.createdAt)}
+                        {formatRelativeTime(transaction.createdAt)}
                       </p>
                       {transaction.description && (
                         <>

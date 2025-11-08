@@ -6,40 +6,16 @@
 
 import type { LucideIcon } from 'lucide-react';
 import { ICON_MAP, DEFAULT_ICON } from './categoryCardConstants';
-import {
-  formatCurrency as formatCurrencyCanonical,
-  formatNumber as formatNumberCanonical,
-} from '@/lib/shared/formatters';
+
+// Sprint 1: All formatter imports removed - use @/lib/shared/formatters directly
 
 // ============================================================================
 // Formatting Helpers
 // ============================================================================
 
-/**
- * Format price in Turkish Lira
- *
- * @deprecated Sprint 6 - Use formatCurrency from @/lib/shared/formatters
- */
-export function formatPrice(price: number): string {
-  return formatCurrencyCanonical(price, 'TRY', { minimumFractionDigits: 0 });
-}
-
-/**
- * Format number with Turkish locale
- *
- * @deprecated Sprint 6 - Use formatNumber from @/lib/shared/formatters
- */
-export function formatNumber(num: number): string {
-  return formatNumberCanonical(num);
-}
-
-/**
- * Truncate text to specified length
- */
-export function truncateText(text: string, maxLength: number = 100): string {
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength).trim() + '...';
-}
+// Sprint 1 Cleanup: formatPrice removed - use formatCurrency from @/lib/shared/formatters
+// Sprint 1 Cleanup: formatNumber removed - use @/lib/shared/formatters
+// Sprint 1 Cleanup: truncateText removed - use @/lib/shared/formatters
 
 // ============================================================================
 // Icon Helpers

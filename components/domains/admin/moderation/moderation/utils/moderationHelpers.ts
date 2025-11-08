@@ -11,7 +11,8 @@ import {
   TYPE_ICONS,
 } from './moderationConstants';
 import type { ModerationFilters } from '../types/moderationTypes';
-import { formatDate as formatDateCanonical } from '@/lib/shared/formatters';
+
+// Sprint 1 Cleanup: formatDateCanonical import removed (no longer used)
 
 // ============================================================================
 // Color & Style Helpers
@@ -49,33 +50,7 @@ export function getStatusIconComponent(status: string) {
 // Formatting Helpers
 // ============================================================================
 
-/**
- * Format date to Turkish locale
- *
- * @deprecated Sprint 6 - Use formatDate from @/lib/shared/formatters
- * Kept as wrapper for error handling during migration
- */
-export function formatDate(dateString: string): string {
-  try {
-    return formatDateCanonical(dateString, 'SHORT');
-  } catch {
-    return 'Bilinmeyen tarih';
-  }
-}
-
-/**
- * Format datetime to Turkish locale with time
- *
- * @deprecated Sprint 6 - Use formatDate(..., 'DATETIME') from @/lib/shared/formatters
- * Kept as wrapper for error handling during migration
- */
-export function formatDateTime(dateString: string): string {
-  try {
-    return formatDateCanonical(dateString, 'DATETIME');
-  } catch {
-    return 'Bilinmeyen tarih';
-  }
-}
+// Sprint 1 Cleanup: formatDate and formatDateTime removed - use formatDate from @/lib/shared/formatters directly
 
 /**
  * Format status label for display
@@ -103,13 +78,7 @@ export function formatPriorityLabel(priority: string): string {
   return labels[priority] || priority;
 }
 
-/**
- * Truncate text with ellipsis
- */
-export function truncateText(text: string, maxLength: number = 100): string {
-  if (!text || text.length <= maxLength) return text || '';
-  return `${text.substring(0, maxLength)}...`;
-}
+// Sprint 1 Cleanup: truncateText removed - use @/lib/shared/formatters
 
 // ============================================================================
 // API Utility Helpers

@@ -11,6 +11,7 @@
 
 import { useCallback, useState } from 'react';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import { sleep } from '@/lib/shared/utils/async';
 
 // ================================================
 // TYPES
@@ -123,12 +124,7 @@ function defaultIsRetryable(error: Error): boolean {
   return false;
 }
 
-/**
- * Sleep for specified milliseconds
- */
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+// Sprint 1 Cleanup: Local sleep removed - using @/lib/shared/utils/async
 
 // ================================================
 // HOOK

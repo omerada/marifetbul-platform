@@ -259,16 +259,7 @@ export async function asyncValidate<T>(
 // UTILITY FUNCTIONS
 // ================================================
 
-/**
- * Formats file size in human readable format
- * @deprecated Use formatFileSize from '@/lib/shared/formatters' instead
- */
-export function formatFileSize(bytes: number): string {
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  if (bytes === 0) return '0 Bytes';
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i];
-}
+// Sprint 1 Cleanup: formatFileSize removed - use @/lib/shared/formatters
 
 /**
  * Debounces validation function calls
@@ -319,8 +310,7 @@ const UnifiedValidation = {
   formatValidationErrors,
   createFormValidator,
   asyncValidate,
-  formatFileSize,
-  debounceValidation,
+  debounceValidation, // Sprint 1: formatFileSize removed
   createValidationChain,
 };
 

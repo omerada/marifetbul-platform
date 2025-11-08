@@ -23,6 +23,7 @@ import {
   isWithinInterval,
 } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import { formatPercentage as canonicalFormatPercentage } from '@/lib/shared/formatters';
 /**
  * Dashboard Helper Functions
  *
@@ -30,8 +31,14 @@ import { tr } from 'date-fns/locale';
  */
 
 import type { TimeRange } from '@/types/shared/analytics/dashboard';
-import { isValidNumber as isValidNumberCanonical } from '@/lib/shared/formatters';
-import { formatCurrency as formatCurrencyCanonical } from '@/lib/shared/formatters';
+import type { TrendDirection, TrendIndicator } from '../types/dashboard.types';
+import {
+  isValidNumber as isValidNumberCanonical,
+  formatCurrency,
+} from '@/lib/shared/formatters';
+
+// Type definitions
+export type DashboardPeriod = 'week' | 'month' | 'quarter' | 'year';
 
 // ============================================================================
 // DATE HELPERS
@@ -123,34 +130,10 @@ export function isDateInPeriod(
 // ============================================================================
 // NUMBER FORMATTING
 // ============================================================================
+// FORMATTING HELPERS
+// ============================================================================
 
-/**
- * Format currency value
- *
- * @deprecated Sprint 6 - Use canonical formatCurrency from @/lib/shared/formatters
- * Kept as wrapper for backward compatibility during migration
- */
-export function formatCurrency(
-  amount: number,
-  currency: string = 'TRY',
-  showSymbol: boolean = true
-): string {
-  return formatCurrencyCanonical(amount, currency, {
-    useSymbol: showSymbol,
-  });
-}
-
-/**
- * Format percentage value
- */
-export function formatPercentage(
-  value: number,
-  decimals: number = 1,
-  showSign: boolean = true
-): string {
-  const sign = showSign && value > 0 ? '+' : '';
-  return `${sign}${value.toFixed(decimals)}%`;
-}
+// Sprint 1 Cleanup: formatPercentage removed - use @/lib/shared/formatters
 
 /**
  * Format large numbers (K, M, B)
@@ -186,7 +169,7 @@ export function formatStatValue(
     case 'currency':
       return formatCurrency(value, currency);
     case 'percentage':
-      return formatPercentage(value);
+      return canonicalFormatPercentage(value / 100); // Convert raw % to 0-1 range
     case 'compact':
       return formatCompactNumber(value);
     case 'number':
@@ -198,7 +181,6 @@ export function formatStatValue(
 // ============================================================================
 // TREND CALCULATIONS
 // ============================================================================
-import type { TrendDirection, TrendIndicator } from '../types/dashboard.types';
 
 /**
  * Calculate trend between two values

@@ -45,6 +45,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { formatCurrency } from '@/lib/shared/formatters';
 
 // ================================================
 // TYPES
@@ -91,17 +92,8 @@ export interface RevenueForecastWidgetProps {
 // UTILITY FUNCTIONS
 // ================================================
 
-/**
- * Format currency for Turkish locale
- */
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency: 'TRY',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
+// REMOVED: formatCurrency (Sprint 1 - Cleanup)
+// Now using canonical formatter from @/lib/shared/formatters
 
 /**
  * Get trend color and icon

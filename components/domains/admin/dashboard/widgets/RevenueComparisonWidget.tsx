@@ -46,6 +46,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { formatCurrency, formatPercentage } from '@/lib/shared/formatters';
 
 // ================================================
 // TYPES
@@ -96,27 +97,10 @@ export interface RevenueComparisonWidgetProps {
 }
 
 // ================================================
-// UTILITY FUNCTIONS
+// REMOVED: Local utility functions (Sprint 1 - Cleanup)
 // ================================================
-
-/**
- * Format currency for Turkish locale
- */
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency: 'TRY',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
-
-/**
- * Format percentage with sign
- */
-function formatPercentage(value: number): string {
-  return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
-}
+// Now using canonical formatters from @/lib/shared/formatters
+// ================================================
 
 /**
  * Get performance color classes
@@ -395,7 +379,7 @@ export function RevenueComparisonWidget({
             >
               {revenueIndicator.icon}
               <span>
-                {formatPercentage(comparison.revenueChangePercentage)}
+                {formatPercentage(comparison.revenueChangePercentage / 100)}
               </span>
             </div>
           </div>
@@ -435,7 +419,9 @@ export function RevenueComparisonWidget({
             >
               {transactionsIndicator.icon}
               <span>
-                {formatPercentage(comparison.transactionsChangePercentage)}
+                {formatPercentage(
+                  comparison.transactionsChangePercentage / 100
+                )}
               </span>
             </div>
           </div>
@@ -465,7 +451,9 @@ export function RevenueComparisonWidget({
               )}
             >
               {aovIndicator.icon}
-              <span>{formatPercentage(comparison.aovChangePercentage)}</span>
+              <span>
+                {formatPercentage(comparison.aovChangePercentage / 100)}
+              </span>
             </div>
           </div>
         </div>

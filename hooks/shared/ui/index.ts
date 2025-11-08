@@ -411,7 +411,10 @@ export function useClipboard() {
       setTimeout(() => setCopied(false), 2000);
       return true;
     } catch (error) {
-      logger.error('Failed to copy text:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to copy text:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return false;
     }
   }, []);

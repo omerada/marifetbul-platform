@@ -18,10 +18,13 @@ import { Badge } from '@/components/ui/Badge';
 import { DashboardWidgetCard } from '@/components/shared/dashboard';
 import { StatsCard } from '@/components/domains/dashboard/widgets/StatsCard';
 import { useAdminDashboard } from '@/hooks';
+import {
+  formatPercentage,
+  formatNumber as canonicalFormatNumber,
+} from '@/lib/shared/formatters';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
-const formatPercentage = (value: number, decimals = 1): string =>
-  `${value.toFixed(decimals)}%`;
+// Sprint 1 Cleanup: Local formatPercentage and formatNumber removed - using canonical formatters
 
 export interface SearchAnalyticsWidgetProps {
   days?: number;
@@ -29,8 +32,8 @@ export interface SearchAnalyticsWidgetProps {
   refreshInterval?: number; // Deprecated - kept for backward compatibility
 }
 
-const formatNumber = (num: number) =>
-  new Intl.NumberFormat('tr-TR').format(num);
+// Sprint 1: formatNumber wrapper for backward compatibility
+const formatNumber = (num: number) => canonicalFormatNumber(num);
 
 const TopQueriesList = memo(function TopQueriesList({
   keywords,
@@ -113,7 +116,10 @@ export function SearchAnalyticsWidget({
 
   useMemo(() => {
     if (searchMetrics) {
-      logger.debug('SearchAnalyticsWidget: Data from store', { totalSearchessearchMetricstotalSearches, hasKeywordssearchMetricstopKeywordslength0,  });
+      logger.debug('SearchAnalyticsWidget: Data from store', {
+        totalSearchessearchMetricstotalSearches,
+        hasKeywordssearchMetricstopKeywordslength0,
+      });
     }
   }, [searchMetrics]);
 
@@ -163,7 +169,7 @@ export function SearchAnalyticsWidget({
               data={{
                 id: 'click-through-rate',
                 title: 'Click-Through Rate',
-                value: formatPercentage(displayMetrics.clickThroughRate),
+                value: formatPercentage(displayMetrics.clickThroughRate / 100),
                 icon: MousePointerClick,
                 iconColor: 'green',
                 trend: {
@@ -178,7 +184,7 @@ export function SearchAnalyticsWidget({
               data={{
                 id: 'conversion-rate',
                 title: 'Conversion Rate',
-                value: formatPercentage(displayMetrics.conversionRate),
+                value: formatPercentage(displayMetrics.conversionRate / 100),
                 subtitle: 'Search to order',
                 icon: ShoppingCart,
                 iconColor: 'purple',
@@ -193,7 +199,7 @@ export function SearchAnalyticsWidget({
               data={{
                 id: 'zero-results',
                 title: 'Zero Results',
-                value: formatPercentage(displayMetrics.zeroResultRate),
+                value: formatPercentage(displayMetrics.zeroResultRate / 100),
                 subtitle: `${formatNumber(displayMetrics.zeroResultSearches)} searches`,
                 icon: AlertCircle,
                 iconColor: displayMetrics.zeroResultRate > 10 ? 'red' : 'gray',

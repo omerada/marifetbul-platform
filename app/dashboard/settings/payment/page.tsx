@@ -28,6 +28,7 @@ import {
   type PaymentMethod,
   type AddPaymentMethodRequest,
 } from '@/lib/api/payment-method';
+import { isValidCreditCard } from '@/lib/shared/utils/validation';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
@@ -342,7 +343,7 @@ function AddPaymentMethodModal({
         const cleanNumber = cardNumber.replace(/\D/g, '');
 
         // Validate card
-        if (!paymentMethodApi.validateCreditCard(cleanNumber)) {
+        if (!isValidCreditCard(cleanNumber)) {
           throw new Error('Geçersiz kart numarası');
         }
 

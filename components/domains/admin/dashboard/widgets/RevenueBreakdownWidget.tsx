@@ -45,6 +45,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { formatCurrency, formatPercentage } from '@/lib/shared/formatters';
 
 // ================================================
 // TYPES
@@ -108,24 +109,8 @@ export interface RevenueBreakdownWidgetProps {
 // UTILITY FUNCTIONS
 // ================================================
 
-/**
- * Format currency for Turkish locale
- */
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency: 'TRY',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
-
-/**
- * Format percentage with sign
- */
-function formatPercentage(value: number): string {
-  return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
-}
+// REMOVED: formatCurrency, formatPercentage (Sprint 1 - Cleanup)
+// Now using canonical formatters from @/lib/shared/formatters
 
 /**
  * Get health status color classes
@@ -330,7 +315,7 @@ export function RevenueBreakdownWidget({
                 )}
               >
                 {getTrendIcon(growth.trend)}
-                <span>{formatPercentage(growth.percentage)}</span>
+                <span>{formatPercentage(growth.percentage / 100)}</span>
               </div>
             </div>
             <div className="rounded-full bg-blue-100 p-3 dark:bg-blue-900/30">

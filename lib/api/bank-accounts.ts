@@ -267,6 +267,7 @@ export function isValidTurkishIban(iban: string): boolean {
  * Format IBAN with spaces for display
  * TR33 0006 1005 1978 6457 8413 26
  *
+ * @deprecated Sprint 1 - Use formatIBAN from @/lib/shared/formatters
  * @param iban IBAN to format
  * @returns Formatted IBAN with spaces
  */

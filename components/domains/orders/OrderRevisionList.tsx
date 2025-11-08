@@ -36,8 +36,7 @@ import {
 import { orderApi, type OrderRevisionResponse } from '@/lib/api/orders';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
-import { tr } from 'date-fns/locale';
+import { formatDate } from '@/lib/shared/formatters';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
@@ -88,14 +87,7 @@ const getStatusIcon = (status: RevisionStatus) => {
   return <Icon className="h-4 w-4" />;
 };
 
-const formatDate = (dateString: string | undefined): string => {
-  if (!dateString) return '-';
-  try {
-    return format(new Date(dateString), 'dd MMM yyyy, HH:mm', { locale: tr });
-  } catch {
-    return '-';
-  }
-};
+// Sprint 1 Cleanup: formatDate removed - using canonical formatter from @/lib/shared/formatters
 
 const getInitials = (name: string): string => {
   return name
@@ -138,7 +130,10 @@ export function OrderRevisionList({
       toast.error('Hata', {
         description: errorMessage,
       });
-      logger.error('Failed to load revisions:', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Failed to load revisions:',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
       setIsLoading(false);
     }
@@ -219,7 +214,7 @@ export function OrderRevisionList({
                   Revizyon #{revision.revisionNumber}
                 </CardTitle>
                 <p className="text-xs text-gray-500">
-                  {formatDate(revision.createdAt)}
+                  {formatDate(revision.createdAt, 'DATETIME')}
                 </p>
               </div>
             </div>
@@ -306,11 +301,11 @@ export function OrderRevisionList({
               </p>
               <p className="mt-2 text-xs text-gray-500">
                 {revision.status === 'ACCEPTED' &&
-                  `Kabul edildi: ${formatDate(revision.acceptedAt)}`}
+                  `Kabul edildi: ${formatDate(revision.acceptedAt, 'DATETIME')}`}
                 {revision.status === 'COMPLETED' &&
-                  `Tamamlandı: ${formatDate(revision.completedAt)}`}
+                  `Tamamlandı: ${formatDate(revision.completedAt, 'DATETIME')}`}
                 {revision.status === 'REJECTED' &&
-                  `Reddedildi: ${formatDate(revision.rejectedAt)}`}
+                  `Reddedildi: ${formatDate(revision.rejectedAt, 'DATETIME')}`}
               </p>
             </div>
           )}

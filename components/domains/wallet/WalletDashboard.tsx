@@ -46,21 +46,12 @@ import { usePayout } from '@/hooks/business/wallet/usePayout';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
-import { formatCurrency } from '@/lib/shared/formatters';
+import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 import { toast } from 'sonner';
 import { exportTransactions } from '@/lib/api/wallet';
 
-// Helper function for date formatting
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('tr-TR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(date);
-};
+// Sprint 1 Cleanup: Local formatDate removed - using canonical formatter
+
 import type { Transaction } from '@/types/business/features/wallet';
 
 // ============================================================================
@@ -168,7 +159,7 @@ function RecentTransactions({
                   {transaction.description || 'İşlem'}
                 </p>
                 <p className="text-sm text-gray-500">
-                  {formatDate(transaction.createdAt)}
+                  {formatDate(transaction.createdAt, 'DATETIME')}
                 </p>
               </div>
 

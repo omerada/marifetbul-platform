@@ -58,6 +58,7 @@ import {
 } from 'lucide-react';
 import { Card, Badge, UnifiedButton } from '@/components/ui';
 import { useRecentActivities } from '@/hooks/business/useModeration';
+import { formatRelativeTime } from '@/lib/shared/formatters';
 import type {
   ModeratorActivity,
   ActionType,
@@ -191,30 +192,7 @@ const getTargetUrl = (
   }
 };
 
-const formatRelativeTime = (timestamp: string) => {
-  const now = new Date();
-  const time = new Date(timestamp);
-  const diffMs = now.getTime() - time.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-
-  if (diffMins < 1) return 'Az önce';
-  if (diffMins < 60) return `${diffMins} dakika önce`;
-
-  const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours} saat önce`;
-
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays === 1) return 'Dün';
-  if (diffDays < 7) return `${diffDays} gün önce`;
-
-  // Format as date
-  return time.toLocaleDateString('tr-TR', {
-    day: 'numeric',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
+// Sprint 1 Cleanup: Local formatRelativeTime removed - using canonical formatter
 
 // ============================================================================
 // ACTIVITY ITEM COMPONENT (Memoized for performance)

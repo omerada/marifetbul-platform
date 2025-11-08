@@ -16,7 +16,7 @@ import {
   ROLE_COLORS,
   MAX_PAGE_BUTTONS,
 } from '../constants/userTableConstants';
-import { formatDate as formatDateCanonical } from '@/lib/shared/formatters';
+import { formatRelativeTime as canonicalFormatRelativeTime } from '@/lib/shared/formatters';
 
 // ============================================================================
 // Color Helpers
@@ -66,43 +66,16 @@ export function getUserInitial(user: AdminUserData): string {
   return name.charAt(0).toUpperCase();
 }
 
-/**
- * Format date to localized string
- *
- * @deprecated Sprint 6 - Use formatDate from @/lib/shared/formatters
- */
-export function formatDate(date: string | Date | undefined): string {
-  if (!date) return 'N/A';
-
-  try {
-    return formatDateCanonical(date, 'SHORT');
-  } catch {
-    return 'N/A';
-  }
-}
+// Sprint 1 Cleanup: formatDate removed - use formatDate from @/lib/shared/formatters directly
 
 /**
- * Format relative time (e.g., "2 hours ago")
+ * Format relative time - wrapper for canonical formatter with Turkish fallback
  */
 export function formatRelativeTime(date: string | Date | undefined): string {
   if (!date) return 'Hiçbir zaman';
 
   try {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    const now = new Date();
-    const diffMs = now.getTime() - dateObj.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-
-    if (diffMins < 1) return 'Az önce';
-    if (diffMins < 60) return `${diffMins} dakika önce`;
-
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours} saat önce`;
-
-    const diffDays = Math.floor(diffHours / 24);
-    if (diffDays < 7) return `${diffDays} gün önce`;
-
-    return formatDate(dateObj);
+    return canonicalFormatRelativeTime(date);
   } catch {
     return 'Hiçbir zaman';
   }

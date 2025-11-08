@@ -27,7 +27,7 @@ import {
   Ban,
   Wallet,
 } from 'lucide-react';
-import { formatCurrency, formatDate } from '@/lib/api/admin/payout-admin-api';
+import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
@@ -70,7 +70,10 @@ export const AdminPayoutDetailModal: React.FC<AdminPayoutDetailModalProps> = ({
       await action();
       onClose();
     } catch (error) {
-      logger.error('Action failed:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Action failed:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     } finally {
       setIsProcessing(false);
     }

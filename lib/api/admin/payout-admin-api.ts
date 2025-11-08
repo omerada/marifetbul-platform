@@ -10,10 +10,7 @@
  */
 
 import { apiClient } from '@/lib/api';
-import {
-  formatCurrency as canonicalFormatCurrency,
-  formatDate as canonicalFormatDate,
-} from '@/lib/shared/formatters';
+import { formatCurrency as canonicalFormatCurrency } from '@/lib/shared/formatters';
 import type {
   Payout,
   PayoutStatus,
@@ -192,15 +189,12 @@ export const payoutAdminApi = {
  */
 export const formatCurrency = canonicalFormatCurrency;
 
-/**
- * Format date for display
- *
- * @deprecated Use formatDate from @/lib/shared/formatters directly
- * Re-exported for backward compatibility
- */
-export const formatDate = (dateString: string): string => {
-  return canonicalFormatDate(dateString, 'DATETIME');
-};
+// ================================================
+// REMOVED: formatDate (Sprint 1 - Cleanup)
+// ================================================
+// Use canonical formatter instead:
+// import { formatDate } from '@/lib/shared/formatters';
+// ================================================
 
 /**
  * Mask IBAN for display

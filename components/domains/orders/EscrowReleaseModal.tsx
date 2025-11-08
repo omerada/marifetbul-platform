@@ -21,7 +21,7 @@ import {
   User,
 } from 'lucide-react';
 import { paymentApi } from '@/lib/api';
-import { formatCurrency } from '@/types/business/features/wallet';
+import { formatCurrency } from '@/lib/shared/formatters';
 
 // ================================================
 // TYPES

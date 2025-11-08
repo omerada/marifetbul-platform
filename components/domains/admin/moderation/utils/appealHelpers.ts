@@ -14,6 +14,7 @@ import {
   AlertCircle,
   type LucideIcon,
 } from 'lucide-react';
+import { formatRelativeTime as canonicalFormatRelativeTime } from '@/lib/shared/formatters';
 import type {
   AppealStatus,
   AppealPriority,
@@ -122,22 +123,14 @@ export function formatAppealDate(dateString: string): string {
 }
 
 /**
- * Format date to relative time (e.g., "2 hours ago")
+ * Format date to relative time - wrapper for canonical formatter
  */
 export function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffMins < 1) return 'Şimdi';
-  if (diffMins < 60) return `${diffMins} dakika önce`;
-  if (diffHours < 24) return `${diffHours} saat önce`;
-  if (diffDays < 7) return `${diffDays} gün önce`;
-
-  return formatAppealDate(dateString);
+  try {
+    return canonicalFormatRelativeTime(dateString);
+  } catch {
+    return formatAppealDate(dateString);
+  }
 }
 
 /**

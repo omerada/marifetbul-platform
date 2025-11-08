@@ -34,6 +34,7 @@ import {
 } from '@/components/admin/analytics';
 import { toast } from 'sonner';
 import { exportToCSV, formatCurrencyForExport } from '@/lib/utils/export';
+import { formatCurrency } from '@/lib/shared/formatters';
 
 /**
  * Admin Refund Analytics Page
@@ -269,13 +270,8 @@ export default function AdminRefundAnalyticsPage() {
   );
 }
 
-/**
- * Format currency helper
- */
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency: 'TRY',
-    minimumFractionDigits: 2,
-  }).format(amount);
-}
+// ================================================
+// REMOVED: formatCurrency (Sprint 1 - Cleanup)
+// ================================================
+// Now using canonical formatter from @/lib/shared/formatters
+// ================================================

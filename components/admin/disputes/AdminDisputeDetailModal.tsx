@@ -56,6 +56,7 @@ import {
   DisputeTimeline,
   createTimelineEvents,
 } from '@/components/domains/disputes';
+import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 
 // ================================================
 // TYPES
@@ -73,26 +74,10 @@ interface AdminDisputeDetailModalProps {
 }
 
 // ================================================
-// HELPER FUNCTIONS
+// REMOVED: Local helper functions (Sprint 1 - Cleanup)
 // ================================================
-
-function formatCurrency(amount: number, currency: string = 'TRY'): string {
-  return new Intl.NumberFormat('tr-TR', {
-    style: 'currency',
-    currency,
-  }).format(amount);
-}
-
-function formatDate(dateStr: string | null | undefined): string {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('tr-TR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
+// Now using canonical formatters from @/lib/shared/formatters
+// ================================================
 
 // ================================================
 // COMPONENT
@@ -118,7 +103,10 @@ export function AdminDisputeDetailModal({
         const orderData = await orderApi.getOrderById(dispute.orderId);
         setOrder(orderData.data);
       } catch (error) {
-        logger.error('Failed to load order:', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'Failed to load order:',
+          error instanceof Error ? error : new Error(String(error))
+        );
         toast.error('Sipariş bilgileri yüklenemedi');
       } finally {
         setIsLoadingOrder(false);

@@ -31,7 +31,10 @@ import {
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
-import { formatCurrency } from '@/lib/shared/formatters';
+import {
+  formatCurrency,
+  formatDate as canonicalFormatDate,
+} from '@/lib/shared/formatters';
 import type {
   Transaction,
   TransactionFilters as TransactionFilterValues,
@@ -76,7 +79,9 @@ export interface TransactionListProps {
 // ============================================================================
 
 /**
- * Format date for display
+ * Format date for display with custom Turkish logic
+ * Sprint 1 Note: Kept local function due to custom "Bugün/Dün" logic
+ * Falls back to canonical formatter for older dates
  */
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
@@ -102,11 +107,8 @@ function formatDate(dateString: string): string {
   } else if (diffDays < 7) {
     return diffDays + ' gün önce';
   } else {
-    return date.toLocaleDateString('tr-TR', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
+    // Sprint 1: Use canonical formatter for dates older than a week
+    return canonicalFormatDate(dateString, 'SHORT');
   }
 }
 

@@ -5,7 +5,6 @@
 // Sprint: Wallet & Payout System Integration
 
 import type { Transaction as BackendTransaction } from '@/lib/api/validators';
-import { formatCurrency as formatCurrencyCanonical } from '@/lib/shared/formatters';
 
 // ================================================
 // BASE TYPES (Backend-aligned)
@@ -627,29 +626,12 @@ export function canCancelPayout(payout: Payout): boolean {
   );
 }
 
-/**
- * Format currency
- *
- * @deprecated Sprint 6 - Use formatCurrency from @/lib/shared/formatters
- */
-export function formatCurrency(
-  amount: number,
-  currency: string = 'TRY'
-): string {
-  const symbols: Record<string, string> = {
-    TRY: '₺',
-    USD: '$',
-    EUR: '€',
-    GBP: '£',
-  };
-
-  const symbol = symbols[currency] || currency;
-  return formatCurrencyCanonical(amount, currency, {
-    useSymbol: false,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).replace(currency, symbol);
-}
+// ================================================
+// REMOVED: formatCurrency (Sprint 1 - Cleanup)
+// ================================================
+// Use canonical formatter instead:
+// import { formatCurrency } from '@/lib/shared/formatters';
+// ================================================
 
 export function maskIBAN(iban: string): string {
   if (iban.length < 8) return iban;

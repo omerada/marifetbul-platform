@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useDebounce } from '@/lib/shared/base';
 import { SearchResult } from '@/types/shared/search';
 
 // Cache configuration
@@ -77,23 +78,6 @@ const getFromCache = (key: string): SearchResult[] | null => {
 export const clearSearchCache = (): void => {
   searchCache = {};
   cacheKeys = [];
-};
-
-// Debounce utility
-export const useDebounce = <T>(value: T, delay: number): T => {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
 };
 
 // Virtual scrolling hook
