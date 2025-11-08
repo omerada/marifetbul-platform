@@ -39,6 +39,7 @@ import { Button, Loading } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { getDispute } from '@/lib/api/disputes';
 import { orderApi } from '@/lib/api/orders';
+import { getRefundByOrderId, type RefundDto } from '@/lib/api/refunds';
 import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 import type { DisputeResponse } from '@/types/dispute';
 import type { OrderResponse } from '@/types/backend-aligned';
@@ -81,6 +82,7 @@ export default function DisputeDetailPage() {
 
   const [dispute, setDispute] = useState<DisputeResponse | null>(null);
   const [order, setOrder] = useState<OrderResponse | null>(null);
+  const [refund, setRefund] = useState<RefundDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -104,6 +106,34 @@ export default function DisputeDetailPage() {
           const orderData =
             'data' in orderResponse ? orderResponse.data : orderResponse;
           setOrder(orderData);
+
+          // Load refund details if dispute is resolved with refund
+          if (
+            disputeData.status === 'RESOLVED' &&
+            disputeData.refundAmount &&
+            disputeData.refundAmount > 0
+          ) {
+            try {
+              const refundData = await getRefundByOrderId(disputeData.orderId);
+              if (refundData) {
+                setRefund(refundData);
+                logger.info('Refund loaded for dispute', {
+                  disputeId,
+                  refundId: refundData.id,
+                });
+              }
+            } catch (refundErr) {
+              logger.warn('Could not load refund for dispute', {
+                error:
+                  refundErr instanceof Error
+                    ? refundErr.message
+                    : String(refundErr),
+                disputeId,
+                orderId: disputeData.orderId,
+              });
+              // Continue even if refund fails to load
+            }
+          }
         } catch (orderErr) {
           logger.error(
             'Failed to load order for dispute',
@@ -376,15 +406,39 @@ export default function DisputeDetailPage() {
                     <div className="rounded-lg border border-green-300 bg-green-100 p-4">
                       <div className="flex gap-3">
                         <CheckCircle className="h-5 w-5 flex-shrink-0 text-green-600" />
-                        <div className="text-sm">
+                        <div className="flex-1 text-sm">
                           <p className="font-medium text-green-900">
                             İade İşlendi
                           </p>
                           <p className="mt-1 text-green-700">
                             İade tutarı cüzdanınıza otomatik olarak
-                            aktarılmıştır. Detaylar için Cüzdan sayfanızı
-                            kontrol edebilirsiniz.
+                            aktarılmıştır. Detaylar için{' '}
+                            <Link
+                              href="/dashboard/wallet"
+                              className="font-medium underline hover:text-green-800"
+                            >
+                              Cüzdan
+                            </Link>{' '}
+                            sayfanızı kontrol edebilirsiniz.
                           </p>
+                          {refund && (
+                            <div className="mt-3 space-y-1 border-t border-green-300 pt-3">
+                              <p className="text-xs text-green-700">
+                                <span className="font-medium">İade ID:</span>{' '}
+                                {refund.id.slice(0, 8)}...
+                              </p>
+                              <p className="text-xs text-green-700">
+                                <span className="font-medium">Durum:</span>{' '}
+                                {refund.status}
+                              </p>
+                              {refund.processedAt && (
+                                <p className="text-xs text-green-700">
+                                  <span className="font-medium">İşlenme:</span>{' '}
+                                  {formatDate(refund.processedAt)}
+                                </p>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

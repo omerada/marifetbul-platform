@@ -42,6 +42,8 @@ import {
 import { RefundCreationForm } from '@/components/domains/refunds';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { orderApi } from '@/lib/api/orders';
+import { PaymentRetryStatus } from '@/components/domains/payments/PaymentRetryStatus';
+import { PaymentRetryHistory } from '@/components/domains/payments/PaymentRetryHistory';
 import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 import type { OrderResponse } from '@/types/backend-aligned';
 import { enrichOrder, type OrderWithComputed } from '@/types/backend-aligned';
@@ -71,6 +73,7 @@ export default function OrderDetailPage() {
   const [showDisputeModal, setShowDisputeModal] = useState(false);
   const [refund, setRefund] = useState<RefundDto | null>(null);
   const [showRefundForm, setShowRefundForm] = useState(false);
+  const [showRetryHistory, setShowRetryHistory] = useState(false);
 
   // Get authenticated user
   const { user } = useAuth();
@@ -600,6 +603,40 @@ export default function OrderDetailPage() {
                 </Button>
               </div>
             </Card>
+          )}
+
+          {/* Payment Retry Status - Show if payment failed and retry exists */}
+          {order.paymentId && (
+            <div className="space-y-4">
+              <PaymentRetryStatus
+                paymentId={order.paymentId}
+                showDetails={true}
+                onRetrySuccess={() => {
+                  toast.success('Ödeme Başarılı', {
+                    description:
+                      'Ödemeniz başarıyla tamamlandı. Sipariş durumu güncelleniyor...',
+                  });
+                  loadOrder();
+                }}
+              />
+
+              {/* Toggle for Retry History */}
+              {showRetryHistory && (
+                <PaymentRetryHistory
+                  paymentId={order.paymentId}
+                  className="mt-4"
+                />
+              )}
+
+              <button
+                onClick={() => setShowRetryHistory(!showRetryHistory)}
+                className="text-primary-600 hover:text-primary-700 w-full py-2 text-center text-sm font-medium"
+              >
+                {showRetryHistory
+                  ? 'Deneme Geçmişini Gizle'
+                  : 'Deneme Geçmişini Göster'}
+              </button>
+            </div>
           )}
 
           {/* Refund Information - Show if refund exists */}

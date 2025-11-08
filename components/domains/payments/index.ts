@@ -5,7 +5,9 @@
  * Central export point for payment domain components
  *
  * @author MarifetBul Development Team
- * @version 1.1.0 - Sprint 1.4 (RefundRequestModal removed - use UnifiedRefundRequestModal from refunds domain)
+ * @version 1.2.0 - Sprint: Payment & Refund System Hardening
  */
 
-export { PaymentHistory } from './PaymentHistory';
+// PaymentHistory removed - was unused duplicate (Sprint Day 3)
+export { PaymentRetryStatus } from './PaymentRetryStatus';
+export { PaymentRetryHistory } from './PaymentRetryHistory';

@@ -23,10 +23,10 @@ import {
   TableRow,
 } from '@/components/ui/Table';
 import { Button } from '@/components/ui';
-import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { ChevronLeft, ChevronRight, Search, Filter } from 'lucide-react';
+import { StatusBadge } from '@/components/shared/StatusBadge';
 import type {
   RefundDto,
   RefundFilters,
@@ -237,7 +237,7 @@ export function RefundApprovalQueue({
                     </span>
                   </TableCell>
                   <TableCell>
-                    <StatusBadge status={refund.status} />
+                    <StatusBadge type="REFUND" status={refund.status} />
                   </TableCell>
                   <TableCell className="text-muted-foreground text-sm">
                     {format(new Date(refund.requestedAt), 'dd MMM yyyy', {
@@ -298,38 +298,6 @@ export function RefundApprovalQueue({
 // ================================================
 // HELPER COMPONENTS
 // ================================================
-
-function StatusBadge({ status }: { status: string }) {
-  const statusConfig: Record<string, { label: string; className: string }> = {
-    PENDING: {
-      label: 'Beklemede',
-      className: 'bg-yellow-500/10 text-yellow-600',
-    },
-    APPROVED: {
-      label: 'Onaylandı',
-      className: 'bg-green-500/10 text-green-600',
-    },
-    REJECTED: { label: 'Reddedildi', className: 'bg-red-500/10 text-red-600' },
-    PROCESSING: {
-      label: 'İşleniyor',
-      className: 'bg-blue-500/10 text-blue-600',
-    },
-    COMPLETED: {
-      label: 'Tamamlandı',
-      className: 'bg-green-500/10 text-green-600',
-    },
-    FAILED: { label: 'Başarısız', className: 'bg-red-500/10 text-red-600' },
-    CANCELLED: { label: 'İptal', className: 'bg-gray-500/10 text-gray-600' },
-  };
-
-  const config = statusConfig[status] || statusConfig.PENDING;
-
-  return (
-    <Badge className={config.className} variant="secondary">
-      {config.label}
-    </Badge>
-  );
-}
 
 function getReasonLabel(reasonCategory: string): string {
   const reasons: Record<string, string> = {

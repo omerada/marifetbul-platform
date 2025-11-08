@@ -102,9 +102,18 @@ if (SENTRY_ENABLED && SENTRY_DSN) {
     // tunnel: '/api/monitoring/sentry-tunnel',
   });
 
-  // eslint-disable-next-line no-console
-  console.log('✅ Sentry Client initialized');
-} else {
+  // Only log in development or when explicitly enabled
+  if (
+    SENTRY_ENVIRONMENT === 'development' ||
+    process.env.NEXT_PUBLIC_SENTRY_DEBUG
+  ) {
+    // eslint-disable-next-line no-console
+    console.log('✅ Sentry Client initialized');
+  }
+} else if (
+  SENTRY_ENVIRONMENT === 'development' ||
+  process.env.NEXT_PUBLIC_SENTRY_DEBUG
+) {
   // eslint-disable-next-line no-console
   console.log('ℹ️ Sentry Client is disabled');
 }

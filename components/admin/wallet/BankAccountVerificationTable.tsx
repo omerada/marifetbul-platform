@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/UnifiedSkeleton';
+import { StatusBadge } from '@/components/shared/StatusBadge';
 
 // ================================================
 // TYPES
@@ -210,7 +211,7 @@ export const BankAccountVerificationTable: React.FC<
 
                   {/* Status */}
                   <td className="px-4 py-4">
-                    <StatusBadge status={account.status} />
+                    <StatusBadge type="BANK_ACCOUNT" status={account.status} />
                   </td>
 
                   {/* Created Date */}
@@ -296,7 +297,7 @@ export const BankAccountVerificationTable: React.FC<
                     </div>
                   </div>
                 </div>
-                <StatusBadge status={account.status} />
+                <StatusBadge type="BANK_ACCOUNT" status={account.status} />
               </div>
 
               {/* IBAN */}
@@ -393,39 +394,6 @@ export const BankAccountVerificationTable: React.FC<
         </div>
       )}
     </div>
-  );
-};
-
-// ================================================
-// STATUS BADGE
-// ================================================
-
-const StatusBadge: React.FC<{ status: BankAccount['status'] }> = ({
-  status,
-}) => {
-  const config = {
-    PENDING: {
-      label: 'Bekliyor',
-      className: 'bg-yellow-100 text-yellow-800',
-    },
-    VERIFIED: {
-      label: 'Onaylandı',
-      className: 'bg-green-100 text-green-800',
-    },
-    REJECTED: {
-      label: 'Reddedildi',
-      className: 'bg-red-100 text-red-800',
-    },
-  };
-
-  const { label, className } = config[status];
-
-  return (
-    <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${className}`}
-    >
-      {label}
-    </span>
   );
 };
 

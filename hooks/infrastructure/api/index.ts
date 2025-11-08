@@ -512,44 +512,6 @@ export function useFileUpload(): MutationHookReturn<UploadResponse, File> {
 }
 
 // ================================================
-// ANALYTICS HOOKS
-// ================================================
-
-export function useAnalytics(
-  dateRange: { start: string; end: string },
-  options: { enabled?: boolean } = {}
-): {
-  data: AnalyticsData | null;
-  isLoading: boolean;
-  error: Error | null;
-  refetch: () => void;
-} {
-  const { enabled = true } = options;
-
-  const operation = useAsyncOperation(async () => {
-    const queryParams = {
-      start: dateRange.start,
-      end: dateRange.end,
-    };
-    return await apiClient.get<AnalyticsData>('/analytics', queryParams);
-  });
-
-  // Auto-fetch when dependencies change
-  useEffect(() => {
-    if (enabled && dateRange.start && dateRange.end) {
-      operation.execute();
-    }
-  }, [dateRange.start, dateRange.end, enabled]); // Remove operation.execute dependency to fix warning
-
-  return {
-    data: operation.data,
-    isLoading: operation.loading,
-    error: operation.error,
-    refetch: operation.execute,
-  };
-}
-
-// ================================================
 // ADMIN HOOKS
 // ================================================
 

@@ -14,7 +14,7 @@ export { OrderForm } from './OrderForm';
 export { OrderTimeline } from './OrderTimeline';
 
 // Payment Components
-export { PaymentHistory } from './PaymentHistory';
+// PaymentHistory removed - was unused duplicate (Sprint Day 3)
 export { InvoiceCard } from './InvoiceCard';
 
 // Package Analytics (moved from components/dashboard)

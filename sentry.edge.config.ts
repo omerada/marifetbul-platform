@@ -20,9 +20,12 @@ if (SENTRY_ENABLED && SENTRY_DSN) {
     debug: false,
   });
 
-  // eslint-disable-next-line no-console
-  console.log('✅ Sentry Edge initialized');
-} else {
+  // Only log in development or when explicitly enabled
+  if (SENTRY_ENVIRONMENT === 'development' || process.env.SENTRY_DEBUG) {
+    // eslint-disable-next-line no-console
+    console.log('✅ Sentry Edge initialized');
+  }
+} else if (SENTRY_ENVIRONMENT === 'development' || process.env.SENTRY_DEBUG) {
   // eslint-disable-next-line no-console
   console.log('ℹ️ Sentry Edge is disabled');
 }

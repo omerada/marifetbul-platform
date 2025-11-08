@@ -66,6 +66,9 @@ export { paymentApi } from './payment';
 export type { Payment, PaymentIntent } from './validators';
 export type { CreatePaymentRequest, RefundRequest } from './payment';
 
+// Export Payment Retry API
+export { paymentRetryApi } from './payment-retry';
+
 // Payout API (new location - consolidated)
 export * from './payouts';
 

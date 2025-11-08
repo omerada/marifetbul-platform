@@ -57,7 +57,8 @@ export type StatusType =
   | 'PROPOSAL'
   | 'ORDER'
   | 'DISPUTE'
-  | 'MODERATION';
+  | 'MODERATION'
+  | 'BANK_ACCOUNT';
 
 /**
  * All possible status values
@@ -81,7 +82,9 @@ export type StatusValue =
   | 'PENDING_RELEASE'
   // Proposal statuses
   | 'ACCEPTED'
-  | 'WITHDRAWN';
+  | 'WITHDRAWN'
+  // Bank Account statuses
+  | 'VERIFIED';
 
 /**
  * Color variants for status badges
@@ -257,6 +260,14 @@ const STATUS_CONFIGS: Record<StatusValue, StatusConfig> = {
     icon: Ban,
     color: 'gray',
     description: 'Teklif geri çekildi',
+  },
+
+  // Bank Account: VERIFIED
+  VERIFIED: {
+    label: 'Onaylandı',
+    icon: CheckCircle,
+    color: 'green',
+    description: 'Banka hesabı doğrulandı',
   },
 };
 
