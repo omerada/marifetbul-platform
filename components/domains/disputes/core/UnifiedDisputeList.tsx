@@ -51,7 +51,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/Table';
+} from '@/components/ui/table';
 import { TableSkeleton } from '@/components/ui/loading/TableSkeleton';
 import { ListSkeleton } from '@/components/ui/loading/ListSkeleton';
 
@@ -68,7 +68,7 @@ import {
 } from '@/types/dispute';
 
 // Existing DisputeCard component (reused)
-import { DisputeCard } from '@/components/disputes/DisputeCard';
+import { DisputeCard } from '@/components/domains/disputes/DisputeCard';
 
 // ============================================================================
 // TYPES
@@ -292,8 +292,7 @@ export function UnifiedDisputeList({
             <DisputeCard
               key={dispute.id}
               dispute={dispute}
-              showOrder={showOrder}
-              showUserInfo={showUserInfo}
+              showOrderInfo={showOrder}
             />
           ))}
         </div>

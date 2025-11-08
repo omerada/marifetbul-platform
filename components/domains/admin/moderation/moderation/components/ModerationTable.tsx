@@ -13,7 +13,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/Table';
+} from '@/components/ui/table';
 import { ModerationRow } from './ModerationRow';
 import type { ModerationTableProps } from '../types/moderationTypes';
 

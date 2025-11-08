@@ -7,7 +7,7 @@
 'use client';
 
 import React from 'react';
-import { TableRow, TableCell } from '@/components/ui/Table';
+import { TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/Badge';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { UserCheck } from 'lucide-react';

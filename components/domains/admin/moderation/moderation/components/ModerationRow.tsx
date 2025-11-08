@@ -19,7 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu';
-import { TableRow, TableCell } from '@/components/ui/Table';
+import { TableRow, TableCell } from '@/components/ui/table';
 import {
   getStatusColor,
   getPriorityColor,

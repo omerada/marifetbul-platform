@@ -22,7 +22,7 @@ import {
   TableHead,
   TableHeader as TableHeaderComponent,
   TableRow,
-} from '@/components/ui/Table';
+} from '@/components/ui/table';
 import {
   AlertDialog,
   AlertDialogAction,
