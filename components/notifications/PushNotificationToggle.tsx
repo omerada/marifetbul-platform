@@ -2,49 +2,47 @@
 
 import { useState, useEffect } from 'react';
 import { Bell, BellOff, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   subscribeToPushNotifications,
   unsubscribeFromPushNotifications,
-  isPushNotificationSupported,
-  getNotificationPermission,
-  isCurrentDeviceRegistered,
-} from '@/lib/services/firebase-messaging.service';
-import { toast } from 'sonner';
-import logger from '@/lib/infrastructure/monitoring/logger';
+  isSupported as isPushNotificationSupported,
+  getPermissionStatus,
+  isSubscribed as checkIfSubscribed,
+} from '@/lib/infrastructure/services/push-notification.service';
 
 /**
  * Push Notification Toggle Button
- * Allows users to enable/disable push notifications
+ * Production-ready component for managing push notification subscriptions
  */
 export function PushNotificationToggle() {
   const [isSupported, setIsSupported] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [permission, setPermission] = useState<NotificationPermission | null>(
-    null
-  );
+  const [permission, setPermission] = useState<NotificationPermission | null>(null);
 
   useEffect(() => {
-    // Check if push notifications are supported
-    const supported = isPushNotificationSupported();
-    setIsSupported(supported);
-
-    if (supported) {
-      // Check current permission status
-      const currentPermission = getNotificationPermission();
-      setPermission(currentPermission);
-
-      // Check if device is already registered
-      checkRegistrationStatus();
-    }
+    initializePushNotifications();
   }, []);
 
-  async function checkRegistrationStatus() {
+  async function initializePushNotifications() {
     try {
-      const registered = await isCurrentDeviceRegistered();
-      setIsRegistered(registered);
+      // Check if push notifications are supported
+      const supported = await isPushNotificationSupported();
+      setIsSupported(supported);
+
+      if (supported) {
+        // Check current permission status
+        const currentPermission = await getPermissionStatus();
+        setPermission(currentPermission);
+
+        // Check if device is already registered
+        const subscribed = await checkIfSubscribed();
+        setIsRegistered(subscribed);
+      }
     } catch (error) {
-      logger.error('Error checking registration status:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to initialize push notifications', error as Error);
     }
   }
 
@@ -55,21 +53,18 @@ export function PushNotificationToggle() {
     try {
       if (isRegistered) {
         // Unsubscribe
-        const success = await unsubscribeFromPushNotifications();
-        if (success) {
-          setIsRegistered(false);
-          setPermission('default');
-        }
+        await unsubscribeFromPushNotifications();
+        setIsRegistered(false);
+        toast.success('Push bildirimleri kapatıldı');
       } else {
         // Subscribe
-        const success = await subscribeToPushNotifications();
-        if (success) {
-          setIsRegistered(true);
-          setPermission('granted');
-        }
+        await subscribeToPushNotifications();
+        setIsRegistered(true);
+        setPermission('granted');
+        toast.success('Push bildirimleri aktif edildi');
       }
     } catch (error) {
-      logger.error('Error toggling push notifications:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to toggle push notifications', error as Error);
       toast.error('Push bildirimler ayarlanırken hata oluştu');
     } finally {
       setIsLoading(false);

@@ -2,32 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import { Bell, Smartphone, Trash2, Send, Loader2 } from 'lucide-react';
-import {
-  getRegisteredDevices,
-  unsubscribeFromPushNotifications,
-  sendTestNotification,
-} from '@/lib/services/firebase-messaging.service';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import logger from '@/lib/infrastructure/monitoring/logger';
-
-interface DeviceToken {
-  id: string;
-  token: string;
-  deviceType: string;
-  deviceName?: string;
-  isActive: boolean;
-  createdAt: string;
-  lastUsedAt?: string;
-}
+import {
+  getRegisteredDevices,
+  unsubscribeFromPushNotifications,
+  sendTestNotification,
+  type DeviceTokenResponse,
+} from '@/lib/infrastructure/services/push-notification.service';
 
 /**
  * Push Notification Settings Panel
- * Shows registered devices and management options
+ * Production-ready component for device management
  */
 export function PushNotificationSettings() {
-  const [devices, setDevices] = useState<DeviceToken[]>([]);
+  const [devices, setDevices] = useState<DeviceTokenResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deletingDeviceId, setDeletingDeviceId] = useState<string | null>(null);
   const [isSendingTest, setIsSendingTest] = useState(false);
@@ -42,26 +33,25 @@ export function PushNotificationSettings() {
       const deviceList = await getRegisteredDevices();
       setDevices(deviceList);
     } catch (error) {
-      logger.error('Error loading devices:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to load devices', error as Error);
       toast.error('Cihazlar yüklenirken hata oluştu');
     } finally {
       setIsLoading(false);
     }
   }
 
-  async function handleDeleteDevice(deviceId: string, _deviceToken: string) {
+  async function handleDeleteDevice(deviceId: string) {
     if (!confirm('Bu cihazın kaydını kaldırmak istediğinizden emin misiniz?')) {
       return;
     }
 
     setDeletingDeviceId(deviceId);
     try {
-      // Note: We need to pass the actual FCM token, not the device ID
       await unsubscribeFromPushNotifications();
       await loadDevices();
       toast.success('Cihaz kaydı kaldırıldı');
     } catch (error) {
-      logger.error('Error deleting device:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to delete device', error as Error);
       toast.error('Cihaz silinirken hata oluştu');
     } finally {
       setDeletingDeviceId(null);
@@ -73,7 +63,7 @@ export function PushNotificationSettings() {
     try {
       await sendTestNotification();
     } catch (error) {
-      logger.error('Error sending test notification:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to send test notification', error as Error);
     } finally {
       setIsSendingTest(false);
     }
@@ -178,7 +168,7 @@ export function PushNotificationSettings() {
                 </p>
               </div>
               <button
-                onClick={() => handleDeleteDevice(device.id, device.token)}
+                onClick={() => handleDeleteDevice(device.id)}
                 disabled={deletingDeviceId === device.id}
                 className="text-destructive hover:bg-destructive/10 flex items-center gap-1 rounded-md px-3 py-1.5 text-sm disabled:cursor-not-allowed disabled:opacity-50"
               >
