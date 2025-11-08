@@ -3,7 +3,7 @@
  * UNIFIED PUSH NOTIFICATION SERVICE
  * ================================================
  * Production-ready Firebase Cloud Messaging integration
- * 
+ *
  * Features:
  * - FCM token management
  * - Device registration with backend
@@ -11,7 +11,7 @@
  * - Permission management
  * - Multi-device support
  * - Graceful error handling
- * 
+ *
  * @author MarifetBul Development Team
  * @version 2.0.0 - Production Ready
  * @since Sprint: Push Notification System
@@ -133,14 +133,18 @@ function initializeFirebase(): FirebaseApp | null {
 
   try {
     const existingApps = getApps();
-    firebaseApp = existingApps.length > 0 
-      ? existingApps[0] 
-      : initializeApp(FIREBASE_CONFIG);
-    
+    firebaseApp =
+      existingApps.length > 0
+        ? existingApps[0]
+        : initializeApp(FIREBASE_CONFIG);
+
     logger.info('Firebase initialized successfully');
     return firebaseApp;
   } catch (error) {
-    logger.error('Firebase initialization failed', error instanceof Error ? error : undefined);
+    logger.error(
+      'Firebase initialization failed',
+      error instanceof Error ? error : undefined
+    );
     return null;
   }
 }
@@ -166,7 +170,10 @@ function getMessagingInstance(): Messaging | null {
     messaging = getMessaging(app);
     return messaging;
   } catch (error) {
-    logger.error('Failed to get messaging instance', error instanceof Error ? error : undefined);
+    logger.error(
+      'Failed to get messaging instance',
+      error instanceof Error ? error : undefined
+    );
     return null;
   }
 }
@@ -215,7 +222,7 @@ export function getSupportInfo(): {
     hasNotificationAPI: 'Notification' in window,
     hasServiceWorker: 'serviceWorker' in navigator,
     hasPushManager: 'PushManager' in window,
-    currentPermission: (Notification.permission as NotificationPermissionStatus),
+    currentPermission: Notification.permission as NotificationPermissionStatus,
   };
 }
 
@@ -242,7 +249,8 @@ export async function requestNotificationPermission(): Promise<NotificationPermi
     return 'denied';
   }
 
-  const currentPermission = Notification.permission as NotificationPermissionStatus;
+  const currentPermission =
+    Notification.permission as NotificationPermissionStatus;
 
   if (currentPermission === 'granted') {
     return 'granted';
@@ -258,7 +266,10 @@ export async function requestNotificationPermission(): Promise<NotificationPermi
     logger.info('Notification permission result:', { permission });
     return permission as NotificationPermissionStatus;
   } catch (error) {
-    logger.error('Error requesting notification permission', error instanceof Error ? error : undefined);
+    logger.error(
+      'Error requesting notification permission',
+      error instanceof Error ? error : undefined
+    );
     return 'denied';
   }
 }
@@ -289,7 +300,10 @@ async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null
 
     return registration;
   } catch (error) {
-    logger.error('Service Worker registration failed', error instanceof Error ? error : undefined);
+    logger.error(
+      'Service Worker registration failed',
+      error instanceof Error ? error : undefined
+    );
     return null;
   }
 }
@@ -345,7 +359,10 @@ export async function getFCMToken(): Promise<string | null> {
 
     return token;
   } catch (error) {
-    logger.error('Failed to get FCM token', error instanceof Error ? error : undefined);
+    logger.error(
+      'Failed to get FCM token',
+      error instanceof Error ? error : undefined
+    );
     return null;
   }
 }
@@ -366,7 +383,10 @@ export async function deleteFCMToken(): Promise<boolean> {
     logger.info('FCM token deleted');
     return true;
   } catch (error) {
-    logger.error('Failed to delete FCM token', error instanceof Error ? error : undefined);
+    logger.error(
+      'Failed to delete FCM token',
+      error instanceof Error ? error : undefined
+    );
     return false;
   }
 }
@@ -418,7 +438,8 @@ export async function subscribeToPushNotifications(): Promise<PushSubscriptionRe
     if (!token) {
       return {
         success: false,
-        error: 'FCM token alınamadı. Lütfen tarayıcı ayarlarınızı kontrol edin.',
+        error:
+          'FCM token alınamadı. Lütfen tarayıcı ayarlarınızı kontrol edin.',
       };
     }
 
@@ -435,13 +456,16 @@ export async function subscribeToPushNotifications(): Promise<PushSubscriptionRe
     });
 
     // Register with backend
-    const response = await apiClient.post<{ success: boolean; data?: DeviceTokenResponse; message?: string }>(
-      '/notifications/push/subscribe',
-      deviceInfo
-    );
+    const response = await apiClient.post<{
+      success: boolean;
+      data?: DeviceTokenResponse;
+      message?: string;
+    }>('/notifications/push/subscribe', deviceInfo);
 
     if (response.success && response.data) {
-      logger.info('Device registered successfully', { deviceId: response.data.id });
+      logger.info('Device registered successfully', {
+        deviceId: response.data.id,
+      });
       toast.success('Push bildirimleri başarıyla etkinleştirildi');
       return {
         success: true,
@@ -449,7 +473,9 @@ export async function subscribeToPushNotifications(): Promise<PushSubscriptionRe
       };
     } else {
       const errorMessage = response.message || 'Cihaz kaydı başarısız oldu';
-      logger.error('Device registration failed', undefined, { message: errorMessage });
+      logger.error('Device registration failed', undefined, {
+        message: errorMessage,
+      });
       toast.error(errorMessage);
       return {
         success: false,
@@ -457,8 +483,12 @@ export async function subscribeToPushNotifications(): Promise<PushSubscriptionRe
       };
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
-    logger.error('Subscribe to push failed', error instanceof Error ? error : undefined);
+    const errorMessage =
+      error instanceof Error ? error.message : 'Bilinmeyen hata';
+    logger.error(
+      'Subscribe to push failed',
+      error instanceof Error ? error : undefined
+    );
     toast.error('Push bildirimlere abone olurken hata oluştu');
     return {
       success: false,
@@ -481,9 +511,10 @@ export async function unsubscribeFromPushNotifications(): Promise<PushSubscripti
     logger.info('Unsubscribing from push notifications');
 
     // Unregister from backend
-    const response = await apiClient.delete<{ success: boolean; message?: string }>(
-      `/notifications/push/unsubscribe?token=${encodeURIComponent(token)}`
-    );
+    const response = await apiClient.delete<{
+      success: boolean;
+      message?: string;
+    }>(`/notifications/push/unsubscribe?token=${encodeURIComponent(token)}`);
 
     if (response.success) {
       // Delete local token
@@ -501,8 +532,12 @@ export async function unsubscribeFromPushNotifications(): Promise<PushSubscripti
       };
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
-    logger.error('Unsubscribe from push failed', error instanceof Error ? error : undefined);
+    const errorMessage =
+      error instanceof Error ? error.message : 'Bilinmeyen hata';
+    logger.error(
+      'Unsubscribe from push failed',
+      error instanceof Error ? error : undefined
+    );
     toast.error('Abonelikten çıkarken hata oluştu');
     return {
       success: false,
@@ -523,9 +558,12 @@ export async function isDeviceSubscribed(): Promise<boolean> {
 
     // Verify with backend
     const devices = await getRegisteredDevices();
-    return devices.some(device => device.token === token && device.isActive);
+    return devices.some((device) => device.token === token && device.isActive);
   } catch (error) {
-    logger.error('Failed to check subscription status', error instanceof Error ? error : undefined);
+    logger.error(
+      'Failed to check subscription status',
+      error instanceof Error ? error : undefined
+    );
     return false;
   }
 }
@@ -539,12 +577,16 @@ export async function isDeviceSubscribed(): Promise<boolean> {
  */
 export async function getRegisteredDevices(): Promise<DeviceTokenResponse[]> {
   try {
-    const response = await apiClient.get<{ success: boolean; data?: DeviceTokenResponse[] }>(
-      '/notifications/push/devices'
-    );
+    const response = await apiClient.get<{
+      success: boolean;
+      data?: DeviceTokenResponse[];
+    }>('/notifications/push/devices');
     return response.data || [];
   } catch (error) {
-    logger.error('Failed to get registered devices', error instanceof Error ? error : undefined);
+    logger.error(
+      'Failed to get registered devices',
+      error instanceof Error ? error : undefined
+    );
     return [];
   }
 }
@@ -609,10 +651,10 @@ export function setupForegroundMessageListener(
  */
 export async function sendTestNotification(): Promise<boolean> {
   try {
-    const response = await apiClient.post<{ success: boolean; message?: string }>(
-      '/notifications/push/test',
-      {}
-    );
+    const response = await apiClient.post<{
+      success: boolean;
+      message?: string;
+    }>('/notifications/push/test', {});
 
     if (response.success) {
       toast.success('Test bildirimi gönderildi');
@@ -622,7 +664,10 @@ export async function sendTestNotification(): Promise<boolean> {
       return false;
     }
   } catch (error) {
-    logger.error('Test notification failed', error instanceof Error ? error : undefined);
+    logger.error(
+      'Test notification failed',
+      error instanceof Error ? error : undefined
+    );
     toast.error('Test bildirimi gönderilirken hata oluştu');
     return false;
   }
@@ -648,7 +693,9 @@ export async function getDiagnostics(): Promise<{
 }> {
   const hasToken = hasStoredToken();
   const tokenTimestamp = localStorage.getItem('fcm_token_timestamp');
-  const tokenAge = tokenTimestamp ? Date.now() - parseInt(tokenTimestamp) : null;
+  const tokenAge = tokenTimestamp
+    ? Date.now() - parseInt(tokenTimestamp)
+    : null;
   const devices = await getRegisteredDevices();
 
   return {
@@ -677,7 +724,7 @@ export async function getDiagnostics(): Promise<{
  */
 export async function isSupported(): Promise<boolean> {
   if (typeof window === 'undefined') return false;
-  
+
   return !!(
     'Notification' in window &&
     'serviceWorker' in navigator &&
@@ -690,8 +737,8 @@ export async function isSupported(): Promise<boolean> {
  */
 export async function getPermissionStatus(): Promise<NotificationPermission> {
   if (typeof window === 'undefined') return 'default';
-  
-  return ('Notification' in window) ? Notification.permission : 'default';
+
+  return 'Notification' in window ? Notification.permission : 'default';
 }
 
 /**

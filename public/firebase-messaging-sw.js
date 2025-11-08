@@ -3,16 +3,16 @@
  * FIREBASE CLOUD MESSAGING SERVICE WORKER
  * ================================================
  * Production-ready service worker for background push notifications
- * 
+ *
  * Handles:
  * - Background message delivery
  * - Notification click events
  * - Push subscription management
  * - Deep linking to app routes
- * 
+ *
  * Note: This file runs in a separate worker context.
  * It cannot access window, localStorage, or main app modules.
- * 
+ *
  * @author MarifetBul Development Team
  * @version 1.0.0 - Production Ready
  */
@@ -34,10 +34,10 @@ importScripts(
 
 /**
  * Firebase Configuration
- * 
+ *
  * This configuration is injected during build time from environment variables.
  * In production, Next.js replaces process.env.* with actual values.
- * 
+ *
  * Required environment variables:
  * - NEXT_PUBLIC_FIREBASE_API_KEY
  * - NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
@@ -59,13 +59,16 @@ const firebaseConfig = {
 // LOGGING
 // ============================================================================
 
-const isDev = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
+const isDev =
+  self.location.hostname === 'localhost' ||
+  self.location.hostname === '127.0.0.1';
 
-const swLog = isDev 
+const swLog = isDev
   ? (...args) => console.log('[SW]', new Date().toISOString(), ...args)
   : () => {};
 
-const swError = (...args) => console.error('[SW ERROR]', new Date().toISOString(), ...args);
+const swError = (...args) =>
+  console.error('[SW ERROR]', new Date().toISOString(), ...args);
 
 // ============================================================================
 // FIREBASE INITIALIZATION
@@ -79,7 +82,9 @@ try {
 
   if (missingKeys.length > 0) {
     swError('Firebase configuration incomplete. Missing keys:', missingKeys);
-    swError('Make sure environment variables are set and firebase-config is injected');
+    swError(
+      'Make sure environment variables are set and firebase-config is injected'
+    );
   } else {
     firebase.initializeApp(firebaseConfig);
     swLog('Firebase initialized successfully');
@@ -115,7 +120,7 @@ if (messaging) {
 
     const notificationTitle =
       payload.notification?.title || 'MarifetBul Bildirimi';
-    
+
     const notificationOptions = {
       body: payload.notification?.body || 'Yeni bir bildiriminiz var',
       icon: payload.notification?.icon || '/icons/icon-192x192.png',
@@ -153,26 +158,26 @@ function getNotificationActions(type) {
         { action: 'open', title: 'Mesajı Aç' },
         { action: 'close', title: 'Kapat' },
       ];
-    
+
     case 'NEW_ORDER':
     case 'ORDER_STATUS_CHANGED':
       return [
         { action: 'view_order', title: 'Siparişi Görüntüle' },
         { action: 'close', title: 'Kapat' },
       ];
-    
+
     case 'NEW_PROPOSAL':
       return [
         { action: 'view_proposal', title: 'Teklifi Görüntüle' },
         { action: 'close', title: 'Kapat' },
       ];
-    
+
     case 'REVIEW_RECEIVED':
       return [
         { action: 'view_review', title: 'Değerlendirmeyi Gör' },
         { action: 'close', title: 'Kapat' },
       ];
-    
+
     default:
       return [{ action: 'open', title: 'Aç' }];
   }
@@ -187,23 +192,23 @@ function getTargetUrl(data) {
   switch (data.type) {
     case 'NEW_MESSAGE':
       return `/messages${data.conversationId ? `/${data.conversationId}` : ''}`;
-    
+
     case 'NEW_ORDER':
     case 'ORDER_STATUS_CHANGED':
       return `/dashboard/orders${data.orderId ? `/${data.orderId}` : ''}`;
-    
+
     case 'NEW_PROPOSAL':
       return `/dashboard/proposals${data.proposalId ? `/${data.proposalId}` : ''}`;
-    
+
     case 'REVIEW_RECEIVED':
       return `/profile/${data.userId || ''}`;
-    
+
     case 'PAYMENT_RECEIVED':
       return '/dashboard/wallet';
-    
+
     case 'NEW_FOLLOWER':
       return `/profile/${data.followerId || ''}`;
-    
+
     default:
       return '/notifications';
   }
@@ -216,7 +221,12 @@ function getTargetUrl(data) {
  * Handle notification click events
  */
 self.addEventListener('notificationclick', (event) => {
-  swLog('Notification clicked:', event.notification.tag, 'action:', event.action);
+  swLog(
+    'Notification clicked:',
+    event.notification.tag,
+    'action:',
+    event.action
+  );
 
   event.notification.close();
 
@@ -238,14 +248,14 @@ self.addEventListener('notificationclick', (event) => {
       })
       .then((clientList) => {
         const targetFullUrl = new URL(targetUrl, self.location.origin).href;
-        
+
         // Check if there's already a window open with this URL
         for (const client of clientList) {
           if (client.url === targetFullUrl && 'focus' in client) {
             return client.focus();
           }
         }
-        
+
         // Open new window if none exists
         if (clients.openWindow) {
           return clients.openWindow(targetUrl);
@@ -269,7 +279,7 @@ self.addEventListener('pushsubscriptionchange', (event) => {
       .subscribe(event.oldSubscription?.options || { userVisibleOnly: true })
       .then((subscription) => {
         swLog('Re-subscribed successfully');
-        
+
         // Send new subscription to backend
         return fetch('/api/v1/notifications/push/subscribe', {
           method: 'POST',

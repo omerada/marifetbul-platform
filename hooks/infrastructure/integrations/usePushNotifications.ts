@@ -3,14 +3,14 @@
  * USE PUSH NOTIFICATIONS HOOK
  * ================================================
  * Production-ready hook for Firebase push notifications
- * 
+ *
  * Features:
  * - Automatic token registration
  * - Permission management
  * - Foreground notification handling
  * - Device subscription status
  * - Testing utilities
- * 
+ *
  * @author MarifetBul Development Team
  * @version 2.0.0 - Production Ready
  * @since Sprint: Push Notification System
@@ -43,14 +43,14 @@ export interface UsePushNotificationsReturn {
   permission: NotificationPermission;
   isLoading: boolean;
   error: string | null;
-  
+
   // Actions
   subscribe: () => Promise<boolean>;
   unsubscribe: () => Promise<boolean>;
   requestPermission: () => Promise<NotificationPermission>;
   sendTestNotification: () => Promise<void>;
   refreshStatus: () => Promise<void>;
-  
+
   // Diagnostics
   getDiagnosticInfo: () => Promise<unknown>;
 }
@@ -63,10 +63,11 @@ export function usePushNotifications(): UsePushNotificationsReturn {
   // State
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isSupported] = useState(() => isPushNotificationSupported());
-  const [permission, setPermission] = useState<NotificationPermission>('default');
+  const [permission, setPermission] =
+    useState<NotificationPermission>('default');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Foreground listener cleanup
   const unsubscribeRef = useRef<(() => void) | null>(null);
 
@@ -77,35 +78,40 @@ export function usePushNotifications(): UsePushNotificationsReturn {
   /**
    * Request notification permission
    */
-  const requestPermission = useCallback(async (): Promise<NotificationPermission> => {
-    if (!isSupported) {
-      toast.error('Tarayıcınız push bildirimleri desteklemiyor');
-      return 'denied';
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const newPermission = await requestNotificationPermission();
-      setPermission(newPermission);
-      
-      if (newPermission === 'granted') {
-        toast.success('Bildirim izni verildi');
-      } else if (newPermission === 'denied') {
-        toast.error('Bildirim izni reddedildi');
+  const requestPermission =
+    useCallback(async (): Promise<NotificationPermission> => {
+      if (!isSupported) {
+        toast.error('Tarayıcınız push bildirimleri desteklemiyor');
+        return 'denied';
       }
-      
-      return newPermission;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'İzin isteği başarısız';
-      setError(errorMessage);
-      logger.error('Permission request failed', err instanceof Error ? err : undefined);
-      return 'denied';
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isSupported]);
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const newPermission = await requestNotificationPermission();
+        setPermission(newPermission);
+
+        if (newPermission === 'granted') {
+          toast.success('Bildirim izni verildi');
+        } else if (newPermission === 'denied') {
+          toast.error('Bildirim izni reddedildi');
+        }
+
+        return newPermission;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'İzin isteği başarısız';
+        setError(errorMessage);
+        logger.error(
+          'Permission request failed',
+          err instanceof Error ? err : undefined
+        );
+        return 'denied';
+      } finally {
+        setIsLoading(false);
+      }
+    }, [isSupported]);
 
   // ============================================================================
   // SUBSCRIPTION MANAGEMENT
@@ -125,7 +131,7 @@ export function usePushNotifications(): UsePushNotificationsReturn {
 
     try {
       const result = await subscribeToPushNotifications();
-      
+
       if (result.success) {
         setIsSubscribed(true);
         logger.info('Successfully subscribed to push notifications', {
@@ -137,7 +143,8 @@ export function usePushNotifications(): UsePushNotificationsReturn {
         return false;
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Abonelik hatası';
+      const errorMessage =
+        err instanceof Error ? err.message : 'Abonelik hatası';
       setError(errorMessage);
       logger.error('Subscribe failed', err instanceof Error ? err : undefined);
       return false;
@@ -155,7 +162,7 @@ export function usePushNotifications(): UsePushNotificationsReturn {
 
     try {
       const result = await unsubscribeFromPushNotifications();
-      
+
       if (result.success) {
         setIsSubscribed(false);
         logger.info('Successfully unsubscribed from push notifications');
@@ -165,9 +172,13 @@ export function usePushNotifications(): UsePushNotificationsReturn {
         return false;
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Abonelik iptali hatası';
+      const errorMessage =
+        err instanceof Error ? err.message : 'Abonelik iptali hatası';
       setError(errorMessage);
-      logger.error('Unsubscribe failed', err instanceof Error ? err : undefined);
+      logger.error(
+        'Unsubscribe failed',
+        err instanceof Error ? err : undefined
+      );
       return false;
     } finally {
       setIsLoading(false);
@@ -194,13 +205,16 @@ export function usePushNotifications(): UsePushNotificationsReturn {
 
       setIsSubscribed(subscribed);
       setPermission(currentPermission);
-      
+
       logger.debug('Push notification status refreshed', {
         isSubscribed: subscribed,
         permission: currentPermission,
       });
     } catch (err) {
-      logger.error('Failed to refresh status', err instanceof Error ? err : undefined);
+      logger.error(
+        'Failed to refresh status',
+        err instanceof Error ? err : undefined
+      );
     }
   }, [isSupported]);
 
@@ -221,7 +235,10 @@ export function usePushNotifications(): UsePushNotificationsReturn {
     try {
       await sendTestNotificationService();
     } catch (err) {
-      logger.error('Test notification failed', err instanceof Error ? err : undefined);
+      logger.error(
+        'Test notification failed',
+        err instanceof Error ? err : undefined
+      );
     } finally {
       setIsLoading(false);
     }
@@ -236,7 +253,10 @@ export function usePushNotifications(): UsePushNotificationsReturn {
       logger.info('Push notification diagnostics', diagnostics);
       return diagnostics;
     } catch (err) {
-      logger.error('Failed to get diagnostics', err instanceof Error ? err : undefined);
+      logger.error(
+        'Failed to get diagnostics',
+        err instanceof Error ? err : undefined
+      );
       return null;
     }
   }, []);
@@ -252,7 +272,7 @@ export function usePushNotifications(): UsePushNotificationsReturn {
     logger.info('Foreground notification received in hook', {
       title: payload.notification?.title,
     });
-    
+
     // Custom handling can be added here
     // The service already shows toast notifications
   }, []);
@@ -275,7 +295,9 @@ export function usePushNotifications(): UsePushNotificationsReturn {
 
     // Setup foreground listener if subscribed
     if (isSubscribed && !unsubscribeRef.current) {
-      unsubscribeRef.current = setupForegroundMessageListener(handleForegroundMessage);
+      unsubscribeRef.current = setupForegroundMessageListener(
+        handleForegroundMessage
+      );
       logger.info('Foreground message listener initialized');
     }
 
@@ -300,14 +322,14 @@ export function usePushNotifications(): UsePushNotificationsReturn {
     permission,
     isLoading,
     error,
-    
+
     // Actions
     subscribe,
     unsubscribe,
     requestPermission,
     sendTestNotification,
     refreshStatus,
-    
+
     // Diagnostics
     getDiagnosticInfo,
   };

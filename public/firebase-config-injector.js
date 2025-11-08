@@ -3,19 +3,19 @@
  * FIREBASE CONFIG INJECTOR
  * ================================================
  * Injects Firebase configuration into service worker context
- * 
+ *
  * This script must be loaded BEFORE firebase-messaging-sw.js
  * It sets up the Firebase config in the global scope so the
  * service worker can access it.
- * 
+ *
  * Usage in HTML:
  * <script src="/firebase-config-injector.js"></script>
- * 
+ *
  * @author MarifetBul Development Team
  * @version 1.0.0 - Production Ready
  */
 
-(function() {
+(function () {
   'use strict';
 
   // Firebase configuration from environment variables
@@ -24,7 +24,8 @@
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
     storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '',
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '',
+    messagingSenderId:
+      process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '',
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
   };
 

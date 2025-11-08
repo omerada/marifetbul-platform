@@ -3,7 +3,7 @@
  * FIREBASE CONFIGURATION
  * ================================================
  * Production-ready Firebase configuration with validation
- * 
+ *
  * Environment Variables Required:
  * - NEXT_PUBLIC_FIREBASE_API_KEY
  * - NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
@@ -12,7 +12,7 @@
  * - NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
  * - NEXT_PUBLIC_FIREBASE_APP_ID
  * - NEXT_PUBLIC_FIREBASE_VAPID_KEY (for push notifications)
- * 
+ *
  * @author MarifetBul Development Team
  * @version 1.0.0 - Production Ready
  */
@@ -47,7 +47,8 @@ const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
 const FIREBASE_AUTH_DOMAIN = process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN;
 const FIREBASE_PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 const FIREBASE_STORAGE_BUCKET = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
-const FIREBASE_MESSAGING_SENDER_ID = process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID;
+const FIREBASE_MESSAGING_SENDER_ID =
+  process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID;
 const FIREBASE_APP_ID = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
 const FIREBASE_MEASUREMENT_ID = process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID;
 const FIREBASE_VAPID_KEY = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
@@ -101,12 +102,16 @@ export function validateFirebaseConfig(): FirebaseConfigValidation {
 
   // Check VAPID key for push notifications
   if (!FIREBASE_VAPID_KEY) {
-    warnings.push('NEXT_PUBLIC_FIREBASE_VAPID_KEY not set - Push notifications will not work');
+    warnings.push(
+      'NEXT_PUBLIC_FIREBASE_VAPID_KEY not set - Push notifications will not work'
+    );
   }
 
   // Check measurement ID for analytics
   if (!FIREBASE_MEASUREMENT_ID) {
-    warnings.push('NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID not set - Analytics will not work');
+    warnings.push(
+      'NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID not set - Analytics will not work'
+    );
   }
 
   const isValid = missingKeys.length === 0;
@@ -186,25 +191,25 @@ export function getConfigurationStatus(): {
  */
 if (process.env.NODE_ENV === 'development') {
   const validation = validateFirebaseConfig();
-  
+
   if (!validation.isValid) {
     logger.warn('Firebase configuration incomplete', {
       missingKeys: validation.missingKeys,
     });
-    
+
     console.warn(
       '⚠️ Firebase Configuration Warning:\n' +
-      'Missing environment variables:\n' +
-      validation.missingKeys.map(key => `  - ${key}`).join('\n')
+        'Missing environment variables:\n' +
+        validation.missingKeys.map((key) => `  - ${key}`).join('\n')
     );
   }
-  
+
   if (validation.warnings.length > 0) {
     logger.info('Firebase configuration warnings', {
       warnings: validation.warnings,
     });
   }
-  
+
   if (validation.isValid && validation.warnings.length === 0) {
     logger.info('Firebase configuration valid');
   }
