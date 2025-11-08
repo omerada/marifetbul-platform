@@ -3,7 +3,7 @@
 import React from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
-import { Notification } from '@/types';
+import { Notification } from '@/types/domains/notification';
 import { Check, Archive, Trash2, Clock } from 'lucide-react';
 import {
   getNotificationIcon,
@@ -71,7 +71,7 @@ export const NotificationListItem: React.FC<NotificationListItemProps> = ({
               </span>
             </div>
 
-            <p className="mb-3 text-sm text-gray-600">{notification.message}</p>
+            <p className="mb-3 text-sm text-gray-600">{notification.content}</p>
 
             {showActions && (
               <div className="flex items-center gap-2">
@@ -153,7 +153,7 @@ export const NotificationListItem: React.FC<NotificationListItemProps> = ({
               {notification.title}
             </h4>
             <p className="line-clamp-2 text-xs text-gray-600">
-              {notification.message}
+              {notification.content}
             </p>
           </div>
           <div className="flex flex-col items-end gap-1">

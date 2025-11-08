@@ -14,26 +14,8 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 import type { ApiResponse } from '@/types/shared/api';
 import { z } from 'zod';
 
-// ============================================================================
-// Sprint 9: Backend uses different pagination format
-// ============================================================================
-// Note: Backend returns 'content' instead of 'data', Spring Boot PageImpl format
-
-/**
- * Paginated Response (Spring Boot Backend format)
- * Different from canonical PaginatedResponse
- */
-export interface PaginatedResponse<T> {
-  content: T[]; // Backend uses 'content' instead of 'data'
-  pageNumber: number;
-  pageSize: number;
-  totalElements: number;
-  totalPages: number;
-  first: boolean;
-  last: boolean;
-  hasNext: boolean;
-  hasPrevious: boolean;
-}
+// Use canonical PageResponse from backend-aligned (Spring Boot format)
+import type { PageResponse as PaginatedResponse } from '@/types/backend-aligned';
 
 // ============================================================================
 // TYPES & VALIDATION
@@ -136,11 +118,16 @@ export async function getCommissions(
       ApiResponse<PaginatedResponse<CommissionTransaction>>
     >(`/admin/commissions?${params}`);
 
-    logger.info('Commissions fetched successfully', { totalElementsresponsedatatotalElements,  });
+    logger.info('Commissions fetched successfully', {
+      totalElements: response.data.totalElements,
+    });
 
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commissions', error instanceof Error ? error : new Error(String(error)));
+    logger.error(
+      'Failed to fetch commissions',
+      error instanceof Error ? error : new Error(String(error))
+    );
     throw error;
   }
 }
@@ -162,7 +149,10 @@ export async function getCommissionById(
     logger.info('Commission fetched successfully', { commissionId });
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commission', error instanceof Error ? error : new Error(String(error)));
+    logger.error(
+      'Failed to fetch commission',
+      error instanceof Error ? error : new Error(String(error))
+    );
     throw error;
   }
 }
@@ -184,7 +174,10 @@ export async function getCommissionByPaymentId(
     logger.info('Commission fetched by payment ID', { paymentId });
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commission by payment ID', error instanceof Error ? error : new Error(String(error)));
+    logger.error(
+      'Failed to fetch commission by payment ID',
+      error instanceof Error ? error : new Error(String(error))
+    );
     throw error;
   }
 }
@@ -212,11 +205,17 @@ export async function getCommissionsBySeller(
       ApiResponse<PaginatedResponse<CommissionTransaction>>
     >(`/admin/commissions/seller/${sellerId}?${params}`);
 
-    logger.info('Seller commissions fetched', { sellerId, totalElementsresponsedatatotalElements,  });
+    logger.info('Seller commissions fetched', {
+      sellerId,
+      totalElements: response.data.totalElements,
+    });
 
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch seller commissions', error instanceof Error ? error : new Error(String(error)));
+    logger.error(
+      'Failed to fetch seller commissions',
+      error instanceof Error ? error : new Error(String(error))
+    );
     throw error;
   }
 }
@@ -245,7 +244,10 @@ export async function getCommissionStats(
     logger.info('Commission stats fetched', { startDate, endDate });
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commission stats', error instanceof Error ? error : new Error(String(error)));
+    logger.error(
+      'Failed to fetch commission stats',
+      error instanceof Error ? error : new Error(String(error))
+    );
     throw error;
   }
 }
@@ -274,7 +276,10 @@ export async function getCommissionAnalytics(
     logger.info('Commission analytics fetched', { startDate, endDate });
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commission analytics', error instanceof Error ? error : new Error(String(error)));
+    logger.error(
+      'Failed to fetch commission analytics',
+      error instanceof Error ? error : new Error(String(error))
+    );
     throw error;
   }
 }
@@ -308,7 +313,7 @@ export async function getMyCommissionSummary(): Promise<{
     logger.info('Commission summary fetched');
     return response.data;
   } catch (error) {
-    logger.warn('Commission summary endpoint not available, { calculatefromtransactions, error });
+    logger.warn('Commission summary endpoint not available', { error });
     throw error;
   }
 }

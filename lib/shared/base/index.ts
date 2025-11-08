@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import type { PaginatedResponse } from '@/types/infrastructure/api';
 
 // ================================================
 // CUSTOM HOOKS - RE-EXPORTED FROM CANONICAL SOURCE
@@ -270,15 +271,8 @@ export interface AsyncState<T> {
   error: string | null;
 }
 
-export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
+// Use canonical PaginatedResponse from infrastructure/api
+export type { PaginatedResponse } from '@/types/infrastructure/api';
 
 // Hook return types
 export interface AsyncHookReturn<T> {

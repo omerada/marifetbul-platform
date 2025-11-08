@@ -1,22 +1,12 @@
 // Infrastructure API index
 export * from './client';
 
-// Core API types
-export interface ApiResponse<T = unknown> {
-  data: T;
-  status: 'success' | 'error';
-  message?: string;
-}
-
-export interface PaginatedResponse<T = unknown> {
-  data: T[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-    itemsPerPage: number;
-  };
-}
+// Use canonical types from types/infrastructure/api
+export type {
+  ApiResponse,
+  PaginatedResponse,
+  PaginationMeta,
+} from '@/types/infrastructure/api';
 
 export interface ApiError {
   message: string;

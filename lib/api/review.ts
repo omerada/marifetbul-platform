@@ -35,7 +35,6 @@ import {
   type UpdateReviewRequest,
   type SellerResponseRequest,
   type FlagReviewRequest,
-  type ModerateReviewRequest,
   type ReviewQueryParams,
   type PackageReviewsQueryParams,
   type SellerReviewsQueryParams,
@@ -402,22 +401,6 @@ export async function rejectReview(
 }
 
 /**
- * Moderate review (admin) - legacy function
- * @deprecated Use approveReview() or rejectReview() instead
- */
-export async function moderateReview(
-  reviewId: string,
-  data: ModerateReviewRequest
-): Promise<Review> {
-  if (data.action === 'APPROVE') {
-    return approveReview(reviewId);
-  } else if (data.action === 'REJECT') {
-    return rejectReview(reviewId, data.reason || 'Rejected by admin');
-  }
-  throw new Error(`Unknown moderation action: ${data.action}`);
-}
-
-/**
  * Get flagged reviews (admin)
  * Backend: GET /api/v1/reviews/admin/flagged
  */
@@ -508,7 +491,6 @@ export const reviewApi = {
 
   // Admin (/api/v1/reviews/admin)
   getForModeration: getReviewsForModeration,
-  moderate: moderateReview,
   approve: approveReview,
   reject: rejectReview,
   getFlagged: getFlaggedReviews,

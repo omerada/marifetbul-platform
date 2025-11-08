@@ -13,4 +13,5 @@ export { JobFilters } from './JobFilters';
 // Proposal Components
 export { ProposalForm } from './ProposalForm';
 export { ProposalCard } from './ProposalCard';
-export { ProposalModal } from './ProposalModal';
+export { ProposalListItem } from './ProposalListItem';
+export { ProposalSubmitModal } from './ProposalSubmitModal';

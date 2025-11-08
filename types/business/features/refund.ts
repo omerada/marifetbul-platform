@@ -179,18 +179,8 @@ export interface RefundStatisticsDto {
   successRate: number;
 }
 
-/**
- * Paginated response wrapper
- */
-export interface PageResponse<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-  first: boolean;
-  last: boolean;
-}
+// Use canonical PageResponse from backend-aligned types
+export type { PageResponse } from '@/types/backend-aligned';
 
 // ================================================
 // FILTER TYPES

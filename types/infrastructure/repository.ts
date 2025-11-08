@@ -160,18 +160,8 @@ export interface PaginationMeta {
   hasPreviousPage: boolean;
 }
 
-/**
- * Paginated response wrapper
- */
-export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: PaginationMeta;
-  meta?: {
-    totalCount: number;
-    filters: Record<string, unknown>;
-    searchQuery?: string;
-  };
-}
+// Use canonical PaginatedResponse from infrastructure/api
+export type { PaginatedResponse } from './api';
 
 /**
  * Single entity response wrapper

@@ -12,15 +12,19 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 import { playNotificationAlert } from '@/lib/utils/notificationSound';
 import { useNotificationPreferences } from './useNotificationPreferences';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
-import { transformToInAppNotifications } from '@/lib/transformers/notificationTransformer';
-import type { InAppNotification } from '@/types/business/features/notifications';
+import type { Notification } from '@/types/domains/notification';
+
+// Simple converter for notification API responses
+function convertToNotifications(data: unknown[]): Notification[] {
+  return data as Notification[];
+}
 
 /**
  * Fetcher function for SWR
  */
-async function fetchRecentNotifications(): Promise<InAppNotification[]> {
+async function fetchRecentNotifications(): Promise<Notification[]> {
   const data = await getRecentNotifications(5);
-  return transformToInAppNotifications(data);
+  return convertToNotifications(data);
 }
 
 /**
@@ -41,7 +45,7 @@ async function fetchRecentNotifications(): Promise<InAppNotification[]> {
 export function useNotifications() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [recentNotifications, setRecentNotifications] = useState<
-    InAppNotification[]
+    Notification[]
   >([]);
 
   // Get auth user
@@ -51,7 +55,7 @@ export function useNotifications() {
   const { preferences } = useNotificationPreferences();
 
   // Fetch recent notifications (latest 5)
-  const { data: notifications, mutate } = useSWR<InAppNotification[]>(
+  const { data: notifications, mutate } = useSWR<Notification[]>(
     '/api/notifications/recent',
     fetchRecentNotifications,
     {
@@ -136,7 +140,7 @@ export function useNotifications() {
 
           // Show toast notification
           toast.success(notification.title, {
-            description: notification.message,
+            description: notification.content,
             action: notification.actionUrl
               ? {
                   label: 'Görüntüle',

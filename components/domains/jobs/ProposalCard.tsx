@@ -3,18 +3,28 @@
 import React, { memo } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import { Star, CheckCircle, X } from 'lucide-react';
-import { Proposal } from '@/types/core/jobs';
+import {
+  Star,
+  CheckCircle,
+  X,
+  Clock,
+  DollarSign,
+  FileText,
+} from 'lucide-react';
+import type { ProposalResponse } from '@/types/backend-aligned';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { MessageButton } from '@/components/domains/messaging';
+import { formatCurrency } from '@/lib/shared/formatters';
 
 interface ProposalCardProps {
-  proposal: Proposal;
+  proposal: ProposalResponse;
   jobTitle?: string;
-  onAccept: () => void;
-  onReject: () => void;
+  onAccept?: () => void;
+  onReject?: () => void;
+  showActions?: boolean;
+  isLoading?: boolean;
   className?: string;
 }
 
@@ -23,29 +33,35 @@ export const ProposalCard = memo<ProposalCardProps>(function ProposalCard({
   jobTitle,
   onAccept,
   onReject,
+  showActions = true,
+  isLoading = false,
   className,
 }) {
-  const getStatusColor = (status: Proposal['status']) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending':
+      case 'PENDING':
         return 'secondary';
-      case 'accepted':
+      case 'ACCEPTED':
         return 'success';
-      case 'rejected':
+      case 'REJECTED':
         return 'destructive';
+      case 'WITHDRAWN':
+        return 'warning';
       default:
         return 'secondary';
     }
   };
 
-  const getStatusText = (status: Proposal['status']) => {
+  const getStatusText = (status: string) => {
     switch (status) {
-      case 'pending':
+      case 'PENDING':
         return 'Beklemede';
-      case 'accepted':
+      case 'ACCEPTED':
         return 'Kabul Edildi';
-      case 'rejected':
+      case 'REJECTED':
         return 'Reddedildi';
+      case 'WITHDRAWN':
+        return 'Geri Çekildi';
       default:
         return status;
     }

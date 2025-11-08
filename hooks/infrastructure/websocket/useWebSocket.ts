@@ -39,7 +39,7 @@ import { useOrderStore } from '@/lib/core/store/orders';
 import type { Message as MessageType } from '@/types/message';
 import type { Message as BusinessMessage } from '@/types/business/features/messaging';
 import type { Notification } from '@/types/core/notification';
-import type { NotificationType as BusinessNotificationType } from '@/types/business/features/notifications';
+import type { NotificationType } from '@/types/domains/notification';
 import type { WebSocketMessage } from '@/types/shared/utils/api';
 import type { Order, OrderTimeline } from '@/types';
 
@@ -246,23 +246,20 @@ export function useWebSocket(
               const notification = wsMessage.data as Notification;
               // Convert core Notification to EnhancedNotification format
               // Map backend NotificationType to frontend NotificationType
-              const notificationTypeMap: Record<
-                string,
-                BusinessNotificationType
-              > = {
-                MESSAGE: 'message_received',
-                JOB: 'job_application',
-                PROPOSAL: 'job_application',
-                ORDER: 'job_accepted',
-                PAYMENT: 'payment_received',
-                REVIEW: 'review_received',
-                FOLLOW: 'system_update',
-                SYSTEM: 'system_update',
+              const notificationTypeMap: Record<string, NotificationType> = {
+                MESSAGE: 'MESSAGE',
+                JOB: 'JOB',
+                PROPOSAL: 'PROPOSAL',
+                ORDER: 'ORDER',
+                PAYMENT: 'PAYMENT',
+                REVIEW: 'REVIEW',
+                FOLLOW: 'FOLLOW',
+                SYSTEM: 'SYSTEM',
               };
               const enhancedNotification = {
                 id: notification.id,
                 userId: notification.userId,
-                type: notificationTypeMap[notification.type] || 'system_update',
+                type: notificationTypeMap[notification.type] || 'SYSTEM',
                 title: notification.title,
                 message: notification.content || notification.message || '',
                 content: notification.content,

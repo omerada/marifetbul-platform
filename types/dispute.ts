@@ -303,18 +303,8 @@ export interface CreateDisputeFormData {
   evidenceFiles?: File[];
 }
 
-/**
- * Pagination response wrapper
- */
-export interface PageResponse<T> {
-  content: T[];
-  pageNumber: number;
-  pageSize: number;
-  totalElements: number;
-  totalPages: number;
-  first: boolean;
-  last: boolean;
-}
+// Use canonical PageResponse from backend-aligned types
+export type { PageResponse } from './backend-aligned';
 
 /**
  * Type guard: Check if resolution includes refund

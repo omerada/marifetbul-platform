@@ -17,10 +17,8 @@ import { apiClient } from '../infrastructure/api/client';
 
 export interface RequestPayoutRequest {
   amount: number;
-  bankAccountId: string; // v2.0: Bank account ID (replaces paymentMethodId)
+  bankAccountId: string; // Bank account ID for payout
   description?: string;
-  /** @deprecated Use bankAccountId instead */
-  paymentMethodId?: string;
 }
 
 export interface PayoutResponse {
@@ -30,12 +28,8 @@ export interface PayoutResponse {
   currency: string;
   status: PayoutStatus;
   method: PayoutMethod;
-  bankAccountId?: string; // v2.0: Bank account ID
-  bankAccountDetails?: string; // v2.0: Formatted bank account info
-  /** @deprecated Use bankAccountId instead */
-  paymentMethodId?: string;
-  /** @deprecated Use bankAccountDetails instead */
-  paymentMethodDetails?: string;
+  bankAccountId?: string; // Bank account ID
+  bankAccountDetails?: string; // Formatted bank account info
   iyzicoPayoutId?: string;
   description?: string;
   failureReason?: string;

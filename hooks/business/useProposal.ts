@@ -2,10 +2,19 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUIStore } from '@/lib/core/store/domains/ui/uiStore';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import type { ProposalResponse } from '@/types/backend-aligned';
+
+export interface SubmitProposalData {
+  jobId: string;
+  coverLetter: string;
+  bidAmount: number;
+  estimatedDuration: number;
+  attachments?: string[];
+}
 
 interface UseProposalOptions {
-  onSuccess?: () => void;
-  onError?: (error: string) => void;
+  onSuccess?: (proposal?: ProposalResponse) => void;
+  onError?: (error: Error | string) => void;
 }
 
 export function useProposal(options: UseProposalOptions = {}) {
@@ -51,10 +60,9 @@ export function useProposal(options: UseProposalOptions = {}) {
           router.push('/dashboard/employer/orders');
         }, 1500);
 
-        logger.info(
-          '[useProposal] Proposal accepted successfully:',
-          proposalId
-        );
+        logger.info('[useProposal] Proposal accepted successfully', {
+          proposalId,
+        });
 
         return data.data;
       } catch (err) {
@@ -71,7 +79,10 @@ export function useProposal(options: UseProposalOptions = {}) {
 
         options.onError?.(errorMessage);
 
-        logger.error('[useProposal] Accept proposal error:', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          '[useProposal] Accept proposal error:',
+          err instanceof Error ? err : new Error(String(err))
+        );
 
         throw err;
       } finally {
@@ -110,10 +121,9 @@ export function useProposal(options: UseProposalOptions = {}) {
 
         options.onSuccess?.();
 
-        logger.info(
-          '[useProposal] Proposal rejected successfully:',
-          proposalId
-        );
+        logger.info('[useProposal] Proposal rejected successfully', {
+          proposalId,
+        });
 
         return data.data;
       } catch (err) {
@@ -130,7 +140,10 @@ export function useProposal(options: UseProposalOptions = {}) {
 
         options.onError?.(errorMessage);
 
-        logger.error('[useProposal] Reject proposal error:', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          '[useProposal] Reject proposal error:',
+          err instanceof Error ? err : new Error(String(err))
+        );
 
         throw err;
       } finally {
@@ -140,7 +153,69 @@ export function useProposal(options: UseProposalOptions = {}) {
     [addToast, options]
   );
 
+  const submitProposal = useCallback(
+    async (data: SubmitProposalData) => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch('/api/v1/proposals', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(data),
+        });
+
+        const responseData = await response.json();
+
+        if (!response.ok) {
+          throw new Error(responseData.message || 'Teklif gönderilemedi');
+        }
+
+        addToast({
+          title: 'Başarılı',
+          description: 'Teklif başarıyla gönderildi',
+          type: 'success',
+          duration: 3000,
+        });
+
+        options.onSuccess?.(responseData.data);
+
+        logger.info(
+          '[useProposal] Proposal submitted successfully:',
+          responseData.data
+        );
+
+        return responseData.data;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Bir hata oluştu';
+        const errorObj = err instanceof Error ? err : new Error(errorMessage);
+        setError(errorMessage);
+
+        addToast({
+          title: 'Hata',
+          description: errorMessage,
+          type: 'error',
+          duration: 5000,
+        });
+
+        options.onError?.(errorObj);
+
+        logger.error('[useProposal] Submit proposal error:', errorObj);
+
+        throw errorObj;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [addToast, options]
+  );
+
   return {
+    submitProposal,
     acceptProposal,
     rejectProposal,
     isLoading,

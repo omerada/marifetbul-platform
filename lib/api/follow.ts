@@ -13,21 +13,10 @@ import { apiClient } from '@/lib/infrastructure/api/client';
 import { validateResponse, UserProfileSchema } from './validators';
 import type { UserProfile } from './validators';
 import type { User, FollowStatusResponse } from '@/types/core/base';
-import type { PaginationMeta } from '@/types';
-
-// ============================================================================
-// Sprint 9: Import canonical API types
-// ============================================================================
-import type { ApiResponse } from '@/types/infrastructure/api';
-
-/**
- * Page response type for pagination
- * @deprecated Sprint 9 - Use PaginatedResponse from canonical
- */
-interface PageResponse<T> {
-  data: T[];
-  pagination: PaginationMeta;
-}
+import type {
+  ApiResponse,
+  PaginatedResponse,
+} from '@/types/infrastructure/api';
 
 /**
  * Toggle follow/unfollow for a user
@@ -56,12 +45,13 @@ export const getFollowers = async (
   userId: string,
   page = 0,
   size = 20
-): Promise<PageResponse<UserProfile>> => {
+): Promise<PaginatedResponse<UserProfile>> => {
   const url = `/users/${userId}/followers?page=${page}&size=${size}&sortBy=createdAt&sortDir=DESC`;
-  const response = await apiClient.get<ApiResponse<PageResponse<User>>>(url);
+  const response =
+    await apiClient.get<ApiResponse<PaginatedResponse<User>>>(url);
 
   // Validate each user in the response
-  const validatedUsers = response.data.data.map((user) =>
+  const validatedUsers = response.data.data.map((user: User) =>
     validateResponse(UserProfileSchema, user, 'User')
   );
 
@@ -84,12 +74,13 @@ export const getFollowing = async (
   userId: string,
   page = 0,
   size = 20
-): Promise<PageResponse<UserProfile>> => {
+): Promise<PaginatedResponse<UserProfile>> => {
   const url = `/users/${userId}/following?page=${page}&size=${size}&sortBy=createdAt&sortDir=DESC`;
-  const response = await apiClient.get<ApiResponse<PageResponse<User>>>(url);
+  const response =
+    await apiClient.get<ApiResponse<PaginatedResponse<User>>>(url);
 
   // Validate each user in the response
-  const validatedUsers = response.data.data.map((user) =>
+  const validatedUsers = response.data.data.map((user: User) =>
     validateResponse(UserProfileSchema, user, 'User')
   );
 

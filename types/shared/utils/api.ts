@@ -59,19 +59,11 @@ export interface ApiError {
   originalError?: Error;
 }
 
-export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: PaginationMeta;
-}
-
-export interface PaginationMeta {
-  page: number;
-  pageSize: number;
-  total: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrev: boolean;
-}
+// Use canonical PaginatedResponse from infrastructure/api
+export type {
+  PaginatedResponse,
+  PaginationMeta,
+} from '@/types/infrastructure/api';
 
 export interface ApiEndpoint {
   path: string;

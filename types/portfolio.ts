@@ -122,18 +122,8 @@ export interface PortfolioFilters {
   sortDir?: 'ASC' | 'DESC';
 }
 
-/**
- * Pagination response wrapper
- */
-export interface PageResponse<T> {
-  content: T[];
-  pageNumber: number;
-  pageSize: number;
-  totalElements: number;
-  totalPages: number;
-  first: boolean;
-  last: boolean;
-}
+// Use canonical PageResponse from backend-aligned types
+export type { PageResponse } from './backend-aligned';
 
 /**
  * Helper: Check if portfolio has images

@@ -51,12 +51,6 @@ export interface ApiPaymentMethod {
   updatedAt: string;
 }
 
-/**
- * @deprecated Sprint 8 - Use ApiPaymentMethod for backend API
- * Type alias for backward compatibility
- */
-export type PaymentMethod = ApiPaymentMethod;
-
 export interface AddPaymentMethodRequest {
   type: PaymentMethodType;
   // Card fields
@@ -114,10 +108,10 @@ const PaymentMethodSchema = z.object({
  * Get all payment methods for current user
  * GET /api/v1/payment-methods
  *
- * @returns {Promise<PaymentMethod[]>} List of payment methods
+ * @returns {Promise<ApiPaymentMethod[]>} List of payment methods
  */
-export async function getPaymentMethods(): Promise<PaymentMethod[]> {
-  const response = await apiClient.get<PaymentMethod[]>('/payment-methods');
+export async function getPaymentMethods(): Promise<ApiPaymentMethod[]> {
+  const response = await apiClient.get<ApiPaymentMethod[]>('/payment-methods');
   return response.map((pm) => PaymentMethodSchema.parse(pm));
 }
 
@@ -127,13 +121,13 @@ export async function getPaymentMethods(): Promise<PaymentMethod[]> {
  *
  * @param {number} page - Page number (0-indexed)
  * @param {number} size - Page size
- * @returns {Promise<PaymentMethod[]>} List of payment methods
+ * @returns {Promise<ApiPaymentMethod[]>} List of payment methods
  */
 export async function getPaymentMethodsPaginated(
   page: number = 0,
   size: number = 20
-): Promise<PaymentMethod[]> {
-  const response = await apiClient.get<PaymentMethod[]>(
+): Promise<ApiPaymentMethod[]> {
+  const response = await apiClient.get<ApiPaymentMethod[]>(
     `/payment-methods?page=${page}&size=${size}`
   );
   return response.map((pm) => PaymentMethodSchema.parse(pm));
@@ -144,12 +138,12 @@ export async function getPaymentMethodsPaginated(
  * GET /api/v1/payment-methods/{id}
  *
  * @param {string} paymentMethodId - Payment method UUID
- * @returns {Promise<PaymentMethod>} Payment method details
+ * @returns {Promise<ApiPaymentMethod>} Payment method details
  */
 export async function getPaymentMethod(
   paymentMethodId: string
-): Promise<PaymentMethod> {
-  const response = await apiClient.get<PaymentMethod>(
+): Promise<ApiPaymentMethod> {
+  const response = await apiClient.get<ApiPaymentMethod>(
     `/payment-methods/${paymentMethodId}`
   );
   return PaymentMethodSchema.parse(response);
@@ -160,12 +154,12 @@ export async function getPaymentMethod(
  * POST /api/v1/payment-methods
  *
  * @param {AddPaymentMethodRequest} data - Payment method data
- * @returns {Promise<PaymentMethod>} Created payment method
+ * @returns {Promise<ApiPaymentMethod>} Created payment method
  */
 export async function addPaymentMethod(
   data: AddPaymentMethodRequest
-): Promise<PaymentMethod> {
-  const response = await apiClient.post<PaymentMethod>(
+): Promise<ApiPaymentMethod> {
+  const response = await apiClient.post<ApiPaymentMethod>(
     '/payment-methods',
     data
   );
@@ -178,13 +172,13 @@ export async function addPaymentMethod(
  *
  * @param {string} paymentMethodId - Payment method UUID
  * @param {UpdatePaymentMethodRequest} data - Update data
- * @returns {Promise<PaymentMethod>} Updated payment method
+ * @returns {Promise<ApiPaymentMethod>} Updated payment method
  */
 export async function updatePaymentMethod(
   paymentMethodId: string,
   data: UpdatePaymentMethodRequest
-): Promise<PaymentMethod> {
-  const response = await apiClient.put<PaymentMethod>(
+): Promise<ApiPaymentMethod> {
+  const response = await apiClient.put<ApiPaymentMethod>(
     `/payment-methods/${paymentMethodId}`,
     data
   );
@@ -209,12 +203,12 @@ export async function deletePaymentMethod(
  * POST /api/v1/payment-methods/{id}/set-default
  *
  * @param {string} paymentMethodId - Payment method UUID
- * @returns {Promise<PaymentMethod>} Updated payment method
+ * @returns {Promise<ApiPaymentMethod>} Updated payment method
  */
 export async function setPaymentMethodAsDefault(
   paymentMethodId: string
-): Promise<PaymentMethod> {
-  const response = await apiClient.post<PaymentMethod>(
+): Promise<ApiPaymentMethod> {
+  const response = await apiClient.post<ApiPaymentMethod>(
     `/payment-methods/${paymentMethodId}/set-default`,
     {}
   );
@@ -230,12 +224,12 @@ export async function setPaymentMethodAsDefault(
  * POST /api/v1/payment-methods/iyzico/attach
  *
  * @param {AttachIyzicoPaymentMethodRequest} data - Iyzico payment method data
- * @returns {Promise<PaymentMethod>} Created payment method
+ * @returns {Promise<ApiPaymentMethod>} Created payment method
  */
 export async function attachIyzicoPaymentMethod(
   data: AttachIyzicoPaymentMethodRequest
-): Promise<PaymentMethod> {
-  const response = await apiClient.post<PaymentMethod>(
+): Promise<ApiPaymentMethod> {
+  const response = await apiClient.post<ApiPaymentMethod>(
     '/payment-methods/iyzico/attach',
     data
   );
@@ -262,7 +256,7 @@ export async function detachIyzicoPaymentMethod(
 /**
  * Get only bank accounts
  */
-export async function getBankAccounts(): Promise<PaymentMethod[]> {
+export async function getBankAccounts(): Promise<ApiPaymentMethod[]> {
   const allMethods = await getPaymentMethods();
   return allMethods.filter((pm) => pm.type === PaymentMethodType.BANK_TRANSFER);
 }
@@ -271,7 +265,7 @@ export async function getBankAccounts(): Promise<PaymentMethod[]> {
  * Get default bank account
  */
 export async function getDefaultBankAccount(): Promise<
-  PaymentMethod | undefined
+  ApiPaymentMethod | undefined
 > {
   const bankAccounts = await getBankAccounts();
   return bankAccounts.find((ba) => ba.isDefault);
@@ -286,7 +280,7 @@ export async function addBankAccount(data: {
   accountHolderName: string;
   nickname?: string;
   isDefault?: boolean;
-}): Promise<PaymentMethod> {
+}): Promise<ApiPaymentMethod> {
   return addPaymentMethod({
     type: PaymentMethodType.BANK_TRANSFER,
     ...data,

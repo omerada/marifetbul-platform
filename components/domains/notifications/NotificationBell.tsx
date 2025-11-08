@@ -25,7 +25,7 @@ import { Badge } from '@/components/ui/Badge';
 import { useNotifications } from '@/hooks/business/useNotifications';
 import { NotificationListItem } from './NotificationListItem';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import type { InAppNotification } from '@/types/business/features/notifications';
+import type { Notification } from '@/types/domains/notification';
 
 export interface NotificationBellProps {
   className?: string;
@@ -85,7 +85,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
     logger.debug('NotificationBell', { isOpen: !isOpen });
   };
 
-  const handleNotificationClick = async (notification: InAppNotification) => {
+  const handleNotificationClick = async (notification: Notification) => {
     logger.debug('NotificationBell', { notification });
 
     // Mark as read if unread
