@@ -17,7 +17,7 @@ import {
   getTransactionTypeLabel,
   getTransactionTypeBadgeVariant,
   getTransactionIcon,
-} from '../utils/transactionHelpers';
+} from './utils/transactionHelpers';
 
 export interface ListViewProps {
   transactions: Transaction[];

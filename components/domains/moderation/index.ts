@@ -3,10 +3,10 @@
  * MODERATION DOMAIN COMPONENTS
  * ================================================
  * All moderation-related components
+ *
+ * NOTE: Card components have been unified.
+ * Use UnifiedCommentModerationCard from @/components/domains/moderation/shared
  */
-
-export { CommentModerationCard } from './CommentModerationCard';
-export type { CommentModerationCardProps } from './CommentModerationCard';
 
 export { RejectCommentModal } from './RejectCommentModal';
 export type { RejectCommentModalProps } from './RejectCommentModal';

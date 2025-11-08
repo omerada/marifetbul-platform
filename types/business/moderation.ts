@@ -60,24 +60,82 @@ export enum Priority {
   LOW = 'LOW',
   MEDIUM = 'MEDIUM',
   HIGH = 'HIGH',
+  CRITICAL = 'CRITICAL',
 }
 
 /**
- * Pending moderation item
+ * Moderation item status
+ */
+export enum ModerationItemStatus {
+  PENDING = 'PENDING',
+  IN_REVIEW = 'IN_REVIEW',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  ESCALATED = 'ESCALATED',
+  SPAM = 'SPAM',
+}
+
+/**
+ * View modes for moderation cards
+ * Used by both UnifiedCommentModerationCard and UnifiedReviewModerationCard
+ */
+export type ViewMode = 'compact' | 'card' | 'detailed';
+
+/**
+ * User roles for moderation interface
+ * Determines action availability and UI behavior
+ */
+export type UserRole = 'admin' | 'moderator';
+
+/**
+ * Pending moderation item (Frontend representation)
+ * Maps from backend PendingItemDto
  */
 export interface PendingItem {
+  /** Unique item identifier */
   itemId: string;
+
+  /** Type of content being moderated */
   itemType: PendingItemType;
+
+  /** Content text or description */
   content: string;
-  authorName: string;
+
+  /** Author user ID */
   authorId: string;
-  relatedEntity: string;
+
+  /** Author display name */
+  authorName: string;
+
+  /** When item was submitted (ISO string) */
+  submittedAt: string;
+
+  /** Priority level */
   priority: Priority;
-  flagCount?: number;
-  flagReasons?: string[];
-  createdAt: string;
+
+  /** Current moderation status */
+  status: ModerationItemStatus;
+
+  /** How long item has been waiting (minutes) */
   waitingTimeMinutes: number;
-  reviewUrl: string;
+
+  /** Number of user reports/flags */
+  flagCount?: number;
+
+  /** Reasons for flags */
+  flagReasons?: string[];
+
+  /** Related entity ID (e.g., blog post ID for comment) */
+  relatedEntityId?: string;
+
+  /** Related entity title */
+  relatedEntityTitle?: string;
+
+  /** URL to review/view the item */
+  reviewUrl?: string;
+
+  /** Content preview (truncated) */
+  contentPreview?: string;
 }
 
 /**

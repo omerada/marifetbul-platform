@@ -683,11 +683,14 @@ export const BLOG_ENDPOINTS = {
     `/blog/admin/comments/${commentId}/reject`,
   SPAM_COMMENT: (commentId: string | number) =>
     `/blog/admin/comments/${commentId}/spam`,
+  ESCALATE_COMMENT: (commentId: string | number) =>
+    `/blog/admin/comments/${commentId}/escalate`,
 
   // Bulk Comment Actions (Sprint 1 - EPIC 2)
   BULK_APPROVE_COMMENTS: '/blog/admin/comments/bulk/approve',
   BULK_REJECT_COMMENTS: '/blog/admin/comments/bulk/reject',
   BULK_SPAM_COMMENTS: '/blog/admin/comments/bulk/spam',
+  BULK_ESCALATE_COMMENTS: '/blog/admin/comments/bulk/escalate',
 
   // Comment Reports (Future)
   REPORT_COMMENT: (commentId: string | number) =>

@@ -11,6 +11,7 @@
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
+import * as blogApi from '@/lib/api/blog';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import type { ApiResponse } from '@/types/infrastructure/api';
 
@@ -301,6 +302,46 @@ export async function bulkMarkAsSpam(
   return response.data;
 }
 
+/**
+ * Bulk escalate comments to admin
+ * Sprint 1 - EPIC 2: Bulk Moderation Operations
+ * POST /blog/admin/comments/bulk/escalate
+ */
+export async function bulkEscalateComments(
+  itemIds: string[],
+  reason: string,
+  priority: 'LOW' | 'MEDIUM' | 'HIGH' = 'MEDIUM'
+): Promise<BulkModerationResponse> {
+  logger.info('[ModerationService] Bulk escalate comments', {
+    count: itemIds.length,
+    priority,
+  });
+
+  const commentIds = itemIds.map((id) => Number(id));
+  const response = await blogApi.bulkEscalateComments(
+    commentIds,
+    reason,
+    priority
+  );
+
+  // Transform blog API response to BulkModerationResponse
+  return {
+    status:
+      response.failureCount === 0
+        ? 'SUCCESS'
+        : response.successCount === 0
+          ? 'FAILED'
+          : 'PARTIAL_SUCCESS',
+    totalRequested: response.successCount + response.failureCount,
+    successCount: response.successCount,
+    failureCount: response.failureCount,
+    errors: response.failures?.map((f) => ({
+      itemId: String(f.commentId),
+      error: f.errorMessage,
+    })),
+  };
+}
+
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================
@@ -361,6 +402,7 @@ export const moderationService = {
   bulkApprove,
   bulkReject,
   bulkMarkAsSpam,
+  bulkEscalateComments,
 
   // Utilities
   formatBulkResult,

@@ -14,8 +14,8 @@
  *
  * Sprint 1 - EPIC 1.1: Component Deduplication (Comments)
  * @author MarifetBul Development Team
- * @version 1.0.0
- * @created November 6, 2025
+ * @version 2.0.0
+ * @updated November 8, 2025 - Consolidated types to @/types/business/moderation
  */
 
 'use client';
@@ -37,13 +37,12 @@ import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import type { BlogComment } from '@/types/blog';
 import type { BlogCommentResponse } from '@/types/backend-aligned';
+import type { ViewMode, UserRole } from '@/types/business/moderation';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-export type ViewMode = 'compact' | 'card' | 'detailed';
-export type UserRole = 'admin' | 'moderator';
 export type CommentStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'SPAM';
 export type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 
@@ -209,7 +208,7 @@ export function UnifiedCommentModerationCard({
       if (onReject) {
         const success = await onReject(commentId, rejectReason);
         if (success) {
-          logger.info('Comment rejected', { commentId, reasonrejectReason });
+          logger.info('Comment rejected', { commentId, reason: rejectReason });
           setShowRejectDialog(false);
           setRejectReason('');
           onUpdated?.();
@@ -268,7 +267,11 @@ export function UnifiedCommentModerationCard({
           escalatePriority
         );
         if (success) {
-          logger.info('Comment escalated', { commentId, reasonescalateReason, priorityescalatePriority,  });
+          logger.info('Comment escalated', {
+            commentId,
+            reason: escalateReason,
+            priority: escalatePriority,
+          });
           setShowEscalateDialog(false);
           setEscalateReason('');
           setEscalatePriority('MEDIUM');

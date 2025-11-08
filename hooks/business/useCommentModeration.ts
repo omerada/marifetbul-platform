@@ -17,10 +17,33 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { moderationApi } from '@/lib/api/moderation';
+import * as blogApi from '@/lib/api/blog';
 import * as moderationService from '@/lib/services/moderation-service';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { toast } from 'sonner';
 import type { BlogComment } from '@/types/blog';
+import type {
+  PendingItem,
+  ModerationItemStatus,
+} from '@/types/business/moderation';
+
+/**
+ * Map backend ModerationItemStatus to BlogComment status
+ */
+function mapModerationStatusToCommentStatus(
+  status: ModerationItemStatus
+): BlogComment['status'] {
+  const statusMap: Record<ModerationItemStatus, BlogComment['status']> = {
+    PENDING: 'PENDING',
+    IN_REVIEW: 'PENDING',
+    APPROVED: 'APPROVED',
+    REJECTED: 'REJECTED',
+    SPAM: 'SPAM',
+    ESCALATED: 'PENDING', // Escalated items shown as pending
+  };
+
+  return statusMap[status] || 'PENDING';
+}
 
 // ================================================
 // TYPES
@@ -182,55 +205,60 @@ export function useCommentModeration(): UseCommentModerationReturn {
       }
 
       // Fetch comments using moderator service
-      // Note: Backend's getPendingItems returns basic info only
-      // Full comment details would require a separate endpoint or enhancement
+      // Backend's getPendingItems returns PendingItemDto objects
+      // We transform them to BlogComment format for UI consistency
       const response = await moderationApi.getPendingItems(
         page - 1, // Backend uses 0-based indexing
         pageSize
       );
 
       // Transform pending items to BlogComment format
-      // Note: Some fields may be incomplete - this is a limitation of current backend API
-      // TODO: Type safety - PendingItem interface needs proper type definitions
-      const comments: BlogComment[] = (response.items as any[])
+      // Maps PendingItemDto from backend to frontend BlogComment interface
+      const comments: BlogComment[] = (
+        response.items as unknown as PendingItem[]
+      )
         .filter(
-          (item: any) => item.type === 'COMMENT' || item.type === 'REVIEW'
+          (item: PendingItem) =>
+            item.itemType === 'COMMENT' || item.itemType === 'REVIEW'
         )
-        .map((item: any) => ({
-          id: item.id,
-          postId: item.relatedEntityId || item.relatedEntity, // relatedEntityId is the blog post/order id
-          postTitle: 'Loading...', // Not available in pending items API
+        .map((item: PendingItem) => ({
+          id: item.itemId, // Already string from PendingItem
+          postId: item.relatedEntityId || '',
+          postTitle: item.relatedEntityTitle || 'Yükleniyor...',
           content: item.contentPreview || item.content,
           author: {
-            id: item.reporterUsername || 'unknown', // Limited author info
-            name: item.reporterUsername || 'Anonim',
-            username: item.reporterUsername || 'unknown',
+            id: item.authorId,
+            name: item.authorName,
+            username: item.authorName,
             avatar: undefined,
           },
-          authorId: item.reporterUsername || 'unknown',
-          createdAt: item.submittedAt || item.createdAt,
-          status: item.status as unknown as BlogComment['status'], // Convert pending status to comment status
+          authorId: item.authorId,
+          createdAt: item.submittedAt,
+          status: mapModerationStatusToCommentStatus(item.status),
           reportCount: item.flagCount || 0,
           // Additional fields
-          updatedAt: item.createdAt,
+          updatedAt: item.submittedAt,
           likes: 0,
           replies: [],
         }));
 
       setData({
         comments,
-        total: (response as any).totalItems || response.items?.length || 0,
-        pending: (response as any).totalItems || response.items?.length || 0, // All items in queue are pending
+        total: response.total || response.items?.length || 0,
+        pending: response.total || response.items?.length || 0,
         approved: 0,
         rejected: 0,
         spam: 0,
       });
 
-      setTotalPages((response as any).totalPages || 1);
+      const calculatedTotalPages = Math.ceil(
+        (response.total || 0) / (response.pageSize || 10)
+      );
+      setTotalPages(calculatedTotalPages || 1);
 
       logger.debug('[useCommentModeration] Comments fetched', {
         count: comments.length,
-        total: (response as any).totalItems || 0,
+        total: response.total || 0,
         page,
       });
     } catch (err) {
@@ -454,16 +482,12 @@ export function useCommentModeration(): UseCommentModerationReturn {
           priority,
         });
 
-        // TODO: Backend API endpoint needed
-        // await moderationApi.escalateComment(id, reason);
-
-        // Temporary: Use reject as fallback until escalate API is available
-        await moderationService.rejectComment(id, `ESCALATED: ${reason}`);
+        // Call backend escalate API
+        await blogApi.escalateComment(Number(id), reason, priority);
 
         // Show success toast
-        toast.success('Yorum işaretlendi', {
-          description:
-            'Yorum reddedildi ve yöneticiye bildirildi (escalate özelliği yakında)',
+        toast.success('Yorum yükseltildi', {
+          description: 'Yorum yöneticiye iletildi',
         });
 
         // Refresh data
@@ -480,7 +504,7 @@ export function useCommentModeration(): UseCommentModerationReturn {
         );
 
         toast.error('İşlem başarısız', {
-          description: 'Yorum işaretlenemedi',
+          description: 'Yorum yükseltilemedi',
         });
         return false;
       }
@@ -767,20 +791,17 @@ export function useCommentModeration(): UseCommentModerationReturn {
       priority: 'LOW' | 'MEDIUM' | 'HIGH' = 'MEDIUM'
     ): Promise<BulkActionResult> => {
       try {
-        logger.debug(
-          '[useCommentModeration] Bulk escalating comments (using bulk reject as fallback)',
-          {
-            count: ids.length,
-            reason,
-            priority,
-          }
-        );
+        logger.debug('[useCommentModeration] Bulk escalating comments', {
+          count: ids.length,
+          reason,
+          priority,
+        });
 
-        // TODO: Backend API endpoint needed for bulk escalate
-        // Temporary: Use bulk reject as fallback
-        const response = await moderationService.bulkRejectComments(
+        // Use real bulk escalate API
+        const response = await moderationService.bulkEscalateComments(
           ids,
-          `ESCALATED: ${reason}`
+          reason,
+          priority
         );
 
         // Extract results
@@ -801,11 +822,11 @@ export function useCommentModeration(): UseCommentModerationReturn {
 
         // Show toast notifications
         if (result.success > 0) {
-          toast.success(`${result.success} yorum işaretlendi`, {
+          toast.success(`${result.success} yorum yükseltildi`, {
             description:
               result.failed > 0
-                ? `${result.failed} yorum işaretlenemedi`
-                : 'Tüm yorumlar reddedildi ve bildirildi (escalate özelliği yakında)',
+                ? `${result.failed} yorum yükseltilemedi`
+                : 'Tüm yorumlar yöneticiye iletildi',
           });
         }
 

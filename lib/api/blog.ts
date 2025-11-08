@@ -22,10 +22,7 @@ import type {
   BlogCategory as ValidatedBlogCategory,
   BlogComment as ValidatedBlogComment,
 } from './validators';
-import type {
-  BulkCommentActionResponse,
-  FailedCommentAction,
-} from '@/types/blog';
+import type { BulkCommentActionResponse } from '@/types/blog';
 
 // ================================================
 // TYPE DEFINITIONS
@@ -630,6 +627,26 @@ export async function markCommentAsSpam(
   return apiClient.post(BLOG_ENDPOINTS.SPAM_COMMENT(commentId), {});
 }
 
+/**
+ * Escalate comment to admin (moderator only)
+ * Sprint 1 - Task 6: Comment Escalation Feature
+ *
+ * @param commentId - Comment ID to escalate
+ * @param reason - Reason for escalation
+ * @param priority - Priority level (LOW, MEDIUM, HIGH)
+ * @returns Updated comment with ESCALATED status
+ */
+export async function escalateComment(
+  commentId: number,
+  reason: string,
+  priority?: 'LOW' | 'MEDIUM' | 'HIGH'
+): Promise<BlogComment> {
+  return apiClient.post(BLOG_ENDPOINTS.ESCALATE_COMMENT(commentId), {
+    reason,
+    priority: priority || 'MEDIUM',
+  });
+}
+
 // ================================================
 // BULK COMMENT MODERATION (Sprint 1 - EPIC 2)
 // ================================================
@@ -670,6 +687,27 @@ export async function bulkMarkAsSpam(
   commentIds: number[]
 ): Promise<BulkCommentActionResponse> {
   return apiClient.post(BLOG_ENDPOINTS.BULK_SPAM_COMMENTS, { commentIds });
+}
+
+/**
+ * Bulk escalate multiple comments to admin
+ * Sprint 1 - EPIC 2: Bulk Moderation Operations
+ *
+ * @param commentIds Array of comment IDs to escalate
+ * @param reason Reason for bulk escalation
+ * @param priority Priority level for all escalated comments
+ * @returns Response with success/failure details
+ */
+export async function bulkEscalateComments(
+  commentIds: number[],
+  reason: string,
+  priority?: 'LOW' | 'MEDIUM' | 'HIGH'
+): Promise<BulkCommentActionResponse> {
+  return apiClient.post(BLOG_ENDPOINTS.BULK_ESCALATE_COMMENTS, {
+    commentIds,
+    reason,
+    priority: priority || 'MEDIUM',
+  });
 }
 
 // ================================================

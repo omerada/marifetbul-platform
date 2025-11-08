@@ -3,16 +3,17 @@
  * ADMIN MODERATION COMPONENTS
  * ================================================
  * Export all moderation-related components
+ *
+ * NOTE: Review and Comment queue components have been unified.
+ * Use components from @/components/domains/moderation/shared:
+ * - UnifiedReviewQueue & UnifiedReviewModerationCard
+ * - UnifiedCommentQueue & UnifiedCommentModerationCard
  */
 
-// Sprint 2 - Review Moderation Components
-export { default as PendingReviewsList } from './PendingReviewsList';
-export { default as ReviewModerationCard } from './ReviewModerationCard';
+// Stats Components
 export { default as ModerationStats } from './ModerationStats';
 
-// Comment Moderation Components
-export { CommentModerationQueue } from './CommentModerationQueue';
-export { CommentModerationCard } from './CommentModerationCard';
+// Supporting Comment Components (still in use)
 export { CommentModerationNotes } from './CommentModerationNotes';
 export { CommentBulkActions } from './CommentBulkActions';
 export { CommentFilterBar } from './CommentFilterBar';
@@ -25,7 +26,6 @@ export {
   RecentCommentsSkeleton as ModerationRecentCommentsSkeleton,
 } from './LoadingSkeletons';
 
-export type { CommentModerationCardProps } from './CommentModerationCard';
 export type {
   ModerationNote,
   CommentModerationNotesProps,

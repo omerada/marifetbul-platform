@@ -1,15 +1,16 @@
 /**
  * ================================================
- * UNIFIED MODERATOR DASHBOARD
+ * UNIFIED MODERATOR DASHBOARD WIDGET
  * ================================================
  * Main dashboard combining all Sprint 3 moderation features
  *
  * Sprint: Sprint 3 - Day 4 (Final Integration)
  * Features: Combines all moderation tools and analytics
  *
- * @version 1.0.0
+ * @version 2.0.0 - Updated to use UnifiedCommentQueue
  * @author MarifetBul Development Team
  * @created November 2, 2025
+ * @updated November 8, 2025 - Removed deprecated CommentModerationQueue
  */
 
 'use client';
@@ -17,7 +18,7 @@
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
 import { LayoutDashboard, Filter, Flag, Shield, BarChart3 } from 'lucide-react';
-import { CommentModerationQueue } from './CommentModerationQueue';
+import { UnifiedCommentQueue } from '@/components/domains/moderation/shared';
 import { AdvancedFilterPanel } from './AdvancedFilterPanel';
 import { FlagStatisticsPanel } from './FlagStatisticsPanel';
 import { AutoModerationRulesPanel } from './AutoModerationRulesPanel';
@@ -104,7 +105,13 @@ export function ModeratorDashboard({
               </div>
             </div>
 
-            <CommentModerationQueue />
+            <UnifiedCommentQueue
+              role="moderator"
+              initialStatus="PENDING"
+              showStats={true}
+              enableBulkActions={true}
+              viewMode="compact"
+            />
           </div>
         </TabsContent>
 

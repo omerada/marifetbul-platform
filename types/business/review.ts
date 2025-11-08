@@ -135,7 +135,27 @@ export interface Review {
   canEdit?: boolean;
   canDelete?: boolean;
   moderationHistory?: ModerationLog[];
+
+  // Moderation-specific fields
+  flagReasons?: Array<{
+    reason: FlagReason;
+    count: number;
+    descriptions: string[];
+  }>;
+  moderatedAt?: string;
+  moderatedBy?: string;
+
+  // Computed/alias fields for component compatibility
+  rating?: number; // Alias for overallRating
+  comment?: string; // Alias for reviewText
+  targetName?: string; // Computed: packageTitle or revieweeName
+  targetId?: string; // Computed: packageId or revieweeId
 }
+
+/**
+ * ReviewResponse - Type alias for Review (backend DTO compatibility)
+ */
+export type ReviewResponse = Review;
 
 /**
  * Review image

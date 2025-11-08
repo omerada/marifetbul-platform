@@ -16,7 +16,7 @@
  * Sprint 1 - EPIC 1.1: Component Deduplication
  * @author MarifetBul Development Team
  * @version 2.0.0
- * @created November 6, 2025
+ * @updated November 8, 2025 - Consolidated types to @/types/business/moderation
  */
 
 'use client';
@@ -39,14 +39,12 @@ import {
 } from 'lucide-react';
 import { UnifiedButton, Badge } from '@/components/ui';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import type { ReviewResponse } from '@/lib/api/admin/moderation';
+import type { Review as ReviewResponse } from '@/types/business/review';
+import type { ViewMode, UserRole } from '@/types/business/moderation';
 
 // ============================================================================
 // TYPES
 // ============================================================================
-
-export type ViewMode = 'compact' | 'card' | 'detailed';
-export type UserRole = 'admin' | 'moderator';
 
 export interface UnifiedReviewModerationCardProps {
   review: ReviewResponse;
@@ -141,7 +139,10 @@ export function UnifiedReviewModerationCard({
       if (onReject) {
         const success = await onReject(review.id, rejectReason);
         if (success) {
-          logger.info('Review rejected', { reviewIdreviewid, reasonrejectReason,  });
+          logger.info('Review rejected', {
+            reviewId: review.id,
+            reason: rejectReason,
+          });
           setShowRejectDialog(false);
           setRejectReason('');
           onUpdated?.();
@@ -176,7 +177,11 @@ export function UnifiedReviewModerationCard({
           escalatePriority
         );
         if (success) {
-          logger.info('Review escalated', { reviewIdreviewid, priorityescalatePriority,  });
+          logger.info('Review escalated', {
+            reviewId: review.id,
+            reason: escalateReason,
+            priority: escalatePriority,
+          });
           setShowEscalateDialog(false);
           setEscalateReason('');
           setEscalatePriority('MEDIUM');
@@ -367,7 +372,7 @@ export function UnifiedReviewModerationCard({
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                {renderStars(review.rating)}
+                {renderStars(review.rating ?? review.overallRating)}
                 {getPriorityBadge()}
               </div>
               <span className="text-xs text-gray-500">
@@ -377,7 +382,7 @@ export function UnifiedReviewModerationCard({
 
             {/* Comment */}
             <p className="line-clamp-2 text-sm text-gray-700">
-              {review.comment}
+              {review.comment ?? review.reviewText}
             </p>
 
             {/* Reviewer */}
@@ -475,7 +480,7 @@ export function UnifiedReviewModerationCard({
           </div>
 
           <div className="flex items-center justify-between">
-            {renderStars(review.rating)}
+            {renderStars(review.rating ?? review.overallRating)}
             <span className="text-sm text-gray-500">
               {new Date(review.createdAt).toLocaleString('tr-TR')}
             </span>
@@ -491,7 +496,7 @@ export function UnifiedReviewModerationCard({
               <h4 className="text-sm font-medium text-gray-700">Yorum</h4>
             </div>
             <p className="whitespace-pre-wrap text-gray-700">
-              {review.comment}
+              {review.comment ?? review.reviewText}
             </p>
           </div>
 
@@ -534,8 +539,16 @@ export function UnifiedReviewModerationCard({
                       Bayrak Nedenleri ({review.flaggedCount})
                     </h4>
                     <ul className="space-y-1 text-sm text-red-700">
-                      {review.flagReasons.map((reason, idx) => (
-                        <li key={idx}>• {reason}</li>
+                      {review.flagReasons.map((flagReason, idx) => (
+                        <li key={idx}>
+                          • {flagReason.reason} ({flagReason.count}x)
+                          {flagReason.descriptions.length > 0 && (
+                            <span className="text-xs text-red-600">
+                              {' '}
+                              - {flagReason.descriptions[0]}
+                            </span>
+                          )}
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -562,9 +575,9 @@ export function UnifiedReviewModerationCard({
                         {new Date(review.moderatedAt).toLocaleString('tr-TR')}
                       </p>
                     )}
-                    {review.moderatorNotes && (
+                    {review.moderatorNote && (
                       <p className="mt-2 border-t border-gray-300 pt-2">
-                        Not: {review.moderatorNotes}
+                        Not: {review.moderatorNote}
                       </p>
                     )}
                   </div>
