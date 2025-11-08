@@ -91,8 +91,8 @@ const PlatformReviewStatsSchema = z.object({
 
 export type PlatformReviewStats = z.infer<typeof PlatformReviewStatsSchema>;
 
-// Paginated Response Schema
-const PagedResponseSchema = <T extends z.ZodType>(itemSchema: T) =>
+// Paginated Response Schema (uses unified PaginatedResponse type)
+const PaginatedResponseSchema = <T extends z.ZodType>(itemSchema: T) =>
   z.object({
     content: z.array(itemSchema),
     totalElements: z.number(),
@@ -119,7 +119,7 @@ const PagedResponseSchema = <T extends z.ZodType>(itemSchema: T) =>
  * @param {number} params.size - Page size
  * @param {string} params.sortBy - Sort field
  * @param {'ASC'|'DESC'} params.direction - Sort direction
- * @returns {Promise<PagedResponse<ReviewSummary>>}
+ * @returns {Promise<PaginatedResponse<ReviewSummary>>}
  */
 export async function getAllReviews(
   params: {
@@ -144,7 +144,7 @@ export async function getAllReviews(
     `/admin/reviews?${queryParams.toString()}`
   );
 
-  return PagedResponseSchema(ReviewSummarySchema).parse(response);
+  return PaginatedResponseSchema(ReviewSummarySchema).parse(response);
 }
 
 /**
@@ -153,14 +153,14 @@ export async function getAllReviews(
  *
  * @param {number} page - Page number
  * @param {number} size - Page size
- * @returns {Promise<PagedResponse<ReviewSummary>>}
+ * @returns {Promise<PaginatedResponse<ReviewSummary>>}
  */
 export async function getPendingReviews(page: number = 0, size: number = 20) {
   const response = await apiClient.get<unknown>(
     `/admin/reviews/pending?page=${page}&size=${size}`
   );
 
-  return PagedResponseSchema(ReviewSummarySchema).parse(response);
+  return PaginatedResponseSchema(ReviewSummarySchema).parse(response);
 }
 
 /**
@@ -169,14 +169,14 @@ export async function getPendingReviews(page: number = 0, size: number = 20) {
  *
  * @param {number} page - Page number
  * @param {number} size - Page size
- * @returns {Promise<PagedResponse<ReviewSummary>>}
+ * @returns {Promise<PaginatedResponse<ReviewSummary>>}
  */
 export async function getFlaggedReviews(page: number = 0, size: number = 20) {
   const response = await apiClient.get<unknown>(
     `/admin/reviews/flagged?page=${page}&size=${size}`
   );
 
-  return PagedResponseSchema(ReviewSummarySchema).parse(response);
+  return PaginatedResponseSchema(ReviewSummarySchema).parse(response);
 }
 
 /**
@@ -185,7 +185,7 @@ export async function getFlaggedReviews(page: number = 0, size: number = 20) {
  *
  * @param {number} page - Page number
  * @param {number} size - Page size
- * @returns {Promise<PagedResponse<ReviewSummary>>}
+ * @returns {Promise<PaginatedResponse<ReviewSummary>>}
  */
 export async function getReviewsNeedingModeration(
   page: number = 0,
@@ -195,7 +195,7 @@ export async function getReviewsNeedingModeration(
     `/admin/reviews/moderation?page=${page}&size=${size}`
   );
 
-  return PagedResponseSchema(ReviewSummarySchema).parse(response);
+  return PaginatedResponseSchema(ReviewSummarySchema).parse(response);
 }
 
 /**
@@ -301,6 +301,7 @@ export async function deleteReview(reviewId: string): Promise<void> {
 
 /**
  * Bulk approve reviews
+ * @deprecated Use bulkApproveReviews from @/lib/services/moderation-service
  *
  * @param {string[]} reviewIds - Array of review UUIDs
  * @returns {Promise<{success: number, failed: number}>}
@@ -308,25 +309,22 @@ export async function deleteReview(reviewId: string): Promise<void> {
 export async function bulkApproveReviews(
   reviewIds: string[]
 ): Promise<{ success: number; failed: number }> {
-  let success = 0;
-  let failed = 0;
-
-  await Promise.allSettled(
-    reviewIds.map(async (id) => {
-      try {
-        await approveReview(id);
-        success++;
-      } catch (_error) {
-        failed++;
-      }
-    })
+  // Re-use centralized moderation service
+  const { bulkApproveReviews: bulkApprove } = await import(
+    '@/lib/services/moderation-service'
   );
 
-  return { success, failed };
+  const result = await bulkApprove(reviewIds);
+
+  return {
+    success: result.successCount,
+    failed: result.failureCount,
+  };
 }
 
 /**
  * Bulk reject reviews
+ * @deprecated Use bulkRejectReviews from @/lib/services/moderation-service
  *
  * @param {string[]} reviewIds - Array of review UUIDs
  * @param {string} reason - Rejection reason
@@ -336,21 +334,17 @@ export async function bulkRejectReviews(
   reviewIds: string[],
   reason: string
 ): Promise<{ success: number; failed: number }> {
-  let success = 0;
-  let failed = 0;
-
-  await Promise.allSettled(
-    reviewIds.map(async (id) => {
-      try {
-        await rejectReview(id, reason);
-        success++;
-      } catch (_error) {
-        failed++;
-      }
-    })
+  // Re-use centralized moderation service
+  const { bulkRejectReviews: bulkReject } = await import(
+    '@/lib/services/moderation-service'
   );
 
-  return { success, failed };
+  const result = await bulkReject(reviewIds, reason);
+
+  return {
+    success: result.successCount,
+    failed: result.failureCount,
+  };
 }
 
 // ============================================================================

@@ -184,28 +184,6 @@ export interface BulkOperationResponse<T = unknown> {
 }
 
 // ============================================================================
-// Backward Compatibility Aliases
-// ============================================================================
-
-/**
- * @deprecated Sprint 9 - Use ApiResponse<T> from @/types/infrastructure/api
- * Temporary alias for backward compatibility
- */
-export type BackendResponse<T> = ApiResponse<T>;
-
-/**
- * @deprecated Sprint 9 - Use PaginatedResponse<T> from @/types/infrastructure/api
- * Temporary alias for backward compatibility
- */
-export type PagedResponse<T> = PaginatedResponse<T>;
-
-/**
- * @deprecated Sprint 9 - Use PaginationMeta from @/types/infrastructure/api
- * Temporary alias for backward compatibility
- */
-export type PaginationInfo = PaginationMeta;
-
-// ============================================================================
 // Type Guards
 // ============================================================================
 

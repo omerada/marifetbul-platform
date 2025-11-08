@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ZodError, z } from 'zod';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { getBackendApiUrl } from '@/lib/config/api';
+import {
+  ApiError,
+  ValidationError,
+  AuthenticationError,
+  AuthorizationError,
+  RateLimitError,
+} from '@/lib/api/error-handler';
 
 // Simple rate limiting implementation
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -104,49 +111,6 @@ export interface ApiSuccessResponse<T = unknown> {
       totalPages: number;
     };
   };
-}
-
-// Built-in error classes
-export class ApiError extends Error {
-  constructor(
-    public statusCode: number,
-    public code: string,
-    message: string,
-    public details?: unknown
-  ) {
-    super(message);
-    this.name = 'ApiError';
-  }
-}
-
-export class ValidationError extends ApiError {
-  constructor(message: string, details?: unknown) {
-    super(400, 'VALIDATION_ERROR', message, details);
-  }
-}
-
-export class AuthenticationError extends ApiError {
-  constructor(message = 'Authentication required') {
-    super(401, 'AUTHENTICATION_ERROR', message);
-  }
-}
-
-export class AuthorizationError extends ApiError {
-  constructor(message = 'Insufficient permissions') {
-    super(403, 'AUTHORIZATION_ERROR', message);
-  }
-}
-
-export class NotFoundError extends ApiError {
-  constructor(message = 'Resource not found') {
-    super(404, 'NOT_FOUND', message);
-  }
-}
-
-export class RateLimitError extends ApiError {
-  constructor(message = 'Rate limit exceeded') {
-    super(429, 'RATE_LIMIT_EXCEEDED', message);
-  }
 }
 
 // CORS middleware
@@ -292,13 +256,15 @@ export function validationMiddleware(
         }
       } catch (error) {
         if (error instanceof ZodError) {
-          throw new ValidationError('Validation failed', {
-            errors: error.issues.map((err) => ({
-              path: err.path.join('.'),
-              message: err.message,
-              code: err.code,
-            })),
+          const fields: Record<string, string[]> = {};
+          error.issues.forEach((err) => {
+            const path = err.path.join('.');
+            if (!fields[path]) {
+              fields[path] = [];
+            }
+            fields[path].push(err.message);
           });
+          throw new ValidationError('Validation failed', fields);
         }
         throw error;
       }
@@ -360,8 +326,9 @@ export function errorHandlerMiddleware() {
       } catch (error) {
         logger.error('API Error', {
           requestId: ctx.metadata.requestId,
-          error: error instanceof Error ? error.message : 'Unknown error',
-          stack: error instanceof Error ? error.stack : undefined,
+          errorMessage:
+            error instanceof Error ? error.message : 'Unknown error',
+          errorStack: error instanceof Error ? error.stack : undefined,
           url: ctx.req.url,
           method: ctx.req.method,
           userAgent: ctx.metadata.userAgent,
@@ -382,7 +349,7 @@ export function errorHandlerMiddleware() {
           },
         };
 
-        const statusCode = error instanceof ApiError ? error.statusCode : 500;
+        const statusCode = error instanceof ApiError ? error.status : 500;
 
         return NextResponse.json(errorResponse, { status: statusCode });
       }
@@ -396,13 +363,24 @@ export function loggingMiddleware() {
     return async (ctx: ApiContext) => {
       const startTime = Date.now();
 
-      logger.info('API Request', { requestIdctxmetadatarequestId, methodctxreqmethod, urlctxrequrl, userAgentctxmetadatauserAgent, ipctxmetadataip, userIdctxuserid,  });
+      logger.info('API Request', {
+        requestId: ctx.metadata.requestId,
+        method: ctx.req.method,
+        url: ctx.req.url,
+        userAgent: ctx.metadata.userAgent,
+        ip: ctx.metadata.ip,
+        userId: ctx.user?.id,
+      });
 
       const response = await handler(ctx);
 
-      const duration = Date.now() - startTime;
+      const durationMs = Date.now() - startTime;
 
-      logger.info('API Response', { requestIdctxmetadatarequestId, statusresponsestatus, durationdurationms,  });
+      logger.info('API Response', {
+        requestId: ctx.metadata.requestId,
+        status: response.status,
+        duration: durationMs,
+      });
 
       return response;
     };
@@ -596,7 +574,7 @@ export function errorResponse(
     },
   };
 
-  const statusCode = error instanceof ApiError ? error.statusCode : 500;
+  const statusCode = error instanceof ApiError ? error.status : 500;
 
   return NextResponse.json(response, { status: statusCode });
 }

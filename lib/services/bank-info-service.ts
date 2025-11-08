@@ -1,36 +1,43 @@
 /**
  * ================================================
- * BANK INFO SERVICE
+ * BANK INFO SERVICE - API INTEGRATED
  * ================================================
- * Centralized service for Turkish bank information and IBAN operations
+ * Centralized service for Turkish bank information via Backend API
+ *
+ * ⚠️ MIGRATED: Sprint 1 - Story 1.3
+ * - Old version: Duplicate bank data in frontend
+ * - New version: Single source of truth via /api/v1/banks
  *
  * Features:
- * - Bank information retrieval
+ * - Bank information retrieval from backend
+ * - Client-side caching (24h TTL)
  * - IBAN validation and parsing
  * - Bank search and filtering
- * - Bank code to name mapping
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
- * @created November 5, 2025
- * @sprint Sprint 1 - Week 1 - Day 1: Bank Account Management
+ * @version 2.0.0 (API-based)
+ * @updated November 8, 2025
+ * @sprint Sprint 1 - Story 1.3: Bank Info Consolidation
  */
 
-import turkishBanksData from '@/lib/data/turkish-banks.json';
 import {
   validateTurkishIBAN,
   formatIBAN,
   displayIBAN,
-  type BankInfo,
   type IBANValidationResult,
 } from '@/lib/utils/iban-validator';
-
-// Re-export BankInfo type for convenience
-export type { BankInfo };
 
 // ================================================
 // TYPES
 // ================================================
+
+export interface BankInfo {
+  code: string;
+  name: string;
+  shortName: string;
+  swift: string | null;
+  active?: boolean;
+}
 
 export interface BankSearchOptions {
   query?: string;
@@ -45,135 +52,221 @@ export interface BankValidationOptions {
 }
 
 // ================================================
-// BANK INFO SERVICE CLASS
+// API CLIENT
+// ================================================
+
+const API_BASE_URL = '/api/v1/banks';
+
+/**
+ * Fetch all banks from backend
+ */
+async function fetchAllBanks(): Promise<BankInfo[]> {
+  const response = await fetch(API_BASE_URL);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch banks: ${response.statusText}`);
+  }
+
+  const result = await response.json();
+  return result.data || [];
+}
+
+/**
+ * Fetch bank by code from backend
+ */
+async function fetchBankByCode(code: string): Promise<BankInfo | null> {
+  const paddedCode = code.padStart(5, '0');
+  const response = await fetch(`${API_BASE_URL}/${paddedCode}`);
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch bank: ${response.statusText}`);
+  }
+
+  const result = await response.json();
+  return result.data || null;
+}
+
+/**
+ * Search banks via backend API
+ */
+async function searchBanksAPI(query: string): Promise<BankInfo[]> {
+  const response = await fetch(
+    `${API_BASE_URL}/search?query=${encodeURIComponent(query)}`
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to search banks: ${response.statusText}`);
+  }
+
+  const result = await response.json();
+  return result.data || [];
+}
+
+/**
+ * Get bank from IBAN via backend API
+ */
+async function getBankFromIBANAPI(iban: string): Promise<BankInfo | null> {
+  const cleaned = formatIBAN(iban);
+
+  if (cleaned.length !== 26 || !cleaned.startsWith('TR')) {
+    return null;
+  }
+
+  const response = await fetch(`${API_BASE_URL}/iban/${cleaned}`);
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error(`Failed to get bank from IBAN: ${response.statusText}`);
+  }
+
+  const result = await response.json();
+  return result.data || null;
+}
+
+/**
+ * Validate IBAN via backend API
+ */
+async function validateIBANAPI(iban: string): Promise<boolean> {
+  const response = await fetch(`${API_BASE_URL}/validate-iban`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(iban),
+  });
+
+  if (!response.ok) {
+    return false;
+  }
+
+  const result = await response.json();
+  return result.data === true;
+}
+
+// ================================================
+// BANK INFO SERVICE CLASS (API-BASED)
 // ================================================
 
 export class BankInfoService {
-  private banks: typeof turkishBanksData.banks;
-  private bankMap: Map<string, BankInfo>;
+  private bankCache: Map<string, BankInfo> = new Map();
+  private allBanksCache: BankInfo[] | null = null;
+  private cacheExpiry: number = 24 * 60 * 60 * 1000; // 24 hours
+  private lastCacheTime: number = 0;
 
-  constructor() {
-    this.banks = turkishBanksData.banks;
-    this.bankMap = new Map();
-    this.initializeBankMap();
+  /**
+   * Check if cache is valid
+   */
+  private isCacheValid(): boolean {
+    return Date.now() - this.lastCacheTime < this.cacheExpiry;
   }
 
   /**
-   * Initialize bank map for quick lookups
+   * Get all banks (with caching)
    */
-  private initializeBankMap(): void {
-    this.banks.forEach((bank) => {
-      const paddedCode = bank.code.padStart(5, '0');
-      this.bankMap.set(paddedCode, {
-        code: paddedCode,
-        name: bank.name,
-        shortName: bank.shortName,
-        swift: bank.swift,
-      });
+  async getAllBanks(options: BankSearchOptions = {}): Promise<BankInfo[]> {
+    // Use cache if valid
+    if (this.allBanksCache && this.isCacheValid()) {
+      return this.filterAndSort(this.allBanksCache, options);
+    }
+
+    // Fetch from API
+    const banks = await fetchAllBanks();
+
+    // Update cache
+    this.allBanksCache = banks;
+    this.lastCacheTime = Date.now();
+
+    // Update individual bank cache
+    banks.forEach((bank) => {
+      this.bankCache.set(bank.code, bank);
     });
+
+    return this.filterAndSort(banks, options);
   }
 
   /**
-   * Get bank by code
+   * Get bank by code (with caching)
    */
-  getBankByCode(code: string): BankInfo | null {
+  async getBankByCode(code: string): Promise<BankInfo | null> {
     const paddedCode = code.padStart(5, '0');
-    return this.bankMap.get(paddedCode) || null;
+
+    // Check cache first
+    if (this.bankCache.has(paddedCode) && this.isCacheValid()) {
+      return this.bankCache.get(paddedCode) || null;
+    }
+
+    // Fetch from API
+    const bank = await fetchBankByCode(paddedCode);
+
+    if (bank) {
+      this.bankCache.set(paddedCode, bank);
+    }
+
+    return bank;
   }
 
   /**
    * Get bank from IBAN
    */
-  getBankFromIBAN(iban: string): BankInfo | null {
-    const cleaned = formatIBAN(iban);
-
-    if (cleaned.length < 9 || !cleaned.startsWith('TR')) {
-      return null;
-    }
-
-    // Extract bank code (positions 4-8, 5 digits)
-    const bankCode = cleaned.substring(4, 9);
-    return this.getBankByCode(bankCode);
-  }
-
-  /**
-   * Get all banks
-   */
-  getAllBanks(options: BankSearchOptions = {}): BankInfo[] {
-    let banks = Array.from(this.bankMap.values());
-
-    // Filter active only
-    if (options.activeOnly) {
-      const activeCodes = this.banks
-        .filter((b) => b.active)
-        .map((b) => b.code.padStart(5, '0'));
-      banks = banks.filter((b) => activeCodes.includes(b.code));
-    }
-
-    // Sort
-    const sortBy = options.sortBy || 'name';
-    const sortOrder = options.sortOrder || 'asc';
-
-    banks.sort((a, b) => {
-      const compareValue =
-        sortBy === 'name'
-          ? a.name.localeCompare(b.name, 'tr')
-          : a.code.localeCompare(b.code);
-
-      return sortOrder === 'asc' ? compareValue : -compareValue;
-    });
-
-    return banks;
+  async getBankFromIBAN(iban: string): Promise<BankInfo | null> {
+    return getBankFromIBANAPI(iban);
   }
 
   /**
    * Search banks by name or code
    */
-  searchBanks(query: string, options: BankSearchOptions = {}): BankInfo[] {
-    if (!query) {
-      return this.getAllBanks(options);
+  async searchBanks(
+    query: string,
+    options: BankSearchOptions = {}
+  ): Promise<BankInfo[]> {
+    // Try API search first
+    try {
+      const results = await searchBanksAPI(query);
+      return this.filterAndSort(results, options);
+    } catch (error) {
+      // Fallback to client-side filtering if API fails
+      console.warn('API search failed, using client-side filter:', error);
+      const allBanks = await this.getAllBanks();
+      const lowerQuery = query.toLowerCase();
+
+      const filtered = allBanks.filter(
+        (bank) =>
+          bank.name.toLowerCase().includes(lowerQuery) ||
+          bank.shortName.toLowerCase().includes(lowerQuery) ||
+          bank.code.includes(query)
+      );
+
+      return this.filterAndSort(filtered, options);
     }
-
-    const lowerQuery = query.toLowerCase();
-    const allBanks = this.getAllBanks(options);
-
-    return allBanks.filter((bank) => {
-      const nameMatch = bank.name.toLowerCase().includes(lowerQuery);
-      const shortNameMatch =
-        bank.shortName?.toLowerCase().includes(lowerQuery) || false;
-      const codeMatch = bank.code.includes(query);
-      const swiftMatch =
-        bank.swift?.toLowerCase().includes(lowerQuery) || false;
-
-      return nameMatch || shortNameMatch || codeMatch || swiftMatch;
-    });
   }
 
   /**
    * Validate IBAN and return bank info
    */
-  validateIBANWithBank(
+  async validateIBANWithBank(
     iban: string,
     options: BankValidationOptions = {}
-  ): IBANValidationResult & { bankDetails?: BankInfo } {
+  ): Promise<IBANValidationResult & { bankDetails?: BankInfo }> {
+    // First, do client-side validation
     const validation = validateTurkishIBAN(iban);
 
     if (!validation.isValid) {
       return validation;
     }
 
-    // Get additional bank details
-    const bankDetails = validation.bankCode
-      ? this.getBankByCode(validation.bankCode)
-      : null;
+    // Get bank details from backend
+    try {
+      const bankDetails = await this.getBankFromIBAN(iban);
 
-    // Check if bank is active (if requested)
-    if (options.checkActive && bankDetails) {
-      const bankData = this.banks.find(
-        (b) => b.code.padStart(5, '0') === bankDetails.code
-      );
-
-      if (bankData && !bankData.active) {
+      // Check active status if requested
+      if (options.checkActive && bankDetails && bankDetails.active === false) {
         return {
           ...validation,
           isValid: false,
@@ -183,127 +276,115 @@ export class BankInfoService {
           ],
         };
       }
-    }
 
-    return {
-      ...validation,
-      bankDetails: bankDetails || undefined,
-    };
+      // Validate with backend API if strict validation requested
+      if (options.strictValidation) {
+        const isValid = await validateIBANAPI(iban);
+
+        if (!isValid) {
+          return {
+            ...validation,
+            isValid: false,
+            errors: [...validation.errors, 'IBAN doğrulama başarısız'],
+          };
+        }
+      }
+
+      return {
+        ...validation,
+        bankDetails: bankDetails || undefined,
+      };
+    } catch (error) {
+      console.error('Bank validation error:', error);
+      return validation; // Return client-side validation on error
+    }
   }
 
   /**
    * Format IBAN for display
    */
-  formatIBANForDisplay(iban: string): string {
+  formatIBAN(iban: string): string {
     return displayIBAN(iban);
   }
 
   /**
-   * Mask IBAN for security (show only first 4 and last 4 characters)
+   * Clear cache (useful for testing or manual refresh)
    */
-  maskIBAN(iban: string): string {
-    const cleaned = formatIBAN(iban);
+  clearCache(): void {
+    this.bankCache.clear();
+    this.allBanksCache = null;
+    this.lastCacheTime = 0;
+  }
 
-    if (cleaned.length !== 26) {
-      return iban;
+  /**
+   * Filter and sort banks based on options
+   */
+  private filterAndSort(
+    banks: BankInfo[],
+    options: BankSearchOptions
+  ): BankInfo[] {
+    let result = [...banks];
+
+    // Filter active only
+    if (options.activeOnly) {
+      result = result.filter((b) => b.active !== false);
     }
 
-    // TR + check digits + show 2 digits + mask middle + show last 4
-    const start = cleaned.substring(0, 6); // TR0000
-    const end = cleaned.substring(22); // Last 4 digits
-    const masked = '**** **** **** ****';
+    // Sort
+    const sortBy = options.sortBy || 'name';
+    const sortOrder = options.sortOrder || 'asc';
 
-    return `${start.substring(0, 2)} ${start.substring(2, 4)} ${masked} ${end.substring(0, 2)} ${end.substring(2)}`;
+    result.sort((a, b) => {
+      const compareValue =
+        sortBy === 'name'
+          ? a.name.localeCompare(b.name, 'tr')
+          : a.code.localeCompare(b.code);
+
+      return sortOrder === 'asc' ? compareValue : -compareValue;
+    });
+
+    return result;
+  }
+
+  /**
+   * Get popular banks (commonly used Turkish banks)
+   * Cached result for better performance
+   */
+  async getPopularBanks(): Promise<BankInfo[]> {
+    const popularCodes = [
+      '00064', // İş Bankası
+      '00062', // Garanti BBVA
+      '00010', // Ziraat Bankası
+      '00015', // Vakıfbank
+      '00012', // Halkbank
+      '00067', // Yapı Kredi
+      '00032', // Türkiye Finans
+      '00059', // Şekerbank
+      '00046', // Akbank
+      '00099', // ING
+    ];
+
+    const banks = await Promise.all(
+      popularCodes.map((code) => this.getBankByCode(code))
+    );
+
+    return banks.filter((bank): bank is BankInfo => bank !== null);
+  }
+
+  /**
+   * Get bank count (from cache or API)
+   */
+  async getBankCount(): Promise<number> {
+    const banks = await this.getAllBanks();
+    return banks.length;
   }
 
   /**
    * Check if bank code exists
    */
-  isBankCodeValid(code: string): boolean {
-    return this.bankMap.has(code.padStart(5, '0'));
-  }
-
-  /**
-   * Get bank statistics
-   */
-  getBankStatistics(): {
-    totalBanks: number;
-    activeBanks: number;
-    inactiveBanks: number;
-    participationBanks: number;
-    commercialBanks: number;
-  } {
-    const totalBanks = this.banks.length;
-    const activeBanks = this.banks.filter((b) => b.active).length;
-    const inactiveBanks = totalBanks - activeBanks;
-
-    // Participation banks typically have codes starting with 02
-    const participationBanks = this.banks.filter(
-      (b) => b.active && b.code.startsWith('02')
-    ).length;
-    const commercialBanks = activeBanks - participationBanks;
-
-    return {
-      totalBanks,
-      activeBanks,
-      inactiveBanks,
-      participationBanks,
-      commercialBanks,
-    };
-  }
-
-  /**
-   * Generate sample IBAN for testing (with valid check digits)
-   */
-  generateSampleIBAN(bankCode: string): string | null {
-    if (!this.isBankCodeValid(bankCode)) {
-      return null;
-    }
-
-    const paddedCode = bankCode.padStart(5, '0');
-
-    // Generate random account number (16 digits)
-    const accountNumber = Math.floor(Math.random() * 10000000000000000)
-      .toString()
-      .padStart(16, '0');
-
-    // Create IBAN without check digits
-    const ibanWithoutCheck = `TR00${paddedCode}${accountNumber}`;
-
-    // Calculate check digits
-    const checkDigits = this.calculateIBANCheckDigits(ibanWithoutCheck);
-
-    // Replace check digits
-    const finalIBAN = `TR${checkDigits}${paddedCode}${accountNumber}`;
-
-    return displayIBAN(finalIBAN);
-  }
-
-  /**
-   * Calculate IBAN check digits using mod-97 algorithm
-   */
-  private calculateIBANCheckDigits(iban: string): string {
-    // Move first 4 characters to end
-    const rearranged = iban.substring(4) + iban.substring(0, 4);
-
-    // Convert letters to numbers (A=10, B=11, ..., Z=35)
-    const numericString = rearranged
-      .split('')
-      .map((char) => {
-        const code = char.charCodeAt(0);
-        return code >= 65 && code <= 90 ? (code - 55).toString() : char;
-      })
-      .join('');
-
-    // Calculate mod 97
-    let remainder = 0;
-    for (let i = 0; i < numericString.length; i++) {
-      remainder = (remainder * 10 + parseInt(numericString[i], 10)) % 97;
-    }
-
-    // Check digit = 98 - remainder
-    const checkDigit = 98 - remainder;
-    return checkDigit.toString().padStart(2, '0');
+  async hasBankCode(code: string): Promise<boolean> {
+    const bank = await this.getBankByCode(code);
+    return bank !== null;
   }
 }
 
@@ -311,27 +392,5 @@ export class BankInfoService {
 // SINGLETON INSTANCE
 // ================================================
 
-export const bankInfoService = new BankInfoService();
-
-// ================================================
-// CONVENIENCE EXPORTS
-// ================================================
-
-export const {
-  getBankByCode,
-  getBankFromIBAN,
-  getAllBanks,
-  searchBanks,
-  validateIBANWithBank,
-  formatIBANForDisplay,
-  maskIBAN,
-  isBankCodeValid,
-  getBankStatistics,
-  generateSampleIBAN,
-} = bankInfoService;
-
-// ================================================
-// DEFAULT EXPORT
-// ================================================
-
+const bankInfoService = new BankInfoService();
 export default bankInfoService;

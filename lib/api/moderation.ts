@@ -4,10 +4,15 @@
  * ================================================
  * API client for moderator endpoints
  *
+ * ⚠️ REFACTORED: Sprint 1 - Story 1.3
+ * - Bulk operations delegated to @/lib/services/moderation-service
+ * - Dashboard/stats methods kept here (specific to moderator dashboard)
+ * - Maintains backward compatibility
+ *
  * Sprint: Moderator Dashboard Implementation
- * @version 2.0.0
+ * @version 3.0.0
  * @author MarifetBul Development Team
- * @updated November 1, 2025
+ * @updated November 8, 2025
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
@@ -18,7 +23,6 @@ import type {
   BlogCommentDto,
   ReviewDto,
   ReportDto,
-  BulkActionResponse,
   UserModerationHistory,
 } from '@/types/business/moderation';
 
@@ -26,6 +30,50 @@ import type {
 // Sprint 9: Import canonical API types
 // ============================================================================
 import type { ApiResponse } from '@/types/infrastructure/api';
+
+// ============================================================================
+// RE-EXPORT BULK OPERATIONS FROM CENTRALIZED SERVICE
+// ============================================================================
+import {
+  // Comment bulk operations
+  bulkApproveComments,
+  bulkRejectComments,
+  bulkMarkCommentsAsSpam,
+
+  // Review bulk operations
+  bulkApproveReviews,
+  bulkRejectReviews,
+
+  // Single operations
+  approveComment,
+  rejectComment,
+  markCommentAsSpam,
+  approveReview,
+  rejectReview,
+
+  // Types
+  type BulkModerationRequest,
+  type BulkModerationResponse,
+  type ModerationStatus,
+  type ModerationItemType,
+} from '@/lib/services/moderation-service';
+
+export {
+  bulkApproveComments,
+  bulkRejectComments,
+  bulkMarkCommentsAsSpam,
+  bulkApproveReviews,
+  bulkRejectReviews,
+  approveComment,
+  rejectComment,
+  markCommentAsSpam,
+  approveReview,
+  rejectReview,
+  type BulkModerationRequest,
+  type BulkModerationResponse,
+  type ModerationStatus,
+  type ModerationItemType,
+};
 
 // ============================================================================
 // STATS & DASHBOARD
@@ -114,89 +162,10 @@ export async function getCommentsByStatus(
   return response.data;
 }
 
-/**
- * Approve a single comment
- * Backend: POST /api/v1/blog/admin/comments/{id}/approve
- */
-export async function approveComment(
-  commentId: string
-): Promise<BlogCommentDto> {
-  const response = await apiClient.post<ApiResponse<BlogCommentDto>>(
-    `/api/v1/blog/admin/comments/${commentId}/approve`
-  );
-  return response.data;
-}
-
-/**
- * Reject a single comment
- * Backend: POST /api/v1/blog/admin/comments/{id}/reject
- */
-export async function rejectComment(
-  commentId: string,
-  reason?: string
-): Promise<BlogCommentDto> {
-  const response = await apiClient.post<ApiResponse<BlogCommentDto>>(
-    `/api/v1/blog/admin/comments/${commentId}/reject`,
-    { reason }
-  );
-  return response.data;
-}
-
-/**
- * Mark comment as spam
- * Backend: POST /api/v1/blog/admin/comments/{id}/spam
- */
-export async function markCommentAsSpam(
-  commentId: string
-): Promise<BlogCommentDto> {
-  const response = await apiClient.post<ApiResponse<BlogCommentDto>>(
-    `/api/v1/blog/admin/comments/${commentId}/spam`
-  );
-  return response.data;
-}
-
-/**
- * Bulk approve comments
- * Backend: POST /api/v1/blog/admin/comments/bulk/approve
- */
-export async function bulkApproveComments(
-  commentIds: string[]
-): Promise<BulkActionResponse> {
-  const response = await apiClient.post<ApiResponse<BulkActionResponse>>(
-    '/api/v1/blog/admin/comments/bulk/approve',
-    { commentIds }
-  );
-  return response.data;
-}
-
-/**
- * Bulk reject comments
- * Backend: POST /api/v1/blog/admin/comments/bulk/reject
- */
-export async function bulkRejectComments(
-  commentIds: string[],
-  reason?: string
-): Promise<BulkActionResponse> {
-  const response = await apiClient.post<ApiResponse<BulkActionResponse>>(
-    '/api/v1/blog/admin/comments/bulk/reject',
-    { commentIds, reason }
-  );
-  return response.data;
-}
-
-/**
- * Bulk mark comments as spam
- * Backend: POST /api/v1/blog/admin/comments/bulk/spam
- */
-export async function bulkMarkCommentsAsSpam(
-  commentIds: string[]
-): Promise<BulkActionResponse> {
-  const response = await apiClient.post<ApiResponse<BulkActionResponse>>(
-    '/api/v1/blog/admin/comments/bulk/spam',
-    { commentIds }
-  );
-  return response.data;
-}
+// ============================================================================
+// NOTE: Comment/Review moderation actions moved to moderation-service.ts
+// Re-exported at the top of this file for backward compatibility
+// ============================================================================
 
 // ============================================================================
 // REVIEW MODERATION
@@ -236,31 +205,11 @@ export async function getFlaggedReviews(
   return response.data;
 }
 
-/**
- * Approve a review
- * Backend: POST /api/v1/reviews/admin/{id}/approve
- */
-export async function approveReview(reviewId: string): Promise<ReviewDto> {
-  const response = await apiClient.post<ApiResponse<ReviewDto>>(
-    `/api/v1/reviews/admin/${reviewId}/approve`
-  );
-  return response.data;
-}
-
-/**
- * Reject a review
- * Backend: POST /api/v1/reviews/admin/{id}/reject
- */
-export async function rejectReview(
-  reviewId: string,
-  reason: string
-): Promise<ReviewDto> {
-  const response = await apiClient.post<ApiResponse<ReviewDto>>(
-    `/api/v1/reviews/admin/${reviewId}/reject`,
-    { reason }
-  );
-  return response.data;
-}
+// ============================================================================
+// NOTE: Review approve/reject moved to moderation-service.ts
+// Re-exported at the top of this file for backward compatibility
+// flagReview and resolveReviewFlag kept here (specific to moderation flow)
+// ============================================================================
 
 /**
  * Flag a review for moderation
@@ -587,21 +536,23 @@ export const moderationApi = {
   getPendingItems,
   getRecentActivities,
 
-  // Comment Moderation
+  // Comment Moderation (query methods - actions re-exported from moderation-service)
   getPendingComments,
   getCommentsByStatus,
+
+  // Comment/Review Actions - delegated to moderation-service (re-exported above)
   approveComment,
   rejectComment,
   markCommentAsSpam,
   bulkApproveComments,
   bulkRejectComments,
   bulkMarkCommentsAsSpam,
-
-  // Review Moderation
-  getPendingReviews,
-  getFlaggedReviews,
   approveReview,
   rejectReview,
+
+  // Review Moderation (specific to moderation flow)
+  getPendingReviews,
+  getFlaggedReviews,
   flagReview,
   resolveReviewFlag,
 
