@@ -31,7 +31,7 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Badge } from '@/components/ui/Badge';
 
 // API
-import { REJECTION_REASONS } from '@/lib/api/blog-moderation';
+import { REJECTION_REASONS } from '@/lib/shared/constants/moderation';
 
 /**
  * Props for RejectCommentModal
