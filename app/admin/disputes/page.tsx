@@ -17,9 +17,9 @@ import type {
   DisputeStatistics,
   DisputeFilters as DisputeFiltersType,
 } from '@/types/dispute';
-import DisputeResolutionModal from '@/components/admin/disputes/DisputeResolutionModal';
-import { AdminDisputeDetailModal } from '@/components/admin/disputes/AdminDisputeDetailModal';
-import { AdminDisputeQueue } from '@/components/admin/disputes/AdminDisputeQueue';
+import DisputeResolutionModal from '@/components/domains/admin/disputes/DisputeResolutionModal';
+import { AdminDisputeDetailModal } from '@/components/domains/admin/disputes/AdminDisputeDetailModal';
+import { AdminDisputeQueue } from '@/components/domains/admin/disputes/AdminDisputeQueue';
 import {
   DisputeStatistics as DisputeStatsComponent,
   DisputeFilters,

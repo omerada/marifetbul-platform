@@ -24,6 +24,13 @@ export type {
 export { useWalletData } from './useWalletData';
 export type { UseWalletDataReturn } from './useWalletData';
 
+// Sprint 1 - Day 2 - Escrow List Hook
+export { useEscrowList } from './useEscrowList';
+export type {
+  UseEscrowListOptions,
+  UseEscrowListReturn,
+} from './useEscrowList';
+
 export { useWebSocketWallet } from './useWebSocketWallet';
 export type {
   UseWebSocketWalletReturn,

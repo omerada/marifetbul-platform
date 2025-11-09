@@ -26,10 +26,12 @@ import {
   EscrowList,
   EscrowDetailsModal,
   ReleaseEscrowFlow,
+  EscrowStatisticsWidget,
+  EscrowTimelineChart,
   type EscrowItem,
 } from '@/components/domains/wallet';
 import { DisputeCreationModal } from '@/components/domains/disputes';
-import { useWalletData } from '@/hooks/business/wallet';
+import { useWalletData, useEscrowList } from '@/hooks/business/wallet';
 import { Card } from '@/components/ui/Card';
 import { releaseEscrowPayment } from '@/lib/api/payment';
 import type { Transaction } from '@/types/business/features/wallet';
@@ -42,6 +44,14 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 export default function EscrowManagementPage() {
   // Fetch wallet data
   const { transactions, isLoading, error, refresh } = useWalletData();
+
+  // Fetch escrow list
+  const {
+    escrows,
+    isLoading: escrowsLoading,
+    error: escrowsError,
+    refresh: refreshEscrows,
+  } = useEscrowList({ autoRefresh: true });
 
   // Modal states
   const [selectedEscrow, setSelectedEscrow] = useState<EscrowItem | null>(null);
@@ -101,14 +111,18 @@ export default function EscrowManagementPage() {
   const handleDisputeSuccess = async () => {
     // Refresh data after successful dispute creation
     await refresh();
+    await refreshEscrows();
 
     // Close modals
     setIsDisputeOpen(false);
     setIsDetailsOpen(false);
   };
 
+  // Combined loading state
+  const combinedLoading = isLoading || escrowsLoading;
+
   // Loading state
-  if (isLoading) {
+  if (combinedLoading) {
     return (
       <div className="container mx-auto space-y-6 py-8">
         <div className="space-y-2">
@@ -127,13 +141,15 @@ export default function EscrowManagementPage() {
   }
 
   // Error state
-  if (error) {
+  if (error || escrowsError) {
     return (
       <div className="container mx-auto py-8">
         <Card className="p-6">
           <div className="text-center text-red-600">
             <h3 className="mb-2 font-semibold">Hata Oluştu</h3>
-            <p className="text-sm">{error?.message || 'Veriler yüklenemedi'}</p>
+            <p className="text-sm">
+              {error?.message || escrowsError?.message || 'Veriler yüklenemedi'}
+            </p>
           </div>
         </Card>
       </div>
@@ -149,6 +165,16 @@ export default function EscrowManagementPage() {
           Güvenli ödemelerinizi yönetin, serbest bırakın veya itiraz edin.
         </p>
       </div>
+
+      {/* Statistics Widget */}
+      <EscrowStatisticsWidget
+        escrows={escrows}
+        transactions={transactions as Transaction[]}
+        isLoading={combinedLoading}
+      />
+
+      {/* Timeline Chart */}
+      <EscrowTimelineChart escrows={escrows} isLoading={combinedLoading} />
 
       {/* Escrow List */}
       <EscrowList

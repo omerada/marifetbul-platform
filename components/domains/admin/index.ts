@@ -48,3 +48,9 @@ export { default as AdminSupportTickets } from './support/AdminSupportTickets';
 
 // Refund Management Components (Sprint 1)
 export * from './refunds';
+
+// Dispute Management Components (Sprint 1.1: Consolidated from components/admin/disputes)
+export { AdminDisputeDetailModal } from './disputes/AdminDisputeDetailModal';
+export { default as DisputeResolutionModal } from './disputes/DisputeResolutionModal';
+export { AdminDisputeTable } from './disputes/AdminDisputeTable';
+export { AdminDisputeQueue } from './disputes/AdminDisputeQueue';

@@ -52,7 +52,7 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { getDisputeByOrderId } from '@/lib/api/disputes';
 import type { DisputeResponse } from '@/types/dispute';
-import { DisputeCreationModal } from '@/components/domains/disputes/DisputeCreationModal';
+import { DisputeCreationModal } from '@/components/domains/disputes';
 import { getRefundByOrderId } from '@/lib/api/refunds';
 import type { RefundDto } from '@/types/business/features/refund';
 
@@ -1122,7 +1122,7 @@ export default function OrderDetailPage() {
         />
       </div>
 
-      {/* Dispute Creation Modal - Placeholder */}
+      {/* Dispute Creation Modal */}
       {showDisputeModal && (
         <DisputeCreationModal
           orderId={orderId}

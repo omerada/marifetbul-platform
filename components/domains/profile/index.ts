@@ -22,8 +22,8 @@ export { AvatarModal } from './AvatarModal';
 export { PortfolioGallery } from './PortfolioGallery';
 export { PortfolioModal } from './PortfolioModal';
 
-// Reputation & Reviews
+// Reputation
 export { ReputationScore } from './ReputationScore';
-export { ReviewCard } from './ReviewCard';
-export { ReviewList } from './ReviewList';
-export { ReviewReply } from './ReviewReply';
+
+// Note: Review components moved to @/components/shared
+// Use: import { ReviewCard, ReviewList } from '@/components/shared';

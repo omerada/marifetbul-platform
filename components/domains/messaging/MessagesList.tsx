@@ -21,11 +21,13 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface MessagesListProps {
   /**
-   * @deprecated Use fetchPage callback instead for better pagination support
+   * Legacy: Direct conversation list (for backward compatibility)
+   * Use fetchPage callback for infinite scroll pagination
    */
   conversations?: Conversation[];
   /**
-   * @deprecated Use useInfiniteScroll loading state instead
+   * Legacy: Loading state (for backward compatibility)
+   * Use useInfiniteScroll loading state with fetchPage
    */
   isLoading?: boolean;
   filter?: ConversationFilter;

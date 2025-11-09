@@ -100,6 +100,25 @@ export type { EscrowCardProps, EscrowCardData } from './EscrowCard';
 export { EscrowActions, EscrowActionPermissions } from './EscrowActions';
 export type { EscrowActionsProps } from './EscrowActions';
 
+export { EscrowStatisticsWidget } from './EscrowStatisticsWidget';
+export type {
+  EscrowStatisticsWidgetProps,
+  EscrowStats,
+} from './EscrowStatisticsWidget';
+
+export { EscrowTimelineChart } from './EscrowTimelineChart';
+export type {
+  EscrowTimelineChartProps,
+  EscrowTimelineData,
+  StatusDistribution,
+} from './EscrowTimelineChart';
+
+export { EscrowQuickActions } from './EscrowQuickActions';
+export type {
+  EscrowQuickActionsProps,
+  FilterPreset,
+} from './EscrowQuickActions';
+
 // Sprint 1 - Epic 1.3 - Payout System (Days 6-7)
 export { PayoutRequestFlow } from './PayoutRequestFlow';
 export type { PayoutRequestFlowProps } from './PayoutRequestFlow';

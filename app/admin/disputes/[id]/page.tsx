@@ -46,7 +46,7 @@ import {
 import { Card } from '@/components/ui/Card';
 import { Button, Loading } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
-import DisputeResolutionModal from '@/components/admin/disputes/DisputeResolutionModal';
+import DisputeResolutionModal from '@/components/domains/admin/disputes/DisputeResolutionModal';
 import DisputeMessages from '@/components/domains/disputes/DisputeMessages';
 import {
   ArrowLeft,
