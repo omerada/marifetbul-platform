@@ -106,16 +106,20 @@ export default function BlogModerationDashboard() {
 
       setStats(data);
       setLastUpdated(new Date());
-            logger.info('BlogModerationDashboard', {
-        context: 'Refresh triggered by WebSocket event'
+      logger.info('BlogModerationDashboard', {
+        context: 'Refresh triggered by WebSocket event',
       });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'İstatistikler yüklenemedi';
       setStatsError(errorMessage);
-      logger.error('Failed to fetch stats', err instanceof Error ? err : new Error(String(err)), {
-        component: 'BlogModerationDashboard'
-      });
+      logger.error(
+        'Failed to fetch stats',
+        err instanceof Error ? err : new Error(String(err)),
+        {
+          component: 'BlogModerationDashboard',
+        }
+      );
     } finally {
       setStatsLoading(false);
     }
@@ -170,9 +174,13 @@ export default function BlogModerationDashboard() {
 
       logger.debug('Analytics fetched successfully', { activityData });
     } catch (err) {
-      logger.error('Failed to fetch analytics', err instanceof Error ? err : new Error(String(err)), {
-        component: 'BlogModerationDashboard'
-      });
+      logger.error(
+        'Failed to fetch analytics',
+        err instanceof Error ? err : new Error(String(err)),
+        {
+          component: 'BlogModerationDashboard',
+        }
+      );
     } finally {
       setAnalyticsLoading(false);
     }
@@ -199,7 +207,9 @@ export default function BlogModerationDashboard() {
   useEffect(() => {
     const interval = setInterval(() => {
       if (!statsLoading) {
-        logger.debug('Auto-refresh triggered', { component: 'BlogModerationDashboard' });
+        logger.debug('Auto-refresh triggered', {
+          component: 'BlogModerationDashboard',
+        });
         fetchStats();
       }
     }, 30000); // 30 seconds
@@ -228,7 +238,7 @@ export default function BlogModerationDashboard() {
     enableSound: notificationPrefs.enableSound,
     onRefreshNeeded: () => {
       logger.info('Refresh triggered by WebSocket event', {
-        component: 'BlogModerationDashboard'
+        component: 'BlogModerationDashboard',
       });
       fetchStats();
     },
@@ -264,7 +274,9 @@ export default function BlogModerationDashboard() {
 
   // Manual refresh
   const handleRefresh = useCallback(() => {
-    logger.info('Manual refresh triggered', { component: 'BlogModerationDashboard' });
+    logger.info('Manual refresh triggered', {
+      component: 'BlogModerationDashboard',
+    });
     fetchStats();
     fetchAnalytics();
     refreshWebSocket();
@@ -403,11 +415,21 @@ export default function BlogModerationDashboard() {
                   value: statsData.pending,
                   icon: MessageSquare,
                   iconColor: 'blue',
-                  trend: previousStats.pending ? {
-                    percentage: ((statsData.pending - previousStats.pending) / previousStats.pending * 100),
-                    direction: statsData.pending > previousStats.pending ? 'up' : statsData.pending < previousStats.pending ? 'down' : 'neutral',
-                    isPositive: statsData.pending < previousStats.pending,
-                  } : undefined,
+                  trend: previousStats.pending
+                    ? {
+                        percentage:
+                          ((statsData.pending - previousStats.pending) /
+                            previousStats.pending) *
+                          100,
+                        direction:
+                          statsData.pending > previousStats.pending
+                            ? 'up'
+                            : statsData.pending < previousStats.pending
+                              ? 'down'
+                              : 'neutral',
+                        isPositive: statsData.pending < previousStats.pending,
+                      }
+                    : undefined,
                 }}
                 isLoading={statsLoading}
               />
@@ -418,11 +440,21 @@ export default function BlogModerationDashboard() {
                   value: statsData.approved,
                   icon: CheckCircle,
                   iconColor: 'green',
-                  trend: previousStats.approved ? {
-                    percentage: ((statsData.approved - previousStats.approved) / previousStats.approved * 100),
-                    direction: statsData.approved > previousStats.approved ? 'up' : statsData.approved < previousStats.approved ? 'down' : 'neutral',
-                    isPositive: statsData.approved > previousStats.approved,
-                  } : undefined,
+                  trend: previousStats.approved
+                    ? {
+                        percentage:
+                          ((statsData.approved - previousStats.approved) /
+                            previousStats.approved) *
+                          100,
+                        direction:
+                          statsData.approved > previousStats.approved
+                            ? 'up'
+                            : statsData.approved < previousStats.approved
+                              ? 'down'
+                              : 'neutral',
+                        isPositive: statsData.approved > previousStats.approved,
+                      }
+                    : undefined,
                 }}
                 isLoading={statsLoading}
               />
@@ -433,11 +465,21 @@ export default function BlogModerationDashboard() {
                   value: statsData.rejected,
                   icon: XCircle,
                   iconColor: 'red',
-                  trend: previousStats.rejected ? {
-                    percentage: ((statsData.rejected - previousStats.rejected) / previousStats.rejected * 100),
-                    direction: statsData.rejected > previousStats.rejected ? 'up' : statsData.rejected < previousStats.rejected ? 'down' : 'neutral',
-                    isPositive: statsData.rejected < previousStats.rejected,
-                  } : undefined,
+                  trend: previousStats.rejected
+                    ? {
+                        percentage:
+                          ((statsData.rejected - previousStats.rejected) /
+                            previousStats.rejected) *
+                          100,
+                        direction:
+                          statsData.rejected > previousStats.rejected
+                            ? 'up'
+                            : statsData.rejected < previousStats.rejected
+                              ? 'down'
+                              : 'neutral',
+                        isPositive: statsData.rejected < previousStats.rejected,
+                      }
+                    : undefined,
                 }}
                 isLoading={statsLoading}
               />
@@ -448,11 +490,21 @@ export default function BlogModerationDashboard() {
                   value: statsData.total,
                   icon: Shield,
                   iconColor: 'orange',
-                  trend: previousStats.total ? {
-                    percentage: ((statsData.total - previousStats.total) / previousStats.total * 100),
-                    direction: statsData.total > previousStats.total ? 'up' : statsData.total < previousStats.total ? 'down' : 'neutral',
-                    isPositive: statsData.total > previousStats.total,
-                  } : undefined,
+                  trend: previousStats.total
+                    ? {
+                        percentage:
+                          ((statsData.total - previousStats.total) /
+                            previousStats.total) *
+                          100,
+                        direction:
+                          statsData.total > previousStats.total
+                            ? 'up'
+                            : statsData.total < previousStats.total
+                              ? 'down'
+                              : 'neutral',
+                        isPositive: statsData.total > previousStats.total,
+                      }
+                    : undefined,
                 }}
                 isLoading={statsLoading}
               />
