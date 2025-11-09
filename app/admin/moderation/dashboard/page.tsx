@@ -44,103 +44,7 @@ import type {
   PerformanceData,
   ModeratorStats as ModeratorStatsType,
 } from '@/components/domains/moderation';
-
-// ==================== STATS CARD ====================
-
-interface StatsCardProps {
-  title: string;
-  value: number;
-  icon: React.ReactNode;
-  color: 'blue' | 'green' | 'red' | 'orange';
-  loading?: boolean;
-  previousValue?: number;
-}
-
-function StatsCard({
-  title,
-  value,
-  icon,
-  color,
-  loading,
-  previousValue,
-}: StatsCardProps) {
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [displayValue, setDisplayValue] = useState(value);
-
-  const colorClasses = {
-    blue: 'bg-blue-500',
-    green: 'bg-green-500',
-    red: 'bg-red-500',
-    orange: 'bg-orange-500',
-  };
-
-  // Animate value changes
-  useEffect(() => {
-    if (previousValue !== undefined && previousValue !== value) {
-      setIsAnimating(true);
-
-      // Animate number count
-      const duration = 500;
-      const steps = 20;
-      const increment = (value - previousValue) / steps;
-      let currentStep = 0;
-
-      const timer = setInterval(() => {
-        currentStep++;
-        if (currentStep >= steps) {
-          setDisplayValue(value);
-          clearInterval(timer);
-          setTimeout(() => setIsAnimating(false), 300);
-        } else {
-          setDisplayValue(Math.round(previousValue + increment * currentStep));
-        }
-      }, duration / steps);
-
-      return () => clearInterval(timer);
-    } else {
-      setDisplayValue(value);
-    }
-  }, [value, previousValue]);
-
-  if (loading) {
-    return (
-      <Card className="p-6">
-        <div className="animate-pulse space-y-3">
-          <div className="h-4 w-24 rounded bg-gray-200" />
-          <div className="h-8 w-16 rounded bg-gray-200" />
-        </div>
-      </Card>
-    );
-  }
-
-  return (
-    <Card
-      className={`p-6 transition-all duration-300 hover:shadow-lg ${
-        isAnimating ? 'scale-105 ring-2 ring-blue-400' : ''
-      }`}
-    >
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p
-            className={`mt-2 text-3xl font-bold text-gray-900 transition-all duration-300 ${
-              isAnimating ? 'scale-110 text-blue-600' : ''
-            }`}
-          >
-            {displayValue}
-          </p>
-        </div>
-        <div
-          className={`rounded-lg p-3 ${colorClasses[color]} text-white ${
-            isAnimating ? 'animate-pulse' : ''
-          }`}
-        >
-          {icon}
-        </div>
-      </div>
-    </Card>
-  );
-}
+import { StatsCard } from '@/components/domains/dashboard/widgets/StatsCard';
 
 // ==================== MAIN COMPONENT ====================
 
@@ -202,12 +106,16 @@ export default function BlogModerationDashboard() {
 
       setStats(data);
       setLastUpdated(new Date());
-      logger.debug('BlogModerationDashboard', { data });
+            logger.info('BlogModerationDashboard', {
+        context: 'Refresh triggered by WebSocket event'
+      });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'İstatistikler yüklenemedi';
       setStatsError(errorMessage);
-      logger.error('BlogModerationDashboard', 'Failed to fetch stats', err);
+      logger.error('Failed to fetch stats', err instanceof Error ? err : new Error(String(err)), {
+        component: 'BlogModerationDashboard'
+      });
     } finally {
       setStatsLoading(false);
     }
@@ -260,9 +168,11 @@ export default function BlogModerationDashboard() {
 
       setModeratorStats(activityData.topModerators);
 
-      logger.debug('BlogModerationDashboard', { activityData });
+      logger.debug('Analytics fetched successfully', { activityData });
     } catch (err) {
-      logger.error('BlogModerationDashboard', 'Failed to fetch analytics', err);
+      logger.error('Failed to fetch analytics', err instanceof Error ? err : new Error(String(err)), {
+        component: 'BlogModerationDashboard'
+      });
     } finally {
       setAnalyticsLoading(false);
     }
@@ -289,7 +199,7 @@ export default function BlogModerationDashboard() {
   useEffect(() => {
     const interval = setInterval(() => {
       if (!statsLoading) {
-        logger.debug('BlogModerationDashboard', 'Auto-refresh triggered');
+        logger.debug('Auto-refresh triggered', { component: 'BlogModerationDashboard' });
         fetchStats();
       }
     }, 30000); // 30 seconds
@@ -317,10 +227,9 @@ export default function BlogModerationDashboard() {
     showToasts: notificationPrefs.showToasts,
     enableSound: notificationPrefs.enableSound,
     onRefreshNeeded: () => {
-      logger.debug(
-        'BlogModerationDashboard',
-        'Refresh triggered by WebSocket event'
-      );
+      logger.info('Refresh triggered by WebSocket event', {
+        component: 'BlogModerationDashboard'
+      });
       fetchStats();
     },
     handlers: {
@@ -355,7 +264,7 @@ export default function BlogModerationDashboard() {
 
   // Manual refresh
   const handleRefresh = useCallback(() => {
-    logger.info('BlogModerationDashboard', 'Manual refresh triggered');
+    logger.info('Manual refresh triggered', { component: 'BlogModerationDashboard' });
     fetchStats();
     fetchAnalytics();
     refreshWebSocket();
@@ -488,36 +397,64 @@ export default function BlogModerationDashboard() {
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
               <StatsCard
-                title="Bekleyen"
-                value={statsData.pending}
-                previousValue={previousStats.pending}
-                icon={<MessageSquare className="h-5 w-5" />}
-                color="blue"
-                loading={statsLoading}
+                data={{
+                  id: 'pending-comments',
+                  title: 'Bekleyen',
+                  value: statsData.pending,
+                  icon: MessageSquare,
+                  iconColor: 'blue',
+                  trend: previousStats.pending ? {
+                    percentage: ((statsData.pending - previousStats.pending) / previousStats.pending * 100),
+                    direction: statsData.pending > previousStats.pending ? 'up' : statsData.pending < previousStats.pending ? 'down' : 'neutral',
+                    isPositive: statsData.pending < previousStats.pending,
+                  } : undefined,
+                }}
+                isLoading={statsLoading}
               />
               <StatsCard
-                title="Onaylanan"
-                value={statsData.approved}
-                previousValue={previousStats.approved}
-                icon={<CheckCircle className="h-5 w-5" />}
-                color="green"
-                loading={statsLoading}
+                data={{
+                  id: 'approved-comments',
+                  title: 'Onaylanan',
+                  value: statsData.approved,
+                  icon: CheckCircle,
+                  iconColor: 'green',
+                  trend: previousStats.approved ? {
+                    percentage: ((statsData.approved - previousStats.approved) / previousStats.approved * 100),
+                    direction: statsData.approved > previousStats.approved ? 'up' : statsData.approved < previousStats.approved ? 'down' : 'neutral',
+                    isPositive: statsData.approved > previousStats.approved,
+                  } : undefined,
+                }}
+                isLoading={statsLoading}
               />
               <StatsCard
-                title="Reddedilen"
-                value={statsData.rejected}
-                previousValue={previousStats.rejected}
-                icon={<XCircle className="h-5 w-5" />}
-                color="red"
-                loading={statsLoading}
+                data={{
+                  id: 'rejected-comments',
+                  title: 'Reddedilen',
+                  value: statsData.rejected,
+                  icon: XCircle,
+                  iconColor: 'red',
+                  trend: previousStats.rejected ? {
+                    percentage: ((statsData.rejected - previousStats.rejected) / previousStats.rejected * 100),
+                    direction: statsData.rejected > previousStats.rejected ? 'up' : statsData.rejected < previousStats.rejected ? 'down' : 'neutral',
+                    isPositive: statsData.rejected < previousStats.rejected,
+                  } : undefined,
+                }}
+                isLoading={statsLoading}
               />
               <StatsCard
-                title="Toplam İşlem (Bugün)"
-                value={statsData.total}
-                previousValue={previousStats.total}
-                icon={<Shield className="h-5 w-5" />}
-                color="orange"
-                loading={statsLoading}
+                data={{
+                  id: 'total-comments',
+                  title: 'Toplam İşlem (Bugün)',
+                  value: statsData.total,
+                  icon: Shield,
+                  iconColor: 'orange',
+                  trend: previousStats.total ? {
+                    percentage: ((statsData.total - previousStats.total) / previousStats.total * 100),
+                    direction: statsData.total > previousStats.total ? 'up' : statsData.total < previousStats.total ? 'down' : 'neutral',
+                    isPositive: statsData.total > previousStats.total,
+                  } : undefined,
+                }}
+                isLoading={statsLoading}
               />
             </div>
           </div>
