@@ -18,6 +18,8 @@
 import { apiClient } from '@/lib/infrastructure/api/client';
 import type {
   ModerationStats,
+  ModerationQueueItem,
+  ModerationActivity,
   PendingItemsResponse,
   ModeratorActivitiesResponse,
   BlogCommentDto,
@@ -30,7 +32,7 @@ import type {
 // ============================================================================
 // Sprint 9: Import canonical API types
 // ============================================================================
-import type { ApiResponse } from '@/types/infrastructure/api';
+import type { ApiResponse, PageResponse } from '@/types/infrastructure/api';
 
 // ============================================================================
 // RE-EXPORT BULK OPERATIONS FROM CENTRALIZED SERVICE
@@ -82,16 +84,51 @@ export {
 
 /**
  * Get moderation statistics
- * Backend: GET /api/v1/moderator/stats
+ *
+ * SPRINT 1 - STORY 1: Production-ready implementation
+ * Backend: GET /api/v1/moderation/stats (ModerationController)
+ * Returns: ModerationStatsResponse with real data
+ *
+ * @returns Comprehensive moderation statistics
  */
 export async function getModerationStats(): Promise<ModerationStats> {
   const response = await apiClient.get<ApiResponse<ModerationStats>>(
-    '/api/v1/moderator/stats'
+    '/api/v1/moderation/stats'
   );
   return response.data;
 }
 
 /**
+ * SPRINT 1 - STORY 2: Get moderation queue with pagination and filtering
+ * Backend: GET /api/v1/moderation/queue
+ * @param page - Page number (0-indexed on backend)
+ * @param size - Page size (default 20, max 100)
+ * @param type - Filter by type: 'review' | 'comment' | 'report' | null
+ * @param priority - Filter by priority: 'HIGH' | 'MEDIUM' | 'LOW' | null
+ * @returns Paginated queue items with priority sorting
+ */
+export async function getModerationQueue(
+  page = 0,
+  size = 20,
+  type?: string | null,
+  priority?: string | null
+): Promise<PageResponse<ModerationQueueItem>> {
+  const params: Record<string, string> = {
+    page: page.toString(),
+    size: size.toString(),
+  };
+
+  if (type) params.type = type;
+  if (priority) params.priority = priority;
+
+  const response = await apiClient.get<
+    ApiResponse<PageResponse<ModerationQueueItem>>
+  >('/api/v1/moderation/queue', params);
+  return response.data;
+}
+
+/**
+ * @deprecated Use getModerationQueue instead
  * Get pending items queue
  * Backend: GET /api/v1/moderator/pending-items
  */
@@ -107,10 +144,40 @@ export async function getPendingItems(
 }
 
 /**
- * Get recent moderator activities
- * Backend: GET /api/v1/moderator/recent-activity
+ * SPRINT 1 - STORY 3: Get recent moderation activities
+ * Backend: GET /api/v1/moderation/activities
+ *
+ * @param page - Page number (0-indexed)
+ * @param size - Page size (default 20, max 100)
+ * @param allModerators - Include all moderators' activities (admin only, default false)
+ * @returns Paginated activity log
  */
 export async function getRecentActivities(
+  page = 0,
+  size = 20,
+  allModerators = false
+): Promise<PageResponse<ModerationActivity>> {
+  const params: Record<string, string> = {
+    page: page.toString(),
+    size: size.toString(),
+  };
+
+  if (allModerators) {
+    params.allModerators = 'true';
+  }
+
+  const response = await apiClient.get<
+    ApiResponse<PageResponse<ModerationActivity>>
+  >('/api/v1/moderation/activities', params);
+
+  return response.data;
+}
+
+/**
+ * @deprecated Use getRecentActivities instead
+ * Legacy endpoint for moderator activities
+ */
+export async function getRecentActivitiesLegacy(
   page = 1,
   pageSize = 20
 ): Promise<ModeratorActivitiesResponse> {
@@ -203,36 +270,48 @@ export async function getCommentsByStatus(
 // ============================================================================
 
 /**
- * Get pending reviews (awaiting moderation)
- * Backend: GET /api/v1/reviews/admin/pending
+ * SPRINT 1 - STORY 4: Get pending reviews (awaiting moderation)
+ * Backend: GET /api/v1/moderation/reviews/pending
+ * Returns: PageResponse<ReviewModerationListResponse>
+ *
+ * @param page - Page number (0-indexed)
+ * @param size - Page size (default 20)
+ * @returns Paginated pending reviews with full details
  */
 export async function getPendingReviews(
   page = 0,
   size = 20
-): Promise<{ reviews: ReviewDto[]; total: number }> {
-  const response = await apiClient.get<
-    ApiResponse<{ reviews: ReviewDto[]; total: number }>
-  >('/api/v1/reviews/admin/pending', {
-    page: page.toString(),
-    size: size.toString(),
-  });
+): Promise<PageResponse<ReviewDto>> {
+  const response = await apiClient.get<ApiResponse<PageResponse<ReviewDto>>>(
+    '/api/v1/moderation/reviews/pending',
+    {
+      page: page.toString(),
+      size: size.toString(),
+    }
+  );
   return response.data;
 }
 
 /**
- * Get flagged reviews (need moderation)
- * Backend: GET /api/v1/reviews/admin/flagged
+ * SPRINT 1 - STORY 4: Get flagged reviews (need moderation)
+ * Backend: GET /api/v1/moderation/reviews/flagged
+ * Returns: PageResponse<ReviewModerationListResponse>
+ *
+ * @param page - Page number (0-indexed)
+ * @param size - Page size (default 20)
+ * @returns Paginated flagged reviews sorted by flaggedCount DESC
  */
 export async function getFlaggedReviews(
   page = 0,
   size = 20
-): Promise<{ reviews: ReviewDto[]; total: number }> {
-  const response = await apiClient.get<
-    ApiResponse<{ reviews: ReviewDto[]; total: number }>
-  >('/api/v1/reviews/admin/flagged', {
-    page: page.toString(),
-    size: size.toString(),
-  });
+): Promise<PageResponse<ReviewDto>> {
+  const response = await apiClient.get<ApiResponse<PageResponse<ReviewDto>>>(
+    '/api/v1/moderation/reviews/flagged',
+    {
+      page: page.toString(),
+      size: size.toString(),
+    }
+  );
   return response.data;
 }
 

@@ -538,7 +538,7 @@ export {
 export { useCommentActions } from './useCommentActions';
 export { type UseCommentActionsReturn } from './useCommentActions';
 
-// ============================================================================
+// ================================================
 // COMMENT MODERATION (Sprint 1 - Comment Moderation Completion)
 // ============================================================================
 export { useCommentModeration } from './useCommentModeration';
@@ -555,6 +555,16 @@ export {
   type OptimisticUpdateResult,
   type UseOptimisticModerationReturn,
 } from './useOptimisticModeration';
+
+// ================================================
+// REVIEW MODERATION LISTS (Sprint 1 - Story 4)
+// ================================================
+export {
+  usePendingReviews,
+  useFlaggedReviews,
+  useReviewModeration as useReviewModerationLists,
+} from './useReviewModeration';
+export type { ReviewModerationTab } from './useReviewModeration';
 
 // ================================================
 // REVIEW MODERATION (Sprint 1 - Story 1.1)

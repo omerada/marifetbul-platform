@@ -43,6 +43,40 @@ export interface ApiResponse<T = unknown> {
 // ============================================================================
 
 /**
+ * Spring Boot PageResponse wrapper (matches backend com.marifetbul.api.common.dto.PageResponse)
+ * Used for endpoints that return Page<T> from backend
+ *
+ * @template T - Type of items in the content array
+ * @version 1.0.0 - Backend-compatible
+ */
+export interface PageResponse<T = unknown> {
+  /** Array of items in current page */
+  content: T[];
+  /** Current page number (0-indexed on backend, can be 0 or 1-indexed on frontend) */
+  page?: number; // For backend compatibility (renamed from pageNumber)
+  pageNumber?: number; // Spring Boot native field
+  /** Items per page */
+  size?: number; // For backend compatibility (renamed from pageSize)
+  pageSize?: number; // Spring Boot native field
+  /** Total number of items across all pages */
+  totalElements: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Number of items in current page */
+  numberOfElements?: number;
+  /** Is this the first page? */
+  first?: boolean;
+  /** Is this the last page? */
+  last?: boolean;
+  /** Is the content empty? */
+  empty?: boolean;
+  /** Has next page? */
+  hasNext?: boolean;
+  /** Has previous page? */
+  hasPrevious?: boolean;
+}
+
+/**
  * Paginated API response wrapper
  * Used for list/collection endpoints
  *

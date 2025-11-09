@@ -2,44 +2,42 @@
 
 /**
  * ================================================
- * USE MODERATION QUEUE HOOK
+ * USE MODERATION ACTIVITIES HOOK
  * ================================================
- * Hook for fetching moderation queue with pagination and filtering
+ * Hook for fetching moderation activity log with pagination
  *
- * SPRINT 1 - STORY 2: Production Implementation
- * @version 2.0.0 - Updated to use new queue API
+ * SPRINT 1 - STORY 3: Production Implementation
+ * @version 1.0.0
  * @author MarifetBul Development Team
- * @updated November 8, 2025
+ * @created November 9, 2025
  */
 
 import { useState, useCallback } from 'react';
 import useSWR from 'swr';
-import { getModerationQueue } from '@/lib/api/moderation';
+import { getRecentActivities } from '@/lib/api/moderation';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import type { ModerationQueueItem } from '@/types/business/moderation';
+import type { ModerationActivity } from '@/types/business/moderation';
 import type { PageResponse } from '@/types/infrastructure/api';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-export interface UseModerationQueueParams {
+export interface UseModerationActivitiesParams {
   /** Page number (0-indexed) */
   page?: number;
   /** Page size (default 20, max 100) */
   size?: number;
-  /** Filter by type: 'review' | 'comment' | 'report' */
-  type?: string | null;
-  /** Filter by priority: 'HIGH' | 'MEDIUM' | 'LOW' */
-  priority?: string | null;
-  /** Auto-refresh interval in ms (default: 60000 = 1 minute) */
+  /** Include all moderators' activities (admin only) */
+  allModerators?: boolean;
+  /** Auto-refresh interval in ms (default: 30000 = 30 seconds) */
   refreshInterval?: number;
 }
 
-export interface UseModerationQueueReturn {
-  /** Queue items for current page */
-  items: ModerationQueueItem[];
-  /** Total number of items across all pages */
+export interface UseModerationActivitiesReturn {
+  /** Activity items for current page */
+  activities: ModerationActivity[];
+  /** Total number of activities across all pages */
   totalElements: number;
   /** Total number of pages */
   totalPages: number;
@@ -65,11 +63,7 @@ export interface UseModerationQueueReturn {
   prevPage: () => void;
   /** Go to specific page */
   goToPage: (page: number) => void;
-  /** Set type filter */
-  setTypeFilter: (type: string | null) => void;
-  /** Set priority filter */
-  setPriorityFilter: (priority: string | null) => void;
-  /** Refresh queue */
+  /** Refresh activities */
   refresh: () => void;
 }
 
@@ -78,68 +72,61 @@ export interface UseModerationQueueReturn {
 // ============================================================================
 
 /**
- * Hook for fetching and managing moderation queue
+ * Hook for fetching and managing moderation activities
  * Uses SWR for automatic caching and revalidation
  *
- * SPRINT 1 - STORY 2: Production Implementation
- * - Endpoint: GET /api/v1/moderation/queue
+ * SPRINT 1 - STORY 3: Production Implementation
+ * - Endpoint: GET /api/v1/moderation/activities
  * - Supports pagination (page, size)
- * - Supports filtering (type, priority)
- * - Auto-sorted by priority then date
+ * - Admin can view all moderators' activities
+ * - Auto-sorted by timestamp DESC (newest first)
  *
- * @param params - Queue parameters (page, size, filters, refresh interval)
- * @returns Queue data with pagination controls
+ * @param params - Activity parameters (page, size, allModerators, refresh interval)
+ * @returns Activity data with pagination controls
  */
-export function useModerationQueue(
-  params: UseModerationQueueParams = {}
-): UseModerationQueueReturn {
+export function useModerationActivities(
+  params: UseModerationActivitiesParams = {}
+): UseModerationActivitiesReturn {
   const {
     page: initialPage = 0,
     size = 20,
-    type: initialType = null,
-    priority: initialPriority = null,
-    refreshInterval = 60000, // 1 minute
+    allModerators = false,
+    refreshInterval = 30000, // 30 seconds
   } = params;
 
   const [currentPage, setCurrentPage] = useState(initialPage);
-  const [typeFilter, setTypeFilter] = useState<string | null>(initialType);
-  const [priorityFilter, setPriorityFilter] = useState<string | null>(
-    initialPriority
-  );
 
   // SWR key includes all parameters for cache invalidation
-  const swrKey = `/moderation/queue?page=${currentPage}&size=${size}&type=${typeFilter || 'all'}&priority=${priorityFilter || 'all'}`;
+  const swrKey = `/moderation/activities?page=${currentPage}&size=${size}&allModerators=${allModerators}`;
 
   const { data, error, isLoading, mutate } = useSWR<
-    PageResponse<ModerationQueueItem>
+    PageResponse<ModerationActivity>
   >(
     swrKey,
     async () => {
       try {
-        logger.debug('Fetching moderation queue', {
+        logger.debug('Fetching moderation activities', {
           page: currentPage,
           size,
-          type: typeFilter,
-          priority: priorityFilter,
+          allModerators,
         });
 
-        const response = await getModerationQueue(
+        const response = await getRecentActivities(
           currentPage,
           size,
-          typeFilter,
-          priorityFilter
+          allModerators
         );
 
-        logger.debug('Moderation queue fetched', {
-          totalItems: response.totalElements,
+        logger.debug('Moderation activities fetched', {
+          totalActivities: response.totalElements,
           currentPage,
-          itemsInPage: response.content.length,
+          activitiesInPage: response.content.length,
         });
 
         return response;
       } catch (err) {
         logger.error(
-          'Failed to fetch moderation queue:',
+          'Failed to fetch moderation activities:',
           err instanceof Error ? err : new Error(String(err))
         );
         throw err;
@@ -174,24 +161,13 @@ export function useModerationQueue(
     }
   }, []);
 
-  // Filter controls
-  const handleSetTypeFilter = useCallback((type: string | null) => {
-    setTypeFilter(type);
-    setCurrentPage(0); // Reset to first page when filter changes
-  }, []);
-
-  const handleSetPriorityFilter = useCallback((priority: string | null) => {
-    setPriorityFilter(priority);
-    setCurrentPage(0); // Reset to first page when filter changes
-  }, []);
-
   // Manual refresh
   const refresh = useCallback(() => {
     mutate();
   }, [mutate]);
 
   return {
-    items: data?.content || [],
+    activities: data?.content || [],
     totalElements: data?.totalElements || 0,
     totalPages: data?.totalPages || 0,
     currentPage,
@@ -205,10 +181,8 @@ export function useModerationQueue(
     nextPage,
     prevPage,
     goToPage,
-    setTypeFilter: handleSetTypeFilter,
-    setPriorityFilter: handleSetPriorityFilter,
     refresh,
   };
 }
 
-export default useModerationQueue;
+export default useModerationActivities;

@@ -6,30 +6,28 @@
  * ================================================
  * Smart container component that integrates ModerationQueue with hooks
  *
- * Sprint: Moderator Dashboard Implementation - Sprint 2, Task 2.2
- * @version 1.0.0
+ * SPRINT 1 - STORY 2: Updated to use new queue API
+ * @version 2.0.0 - Production Ready
  * @author MarifetBul Development Team
- * @created November 4, 2025
+ * @updated November 9, 2025
  *
  * Features:
- * - Integrated usePendingItems hook
+ * - Uses new useModerationQueue hook (GET /api/v1/moderation/queue)
  * - Real-time data fetching with auto-refresh
  * - Built-in action handlers
- * - Bulk selection support
- * - Type filtering
+ * - Pagination support
+ * - Type and priority filtering
  */
 
-'use client';
-
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { ModerationQueue } from './ModerationQueue';
+import { useModerationQueue } from '@/hooks/business/useModerationQueue';
 import {
-  usePendingItems,
   useCommentActions,
   useReviewActions,
 } from '@/hooks/business/useModeration';
 import { useToast } from '@/hooks/core/useToast';
-import type { PendingItemType } from '@/types/business/moderation';
+import { adaptQueueItemsToPendingItems } from '@/lib/transformers/moderationQueueAdapter';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
@@ -38,17 +36,21 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface ModerationQueueContainerProps {
   /**
-   * Page number (1-indexed)
+   * Page number (0-indexed for new API)
    */
   page?: number;
   /**
-   * Items per page
+   * Items per page (max 100)
    */
   pageSize?: number;
   /**
-   * Optional item type filter
+   * Optional item type filter ('review' | 'comment' | 'report')
    */
-  itemType?: PendingItemType;
+  itemType?: 'review' | 'comment' | 'report' | null;
+  /**
+   * Optional priority filter ('HIGH' | 'MEDIUM' | 'LOW')
+   */
+  priority?: 'HIGH' | 'MEDIUM' | 'LOW' | null;
   /**
    * Auto-refresh interval in milliseconds (default: 60000 = 60s)
    */
@@ -64,19 +66,35 @@ interface ModerationQueueContainerProps {
 // ============================================================================
 
 export function ModerationQueueContainer({
-  page = 1,
+  page = 0,
   pageSize = 20,
-  itemType,
+  itemType = null,
+  priority = null,
   refreshInterval = 60000,
   className,
 }: ModerationQueueContainerProps) {
   // Hooks
   const { success, error: showError } = useToast();
-  const { items, isLoading, refresh } = usePendingItems(
+
+  // New queue hook with pagination and filtering
+  const {
+    items: queueItems,
+    isLoading,
+    refresh,
+  } = useModerationQueue({
     page,
-    pageSize,
-    refreshInterval
+    size: pageSize,
+    type: itemType,
+    priority,
+    refreshInterval,
+  });
+
+  // Convert new queue items to legacy PendingItem format for compatibility
+  const items = useMemo(
+    () => adaptQueueItemsToPendingItems(queueItems),
+    [queueItems]
   );
+
   const {
     approve: approveComment,
     reject: rejectComment,
@@ -87,12 +105,6 @@ export function ModerationQueueContainer({
   // State
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [actionInProgress, setActionInProgress] = useState(false);
-
-  // Filter items by type if specified
-  const filteredItems = React.useMemo(() => {
-    if (!itemType) return items;
-    return items.filter((item) => item.itemType === itemType);
-  }, [items, itemType]);
 
   // Handle item selection
   const handleItemSelect = useCallback((itemId: string) => {
@@ -105,12 +117,12 @@ export function ModerationQueueContainer({
 
   // Handle select all
   const handleSelectAll = useCallback(() => {
-    if (selectedItems.length === filteredItems.length) {
+    if (selectedItems.length === items.length) {
       setSelectedItems([]);
     } else {
-      setSelectedItems(filteredItems.map((item) => item.itemId));
+      setSelectedItems(items.map((item) => item.itemId));
     }
-  }, [selectedItems.length, filteredItems]);
+  }, [selectedItems.length, items]);
 
   // Handle single item approval
   const handleApprove = useCallback(
@@ -143,7 +155,10 @@ export function ModerationQueueContainer({
         // Remove from selection if selected
         setSelectedItems((prev) => prev.filter((id) => id !== itemId));
       } catch (err) {
-        logger.error('Approve failed', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Approve failed',
+          err instanceof Error ? err : new Error(String(err))
+        );
         showError('Onaylama sırasında bir hata oluştu');
       } finally {
         setActionInProgress(false);
@@ -191,7 +206,10 @@ export function ModerationQueueContainer({
         // Remove from selection if selected
         setSelectedItems((prev) => prev.filter((id) => id !== itemId));
       } catch (err) {
-        logger.error('Reject failed', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Reject failed',
+          err instanceof Error ? err : new Error(String(err))
+        );
         showError('Reddetme sırasında bir hata oluştu');
       } finally {
         setActionInProgress(false);
@@ -267,7 +285,10 @@ export function ModerationQueueContainer({
                 break;
             }
           } catch (err) {
-            logger.error('Bulk comment action failed', err instanceof Error ? err : new Error(String(err)));
+            logger.error(
+              'Bulk comment action failed',
+              err instanceof Error ? err : new Error(String(err))
+            );
             failCount += commentIds.length;
           }
         }
@@ -302,7 +323,10 @@ export function ModerationQueueContainer({
                 break;
             }
           } catch (err) {
-            logger.error('Bulk review action failed', err instanceof Error ? err : new Error(String(err)));
+            logger.error(
+              'Bulk review action failed',
+              err instanceof Error ? err : new Error(String(err))
+            );
             failCount += reviewIds.length;
           }
         }
@@ -328,7 +352,10 @@ export function ModerationQueueContainer({
         // Clear selection
         setSelectedItems([]);
       } catch (err) {
-        logger.error('Bulk action failed', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Bulk action failed',
+          err instanceof Error ? err : new Error(String(err))
+        );
         showError('Toplu işlem sırasında bir hata oluştu');
       } finally {
         setActionInProgress(false);
@@ -350,7 +377,7 @@ export function ModerationQueueContainer({
 
   return (
     <ModerationQueue
-      items={filteredItems}
+      items={items}
       isLoading={isLoading}
       selectedItems={selectedItems}
       onItemSelect={handleItemSelect}

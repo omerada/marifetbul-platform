@@ -69,6 +69,21 @@ export {
   usePendingReports,
   useReportActions,
 } from './business/useModeration';
+
+// SPRINT 1 - STORY 2: New moderation queue hook
+export { useModerationQueue } from './business/useModerationQueue';
+export type {
+  UseModerationQueueParams,
+  UseModerationQueueReturn,
+} from './business/useModerationQueue';
+
+// SPRINT 1 - STORY 3: New moderation activities hook
+export { useModerationActivities } from './business/useModerationActivities';
+export type {
+  UseModerationActivitiesParams,
+  UseModerationActivitiesReturn,
+} from './business/useModerationActivities';
+
 // Business hooks
 export * from './business/useOrder';
 export * from './business/useReviews';

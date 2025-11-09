@@ -40,13 +40,18 @@ interface UseModerationStatsReturn {
  * Hook for fetching and managing moderation statistics
  * Uses SWR for automatic caching and revalidation
  *
+ * SPRINT 1 - STORY 1: Updated to use production-ready API
+ * - Endpoint: GET /api/v1/moderation/stats
+ * - Response: ModerationStatsResponse (backend)
+ * - Auto-transforms to ModerationStats (frontend)
+ *
  * @param refreshInterval - Auto-refresh interval in milliseconds (default: 30000)
  */
 export function useModerationStats(
   refreshInterval = 30000
 ): UseModerationStatsReturn {
   const {
-    data: stats,
+    data: rawStats,
     error,
     isLoading,
     mutate,
@@ -55,10 +60,37 @@ export function useModerationStats(
     async () => {
       try {
         const data = await moderationApi.getStats();
-        logger.debug('Moderation stats fetched:', data);
-        return data;
+
+        // Add backward compatibility fields for legacy components
+        const enhancedStats: ModerationStats = {
+          ...data,
+          // Legacy compatibility
+          flaggedComments: data.flaggedItems,
+          flaggedReviews: data.flaggedItems,
+          commentsApprovedToday: data.performance.actionsToday,
+          commentsRejectedToday: 0, // Not tracked separately anymore
+          reviewsApprovedToday: data.performance.actionsToday,
+          reviewsRejectedToday: 0, // Not tracked separately anymore
+          reportsResolvedToday: data.resolvedToday,
+          pendingSupportTickets: 0, // Removed from new API
+          ticketsClosedToday: 0, // Removed from new API
+          totalPendingItems:
+            data.pendingReviews + data.pendingComments + data.pendingReports,
+          totalActionsToday: data.performance.actionsToday,
+          accuracyRate: data.performance.accuracyRate,
+        };
+
+        logger.debug('Moderation stats fetched', {
+          pendingReviews: enhancedStats.pendingReviews,
+          pendingComments: enhancedStats.pendingComments,
+          totalPending: enhancedStats.totalPendingItems,
+        });
+        return enhancedStats;
       } catch (err) {
-        logger.error('Failed to fetch moderation stats:', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Failed to fetch moderation stats:',
+          err instanceof Error ? err : new Error(String(err))
+        );
         throw err;
       }
     },
@@ -78,10 +110,10 @@ export function useModerationStats(
   }, [mutate]);
 
   // Calculate last updated time
-  const lastUpdated = stats ? new Date() : null;
+  const lastUpdated = rawStats ? new Date() : null;
 
   return {
-    stats: stats || null,
+    stats: rawStats || null,
     isLoading,
     error: error || null,
     refresh,

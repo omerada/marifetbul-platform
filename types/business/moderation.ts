@@ -12,33 +12,63 @@
 
 /**
  * Moderation statistics for dashboard
+ *
+ * SPRINT 1 - STORY 1: Updated to match ModerationStatsResponse from backend
+ * Backend DTO: ModerationStatsResponse.java
+ * Endpoint: GET /api/v1/moderation/stats
+ *
+ * @version 2.0.0 - Production Ready
  */
 export interface ModerationStats {
-  // Comment Statistics
-  pendingComments: number;
-  flaggedComments: number;
-  commentsApprovedToday: number;
-  commentsRejectedToday: number;
-
-  // Review Statistics
+  // Pending Counts
   pendingReviews: number;
-  flaggedReviews: number;
-  reviewsApprovedToday: number;
-  reviewsRejectedToday: number;
-
-  // Report Statistics
+  pendingComments: number;
   pendingReports: number;
-  reportsResolvedToday: number;
+  flaggedItems: number;
 
-  // Support Ticket Statistics
-  pendingSupportTickets: number;
-  ticketsClosedToday: number;
+  // Resolution Metrics
+  resolvedToday: number;
+  resolvedThisWeek: number;
+  resolvedThisMonth: number;
+  averageResolutionTimeMinutes: number;
 
-  // Overall Statistics
-  totalPendingItems: number;
-  totalActionsToday: number;
-  averageResponseTimeMinutes: number;
-  accuracyRate: number;
+  // Moderator Metrics
+  totalModeratorsActive: number;
+
+  // Performance Metrics
+  performance: {
+    actionsToday: number;
+    actionsThisWeek: number;
+    actionsThisMonth: number;
+    averageActionTimeMinutes: number;
+    accuracyRate: number;
+  };
+
+  // Legacy compatibility (computed from new fields)
+  /** @deprecated Use pendingComments instead */
+  flaggedComments?: number;
+  /** @deprecated Use performance.actionsToday instead */
+  commentsApprovedToday?: number;
+  /** @deprecated Use performance.actionsToday instead */
+  commentsRejectedToday?: number;
+  /** @deprecated Use pendingReviews instead */
+  flaggedReviews?: number;
+  /** @deprecated Use performance.actionsToday instead */
+  reviewsApprovedToday?: number;
+  /** @deprecated Use performance.actionsToday instead */
+  reviewsRejectedToday?: number;
+  /** @deprecated Use resolvedToday instead */
+  reportsResolvedToday?: number;
+  /** @deprecated Removed - not tracked */
+  pendingSupportTickets?: number;
+  /** @deprecated Removed - not tracked */
+  ticketsClosedToday?: number;
+  /** @deprecated Use computed total instead */
+  totalPendingItems?: number;
+  /** @deprecated Use performance.actionsToday instead */
+  totalActionsToday?: number;
+  /** @deprecated Use performance.accuracyRate instead */
+  accuracyRate?: number;
 }
 
 /**
@@ -86,6 +116,48 @@ export type ViewMode = 'compact' | 'card' | 'detailed';
  * Determines action availability and UI behavior
  */
 export type UserRole = 'admin' | 'moderator';
+
+/**
+ * SPRINT 1 - STORY 2: Moderation Queue Item
+ * Backend DTO: ModerationQueueItemResponse.java
+ * Endpoint: GET /api/v1/moderation/queue
+ *
+ * Represents a single item in the moderation queue
+ * Can be a Review, Comment, or Report
+ *
+ * @version 1.0.0
+ */
+export interface ModerationQueueItem {
+  /** Unique identifier (UUID) */
+  id: string;
+
+  /** Item type: 'REVIEW' | 'COMMENT' | 'REPORT' */
+  type: string;
+
+  /** Content preview (max 100 chars + "...") */
+  content: string;
+
+  /** Name of the person who created the item */
+  authorName: string;
+
+  /** Author's user ID (UUID) */
+  authorId: string;
+
+  /** Priority: 'HIGH' | 'MEDIUM' | 'LOW' */
+  priority: string;
+
+  /** Current status (e.g., 'PENDING', 'FLAGGED', 'UNDER_REVIEW') */
+  status: string;
+
+  /** Creation timestamp (ISO string) */
+  createdAt: string;
+
+  /** Flag/escalation reason (nullable) */
+  flagReason: string | null;
+
+  /** Number of reports/flags */
+  reportCount: number;
+}
 
 /**
  * Pending moderation item (Frontend representation)
@@ -139,7 +211,43 @@ export interface PendingItem {
 }
 
 /**
- * Recent activity item
+ * SPRINT 1 - STORY 3: Moderation Activity
+ * Backend DTO: ModerationActivityResponse.java
+ * Endpoint: GET /api/v1/moderation/activities
+ *
+ * Represents a single moderation action in the activity log
+ *
+ * @version 1.0.0
+ */
+export interface ModerationActivity {
+  /** Unique activity ID */
+  id: string;
+
+  /** Action performed: 'APPROVE' | 'REJECT' | 'SPAM' | 'ESCALATE' | etc. */
+  action: string;
+
+  /** Type of item moderated: 'COMMENT' | 'REVIEW' | 'REPORT' */
+  itemType: string;
+
+  /** ID of the moderated item */
+  itemId: string;
+
+  /** Name of the moderator who performed the action */
+  moderatorName: string;
+
+  /** Moderator's user ID */
+  moderatorId: string;
+
+  /** Reason or notes for the action (nullable) */
+  reason: string | null;
+
+  /** Timestamp when action was performed (ISO string) */
+  timestamp: string;
+}
+
+/**
+ * Recent activity item (Legacy)
+ * @deprecated Use ModerationActivity instead
  */
 export interface ModeratorActivity {
   activityId: string;

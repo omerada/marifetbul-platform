@@ -85,6 +85,10 @@ export function useModerationStats(refreshInterval = 30000) {
 // ============================================================================
 
 /**
+ * @deprecated Use useModerationQueue from @/hooks/business/useModerationQueue instead
+ * This hook uses the legacy /api/v1/moderator/pending-items endpoint
+ * New queue API provides better pagination, filtering, and priority sorting
+ *
  * Hook for fetching pending moderation items with pagination
  *
  * @param page - Page number (default: 1)
