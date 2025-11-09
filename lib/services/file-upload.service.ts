@@ -65,6 +65,10 @@ export interface UploadOptions {
   folder?: string;
   /** Additional metadata */
   metadata?: Record<string, string>;
+  /** Custom endpoint URL (overrides default) */
+  endpoint?: string;
+  /** Include authentication token */
+  authenticated?: boolean;
 }
 
 // ================================================
@@ -73,6 +77,14 @@ export interface UploadOptions {
 
 class FileUploadService {
   private apiBaseUrl = '/api/files';
+
+  /**
+   * Get authentication token from localStorage
+   */
+  private getAuthToken(): string | null {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('auth_token');
+  }
 
   /**
    * Upload a single file
@@ -92,6 +104,8 @@ class FileUploadService {
       backend = 'api',
       folder = 'orders',
       metadata = {},
+      endpoint,
+      authenticated = true,
     } = options;
 
     // Create form data
@@ -166,7 +180,17 @@ class FileUploadService {
       });
 
       // Send request
-      xhr.open('POST', this.apiBaseUrl);
+      const uploadUrl = endpoint || this.apiBaseUrl;
+      xhr.open('POST', uploadUrl);
+
+      // Add authentication header if required
+      if (authenticated) {
+        const token = this.getAuthToken();
+        if (token) {
+          xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+        }
+      }
+
       xhr.send(formData);
     });
   }

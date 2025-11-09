@@ -20,6 +20,14 @@ export { EscrowReleaseModal } from './EscrowReleaseModal';
 // Order revision components (Sprint 1.3)
 export { OrderRevisionList } from './OrderRevisionList';
 
+// Sprint 1 - Story 3: Milestone Revision UI
+export { MilestoneRevisionModal } from './MilestoneRevisionModal';
+export { RevisionHistoryTimeline } from './RevisionHistoryTimeline';
+export { MilestoneProgressTracker } from './MilestoneProgressTracker';
+export type { MilestoneRevisionModalProps } from './MilestoneRevisionModal';
+export type { RevisionHistoryTimelineProps } from './RevisionHistoryTimeline';
+export type { MilestoneProgressTrackerProps } from './MilestoneProgressTracker';
+
 // Order UI components
 export {
   OrderReviewButton,

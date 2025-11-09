@@ -82,24 +82,8 @@ export function unescapeHTML(html: string): string {
 // ================================================
 // NUMBER FORMATTING
 // ================================================
-// ============================================================================
 // Sprint 10: Migrated to canonical formatters
-// ============================================================================
 // Use @/lib/shared/formatters for comprehensive number formatting
-
-/**
- * Format number with locale support
- *
- * @deprecated Sprint 10 - Use @/lib/shared/formatters::formatNumber for full feature set
- * @see {@link @/lib/shared/formatters#formatNumber}
- */
-export function formatNumber(
-  num: number,
-  options?: Intl.NumberFormatOptions
-): string {
-  // Simple wrapper for backward compatibility
-  return new Intl.NumberFormat('tr-TR', options).format(num);
-}
 
 export function formatBytes(bytes: number, decimals = 2): string {
   if (bytes === 0) return '0 Bytes';
@@ -137,17 +121,21 @@ export function extractInitials(name: string, maxChars = 2): string {
 }
 
 export function formatPhoneNumber(phone: string): string {
-  // Remove all non-digit characters
-  const cleaned = phone.replace(/\D/g, '');
-
-  // Check if it's a Turkish phone number
-  if (cleaned.length === 11 && cleaned.startsWith('0')) {
-    // Format: 0 (5XX) XXX XX XX
-    return `${cleaned.slice(0, 1)} (${cleaned.slice(1, 4)}) ${cleaned.slice(4, 7)} ${cleaned.slice(7, 9)} ${cleaned.slice(9)}`;
+  // Delegates to the canonical implementation in lib/shared/formatters
+  // Keeps backward-compatible signature while avoiding duplicate logic.
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const {
+    formatPhoneNumber: canonicalFormatPhoneNumber,
+  } = require('../formatters');
+  try {
+    return canonicalFormatPhoneNumber(phone);
+  } catch (err) {
+    // Fallback to original phone string on any unexpected error
+    // (This mimics the previous behavior which returned the input)
+    // eslint-disable-next-line no-console
+    console.error('[FormatUtils] canonical formatPhoneNumber failed:', err);
+    return phone;
   }
-
-  // Return original if not a valid Turkish number
-  return phone;
 }
 
 export function formatEmailDomain(email: string): string {
@@ -164,9 +152,19 @@ export function formatEmailDomain(email: string): string {
 }
 
 export function formatCreditCard(cardNumber: string): string {
-  const cleaned = cardNumber.replace(/\D/g, '');
-  const matches = cleaned.match(/.{1,4}/g);
-  return matches ? matches.join(' ') : cardNumber;
+  // Delegate to canonical formatCardNumber implementation
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const {
+    formatCardNumber: canonicalFormatCardNumber,
+  } = require('../formatters');
+  try {
+    return canonicalFormatCardNumber(cardNumber, true);
+  } catch (err) {
+    // Fallback to basic grouping on error
+    const cleaned = cardNumber.replace(/\D/g, '');
+    const matches = cleaned.match(/.{1,4}/g);
+    return matches ? matches.join(' ') : cardNumber;
+  }
 }
 
 export function maskString(
@@ -240,7 +238,6 @@ export const FormatUtils = {
   unescapeHTML,
 
   // Number formatting
-  formatNumber,
   formatBytes,
   formatPercentage,
   formatCompactNumber,

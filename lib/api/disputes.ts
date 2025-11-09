@@ -101,52 +101,34 @@ export async function uploadDisputeAttachment(
   fileSize: number;
   fileType: string;
 }> {
-  const formData = new FormData();
-  formData.append('file', file);
+  // Use canonical file upload service
+  const { fileUploadService } = await import(
+    '@/lib/services/file-upload.service'
+  );
 
-  const token =
-    typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-
-  const xhr = new XMLHttpRequest();
-
-  return new Promise((resolve, reject) => {
-    xhr.upload.addEventListener('progress', (e) => {
-      if (e.lengthComputable && onProgress) {
-        const progress = Math.round((e.loaded * 100) / e.total);
-        onProgress(progress);
-      }
+  try {
+    const result = await fileUploadService.uploadFile(file, {
+      endpoint: `${process.env.NEXT_PUBLIC_API_URL}${DISPUTES_BASE_URL}/attachments`,
+      folder: 'disputes',
+      authenticated: true,
+      onProgress: (progress) => {
+        onProgress?.(progress.progress);
+      },
     });
 
-    xhr.addEventListener('load', () => {
-      if (xhr.status === 200 || xhr.status === 201) {
-        const response = JSON.parse(xhr.responseText);
-        // Handle both direct response and wrapped response
-        const data = response.data || response;
-        resolve(data);
-      } else {
-        reject(new Error(`Upload failed: ${xhr.statusText}`));
-      }
-    });
-
-    xhr.addEventListener('error', () => {
-      reject(new Error('Upload failed'));
-    });
-
-    xhr.addEventListener('abort', () => {
-      reject(new Error('Upload cancelled'));
-    });
-
-    xhr.open(
-      'POST',
-      `${process.env.NEXT_PUBLIC_API_URL}${DISPUTES_BASE_URL}/attachments`
+    return {
+      fileUrl: result.fileUrl,
+      fileName: result.fileName,
+      fileSize: result.fileSize,
+      fileType: result.fileType,
+    };
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : 'Failed to upload dispute attachment'
     );
-
-    if (token) {
-      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-    }
-
-    xhr.send(formData);
-  });
+  }
 }
 
 /**

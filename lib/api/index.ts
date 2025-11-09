@@ -72,14 +72,6 @@ export { paymentRetryApi } from './payment-retry';
 // Payout API (new location - consolidated)
 export * from './payouts';
 
-// Legacy payout exports (deprecated - will be removed in Sprint 2)
-// @deprecated Use exports from './payouts' instead
-export type { RequestPayoutRequest as CreatePayoutRequest } from './payouts';
-export type {
-  PayoutResponse as Payout,
-  PayoutResponse as PayoutEligibility,
-} from './payouts';
-
 // Export Payment Method API
 export { paymentMethodApi } from './payment-method';
 export type {

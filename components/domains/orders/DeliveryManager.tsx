@@ -181,17 +181,8 @@ export function DeliveryManager({
             throw new Error(`${file.name} çok büyük (max 50MB)`);
           }
 
-          // Mock progress tracking
           const fileId = `${Date.now()}-${file.name}`;
           setUploadProgress((prev) => ({ ...prev, [fileId]: 0 }));
-
-          // Simulate progress
-          const progressInterval = setInterval(() => {
-            setUploadProgress((prev) => ({
-              ...prev,
-              [fileId]: Math.min((prev[fileId] || 0) + 10, 90),
-            }));
-          }, 200);
 
           try {
             let uploadedFile: DeliveryFile;
@@ -200,24 +191,41 @@ export function DeliveryManager({
               // Use provided upload function
               uploadedFile = await onUploadFile(file);
             } else {
-              // Mock upload for demo
-              await new Promise((resolve) => setTimeout(resolve, 1500));
+              // Use canonical file upload service (PRODUCTION-READY)
+              const { fileUploadService } = await import(
+                '@/lib/services/file-upload.service'
+              );
+
+              const result = await fileUploadService.uploadFile(file, {
+                folder: 'order-deliveries',
+                backend: 'cloudinary',
+                authenticated: true,
+                onProgress: (progress) => {
+                  setUploadProgress((prev) => ({
+                    ...prev,
+                    [fileId]: progress.progress,
+                  }));
+                },
+              });
+
               uploadedFile = {
-                id: fileId,
-                name: file.name,
-                url: URL.createObjectURL(file),
-                size: file.size,
-                type: file.type,
-                uploadedAt: new Date().toISOString(),
+                id: result.id,
+                name: result.fileName,
+                url: result.fileUrl,
+                size: result.fileSize,
+                type: result.fileType,
+                uploadedAt: result.uploadedAt,
               };
             }
 
-            clearInterval(progressInterval);
             setUploadProgress((prev) => ({ ...prev, [fileId]: 100 }));
-
             return uploadedFile;
           } catch (error) {
-            clearInterval(progressInterval);
+            setUploadProgress((prev) => {
+              const newProgress = { ...prev };
+              delete newProgress[fileId];
+              return newProgress;
+            });
             throw error;
           }
         });

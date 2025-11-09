@@ -34,16 +34,13 @@ export type { EscalateCommentModalProps } from './EscalateCommentModal';
 // DEDICATED MODERATION COMPONENTS (Sprint 1)
 // ============================================================================
 
-// DEPRECATED: ModeratorReviewQueue - Use UnifiedReviewQueue from @/components/domains/moderation/shared
-// export { ModeratorReviewQueue } from './ModeratorReviewQueue'; // REMOVED - Use UnifiedReviewQueue
 export { ModeratorTicketQueue } from './ModeratorTicketQueue';
 export { ModeratorReportQueue } from './ModeratorReportQueue';
 
 // ============================================================================
 // DASHBOARD COMPONENTS (Sprint 2)
 // ============================================================================
-// DEPRECATED: ModeratorDashboardOverview - Use ModeratorDashboardView from @/components/domains/dashboard/views
-// Migration: All moderator dashboard functionality moved to UnifiedDashboard
+// Moderator dashboard moved to UnifiedDashboard
 // See: components/domains/dashboard/views/ModeratorDashboardView.tsx
 
 export { ModeratorActivityTimeline } from './ModeratorActivityTimeline';

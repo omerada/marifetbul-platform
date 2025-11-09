@@ -277,53 +277,36 @@ export async function uploadAttachment(
   file: File,
   onProgress?: (progress: number) => void
 ): Promise<MessageAttachment> {
-  const formData = new FormData();
-  formData.append('file', file);
+  // Use canonical file upload service
+  const { fileUploadService } = await import(
+    '@/lib/services/file-upload.service'
+  );
 
-  // For file upload, we'll use fetch directly
-  const token =
-    typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-
-  const xhr = new XMLHttpRequest();
-
-  return new Promise((resolve, reject) => {
-    xhr.upload.addEventListener('progress', (e) => {
-      if (e.lengthComputable && onProgress) {
-        const progress = Math.round((e.loaded * 100) / e.total);
-        onProgress(progress);
-      }
+  try {
+    const result = await fileUploadService.uploadFile(file, {
+      endpoint: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/messages/attachments`,
+      folder: 'messages',
+      authenticated: true,
+      onProgress: (progress) => {
+        onProgress?.(progress.progress);
+      },
     });
 
-    xhr.addEventListener('load', () => {
-      if (xhr.status === 200 || xhr.status === 201) {
-        const response = JSON.parse(
-          xhr.responseText
-        ) as BackendApiResponse<MessageAttachment>;
-        resolve(response.data);
-      } else {
-        reject(new Error(`Upload failed: ${xhr.statusText}`));
-      }
-    });
-
-    xhr.addEventListener('error', () => {
-      reject(new Error('Upload failed'));
-    });
-
-    xhr.addEventListener('abort', () => {
-      reject(new Error('Upload cancelled'));
-    });
-
-    xhr.open(
-      'POST',
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/messages/attachments`
+    // Map to MessageAttachment type
+    return {
+      id: result.id,
+      messageId: '', // Will be set when message is created
+      fileName: result.fileName,
+      fileUrl: result.fileUrl,
+      fileSize: result.fileSize,
+      mimeType: result.fileType,
+      uploadedAt: result.uploadedAt,
+    };
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to upload attachment'
     );
-
-    if (token) {
-      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-    }
-
-    xhr.send(formData);
-  });
+  }
 }
 
 export async function deleteAttachment(attachmentId: string) {

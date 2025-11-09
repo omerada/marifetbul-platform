@@ -1,10 +1,10 @@
 /**
  * ================================================
- * PAYOUT HOOK
+ * PayoutResponse HOOK
  * ================================================
  * React hook for managing payouts
  *
- * Sprint 14 - Payment & Payout System
+ * Sprint 14 - Payment & PayoutResponse System
  *
  * @author MarifetBul Development Team
  * @version 1.0.0
@@ -27,10 +27,6 @@ import {
   type PayoutResponse,
 } from '@/lib/api/payouts';
 
-// Type alias for backward compatibility
-type CreatePayoutRequest = RequestPayoutRequest;
-type Payout = PayoutResponse;
-
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -41,20 +37,20 @@ interface UsePayoutOptions {
 
 export interface UsePayoutReturn {
   // State
-  payouts: Payout[];
-  pendingPayouts: Payout[];
+  payouts: PayoutResponse[];
+  pendingPayouts: PayoutResponse[];
   isLoading: boolean;
   error: string | null;
 
   // Actions
   load: () => Promise<void>;
   loadPending: () => Promise<void>;
-  request: (data: CreatePayoutRequest) => Promise<Payout>;
+  request: (data: RequestPayoutRequest) => Promise<PayoutResponse>;
   cancel: (payoutId: string, reason?: string) => Promise<void>;
   refresh: () => Promise<void>;
 
   // Utilities
-  canCancel: (payout: Payout) => boolean;
+  canCancel: (PayoutResponse: PayoutResponse) => boolean;
 }
 
 // ============================================================================
@@ -65,13 +61,13 @@ export function usePayout(options: UsePayoutOptions = {}): UsePayoutReturn {
   const { autoLoad = true } = options;
   const { success, error: showError, info } = useToast();
 
-  const [payouts, setPayouts] = useState<Payout[]>([]);
-  const [pendingPayouts, setPendingPayouts] = useState<Payout[]>([]);
+  const [payouts, setPayouts] = useState<PayoutResponse[]>([]);
+  const [pendingPayouts, setPendingPayouts] = useState<PayoutResponse[]>([]);
   const [isLoading, setIsLoading] = useState(autoLoad);
   const [error, setError] = useState<string | null>(null);
 
   /**
-   * Load payout history
+   * Load PayoutResponse history
    */
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -85,7 +81,10 @@ export function usePayout(options: UsePayoutOptions = {}): UsePayoutReturn {
         err instanceof Error ? err.message : 'Ödeme geçmişi yüklenemedi';
       setError(errorMessage);
       if (err instanceof Error) {
-        logger.error('Load payouts error:', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Load payouts error:',
+          err instanceof Error ? err : new Error(String(err))
+        );
       }
     } finally {
       setIsLoading(false);
@@ -107,7 +106,10 @@ export function usePayout(options: UsePayoutOptions = {}): UsePayoutReturn {
         err instanceof Error ? err.message : 'Bekleyen ödemeler yüklenemedi';
       setError(errorMessage);
       if (err instanceof Error) {
-        logger.error('Load pending payouts error:', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Load pending payouts error:',
+          err instanceof Error ? err : new Error(String(err))
+        );
       }
     } finally {
       setIsLoading(false);
@@ -115,25 +117,25 @@ export function usePayout(options: UsePayoutOptions = {}): UsePayoutReturn {
   }, []);
 
   /**
-   * Request payout
+   * Request PayoutResponse
    */
   const request = useCallback(
-    async (data: CreatePayoutRequest): Promise<Payout> => {
+    async (data: RequestPayoutRequest): Promise<PayoutResponse> => {
       setIsLoading(true);
       setError(null);
 
       try {
-        const payout = await requestPayout(data);
+        const PayoutResponse = await requestPayout(data);
 
         // Add to pending list
-        setPendingPayouts((prev) => [payout, ...prev]);
+        setPendingPayouts((prev) => [PayoutResponse, ...prev]);
 
         // Add to all payouts list
-        setPayouts((prev) => [payout, ...prev]);
+        setPayouts((prev) => [PayoutResponse, ...prev]);
 
         success('Başarılı', 'Ödeme talebiniz oluşturuldu');
 
-        return payout;
+        return PayoutResponse;
       } catch (err: unknown) {
         const errorMessage =
           err instanceof Error ? err.message : 'Ödeme talebi oluşturulamadı';
@@ -150,7 +152,7 @@ export function usePayout(options: UsePayoutOptions = {}): UsePayoutReturn {
   );
 
   /**
-   * Cancel payout
+   * Cancel PayoutResponse
    */
   const cancel = useCallback(
     async (payoutId: string, reason?: string): Promise<void> => {
@@ -193,10 +195,10 @@ export function usePayout(options: UsePayoutOptions = {}): UsePayoutReturn {
   }, [load, loadPending]);
 
   /**
-   * Check if payout can be canceled
+   * Check if PayoutResponse can be canceled
    */
-  const canCancel = useCallback((payout: Payout) => {
-    return canCancelPayout(payout);
+  const canCancel = useCallback((PayoutResponse: PayoutResponse) => {
+    return canCancelPayout(PayoutResponse);
   }, []);
 
   // Auto-load on mount
@@ -232,7 +234,7 @@ export function usePayout(options: UsePayoutOptions = {}): UsePayoutReturn {
 
 export interface UsePayoutAdminReturn {
   // State
-  pendingPayouts: Payout[];
+  pendingPayouts: PayoutResponse[];
   isLoading: boolean;
   error: string | null;
 
@@ -243,13 +245,13 @@ export interface UsePayoutAdminReturn {
   refresh: () => Promise<void>;
 
   // Utilities
-  canApprove: (payout: Payout) => boolean;
+  canApprove: (PayoutResponse: PayoutResponse) => boolean;
 }
 
 export function usePayoutAdmin(): UsePayoutAdminReturn {
   const { success, error: showError, warning } = useToast();
 
-  const [pendingPayouts, setPendingPayouts] = useState<Payout[]>([]);
+  const [pendingPayouts, setPendingPayouts] = useState<PayoutResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -268,7 +270,10 @@ export function usePayoutAdmin(): UsePayoutAdminReturn {
         err instanceof Error ? err.message : 'Bekleyen ödemeler yüklenemedi';
       setError(errorMessage);
       if (err instanceof Error) {
-        logger.error('Load pending payouts error:', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Load pending payouts error:',
+          err instanceof Error ? err : new Error(String(err))
+        );
       }
     } finally {
       setIsLoading(false);
@@ -276,7 +281,7 @@ export function usePayoutAdmin(): UsePayoutAdminReturn {
   }, []);
 
   /**
-   * Approve payout
+   * Approve PayoutResponse
    */
   const approve = useCallback(
     async (payoutId: string, notes?: string): Promise<void> => {
@@ -306,7 +311,7 @@ export function usePayoutAdmin(): UsePayoutAdminReturn {
   );
 
   /**
-   * Reject payout
+   * Reject PayoutResponse
    */
   const reject = useCallback(
     async (payoutId: string, reason: string): Promise<void> => {
@@ -343,10 +348,10 @@ export function usePayoutAdmin(): UsePayoutAdminReturn {
   }, [load]);
 
   /**
-   * Check if payout can be approved/rejected
+   * Check if PayoutResponse can be approved/rejected
    */
-  const canApprove = useCallback((payout: Payout) => {
-    return canProcessPayout(payout);
+  const canApprove = useCallback((PayoutResponse: PayoutResponse) => {
+    return canProcessPayout(PayoutResponse);
   }, []);
 
   return {

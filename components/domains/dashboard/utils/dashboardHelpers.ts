@@ -30,12 +30,8 @@ import { formatPercentage as canonicalFormatPercentage } from '@/lib/shared/form
  * Pure utility functions for dashboard data processing and display
  */
 
-import type { TimeRange } from '@/types/shared/analytics/dashboard';
 import type { TrendDirection, TrendIndicator } from '../types/dashboard.types';
-import {
-  isValidNumber as isValidNumberCanonical,
-  formatCurrency,
-} from '@/lib/shared/formatters';
+import { formatCurrency } from '@/lib/shared/formatters';
 
 // Type definitions
 export type DashboardPeriod = 'week' | 'month' | 'quarter' | 'year';
@@ -336,17 +332,7 @@ export function groupByPeriod<T extends { createdAt: string | Date }>(
 // ============================================================================
 // VALIDATION HELPERS
 // ============================================================================
-
-/**
- * Check if value is valid number
- */
-/**
- * Type guard for valid number
- * @deprecated Sprint 7 - Use isValidNumber from @/lib/shared/formatters
- */
-export function isValidNumber(value: unknown): value is number {
-  return isValidNumberCanonical(value);
-}
+// Sprint 7: Use isValidNumber from @/lib/shared/formatters
 
 /**
  * Check if stat data is empty
