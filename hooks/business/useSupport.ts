@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useCallback } from 'react';
 import { useSupportStore } from '@/lib/core/store/support';
 import type { SupportTicket, PaginationMeta } from '@/types';

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * USE MODERATION DASHBOARD HOOK

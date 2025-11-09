@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * MODERATOR TICKET QUEUE COMPONENT

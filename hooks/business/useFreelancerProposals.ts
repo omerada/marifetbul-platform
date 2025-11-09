@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect, useCallback } from 'react';
 import { useUIStore } from '@/lib/core/store/domains/ui/uiStore';
 import logger from '@/lib/infrastructure/monitoring/logger';

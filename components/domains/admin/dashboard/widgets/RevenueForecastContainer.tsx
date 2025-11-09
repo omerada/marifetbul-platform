@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * REVENUE FORECAST CONTAINER - DATA FETCHING WRAPPER

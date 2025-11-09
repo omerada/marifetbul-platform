@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * JOB POSTING WIZARD - STEP 2: SKILLS & REQUIREMENTS

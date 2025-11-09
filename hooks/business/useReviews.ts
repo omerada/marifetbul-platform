@@ -1,3 +1,5 @@
+'use client';
+
 import { useCallback, useEffect } from 'react';
 import { useReviewStore } from '@/lib/core/store/domains/reviews/reviewStore';
 import type { ReviewFilters, CreateReviewRequest } from '@/types';

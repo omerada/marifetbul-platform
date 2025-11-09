@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect, useCallback } from 'react';
 import { apiClient } from '@/lib/infrastructure/api/client';
 import logger from '@/lib/infrastructure/monitoring/logger';

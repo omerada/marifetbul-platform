@@ -1,10 +1,10 @@
-﻿/**
+'use client';
+
+/**
  * Unified Dashboard Orchestrator
  * Routes to role-specific dashboard views
  * Sprint 1 - Day 9 + Task 1.3
  */
-
-'use client';
 
 import React, { useMemo, useCallback } from 'react';
 import { toast } from 'sonner';
@@ -82,11 +82,11 @@ export function UnifiedDashboard({
 
         // Show success toast notification
         const actionLabels = {
-          approve: 'onaylandı',
+          approve: 'onayland�',
           reject: 'reddedildi',
-          spam: 'spam olarak işaretlendi',
+          spam: 'spam olarak i�aretlendi',
         };
-        toast.success(`İçerik başarıyla ${actionLabels[action]}`);
+        toast.success(`��erik ba�ar�yla ${actionLabels[action]}`);
       } catch (error) {
         logger.error(
           '[UnifiedDashboard] Moderation action failed',
@@ -95,7 +95,7 @@ export function UnifiedDashboard({
         );
 
         // Show error toast notification
-        toast.error('Moderasyon işlemi başarısız oldu. Lütfen tekrar deneyin.');
+        toast.error('Moderasyon i�lemi ba�ar�s�z oldu. L�tfen tekrar deneyin.');
       }
     },
     [retry]
@@ -118,7 +118,7 @@ export function UnifiedDashboard({
           <div className="text-center">
             <AlertCircle className="mx-auto mb-4 h-12 w-12 text-gray-400" />
             <h2 className="mb-2 text-xl font-semibold">Oturum Gerekli</h2>
-            <p className="text-gray-600">Dashboard için giriş yapmalısınız.</p>
+            <p className="text-gray-600">Dashboard i�in giri� yapmal�s�n�z.</p>
           </div>
         </div>
       </div>
@@ -132,9 +132,9 @@ export function UnifiedDashboard({
           <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
             <div className="flex flex-col items-center text-center">
               <AlertCircle className="mb-4 h-12 w-12 text-red-600" />
-              <h3 className="mb-2 text-lg font-semibold">Yüklenemedi</h3>
+              <h3 className="mb-2 text-lg font-semibold">Y�klenemedi</h3>
               <p className="mb-4 text-sm text-gray-600">
-                {dashboardError.message || 'Bir hata oluştu.'}
+                {dashboardError.message || 'Bir hata olu�tu.'}
               </p>
               <button
                 onClick={() => retry()}

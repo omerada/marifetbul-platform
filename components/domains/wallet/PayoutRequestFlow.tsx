@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * PAYOUT REQUEST FLOW COMPONENT

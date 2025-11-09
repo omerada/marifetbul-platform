@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * UNIFIED WEBSOCKET HOOK - Production Ready

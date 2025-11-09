@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * MODERATION QUEUE CONTAINER

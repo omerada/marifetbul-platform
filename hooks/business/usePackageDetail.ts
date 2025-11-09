@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect } from 'react';
 import { usePackageDetailStore } from '@/lib/core/store';
 import { useAuthState as useAuth } from '../shared/useAuth';

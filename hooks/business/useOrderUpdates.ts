@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * USE ORDER UPDATES HOOK - Real-time Order Updates

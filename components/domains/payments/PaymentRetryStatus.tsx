@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * PAYMENT RETRY STATUS COMPONENT

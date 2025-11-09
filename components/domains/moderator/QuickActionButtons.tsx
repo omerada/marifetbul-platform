@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * QUICK ACTION BUTTONS COMPONENT

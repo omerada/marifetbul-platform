@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * DELIVERY MANAGER COMPONENT

@@ -1,3 +1,5 @@
+'use client';
+
 // Unified Location Hook - consolidating useLocation and useLocationSearch
 'use client';
 

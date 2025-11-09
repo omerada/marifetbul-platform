@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * ORDER ATTACHMENTS VIEWER

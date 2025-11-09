@@ -1,3 +1,5 @@
+'use client';
+
 import { useCallback, useEffect, useState } from 'react';
 import { useSocialStore } from '@/lib/core/store/social';
 import logger from '@/lib/infrastructure/monitoring/logger';

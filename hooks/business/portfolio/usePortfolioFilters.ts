@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Portfolio Filters Hook
  * Sprint 1: Story 4.2 - Portfolio Search & Filter

@@ -1,3 +1,5 @@
+'use client';
+
 import { useCallback, useEffect } from 'react';
 import { useReputationStore } from '@/lib/core/store/domains/reputation/reputationStore';
 import type { SecurityVerification } from '@/types';

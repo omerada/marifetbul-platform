@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ============================================================================
  * SESSION PROVIDER - Centralized Session Management for App

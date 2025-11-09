@@ -1,3 +1,5 @@
+'use client';
+
 import { useCallback, useEffect } from 'react';
 import { useAnalyticsStore } from '@/lib/core/store/domains/analytics/analyticsStore';
 import type {

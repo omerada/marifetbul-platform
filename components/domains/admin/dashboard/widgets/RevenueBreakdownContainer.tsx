@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * REVENUE BREAKDOWN CONTAINER - DATA FETCHING WRAPPER

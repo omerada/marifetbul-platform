@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Dashboard Stats Hook
  * Sprint 1: Dashboard System

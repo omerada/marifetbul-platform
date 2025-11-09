@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * JOB POSTING WIZARD - STEP 3: BUDGET & TIMELINE

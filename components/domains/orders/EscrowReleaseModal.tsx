@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * ESCROW RELEASE MODAL - Escrow Payment Release

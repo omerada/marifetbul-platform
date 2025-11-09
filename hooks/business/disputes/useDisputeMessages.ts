@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * useDisputeMessages Hook
  * Fetch and manage dispute messages with real-time updates

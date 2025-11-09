@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Enhanced profile editing hook with optimized auto-save
  * Handles debouncing, error recovery, and save queue

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * COMMENT BULK ACTIONS COMPONENT

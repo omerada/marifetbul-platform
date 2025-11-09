@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useCallback } from 'react';
 import { apiClient } from '@/lib/infrastructure/api/client';
 import type {

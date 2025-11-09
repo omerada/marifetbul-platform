@@ -12,6 +12,13 @@
 
 # testing
 /coverage
+/test-results
+/.nyc_output
+playwright-report/
+
+# bundle analysis
+/analyze
+.next/analyze
 
 # next.js
 /.next/

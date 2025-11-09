@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * REFUND STATISTICS DASHBOARD COMPONENT

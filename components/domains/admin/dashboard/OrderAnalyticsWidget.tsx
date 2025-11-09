@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Order Analytics Widget
  * Displays comprehensive order metrics using real backend API

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Portfolio Search and Filter Bar
  * Sprint 1: Story 4.3 - Search & Filter UI

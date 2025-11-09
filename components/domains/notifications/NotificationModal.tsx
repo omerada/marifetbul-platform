@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import logger from '@/lib/infrastructure/monitoring/logger';

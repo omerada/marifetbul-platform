@@ -1,4 +1,6 @@
-﻿/**
+'use client';
+
+/**
  * SYSTEM HEALTH WIDGET v4.0.0
  * Sprint 1 - Story 1.3.3 (Phase 2): Migrated to Centralized State
  * Now uses useAdminDashboard hook - no local state or API calls

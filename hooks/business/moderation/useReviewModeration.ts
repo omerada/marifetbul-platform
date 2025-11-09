@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * USE REVIEW MODERATION HOOK

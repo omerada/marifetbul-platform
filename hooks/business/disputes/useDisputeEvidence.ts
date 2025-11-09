@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * useDisputeEvidence Hook
  * Handle evidence upload for disputes

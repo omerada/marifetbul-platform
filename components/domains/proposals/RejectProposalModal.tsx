@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Reject Proposal Modal
  * Modal for rejecting a proposal with reason selection

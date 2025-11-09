@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * USE REVIEW NOTIFICATIONS HOOK

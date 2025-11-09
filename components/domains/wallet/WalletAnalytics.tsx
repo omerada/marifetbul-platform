@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * WALLET ANALYTICS COMPONENT

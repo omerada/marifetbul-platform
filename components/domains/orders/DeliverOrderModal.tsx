@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Modal for freelancer to deliver completed work
  * Includes file upload, delivery notes, and submission

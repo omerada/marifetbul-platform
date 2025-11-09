@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * JOB CREATE FORM COMPONENT

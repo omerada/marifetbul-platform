@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * BALANCE HOOK - Wallet Balance Management

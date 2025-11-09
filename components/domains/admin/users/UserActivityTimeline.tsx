@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * USER ACTIVITY TIMELINE COMPONENT

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * WALLET BALANCE WIDGET - Enhanced Dashboard Widget

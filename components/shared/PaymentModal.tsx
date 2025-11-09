@@ -1,9 +1,9 @@
-﻿/**
+'use client';
+
+/**
  * PAYMENT MODAL - Iyzico Payment Integration
  * Modern payment modal with Iyzico Checkout
  */
-
-'use client';
 
 import { useState } from 'react';
 import { X, CreditCard, Lock, AlertCircle, CheckCircle } from 'lucide-react';
@@ -40,7 +40,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!paymentToken) {
-      onError?.('Ödeme bilgileri eksik');
+      onError?.('�deme bilgileri eksik');
       return;
     }
     const result = await processPayment(paymentToken);
@@ -72,8 +72,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               <CreditCard className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Güvenli Ödeme</h2>
-              <p className="text-sm text-gray-500">Iyzico ile korumalı</p>
+              <h2 className="text-xl font-bold text-gray-900">G�venli �deme</h2>
+              <p className="text-sm text-gray-500">Iyzico ile korumal�</p>
             </div>
           </div>
           <button
@@ -91,9 +91,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 <CheckCircle className="h-6 w-6 text-green-600" />
                 <div>
                   <p className="font-semibold text-green-900">
-                    Ödeme Başarılı!
+                    �deme Ba�ar�l�!
                   </p>
-                  <p className="text-sm text-green-700">İşleminiz tamamlandı</p>
+                  <p className="text-sm text-green-700">��leminiz tamamland�</p>
                 </div>
               </div>
             </div>
@@ -111,17 +111,17 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           )}
           <div className="mb-6 rounded-lg border bg-gray-50 p-4">
             <h3 className="mb-2 text-sm font-medium text-gray-700">
-              İşlem Detayları
+              ��lem Detaylar�
             </h3>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Sipariş</span>
+                <span className="text-gray-600">Sipari�</span>
                 <span className="font-medium text-gray-900">
                   #{orderId.slice(0, 8)}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Açıklama</span>
+                <span className="text-gray-600">A��klama</span>
                 <span className="font-medium text-gray-900">{description}</span>
               </div>
               <div className="border-t pt-2">
@@ -140,10 +140,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             <form onSubmit={handlePayment} className="space-y-4">
               <div className="rounded-lg border border-gray-300 p-4">
                 <p className="text-center text-sm text-gray-600">
-                  Iyzico Ödeme Formu
+                  Iyzico �deme Formu
                 </p>
                 <p className="mt-2 text-center text-xs text-gray-500">
-                  (Geliştirme aşamasında)
+                  (Geli�tirme a�amas�nda)
                 </p>
               </div>
               <button
@@ -154,17 +154,17 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 {isProcessing ? (
                   <span className="flex items-center justify-center gap-2">
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-                    İşleniyor...
+                    ��leniyor...
                   </span>
                 ) : (
-                  `${formatCurrency(amount)} Öde`
+                  `${formatCurrency(amount)} �de`
                 )}
               </button>
               <div className="flex items-start gap-2 text-xs text-gray-600">
                 <Lock className="mt-0.5 h-4 w-4 flex-shrink-0" />
                 <p>
-                  Ödeme bilgileriniz SSL ile şifrelenir ve PCI DSS
-                  standartlarına uygun olarak işlenir.
+                  �deme bilgileriniz SSL ile �ifrelenir ve PCI DSS
+                  standartlar�na uygun olarak i�lenir.
                 </p>
               </div>
             </form>

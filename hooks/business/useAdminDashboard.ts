@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * useAdminDashboard Hook - Production Ready
  *

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * USE PLATFORM STATISTICS HOOK

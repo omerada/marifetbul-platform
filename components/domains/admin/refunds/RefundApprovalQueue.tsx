@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * REFUND APPROVAL QUEUE COMPONENT

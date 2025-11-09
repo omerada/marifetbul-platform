@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Map View Component
  * Harita görünümü bileşeni

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * useDisputeResolution Hook
  * Handle dispute resolution by admin

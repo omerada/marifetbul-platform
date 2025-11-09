@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Portfolio Delete Modal
  * Sprint 1: Story 1.5 - Portfolio CRUD UI

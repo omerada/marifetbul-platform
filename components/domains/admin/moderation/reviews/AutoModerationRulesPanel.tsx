@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * AUTO-MODERATION RULES PANEL

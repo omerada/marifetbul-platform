@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * IYZICO PROVIDER - Iyzico Payment Provider

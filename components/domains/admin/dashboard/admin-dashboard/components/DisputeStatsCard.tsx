@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * DisputeStatsCard Component
  * Sprint 1: Order Dispute System

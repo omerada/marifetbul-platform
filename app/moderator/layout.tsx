@@ -26,12 +26,6 @@ import { moderatorToolsNavigation } from '@/lib/config/navigation';
 import { cn } from '@/lib/utils';
 import { Shield } from 'lucide-react';
 
-export const metadata = {
-  title: 'Moderasyon Araçları - MarifetBul',
-  description: 'İçerik moderasyonu ve kullanıcı yönetimi araçları',
-  robots: 'noindex, nofollow',
-};
-
 export default function ModeratorLayout({
   children,
 }: {

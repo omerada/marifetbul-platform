@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * BANK ACCOUNT FORM COMPONENT

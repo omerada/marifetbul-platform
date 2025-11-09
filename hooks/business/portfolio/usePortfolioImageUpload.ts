@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Portfolio Image Upload Hook
  * Sprint 17: Portfolio Management System

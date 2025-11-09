@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * MODERATOR ACTIVITY TIMELINE COMPONENT

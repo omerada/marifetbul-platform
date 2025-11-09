@@ -1,3 +1,5 @@
+'use client';
+
 // Invoice card component
 'use client';
 

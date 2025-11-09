@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Unified Performance Hook
  * Consolidates useEnhancedPerformance, useSearchPerformance and other performance hooks

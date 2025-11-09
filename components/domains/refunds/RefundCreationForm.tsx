@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * REFUND CREATION FORM COMPONENT

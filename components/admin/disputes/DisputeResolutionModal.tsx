@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * DisputeResolutionModal Component
  * Sprint 1: Order Dispute System - Admin

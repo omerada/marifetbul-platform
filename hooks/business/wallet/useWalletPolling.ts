@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * WALLET POLLING HOOK - Real-time Updates

@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useCallback } from 'react';
 import { ReviewStatus } from '@/types/business/review';
 import type { Review } from '@/types/business/review';

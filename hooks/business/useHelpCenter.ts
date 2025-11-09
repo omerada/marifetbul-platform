@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useCallback } from 'react';
 import { useHelpCenterStore } from '@/lib/core/store/help-center';
 import type { HelpCategory, HelpArticle, PaginationMeta } from '@/types';

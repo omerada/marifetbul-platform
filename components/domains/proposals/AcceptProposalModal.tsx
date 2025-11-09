@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Accept Proposal Modal
  * Modal for accepting a proposal with optional message

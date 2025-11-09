@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * EARNINGS CHART - Earnings Over Time Visualization

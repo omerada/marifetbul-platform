@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * @fileoverview DashboardSection Widget - Dashboard Content Section
  * @module components/domains/dashboard/widgets/DashboardSection

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Modal for employer to approve completed delivery
  * Confirms work acceptance and releases payment from escrow

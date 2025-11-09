@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * IMAGE UPLOAD COMPONENT (CANONICAL FOR IMAGES)

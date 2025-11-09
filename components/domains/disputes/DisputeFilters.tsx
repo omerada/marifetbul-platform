@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * DisputeFilters Component
  * Sprint 1 - Day 1.3: Dispute Filters Component

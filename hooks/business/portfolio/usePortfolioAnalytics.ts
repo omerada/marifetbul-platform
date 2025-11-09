@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Portfolio Analytics Hook
  * Sprint 1: Story 3 - Analytics Dashboard

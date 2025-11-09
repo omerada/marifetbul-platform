@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * FILE UPLOAD COMPONENT (SIMPLE)

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Custom hook for order operations
  * Handles order lifecycle: accept, start, deliver, approve, revision

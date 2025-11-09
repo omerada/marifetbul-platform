@@ -1,3 +1,5 @@
+'use client';
+
 // LEGACY AUTH HOOK - DEPRECATED
 // Use useUnifiedAuthStore from @/lib/core/store/domains/auth/unifiedAuthStore instead
 import { useCallback } from 'react';

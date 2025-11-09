@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * DisputeStatistics Component
  * Sprint 1 - Day 1.2: Dispute Statistics Component

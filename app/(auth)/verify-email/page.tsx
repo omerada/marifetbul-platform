@@ -1,18 +1,5 @@
-import dynamic from 'next/dynamic';
 import type { Metadata } from 'next';
-
-import { Loading } from '@/components/ui';
-
-const VerifyEmailForm = dynamic(
-  () =>
-    import('@/components/forms').then((mod) => ({
-      default: mod.VerifyEmailForm,
-    })),
-  {
-    ssr: false,
-    loading: () => <Loading />,
-  }
-);
+import { VerifyEmailForm } from '@/components/forms';
 
 export const metadata: Metadata = {
   title: 'E-posta Doğrulama | MarifetBul',

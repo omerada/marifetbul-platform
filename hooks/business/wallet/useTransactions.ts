@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * TRANSACTIONS HOOK - Transaction History Management

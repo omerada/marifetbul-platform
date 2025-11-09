@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * ADVANCED SEARCH FILTERS SIDEBAR

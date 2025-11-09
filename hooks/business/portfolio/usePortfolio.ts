@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Portfolio CRUD Hook
  * Sprint 1: Portfolio & Analytics System

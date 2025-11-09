@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * REFUND REQUEST FORM COMPONENT

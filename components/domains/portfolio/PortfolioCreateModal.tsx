@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Portfolio Create Modal
  * Sprint 1: Story 1.1 - Portfolio CRUD UI

@@ -1,3 +1,5 @@
+'use client';
+
 import { useCallback, useEffect } from 'react';
 import { useSEOStore } from '@/lib/core/store/seo';
 import logger from '@/lib/infrastructure/monitoring/logger';

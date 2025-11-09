@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * ADVANCED FILTER PANEL COMPONENT

@@ -3,6 +3,52 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 const { withSentryConfig } = require('@sentry/nextjs');
 
+// ================================================
+// PRODUCTION SAFETY VALIDATION
+// ================================================
+// Validate production environment configuration during build
+if (process.env.NODE_ENV === 'production') {
+  console.log('🔒 Running production safety checks...');
+
+  // Critical validations
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const appEnv = process.env.NEXT_PUBLIC_APP_ENV;
+  const debugEnabled = process.env.NEXT_PUBLIC_ENABLE_DEBUG;
+
+  const errors = [];
+
+  if (appEnv !== 'production') {
+    errors.push(
+      `NEXT_PUBLIC_APP_ENV must be 'production', got: ${appEnv || 'not set'}`
+    );
+  }
+
+  if (debugEnabled === 'true') {
+    errors.push(
+      'Debug mode is ENABLED in production (NEXT_PUBLIC_ENABLE_DEBUG=true)'
+    );
+  }
+
+  if (!apiUrl) {
+    errors.push('API URL is not configured (NEXT_PUBLIC_API_URL is required)');
+  } else if (apiUrl.includes('localhost') || apiUrl.includes('127.0.0.1')) {
+    errors.push(`API URL points to localhost: ${apiUrl}`);
+  } else if (!apiUrl.startsWith('https://')) {
+    errors.push(`API URL must use HTTPS in production: ${apiUrl}`);
+  }
+
+  if (errors.length > 0) {
+    console.error('\n❌❌❌ PRODUCTION BUILD FAILED ❌❌❌\n');
+    errors.forEach((err) => console.error(`  ❌ ${err}`));
+    console.error(
+      '\nFix configuration errors before deploying to production.\n'
+    );
+    process.exit(1);
+  }
+
+  console.log('✅ Production safety checks passed\n');
+}
+
 const nextConfig = {
   // ================================================
   // PRODUCTION OPTIMIZATIONS
@@ -294,6 +340,35 @@ const nextConfig = {
   // TURBOPACK CONFIGURATION (Next.js 16+)
   // ================================================
   turbopack: {},
+
+  // ================================================
+  // WEBPACK CONFIGURATION (Bundle Analysis)
+  // ================================================
+  webpack: (config, { isServer }) => {
+    // Bundle analyzer configuration
+    if (process.env.ANALYZE === 'true') {
+      const { BundleAnalyzerPlugin } = require('@next/bundle-analyzer')();
+      config.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'static',
+          reportFilename: isServer
+            ? '../analyze/server.html'
+            : './analyze/client.html',
+          openAnalyzer: false,
+        })
+      );
+    }
+
+    // Exclude test files from production bundle
+    if (!isServer && process.env.NODE_ENV === 'production') {
+      config.module.rules.push({
+        test: /\.(test|spec)\.(ts|tsx|js|jsx)$/,
+        loader: 'ignore-loader',
+      });
+    }
+
+    return config;
+  },
 };
 
 // ================================================

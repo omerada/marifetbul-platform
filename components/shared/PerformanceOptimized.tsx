@@ -1,3 +1,5 @@
+'use client';
+
 import React, { memo, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import { shallowEqual } from '@/lib/core/store/optimized';

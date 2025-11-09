@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * USER EXPORT BUTTON COMPONENT

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * PackagePerformance Component
  * Displays package-level performance metrics

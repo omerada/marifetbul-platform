@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import logger from '@/lib/infrastructure/monitoring/logger';
 

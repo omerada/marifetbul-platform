@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * REVIEW PROMPT CARD COMPONENT

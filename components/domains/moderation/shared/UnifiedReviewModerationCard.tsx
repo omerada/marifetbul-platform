@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * UNIFIED REVIEW MODERATION CARD

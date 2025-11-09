@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * DISPUTE RESOLUTION PANEL

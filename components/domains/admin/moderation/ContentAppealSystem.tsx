@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Content Appeal System Component
  *

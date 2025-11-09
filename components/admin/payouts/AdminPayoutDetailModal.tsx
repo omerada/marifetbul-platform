@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * ADMIN PAYOUT DETAIL MODAL

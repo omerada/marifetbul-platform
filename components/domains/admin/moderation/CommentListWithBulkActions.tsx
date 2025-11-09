@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * COMMENT LIST WITH BULK ACTIONS

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Portfolio Analytics Dashboard
  * Sprint 1: Story 3.3 - Analytics Dashboard Component

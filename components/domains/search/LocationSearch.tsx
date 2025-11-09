@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Location Search Component
  * Lokasyon bazlı arama bileşeni

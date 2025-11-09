@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect } from 'react';
 import useProfileStore from '@/lib/core/store/profile';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';

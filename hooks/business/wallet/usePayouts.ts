@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * PAYOUTS HOOK - Payout Management Hook

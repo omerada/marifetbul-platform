@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * RELEASE ESCROW FLOW COMPONENT

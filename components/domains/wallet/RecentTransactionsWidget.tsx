@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * RECENT TRANSACTIONS WIDGET - Latest Transactions Display

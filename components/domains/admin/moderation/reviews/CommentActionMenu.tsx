@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * COMMENT ACTION MENU COMPONENT

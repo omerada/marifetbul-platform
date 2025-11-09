@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Portfolio Reorder Hook
  * Sprint 1: Story 2 - Portfolio Reordering with DnD

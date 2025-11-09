@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * SEARCH ANALYTICS WIDGET v5.0.0
  * Sprint 2: Refactored to use StatsCard instead of deprecated MetricCard

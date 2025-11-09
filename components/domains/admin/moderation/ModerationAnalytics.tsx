@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Moderation Analytics Component
  *

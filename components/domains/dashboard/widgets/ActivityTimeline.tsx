@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * @fileoverview ActivityTimeline Widget - Activity Feed Component
  * @module components/domains/dashboard/widgets/ActivityTimeline

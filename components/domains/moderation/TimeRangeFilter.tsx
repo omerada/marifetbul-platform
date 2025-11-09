@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * TIME RANGE FILTER COMPONENT

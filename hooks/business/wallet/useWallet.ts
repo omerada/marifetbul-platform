@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * WALLET HOOK - Main Wallet Management Hook

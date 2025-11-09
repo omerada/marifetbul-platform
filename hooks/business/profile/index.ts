@@ -1,3 +1,5 @@
+'use client';
+
 // ================================================
 // REFACTORED PROFILE HOOKS - RESPONSIBILITY SEPARATION
 // ================================================

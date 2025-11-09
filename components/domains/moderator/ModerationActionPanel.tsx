@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * MODERATION ACTIONS PANEL

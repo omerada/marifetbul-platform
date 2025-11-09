@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * User Growth Analytics Widget
  * Displays user registration trends with real backend API

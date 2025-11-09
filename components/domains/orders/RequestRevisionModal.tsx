@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Modal for employer to request revision on delivered work
  * Sends work back to freelancer with specific revision requirements

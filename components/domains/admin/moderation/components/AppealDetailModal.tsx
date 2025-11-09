@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Appeal Detail Modal Component
  *

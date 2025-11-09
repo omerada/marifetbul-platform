@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * EVIDENCE UPLOAD COMPONENT (DOMAIN-SPECIFIC)

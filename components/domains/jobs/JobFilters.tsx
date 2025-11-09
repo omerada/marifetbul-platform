@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * JobFilters Component
  * Filter controls for job listing page

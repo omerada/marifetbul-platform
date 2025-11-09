@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Portfolio Reorder List Component
  * Sprint 1: Story 2 - Portfolio Reordering with DnD

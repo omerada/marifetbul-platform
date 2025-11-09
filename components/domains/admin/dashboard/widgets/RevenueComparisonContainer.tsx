@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * REVENUE COMPARISON CONTAINER - DATA FETCHING WRAPPER

@@ -1,3 +1,5 @@
+'use client';
+
 // Unified Search Hook - consolidating useAdvancedSearch, useEnhancedSearch functionality
 'use client';
 

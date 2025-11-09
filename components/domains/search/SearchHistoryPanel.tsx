@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * SEARCH HISTORY PANEL COMPONENT

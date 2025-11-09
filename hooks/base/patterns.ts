@@ -1,3 +1,5 @@
+'use client';
+
 // Pattern-based hook creators
 import { useState, useEffect, useCallback } from 'react';
 

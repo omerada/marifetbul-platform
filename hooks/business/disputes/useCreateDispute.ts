@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * useCreateDispute Hook
  * Handle dispute creation with validation and loading states

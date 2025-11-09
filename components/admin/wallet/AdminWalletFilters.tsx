@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * ADMIN WALLET FILTERS COMPONENT

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * TRANSACTION DISPLAY - Unified Component

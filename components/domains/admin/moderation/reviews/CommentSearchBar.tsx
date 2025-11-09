@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * COMMENT SEARCH BAR COMPONENT

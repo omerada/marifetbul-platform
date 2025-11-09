@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Unified Notification Hook - Optimized for Performance
  * Single source of truth for all notification operations

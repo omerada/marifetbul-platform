@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ============================================================================
  * USE SESSION HOOK - React Integration for Session Manager

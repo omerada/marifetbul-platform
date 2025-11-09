@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * BULK REFUND ACTIONS COMPONENT

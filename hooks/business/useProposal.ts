@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUIStore } from '@/lib/core/store/domains/ui/uiStore';

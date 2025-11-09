@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * ADMIN BANK ACCOUNT VERIFICATION TABLE

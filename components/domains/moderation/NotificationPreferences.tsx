@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * NOTIFICATION PREFERENCES COMPONENT
