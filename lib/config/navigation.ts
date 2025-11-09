@@ -143,40 +143,42 @@ export const freelancerDashboardNavigation: NavigationItem[] = [
 
 /**
  * Dashboard Navigation - Employer
+ * @deprecated Use unified /dashboard route instead. These routes redirect automatically.
+ * Keep for backward compatibility with matchPaths
  */
 export const employerDashboardNavigation: NavigationItem[] = [
   {
-    href: '/dashboard/employer',
+    href: '/dashboard',
     label: 'Özet',
     icon: Home,
   },
   {
-    href: '/dashboard/employer/jobs',
+    href: '/dashboard/my-jobs',
     label: 'İş İlanlarım',
     icon: Briefcase,
   },
   {
-    href: '/dashboard/employer/orders',
+    href: '/dashboard/orders',
     label: 'Siparişler',
     icon: Package,
   },
   {
-    href: '/dashboard/employer/proposals',
+    href: '/dashboard/my-proposals',
     label: 'Gelen Teklifler',
     icon: FileText,
   },
   {
-    href: '/dashboard/employer/freelancers',
+    href: '/search?type=freelancers',
     label: 'Freelancerlar',
     icon: User,
   },
   {
-    href: '/dashboard/employer/reviews',
+    href: '/dashboard/reviews',
     label: 'Değerlendirmeler',
     icon: Shield,
   },
   {
-    href: '/dashboard/employer/analytics',
+    href: '/dashboard/analytics',
     label: 'Analitik',
     icon: Grid,
   },

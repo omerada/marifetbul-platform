@@ -154,7 +154,8 @@ async function getUserIdentifier(request: NextRequest): Promise<string> {
     return `ip:${getClientIp(request)}`;
   } catch (error) {
     // On error (timeout, network issue), fallback to IP-based limiting
-    logger.warn('Failed to get user identifier, { fallingbacktoIP, errorerrorinstanceofErrorerrormessageStringerror }),
+    logger.warn('Failed to get user identifier, falling back to IP', {
+      error: error instanceof Error ? error.message : String(error),
     });
     return `ip:${getClientIp(request)}`;
   }
@@ -241,7 +242,10 @@ export function withRateLimit(
     try {
       // Check if should skip
       if (skip && (await skip(request))) {
-        logger.debug('Rate limiting skipped', { urlrequesturl, methodrequestmethod,  });
+        logger.debug('Rate limiting skipped', {
+          urlrequesturl,
+          methodrequestmethod,
+        });
         return await handler(request, context);
       }
 
@@ -252,7 +256,14 @@ export function withRateLimit(
       const result = limiter.checkLimit(identifier);
 
       if (!result.allowed) {
-        logger.warn('Rate limit exceeded', { identifier, urlrequesturl, methodrequestmethod, countresultcount, limitresultlimit, resetAfterresultresetAfter,  });
+        logger.warn('Rate limit exceeded', {
+          identifier,
+          urlrequesturl,
+          methodrequestmethod,
+          countresultcount,
+          limitresultlimit,
+          resetAfterresultresetAfter,
+        });
 
         // Call exceeded callback
         if (onRateLimitExceeded) {

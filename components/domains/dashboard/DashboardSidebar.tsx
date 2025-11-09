@@ -101,20 +101,20 @@ export function DashboardSidebar() {
     {
       label: 'Genel Bakış',
       icon: <LayoutDashboard className="h-5 w-5" />,
-      href: '/dashboard/employer',
+      href: '/dashboard',
       matchPaths: ['/dashboard', '/dashboard/employer'],
     },
     {
       label: 'İş İlanları',
       icon: <Briefcase className="h-5 w-5" />,
-      href: '/dashboard/employer/jobs',
-      matchPaths: ['/dashboard/employer/jobs'],
+      href: '/dashboard/my-jobs',
+      matchPaths: ['/dashboard/my-jobs', '/dashboard/employer/jobs'],
     },
     {
       label: 'Siparişler',
       icon: <Package className="h-5 w-5" />,
-      href: '/dashboard/employer/orders',
-      matchPaths: ['/dashboard/employer/orders'],
+      href: '/dashboard/orders',
+      matchPaths: ['/dashboard/orders', '/dashboard/employer/orders'],
     },
     {
       label: 'İade Taleplerim',
@@ -125,8 +125,8 @@ export function DashboardSidebar() {
     {
       label: 'Teklifler',
       icon: <FileText className="h-5 w-5" />,
-      href: '/dashboard/employer/proposals',
-      matchPaths: ['/dashboard/employer/proposals'],
+      href: '/dashboard/my-proposals',
+      matchPaths: ['/dashboard/my-proposals', '/dashboard/employer/proposals'],
     },
     {
       label: 'Mesajlar',
@@ -137,8 +137,8 @@ export function DashboardSidebar() {
     {
       label: "Freelancer'lar",
       icon: <Users className="h-5 w-5" />,
-      href: '/dashboard/employer/freelancers',
-      matchPaths: ['/dashboard/employer/freelancers'],
+      href: '/search?type=freelancers',
+      matchPaths: ['/search', '/dashboard/employer/freelancers'],
     },
   ];
 

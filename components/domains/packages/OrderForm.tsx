@@ -84,12 +84,19 @@ export function OrderForm({
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      logger.debug('Order submitted:', { servicePackageIdservicePackageid, data, selectedServices, totalcalculateFees }).grandTotal,
+      logger.debug('Order submitted:', {
+        servicePackageId: servicePackage.id,
+        data,
+        selectedServices,
+        total: calculateFees().grandTotal,
       });
 
       onSubmit(data);
     } catch (error) {
-      logger.error('Error submitting order:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Error submitting order:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     } finally {
       setIsSubmitting(false);
     }

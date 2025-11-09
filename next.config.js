@@ -149,6 +149,13 @@ const nextConfig = {
         destination: '/dashboard/orders/:id',
         permanent: true,
       },
+      // Job Proposals Route Consolidation - Sprint: Dashboard Route Consolidation (Nov 9, 2025)
+      // Redirect old employer-specific proposals route to canonical my-jobs route
+      {
+        source: '/dashboard/employer/jobs/:jobId/proposals',
+        destination: '/dashboard/my-jobs/:jobId/proposals',
+        permanent: true,
+      },
       // Moderation page redirects - Sprint 1: Route Consolidation (Nov 8, 2025)
       // Old route group format redirects to new canonical moderator routes
       {

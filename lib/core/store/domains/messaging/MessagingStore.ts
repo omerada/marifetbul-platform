@@ -523,7 +523,13 @@ export const useMessagingStore = create<MessagingState>()(
               response.status === 404
             ) {
               if (process.env.NODE_ENV === 'development') {
-                logger.debug('[MessagingStore] Conversations endpoint not ready or not authenticated, { status, responsestatus });
+                logger.debug(
+                  '[MessagingStore] Conversations endpoint not ready or not authenticated',
+                  {
+                    status,
+                    responseStatus: response.status,
+                  }
+                );
               }
               set((state) => {
                 state.conversations = [];

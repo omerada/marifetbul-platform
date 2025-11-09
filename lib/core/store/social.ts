@@ -162,7 +162,9 @@ export const useSocialStore = create<SocialStore>()(
 
       trackReferral: (data: Partial<ReferralData>) => {
         // In a real app, this would send to analytics
-        logger.debug('Referral tracked', { data, timestampnewDate }).toISOString(),
+        logger.debug('Referral tracked', {
+          data,
+          timestamp: new Date().toISOString(),
         });
       },
 
@@ -301,6 +303,10 @@ function waitForAuthResult(popup: Window | null): Promise<SocialLoginResponse> {
 
 function trackShareEvent(platform: string, data: SocialShareData) {
   // In a real app, this would send to analytics
-  logger.debug('Share tracked', { platform, urldataurl, titledatatitle, timestampnewDate }).toISOString(),
+  logger.debug('Share tracked', {
+    platform,
+    url: data.url,
+    title: data.title,
+    timestamp: new Date().toISOString(),
   });
 }

@@ -17,6 +17,12 @@ export {
   ProposalNotificationBadge,
 } from './ProposalNotificationItem';
 
+// Sprint: Dashboard Route Consolidation - Shared Components
+export { ProposalStatistics } from './ProposalStatistics';
+export type { ProposalStatsData } from './ProposalStatistics';
+export { ProposalFilters } from './ProposalFilters';
+export type { SortOption, FilterStatus } from './ProposalFilters';
+
 // Error Boundary
 export {
   ProposalErrorBoundary,

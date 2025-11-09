@@ -177,7 +177,7 @@ export async function validateToken(
     });
 
     if (!response.ok) {
-      logger.warn('Token validation failed', { statusresponsestatus,  });
+      logger.warn('Token validation failed', { status: response.status });
       return null;
     }
 
@@ -282,7 +282,7 @@ export function normalizeRole(role: string): UserRole {
 
   // Default to FREELANCER for unknown roles
   // (Backend doesn't have 'USER' role, FREELANCER is the default user type)
-  logger.warn('Unknown role, { defaultingtoFREELANCER, role });
+  logger.warn('Unknown role, defaulting to FREELANCER', { role });
   return 'FREELANCER';
 }
 

@@ -29,7 +29,10 @@ export async function initializeProductionApp() {
 
     // In development, show optimization status
     if (process.env.NODE_ENV === 'development') {
-      logger.debug('🔧 Production Optimization Status:', { deploymentReadydeploymentResultreadyForDeployment, optimizationScoredeploymentResultreportoverallScore, nextStepsdeploymentResultnextStepsslice0, 3 }),
+      logger.debug('🔧 Production Optimization Status:', {
+        deploymentReady: deploymentResult.readyForDeployment,
+        optimizationScore: deploymentResult.report.overallScore,
+        nextSteps: deploymentResult.nextSteps.slice(0, 3),
       });
     }
 
