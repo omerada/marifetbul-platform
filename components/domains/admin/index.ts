@@ -10,8 +10,12 @@ export { default as AdminHeader } from './layout/AdminHeader';
 export { default as AdminFooter } from './layout/AdminFooter';
 export { default as AdminSidebar } from './layout/AdminSidebar';
 
-// Dashboard Components (Legacy - use AdminDashboardView from @/components/domains/dashboard/views)
-// REMOVED: export { default as AdminDashboard } - DEPRECATED, use AdminDashboardView instead
+// ================================================
+// DASHBOARD COMPONENTS
+// ================================================
+// NOTE: Use AdminDashboardView from @/components/domains/dashboard/views
+// for unified dashboard implementation
+
 export { default as AdminAnalytics } from './dashboard/AdminAnalytics';
 export { default as AdminReports } from './dashboard/AdminReports';
 export { default as SystemHealthWidget } from './dashboard/SystemHealthWidget';

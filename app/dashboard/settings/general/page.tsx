@@ -34,6 +34,12 @@ import {
 import Link from 'next/link';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { useSettings } from '@/hooks/business/useSettings';
+import { useUserPreferences } from '@/hooks/business/useUserPreferences';
+import {
+  LANGUAGES,
+  COMMON_TIMEZONES,
+  type SupportedLanguage,
+} from '@/lib/api/user-preferences';
 
 interface UserProfile {
   firstName: string;
@@ -48,6 +54,17 @@ export default function GeneralSettingsPage() {
   const { user } = useAuthStore();
   const { updateProfile, isUpdatingProfile, profileError, clearErrors } =
     useSettings();
+
+  const {
+    preferences,
+    updateLanguage,
+    updateTimezone,
+    fetchPreferences,
+    detectAndApplyBrowserSettings,
+    isLoading: isPreferencesLoading,
+    browserSettings,
+    isUsingBrowserSettings,
+  } = useUserPreferences();
 
   const [success, setSuccess] = useState(false);
 
@@ -74,6 +91,11 @@ export default function GeneralSettingsPage() {
       });
     }
   }, [user]);
+
+  // Load user preferences
+  useEffect(() => {
+    fetchPreferences();
+  }, [fetchPreferences]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -245,15 +267,36 @@ export default function GeneralSettingsPage() {
           </div>
         </Card>
 
-        {/* Language & Region (Placeholder) */}
-        <Card className="border-gray-200 bg-gray-50 p-6">
-          <div className="mb-6 flex items-center space-x-3">
-            <div className="rounded-lg bg-purple-100 p-2">
-              <Globe className="h-5 w-5 text-purple-600" />
+        {/* Language & Region */}
+        <Card className="p-6">
+          <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="rounded-lg bg-purple-100 p-2">
+                <Globe className="h-5 w-5 text-purple-600" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Dil ve Bölge
+                </h2>
+                {browserSettings && !isUsingBrowserSettings && (
+                  <p className="text-xs text-gray-500">
+                    Tarayıcı: {browserSettings.language.toUpperCase()} •{' '}
+                    {browserSettings.timezone}
+                  </p>
+                )}
+              </div>
             </div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              Dil ve Bölge
-            </h2>
+            {browserSettings && !isUsingBrowserSettings && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={detectAndApplyBrowserSettings}
+                disabled={isPreferencesLoading}
+              >
+                <Globe className="mr-2 h-4 w-4" />
+                Tarayıcı Ayarlarını Kullan
+              </Button>
+            )}
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -262,13 +305,21 @@ export default function GeneralSettingsPage() {
                 Dil
               </label>
               <select
-                disabled
-                className="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-500"
+                value={preferences?.language || 'tr'}
+                onChange={(e) =>
+                  updateLanguage(e.target.value as SupportedLanguage)
+                }
+                disabled={isPreferencesLoading}
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-purple-500 focus:ring-2 focus:ring-purple-500 focus:outline-none disabled:bg-gray-100 disabled:text-gray-500"
               >
-                <option>Türkçe (Varsayılan)</option>
+                {LANGUAGES.map((lang) => (
+                  <option key={lang.code} value={lang.code}>
+                    {lang.flag} {lang.name}
+                  </option>
+                ))}
               </select>
               <p className="mt-1 text-xs text-gray-500">
-                Çoklu dil desteği yakında eklenecek
+                Arayüz dili tercihiniz
               </p>
             </div>
 
@@ -277,16 +328,33 @@ export default function GeneralSettingsPage() {
                 Saat Dilimi
               </label>
               <select
-                disabled
-                className="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-gray-500"
+                value={preferences?.timezone || 'Europe/Istanbul'}
+                onChange={(e) => updateTimezone(e.target.value)}
+                disabled={isPreferencesLoading}
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-purple-500 focus:ring-2 focus:ring-purple-500 focus:outline-none disabled:bg-gray-100 disabled:text-gray-500"
               >
-                <option>Europe/Istanbul (GMT+3)</option>
+                {COMMON_TIMEZONES.map((tz) => (
+                  <option key={tz.value} value={tz.value}>
+                    {tz.label}
+                  </option>
+                ))}
               </select>
               <p className="mt-1 text-xs text-gray-500">
-                Saat dilimi seçimi yakında eklenecek
+                Tarih ve saat görünümü için kullanılır
               </p>
             </div>
           </div>
+
+          {isUsingBrowserSettings && (
+            <div className="mt-4 rounded-lg bg-green-50 p-3">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <p className="text-sm text-green-800">
+                  Tarayıcı ayarlarınız kullanılıyor
+                </p>
+              </div>
+            </div>
+          )}
         </Card>
 
         {/* Error/Success Messages */}

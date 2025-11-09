@@ -54,7 +54,7 @@ export function CommentList({
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [showForm, setShowForm] = useState(false);
   const [reportModalOpen, setReportModalOpen] = useState(false);
-  const [reportingCommentId, setReportingCommentId] = useState<number | null>(
+  const [reportingComment, setReportingComment] = useState<BlogComment | null>(
     null
   );
 
@@ -114,7 +114,11 @@ export function CommentList({
       const data = Array.isArray(response) ? response : response.content || [];
       setComments(data);
     } catch (err) {
-      logger.error('Failed to fetch comments', { postId, error: err });
+      logger.error(
+        'Failed to fetch comments',
+        err instanceof Error ? err : new Error(String(err)),
+        { postId }
+      );
       setError('Yorumlar yüklenemedi.');
     } finally {
       setIsLoading(false);
@@ -148,8 +152,26 @@ export function CommentList({
   };
 
   const handleReport = (commentId: number) => {
-    setReportingCommentId(commentId);
-    setReportModalOpen(true);
+    // Find the comment being reported (recursively search in nested replies)
+    const findComment = (
+      commentsList: BlogComment[],
+      id: number
+    ): BlogComment | null => {
+      for (const comment of commentsList) {
+        if (comment.id === id) return comment;
+        if (comment.replies) {
+          const found = findComment(comment.replies, id);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    const comment = findComment(comments, commentId);
+    if (comment) {
+      setReportingComment(comment);
+      setReportModalOpen(true);
+    }
   };
 
   // ================================================
@@ -286,23 +308,25 @@ export function CommentList({
         />
       )} */}
 
-      {/* Report Comment Modal - Consolidated from ReportCommentModal */}
-      {reportingCommentId && (
+      {/* Report Comment Modal - Production Ready */}
+      {reportingComment && (
         <CommentReportModal
-          commentId={reportingCommentId}
-          commentAuthor="User" // TODO: Get from comment data
-          commentPreview="Comment preview" // TODO: Get from comment data
+          commentId={reportingComment.id}
+          commentAuthor={
+            reportingComment.author.fullName || reportingComment.author.username
+          }
+          commentPreview={reportingComment.content.substring(0, 100)}
           isOpen={reportModalOpen}
           onClose={() => {
             setReportModalOpen(false);
-            setReportingCommentId(null);
+            setReportingComment(null);
           }}
           onSuccess={() => {
             logger.info('Comment reported successfully', {
-              commentId: reportingCommentId,
+              commentId: reportingComment.id,
             });
             setReportModalOpen(false);
-            setReportingCommentId(null);
+            setReportingComment(null);
           }}
         />
       )}

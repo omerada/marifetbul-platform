@@ -47,7 +47,7 @@ import { Card } from '@/components/ui/Card';
 import { Button, Loading } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import DisputeResolutionModal from '@/components/domains/admin/disputes/DisputeResolutionModal';
-import DisputeMessages from '@/components/domains/disputes/DisputeMessages';
+import { DisputeMessaging } from '@/components/domains/disputes';
 import {
   ArrowLeft,
   Calendar,
@@ -84,7 +84,7 @@ export default function AdminDisputeDetailPage({
   params,
 }: DisputeDetailPageProps) {
   const router = useRouter();
-  const { user } = useAuthState();
+  useAuthState(); // Ensure admin authenticated
   const [disputeId, setDisputeId] = useState<string>('');
   const [dispute, setDispute] = useState<DisputeResponse | null>(null);
   const [order, setOrder] = useState<OrderResponse | null>(null);
@@ -406,10 +406,7 @@ export default function AdminDisputeDetailPage({
                 </h2>
               </div>
               <div className="h-[600px]">
-                <DisputeMessages
-                  disputeId={disputeId}
-                  currentUserId={user?.id || 'admin'}
-                />
+                <DisputeMessaging disputeId={disputeId} />
               </div>
             </Card>
           </div>

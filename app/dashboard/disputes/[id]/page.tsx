@@ -39,7 +39,7 @@ import {
 import { Card } from '@/components/ui/Card';
 import { Button, Loading } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
-import DisputeMessages from '@/components/domains/disputes/DisputeMessages';
+import { DisputeMessaging } from '@/components/domains/disputes';
 import {
   ArrowLeft,
   Calendar,
@@ -74,7 +74,7 @@ export default function UserDisputeDetailPage({
   params,
 }: UserDisputeDetailPageProps) {
   const router = useRouter();
-  const { user } = useAuthState();
+  useAuthState(); // Ensure authenticated
   const [disputeId, setDisputeId] = useState<string>('');
   const [dispute, setDispute] = useState<DisputeResponse | null>(null);
   const [evidence, setEvidence] = useState<DisputeEvidence[]>([]);
@@ -342,10 +342,7 @@ export default function UserDisputeDetailPage({
                 </h2>
               </div>
               <div className="h-[600px]">
-                <DisputeMessages
-                  disputeId={disputeId}
-                  currentUserId={user?.id || 'anonymous'}
-                />
+                <DisputeMessaging disputeId={disputeId} />
               </div>
             </Card>
           </div>

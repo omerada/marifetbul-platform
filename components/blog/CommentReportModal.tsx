@@ -2,25 +2,28 @@
 
 /**
  * ================================================
- * COMMENT REPORT MODAL COMPONENT
+ * COMMENT REPORT MODAL - PRODUCTION READY
  * ================================================
- * Modal for reporting inappropriate comments
- * Includes reason selection and optional details
+ * Unified modal for reporting inappropriate comments
+ * Uses real backend API integration
  *
- * @author MarifetBul Development Team
- * @version 1.0.0
+ * Sprint 1: Blog Comment Moderation Completion
+ * @version 2.0.0 - Production Ready
  */
 
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { X, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import {
-  useCommentReports,
-  REPORT_REASON_LABELS,
-  REPORT_REASON_DESCRIPTIONS,
-  type CommentReportReason,
-} from '@/hooks/business/useCommentReports';
+  type FlagCategory,
+  type FlagCommentRequest,
+  getCategoryLabel,
+  flagComment as apiFlagComment,
+} from '@/lib/api/comment-flagging';
+import type { BlogCommentDto } from '@/types';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES
@@ -28,12 +31,56 @@ import {
 
 export interface CommentReportModalProps {
   commentId: number;
-  commentAuthor: string;
-  commentPreview: string;
+  comment?: BlogCommentDto;
+  commentAuthor?: string;
+  commentPreview?: string;
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
 }
+
+// Flag categories mapping for UI
+const FLAG_CATEGORIES: Array<{
+  value: FlagCategory;
+  label: string;
+  description: string;
+}> = [
+  {
+    value: 'SPAM' as FlagCategory,
+    label: 'Spam veya Reklam',
+    description: 'İstenmeyen reklam, spam veya tekrarlayan içerik',
+  },
+  {
+    value: 'HARASSMENT' as FlagCategory,
+    label: 'Taciz veya Zorbalık',
+    description: 'Taciz, zorbalık veya tehdit içeren yorumlar',
+  },
+  {
+    value: 'OFFENSIVE' as FlagCategory,
+    label: 'Rahatsız Edici İçerik',
+    description: 'Hakaret, küfür veya saldırgan dil',
+  },
+  {
+    value: 'OFF_TOPIC' as FlagCategory,
+    label: 'Konu Dışı',
+    description: 'Konu ile alakasız veya ilgisiz içerik',
+  },
+  {
+    value: 'MISINFORMATION' as FlagCategory,
+    label: 'Yanlış Bilgi',
+    description: 'Kasıtlı olarak yanlış veya yanıltıcı bilgi',
+  },
+  {
+    value: 'INAPPROPRIATE' as FlagCategory,
+    label: 'Uygunsuz İçerik',
+    description: 'Genel olarak uygunsuz içerik',
+  },
+  {
+    value: 'OTHER' as FlagCategory,
+    label: 'Diğer',
+    description: 'Yukarıdakilerden hiçbiri',
+  },
+];
 
 // ================================================
 // COMPONENT
@@ -41,6 +88,7 @@ export interface CommentReportModalProps {
 
 export function CommentReportModal({
   commentId,
+  comment,
   commentAuthor,
   commentPreview,
   isOpen,
@@ -51,16 +99,21 @@ export function CommentReportModal({
   // STATE
   // ================================================
 
-  const [selectedReason, setSelectedReason] =
-    useState<CommentReportReason | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<FlagCategory | null>(
+    null
+  );
   const [details, setDetails] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   // ================================================
-  // HOOKS
+  // DERIVED VALUES
   // ================================================
 
-  const { isSubmitting, error, success, reportComment, resetState } =
-    useCommentReports();
+  const author = comment?.authorName || commentAuthor || 'Kullanıcı';
+  const preview =
+    comment?.content || commentPreview || 'Yorum içeriği yüklenemedi';
 
   // ================================================
   // EFFECTS
@@ -69,13 +122,14 @@ export function CommentReportModal({
   // Reset form when modal opens/closes
   useEffect(() => {
     if (isOpen) {
-      setSelectedReason(null);
+      setSelectedCategory(null);
       setDetails('');
-      resetState();
+      setError(null);
+      setSuccess(false);
     }
-  }, [isOpen, resetState]);
+  }, [isOpen]);
 
-  // Handle success
+  // Handle success - close after 2 seconds
   useEffect(() => {
     if (success) {
       const timer = setTimeout(() => {
@@ -107,16 +161,56 @@ export function CommentReportModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedReason) return;
+    if (!selectedCategory) {
+      setError('Lütfen bir kategori seçin');
+      return;
+    }
 
-    const result = await reportComment({
-      commentId,
-      reason: selectedReason,
-      details: details.trim() || undefined,
-    });
+    if (selectedCategory === 'OTHER' && !details.trim()) {
+      setError('Lütfen "Diğer" kategorisi için açıklama girin');
+      return;
+    }
 
-    if (result) {
-      // Success handled by useEffect
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const request: FlagCommentRequest = {
+        category: selectedCategory,
+        reason: getCategoryLabel(selectedCategory),
+        customReason: details.trim() || undefined,
+      };
+
+      await apiFlagComment(commentId.toString(), request);
+
+      logger.info('Comment flagged successfully', {
+        commentId,
+        category: selectedCategory,
+      });
+
+      toast.success('Şikayetiniz Alındı', {
+        description: 'Moderatörlerimiz en kısa sürede inceleyecektir.',
+      });
+
+      setSuccess(true);
+    } catch (err) {
+      logger.error(
+        'Failed to flag comment',
+        err instanceof Error ? err : new Error(String(err)),
+        {
+          commentId,
+        }
+      );
+
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Şikayet gönderilemedi. Lütfen tekrar deneyin.';
+
+      setError(message);
+      toast.error('Hata', { description: message });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -136,8 +230,12 @@ export function CommentReportModal({
   // COMPUTED
   // ================================================
 
-  const canSubmit = selectedReason && !isSubmitting;
-  const showDetailsField = selectedReason === 'other' || details.length > 0;
+  const canSubmit =
+    selectedCategory &&
+    !isSubmitting &&
+    (selectedCategory !== 'OTHER' || details.trim().length >= 10);
+
+  const showDetailsField = selectedCategory === 'OTHER' || details.length > 0;
 
   // ================================================
   // RENDER - Not Open
@@ -195,7 +293,7 @@ export function CommentReportModal({
                 Yorumu Şikayet Et
               </h2>
               <p className="text-sm text-gray-500">
-                @{commentAuthor} kullanıcısının yorumu
+                @{author} kullanıcısının yorumu
               </p>
             </div>
           </div>
@@ -203,6 +301,7 @@ export function CommentReportModal({
             onClick={handleClose}
             className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
             disabled={isSubmitting}
+            aria-label="Kapat"
           >
             <X className="h-5 w-5" />
           </button>
@@ -216,7 +315,7 @@ export function CommentReportModal({
               Şikayet edilen yorum:
             </p>
             <p className="mt-2 line-clamp-3 text-sm text-gray-600">
-              &ldquo;{commentPreview}&rdquo;
+              &ldquo;{preview}&rdquo;
             </p>
           </div>
 
@@ -227,44 +326,42 @@ export function CommentReportModal({
             </div>
           )}
 
-          {/* Reason Selection */}
+          {/* Category Selection */}
           <div className="mb-6">
             <label className="mb-3 block text-sm font-medium text-gray-900">
-              Şikayet Nedeni *
+              Şikayet Kategorisi *
             </label>
             <div className="space-y-2">
-              {(Object.keys(REPORT_REASON_LABELS) as CommentReportReason[]).map(
-                (reason) => (
-                  <label
-                    key={reason}
-                    className={`flex cursor-pointer items-start gap-3 rounded-lg border-2 p-4 transition-colors ${
-                      selectedReason === reason
-                        ? 'border-red-500 bg-red-50'
-                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="reason"
-                      value={reason}
-                      checked={selectedReason === reason}
-                      onChange={(e) =>
-                        setSelectedReason(e.target.value as CommentReportReason)
-                      }
-                      className="mt-0.5 h-4 w-4 text-red-600 focus:ring-2 focus:ring-red-500"
-                      disabled={isSubmitting}
-                    />
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-900">
-                        {REPORT_REASON_LABELS[reason]}
-                      </div>
-                      <div className="mt-1 text-sm text-gray-600">
-                        {REPORT_REASON_DESCRIPTIONS[reason]}
-                      </div>
+              {FLAG_CATEGORIES.map((category) => (
+                <label
+                  key={category.value}
+                  className={`flex cursor-pointer items-start gap-3 rounded-lg border-2 p-4 transition-colors ${
+                    selectedCategory === category.value
+                      ? 'border-red-500 bg-red-50'
+                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="category"
+                    value={category.value}
+                    checked={selectedCategory === category.value}
+                    onChange={(e) =>
+                      setSelectedCategory(e.target.value as FlagCategory)
+                    }
+                    className="mt-0.5 h-4 w-4 text-red-600 focus:ring-2 focus:ring-red-500"
+                    disabled={isSubmitting}
+                  />
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-900">
+                      {category.label}
                     </div>
-                  </label>
-                )
-              )}
+                    <div className="mt-1 text-sm text-gray-600">
+                      {category.description}
+                    </div>
+                  </div>
+                </label>
+              ))}
             </div>
           </div>
 
@@ -272,7 +369,7 @@ export function CommentReportModal({
           {showDetailsField && (
             <div className="mb-6">
               <label className="mb-2 block text-sm font-medium text-gray-900">
-                Ek Açıklama {selectedReason === 'other' && '*'}
+                Ek Açıklama {selectedCategory === 'OTHER' && '*'}
               </label>
               <textarea
                 value={details}
@@ -281,6 +378,7 @@ export function CommentReportModal({
                 rows={4}
                 className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm transition-colors focus:border-red-500 focus:ring-2 focus:ring-red-500 focus:outline-none"
                 disabled={isSubmitting}
+                maxLength={500}
               />
               <p className="mt-1 text-xs text-gray-500">
                 {details.length} / 500 karakter

@@ -537,16 +537,10 @@ export {
 } from './useCommentSubmission';
 export { useCommentActions } from './useCommentActions';
 export { type UseCommentActionsReturn } from './useCommentActions';
-export {
-  useCommentReports,
-  REPORT_REASON_LABELS,
-  REPORT_REASON_DESCRIPTIONS,
-} from './useCommentReports';
-export {
-  type CommentReportReason,
-  type CommentReportData,
-  type UseCommentReportsReturn,
-} from './useCommentReports';
+
+// ============================================================================
+// COMMENT MODERATION (Sprint 1 - Comment Moderation Completion)
+// ============================================================================
 export { useCommentModeration } from './useCommentModeration';
 export {
   type CommentModerationStatus,
@@ -663,3 +657,25 @@ export default BusinessHooks;
 // ================================================
 export * from './jobs'; // ✅ Job Posting System
 export * from './proposals'; // ✅ Proposal System - Story 2
+
+// ================================================
+// SECURITY & SETTINGS (Sprint 4 - Security & Settings)
+// ================================================
+export { useSettings } from './useSettings';
+export { useTwoFactor } from './useTwoFactor';
+export { useSessions } from './useSessions';
+export type { UseSessionsReturn } from './useSessions';
+export { useUserPreferences } from './useUserPreferences';
+export type { UseUserPreferencesReturn } from './useUserPreferences';
+
+// ================================================
+// DISPUTES (Sprint 4 - Story 4 & Story 5)
+// ================================================
+export { useDisputeEvidence } from './useDisputeEvidence';
+export type {
+  UploadProgress,
+  UseDisputeEvidenceReturn,
+} from './useDisputeEvidence';
+
+export { useDisputeMessages } from './useDisputeMessages';
+export type { UseDisputeMessagesReturn } from './useDisputeMessages';

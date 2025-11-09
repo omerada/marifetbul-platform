@@ -15,10 +15,10 @@ export type {
 
 // Other components
 export { DisputeCreationModal } from './DisputeCreationModal';
-export { EvidenceUpload } from './EvidenceUpload';
+export { EvidenceUploadV2 } from './EvidenceUploadV2';
 export { DisputeTimeline, createTimelineEvents } from './DisputeTimeline';
 export type { DisputeEvent, DisputeEventType } from './DisputeTimeline';
 export { DisputeCard } from './DisputeCard';
 export { DisputeStatistics } from './DisputeStatistics';
 export { DisputeFilters } from './DisputeFilters';
-export { default as DisputeMessages } from './DisputeMessages';
+export { default as DisputeMessaging } from './DisputeMessaging';

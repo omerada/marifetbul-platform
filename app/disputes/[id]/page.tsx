@@ -52,6 +52,8 @@ import { useWebSocket } from '@/hooks';
 import {
   DisputeTimeline,
   createTimelineEvents,
+  EvidenceUploadV2,
+  DisputeMessaging,
 } from '@/components/domains/disputes';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
@@ -85,6 +87,9 @@ export default function DisputeDetailPage() {
   const [refund, setRefund] = useState<RefundDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'overview' | 'messages'>(
+    'overview'
+  );
 
   const socket = useWebSocket();
 
@@ -255,310 +260,366 @@ export default function DisputeDetailPage() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Main Content - 2 columns */}
-        <div className="space-y-6 lg:col-span-2">
-          {/* Status Card */}
-          <Card
-            className={`border-2 p-6 ${isResolved ? 'border-green-300 bg-green-50' : 'border-yellow-300 bg-yellow-50'}`}
+      {/* Tabs */}
+      <div className="mb-6 border-b border-gray-200">
+        <nav className="-mb-px flex gap-8">
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`border-b-2 pb-4 text-sm font-medium transition-colors ${
+              activeTab === 'overview'
+                ? 'border-purple-600 text-purple-600'
+                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+            }`}
           >
-            <div className="flex items-start gap-3">
-              <div
-                className={`flex h-10 w-10 items-center justify-center rounded-full ${isResolved ? 'bg-green-200' : 'bg-yellow-200'}`}
-              >
-                {isResolved ? (
-                  <CheckCircle className="h-5 w-5 text-green-700" />
-                ) : (
-                  <Clock className="h-5 w-5 text-yellow-700" />
-                )}
-              </div>
-              <div className="flex-1">
-                <h2
-                  className={`text-lg font-semibold ${isResolved ? 'text-green-900' : 'text-yellow-900'}`}
+            Genel Bakış
+          </button>
+          <button
+            onClick={() => setActiveTab('messages')}
+            className={`border-b-2 pb-4 text-sm font-medium transition-colors ${
+              activeTab === 'messages'
+                ? 'border-purple-600 text-purple-600'
+                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+            }`}
+          >
+            Mesajlaşma
+          </button>
+        </nav>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'messages' ? (
+        <DisputeMessaging disputeId={disputeId} />
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-3">
+          {/* Main Content - 2 columns */}
+          <div className="space-y-6 lg:col-span-2">
+            {/* Status Card */}
+            <Card
+              className={`border-2 p-6 ${isResolved ? 'border-green-300 bg-green-50' : 'border-yellow-300 bg-yellow-50'}`}
+            >
+              <div className="flex items-start gap-3">
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-full ${isResolved ? 'bg-green-200' : 'bg-yellow-200'}`}
                 >
-                  {isResolved ? 'İtiraz Çözümlendi' : 'İtiraz İnceleniyor'}
-                </h2>
-                <p
-                  className={`mt-1 text-sm ${isResolved ? 'text-green-700' : 'text-yellow-700'}`}
-                >
-                  {isResolved
-                    ? 'Bu itiraz yönetim ekibi tarafından çözümlenmiştir.'
-                    : 'İtirazınız inceleniyor. Lütfen bekleyin.'}
-                </p>
-              </div>
-            </div>
-          </Card>
-
-          {/* Dispute Information */}
-          <Card className="p-6">
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">
-              <AlertCircle className="mr-2 inline-block h-5 w-5" />
-              İtiraz Bilgileri
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-600">
-                  İtiraz Nedeni
-                </label>
-                <p className="text-gray-900">
-                  {disputeReasonLabels[dispute.reason] || dispute.reason}
-                </p>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-600">
-                  Açıklama
-                </label>
-                <p className="whitespace-pre-wrap text-gray-900">
-                  {dispute.description}
-                </p>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-600">
-                  İtiraz Açan
-                </label>
-                <p className="text-gray-900">{dispute.raisedByUserFullName}</p>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-600">
-                  Oluşturulma Tarihi
-                </label>
-                <p className="text-gray-900">{formatDate(dispute.createdAt)}</p>
-              </div>
-            </div>
-          </Card>
-
-          {/* Evidence Gallery */}
-          {dispute.evidenceUrls && dispute.evidenceUrls.length > 0 && (
-            <Card className="p-6">
-              <h2 className="mb-4 text-lg font-semibold text-gray-900">
-                <ImageIcon className="mr-2 inline-block h-5 w-5" />
-                Kanıtlar ({dispute.evidenceUrls.length})
-              </h2>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                {dispute.evidenceUrls.map((url, index) => (
-                  <a
-                    key={index}
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group relative aspect-square overflow-hidden rounded-lg border border-gray-200 bg-gray-100 transition-transform hover:scale-105"
+                  {isResolved ? (
+                    <CheckCircle className="h-5 w-5 text-green-700" />
+                  ) : (
+                    <Clock className="h-5 w-5 text-yellow-700" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <h2
+                    className={`text-lg font-semibold ${isResolved ? 'text-green-900' : 'text-yellow-900'}`}
                   >
-                    <div className="relative h-full w-full">
-                      <Image
-                        src={url}
-                        alt={`Kanıt ${index + 1}`}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
-                      <FileText className="h-6 w-6 text-white" />
-                    </div>
-                  </a>
-                ))}
+                    {isResolved ? 'İtiraz Çözümlendi' : 'İtiraz İnceleniyor'}
+                  </h2>
+                  <p
+                    className={`mt-1 text-sm ${isResolved ? 'text-green-700' : 'text-yellow-700'}`}
+                  >
+                    {isResolved
+                      ? 'Bu itiraz yönetim ekibi tarafından çözümlenmiştir.'
+                      : 'İtirazınız inceleniyor. Lütfen bekleyin.'}
+                  </p>
+                </div>
               </div>
             </Card>
-          )}
 
-          {/* Resolution Details */}
-          {isResolved && dispute.resolution && (
-            <Card className="border-2 border-green-300 bg-green-50 p-6">
-              <h2 className="mb-4 text-lg font-semibold text-green-900">
-                <CheckCircle className="mr-2 inline-block h-5 w-5" />
-                Çözüm Detayları
+            {/* Dispute Information */}
+            <Card className="p-6">
+              <h2 className="mb-4 text-lg font-semibold text-gray-900">
+                <AlertCircle className="mr-2 inline-block h-5 w-5" />
+                İtiraz Bilgileri
               </h2>
               <div className="space-y-4">
-                {dispute.resolutionType && (
-                  <div>
-                    <label className="text-sm font-medium text-green-800">
-                      Çözüm Tipi
-                    </label>
-                    <p className="text-green-900">
-                      {disputeResolutionTypeLabels[dispute.resolutionType] ||
-                        dispute.resolutionType}
-                    </p>
-                  </div>
-                )}
-
-                <div>
-                  <label className="text-sm font-medium text-green-800">
-                    Çözüm Açıklaması
-                  </label>
-                  <p className="whitespace-pre-wrap text-green-900">
-                    {dispute.resolution}
-                  </p>
-                </div>
-
-                {dispute.refundAmount !== null && dispute.refundAmount > 0 && (
-                  <>
-                    <div>
-                      <label className="text-sm font-medium text-green-800">
-                        İade Tutarı
-                      </label>
-                      <p className="text-xl font-semibold text-green-900">
-                        {formatCurrency(dispute.refundAmount)}
-                      </p>
-                    </div>
-
-                    <div className="rounded-lg border border-green-300 bg-green-100 p-4">
-                      <div className="flex gap-3">
-                        <CheckCircle className="h-5 w-5 flex-shrink-0 text-green-600" />
-                        <div className="flex-1 text-sm">
-                          <p className="font-medium text-green-900">
-                            İade İşlendi
-                          </p>
-                          <p className="mt-1 text-green-700">
-                            İade tutarı cüzdanınıza otomatik olarak
-                            aktarılmıştır. Detaylar için{' '}
-                            <Link
-                              href="/dashboard/wallet"
-                              className="font-medium underline hover:text-green-800"
-                            >
-                              Cüzdan
-                            </Link>{' '}
-                            sayfanızı kontrol edebilirsiniz.
-                          </p>
-                          {refund && (
-                            <div className="mt-3 space-y-1 border-t border-green-300 pt-3">
-                              <p className="text-xs text-green-700">
-                                <span className="font-medium">İade ID:</span>{' '}
-                                {refund.id.slice(0, 8)}...
-                              </p>
-                              <p className="text-xs text-green-700">
-                                <span className="font-medium">Durum:</span>{' '}
-                                {refund.status}
-                              </p>
-                              {refund.processedAt && (
-                                <p className="text-xs text-green-700">
-                                  <span className="font-medium">İşlenme:</span>{' '}
-                                  {formatDate(refund.processedAt)}
-                                </p>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {dispute.resolvedByUserFullName && (
-                  <div>
-                    <label className="text-sm font-medium text-green-800">
-                      Çözümleyen
-                    </label>
-                    <p className="text-green-900">
-                      {dispute.resolvedByUserFullName}
-                    </p>
-                  </div>
-                )}
-
-                {dispute.resolvedAt && (
-                  <div>
-                    <label className="text-sm font-medium text-green-800">
-                      Çözüm Tarihi
-                    </label>
-                    <p className="text-green-900">
-                      {formatDate(dispute.resolvedAt)}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </Card>
-          )}
-        </div>
-
-        {/* Sidebar - 1 column */}
-        <div className="space-y-6">
-          {/* Order Information */}
-          {order && (
-            <Card className="p-6">
-              <h2 className="mb-4 text-lg font-semibold text-gray-900">
-                <Package className="mr-2 inline-block h-5 w-5" />
-                Sipariş Bilgileri
-              </h2>
-              <div className="space-y-3">
                 <div>
                   <label className="text-sm font-medium text-gray-600">
-                    Sipariş No
-                  </label>
-                  <p className="text-gray-900">{order.orderNumber}</p>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-600">
-                    Durum
+                    İtiraz Nedeni
                   </label>
                   <p className="text-gray-900">
-                    {orderApi.getOrderStatusLabel(order.status)}
+                    {disputeReasonLabels[dispute.reason] || dispute.reason}
                   </p>
                 </div>
 
                 <div>
                   <label className="text-sm font-medium text-gray-600">
-                    Tutar
+                    Açıklama
                   </label>
-                  <p className="text-lg font-semibold text-purple-600">
-                    {formatCurrency(order.totalAmount, 'TRY')}
+                  <p className="whitespace-pre-wrap text-gray-900">
+                    {dispute.description}
                   </p>
                 </div>
 
-                <div className="pt-3">
-                  <Button
-                    variant="outline"
-                    onClick={() => router.push(`/dashboard/orders/${order.id}`)}
-                    className="w-full"
-                  >
-                    Siparişi Görüntüle
-                  </Button>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">
+                    İtiraz Açan
+                  </label>
+                  <p className="text-gray-900">
+                    {dispute.raisedByUserFullName}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-gray-600">
+                    Oluşturulma Tarihi
+                  </label>
+                  <p className="text-gray-900">
+                    {formatDate(dispute.createdAt)}
+                  </p>
                 </div>
               </div>
             </Card>
-          )}
 
-          {/* Timeline */}
-          <Card className="p-6">
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">
-              <Calendar className="mr-2 inline-block h-5 w-5" />
-              Zaman Çizelgesi
-            </h2>
-            <DisputeTimeline events={createTimelineEvents(dispute)} />
-          </Card>
+            {/* Evidence Gallery */}
+            {dispute.evidenceUrls && dispute.evidenceUrls.length > 0 && (
+              <Card className="p-6">
+                <h2 className="mb-4 text-lg font-semibold text-gray-900">
+                  <ImageIcon className="mr-2 inline-block h-5 w-5" />
+                  Kanıtlar ({dispute.evidenceUrls.length})
+                </h2>
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                  {dispute.evidenceUrls.map((url, index) => (
+                    <a
+                      key={index}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative aspect-square overflow-hidden rounded-lg border border-gray-200 bg-gray-100 transition-transform hover:scale-105"
+                    >
+                      <div className="relative h-full w-full">
+                        <Image
+                          src={url}
+                          alt={`Kanıt ${index + 1}`}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                        <FileText className="h-6 w-6 text-white" />
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </Card>
+            )}
 
-          {/* Actions */}
-          <Card className="p-6">
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">
-              İşlemler
-            </h2>
-            <div className="space-y-3">
-              <Button
-                variant="outline"
-                onClick={() => router.back()}
-                className="w-full"
-              >
-                Geri Dön
-              </Button>
-              {!isResolved && (
+            {/* Modern Evidence Upload - Sprint 4: Story 4 */}
+            {!isResolved && (
+              <Card className="p-6">
+                <h2 className="mb-4 text-lg font-semibold text-gray-900">
+                  <FileText className="mr-2 inline-block h-5 w-5" />
+                  Kanıt Yükleme
+                </h2>
+                <EvidenceUploadV2
+                  disputeId={disputeId}
+                  onUploadComplete={() => loadDispute()}
+                />
+              </Card>
+            )}
+
+            {/* Resolution Details */}
+            {isResolved && dispute.resolution && (
+              <Card className="border-2 border-green-300 bg-green-50 p-6">
+                <h2 className="mb-4 text-lg font-semibold text-green-900">
+                  <CheckCircle className="mr-2 inline-block h-5 w-5" />
+                  Çözüm Detayları
+                </h2>
+                <div className="space-y-4">
+                  {dispute.resolutionType && (
+                    <div>
+                      <label className="text-sm font-medium text-green-800">
+                        Çözüm Tipi
+                      </label>
+                      <p className="text-green-900">
+                        {disputeResolutionTypeLabels[dispute.resolutionType] ||
+                          dispute.resolutionType}
+                      </p>
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="text-sm font-medium text-green-800">
+                      Çözüm Açıklaması
+                    </label>
+                    <p className="whitespace-pre-wrap text-green-900">
+                      {dispute.resolution}
+                    </p>
+                  </div>
+
+                  {dispute.refundAmount !== null &&
+                    dispute.refundAmount > 0 && (
+                      <>
+                        <div>
+                          <label className="text-sm font-medium text-green-800">
+                            İade Tutarı
+                          </label>
+                          <p className="text-xl font-semibold text-green-900">
+                            {formatCurrency(dispute.refundAmount)}
+                          </p>
+                        </div>
+
+                        <div className="rounded-lg border border-green-300 bg-green-100 p-4">
+                          <div className="flex gap-3">
+                            <CheckCircle className="h-5 w-5 flex-shrink-0 text-green-600" />
+                            <div className="flex-1 text-sm">
+                              <p className="font-medium text-green-900">
+                                İade İşlendi
+                              </p>
+                              <p className="mt-1 text-green-700">
+                                İade tutarı cüzdanınıza otomatik olarak
+                                aktarılmıştır. Detaylar için{' '}
+                                <Link
+                                  href="/dashboard/wallet"
+                                  className="font-medium underline hover:text-green-800"
+                                >
+                                  Cüzdan
+                                </Link>{' '}
+                                sayfanızı kontrol edebilirsiniz.
+                              </p>
+                              {refund && (
+                                <div className="mt-3 space-y-1 border-t border-green-300 pt-3">
+                                  <p className="text-xs text-green-700">
+                                    <span className="font-medium">
+                                      İade ID:
+                                    </span>{' '}
+                                    {refund.id.slice(0, 8)}...
+                                  </p>
+                                  <p className="text-xs text-green-700">
+                                    <span className="font-medium">Durum:</span>{' '}
+                                    {refund.status}
+                                  </p>
+                                  {refund.processedAt && (
+                                    <p className="text-xs text-green-700">
+                                      <span className="font-medium">
+                                        İşlenme:
+                                      </span>{' '}
+                                      {formatDate(refund.processedAt)}
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                  {dispute.resolvedByUserFullName && (
+                    <div>
+                      <label className="text-sm font-medium text-green-800">
+                        Çözümleyen
+                      </label>
+                      <p className="text-green-900">
+                        {dispute.resolvedByUserFullName}
+                      </p>
+                    </div>
+                  )}
+
+                  {dispute.resolvedAt && (
+                    <div>
+                      <label className="text-sm font-medium text-green-800">
+                        Çözüm Tarihi
+                      </label>
+                      <p className="text-green-900">
+                        {formatDate(dispute.resolvedAt)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
+          </div>
+
+          {/* Sidebar - 1 column */}
+          <div className="space-y-6">
+            {/* Order Information */}
+            {order && (
+              <Card className="p-6">
+                <h2 className="mb-4 text-lg font-semibold text-gray-900">
+                  <Package className="mr-2 inline-block h-5 w-5" />
+                  Sipariş Bilgileri
+                </h2>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">
+                      Sipariş No
+                    </label>
+                    <p className="text-gray-900">{order.orderNumber}</p>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">
+                      Durum
+                    </label>
+                    <p className="text-gray-900">
+                      {orderApi.getOrderStatusLabel(order.status)}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">
+                      Tutar
+                    </label>
+                    <p className="text-lg font-semibold text-purple-600">
+                      {formatCurrency(order.totalAmount, 'TRY')}
+                    </p>
+                  </div>
+
+                  <div className="pt-3">
+                    <Button
+                      variant="outline"
+                      onClick={() =>
+                        router.push(`/dashboard/orders/${order.id}`)
+                      }
+                      className="w-full"
+                    >
+                      Siparişi Görüntüle
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* Timeline */}
+            <Card className="p-6">
+              <h2 className="mb-4 text-lg font-semibold text-gray-900">
+                <Calendar className="mr-2 inline-block h-5 w-5" />
+                Zaman Çizelgesi
+              </h2>
+              <DisputeTimeline events={createTimelineEvents(dispute)} />
+            </Card>
+
+            {/* Actions */}
+            <Card className="p-6">
+              <h2 className="mb-4 text-lg font-semibold text-gray-900">
+                İşlemler
+              </h2>
+              <div className="space-y-3">
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    toast.info('Yakında', {
-                      description: 'Mesajlaşma özelliği yakında eklenecek.',
-                    });
-                  }}
+                  onClick={() => router.back()}
                   className="w-full"
                 >
-                  <User className="mr-2 h-4 w-4" />
-                  Destek ile İletişime Geç
+                  Geri Dön
                 </Button>
-              )}
-            </div>
-          </Card>
+                {!isResolved && (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      toast.info('Yakında', {
+                        description: 'Mesajlaşma özelliği yakında eklenecek.',
+                      });
+                    }}
+                    className="w-full"
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    Destek ile İletişime Geç
+                  </Button>
+                )}
+              </div>
+            </Card>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -1,49 +1,67 @@
 /**
- * Review and Comment Moderation Components
+ * ================================================
+ * REVIEW & COMMENT MODERATION COMPONENTS
+ * ================================================
+ * Unified moderation components for admin/moderator dashboards
  *
- * Sprint 1 - EPIC 1.1: Component Deduplication
- * @updated November 6, 2025
+ * Sprint 1 - EPIC 1.1: Component Deduplication ✅
+ * Sprint 1 - Task 2: Deprecated Code Cleanup ✅
+ * @version 2.0.0
+ * @updated November 9, 2025
  *
- * NOTE: Review and Comment moderation now use Unified components from @/components/domains/moderation/shared
- * - Reviews: Use UnifiedReviewQueue and UnifiedReviewModerationCard
- * - Comments: Use UnifiedCommentQueue and UnifiedCommentModerationCard
- *
- * Legacy components have been deprecated and removed
+ * NOTE: Review and Comment moderation use Unified components:
+ * - Reviews: UnifiedReviewQueue + UnifiedReviewModerationCard
+ * - Comments: UnifiedCommentQueue + UnifiedCommentModerationCard
+ * - Flagging: CommentReportModal from @/components/blog
  */
 
-// Review Moderation - DEPRECATED: Use UnifiedReviewQueue instead
-// export { PendingReviewsList } from './reviews/PendingReviewsList'; // REMOVED - Use UnifiedReviewQueue
-// export { default as ReviewModerationCard } from './reviews/ReviewModerationCard'; // REMOVED - Use UnifiedReviewModerationCard
+// ================================================
+// MODERATION STATS
+// ================================================
+
 export { default as ModerationStats } from './reviews/ModerationStats';
 
-// Comment Moderation - DEPRECATED: Use UnifiedCommentQueue and UnifiedCommentModerationCard
-// export { CommentModerationQueue } from './reviews/CommentModerationQueue'; // REMOVED - Use UnifiedCommentQueue
-// export { CommentModerationCard } from './reviews/CommentModerationCard'; // REMOVED - Use UnifiedCommentModerationCard
+// ================================================
+// COMMENT MODERATION SUPPORTING COMPONENTS
+// ================================================
 
-// Supporting Comment Components (still in use)
 export { CommentBulkActions } from './reviews/CommentBulkActions';
 export { CommentFilterBar } from './reviews/CommentFilterBar';
 export { CommentSearchBar } from './reviews/CommentSearchBar';
 export { CommentModerationNotes } from './reviews/CommentModerationNotes';
+
+// ================================================
+// LOADING SKELETONS
+// ================================================
+
 export {
   CommentCardSkeleton as ModerationCommentCardSkeleton,
   StatsCardSkeleton as ModerationStatsCardSkeleton,
   ModerationQueueSkeleton,
   DashboardWidgetSkeleton as ModerationDashboardWidgetSkeleton,
   RecentCommentsSkeleton as ModerationRecentCommentsSkeleton,
-} from './reviews/LoadingSkeletons'; // Sprint 1 - Bulk Action Components (NEW)
+} from './reviews/LoadingSkeletons';
+
+// ================================================
+// BULK ACTION COMPONENTS (Sprint 1 - EPIC 2)
+// ================================================
+
 export { BulkActionToolbar, CommentListWithBulkActions } from '.';
 export type {
   BulkActionToolbarProps,
   CommentListWithBulkActionsProps,
 } from '.';
 
-// Sprint 3 Day 2 - Advanced Moderation Components (NEW)
+// ================================================
+// ADVANCED MODERATION (Sprint 3 Day 2)
+// ================================================
+
 export { AdvancedFilterPanel } from './reviews/AdvancedFilterPanel';
 export { CommentActionMenu } from './reviews/CommentActionMenu';
 export { CommentEditDialog } from './reviews/CommentEditDialog';
 export { CommentReplyDialog } from './reviews/CommentReplyDialog';
 export { CommentHistoryDialog } from './reviews/CommentHistoryDialog';
+
 export type {
   FilterPreset,
   AdvancedFilterPanelProps,
@@ -56,22 +74,30 @@ export type {
   CommentHistoryDialogProps,
 } from './reviews/CommentHistoryDialog';
 
-// Sprint 3 Day 3 - Content Flagging & Auto-Moderation (NEW)
-export { FlagCommentDialog } from './reviews/FlagCommentDialog';
+// ================================================
+// CONTENT FLAGGING & AUTO-MODERATION (Sprint 3 Day 3)
+// ================================================
+
 export { AutoModerationRulesPanel } from './reviews/AutoModerationRulesPanel';
 export { FlagStatisticsPanel } from './reviews/FlagStatisticsPanel';
-export type { FlagCommentDialogProps } from './reviews/FlagCommentDialog';
+
 export type { AutoModerationRulesPanelProps } from './reviews/AutoModerationRulesPanel';
 export type { FlagStatisticsPanelProps } from './reviews/FlagStatisticsPanel';
 
-// Sprint 3 Day 4 - Analytics Dashboard (NEW)
+// ================================================
+// ANALYTICS DASHBOARD (Sprint 3 Day 4)
+// ================================================
+
 export { ModeratorAnalyticsDashboard } from './reviews/ModeratorAnalyticsDashboard';
-export type { ModeratorAnalyticsDashboardProps } from './reviews/ModeratorAnalyticsDashboard';
-// RENAMED to avoid conflict with ModeratorDashboardView
 export { ModeratorDashboard as ModerationDashboardWidget } from './reviews/ModeratorDashboard';
+
+export type { ModeratorAnalyticsDashboardProps } from './reviews/ModeratorAnalyticsDashboard';
 export type { ModeratorDashboardProps as ModerationDashboardWidgetProps } from './reviews/ModeratorDashboard';
 
-// Comment Dashboard Widgets
+// ================================================
+// DASHBOARD WIDGETS
+// ================================================
+
 export { CommentModerationSummary } from '../dashboard/CommentModerationSummary';
 export { CommentModerationStats } from '../dashboard/comments/CommentModerationStats';
 export { PendingCommentsWidget } from '../dashboard/comments/PendingCommentsWidget';

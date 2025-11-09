@@ -16,7 +16,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
@@ -28,9 +28,13 @@ import {
   Smartphone,
   CheckCircle,
   AlertCircle,
+  XCircle,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSettings } from '@/hooks/business/useSettings';
+import { useTwoFactor } from '@/hooks/business/useTwoFactor';
+import { TwoFactorSetup } from '@/components/domains/auth/TwoFactorSetup';
+import { SessionManager } from '@/components/domains/auth/SessionManager';
 
 export default function SecuritySettingsPage() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -38,9 +42,23 @@ export default function SecuritySettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [show2FASetup, setShow2FASetup] = useState(false);
+  const [showSessionsModal, setShowSessionsModal] = useState(false);
 
   const { changePassword, isChangingPassword, passwordError, clearErrors } =
     useSettings();
+
+  const {
+    status: twoFactorStatus,
+    fetchStatus,
+    disable2FA,
+    isLoading: is2FALoading,
+  } = useTwoFactor();
+
+  // Fetch 2FA status on mount
+  useEffect(() => {
+    fetchStatus();
+  }, [fetchStatus]);
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -193,82 +211,163 @@ export default function SecuritySettingsPage() {
         </Card>
 
         {/* Two-Factor Authentication */}
-        <Card className="p-6">
-          <div className="mb-4 flex items-center space-x-3">
-            <div className="rounded-lg bg-purple-100 p-2">
-              <Smartphone className="h-5 w-5 text-purple-600" />
-            </div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              İki Faktörlü Doğrulama (2FA)
-            </h2>
-          </div>
-
-          <p className="mb-4 text-sm text-gray-600">
-            Hesabınıza ekstra bir güvenlik katmanı ekleyin. Giriş yaparken
-            telefonunuzdan onay koduna ihtiyacınız olacak.
-          </p>
-
-          <div className="mb-4 rounded-lg bg-gray-50 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-900">Durum</p>
-                <p className="text-sm text-gray-600">Devre Dışı</p>
+        {!show2FASetup ? (
+          <Card className="p-6">
+            <div className="mb-4 flex items-center space-x-3">
+              <div className="rounded-lg bg-purple-100 p-2">
+                <Smartphone className="h-5 w-5 text-purple-600" />
               </div>
-              <div className="flex items-center">
-                <div className="h-3 w-3 rounded-full bg-gray-400"></div>
-              </div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                İki Faktörlü Doğrulama (2FA)
+              </h2>
             </div>
-          </div>
 
-          <Button variant="outline" className="w-full" disabled>
-            2FA Etkinleştir (Yakında)
-          </Button>
-
-          <div className="mt-4 border-t border-gray-200 pt-4">
-            <p className="text-xs text-gray-500">
-              📱 Authenticator uygulaması veya SMS ile doğrulama yapabilirsiniz
+            <p className="mb-4 text-sm text-gray-600">
+              Hesabınıza ekstra bir güvenlik katmanı ekleyin. Giriş yaparken
+              telefonunuzdan onay koduna ihtiyacınız olacak.
             </p>
-          </div>
-        </Card>
 
-        {/* Active Sessions */}
-        <Card className="p-6">
-          <div className="mb-4 flex items-center space-x-3">
-            <div className="rounded-lg bg-blue-100 p-2">
-              <Key className="h-5 w-5 text-blue-600" />
-            </div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              Aktif Oturumlar
-            </h2>
-          </div>
-
-          <p className="mb-4 text-sm text-gray-600">
-            Hesabınıza bağlı aktif cihazları görüntüleyin ve yönetin.
-          </p>
-
-          <div className="space-y-3">
-            <div className="rounded-lg border border-gray-200 p-3">
-              <div className="flex items-start justify-between">
+            <div className="mb-4 rounded-lg bg-gray-50 p-4">
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Bu Cihaz</p>
-                  <p className="mt-1 text-xs text-gray-500">
-                    Windows • Chrome • İstanbul, Türkiye
-                  </p>
-                  <p className="mt-1 text-xs text-gray-400">
-                    Son Etkinlik: Şimdi
+                  <p className="text-sm font-medium text-gray-900">Durum</p>
+                  <p className="text-sm text-gray-600">
+                    {twoFactorStatus?.enabled ? (
+                      <span className="flex items-center text-green-600">
+                        <CheckCircle className="mr-1 h-4 w-4" />
+                        Etkin ({twoFactorStatus.method})
+                      </span>
+                    ) : (
+                      <span className="flex items-center text-gray-500">
+                        <XCircle className="mr-1 h-4 w-4" />
+                        Devre Dışı
+                      </span>
+                    )}
                   </p>
                 </div>
-                <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
-                  Aktif
-                </span>
+                <div className="flex items-center">
+                  <div
+                    className={`h-3 w-3 rounded-full ${
+                      twoFactorStatus?.enabled ? 'bg-green-500' : 'bg-gray-400'
+                    }`}
+                  ></div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <Button variant="outline" className="mt-4 w-full" disabled>
-            Tüm Oturumları Görüntüle (Yakında)
-          </Button>
-        </Card>
+            {twoFactorStatus?.enabled ? (
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={async () => {
+                  const password = prompt('Şifrenizi girin:');
+                  if (password) {
+                    const success = await disable2FA({ password });
+                    if (success) {
+                      await fetchStatus();
+                    }
+                  }
+                }}
+                disabled={is2FALoading}
+              >
+                2FA Devre Dışı Bırak
+              </Button>
+            ) : (
+              <Button
+                variant="primary"
+                className="w-full"
+                onClick={() => setShow2FASetup(true)}
+              >
+                2FA Etkinleştir
+              </Button>
+            )}
+
+            <div className="mt-4 border-t border-gray-200 pt-4">
+              <p className="text-xs text-gray-500">
+                📱 Authenticator uygulaması ile doğrulama yapabilirsiniz
+              </p>
+            </div>
+          </Card>
+        ) : (
+          <TwoFactorSetup
+            onComplete={() => {
+              setShow2FASetup(false);
+              fetchStatus();
+            }}
+            onCancel={() => setShow2FASetup(false)}
+            autoStart
+          />
+        )}
+
+        {/* Active Sessions */}
+        {!showSessionsModal ? (
+          <Card className="p-6">
+            <div className="mb-4 flex items-center space-x-3">
+              <div className="rounded-lg bg-blue-100 p-2">
+                <Key className="h-5 w-5 text-blue-600" />
+              </div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Aktif Oturumlar
+              </h2>
+            </div>
+
+            <p className="mb-4 text-sm text-gray-600">
+              Hesabınıza bağlı aktif cihazları görüntüleyin ve yönetin.
+            </p>
+
+            <div className="space-y-3">
+              <div className="rounded-lg border border-gray-200 p-3">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      Bu Cihaz
+                    </p>
+                    <p className="mt-1 text-xs text-gray-500">
+                      Windows • Chrome • İstanbul, Türkiye
+                    </p>
+                    <p className="mt-1 text-xs text-gray-400">
+                      Son Etkinlik: Şimdi
+                    </p>
+                  </div>
+                  <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
+                    Aktif
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <Button
+              variant="primary"
+              className="mt-4 w-full"
+              onClick={() => setShowSessionsModal(true)}
+            >
+              Tüm Oturumları Yönet
+            </Button>
+          </Card>
+        ) : (
+          <Card className="p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="rounded-lg bg-blue-100 p-2">
+                  <Key className="h-5 w-5 text-blue-600" />
+                </div>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Aktif Oturumlar
+                </h2>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowSessionsModal(false)}
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Geri
+              </Button>
+            </div>
+
+            <SessionManager variant="full" />
+          </Card>
+        )}
 
         {/* Security Recommendations */}
         <Card className="p-6">

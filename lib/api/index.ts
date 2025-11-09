@@ -75,13 +75,24 @@ export * from './payouts';
 // Export Payment Method API
 export { paymentMethodApi } from './payment-method';
 export type {
-  PaymentMethod,
   AddPaymentMethodRequest,
   UpdatePaymentMethodRequest,
   PaymentMethodType,
 } from './payment-method';
 
-// Export Job API
+// Export Two-Factor Authentication API
+export { twoFactorApi } from './two-factor';
+export type {
+  TwoFactorStatus,
+  QRCodeResponse,
+  RecoveryCodesResponse,
+  Enable2FARequest,
+  Verify2FARequest,
+  Disable2FARequest,
+  TwoFactorMethod,
+} from './two-factor';
+
+// Export Orders API
 export * from './jobs';
 
 // Export Proposal API (already exists)
@@ -155,3 +166,30 @@ export type {
   ReportTypeInfo,
   ReportTypesResponse,
 } from './admin-reports';
+
+// ================================================
+// SECURITY & SETTINGS (Security & Settings Sprint)
+// ================================================
+
+// Export Sessions API (Story 2)
+export { sessionsApi } from './sessions';
+export type {
+  SessionInfo,
+  RevokeSessionRequest,
+  SessionOperationResponse,
+} from './sessions';
+
+// Export User Preferences API (Story 3)
+export { userPreferencesApi } from './user-preferences';
+export type {
+  SupportedLanguage,
+  UserPreferences,
+  UpdatePreferencesRequest,
+  PreferencesResponse,
+  BrowserSettings,
+} from './user-preferences';
+export {
+  LANGUAGES,
+  COMMON_TIMEZONES,
+  DEFAULT_PREFERENCES,
+} from './user-preferences';

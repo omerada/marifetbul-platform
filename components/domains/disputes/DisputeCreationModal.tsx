@@ -35,7 +35,7 @@ import {
   type DisputeRequest,
   type DisputeResponse,
 } from '@/types/dispute';
-import { EvidenceUpload } from './EvidenceUpload';
+// Evidence upload removed from creation modal - use EvidenceUploadV2 after dispute is created
 
 // ================================================
 // TYPES & VALIDATION
@@ -79,9 +79,6 @@ export function DisputeCreationModal({
   onSuccess,
 }: DisputeCreationModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [uploadedEvidenceUrls, setUploadedEvidenceUrls] = useState<string[]>(
-    []
-  );
 
   const {
     register,
@@ -109,19 +106,18 @@ export function DisputeCreationModal({
         orderId,
         reason: data.reason,
         description: data.description,
-        evidenceUrls: uploadedEvidenceUrls,
+        evidenceUrls: [], // Evidence will be uploaded after dispute creation
       };
 
       const dispute = await raiseDispute(request);
 
       toast.success('İtiraz Oluşturuldu', {
         description:
-          'İtirazınız başarıyla oluşturuldu. Yönetim ekibi en kısa sürede inceleyecektir.',
+          'İtirazınız başarıyla oluşturuldu. İtiraz detay sayfasında kanıtlarınızı yükleyebilirsiniz.',
       });
 
       // Reset form
       reset();
-      setUploadedEvidenceUrls([]);
 
       // Call success callback
       if (onSuccess) {
@@ -145,13 +141,7 @@ export function DisputeCreationModal({
   const handleClose = () => {
     if (isSubmitting) return;
     reset();
-    setUploadedEvidenceUrls([]);
     onClose();
-  };
-
-  // Handle evidence upload success (for future use in Story 1.3)
-  const handleEvidenceUploaded = (urls: string[]) => {
-    setUploadedEvidenceUrls(urls);
   };
 
   if (!isOpen) return null;
@@ -278,17 +268,18 @@ export function DisputeCreationModal({
             </p>
           </div>
 
-          {/* Evidence Upload */}
+          {/* Evidence Upload Note */}
           <div className="mb-6">
             <label className="mb-2 block text-sm font-medium text-gray-700">
-              Kanıtlar (Opsiyonel)
+              Kanıtlar
             </label>
-            <EvidenceUpload
-              onFilesChange={handleEvidenceUploaded}
-              disabled={isSubmitting}
-              maxFiles={5}
-              maxSizeMB={10}
-            />
+            <div className="rounded-lg bg-blue-50 p-4">
+              <p className="text-sm text-blue-800">
+                <strong>💡 İpucu:</strong> İtiraz oluşturulduktan sonra, itiraz
+                detay sayfasında kanıt dosyalarınızı (ekran görüntüleri,
+                mesajlar, belgeler) yükleyebileceksiniz.
+              </p>
+            </div>
           </div>
 
           {/* Actions */}
