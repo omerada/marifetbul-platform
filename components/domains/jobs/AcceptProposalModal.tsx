@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { CheckCircle, AlertCircle } from 'lucide-react';
 import { PaymentMode } from '@/types/business/features/order';
 import { getSellerPaymentStatus } from '@/lib/api/users';
-import { PaymentModeSelector } from '@/components/checkout/PaymentModeSelector';
+import { PaymentModeSelector } from '@/components/domains/payments/PaymentModeSelector';
 import {
   Dialog,
   DialogContent,

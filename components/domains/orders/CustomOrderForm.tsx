@@ -23,7 +23,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { PaymentMode } from '@/types/business/features/order';
 import { getSellerPaymentStatus } from '@/lib/api/users';
-import { PaymentModeSelector } from '@/components/checkout/PaymentModeSelector';
+import { PaymentModeSelector } from '@/components/domains/payments/PaymentModeSelector';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';

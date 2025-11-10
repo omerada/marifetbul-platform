@@ -31,8 +31,10 @@ export type { MilestoneProgressTrackerProps } from './MilestoneProgressTracker';
 // Sprint 1 - Story 1.1: Manual Payment & IBAN Display
 export { IBANDisplayCard } from './IBANDisplayCard';
 export { ManualPaymentConfirmationForm } from './ManualPaymentConfirmationForm';
+export { PaymentModeDisplay } from './PaymentModeDisplay';
 export type { IBANDisplayCardProps } from './IBANDisplayCard';
 export type { ManualPaymentConfirmationFormProps } from './ManualPaymentConfirmationForm';
+export type { PaymentModeDisplayProps } from './PaymentModeDisplay';
 
 // Sprint 1 - Story 1.2: Milestone List & Progress Display
 export { MilestoneListCard } from './MilestoneListCard';

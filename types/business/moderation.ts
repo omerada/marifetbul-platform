@@ -43,32 +43,6 @@ export interface ModerationStats {
     averageActionTimeMinutes: number;
     accuracyRate: number;
   };
-
-  // Legacy compatibility (computed from new fields)
-  /** @deprecated Use pendingComments instead */
-  flaggedComments?: number;
-  /** @deprecated Use performance.actionsToday instead */
-  commentsApprovedToday?: number;
-  /** @deprecated Use performance.actionsToday instead */
-  commentsRejectedToday?: number;
-  /** @deprecated Use pendingReviews instead */
-  flaggedReviews?: number;
-  /** @deprecated Use performance.actionsToday instead */
-  reviewsApprovedToday?: number;
-  /** @deprecated Use performance.actionsToday instead */
-  reviewsRejectedToday?: number;
-  /** @deprecated Use resolvedToday instead */
-  reportsResolvedToday?: number;
-  /** @deprecated Removed - not tracked */
-  pendingSupportTickets?: number;
-  /** @deprecated Removed - not tracked */
-  ticketsClosedToday?: number;
-  /** @deprecated Use computed total instead */
-  totalPendingItems?: number;
-  /** @deprecated Use performance.actionsToday instead */
-  totalActionsToday?: number;
-  /** @deprecated Use performance.accuracyRate instead */
-  accuracyRate?: number;
 }
 
 /**

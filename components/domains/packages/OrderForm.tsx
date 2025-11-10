@@ -10,7 +10,7 @@ import { getSellerPaymentStatus } from '@/lib/api/users';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
-import { PaymentModeSelector } from '@/components/checkout/PaymentModeSelector';
+import { PaymentModeSelector } from '@/components/domains/payments/PaymentModeSelector';
 import { ShoppingCart, CreditCard, Calendar, FileText } from 'lucide-react';
 import logger from '@/lib/infrastructure/monitoring/logger';
 

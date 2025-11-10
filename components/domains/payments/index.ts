@@ -5,9 +5,13 @@
  * Central export point for payment domain components
  *
  * @author MarifetBul Development Team
- * @version 1.2.0 - Sprint: Payment & Refund System Hardening
+ * @version 1.3.0 - Sprint 1: Payment Mode Selection
  */
 
-// PaymentHistory removed - was unused duplicate (Sprint Day 3)
+// Sprint 1 - Epic 1: Payment Mode Selection
+export { PaymentModeSelector, getPaymentModeLabel, getPaymentModeDescription } from './PaymentModeSelector';
+export type { PaymentMode } from './PaymentModeSelector';
+
+// Existing components
 export { PaymentRetryStatus } from './PaymentRetryStatus';
 export { PaymentRetryHistory } from './PaymentRetryHistory';

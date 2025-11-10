@@ -40,6 +40,7 @@ import {
   OrderMessagingPanel,
   IBANDisplayCard,
   ManualPaymentConfirmationForm,
+  PaymentModeDisplay,
   MilestoneListCard,
   MilestoneDeliveryForm,
   MilestoneAcceptancePanel,
@@ -605,6 +606,20 @@ export default function OrderDetailPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Content - 2 columns */}
         <div className="space-y-6 lg:col-span-2">
+          {/* Payment Mode Display - Show payment info for all payment modes */}
+          <PaymentModeDisplay
+            paymentMode={order.paymentMode}
+            orderStatus={order.status}
+            paymentProofUrl={order.paymentProofUrl}
+            paymentConfirmedAt={order.paymentConfirmedAt}
+            buyerConfirmed={order.buyerPaymentConfirmed}
+            sellerConfirmed={order.sellerPaymentConfirmed}
+            userRole={userRole}
+            onViewProof={() => {
+              logger.info('Payment proof viewed', { orderId: order.id });
+            }}
+          />
+
           {/* IBAN Display - Show for manual payment pending */}
           {order.paymentMode === 'MANUAL_IBAN' && 
            order.status === 'PENDING_PAYMENT' && 

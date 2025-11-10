@@ -1,5 +1,6 @@
 // Consolidated payment types
 import { Currency } from './orders';
+import type { PaymentMode } from './order';
 
 export type PaymentMethodType =
   | 'credit_card'
@@ -321,6 +322,7 @@ export interface CheckoutSession {
   deliveryDate: string;
   requirements?: string;
   notes?: string;
+  paymentMode?: PaymentMode; // Sprint 1: Dual Payment System
   paymentIntentId?: string;
   clientSecret?: string;
 }
