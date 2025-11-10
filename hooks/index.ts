@@ -55,7 +55,6 @@ export { useHelpCenter } from './business/useHelpCenter';
 // Moderation hooks (Sprint: Moderator Dashboard)
 export {
   useModerationStats,
-  usePendingItems,
   useRecentActivities,
   usePendingComments,
   useCommentsByStatus,

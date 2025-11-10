@@ -16,7 +16,6 @@ import useSWR, { mutate } from 'swr';
 import { useState } from 'react';
 import {
   getModerationStats,
-  getPendingItems,
   getRecentActivities,
   getPendingComments,
   getCommentsByStatus,
@@ -40,7 +39,6 @@ import {
 } from '@/lib/api/moderation';
 import type {
   ModerationStats,
-  PendingItemsResponse,
   ModeratorActivitiesResponse,
   BlogCommentDto,
   ReviewDto,
@@ -80,54 +78,6 @@ export function useModerationStats(refreshInterval = 30000) {
   };
 }
 
-// ============================================================================
-// PENDING ITEMS HOOK
-// ============================================================================
-
-/**
- * @deprecated Use useModerationQueue from @/hooks/business/useModerationQueue instead
- * This hook uses the legacy /api/v1/moderator/pending-items endpoint
- * New queue API provides better pagination, filtering, and priority sorting
- *
- * Hook for fetching pending moderation items with pagination
- *
- * @param page - Page number (default: 1)
- * @param pageSize - Items per page (default: 10)
- * @param refreshInterval - Auto-refresh interval in milliseconds (default: 60000)
- * @returns Pending items with pagination info
- */
-export function usePendingItems(
-  page = 1,
-  pageSize = 10,
-  refreshInterval = 60000
-) {
-  const {
-    data,
-    error,
-    isLoading,
-    mutate: refresh,
-  } = useSWR<PendingItemsResponse>(
-    ['/api/v1/moderator/pending-items', page, pageSize],
-    () => getPendingItems(page, pageSize),
-    {
-      refreshInterval,
-      revalidateOnFocus: true,
-      dedupingInterval: 10000,
-    }
-  );
-
-  return {
-    items: data?.items ?? [],
-    total: data?.total ?? 0,
-    page: data?.page ?? 1,
-    pageSize: data?.pageSize ?? pageSize,
-    isLoading,
-    error,
-    refresh,
-  };
-}
-
-// ============================================================================
 // ============================================================================
 // RECENT ACTIVITIES HOOK
 // ============================================================================

@@ -20,7 +20,6 @@ import type {
   ModerationStats,
   ModerationQueueItem,
   ModerationActivity,
-  PendingItemsResponse,
   ModeratorActivitiesResponse,
   BlogCommentDto,
   CommentStatus,
@@ -124,22 +123,6 @@ export async function getModerationQueue(
   const response = await apiClient.get<
     ApiResponse<PageResponse<ModerationQueueItem>>
   >('/api/v1/moderation/queue', params);
-  return response.data;
-}
-
-/**
- * @deprecated Use getModerationQueue instead
- * Get pending items queue
- * Backend: GET /api/v1/moderator/pending-items
- */
-export async function getPendingItems(
-  page = 1,
-  pageSize = 10
-): Promise<PendingItemsResponse> {
-  const response = await apiClient.get<ApiResponse<PendingItemsResponse>>(
-    '/api/v1/moderator/pending-items',
-    { page: page.toString(), pageSize: pageSize.toString() }
-  );
   return response.data;
 }
 
@@ -643,7 +626,6 @@ export async function dismissReport(
 export const moderationApi = {
   // Stats & Dashboard
   getStats: getModerationStats,
-  getPendingItems,
   getRecentActivities,
 
   // Comment Moderation (query methods - actions re-exported from moderation-service)
