@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/Select';
 import { Textarea } from '@/components/ui/Textarea';
 import { Badge } from '@/components/ui/Badge';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // API
 import { REJECTION_REASONS } from '@/lib/shared/constants/moderation';
@@ -88,7 +89,7 @@ export function RejectCommentModal({
       setMessage('');
       onClose();
     } catch (err) {
-      console.error('Failed to reject comment:', err);
+      logger.error('Failed to reject comment', err as Error);
       setError(
         err instanceof Error
           ? err.message

@@ -25,6 +25,7 @@ import { Button } from '@/components/ui';
 import { Download, FileText, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks';
 import type { TransactionType } from '@/types/business/features/wallet';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -133,7 +134,7 @@ export default function TransactionExportButtons({
 
       success('Başarılı', 'İşlem geçmişi CSV olarak indirildi');
     } catch (err) {
-      console.error('CSV export error:', err);
+      logger.error('CSV export error', err as Error);
       error('Hata', 'CSV dosyası indirilemedi');
     } finally {
       setIsExportingCSV(false);
@@ -183,7 +184,7 @@ export default function TransactionExportButtons({
 
       success('Başarılı', 'İşlem geçmişi PDF olarak indirildi');
     } catch (err) {
-      console.error('PDF export error:', err);
+      logger.error('PDF export error', err as Error);
       error('Hata', 'PDF dosyası indirilemedi');
     } finally {
       setIsExportingPDF(false);

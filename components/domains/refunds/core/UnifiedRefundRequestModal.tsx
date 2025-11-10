@@ -49,6 +49,7 @@ import { Alert, AlertDescription } from '@/components/ui/Alert';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRefund } from '@/hooks/business/payment';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -284,7 +285,7 @@ export function UnifiedRefundRequestModal({
 
       return true;
     } catch (error) {
-      console.error('Refund request error:', error);
+      logger.error('Refund request error', error as Error);
       toast.error('Hata', {
         description:
           error instanceof Error ? error.message : 'İade talebi oluşturulamadı',

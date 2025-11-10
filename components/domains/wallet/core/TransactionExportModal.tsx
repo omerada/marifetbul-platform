@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/Dialog';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { Label } from '@/components/ui/Label';
 import { Input } from '@/components/ui/Input';
 import {
@@ -176,7 +177,7 @@ export const TransactionExportModal: React.FC<TransactionExportModalProps> = ({
       toast.success(`İşlemler ${selectedFormat} formatında indirildi`);
       onClose();
     } catch (error) {
-      console.error('Export failed:', error);
+      logger.error('Export failed', error as Error);
       toast.error('Export işlemi başarısız oldu');
     } finally {
       setIsExporting(false);

@@ -14,21 +14,6 @@ export { FollowersModal } from './FollowersModal';
 export { FollowingModal } from './FollowingModal';
 
 // Notification components
-export { CopyButton } from './CopyButton';
-export { Footer } from './Footer';
-export { Header } from './Header';
-export { Hero } from './Hero';
-export { LoadingSpinner } from './LoadingSpinner';
-export { Navbar } from './Navbar';
-export { NotificationBanner } from './NotificationBanner';
-export { Pagination } from './Pagination';
-export { SearchBar } from './SearchBar';
-export { ShareButton } from './ShareButton';
-export { Sidebar } from './Sidebar';
-export { SocialLinks } from './SocialLinks';
-export { Tag } from './Tag';
-export { TagCloud } from './TagCloud';
-export { ErrorMessage } from './ErrorMessage';
 export { NotificationBadge } from './NotificationBadge';
 export { NotificationFilter } from './NotificationFilter';
 
@@ -77,6 +62,9 @@ export * from './filters';
 // Utility components
 export * from './utilities';
 
+// Dashboard components
+export * from './dashboard';
+
 // Unified lazy loading system
 export {
   LazyWrapper,
@@ -107,13 +95,3 @@ export {
 } from './LazyComponents';
 
 export { default as LazyComponentsUtils } from './LazyComponents';
-
-// New organized shared components
-// Mobile Components
-export * from './mobile';
-
-// Filter Components
-export * from './filters';
-
-// Utility Components
-export * from './utilities';

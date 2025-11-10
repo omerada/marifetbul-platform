@@ -28,6 +28,7 @@ import {
   DialogTitle,
 } from '@/components/ui/Dialog';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { Textarea } from '@/components/ui/Textarea';
 import { Label } from '@/components/ui/Label';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
@@ -95,8 +96,7 @@ export function MilestoneRevisionModal({
       onSuccess?.(updatedMilestone);
       onClose();
     } catch (error) {
-      // Error already handled by hook with toast
-      console.error('Revision request failed:', error);
+      logger.error('Revision request failed', error as Error);
     }
   };
 

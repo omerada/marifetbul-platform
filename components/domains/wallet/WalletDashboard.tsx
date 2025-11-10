@@ -51,6 +51,7 @@ import { Alert, AlertDescription } from '@/components/ui/Alert';
 import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 import { toast } from 'sonner';
 import { exportTransactions } from '@/lib/api/wallet';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // Sprint 1 Cleanup: Local formatDate removed - using canonical formatter
 
@@ -435,7 +436,7 @@ export function WalletDashboard({
 
       toast.success('İşlem geçmişi indirildi');
     } catch (error) {
-      console.error('Export failed:', error);
+      logger.error('Export failed', error as Error);
       toast.error('İndirme başarısız', {
         description: 'İşlem geçmişi indirilirken bir hata oluştu',
       });
@@ -688,7 +689,7 @@ export function WalletDashboard({
               description: 'Para çekme talebiniz oluşturuldu',
             });
           } catch (error) {
-            console.error('Payout failed:', error);
+            logger.error('Payout failed', error as Error);
             toast.error('Hata', {
               description:
                 error instanceof Error

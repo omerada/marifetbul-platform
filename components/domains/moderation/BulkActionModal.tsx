@@ -28,6 +28,7 @@ import {
   DialogTitle,
 } from '@/components/ui/Dialog';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { Badge } from '@/components/ui/Badge';
 
 /**
@@ -122,7 +123,7 @@ export function BulkActionModal({
 
       onClose();
     } catch (err) {
-      console.error('Bulk action failed:', err);
+      logger.error('Bulk action failed', err as Error);
       setError(
         err instanceof Error ? err.message : 'İşlem sırasında bir hata oluştu'
       );

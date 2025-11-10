@@ -13,8 +13,5 @@ export { UnifiedDashboard as DashboardOverview } from '../../domains/dashboard/U
 export { JobDetail as JobSummary } from '../../domains/jobs/JobDetail';
 export { PackageDetail as PackageSummary } from '../../domains/packages/PackageDetail';
 
-// Dashboard components - export actual components, not from removed files
-export { DashboardStats } from '../../domains/dashboard/DashboardStats';
-export { QuickActions } from '../../domains/dashboard/QuickActions';
-export { ActivityTimeline } from '../../domains/dashboard/ActivityTimeline';
-export { DashboardCharts } from '../../domains/dashboard/DashboardCharts';
+// Dashboard widgets - use from domains/dashboard/widgets
+// Legacy exports removed - use UnifiedDashboard or specific widgets from domains/dashboard/widgets

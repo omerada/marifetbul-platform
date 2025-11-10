@@ -31,6 +31,7 @@ import { useReviewModeration } from '@/hooks/business/moderation/useReviewModera
 import { adminModerationApi } from '@/lib/api/admin/moderation';
 import type { ReviewResponse } from '@/lib/api/admin/moderation';
 import type { UserRole } from './UnifiedReviewModerationCard';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -154,7 +155,7 @@ export function UnifiedReviewQueue({
       }
       return true;
     } catch (error) {
-      console.error('Failed to escalate review:', error);
+      logger.error('Failed to escalate review', error as Error);
       return false;
     }
   };
@@ -170,7 +171,7 @@ export function UnifiedReviewQueue({
       }
       return true;
     } catch (error) {
-      console.error('Failed to delete review:', error);
+      logger.error('Failed to delete review', error as Error);
       return false;
     }
   };
@@ -183,7 +184,7 @@ export function UnifiedReviewQueue({
       refetch();
       return true;
     } catch (error) {
-      console.error('Failed to resolve flag:', error);
+      logger.error('Failed to resolve flag', error as Error);
       return false;
     }
   };

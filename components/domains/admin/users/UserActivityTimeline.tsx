@@ -27,6 +27,7 @@ import { Badge } from '@/components/ui/Badge';
 import { ScrollArea } from '@/components/ui/ScrollArea';
 import { adminUsersApi } from '@/lib/api/admin-users';
 import { useToast } from '@/hooks';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   type UserActivityLog,
   type ActivityType,
@@ -141,7 +142,7 @@ export function UserActivityTimeline({
         setTotalElements(response.data.totalElements);
       }
     } catch (error) {
-      console.error('Error fetching user activities:', error);
+      logger.error('Error fetching user activities', error as Error);
       showError('Hata', 'Kullanıcı aktiviteleri yüklenemedi');
     } finally {
       setLoading(false);

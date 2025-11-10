@@ -20,6 +20,7 @@ import { Button } from '@/components/ui';
 import { Textarea } from '@/components/ui/Textarea';
 import { CheckCircle, Loader2 } from 'lucide-react';
 import type { ProposalResponse } from '@/types/backend-aligned';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export interface AcceptProposalModalProps {
   isOpen: boolean;
@@ -43,7 +44,7 @@ export function AcceptProposalModal({
       await onAccept(message || undefined);
       onClose();
     } catch (error) {
-      console.error('Failed to accept proposal:', error);
+      logger.error('Failed to accept proposal', error as Error);
     } finally {
       setIsSubmitting(false);
     }

@@ -35,6 +35,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/Dialog';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -108,7 +109,7 @@ export function EscrowActions({
       await onRelease(paymentId);
       setShowReleaseConfirm(false);
     } catch (error) {
-      console.error('Release failed:', error);
+      logger.error('Release failed', error as Error);
     } finally {
       setIsReleasing(false);
     }

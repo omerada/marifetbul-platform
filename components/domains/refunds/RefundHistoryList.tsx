@@ -24,6 +24,7 @@ import { Loader2, Search, RefreshCw, Eye, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
 import { formatDistance } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * Refund History List Component
@@ -149,7 +150,7 @@ export default function RefundHistoryList({
       setRefunds(data.content || []);
       setTotalPages(data.totalPages || 1);
     } catch (err) {
-      console.error('Load refunds error:', err);
+      logger.error('Load refunds error', err as Error);
       setError(err instanceof Error ? err.message : 'Bir hata oluştu');
     } finally {
       setIsLoading(false);

@@ -27,6 +27,7 @@ import {
 // API
 import { getModeratorActivityHistory } from '@/lib/api/moderation-activity';
 import { ActionType } from '@/types/business/moderation';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // Components
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -156,7 +157,7 @@ export function ActivityLogViewer({
       setActivities(response.activities);
       setTotal(response.total);
     } catch (err) {
-      console.error('Failed to fetch activities:', err);
+      logger.error('Failed to fetch activities', err as Error);
       setError('Aktivite geçmişi yüklenirken hata oluştu');
     } finally {
       setLoading(false);

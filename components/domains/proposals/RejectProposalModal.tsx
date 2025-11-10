@@ -20,6 +20,7 @@ import { Button } from '@/components/ui';
 import { Textarea } from '@/components/ui/Textarea';
 import { XCircle, Loader2, AlertCircle } from 'lucide-react';
 import type { ProposalResponse } from '@/types/backend-aligned';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 const REJECTION_REASONS = [
   { value: 'BUDGET_TOO_HIGH', label: 'Bütçe çok yüksek' },
@@ -58,7 +59,7 @@ export function RejectProposalModal({
       await onReject(reason, message || undefined);
       onClose();
     } catch (error) {
-      console.error('Failed to reject proposal:', error);
+      logger.error('Failed to reject proposal', error as Error);
     } finally {
       setIsSubmitting(false);
     }

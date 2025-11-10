@@ -23,6 +23,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface BulkModerationPanelProps {
   selectedCount: number;
@@ -103,7 +104,7 @@ export function BulkModerationPanel({
       }
       onClearSelection();
     } catch (error) {
-      console.error(`Bulk ${action} failed:`, error);
+      logger.error(`Bulk ${action} failed`, error as Error);
       toast.error(
         `Toplu işlem başarısız oldu: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`
       );

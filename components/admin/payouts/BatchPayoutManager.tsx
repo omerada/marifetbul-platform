@@ -29,6 +29,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   Table,
   TableBody,
@@ -131,7 +132,7 @@ export default function BatchPayoutManager({
       const data = await response.json();
       setPayouts(data.payouts || []);
     } catch (error) {
-      console.error('Error fetching payouts:', error);
+      logger.error('Error fetching payouts', error as Error);
       toast({
         title: 'Hata',
         description: 'Para çekme talepleri yüklenemedi',
@@ -225,7 +226,7 @@ export default function BatchPayoutManager({
         pollBatchStatus(result.batch.id);
       }
     } catch (error) {
-      console.error('Error creating batch:', error);
+      logger.error('Error creating batch', error as Error);
       toast({
         title: 'Hata',
         description:
@@ -267,7 +268,7 @@ export default function BatchPayoutManager({
           });
         }
       } catch (error) {
-        console.error('Error polling batch status:', error);
+        logger.error('Error polling batch status', error as Error);
         clearInterval(pollInterval);
       }
     }, 3000); // Poll every 3 seconds

@@ -12,6 +12,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * SearchSuggestions Component - Sprint 4 Day 3
@@ -67,7 +68,7 @@ function getRecentSearches(): string[] {
     const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
     return stored ? JSON.parse(stored) : [];
   } catch (error) {
-    console.error('Failed to load recent searches:', error);
+    logger.error('Failed to load recent searches', error as Error);
     return [];
   }
 }
@@ -82,7 +83,7 @@ function saveRecentSearch(query: string): void {
     const updated = [query, ...filtered].slice(0, MAX_RECENT_SEARCHES);
     localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
   } catch (error) {
-    console.error('Failed to save recent search:', error);
+    logger.error('Failed to save recent search', error as Error);
   }
 }
 
@@ -93,7 +94,7 @@ function clearRecentSearches(): void {
   try {
     localStorage.removeItem(RECENT_SEARCHES_KEY);
   } catch (error) {
-    console.error('Failed to clear recent searches:', error);
+    logger.error('Failed to clear recent searches', error as Error);
   }
 }
 
@@ -130,7 +131,7 @@ async function fetchSuggestions(query: string): Promise<SearchSuggestion[]> {
       count: undefined, // Backend doesn't return counts yet
     }));
   } catch (error) {
-    console.error('[fetchSuggestions] API error:', error);
+    logger.error('[fetchSuggestions] API error', error as Error);
 
     // Return empty array on error - graceful degradation
     // Users will still see recent searches and popular searches
@@ -159,7 +160,7 @@ async function getPopularSearches(): Promise<SearchSuggestion[]> {
       category: item.category || undefined,
     }));
   } catch (error) {
-    console.error('[getPopularSearches] Failed to fetch:', error);
+    logger.error('[getPopularSearches] Failed to fetch', error as Error);
 
     // Fallback to empty array - graceful degradation
     // Component will handle empty state
@@ -193,7 +194,7 @@ export function SearchSuggestions({
     getPopularSearches()
       .then(setPopularSearches)
       .catch((error) => {
-        console.error('Failed to load popular searches:', error);
+        logger.error('Failed to load popular searches', error as Error);
         setPopularSearches([]);
       });
   }, []);
@@ -216,7 +217,7 @@ export function SearchSuggestions({
         const results = await fetchSuggestions(query);
         setSuggestions(results.slice(0, maxSuggestions));
       } catch (error) {
-        console.error('Failed to fetch suggestions:', error);
+        logger.error('Failed to fetch suggestions', error as Error);
         setSuggestions([]);
       }
     }, DEBOUNCE_DELAY);

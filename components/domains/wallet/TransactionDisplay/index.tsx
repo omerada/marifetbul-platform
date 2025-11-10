@@ -28,6 +28,7 @@ import type {
   Transaction,
   TransactionFilters,
 } from '@/types/business/features/wallet';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 import { TableView } from './TableView';
 import { ListView } from './ListView';
@@ -192,8 +193,7 @@ export function TransactionDisplay({
       errorMessage="İşlem listesi yüklenirken bir sorun oluştu."
       showRetry={true}
       onError={(error, errorInfo) => {
-        // Additional error logging or reporting can be done here
-        console.error('TransactionDisplay error:', error, errorInfo);
+        logger.error('TransactionDisplay error', error as Error);
       }}
     >
       <div className={className}>
