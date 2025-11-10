@@ -3,23 +3,20 @@
 // ================================================
 // Consolidated date functions with best features from both implementations
 
-export function formatDate(
-  date: Date | string | number,
-  options?: Intl.DateTimeFormatOptions
-): string {
-  const d = new Date(date);
-  if (isNaN(d.getTime())) return 'Invalid Date';
+// Sprint 1 Cleanup: formatDate & formatDateTime removed - use from @/lib/shared/formatters
+// Import canonical implementations
+import {
+  formatDate as canonicalFormatDate,
+  formatRelativeTime as canonicalFormatRelativeTime,
+} from '@/lib/shared/formatters';
 
-  const defaultOptions: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    ...options,
-  };
+// Re-export canonical formatters
+export { canonicalFormatDate as formatDate };
 
-  return new Intl.DateTimeFormat('tr-TR', defaultOptions).format(d);
-}
-
+/**
+ * Format date with time
+ * Wrapper around canonical formatDate with includeTime option
+ */
 export function formatDateTime(
   date: Date | string | number,
   options?: Intl.DateTimeFormatOptions
@@ -27,47 +24,12 @@ export function formatDateTime(
   const d = new Date(date);
   if (isNaN(d.getTime())) return 'Invalid Date';
 
-  const defaultOptions: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    ...options,
-  };
-
-  return new Intl.DateTimeFormat('tr-TR', defaultOptions).format(d);
+  // Use canonical formatter with time included
+  return canonicalFormatDate(d, 'DATETIME', { includeTime: true, ...options });
 }
 
-export function formatRelativeTime(date: Date | string | number): string {
-  const d = new Date(date);
-  if (isNaN(d.getTime())) return 'Invalid Date';
-
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - d.getTime()) / 1000);
-
-  // Use Turkish manual formatting for better UX
-  if (diffInSeconds < 60) return 'az önce';
-  if (diffInSeconds < 3600) {
-    const minutes = Math.floor(diffInSeconds / 60);
-    return `${minutes} dakika önce`;
-  }
-  if (diffInSeconds < 86400) {
-    const hours = Math.floor(diffInSeconds / 3600);
-    return `${hours} saat önce`;
-  }
-  if (diffInSeconds < 2592000) {
-    const days = Math.floor(diffInSeconds / 86400);
-    return `${days} gün önce`;
-  }
-  if (diffInSeconds < 31536000) {
-    const months = Math.floor(diffInSeconds / 2592000);
-    return `${months} ay önce`;
-  }
-
-  const years = Math.floor(diffInSeconds / 31536000);
-  return `${years} yıl önce`;
-}
+// Use canonical formatRelativeTime
+export { canonicalFormatRelativeTime as formatRelativeTime };
 
 export function isValidDate(date: unknown): boolean {
   const d = new Date(date as string | number | Date);
@@ -252,9 +214,9 @@ export function parseTime(timeString: string): Date | null {
 
 // Default exports for convenience
 export const DateUtils = {
-  formatDate,
+  formatDate: canonicalFormatDate,
   formatDateTime,
-  formatRelativeTime,
+  formatRelativeTime: canonicalFormatRelativeTime,
   isValidDate,
   addDays,
   addMonths,

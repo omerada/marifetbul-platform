@@ -1,124 +1,101 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getBackendApiUrl } from '@/lib/config/api';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import { getUserPermissions as getRolePermissions } from '@/lib/infrastructure/security/permissions';
+import type { UserContext } from '@/lib/infrastructure/security/auth-utils';
 
 interface AdminUser {
   id: string;
   email: string;
-  role: 'admin' | 'super_admin' | 'user';
+  role: 'ADMIN' | 'MODERATOR' | 'FREELANCER' | 'EMPLOYER';
   permissions: string[];
   isActive: boolean;
 }
 
-// Define role-based permissions
-const ROLE_PERMISSIONS = {
-  super_admin: [
-    'admin:dashboard:view',
-    'admin:users:read',
-    'admin:users:write',
-    'admin:users:delete',
-    'admin:moderation:read',
-    'admin:moderation:write',
-    'admin:financial:read',
-    'admin:financial:write',
-    'admin:content:read',
-    'admin:content:write',
-    'admin:content:delete',
-    'admin:messaging:read',
-    'admin:messaging:write',
-    'admin:analytics:read',
-    'admin:reports:read',
-    'admin:reports:write',
-    'admin:system:read',
-    'admin:system:write',
-    'admin:security:read',
-    'admin:security:write',
-    'admin:settings:read',
-    'admin:settings:write',
-  ],
-  admin: [
-    'admin:dashboard:view',
-    'admin:users:read',
-    'admin:users:write',
-    'admin:moderation:read',
-    'admin:moderation:write',
-    'admin:financial:read',
-    'admin:content:read',
-    'admin:content:write',
-    'admin:messaging:read',
-    'admin:analytics:read',
-    'admin:reports:read',
-    'admin:settings:read',
-  ],
-  user: [],
-};
+// ================================================
+// ADMIN ROUTE PERMISSIONS
+// ================================================
+// Maps admin routes to required permissions from central permission system
+// Using permissions from lib/infrastructure/security/permissions.ts
+// ================================================
 
-// Define route permissions
 const ROUTE_PERMISSIONS: Record<string, string[]> = {
-  '/admin': ['admin:dashboard:view'],
-  '/admin/users': ['admin:users:read'],
-  '/admin/users/create': ['admin:users:write'],
-  '/admin/users/edit': ['admin:users:write'],
-  '/admin/users/delete': ['admin:users:delete'],
-  '/admin/users/verifications': ['admin:users:read'],
-  '/admin/users/groups': ['admin:users:read'],
-  '/admin/users/blocked': ['admin:users:read'],
+  '/admin': [], // Basic admin access (checked by role)
 
-  '/admin/analytics': ['admin:analytics:read'],
-  '/admin/analytics/users': ['admin:analytics:read'],
-  '/admin/analytics/financial': ['admin:analytics:read'],
-  '/admin/analytics/performance': ['admin:analytics:read'],
+  // User Management
+  '/admin/users': ['user.view'],
+  '/admin/users/create': ['user.create'],
+  '/admin/users/edit': ['user.edit'],
+  '/admin/users/delete': ['user.delete'],
+  '/admin/users/verifications': ['user.view'],
+  '/admin/users/groups': ['user.view'],
+  '/admin/users/blocked': ['user.view'],
 
-  '/admin/moderation': ['admin:moderation:read'],
-  '/admin/moderation/reports': ['admin:moderation:read'],
-  '/admin/moderation/rules': ['admin:moderation:write'],
-  '/admin/moderation/blocked': ['admin:moderation:read'],
+  // Analytics
+  '/admin/analytics': ['analytics.view'],
+  '/admin/analytics/users': ['analytics.view'],
+  '/admin/analytics/financial': ['revenue.view'],
+  '/admin/analytics/performance': ['analytics.view'],
 
-  '/admin/financial': ['admin:financial:read'],
-  '/admin/financial/payments': ['admin:financial:read'],
-  '/admin/financial/withdrawals': ['admin:financial:read'],
-  '/admin/financial/commissions': ['admin:financial:read'],
-  '/admin/financial/invoices': ['admin:financial:read'],
+  // Moderation
+  '/admin/moderation': ['content.moderate'],
+  '/admin/moderation/reports': ['report.view'],
+  '/admin/moderation/rules': ['content.moderate'],
+  '/admin/moderation/blocked': ['content.moderate'],
 
-  '/admin/content': ['admin:content:read'],
-  '/admin/content/jobs': ['admin:content:read'],
-  '/admin/content/packages': ['admin:content:read'],
-  '/admin/content/categories': ['admin:content:read'],
-  '/admin/content/pages': ['admin:content:read'],
-  '/admin/content/media': ['admin:content:read'],
+  // Financial
+  '/admin/financial': ['payment.view'],
+  '/admin/financial/payments': ['payment.view'],
+  '/admin/financial/withdrawals': ['payment.view'],
+  '/admin/financial/commissions': ['commission.manage'],
+  '/admin/financial/invoices': ['payment.view'],
 
-  '/admin/messaging': ['admin:messaging:read'],
-  '/admin/messaging/reports': ['admin:messaging:read'],
-  '/admin/messaging/system': ['admin:messaging:write'],
-  '/admin/messaging/blocked-words': ['admin:messaging:write'],
+  // Content
+  '/admin/content': ['content.moderate'],
+  '/admin/content/jobs': ['content.moderate'],
+  '/admin/content/packages': ['package.approve'],
+  '/admin/content/categories': ['category.manage'],
+  '/admin/content/pages': ['content.moderate'],
+  '/admin/content/media': ['content.moderate'],
 
-  '/admin/support': ['admin:messaging:read'],
-  '/admin/support/faq': ['admin:content:read'],
-  '/admin/support/knowledge-base': ['admin:content:read'],
-  '/admin/support/feedback': ['admin:messaging:read'],
+  // Messaging
+  '/admin/messaging': ['ticket.view'],
+  '/admin/messaging/reports': ['report.view'],
+  '/admin/messaging/system': ['ticket.respond'],
+  '/admin/messaging/blocked-words': ['content.moderate'],
 
-  '/admin/reports': ['admin:reports:read'],
-  '/admin/reports/daily': ['admin:reports:read'],
-  '/admin/reports/monthly': ['admin:reports:read'],
-  '/admin/reports/custom': ['admin:reports:write'],
-  '/admin/reports/performance': ['admin:reports:read'],
+  // Support
+  '/admin/support': ['ticket.view'],
+  '/admin/support/faq': ['content.moderate'],
+  '/admin/support/knowledge-base': ['content.moderate'],
+  '/admin/support/feedback': ['ticket.view'],
 
-  '/admin/system': ['admin:system:read'],
-  '/admin/system/health': ['admin:system:read'],
-  '/admin/system/backup': ['admin:system:write'],
-  '/admin/system/logs': ['admin:system:read'],
-  '/admin/system/performance': ['admin:system:read'],
+  // Reports
+  '/admin/reports': ['analytics.view'],
+  '/admin/reports/daily': ['analytics.view'],
+  '/admin/reports/monthly': ['analytics.view'],
+  '/admin/reports/custom': ['analytics.export'],
+  '/admin/reports/performance': ['analytics.view'],
 
-  '/admin/security': ['admin:security:read'],
-  '/admin/security/2fa': ['admin:security:write'],
-  '/admin/security/api-keys': ['admin:security:write'],
-  '/admin/security/logs': ['admin:security:read'],
+  // System
+  '/admin/system': ['system.health'],
+  '/admin/system/health': ['system.health'],
+  '/admin/system/backup': ['system.settings'],
+  '/admin/system/logs': ['system.logs'],
+  '/admin/system/performance': ['system.health'],
 
-  '/admin/settings': ['admin:settings:read'],
-  '/admin/settings/email': ['admin:settings:write'],
-  '/admin/settings/notifications': ['admin:settings:write'],
-  '/admin/settings/api': ['admin:settings:write'],
-  '/admin/settings/maintenance': ['admin:settings:write'],
+  // Security
+  '/admin/security': ['system.settings'],
+  '/admin/security/2fa': ['system.settings'],
+  '/admin/security/api-keys': ['system.settings'],
+  '/admin/security/logs': ['system.logs'],
+
+  // Settings
+  '/admin/settings': ['system.settings'],
+  '/admin/settings/email': ['system.settings'],
+  '/admin/settings/notifications': ['system.settings'],
+  '/admin/settings/api': ['system.settings'],
+  '/admin/settings/maintenance': ['system.settings'],
 };
 
 /**
@@ -129,8 +106,8 @@ export function hasPermission(
   userPermissions: string[],
   route: string
 ): boolean {
-  // Super admin has access to everything
-  if (userRole === 'super_admin') {
+  // Admin has access to everything
+  if (userRole === 'ADMIN') {
     return true;
   }
 
@@ -170,9 +147,17 @@ export function getRequiredPermissions(route: string): string[] {
 
 /**
  * Get user permissions based on role
+ * Uses central permission system
  */
 export function getUserPermissions(role: string): string[] {
-  return ROLE_PERMISSIONS[role as keyof typeof ROLE_PERMISSIONS] || [];
+  // Convert role to UserRole type and get permissions from central system
+  const userContext: UserContext = {
+    id: '',
+    email: '',
+    role: role as 'ADMIN' | 'MODERATOR' | 'EMPLOYER' | 'FREELANCER',
+  };
+
+  return getRolePermissions(userContext);
 }
 
 /**
@@ -230,7 +215,7 @@ export async function adminMiddleware(request: NextRequest) {
   }
 
   // Check if user has admin role
-  if (!['admin', 'super_admin'].includes(user.role)) {
+  if (user.role !== 'ADMIN' && user.role !== 'MODERATOR') {
     return NextResponse.redirect(new URL('/unauthorized', request.url));
   }
 
@@ -275,7 +260,7 @@ export async function adminApiMiddleware(request: NextRequest) {
     );
   }
 
-  if (!['admin', 'super_admin'].includes(user.role)) {
+  if (user.role !== 'ADMIN' && user.role !== 'MODERATOR') {
     return NextResponse.json(
       { error: 'Admin access required' },
       { status: 403 }
@@ -297,10 +282,11 @@ export function checkApiPermission(
   action: string,
   resource: string
 ): boolean {
-  const permission = `admin:${resource}:${action}`;
+  const permission = `${resource}.${action}`;
   const userPermissions = getUserPermissions(userRole);
 
-  if (userRole === 'super_admin') {
+  // Admin has all permissions
+  if (userRole === 'ADMIN') {
     return true;
   }
 
@@ -330,7 +316,7 @@ export function withAdminAuth(
       );
     }
 
-    if (!['admin', 'super_admin'].includes(user.role)) {
+    if (user.role !== 'ADMIN' && user.role !== 'MODERATOR') {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }
@@ -346,7 +332,7 @@ export function withAdminAuth(
       const userPermissions = getUserPermissions(user.role);
       if (
         !userPermissions.includes(requiredPermission) &&
-        user.role !== 'super_admin'
+        user.role !== 'ADMIN'
       ) {
         return NextResponse.json(
           { error: 'Insufficient permissions' },

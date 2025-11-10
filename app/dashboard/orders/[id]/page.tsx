@@ -42,11 +42,11 @@ import {
   ManualPaymentConfirmationForm,
   PaymentModeDisplay,
   MilestoneListCard,
-  MilestoneDeliveryForm,
   MilestoneAcceptancePanel,
   MilestoneCreationWizard,
   MilestoneEditForm,
   MilestoneDeletionModal,
+  UnifiedDeliveryButton,
 } from '@/components/domains/orders';
 import { RefundCreationForm } from '@/components/domains/refunds';
 import { StatusBadge } from '@/components/shared/StatusBadge';
@@ -87,8 +87,8 @@ export default function OrderDetailPage() {
   const [showRetryHistory, setShowRetryHistory] = useState(false);
 
   // Sprint 1.3: Milestone action modals
-  const [selectedMilestone, setSelectedMilestone] = useState<OrderMilestone | null>(null);
-  const [showDeliveryForm, setShowDeliveryForm] = useState(false);
+  const [selectedMilestone, setSelectedMilestone] =
+    useState<MilestoneResponse | null>(null);
   const [showAcceptancePanel, setShowAcceptancePanel] = useState(false);
 
   // Sprint 2: Milestone CRUD modals
@@ -327,7 +327,8 @@ export default function OrderDetailPage() {
   const handleManualPaymentSuccess = (updatedOrder: OrderResponse) => {
     setOrder(enrichOrder(updatedOrder));
     toast.success('Ödeme Onaylandı', {
-      description: 'Manuel ödeme başarıyla onaylandı. Artık işe başlayabilirsiniz.',
+      description:
+        'Manuel ödeme başarıyla onaylandı. Artık işe başlayabilirsiniz.',
     });
   };
 
@@ -404,13 +405,17 @@ export default function OrderDetailPage() {
   // ================================================
 
   // Handle edit milestone click
-  const handleEditMilestone = (milestone: OrderMilestone | MilestoneResponse) => {
+  const handleEditMilestone = (
+    milestone: OrderMilestone | MilestoneResponse
+  ) => {
     setSelectedMilestone(milestone as OrderMilestone);
     setShowEditForm(true);
   };
 
   // Handle delete milestone click
-  const handleDeleteMilestone = (milestone: OrderMilestone | MilestoneResponse) => {
+  const handleDeleteMilestone = (
+    milestone: OrderMilestone | MilestoneResponse
+  ) => {
     setSelectedMilestone(milestone as OrderMilestone);
     setShowDeletionModal(true);
   };
@@ -418,7 +423,7 @@ export default function OrderDetailPage() {
   // Handle milestone creation success
   const handleMilestoneCreated = () => {
     toast.success('Milestone Oluşturuldu', {
-      description: 'Milestone\'lar başarıyla oluşturuldu.',
+      description: "Milestone'lar başarıyla oluşturuldu.",
     });
     setShowCreationWizard(false);
     loadOrder(); // Reload to get updated milestones
@@ -621,34 +626,34 @@ export default function OrderDetailPage() {
           />
 
           {/* IBAN Display - Show for manual payment pending */}
-          {order.paymentMode === 'MANUAL_IBAN' && 
-           order.status === 'PENDING_PAYMENT' && 
-           order.sellerIban && (
-            <IBANDisplayCard
-              iban={order.sellerIban}
-              orderStatus={order.status}
-              userRole={userRole}
-              sellerName={order.seller?.fullName || order.seller?.username}
-              orderAmount={order.financials.total}
-              currency={order.financials.currency}
-              orderNumber={order.orderNumber}
-              isPaymentConfirmed={false}
-            />
-          )}
+          {order.paymentMode === 'MANUAL_IBAN' &&
+            order.status === 'PENDING_PAYMENT' &&
+            order.sellerIban && (
+              <IBANDisplayCard
+                iban={order.sellerIban}
+                orderStatus={order.status}
+                userRole={userRole}
+                sellerName={order.seller?.fullName || order.seller?.username}
+                orderAmount={order.financials.total}
+                currency={order.financials.currency}
+                orderNumber={order.orderNumber}
+                isPaymentConfirmed={false}
+              />
+            )}
 
           {/* Manual Payment Confirmation - Show for seller when payment pending */}
-          {order.paymentMode === 'MANUAL_IBAN' && 
-           order.status === 'PENDING_PAYMENT' && 
-           userRole === 'seller' && (
-            <ManualPaymentConfirmationForm
-              orderId={order.id}
-              orderNumber={order.orderNumber}
-              orderAmount={order.financials.total}
-              currency={order.financials.currency}
-              buyerName={order.buyer?.fullName || order.buyer?.username}
-              onSuccess={handleManualPaymentSuccess}
-            />
-          )}
+          {order.paymentMode === 'MANUAL_IBAN' &&
+            order.status === 'PENDING_PAYMENT' &&
+            userRole === 'seller' && (
+              <ManualPaymentConfirmationForm
+                orderId={order.id}
+                orderNumber={order.orderNumber}
+                orderAmount={order.financials.total}
+                currency={order.financials.currency}
+                buyerName={order.buyer?.fullName || order.buyer?.username}
+                onSuccess={handleManualPaymentSuccess}
+              />
+            )}
 
           {/* Dispute Information - Show if disputed */}
           {order.status === 'DISPUTED' && dispute && (
@@ -890,13 +895,18 @@ export default function OrderDetailPage() {
                   } catch (err) {
                     toast.error('Hata', {
                       description:
-                        err instanceof Error ? err.message : 'Başlatma başarısız',
+                        err instanceof Error
+                          ? err.message
+                          : 'Başlatma başarısız',
                     });
                   }
                 }}
-                onDeliverClick={(milestone) => {
-                  setSelectedMilestone(milestone);
-                  setShowDeliveryForm(true);
+                onDeliverClick={async (milestone) => {
+                  // onDeliverClick callback is now for post-delivery reload
+                  await loadOrder();
+                  toast.success('Başarılı', {
+                    description: 'Milestone teslim edildi',
+                  });
                 }}
                 onAcceptClick={(milestone) => {
                   setSelectedMilestone(milestone);
@@ -1018,9 +1028,12 @@ export default function OrderDetailPage() {
                   logger.error('Start milestone failed', error as Error);
                 }
               }}
-              onDeliverClick={(milestone) => {
-                setSelectedMilestone(milestone);
-                setShowDeliveryForm(true);
+              onDeliverClick={async (_milestone) => {
+                // onDeliverClick callback is now for post-delivery reload
+                await loadOrder();
+                toast.success('Başarılı', {
+                  description: 'Milestone teslim edildi',
+                });
               }}
               onAcceptClick={(milestone) => {
                 setSelectedMilestone(milestone);
@@ -1361,23 +1374,6 @@ export default function OrderDetailPage() {
           isOpen={showDisputeModal}
           onClose={() => setShowDisputeModal(false)}
           onSuccess={handleDisputeCreated}
-        />
-      )}
-
-      {/* Sprint 1.3: Milestone Delivery Form */}
-      {selectedMilestone && showDeliveryForm && (
-        <MilestoneDeliveryForm
-          milestone={selectedMilestone}
-          isOpen={showDeliveryForm}
-          onClose={() => {
-            setShowDeliveryForm(false);
-            setSelectedMilestone(null);
-          }}
-          onSuccess={async () => {
-            await loadOrder(); // Reload to get updated milestones
-            setShowDeliveryForm(false);
-            setSelectedMilestone(null);
-          }}
         />
       )}
 

@@ -21,19 +21,13 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import IyzicoProvider from '@/components/shared/IyzicoProvider';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { RequirementsForm } from '@/components/checkout/RequirementsForm';
-import { IyzicoCheckoutForm } from '@/components/checkout/IyzicoCheckoutForm';
-import {
-  PaymentModeSelector,
-  IBANDisplayCard,
-  PaymentProofUploadModal,
-} from '@/components/domains/payments';
-import type { PaymentMode } from '@/types/business/features/order';
+import { UnifiedCheckout } from '@/components/checkout/UnifiedCheckout';
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { PACKAGE_ENDPOINTS, ORDER_ENDPOINTS } from '@/lib/api/endpoints';
-import type { CheckoutSession } from '@/types/business/features/payments';
+import type { OrderResponse } from '@/types/backend-aligned';
+import type { CreateOrderMilestoneRequest } from '@/types/business/features/milestone';
 
 // Simple Package type for checkout
 interface Package {
@@ -52,12 +46,6 @@ interface Package {
   };
 }
 
-// Order response type
-interface OrderResponse {
-  id: string;
-  status: string;
-}
-
 export default function CheckoutPage() {
   const params = useParams();
   const router = useRouter();
@@ -66,10 +54,9 @@ export default function CheckoutPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [packageData, setPackageData] = useState<Package | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [paymentMode, setPaymentMode] = useState<PaymentMode>('ESCROW_PROTECTED');
-  const [checkoutSession, setCheckoutSession] =
-    useState<CheckoutSession | null>(null);
-  const [showProofUploadModal, setShowProofUploadModal] = useState(false);
+  const [orderResponse, setOrderResponse] = useState<OrderResponse | null>(
+    null
+  );
 
   // Load package data
   useEffect(() => {
@@ -95,41 +82,29 @@ export default function CheckoutPage() {
   }, [packageId]);
 
   // Handle order creation
-  const handleCreateOrder = async (requirements: string, notes?: string) => {
+  const handleCreateOrder = async (
+    requirements: string,
+    notes?: string,
+    milestones?: CreateOrderMilestoneRequest[]
+  ) => {
     if (!packageData) return;
 
     try {
       setIsLoading(true);
       setError(null);
 
-      // Create order with payment mode
-      const orderResponse = await apiClient.post<OrderResponse>(
+      // Create order
+      const response = await apiClient.post<OrderResponse>(
         ORDER_ENDPOINTS.CREATE,
         {
           packageId: packageData.id,
           requirements,
           notes,
-          paymentMode, // Include selected payment mode
+          milestones, // Sprint 1.1: Include milestones if provided
         }
       );
 
-      // Calculate delivery date
-      const deliveryDate = new Date();
-      deliveryDate.setDate(
-        deliveryDate.getDate() + (packageData.deliveryTime || 7)
-      );
-
-      // Set checkout session
-      setCheckoutSession({
-        orderId: orderResponse.id,
-        packageId: packageData.id,
-        amount: packageData.price,
-        currency: 'TRY',
-        deliveryDate: deliveryDate.toISOString(),
-        requirements,
-        notes,
-        paymentMode, // Pass payment mode to session
-      });
+      setOrderResponse(response);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Sipariş oluşturulamadı';
@@ -207,87 +182,41 @@ export default function CheckoutPage() {
             <div className="lg:col-span-1">
               <OrderSummary
                 packageData={packageData}
-                checkoutSession={checkoutSession}
+                checkoutSession={
+                  orderResponse
+                    ? {
+                        orderId: orderResponse.id,
+                        packageId: packageData.id,
+                        amount: packageData.price,
+                        currency: 'TRY',
+                        deliveryDate: new Date(
+                          Date.now() +
+                            (packageData.deliveryTime || 7) *
+                              24 *
+                              60 *
+                              60 *
+                              1000
+                        ).toISOString(),
+                      }
+                    : null
+                }
               />
             </div>
 
-            {/* Right Column - Payment Mode Selection, Requirements & Payment */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Step 1: Payment Mode Selection (only before checkout session) */}
-              {!checkoutSession && (
-                <div className="rounded-lg bg-white p-6 shadow-sm">
-                  <h2 className="mb-4 text-xl font-semibold text-gray-900">
-                    Ödeme Yöntemi Seçin
-                  </h2>
-                  <PaymentModeSelector
-                    selectedMode={paymentMode}
-                    onModeChange={setPaymentMode}
-                  />
-                </div>
-              )}
-
-              {/* Step 2: Requirements Form or Payment Processing */}
-              {!checkoutSession ? (
+            {/* Right Column - Requirements & Payment */}
+            <div className="lg:col-span-2">
+              {!orderResponse ? (
                 <RequirementsForm
                   packageData={packageData}
                   onSubmit={handleCreateOrder}
                   isLoading={isLoading}
                 />
-              ) : paymentMode === 'ESCROW_PROTECTED' ? (
-                <IyzicoProvider>
-                  <IyzicoCheckoutForm checkoutSession={checkoutSession} />
-                </IyzicoProvider>
               ) : (
-                // Manual IBAN Payment Flow
-                <div className="space-y-6">
-                  {/* IBAN Display Card */}
-                  <IBANDisplayCard
-                    orderId={checkoutSession.orderId}
-                    amount={packageData.price}
-                    currency="TRY"
-                    onCopy={() => {
-                      // Optional: Track copy events
-                      console.log('IBAN information copied');
-                    }}
-                  />
-
-                  {/* Upload Payment Proof Button */}
-                  <div className="rounded-lg bg-white p-6 shadow-sm">
-                    <h3 className="mb-4 text-lg font-semibold text-gray-900">
-                      Ödeme Kanıtı
-                    </h3>
-                    <p className="mb-4 text-sm text-gray-600">
-                      Havale/EFT işleminizi yaptıktan sonra dekontunuzu
-                      yükleyerek ödeme onayını hızlandırabilirsiniz.
-                    </p>
-                    <button
-                      onClick={() => setShowProofUploadModal(true)}
-                      className="w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    >
-                      Ödeme Kanıtı Yükle
-                    </button>
-                  </div>
-
-                  {/* Payment Proof Upload Modal */}
-                  <PaymentProofUploadModal
-                    orderId={checkoutSession.orderId}
-                    amount={packageData.price}
-                    currency="TRY"
-                    isOpen={showProofUploadModal}
-                    onClose={() => setShowProofUploadModal(false)}
-                    onUploadSuccess={(fileUrl) => {
-                      console.log('Payment proof uploaded:', fileUrl);
-                      // TODO: Update order status or show success message
-                      setShowProofUploadModal(false);
-                      // Optionally redirect to order tracking page
-                      // router.push(`/dashboard/orders/${checkoutSession.orderId}`);
-                    }}
-                    onUploadError={(error) => {
-                      console.error('Upload error:', error);
-                      // Error is already shown in modal
-                    }}
-                  />
-                </div>
+                <UnifiedCheckout
+                  isOpen={true}
+                  onClose={() => router.push('/dashboard/orders')}
+                  order={orderResponse}
+                />
               )}
             </div>
           </div>

@@ -20,7 +20,6 @@ import type {
   ModerationStats,
   ModerationQueueItem,
   ModerationActivity,
-  ModeratorActivitiesResponse,
   BlogCommentDto,
   CommentStatus,
   ReviewDto,
@@ -153,23 +152,6 @@ export async function getRecentActivities(
     ApiResponse<PageResponse<ModerationActivity>>
   >('/api/v1/moderation/activities', params);
 
-  return response.data;
-}
-
-/**
- * @deprecated Use getRecentActivities instead
- * Legacy endpoint for moderator activities
- */
-export async function getRecentActivitiesLegacy(
-  page = 1,
-  pageSize = 20
-): Promise<ModeratorActivitiesResponse> {
-  const response = await apiClient.get<
-    ApiResponse<ModeratorActivitiesResponse>
-  >('/api/v1/moderator/recent-activity', {
-    page: page.toString(),
-    pageSize: pageSize.toString(),
-  });
   return response.data;
 }
 

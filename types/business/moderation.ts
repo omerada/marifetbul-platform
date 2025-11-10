@@ -220,24 +220,6 @@ export interface ModerationActivity {
 }
 
 /**
- * Recent activity item (Legacy)
- * @deprecated Use ModerationActivity instead
- */
-export interface ModeratorActivity {
-  activityId: string;
-  moderatorId: string;
-  moderatorName: string;
-  actionType: ActionType;
-  targetType: string;
-  targetId: string;
-  description: string;
-  reason?: string;
-  timestamp: string;
-  affectedUserId?: string;
-  affectedUserName?: string;
-}
-
-/**
  * Action types
  */
 export enum ActionType {
@@ -258,16 +240,6 @@ export enum ActionType {
  */
 export interface PendingItemsResponse {
   items: PendingItem[];
-  total: number;
-  page: number;
-  pageSize: number;
-}
-
-/**
- * API response for recent activities
- */
-export interface ModeratorActivitiesResponse {
-  activities: ModeratorActivity[];
   total: number;
   page: number;
   pageSize: number;

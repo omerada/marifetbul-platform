@@ -32,8 +32,6 @@ import {
   ChevronDown,
   ChevronUp,
   AlertTriangle,
-  Calendar,
-  DollarSign,
   FileText,
   Edit,
   Trash2,
@@ -41,6 +39,7 @@ import {
 import type { MilestoneResponse } from '@/types/backend-aligned';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatDate } from '@/lib/shared/formatters';
+import { UnifiedDeliveryButton } from './UnifiedDeliveryButton';
 
 // ================================================
 // TYPES
@@ -201,7 +200,9 @@ export function MilestoneListCard({
   const releasedAmount = milestones
     .filter((m) => m.status === 'ACCEPTED' && m.paymentReleasedAt)
     .reduce((sum, m) => sum + m.amount, 0);
-  const completedCount = milestones.filter((m) => m.status === 'ACCEPTED').length;
+  const completedCount = milestones.filter(
+    (m) => m.status === 'ACCEPTED'
+  ).length;
 
   return (
     <Card className={cn('p-6', className)}>
@@ -248,7 +249,7 @@ export function MilestoneListCard({
                 config.borderColor,
                 config.bgColor,
                 isOverdue && 'border-red-300',
-                hasActions && 'ring-2 ring-blue-400 ring-opacity-30'
+                hasActions && 'ring-opacity-30 ring-2 ring-blue-400'
               )}
             >
               {/* Header */}
@@ -270,7 +271,7 @@ export function MilestoneListCard({
                   </div>
 
                   {/* Title & Info */}
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-medium text-gray-500">
                         Aşama {milestone.sequence}
@@ -322,7 +323,7 @@ export function MilestoneListCard({
 
               {/* Expanded Details */}
               {isExpanded && (
-                <div className="border-t border-gray-200 p-4 space-y-4">
+                <div className="space-y-4 border-t border-gray-200 p-4">
                   {/* Description */}
                   {milestone.description && (
                     <div>
@@ -338,11 +339,11 @@ export function MilestoneListCard({
                   {/* Delivery Notes */}
                   {milestone.deliveryNotes && (
                     <div>
-                      <label className="text-xs font-medium text-gray-600 flex items-center gap-1">
+                      <label className="flex items-center gap-1 text-xs font-medium text-gray-600">
                         <FileText className="h-3 w-3" />
                         Teslimat Notu
                       </label>
-                      <p className="mt-1 whitespace-pre-wrap rounded bg-white p-3 text-sm text-gray-900 border">
+                      <p className="mt-1 rounded border bg-white p-3 text-sm whitespace-pre-wrap text-gray-900">
                         {milestone.deliveryNotes}
                       </p>
                     </div>
@@ -371,7 +372,7 @@ export function MilestoneListCard({
                   )}
 
                   {/* Timeline */}
-                  <div className="space-y-2 rounded bg-white p-3 text-xs border">
+                  <div className="space-y-2 rounded border bg-white p-3 text-xs">
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Oluşturulma</span>
                       <span className="font-medium text-gray-900">
@@ -439,7 +440,7 @@ export function MilestoneListCard({
 
                         {milestone.status === 'PENDING' && onStartClick && (
                           <Button
-                            variant="default"
+                            variant="primary"
                             size="sm"
                             onClick={() => onStartClick(milestone)}
                           >
@@ -448,18 +449,22 @@ export function MilestoneListCard({
                           </Button>
                         )}
                         {(milestone.status === 'IN_PROGRESS' ||
-                          milestone.status === 'REVISION_REQUESTED') &&
-                          onDeliverClick && (
-                            <Button
-                              variant="default"
-                              size="sm"
-                              onClick={() => onDeliverClick(milestone)}
-                              className="bg-green-600 hover:bg-green-700"
-                            >
-                              <Package className="mr-1 h-4 w-4" />
-                              Teslim Et
-                            </Button>
-                          )}
+                          milestone.status === 'REVISION_REQUESTED') && (
+                          <UnifiedDeliveryButton
+                            mode="milestone"
+                            milestoneId={milestone.id}
+                            orderId={orderId}
+                            title="Teslim Et"
+                            subtitle={milestone.title}
+                            variant="primary"
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700"
+                            onSuccess={() => {
+                              // Parent will reload order after delivery
+                              onDeliverClick?.(milestone);
+                            }}
+                          />
+                        )}
                       </>
                     )}
 
@@ -469,7 +474,7 @@ export function MilestoneListCard({
                         <>
                           {onAcceptClick && (
                             <Button
-                              variant="default"
+                              variant="primary"
                               size="sm"
                               onClick={() => onAcceptClick(milestone)}
                               className="bg-green-600 hover:bg-green-700"

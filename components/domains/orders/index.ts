@@ -3,17 +3,25 @@
  * Sprint 1 Story 1.3: Consolidated from components/dashboard/orders and components/dashboard/client/orders
  */
 
-// Sprint 1: New action buttons
-export { DeliverOrderButton } from './DeliverOrderButton';
+// ================================================
+// UNIFIED DELIVERY COMPONENTS (Production-Ready)
+// ================================================
+export { UnifiedDeliveryButton } from './UnifiedDeliveryButton';
+export { UnifiedDeliveryModal } from './UnifiedDeliveryModal';
+export type { UnifiedDeliveryButtonProps } from './UnifiedDeliveryButton';
+export type {
+  UnifiedDeliveryModalProps,
+  DeliveryMode,
+} from './UnifiedDeliveryModal';
+
+// Sprint 1: Action buttons
 export { AcceptOrderButton } from './AcceptOrderButton';
 export { RequestRevisionButton } from './RequestRevisionButton';
 
 // Order workflow modals
-export { DeliverOrderModal } from './DeliverOrderModal';
 export { ApproveDeliveryModal } from './ApproveDeliveryModal';
 export { RequestRevisionModal } from './RequestRevisionModal';
 export { AcceptOrderModal } from './AcceptOrderModal';
-export { DeliverySubmissionModal } from './DeliverySubmissionModal';
 export { CancelOrderModal } from './CancelOrderModal';
 export { EscrowReleaseModal } from './EscrowReleaseModal';
 
@@ -41,9 +49,8 @@ export { MilestoneListCard } from './MilestoneListCard';
 export type { MilestoneListCardProps } from './MilestoneListCard';
 
 // Sprint 1 - Story 1.3: Milestone Delivery & Acceptance
-export { MilestoneDeliveryForm } from './MilestoneDeliveryForm';
+// Note: MilestoneDeliveryForm removed - Use UnifiedDeliveryModal with mode='milestone'
 export { MilestoneAcceptancePanel } from './MilestoneAcceptancePanel';
-export type { MilestoneDeliveryFormProps } from './MilestoneDeliveryForm';
 export type { MilestoneAcceptancePanelProps } from './MilestoneAcceptancePanel';
 
 // Sprint 2 - Story 2: Milestone Creation & Editing
@@ -75,8 +82,6 @@ export { RecentOrdersList } from './RecentOrdersList';
 export { OrderQuickActions } from './OrderQuickActions';
 export { OrderActivityLog } from './OrderActivityLog';
 export { OrderAttachmentsViewer } from './OrderAttachmentsViewer';
-export { AdvancedOrderFilters } from './AdvancedOrderFilters';
-export type { OrderFilterValues } from './AdvancedOrderFilters';
 export { OrderExportButton } from './OrderExportButton';
 
 // Order creation forms (Dual Payment System)
@@ -87,7 +92,6 @@ export type { OrderStats } from '@/types/business/features/orders';
 export type { OrderWorkflowStepperProps } from './OrderWorkflowStepper';
 export type { OrderActionsProps } from './OrderActions';
 export type { AcceptOrderModalProps } from './AcceptOrderModal';
-export type { DeliverySubmissionModalProps } from './DeliverySubmissionModal';
 export type { CancelOrderModalProps } from './CancelOrderModal';
 export type { OrderListFiltersProps } from './OrderListFilters';
 export type { OrderCardProps } from './OrderCard';

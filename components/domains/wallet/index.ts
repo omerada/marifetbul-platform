@@ -177,7 +177,11 @@ export type { TransactionDetailsModalProps } from './TransactionDetailsModal';
 // PayoutRequestWizard.tsx - DELETED
 // Replaced by: PayoutRequestFlow (active, 800 lines)
 // Migration complete: 2025-11-06
-// Note: PayoutRequestForm (core) exists but unused - consider integration
+// ============================================================================
+
+// ✅ PayoutRequestForm: Used in app/dashboard/wallet/payouts/request/page.tsx
+
+// ============================================================================
 // ================================================
 
 // Bank account management

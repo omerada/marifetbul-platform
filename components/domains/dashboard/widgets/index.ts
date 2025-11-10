@@ -27,6 +27,10 @@ export { WalletBalanceWidget } from './WalletBalanceWidget';
 // Chart components
 export { ChartWidget } from './ChartWidget';
 
+// Milestone components (Sprint 1 - Story 1.6)
+export { PendingMilestonesWidget } from './PendingMilestonesWidget';
+export { AwaitingAcceptanceWidget } from './AwaitingAcceptanceWidget';
+
 // Layout components
 export { DashboardHeader } from './DashboardHeader';
 export { DashboardSection } from './DashboardSection';

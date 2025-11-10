@@ -39,13 +39,14 @@ import {
 } from '@/lib/api/moderation';
 import type {
   ModerationStats,
-  ModeratorActivitiesResponse,
+  ModerationActivity,
   BlogCommentDto,
   ReviewDto,
   ReportDto,
   CommentStatus,
   UserModerationHistory,
 } from '@/types/business/moderation';
+import type { PageResponse } from '@/types/infrastructure/api';
 import { useToast } from '@/hooks/core/useToast';
 
 // ============================================================================
@@ -85,14 +86,19 @@ export function useModerationStats(refreshInterval = 30000) {
 /**
  * Hook for fetching recent moderator activities
  *
- * @param page - Page number (default: 1)
- * @param pageSize - Items per page (default: 20)
+ * REFACTORED: Sprint 1 - Uses production-ready ModerationActivity type
+ * Backend: GET /api/v1/moderation/activities (returns PageResponse<ModerationActivity>)
+ *
+ * @param page - Page number (0-indexed, default: 0)
+ * @param size - Items per page (default: 20)
+ * @param allModerators - Include all moderators' activities (admin only, default: false)
  * @param refreshInterval - Auto-refresh interval in milliseconds (default: 60000)
  * @returns Recent activities with pagination info
  */
 export function useRecentActivities(
-  page = 1,
-  pageSize = 20,
+  page = 0,
+  size = 20,
+  allModerators = false,
   refreshInterval = 60000
 ) {
   const {
@@ -100,9 +106,9 @@ export function useRecentActivities(
     error,
     isLoading,
     mutate: refresh,
-  } = useSWR<ModeratorActivitiesResponse>(
-    ['/api/v1/moderator/recent-activity', page, pageSize],
-    () => getRecentActivities(page, pageSize),
+  } = useSWR<PageResponse<ModerationActivity>>(
+    ['/api/v1/moderation/activities', page, size, allModerators],
+    () => getRecentActivities(page, size, allModerators),
     {
       refreshInterval,
       revalidateOnFocus: true,
@@ -111,10 +117,11 @@ export function useRecentActivities(
   );
 
   return {
-    activities: data?.activities ?? [],
-    total: data?.total ?? 0,
-    page: data?.page ?? 1,
-    pageSize: data?.pageSize ?? pageSize,
+    activities: data?.content ?? [],
+    total: data?.totalElements ?? 0,
+    page: data?.page ?? data?.pageNumber ?? 0,
+    size: data?.size ?? data?.pageSize ?? size,
+    totalPages: data?.totalPages ?? 0,
     isLoading,
     error,
     refresh,
@@ -363,6 +370,9 @@ export function useCommentActions() {
 
 /**
  * Hook for fetching pending reviews
+ *
+ * REFACTORED: Sprint 1 - Uses PageResponse<ReviewDto>
+ * Backend: GET /api/v1/moderation/reviews/pending
  */
 export function usePendingReviews(page = 0, size = 20) {
   const {
@@ -370,11 +380,8 @@ export function usePendingReviews(page = 0, size = 20) {
     error,
     isLoading,
     mutate: refresh,
-  } = useSWR<{
-    reviews: ReviewDto[];
-    total: number;
-  }>(
-    ['/api/v1/reviews/admin/pending', page, size],
+  } = useSWR<PageResponse<ReviewDto>>(
+    ['/api/v1/moderation/reviews/pending', page, size],
     () => getPendingReviews(page, size),
     {
       refreshInterval: 60000,
@@ -382,8 +389,8 @@ export function usePendingReviews(page = 0, size = 20) {
   );
 
   return {
-    reviews: data?.reviews ?? [],
-    total: data?.total ?? 0,
+    reviews: data?.content ?? [],
+    total: data?.totalElements ?? 0,
     isLoading,
     error,
     refresh,
@@ -392,6 +399,9 @@ export function usePendingReviews(page = 0, size = 20) {
 
 /**
  * Hook for fetching flagged reviews
+ *
+ * REFACTORED: Sprint 1 - Uses PageResponse<ReviewDto>
+ * Backend: GET /api/v1/moderation/reviews/flagged
  */
 export function useFlaggedReviews(page = 0, size = 20) {
   const {
@@ -399,16 +409,17 @@ export function useFlaggedReviews(page = 0, size = 20) {
     error,
     isLoading,
     mutate: refresh,
-  } = useSWR<{
-    reviews: ReviewDto[];
-    total: number;
-  }>(['/api/v1/reviews/admin/flagged', page, size], () =>
-    getFlaggedReviews(page, size)
+  } = useSWR<PageResponse<ReviewDto>>(
+    ['/api/v1/moderation/reviews/flagged', page, size],
+    () => getFlaggedReviews(page, size),
+    {
+      refreshInterval: 60000,
+    }
   );
 
   return {
-    reviews: data?.reviews ?? [],
-    total: data?.total ?? 0,
+    reviews: data?.content ?? [],
+    total: data?.totalElements ?? 0,
     isLoading,
     error,
     refresh,

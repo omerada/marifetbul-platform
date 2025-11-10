@@ -45,9 +45,11 @@ import {
   ActivityTimeline,
   QuickActions,
   WalletBalanceWidget,
+  PendingMilestonesWidget,
 } from '../widgets';
 import type { FreelancerDashboard } from '../types/dashboard.types';
-import { formatCurrency, formatCompactNumber } from '../utils';
+import { formatCompactNumber } from '../utils';
+import { formatCurrency } from '@/lib/shared/formatters';
 
 // ============================================================================
 // TYPES
@@ -98,7 +100,7 @@ function prepareStatsCards(data: FreelancerDashboard) {
       id: 'earnings',
       title: 'Toplam Kazanç',
       value: formatCurrency(data.earnings.total, data.earnings.currency),
-      subtitle: `${formatCurrency(data.earnings.available, data.earnings.currency, false)} müsait`,
+      subtitle: `${formatCurrency(data.earnings.available, data.earnings.currency, { useSymbol: false })} müsait`,
       icon: DollarSign,
       iconColor: 'text-green-600 dark:text-green-400',
       trend: data.earnings.trend,
