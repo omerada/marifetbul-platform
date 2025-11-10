@@ -28,6 +28,30 @@ export type { MilestoneRevisionModalProps } from './MilestoneRevisionModal';
 export type { RevisionHistoryTimelineProps } from './RevisionHistoryTimeline';
 export type { MilestoneProgressTrackerProps } from './MilestoneProgressTracker';
 
+// Sprint 1 - Story 1.1: Manual Payment & IBAN Display
+export { IBANDisplayCard } from './IBANDisplayCard';
+export { ManualPaymentConfirmationForm } from './ManualPaymentConfirmationForm';
+export type { IBANDisplayCardProps } from './IBANDisplayCard';
+export type { ManualPaymentConfirmationFormProps } from './ManualPaymentConfirmationForm';
+
+// Sprint 1 - Story 1.2: Milestone List & Progress Display
+export { MilestoneListCard } from './MilestoneListCard';
+export type { MilestoneListCardProps } from './MilestoneListCard';
+
+// Sprint 1 - Story 1.3: Milestone Delivery & Acceptance
+export { MilestoneDeliveryForm } from './MilestoneDeliveryForm';
+export { MilestoneAcceptancePanel } from './MilestoneAcceptancePanel';
+export type { MilestoneDeliveryFormProps } from './MilestoneDeliveryForm';
+export type { MilestoneAcceptancePanelProps } from './MilestoneAcceptancePanel';
+
+// Sprint 2 - Story 2: Milestone Creation & Editing
+export { MilestoneCreationWizard } from './MilestoneCreationWizard';
+export { MilestoneEditForm } from './MilestoneEditForm';
+export { MilestoneDeletionModal } from './MilestoneDeletionModal';
+export type { MilestoneCreationWizardProps } from './MilestoneCreationWizard';
+export type { MilestoneEditFormProps } from './MilestoneEditForm';
+export type { MilestoneDeletionModalProps } from './MilestoneDeletionModal';
+
 // Order UI components
 export {
   OrderReviewButton,
