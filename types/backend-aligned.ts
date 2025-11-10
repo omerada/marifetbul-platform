@@ -154,6 +154,97 @@ export interface OrderResponse {
   // Metadata
   createdAt: string;
   updatedAt: string;
+
+  // Milestones (for milestone-based projects)
+  milestones?: MilestoneResponse[];
+
+  // Seller's IBAN for manual payment (visible only to buyer after project started)
+  sellerIban?: string;
+}
+
+// ================================================
+// MILESTONE TYPES (MilestoneResponse.java)
+// ================================================
+
+/**
+ * Milestone Status Enum
+ * Backend: com.marifetbul.api.domain.order.entity.OrderMilestone.MilestoneStatus
+ */
+export type MilestoneStatus =
+  | 'PENDING'
+  | 'IN_PROGRESS'
+  | 'DELIVERED'
+  | 'REVISION_REQUESTED'
+  | 'ACCEPTED'
+  | 'CANCELED';
+
+/**
+ * Milestone Response (matches MilestoneResponse.java)
+ */
+export interface MilestoneResponse {
+  // Identity
+  id: string; // UUID
+  orderId: string; // UUID
+  orderNumber: string;
+  sequence: number;
+
+  // Details
+  title: string;
+  description?: string;
+  amount: number;
+  currency: string;
+
+  // Status
+  status: MilestoneStatus;
+  statusDisplay?: string;
+
+  // Timing
+  dueDate?: string; // ISO 8601
+  isOverdue?: boolean;
+
+  // Delivery
+  deliveryNotes?: string;
+  attachments?: string;
+  deliveredAt?: string;
+  acceptedAt?: string;
+  paymentReleasedAt?: string;
+
+  // Cancellation
+  canceledAt?: string;
+  cancellationReason?: string;
+
+  // Metadata
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Create Milestone Request
+ */
+export interface CreateMilestoneRequest {
+  sequence: number;
+  title: string;
+  description?: string;
+  amount: number;
+  dueDate?: string; // ISO 8601
+}
+
+/**
+ * Update Milestone Request
+ */
+export interface UpdateMilestoneRequest {
+  title?: string;
+  description?: string;
+  amount?: number;
+  dueDate?: string; // ISO 8601
+}
+
+/**
+ * Deliver Milestone Request
+ */
+export interface DeliverMilestoneRequest {
+  deliveryNotes: string;
+  attachments?: string;
 }
 
 /**
@@ -203,6 +294,102 @@ export interface OrderEvent {
   performedByName?: string;
   metadata?: Record<string, unknown>;
   createdAt: string;
+}
+
+// ================================================
+// MANUAL PAYMENT PROOF TYPES
+// ================================================
+
+/**
+ * Confirmation Status Enum
+ * Backend: ManualPaymentProof.ConfirmationStatus
+ */
+export type ConfirmationStatus = 'PENDING' | 'CONFIRMED' | 'REJECTED' | 'DISPUTED';
+
+/**
+ * Verification Status Enum
+ * Backend: ManualPaymentProof.VerificationStatus
+ */
+export type VerificationStatus = 
+  | 'PENDING' 
+  | 'AUTO_VERIFIED' 
+  | 'MANUALLY_VERIFIED' 
+  | 'REJECTED' 
+  | 'UNDER_REVIEW';
+
+/**
+ * Manual Payment Proof Response
+ * Matches: ManualPaymentProofResponse.java
+ */
+export interface ManualPaymentProofResponse {
+  // Identity
+  id: string; // UUID
+  orderId: string; // UUID
+  payerId: string; // UUID
+
+  // Payment Details
+  paymentReference: string;
+  proofFileUrl: string;
+
+  // Confirmation Status
+  buyerConfirmationStatus: ConfirmationStatus;
+  sellerConfirmationStatus: ConfirmationStatus;
+  platformVerificationStatus: VerificationStatus;
+
+  // Notes
+  buyerNotes?: string;
+  sellerNotes?: string;
+
+  // Timestamps
+  buyerConfirmedAt?: string; // ISO 8601
+  sellerConfirmedAt?: string; // ISO 8601
+  platformVerifiedAt?: string; // ISO 8601
+
+  // Security
+  fraudSuspected: boolean;
+  disputed: boolean;
+  disputeReason?: string;
+
+  // Metadata
+  createdAt: string; // ISO 8601
+  updatedAt: string; // ISO 8601
+
+  // Computed Fields
+  mutuallyConfirmed: boolean;
+  canAutoVerify: boolean;
+  expired: boolean;
+}
+
+/**
+ * Upload Payment Proof Request
+ * Matches: UploadPaymentProofRequest.java
+ */
+export interface UploadPaymentProofRequest {
+  paymentReference: string;
+  notes?: string;
+  proofFile: File; // MultipartFile in backend
+  payerIban?: string;
+  receiverIban?: string;
+  declaredAmount?: number;
+}
+
+/**
+ * Confirm Payment Proof Request
+ * Matches: ConfirmPaymentProofRequest.java
+ */
+export interface ConfirmPaymentProofRequest {
+  confirmed: boolean;
+  reason?: string;
+}
+
+/**
+ * Dispute Payment Proof Request
+ * Matches: DisputePaymentProofRequest.java
+ */
+export interface DisputePaymentProofRequest {
+  disputeReason: string;
+  supportingDocuments?: File[];
+  requestedResolution?: string;
 }
 
 // Re-export helper types and functions

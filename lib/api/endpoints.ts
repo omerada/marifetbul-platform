@@ -215,6 +215,7 @@ export const ORDER_ENDPOINTS = {
   START: (orderId: string) => `/orders/${orderId}/start`,
   DELIVER: (orderId: string) => `/orders/${orderId}/deliver`,
   ACCEPT_DELIVERY: (orderId: string) => `/orders/${orderId}/accept`,
+  CONFIRM_MANUAL_PAYMENT: (orderId: string) => `/orders/${orderId}/confirm-manual-payment`,
   REQUEST_REVISION: (orderId: string) => `/orders/${orderId}/revisions`, // Updated to match new API
   COMPLETE: (orderId: string) => `/orders/${orderId}/complete`,
 
@@ -230,6 +231,14 @@ export const ORDER_ENDPOINTS = {
 
   // Order Timeline
   GET_TIMELINE: (orderId: string) => `/orders/${orderId}/timeline`,
+
+  // Manual Payment Proofs
+  UPLOAD_PAYMENT_PROOF: (orderId: string) => `/orders/${orderId}/payment-proof`,
+  GET_PAYMENT_PROOF: (orderId: string) => `/orders/${orderId}/payment-proof`,
+  CONFIRM_PAYMENT_PROOF: (orderId: string) => `/orders/${orderId}/payment-proof/confirm`,
+  DISPUTE_PAYMENT_PROOF: (orderId: string) => `/orders/${orderId}/payment-proof/dispute`,
+  GET_PENDING_PAYMENT_PROOFS: '/orders/payment-proofs/pending',
+  VERIFY_PAYMENT_PROOF_ADMIN: (proofId: string) => `/orders/payment-proofs/${proofId}/verify`,
 
   // Admin
   ADMIN_ALL: '/admin/orders',

@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useJobDetail } from '@/hooks';
 import { formatJobBudget, getBudgetType } from '@/lib/utils';
+import { PaymentMode } from '@/types/business/features/order';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -26,6 +27,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { SocialShare } from '@/components/shared/social/SocialShare';
 import { JobProposalButton } from './JobProposalButton';
 import { ProposalCard } from './ProposalCard';
+import { AcceptProposalModal } from './AcceptProposalModal';
 import { Loading, SimpleErrorDisplay } from '@/components/ui';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
@@ -49,6 +51,13 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
   } = useJobDetail(jobId);
 
   const [isSaved, setIsSaved] = useState(false);
+  const [acceptModalOpen, setAcceptModalOpen] = useState(false);
+  const [selectedProposal, setSelectedProposal] = useState<{
+    id: string;
+    proposedBudget: number;
+    freelancerName: string;
+    freelancerId: string;
+  } | null>(null);
 
   if (isLoading) {
     return <Loading variant="skeleton" text="İş detayları yükleniyor..." />;
@@ -99,13 +108,67 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
     proposalId: string,
     action: 'accepted' | 'rejected'
   ) => {
+    if (action === 'rejected') {
+      try {
+        await updateProposalStatus(proposalId, action);
+      } catch (error) {
+        logger.error(
+          'Proposal action error:',
+          error instanceof Error ? error : new Error(String(error))
+        );
+      }
+    }
+    // For 'accepted', we'll use the modal
+  };
+
+  const handleAcceptClick = (proposal: any) => {
+    setSelectedProposal({
+      id: proposal.id,
+      proposedBudget: proposal.proposedBudget,
+      freelancerName: `${proposal.freelancer?.firstName || ''} ${proposal.freelancer?.lastName || ''}`,
+      freelancerId: proposal.freelancer?.id || '',
+    });
+    setAcceptModalOpen(true);
+  };
+
+  const handleAcceptProposal = async (paymentMode: PaymentMode) => {
+    if (!selectedProposal) return;
+
     try {
-      await updateProposalStatus(proposalId, action);
+      // Call the API with payment mode
+      const response = await fetch(
+        `/api/v1/proposals/${selectedProposal.id}/accept`,
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            paymentMode,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        logger.info('Proposal accepted successfully with payment mode:', paymentMode);
+        // Refresh job detail to get updated proposals
+        await refreshJobDetail();
+      } else {
+        throw new Error(data.error || 'Teklif kabul edilemedi');
+      }
     } catch (error) {
       logger.error(
-        'Proposal action error:',
+        'Failed to accept proposal:',
         error instanceof Error ? error : new Error(String(error))
       );
+      throw error;
     }
   };
 
@@ -324,9 +387,7 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
                     <ProposalCard
                       key={proposal.id}
                       proposal={proposal}
-                      onAccept={() =>
-                        handleProposalAction(proposal.id, 'accepted')
-                      }
+                      onAccept={() => handleAcceptClick(proposal)}
                       onReject={() =>
                         handleProposalAction(proposal.id, 'rejected')
                       }
@@ -466,6 +527,20 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
           </Card>
         </div>
       </div>
+
+      {/* Accept Proposal Modal */}
+      {selectedProposal && (
+        <AcceptProposalModal
+          isOpen={acceptModalOpen}
+          onClose={() => {
+            setAcceptModalOpen(false);
+            setSelectedProposal(null);
+          }}
+          onAccept={handleAcceptProposal}
+          proposal={selectedProposal}
+          sellerHasIban={true} // TODO: Fetch from seller profile
+        />
+      )}
     </div>
   );
 });

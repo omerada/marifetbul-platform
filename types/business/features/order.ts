@@ -8,10 +8,12 @@
  * - OrderResponse.java: com.marifetbul.api.domain.order.dto.OrderResponse
  * - OrderStatus.java: com.marifetbul.api.domain.order.entity.OrderStatus
  * - OrderType.java: com.marifetbul.api.domain.order.entity.OrderType
+ * - PaymentMode.java: com.marifetbul.api.domain.order.entity.PaymentMode
  *
- * @version 2.0.0 - Production Ready
+ * @version 2.1.0 - Dual Payment System
  * @author MarifetBul Development Team
  * @created Sprint 1 - Story 7 (Type Alignment)
+ * @updated Sprint X - Dual Payment System
  */
 
 // ================================================
@@ -25,6 +27,19 @@ export enum PackageTier {
   BASIC = 'BASIC',
   STANDARD = 'STANDARD',
   PREMIUM = 'PREMIUM',
+}
+
+/**
+ * Payment Mode Enum
+ * Backend: com.marifetbul.api.domain.order.entity.PaymentMode
+ * 
+ * @since Sprint X - Dual Payment System
+ */
+export enum PaymentMode {
+  /** Platform-managed escrow via iyzico payment gateway */
+  ESCROW_PROTECTED = 'ESCROW_PROTECTED',
+  /** Direct bank transfer with dual confirmation */
+  MANUAL_IBAN = 'MANUAL_IBAN',
 }
 
 /**
@@ -85,9 +100,6 @@ export enum OrderCancellationReason {
  */
 export enum Currency {
   TRY = 'TRY',
-  USD = 'USD',
-  EUR = 'EUR',
-  GBP = 'GBP',
 }
 
 // ================================================
@@ -110,6 +122,8 @@ export interface Order {
   type: OrderType;
   /** Current order status */
   status: OrderStatus;
+  /** Payment mode (escrow vs manual IBAN) */
+  paymentMode: PaymentMode;
 
   // ==================== Parties ====================
   /** Buyer (employer) UUID */
@@ -229,17 +243,63 @@ export interface OrderSummary {
 
 /**
  * Create Order Request
- * Backend: CreateOrderRequest.java
+ * Backend: CreateOrderRequest.java (base), CreatePackageOrderRequest.java
  */
 export interface CreateOrderRequest {
   /** Package UUID (required for PACKAGE_ORDER) */
   packageId: string;
   /** Package tier (BASIC, STANDARD, PREMIUM) */
   tier: PackageTier;
+  /** Payment mode */
+  paymentMode: PaymentMode;
   /** Order requirements/description */
   requirements: string;
   /** Custom requirements (optional) */
   customizations?: string;
+}
+
+/**
+ * Create Job Order Request
+ * Backend: CreateJobOrderRequest.java
+ * 
+ * @since Sprint X - Dual Payment System
+ */
+export interface CreateJobOrderRequest {
+  /** Job UUID */
+  jobId: string;
+  /** Seller (freelancer) UUID */
+  sellerId: string;
+  /** Payment mode */
+  paymentMode: PaymentMode;
+  /** Order amount */
+  amount: number;
+  /** Order requirements */
+  requirements: string;
+  /** Delivery deadline */
+  deadline: string; // ISO 8601 datetime
+  /** Additional notes (optional) */
+  notes?: string;
+}
+
+/**
+ * Create Package Order Request
+ * Backend: CreatePackageOrderRequest.java
+ * 
+ * @since Sprint X - Dual Payment System
+ */
+export interface CreatePackageOrderRequest {
+  /** Package UUID */
+  packageId: string;
+  /** Payment mode */
+  paymentMode: PaymentMode;
+  /** Order amount */
+  amount: number;
+  /** Package customizations (optional) */
+  customizations?: string;
+  /** Delivery deadline */
+  deadline: string; // ISO 8601 datetime
+  /** Additional notes (optional) */
+  notes?: string;
 }
 
 /**

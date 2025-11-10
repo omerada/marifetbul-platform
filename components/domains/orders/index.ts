@@ -53,6 +53,9 @@ export { AdvancedOrderFilters } from './AdvancedOrderFilters';
 export type { OrderFilterValues } from './AdvancedOrderFilters';
 export { OrderExportButton } from './OrderExportButton';
 
+// Order creation forms (Dual Payment System)
+export { CustomOrderForm } from './CustomOrderForm';
+
 // Type exports
 export type { OrderStats } from '@/types/business/features/orders';
 export type { OrderWorkflowStepperProps } from './OrderWorkflowStepper';

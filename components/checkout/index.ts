@@ -11,3 +11,4 @@
 export { OrderSummary } from './OrderSummary';
 export { RequirementsForm } from './RequirementsForm';
 export { IyzicoCheckoutForm } from './IyzicoCheckoutForm';
+export { PaymentModeSelector } from './PaymentModeSelector';

@@ -22,6 +22,7 @@ import type {
   RejectRevisionRequest,
   OrderRevisionResponse,
   CancelOrderRequest,
+  ConfirmManualPaymentRequest,
   OrderFilters,
 } from '@/lib/infrastructure/services/api/orderService';
 
@@ -37,6 +38,7 @@ export type {
   RejectRevisionRequest,
   OrderRevisionResponse,
   CancelOrderRequest,
+  ConfirmManualPaymentRequest,
   OrderFilters,
 };
 
@@ -104,6 +106,7 @@ export const orderApi = {
   // ==================== ORDER ACTIONS ====================
   acceptOrder: orderServiceInstance.acceptOrder.bind(orderServiceInstance),
   startOrder: orderServiceInstance.startOrder.bind(orderServiceInstance),
+  confirmManualPayment: orderServiceInstance.confirmManualPayment.bind(orderServiceInstance),
   submitDelivery:
     orderServiceInstance.submitDelivery.bind(orderServiceInstance),
   approveDelivery:
@@ -191,6 +194,7 @@ export const getBuyerOrders = orderApi.getBuyerOrders;
 export const getSellerOrders = orderApi.getSellerOrders;
 export const acceptOrder = orderApi.acceptOrder;
 export const startOrder = orderApi.startOrder;
+export const confirmManualPayment = orderApi.confirmManualPayment;
 export const submitDelivery = orderApi.submitDelivery;
 export const approveDelivery = orderApi.approveDelivery;
 export const requestRevision = orderApi.requestRevision;

@@ -1,13 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { PackageDetail } from '@/types';
+import { PaymentMode } from '@/types/business/features/order';
+import { getSellerPaymentStatus } from '@/lib/api/users';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
+import { PaymentModeSelector } from '@/components/checkout/PaymentModeSelector';
 import { ShoppingCart, CreditCard, Calendar, FileText } from 'lucide-react';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
@@ -22,6 +25,7 @@ const orderSchema = z.object({
     .string()
     .min(5, 'İletişim bilgisi gereklidir')
     .max(100, 'İletişim bilgisi çok uzun'),
+  paymentMode: z.nativeEnum(PaymentMode),
 });
 
 type OrderFormData = z.infer<typeof orderSchema>;
@@ -46,14 +50,45 @@ export function OrderForm({
 }: OrderFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [paymentMode, setPaymentMode] = useState<PaymentMode>(PaymentMode.ESCROW_PROTECTED);
+  const [sellerHasIban, setSellerHasIban] = useState(false);
+  const [isLoadingPaymentStatus, setIsLoadingPaymentStatus] = useState(true);
+
+  // Fetch seller payment status on component mount
+  useEffect(() => {
+    const fetchSellerPaymentStatus = async () => {
+      if (!servicePackage.seller?.id) return;
+
+      try {
+        const status = await getSellerPaymentStatus(servicePackage.seller.id);
+        setSellerHasIban(status.hasValidIban);
+        logger.debug('Seller payment status fetched:', status);
+      } catch (error) {
+        logger.error(
+          'Failed to fetch seller payment status:',
+          error instanceof Error ? error : new Error(String(error))
+        );
+        // Default to false if fetch fails
+        setSellerHasIban(false);
+      } finally {
+        setIsLoadingPaymentStatus(false);
+      }
+    };
+
+    fetchSellerPaymentStatus();
+  }, [servicePackage.seller?.id]);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
+    setValue,
   } = useForm<OrderFormData>({
     resolver: zodResolver(orderSchema),
+    defaultValues: {
+      paymentMode: PaymentMode.ESCROW_PROTECTED,
+    },
   });
 
   const requirements = watch('requirements');
@@ -87,6 +122,7 @@ export function OrderForm({
       logger.debug('Order submitted:', {
         servicePackageId: servicePackage.id,
         data,
+        paymentMode: data.paymentMode,
         selectedServices,
         total: calculateFees().grandTotal,
       });
@@ -270,32 +306,19 @@ export function OrderForm({
         </div>
       </Card>
 
-      {/* Payment Method */}
-      <div>
-        <label className="mb-3 block text-sm font-medium text-gray-700">
-          Ödeme Yöntemi
-        </label>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <div className="rounded-lg border border-blue-500 bg-blue-50 p-3">
-            <div className="flex items-center">
-              <CreditCard className="mr-2 h-5 w-5 text-blue-600" />
-              <div>
-                <div className="font-medium text-blue-900">Kredi Kartı</div>
-                <div className="text-xs text-blue-700">Güvenli ödeme</div>
-              </div>
-            </div>
-          </div>
-          <div className="rounded-lg border border-gray-200 p-3 opacity-50">
-            <div className="flex items-center">
-              <FileText className="mr-2 h-5 w-5 text-gray-400" />
-              <div>
-                <div className="font-medium text-gray-500">Havale/EFT</div>
-                <div className="text-xs text-gray-400">Yakında</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Payment Mode Selector */}
+      <PaymentModeSelector
+        value={paymentMode}
+        onChange={(mode) => {
+          setPaymentMode(mode);
+          setValue('paymentMode', mode);
+        }}
+        orderAmount={grandTotal}
+        platformFeePercentage={5}
+        sellerHasIban={sellerHasIban}
+        sellerName={`${servicePackage.seller?.firstName} ${servicePackage.seller?.lastName}`}
+        disabled={isLoadingPaymentStatus}
+      />
 
       {/* Terms */}
       <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">

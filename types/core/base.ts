@@ -27,6 +27,7 @@ export interface User {
    * Backend: com.marifetbul.api.domain.user.entity.UserRole
    */
   role?: UserRole;
+  iban?: string; // IBAN for manual payment (service providers)
   phone?: string;
   location?: string;
   bio?: string;

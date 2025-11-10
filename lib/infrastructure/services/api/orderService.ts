@@ -22,6 +22,7 @@ import type {
   OrderEvent,
   OrderStatus,
 } from '@/types/backend-aligned';
+import type { PaymentMode } from '@/types/business/features/order';
 
 // ================================================
 // REQUEST TYPES
@@ -30,6 +31,7 @@ import type {
 export interface CreateJobOrderRequest {
   jobId: string;
   sellerId: string;
+  paymentMode: PaymentMode; // Dual Payment System
   amount: number;
   requirements?: string;
   deadline: string; // ISO 8601
@@ -37,6 +39,7 @@ export interface CreateJobOrderRequest {
 
 export interface CreatePackageOrderRequest {
   packageId: string;
+  paymentMode: PaymentMode; // Dual Payment System
   amount: number;
   tier?: string;
   customizations?: string;
@@ -51,6 +54,7 @@ export interface CreateCustomOrderRequest {
   description: string;
   amount: number;
   requirements: string;
+  paymentMode: PaymentMode; // Dual Payment System
   deadline: string;
 }
 
@@ -102,6 +106,11 @@ export interface OrderRevisionResponse {
 export interface CancelOrderRequest {
   reason: string;
   note?: string;
+}
+
+export interface ConfirmManualPaymentRequest {
+  paymentReference: string;
+  notes?: string;
 }
 
 export interface OrderFilters {
@@ -291,6 +300,20 @@ class OrderService {
     return apiClient.post<ApiResponse<OrderResponse>>(
       ORDER_ENDPOINTS.START(orderId),
       {}
+    );
+  }
+
+  /**
+   * Confirm manual payment reception (seller action)
+   * POST /api/v1/orders/:orderId/confirm-manual-payment
+   */
+  async confirmManualPayment(
+    orderId: string,
+    request: ConfirmManualPaymentRequest
+  ): Promise<ApiResponse<OrderResponse>> {
+    return apiClient.put<ApiResponse<OrderResponse>>(
+      ORDER_ENDPOINTS.CONFIRM_MANUAL_PAYMENT(orderId),
+      request
     );
   }
 
@@ -493,6 +516,111 @@ class OrderService {
       ORDER_ENDPOINTS.ADMIN_RESOLVE(orderId),
       resolution
     );
+  }
+
+  // ==================== MANUAL PAYMENT PROOF METHODS ====================
+
+  /**
+   * Upload payment proof (buyer)
+   * POST /api/v1/orders/:orderId/payment-proof
+   */
+  async uploadPaymentProof(
+    orderId: string,
+    request: {
+      paymentReference: string;
+      notes?: string;
+      proofFile: File;
+      payerIban?: string;
+      receiverIban?: string;
+      declaredAmount?: number;
+    }
+  ): Promise<ApiResponse<import('@/types/backend-aligned').ManualPaymentProofResponse>> {
+    const formData = new FormData();
+    formData.append('paymentReference', request.paymentReference);
+    if (request.notes) formData.append('notes', request.notes);
+    formData.append('proofFile', request.proofFile);
+    if (request.payerIban) formData.append('payerIban', request.payerIban);
+    if (request.receiverIban) formData.append('receiverIban', request.receiverIban);
+    if (request.declaredAmount) formData.append('declaredAmount', String(request.declaredAmount));
+
+    return apiClient.post(ORDER_ENDPOINTS.UPLOAD_PAYMENT_PROOF(orderId), formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  }
+
+  /**
+   * Get payment proof for order
+   * GET /api/v1/orders/:orderId/payment-proof
+   */
+  async getPaymentProof(
+    orderId: string
+  ): Promise<ApiResponse<import('@/types/backend-aligned').ManualPaymentProofResponse>> {
+    return apiClient.get(ORDER_ENDPOINTS.GET_PAYMENT_PROOF(orderId));
+  }
+
+  /**
+   * Confirm payment proof (seller)
+   * PUT /api/v1/orders/:orderId/payment-proof/confirm
+   */
+  async confirmPaymentProof(
+    orderId: string,
+    request: {
+      confirmed: boolean;
+      reason?: string;
+    }
+  ): Promise<ApiResponse<import('@/types/backend-aligned').ManualPaymentProofResponse>> {
+    return apiClient.put(ORDER_ENDPOINTS.CONFIRM_PAYMENT_PROOF(orderId), request);
+  }
+
+  /**
+   * Dispute payment proof
+   * POST /api/v1/orders/:orderId/payment-proof/dispute
+   */
+  async disputePaymentProof(
+    orderId: string,
+    request: {
+      disputeReason: string;
+      supportingDocuments?: File[];
+      requestedResolution?: string;
+    }
+  ): Promise<ApiResponse<import('@/types/backend-aligned').ManualPaymentProofResponse>> {
+    const formData = new FormData();
+    formData.append('disputeReason', request.disputeReason);
+    if (request.requestedResolution) {
+      formData.append('requestedResolution', request.requestedResolution);
+    }
+    if (request.supportingDocuments) {
+      request.supportingDocuments.forEach((file, index) => {
+        formData.append(`supportingDocuments[${index}]`, file);
+      });
+    }
+
+    return apiClient.post(ORDER_ENDPOINTS.DISPUTE_PAYMENT_PROOF(orderId), formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  }
+
+  /**
+   * Get pending payment confirmations (seller)
+   * GET /api/v1/orders/payment-proofs/pending
+   */
+  async getPendingPaymentProofs(): Promise<
+    ApiResponse<import('@/types/backend-aligned').ManualPaymentProofResponse[]>
+  > {
+    return apiClient.get(ORDER_ENDPOINTS.GET_PENDING_PAYMENT_PROOFS);
+  }
+
+  /**
+   * Verify payment proof manually (admin)
+   * PUT /api/v1/orders/payment-proofs/:proofId/verify
+   */
+  async verifyPaymentProofAdmin(
+    proofId: string,
+    approved: boolean,
+    notes?: string
+  ): Promise<ApiResponse<import('@/types/backend-aligned').ManualPaymentProofResponse>> {
+    const url = `${ORDER_ENDPOINTS.VERIFY_PAYMENT_PROOF_ADMIN(proofId)}?approved=${approved}${notes ? `&notes=${encodeURIComponent(notes)}` : ''}`;
+    return apiClient.put(url, null);
   }
 
   // ==================== HELPER METHODS ====================
