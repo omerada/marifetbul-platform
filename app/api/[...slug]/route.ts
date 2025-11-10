@@ -86,7 +86,7 @@ async function proxyToBackend(request: Request, method: string) {
       headers: responseHeaders,
     });
   } catch (error) {
-    console.error('[API Proxy] Error:', error);
+    logger.error('[API Proxy] Error:', error instanceof Error ? error : new Error(String(error)));
     return new Response(
       JSON.stringify({
         success: false,

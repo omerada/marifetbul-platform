@@ -37,13 +37,8 @@ const eslintConfig = [
       'jsx-a11y/alt-text': 'warn', // Allow alt text warnings
       '@next/next/no-img-element': 'warn', // Allow img element warnings
       'react-hooks/exhaustive-deps': 'warn', // Allow hook dependency warnings
-      // Sprint Day 1 - Task 1.3: Enforce logger usage instead of console
-      'no-console': [
-        'error',
-        {
-          allow: ['warn', 'error'], // Allow console.warn and console.error for critical issues
-        },
-      ],
+      // Sprint 1 - Task 4: Enforce logger usage - NO console.* allowed
+      'no-console': 'error', // Strict enforcement: Use logger instead
     },
   },
 ];

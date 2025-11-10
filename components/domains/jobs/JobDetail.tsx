@@ -26,8 +26,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { SocialShare } from '@/components/shared/social/SocialShare';
 import { JobProposalButton } from './JobProposalButton';
 import { ProposalCard } from './ProposalCard';
-import { Loading } from '@/components/ui';
-import { ErrorState } from '@/components/shared/utilities';
+import { Loading, SimpleErrorDisplay } from '@/components/ui';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface JobDetailProps {
@@ -57,8 +56,8 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
 
   if (error || !currentJob) {
     return (
-      <ErrorState
-        message={error || 'İş ilanı bulunamadı'}
+      <SimpleErrorDisplay
+        error={error || 'İş ilanı bulunamadı'}
         onRetry={refreshJobDetail}
       />
     );

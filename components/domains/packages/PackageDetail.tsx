@@ -26,8 +26,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
-import { ErrorState } from '@/components/shared/utilities';
-import { Loading } from '@/components/ui';
+import { SimpleErrorDisplay, Loading } from '@/components/ui';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface PackageDetailProps {
@@ -59,8 +58,8 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
 
   if (error || !currentPackage) {
     return (
-      <ErrorState
-        message={error || 'Paket bulunamadı'}
+      <SimpleErrorDisplay
+        error={error || 'Paket bulunamadı'}
         onRetry={refreshPackageDetail}
       />
     );
@@ -75,7 +74,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
 
   if (!isPackageDetail(currentPackage)) {
     return (
-      <ErrorState
+      <SimpleErrorDisplay
         message="Bu paket için detay görünümü mevcut değil"
         onRetry={refreshPackageDetail}
       />

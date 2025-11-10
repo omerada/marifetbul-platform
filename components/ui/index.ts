@@ -38,7 +38,7 @@ export {
   useLoadingState,
 } from './UnifiedLoadingSystem';
 
-// Error System
+// Error System - Production Ready
 export {
   UnifiedErrorBoundary as ErrorBoundary,
   UnifiedErrorBoundary,
@@ -47,6 +47,7 @@ export {
   ErrorBoundaryConfigProvider,
   useErrorBoundaryConfig,
 } from './UnifiedErrorBoundary';
+export { SimpleErrorDisplay } from './SimpleErrorDisplay';
 
 // New Error Boundary System - Sprint EPIC 4
 export {

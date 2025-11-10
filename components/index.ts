@@ -68,7 +68,7 @@ export {
   AnimatedInteractions,
   LocationPicker,
   MapView,
-  ErrorState,
+  // ErrorState, // REMOVED - Use SimpleErrorDisplay from @/components/ui instead
 } from './shared';
 
 // ================================================

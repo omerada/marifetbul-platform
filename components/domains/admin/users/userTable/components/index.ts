@@ -12,4 +12,5 @@ export { ActionMenu } from './ActionMenu';
 export { TablePagination } from './TablePagination';
 export { EmptyState } from './EmptyState';
 export { LoadingState } from './LoadingState';
-export { ErrorState } from './ErrorState';
+// Error Handling - REMOVED (Use SimpleErrorDisplay from @/components/ui instead)
+// Deprecated: ErrorState removed - use SimpleErrorDisplay or UnifiedErrorBoundary

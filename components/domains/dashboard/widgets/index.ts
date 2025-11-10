@@ -33,7 +33,8 @@ export { DashboardSection } from './DashboardSection';
 
 // State components
 export { EmptyState } from './EmptyState';
-export { ErrorState } from './ErrorState';
+// Error Handling - REMOVED (Use SimpleErrorDisplay from @/components/ui instead)
+// Deprecated: ErrorState removed - use SimpleErrorDisplay or UnifiedErrorBoundary
 export {
   LoadingState as DashboardLoadingState,
   CardLoadingSkeleton,

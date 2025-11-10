@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * Server action to release payment from escrow
@@ -60,7 +61,7 @@ export async function releasePaymentFromEscrow(orderId: string): Promise<{
       message: data.message || 'Ödeme başarıyla serbest bırakıldı',
     };
   } catch (error) {
-    console.error('Error releasing payment from escrow:', error);
+    logger.error('Error releasing payment from escrow:', error instanceof Error ? error : new Error(String(error)));
     return {
       success: false,
       message: 'Bir hata oluştu. Lütfen tekrar deneyin.',

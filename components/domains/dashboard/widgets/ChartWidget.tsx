@@ -45,7 +45,7 @@ import type {
   ChartConfig,
 } from '../types/dashboard.types';
 import { EmptyState } from './EmptyState';
-import { ErrorState } from './ErrorState';
+import { SimpleErrorDisplay } from '@/components/ui/SimpleErrorDisplay';
 import { Skeleton } from '@/components/ui/UnifiedSkeleton';
 
 // ============================================================================
@@ -430,13 +430,8 @@ export const ChartWidget = memo<ChartWidgetProps>(
     if (error) {
       return (
         <div className={className}>
-          <ErrorState
-            error={{
-              message: error,
-              code: 'CHART_ERROR',
-              timestamp: new Date(),
-              recoverable: true,
-            }}
+          <SimpleErrorDisplay
+            error={error}
             className="py-8"
           />
         </div>

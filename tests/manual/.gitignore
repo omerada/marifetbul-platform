@@ -1,0 +1,29 @@
+# Tests Manual - .gitignore
+
+# Test output files
+*.test.json
+*.mock.json
+
+# Test results
+test-results/
+screenshots/
+videos/
+
+# Local test data
+local-data/
+temp/
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Environment files with test credentials
+.env.test.local
+
+# IDE specific
+.vscode/settings.json
+.idea/
+
+# OS specific
+.DS_Store
+Thumbs.db

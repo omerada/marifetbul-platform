@@ -27,5 +27,5 @@ export { AnimatedInteractions } from './AnimatedInteractions';
 export { LocationPicker } from './LocationPicker';
 export { MapView } from './MapView';
 
-// Error Handling
-export { ErrorState } from './ErrorState';
+// Error Handling - REMOVED (Use SimpleErrorDisplay from @/components/ui instead)
+// Deprecated: ErrorState removed - use SimpleErrorDisplay or UnifiedErrorBoundary

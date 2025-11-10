@@ -21,7 +21,7 @@ import type {
 import { MarketplaceList } from './MarketplaceList';
 import { Pagination } from '@/components/ui/Pagination';
 import { MobileMarketplace } from './MobileMarketplace';
-import { ErrorState } from '@/components/shared/utilities';
+import { SimpleErrorDisplay } from '@/components/ui/SimpleErrorDisplay';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
@@ -209,11 +209,9 @@ export function MarketplacePage() {
 
   if (error) {
     return (
-      <ErrorState
-        title="Marketplace Yüklenemedi"
-        message={error}
+      <SimpleErrorDisplay
+        error={error}
         onRetry={handleRefresh}
-        variant="full"
       />
     );
   }

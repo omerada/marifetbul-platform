@@ -21,7 +21,7 @@ import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { LoadingState } from './LoadingState';
-import { ErrorState } from './ErrorState';
+import { SimpleErrorDisplay } from '@/components/ui/SimpleErrorDisplay';
 import type { DashboardSectionProps } from '../types/dashboard.types';
 
 /**
@@ -119,13 +119,7 @@ export function DashboardSection({
 
           {/* Error state */}
           {!isLoading && error && (
-            <ErrorState
-              error={{
-                message: error,
-                timestamp: new Date(),
-                recoverable: false,
-              }}
-            />
+            <SimpleErrorDisplay error={error} />
           )}
 
           {/* Actual content */}

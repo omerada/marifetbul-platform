@@ -44,8 +44,8 @@ import {
   TablePagination,
   EmptyState,
   LoadingState,
-  ErrorState,
 } from './userTable/components';
+import { SimpleErrorDisplay } from '@/components/ui/SimpleErrorDisplay';
 import { useUserTableActions } from './userTable/hooks/useUserTableActions';
 import { formatUserName } from './userTable/utils/userTableHelpers';
 import { UserActivityTimeline } from './UserActivityTimeline';
@@ -131,7 +131,7 @@ export function UserTable({ className }: UserTableProps) {
 
   // Error state
   if (error) {
-    return <ErrorState error={error} className={className} />;
+    return <SimpleErrorDisplay error={error} className={className} />;
   }
 
   return (

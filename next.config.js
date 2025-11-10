@@ -238,7 +238,7 @@ const nextConfig = {
   },
 
   // ================================================
-  // API PROXY CONFIGURATION
+  // API PROXY & TEST ROUTE CONFIGURATION
   // ================================================
   async rewrites() {
     // Proxy API requests to backend server
@@ -248,7 +248,7 @@ const nextConfig = {
 
     console.log('[Next.js] API proxy configured:', backendUrl);
 
-    return [
+    const rewrites = [
       {
         source: '/api/v1/:path*',
         destination: `${backendUrl}/api/v1/:path*`,
@@ -258,6 +258,20 @@ const nextConfig = {
         destination: `${backendUrl}/api/:path*`,
       },
     ];
+
+    // Development-only: Enable test routes
+    // PRODUCTION: Test routes are EXCLUDED from build
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Next.js] 🧪 Test routes ENABLED (development mode)');
+      rewrites.push({
+        source: '/test/:path*',
+        destination: '/tests/manual/:path*',
+      });
+    } else {
+      console.log('[Next.js] 🔒 Test routes EXCLUDED (production mode)');
+    }
+
+    return rewrites;
   },
 
   // ================================================
@@ -349,7 +363,7 @@ const nextConfig = {
   turbopack: {},
 
   // ================================================
-  // WEBPACK CONFIGURATION (Bundle Analysis)
+  // WEBPACK CONFIGURATION (Production Optimization)
   // ================================================
   webpack: (config, { isServer }) => {
     // Bundle analyzer configuration
@@ -366,12 +380,27 @@ const nextConfig = {
       );
     }
 
-    // Exclude test files from production bundle
-    if (!isServer && process.env.NODE_ENV === 'production') {
-      config.module.rules.push({
-        test: /\.(test|spec)\.(ts|tsx|js|jsx)$/,
-        loader: 'ignore-loader',
-      });
+    // PRODUCTION OPTIMIZATION: Exclude test files and directories
+    if (process.env.NODE_ENV === 'production') {
+      // Exclude test files
+      if (!isServer) {
+        config.module.rules.push({
+          test: /\.(test|spec)\.(ts|tsx|js|jsx)$/,
+          loader: 'ignore-loader',
+        });
+      }
+
+      // Exclude test directories from bundle
+      config.externals = config.externals || [];
+      if (Array.isArray(config.externals)) {
+        config.externals.push({
+          './tests/manual/**': 'commonjs ./tests/manual/**',
+          './app/test/**': 'commonjs ./app/test/**',
+          './__tests__/**': 'commonjs ./__tests__/**',
+        });
+      }
+
+      console.log('[Next.js] 🗜️  Production bundle optimization: Test files excluded');
     }
 
     return config;
