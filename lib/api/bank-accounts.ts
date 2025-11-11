@@ -175,7 +175,7 @@ export async function removeBankAccount(id: string): Promise<void> {
 /**
  * Get pending bank accounts for verification (Admin only)
  *
- * GET /api/v1/admin/bank-accounts/pending
+ * GET /api/v1/bank-accounts/admin/pending
  *
  * @param params Pagination and sorting parameters
  * @returns Paginated pending accounts
@@ -205,7 +205,7 @@ export async function getPendingBankAccounts(params?: {
     totalPages: number;
     size: number;
     number: number;
-  }>('/v1/admin/bank-accounts/pending', {
+  }>('/v1/bank-accounts/admin/pending', {
     page: page.toString(),
     size: size.toString(),
     sortBy,
@@ -216,7 +216,7 @@ export async function getPendingBankAccounts(params?: {
 /**
  * Verify bank account (Admin only)
  *
- * PUT /api/v1/admin/bank-accounts/{id}/verify
+ * PUT /api/v1/bank-accounts/admin/{id}/verify
  *
  * @param id Bank account ID
  * @param notes Optional admin notes
@@ -227,15 +227,15 @@ export async function verifyBankAccount(
   notes?: string
 ): Promise<BankAccountResponse> {
   const url = notes
-    ? `/v1/admin/bank-accounts/${id}/verify?notes=${encodeURIComponent(notes)}`
-    : `/v1/admin/bank-accounts/${id}/verify`;
+    ? `/v1/bank-accounts/admin/${id}/verify?notes=${encodeURIComponent(notes)}`
+    : `/v1/bank-accounts/admin/${id}/verify`;
   return apiClient.put<BankAccountResponse>(url, {});
 }
 
 /**
  * Reject bank account (Admin only)
  *
- * PUT /api/v1/admin/bank-accounts/{id}/reject
+ * PUT /api/v1/bank-accounts/admin/{id}/reject
  *
  * @param id Bank account ID
  * @param reason Rejection reason
@@ -246,7 +246,7 @@ export async function rejectBankAccount(
   reason: string
 ): Promise<BankAccountResponse> {
   return apiClient.put<BankAccountResponse>(
-    `/v1/admin/bank-accounts/${id}/reject?reason=${encodeURIComponent(reason)}`,
+    `/v1/bank-accounts/admin/${id}/reject?reason=${encodeURIComponent(reason)}`,
     {}
   );
 }
@@ -333,7 +333,7 @@ export function canUseForPayout(account: BankAccountResponse): boolean {
 /**
  * Get bank account statistics (Admin only)
  *
- * GET /api/v1/admin/bank-accounts/statistics
+ * GET /api/v1/bank-accounts/admin/statistics
  *
  * @returns Statistics about bank accounts by status
  */
@@ -348,5 +348,5 @@ export async function getBankAccountStatistics(): Promise<{
     pending: number;
     verified: number;
     rejected: number;
-  }>('/v1/admin/bank-accounts/statistics');
+  }>('/v1/bank-accounts/admin/statistics');
 }

@@ -64,7 +64,7 @@ export interface AdminPayoutStats {
 export const payoutAdminApi = {
   /**
    * Get all payouts (paginated and filtered)
-   * GET /api/v1/admin/payouts
+   * GET /api/v1/payouts/admin
    */
   getPayouts: async (
     filters: PayoutFilters = {}
@@ -84,79 +84,79 @@ export const payoutAdminApi = {
 
     const queryString = params.toString();
     return apiClient.get<PageResponse<Payout>>(
-      `/api/v1/admin/payouts${queryString ? `?${queryString}` : ''}`
+      `/api/v1/payouts/admin${queryString ? `?${queryString}` : ''}`
     );
   },
 
   /**
    * Get pending payouts only
-   * GET /api/v1/admin/payouts/pending
+   * GET /api/v1/payouts/admin/pending
    */
   getPendingPayouts: async (): Promise<Payout[]> => {
-    return apiClient.get<Payout[]>('/api/v1/admin/payouts/pending');
+    return apiClient.get<Payout[]>('/api/v1/payouts/admin/pending');
   },
 
   /**
    * Get payout details by ID
-   * GET /api/v1/admin/payouts/{id}
+   * GET /api/v1/payouts/admin/{id}
    */
   getPayout: async (payoutId: string): Promise<Payout> => {
-    return apiClient.get<Payout>(`/api/v1/admin/payouts/${payoutId}`);
+    return apiClient.get<Payout>(`/api/v1/payouts/admin/${payoutId}`);
   },
 
   /**
    * Process payout (approve and mark as PROCESSING)
-   * POST /api/v1/admin/payouts/{id}/process
+   * POST /api/v1/payouts/admin/{id}/process
    */
   processPayout: async (payoutId: string): Promise<Payout> => {
-    return apiClient.post<Payout>(`/api/v1/admin/payouts/${payoutId}/process`);
+    return apiClient.post<Payout>(`/api/v1/payouts/admin/${payoutId}/process`);
   },
 
   /**
    * Mark payout as completed (after bank transfer)
-   * POST /api/v1/admin/payouts/{id}/complete
+   * POST /api/v1/payouts/admin/{id}/complete
    */
   completePayout: async (payoutId: string): Promise<Payout> => {
-    return apiClient.post<Payout>(`/api/v1/admin/payouts/${payoutId}/complete`);
+    return apiClient.post<Payout>(`/api/v1/payouts/admin/${payoutId}/complete`);
   },
 
   /**
    * Mark payout as failed (with reason)
-   * POST /api/v1/admin/payouts/{id}/fail
+   * POST /api/v1/payouts/admin/{id}/fail
    */
   failPayout: async (payoutId: string, reason: string): Promise<Payout> => {
-    return apiClient.post<Payout>(`/api/v1/admin/payouts/${payoutId}/fail`, {
+    return apiClient.post<Payout>(`/api/v1/payouts/admin/${payoutId}/fail`, {
       reason,
     });
   },
 
   /**
    * Cancel payout (refund to wallet)
-   * POST /api/v1/admin/payouts/{id}/cancel
+   * POST /api/v1/payouts/admin/{id}/cancel
    */
   cancelPayout: async (payoutId: string): Promise<Payout> => {
-    return apiClient.post<Payout>(`/api/v1/admin/payouts/${payoutId}/cancel`);
+    return apiClient.post<Payout>(`/api/v1/payouts/admin/${payoutId}/cancel`);
   },
 
   /**
    * Get user's payout history
-   * GET /api/v1/admin/payouts/user/{userId}
+   * GET /api/v1/payouts/admin/user/{userId}
    */
   getUserPayouts: async (userId: string): Promise<Payout[]> => {
-    return apiClient.get<Payout[]>(`/api/v1/admin/payouts/user/${userId}`);
+    return apiClient.get<Payout[]>(`/api/v1/payouts/admin/user/${userId}`);
   },
 
   /**
    * Get user's wallet details
-   * GET /api/v1/admin/wallets/{userId}
+   * GET /api/v1/wallet/admin/{userId}
    */
   getUserWallet: async (userId: string): Promise<WalletResponse> => {
-    return apiClient.get<WalletResponse>(`/api/v1/admin/wallets/${userId}`);
+    return apiClient.get<WalletResponse>(`/api/v1/wallet/admin/${userId}`);
   },
 
   /**
    * Get user's wallet transactions
-   * GET /api/v1/admin/wallets/{userId}/transactions
+   * GET /api/v1/wallet/admin/{userId}/transactions
    */
   getUserTransactions: async (
     userId: string,
@@ -164,16 +164,16 @@ export const payoutAdminApi = {
     size: number = 10
   ): Promise<PageResponse<Transaction>> => {
     return apiClient.get<PageResponse<Transaction>>(
-      `/api/v1/admin/wallets/${userId}/transactions?page=${page}&size=${size}`
+      `/api/v1/wallet/admin/${userId}/transactions?page=${page}&size=${size}`
     );
   },
 
   /**
    * Get payout statistics
-   * GET /api/v1/admin/payouts/stats
+   * GET /api/v1/payouts/admin/stats
    */
   getPayoutStats: async (): Promise<AdminPayoutStats> => {
-    return apiClient.get<AdminPayoutStats>('/api/v1/admin/payouts/stats');
+    return apiClient.get<AdminPayoutStats>('/api/v1/payouts/admin/stats');
   },
 };
 

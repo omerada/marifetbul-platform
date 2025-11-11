@@ -141,7 +141,7 @@ export interface TransactionFilters {
 export const walletAdminApi = {
   /**
    * Get all wallets (paginated and filtered)
-   * GET /api/v1/admin/wallets
+   * GET /api/v1/wallet/admin
    */
   getWallets: async (
     filters: WalletFilters = {}
@@ -162,21 +162,21 @@ export const walletAdminApi = {
 
     const queryString = params.toString();
     return apiClient.get<PageResponse<AdminWalletDetail>>(
-      `/api/v1/admin/wallets${queryString ? `?${queryString}` : ''}`
+      `/api/v1/wallet/admin${queryString ? `?${queryString}` : ''}`
     );
   },
 
   /**
    * Get wallet details by user ID
-   * GET /api/v1/admin/wallets/{userId}
+   * GET /api/v1/wallet/admin/{userId}
    */
   getWalletByUserId: async (userId: string): Promise<AdminWalletDetail> => {
-    return apiClient.get<AdminWalletDetail>(`/api/v1/admin/wallets/${userId}`);
+    return apiClient.get<AdminWalletDetail>(`/api/v1/wallet/admin/${userId}`);
   },
 
   /**
    * Get user transactions
-   * GET /api/v1/admin/wallets/{userId}/transactions
+   * GET /api/v1/wallet/admin/{userId}/transactions
    */
   getUserTransactions: async (
     userId: string,
@@ -184,60 +184,60 @@ export const walletAdminApi = {
     size: number = 20
   ): Promise<PageResponse<TransactionResponse>> => {
     return apiClient.get<PageResponse<TransactionResponse>>(
-      `/api/v1/admin/wallets/${userId}/transactions?page=${page}&size=${size}`
+      `/api/v1/wallet/admin/${userId}/transactions?page=${page}&size=${size}`
     );
   },
 
   /**
    * Adjust wallet balance (add or subtract)
-   * POST /api/v1/admin/wallets/{userId}/adjust
+   * POST /api/v1/wallet/admin/{userId}/adjust
    */
   adjustBalance: async (
     userId: string,
     request: BalanceAdjustmentRequest
   ): Promise<WalletResponse> => {
     return apiClient.post<WalletResponse>(
-      `/api/v1/admin/wallets/${userId}/adjust`,
+      `/api/v1/wallet/admin/${userId}/adjust`,
       request
     );
   },
 
   /**
    * Freeze wallet (suspend)
-   * POST /api/v1/admin/wallets/{userId}/freeze
+   * POST /api/v1/wallet/admin/{userId}/freeze
    */
   freezeWallet: async (
     userId: string,
     request: WalletActionRequest
   ): Promise<WalletResponse> => {
     return apiClient.post<WalletResponse>(
-      `/api/v1/admin/wallets/${userId}/freeze`,
+      `/api/v1/wallet/admin/${userId}/freeze`,
       request
     );
   },
 
   /**
    * Unfreeze wallet (activate)
-   * POST /api/v1/admin/wallets/{userId}/unfreeze
+   * POST /api/v1/wallet/admin/{userId}/unfreeze
    */
   unfreezeWallet: async (userId: string): Promise<WalletResponse> => {
     return apiClient.post<WalletResponse>(
-      `/api/v1/admin/wallets/${userId}/unfreeze`,
+      `/api/v1/wallet/admin/${userId}/unfreeze`,
       {}
     );
   },
 
   /**
    * Get wallet statistics
-   * GET /api/v1/admin/wallets/statistics
+   * GET /api/v1/wallet/admin/statistics
    */
   getWalletStats: async (): Promise<WalletStats> => {
-    return apiClient.get<WalletStats>('/api/v1/admin/wallets/statistics');
+    return apiClient.get<WalletStats>('/api/v1/wallet/admin/statistics');
   },
 
   /**
    * Get all transactions (paginated and filtered) - NEW
-   * GET /api/v1/admin/wallets/transactions
+   * GET /api/v1/wallet/admin/transactions
    */
   getAllTransactions: async (
     filters: TransactionFilters = {}
@@ -260,13 +260,13 @@ export const walletAdminApi = {
 
     const queryString = params.toString();
     return apiClient.get<PageResponse<TransactionResponse>>(
-      `/api/v1/admin/wallets/transactions${queryString ? `?${queryString}` : ''}`
+      `/api/v1/wallet/admin/transactions${queryString ? `?${queryString}` : ''}`
     );
   },
 
   /**
    * Get transactions by user ID - NEW
-   * GET /api/v1/admin/wallets/transactions/user/{userId}
+   * GET /api/v1/wallet/admin/transactions/user/{userId}
    */
   getTransactionsByUserId: async (
     userId: string,
@@ -283,7 +283,7 @@ export const walletAdminApi = {
 
     const queryString = params.toString();
     return apiClient.get<PageResponse<TransactionResponse>>(
-      `/api/v1/admin/wallets/transactions/user/${userId}${queryString ? `?${queryString}` : ''}`
+      `/api/v1/wallet/admin/transactions/user/${userId}${queryString ? `?${queryString}` : ''}`
     );
   },
 };

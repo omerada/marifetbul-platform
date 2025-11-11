@@ -35,42 +35,6 @@ Modern, ölçeklenebilir ve güvenli freelance platformu. Spring Boot backend + 
 
 MarifetBul projesi için kapsamlı bir analiz ve refactoring planı hazırlandı. Detaylı dokümanlar için:
 
-### 📚 Refactoring Dokümanları
-- **[Proje Analiz Raporu](./docs/ANALYSIS_REPORT.md)** - Mevcut durum, problemler ve çözüm önerileri
-- **[Sprint 1 Implementation](./docs/SPRINT_1_IMPLEMENTATION.md)** - Payment & Wallet consolidation
-- **[Task 1.1 Guide](./docs/SPRINT_1_TASK_1_1.md)** - BankAccount controller step-by-step
-- **[Docs Overview](./docs/README.md)** - Tüm dokümanların özeti
-
-### 🎯 Ana Hedefler
-```
-Backend:  73 controllers → ~45 controllers (-38%)
-Frontend: 238+ pages → ~180 pages (-24%)
-Coverage: 60% → 80%+
-Quality:  Duplicate'siz, clean architecture
-```
-
-### 📅 Sprint Planı (9.5 hafta)
-1. **Sprint 1** (2 hafta) - Payment & Wallet System ⚠️ **CRITICAL**
-2. **Sprint 2** (2 hafta) - Admin & Dashboard Separation 🔴 HIGH
-3. **Sprint 3** (1.5 hafta) - Message System Refactor 🟡 MEDIUM
-4. **Sprint 4** (1.5 hafta) - Order & Milestone Cleanup 🟡 MEDIUM
-5. **Sprint 5** (1 hafta) - API Standardization 🟡 MEDIUM
-6. **Sprint 6** (1 hafta) - Frontend Optimization 🟢 LOW
-
-### 🚀 Başlangıç
-```bash
-# Analiz raporunu oku
-cat docs/ANALYSIS_REPORT.md
-
-# Sprint 1 planını incele
-cat docs/SPRINT_1_IMPLEMENTATION.md
-
-# İlk task'a başla
-cat docs/SPRINT_1_TASK_1_1.md
-```
-
----
-
 ## ✨ Özellikler
 
 ### 🎯 Core Features
