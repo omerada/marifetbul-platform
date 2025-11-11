@@ -5,14 +5,14 @@
  * PAYMENT PROOF CONFIRMATION COMPONENT
  * ================================================
  * Satıcının ödeme kanıtını görüntüleyip onaylaması/reddetmesi için UI
- * 
+ *
  * Features:
  * - Dekont önizlemesi
  * - Ödeme detayları görüntüleme
  * - Onay/Red butonları
  * - Not ekleme
  * - İtiraz etme özelliği
- * 
+ *
  * @author MarifetBul Development Team
  * @version 1.0.0
  */
@@ -24,6 +24,7 @@ import { Label } from '@/components/ui/Label';
 import { Textarea } from '@/components/ui/Textarea';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
 import { Badge } from '@/components/ui/Badge';
+import { formatDate } from '@/lib/shared/formatters';
 import {
   Dialog,
   DialogContent,
@@ -53,27 +54,12 @@ export function PaymentProofConfirmation({
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [disputeDialogOpen, setDisputeDialogOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
-  
+
   const [confirmNotes, setConfirmNotes] = useState('');
   const [rejectReason, setRejectReason] = useState('');
   const [disputeReason, setDisputeReason] = useState('');
-  
+
   const [isProcessing, setIsProcessing] = useState(false);
-
-  const formatIban = (iban: string): string => {
-    const cleaned = iban.replace(/\s/g, '');
-    return cleaned.match(/.{1,4}/g)?.join(' ') || cleaned;
-  };
-
-  const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleString('tr-TR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
 
   const handleConfirm = async () => {
     if (!confirmNotes.trim()) {
@@ -160,7 +146,10 @@ export function PaymentProofConfirmation({
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+    const variants: Record<
+      string,
+      'default' | 'secondary' | 'destructive' | 'outline'
+    > = {
       PENDING: 'outline',
       CONFIRMED: 'default',
       REJECTED: 'destructive',
@@ -188,7 +177,7 @@ export function PaymentProofConfirmation({
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">Ödeme Onayı Bekleniyor</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Hesabınıza ödeme düştüğünü onaylamanız gerekiyor
               </p>
             </div>
@@ -198,8 +187,8 @@ export function PaymentProofConfirmation({
       </Alert>
 
       {/* Ödeme Detayları */}
-      <div className="border rounded-lg p-6 space-y-4">
-        <h3 className="font-semibold text-lg">Ödeme Detayları</h3>
+      <div className="space-y-4 rounded-lg border p-6">
+        <h3 className="text-lg font-semibold">Ödeme Detayları</h3>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -209,29 +198,33 @@ export function PaymentProofConfirmation({
 
           <div>
             <Label className="text-muted-foreground">Yüklenme Zamanı</Label>
-            <p className="text-sm">{formatDate(proof.createdAt)}</p>
+            <p className="text-sm">
+              {formatDate(proof.createdAt, 'LONG', { includeTime: true })}
+            </p>
           </div>
 
           {proof.buyerNotes && (
             <div className="col-span-2">
               <Label className="text-muted-foreground">Alıcı Notları</Label>
-              <p className="text-sm bg-muted p-3 rounded-md">{proof.buyerNotes}</p>
+              <p className="bg-muted rounded-md p-3 text-sm">
+                {proof.buyerNotes}
+              </p>
             </div>
           )}
         </div>
       </div>
 
       {/* Dekont Önizleme */}
-      <div className="border rounded-lg p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-lg">Ödeme Kanıtı</h3>
+      <div className="rounded-lg border p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-lg font-semibold">Ödeme Kanıtı</h3>
           <div className="flex gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setPreviewOpen(true)}
             >
-              <Eye className="h-4 w-4 mr-2" />
+              <Eye className="mr-2 h-4 w-4" />
               Görüntüle
             </Button>
             <Button
@@ -239,7 +232,7 @@ export function PaymentProofConfirmation({
               size="sm"
               onClick={() => window.open(proof.proofFileUrl, '_blank')}
             >
-              <Download className="h-4 w-4 mr-2" />
+              <Download className="mr-2 h-4 w-4" />
               İndir
             </Button>
           </div>
@@ -249,10 +242,10 @@ export function PaymentProofConfirmation({
           <img
             src={proof.proofFileUrl}
             alt="Ödeme Dekontu"
-            className="w-full max-h-96 object-contain rounded border"
+            className="max-h-96 w-full rounded border object-contain"
           />
         ) : (
-          <div className="flex items-center justify-center h-48 bg-muted rounded border">
+          <div className="bg-muted flex h-48 items-center justify-center rounded border">
             <p className="text-muted-foreground">PDF önizlemesi mevcut değil</p>
           </div>
         )}
@@ -265,8 +258,10 @@ export function PaymentProofConfirmation({
           <AlertDescription>
             <div>
               <p className="font-medium">Alıcı ödeme yaptığını onayladı</p>
-              <p className="text-sm text-muted-foreground">
-                {formatDate(proof.buyerConfirmedAt!)}
+              <p className="text-muted-foreground text-sm">
+                {formatDate(proof.buyerConfirmedAt!, 'LONG', {
+                  includeTime: true,
+                })}
               </p>
             </div>
           </AlertDescription>
@@ -276,11 +271,8 @@ export function PaymentProofConfirmation({
       {/* Aksiyon Butonları */}
       {isPending && (
         <div className="flex gap-3">
-          <Button
-            onClick={() => setConfirmDialogOpen(true)}
-            className="flex-1"
-          >
-            <Check className="h-4 w-4 mr-2" />
+          <Button onClick={() => setConfirmDialogOpen(true)} className="flex-1">
+            <Check className="mr-2 h-4 w-4" />
             Ödeme Alındı, Onayla
           </Button>
 
@@ -289,15 +281,12 @@ export function PaymentProofConfirmation({
             onClick={() => setRejectDialogOpen(true)}
             className="flex-1"
           >
-            <X className="h-4 w-4 mr-2" />
+            <X className="mr-2 h-4 w-4" />
             Ödeme Alınmadı, Reddet
           </Button>
 
-          <Button
-            variant="outline"
-            onClick={() => setDisputeDialogOpen(true)}
-          >
-            <Flag className="h-4 w-4 mr-2" />
+          <Button variant="outline" onClick={() => setDisputeDialogOpen(true)}>
+            <Flag className="mr-2 h-4 w-4" />
             İtiraz Et
           </Button>
         </div>
@@ -309,7 +298,8 @@ export function PaymentProofConfirmation({
           <DialogHeader>
             <DialogTitle>Ödeme Alındığını Onayla</DialogTitle>
             <DialogDescription>
-              Hesabınıza ödeme düştüğünü onaylamak üzeresiniz. Bu işlem geri alınamaz.
+              Hesabınıza ödeme düştüğünü onaylamak üzeresiniz. Bu işlem geri
+              alınamaz.
             </DialogDescription>
           </DialogHeader>
 
@@ -326,7 +316,10 @@ export function PaymentProofConfirmation({
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDialogOpen(false)}
+            >
               İptal
             </Button>
             <Button onClick={handleConfirm} disabled={isProcessing}>
@@ -359,10 +352,17 @@ export function PaymentProofConfirmation({
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRejectDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setRejectDialogOpen(false)}
+            >
               İptal
             </Button>
-            <Button variant="destructive" onClick={handleReject} disabled={isProcessing}>
+            <Button
+              variant="destructive"
+              onClick={handleReject}
+              disabled={isProcessing}
+            >
               {isProcessing ? 'İşleniyor...' : 'Reddet'}
             </Button>
           </DialogFooter>
@@ -390,14 +390,17 @@ export function PaymentProofConfirmation({
                 rows={5}
                 maxLength={1000}
               />
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-muted-foreground mt-1 text-xs">
                 {disputeReason.length}/1000 karakter
               </p>
             </div>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDisputeDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setDisputeDialogOpen(false)}
+            >
               İptal
             </Button>
             <Button onClick={handleDispute} disabled={isProcessing}>
@@ -423,7 +426,7 @@ export function PaymentProofConfirmation({
             ) : (
               <iframe
                 src={proof.proofFileUrl}
-                className="w-full h-[70vh]"
+                className="h-[70vh] w-full"
                 title="PDF Önizleme"
               />
             )}

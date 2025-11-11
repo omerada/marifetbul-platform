@@ -50,12 +50,6 @@ export interface JobDetail extends Omit<Job, 'employer'> {
   expiresAt?: string;
 }
 
-/**
- * @deprecated Use ProposalResponse from @/types/backend-aligned instead
- * This type is kept for backward compatibility only
- */
-export type { ProposalResponse as Proposal } from '@/types/backend-aligned';
-
 export interface FileAttachment {
   id: string;
   filename: string;

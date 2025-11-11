@@ -4,8 +4,9 @@
  */
 
 import type { Order } from '../business/features/order';
-import type { Job, Proposal } from '../business/features/marketplace';
-import type { EnhancedNotification } from '../business/features/notifications';
+import type { Job } from '../business/features/marketplace';
+import type { ProposalResponse } from '../backend-aligned';
+import type { EnhancedNotification } from '../domains/notification/notification.types';
 import type {
   FreelancerAnalytics,
   EmployerAnalytics,
@@ -39,7 +40,7 @@ export interface FreelancerDashboard {
   };
   recentJobs: Job[];
   recentOrders: Order[];
-  recentProposals: Proposal[];
+  recentProposals: ProposalResponse[];
   earnings: Record<string, number>;
   analytics: FreelancerAnalytics;
   recommendations: Recommendation[];

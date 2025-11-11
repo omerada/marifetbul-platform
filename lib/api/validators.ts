@@ -162,30 +162,75 @@ export type PackagesResponse = z.infer<typeof PackagesResponseSchema>;
 // ============================================================================
 
 /**
- * Proposal status schema
+ * Proposal status schema (aligned with backend ProposalStatus enum)
  */
 export const ProposalStatusSchema = z.enum([
   'PENDING',
+  'SHORTLISTED',
   'ACCEPTED',
   'REJECTED',
   'WITHDRAWN',
 ]);
 
 /**
- * Proposal schema
+ * Proposal Milestone schema (aligned with backend ProposalMilestone)
+ */
+export const ProposalMilestoneSchema = z.object({
+  description: z.string(),
+  amount: z.number().min(0),
+  dueDate: z.string().optional(),
+});
+
+/**
+ * Proposal Question schema (aligned with backend ProposalQuestion)
+ */
+export const ProposalQuestionSchema = z.object({
+  question: z.string(),
+  answer: z.string().optional(),
+});
+
+/**
+ * Proposal schema (aligned with backend ProposalResponse)
  */
 export const ProposalSchema = z.object({
-  id: z.number(),
-  jobId: z.number(),
-  freelancerId: z.number(),
+  // Identity
+  id: z.string(), // UUID
+
+  // Relations
+  jobId: z.string(), // UUID
+  jobTitle: z.string(),
+  freelancerId: z.string(), // UUID
+  freelancerName: z.string(),
+  freelancerAvatar: z.string().optional(),
+  freelancerRating: z.number().optional(),
+  freelancerSkills: z.array(z.string()).optional(),
+
+  // Proposal Details
   coverLetter: z.string(),
-  proposedPrice: z.number().min(0),
+  proposedBudget: z.number().min(0),
+  proposedTimeline: z.string(),
   deliveryDays: z.number().int().min(1),
+
+  // Status
   status: ProposalStatusSchema,
+
+  // Attachments
+  attachments: z.array(z.string()).optional(),
+
+  // Milestones
+  milestones: z.array(ProposalMilestoneSchema).optional(),
+
+  // Questions
+  questions: z.array(ProposalQuestionSchema).optional(),
+
+  // Tracking
+  isViewed: z.boolean(),
+  viewedAt: z.string().optional(),
+  respondedAt: z.string().optional(),
+
+  // Timestamps
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
-  // Related entities
-  freelancer: UserProfileSchema.optional(),
 });
 
 export type Proposal = z.infer<typeof ProposalSchema>;

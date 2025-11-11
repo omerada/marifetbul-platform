@@ -19,7 +19,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useToast } from '@/hooks';
+import { useToast, useAuth } from '@/hooks';
 import {
   BankAccountVerificationTable,
   BankAccountStatistics,
@@ -76,6 +76,7 @@ interface BankAccount {
 
 export default function AdminBankAccountVerificationPage() {
   const { success, error: showError } = useToast();
+  const { user } = useAuth();
 
   // State
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
@@ -193,7 +194,8 @@ export default function AdminBankAccountVerificationPage() {
     logger.info('Bank account verification completed', { 
       accountId, 
       approved,
-      adminUser: 'current-admin-id' // TODO: Get from auth context
+      adminUser: user?.id || 'unknown',
+      adminEmail: user?.email
     });
   };
 

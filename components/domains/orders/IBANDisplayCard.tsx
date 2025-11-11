@@ -21,6 +21,8 @@ import React, { useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
+import { formatIBAN } from '@/lib/shared/formatters';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   Building2,
   Copy,
@@ -62,29 +64,12 @@ export interface IBANDisplayCardProps {
 // ================================================
 
 /**
- * Format IBAN with spaces for better readability
- */
-function formatIBAN(iban: string): string {
-  // Remove existing spaces
-  const cleaned = iban.replace(/\s/g, '');
-  // Add space every 4 characters
-  return cleaned.match(/.{1,4}/g)?.join(' ') || iban;
-}
-
-/**
  * Mask IBAN for security (show first 4 and last 4 characters)
+ * Uses formatIBAN from @/lib/shared/formatters for consistent formatting
  */
 function maskIBAN(iban: string, reveal: boolean = false): string {
   if (reveal) return formatIBAN(iban);
-  
-  const cleaned = iban.replace(/\s/g, '');
-  if (cleaned.length < 8) return formatIBAN(iban);
-  
-  const first = cleaned.substring(0, 4);
-  const last = cleaned.substring(cleaned.length - 4);
-  const middle = '*'.repeat(cleaned.length - 8);
-  
-  return formatIBAN(first + middle + last);
+  return formatIBAN(iban, true); // Use mask parameter from shared formatter
 }
 
 /**
@@ -95,7 +80,7 @@ async function copyToClipboard(text: string): Promise<boolean> {
     await navigator.clipboard.writeText(text);
     return true;
   } catch (err) {
-    console.error('Failed to copy:', err);
+    logger.error('Failed to copy to clipboard', err as Error);
     return false;
   }
 }
@@ -190,15 +175,12 @@ export function IBANDisplayCard({
               )}
             >
               {userRole === 'buyer'
-                ? 'Aşağıdaki IBAN\'a ödeme yapınız'
+                ? "Aşağıdaki IBAN'a ödeme yapınız"
                 : 'Alıcının ödeme yapması bekleniyor'}
             </p>
           </div>
         </div>
-        <Badge
-          variant={isPaymentConfirmed ? 'success' : 'warning'}
-          size="md"
-        >
+        <Badge variant={isPaymentConfirmed ? 'success' : 'warning'} size="md">
           {isPaymentConfirmed ? 'Onaylandı' : 'Bekliyor'}
         </Badge>
       </div>
@@ -278,7 +260,7 @@ export function IBANDisplayCard({
                 isPaymentConfirmed ? 'text-green-700' : 'text-blue-700'
               )}
             >
-              {showFullIBAN ? 'IBAN\'ı Gizle' : 'IBAN\'ı Göster'}
+              {showFullIBAN ? "IBAN'ı Gizle" : "IBAN'ı Göster"}
             </button>
           </div>
 
@@ -371,14 +353,13 @@ export function IBANDisplayCard({
                     ) yazın
                   </li>
                   <li>Ödeme yaptıktan sonra satıcının onayını bekleyin</li>
-                  <li>
-                    Satıcı ödemeyi onayladıktan sonra işe başlayacaktır
-                  </li>
+                  <li>Satıcı ödemeyi onayladıktan sonra işe başlayacaktır</li>
                 </ol>
                 <p className="mt-3 rounded bg-yellow-50 p-2 text-xs text-yellow-800">
                   <AlertCircle className="mr-1 inline h-4 w-4" />
-                  <strong>Önemli:</strong> Ödeme işlemi genellikle birkaç dakika içinde gerçekleşir.
-                  Satıcı ödemeyi aldıktan sonra sistem üzerinden onaylayacaktır.
+                  <strong>Önemli:</strong> Ödeme işlemi genellikle birkaç dakika
+                  içinde gerçekleşir. Satıcı ödemeyi aldıktan sonra sistem
+                  üzerinden onaylayacaktır.
                 </p>
               </div>
             </div>

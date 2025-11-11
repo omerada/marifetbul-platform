@@ -76,12 +76,6 @@ export interface JobFormData {
   deadline?: string;
 }
 
-/**
- * @deprecated Use ProposalResponse from @/types/backend-aligned instead
- * This type is kept for backward compatibility only
- */
-export type { ProposalResponse as Proposal } from '@/types/backend-aligned';
-
 export interface JobsResponse {
   success: boolean;
   data?: {

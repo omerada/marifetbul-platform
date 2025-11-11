@@ -5,14 +5,14 @@
  * PAYMENT PROOF UPLOAD COMPONENT
  * ================================================
  * Alıcının ödeme dekontunu yüklemesi için form
- * 
+ *
  * Features:
  * - Dekont/ekran görüntüsü yükleme (JPG, PNG, PDF)
  * - Ödeme referans numarası girişi
  * - Opsiyonel IBAN doğrulaması
  * - Önizleme özelliği
  * - Dosya boyut kontrolü (max 5MB)
- * 
+ *
  * @author MarifetBul Development Team
  * @version 1.0.0
  */
@@ -24,6 +24,8 @@ import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { Textarea } from '@/components/ui/Textarea';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { formatIBAN } from '@/lib/shared/formatters';
+import { validateTurkishIBAN } from '@/lib/utils/iban-validator';
 import { orderService } from '@/lib/infrastructure/services/api/orderService';
 import { toast } from 'sonner';
 
@@ -52,7 +54,12 @@ export function PaymentProofUpload({
   const [error, setError] = useState<string | null>(null);
 
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+  const ALLOWED_TYPES = [
+    'image/jpeg',
+    'image/png',
+    'image/jpg',
+    'application/pdf',
+  ];
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -116,19 +123,13 @@ export function PaymentProofUpload({
   };
 
   const validateIban = (iban: string): boolean => {
-    const ibanRegex = /^TR\d{24}$/;
-    return ibanRegex.test(iban.replace(/\s/g, ''));
-  };
-
-  const formatIban = (iban: string): string => {
-    // IBAN'ı her 4 karakterde bir boşlukla formatla
-    const cleaned = iban.replace(/\s/g, '');
-    return cleaned.match(/.{1,4}/g)?.join(' ') || cleaned;
+    const result = validateTurkishIBAN(iban);
+    return result.isValid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
     if (!file) return;
 
@@ -151,7 +152,8 @@ export function PaymentProofUpload({
 
       onSuccess?.();
     } catch (err: any) {
-      const errorMsg = err.response?.data?.message || 'Ödeme kanıtı yüklenirken hata oluştu';
+      const errorMsg =
+        err.response?.data?.message || 'Ödeme kanıtı yüklenirken hata oluştu';
       setError(errorMsg);
       toast.error('Hata', { description: errorMsg });
     } finally {
@@ -167,9 +169,10 @@ export function PaymentProofUpload({
         <AlertDescription>
           <div className="space-y-1">
             <p className="font-medium">Ödeme yapılacak hesap:</p>
-            <p className="font-mono text-sm">{formatIban(sellerIban)}</p>
-            <p className="text-xs text-muted-foreground mt-2">
-              Tutar: <span className="font-semibold">{orderAmount.toFixed(2)} TL</span>
+            <p className="font-mono text-sm">{formatIBAN(sellerIban)}</p>
+            <p className="text-muted-foreground mt-2 text-xs">
+              Tutar:{' '}
+              <span className="font-semibold">{orderAmount.toFixed(2)} TL</span>
             </p>
           </div>
         </AlertDescription>
@@ -178,20 +181,22 @@ export function PaymentProofUpload({
       {/* Dosya Yükleme */}
       <div className="space-y-2">
         <Label htmlFor="proofFile">
-          Ödeme Dekontu / Ekran Görüntüsü <span className="text-red-500">*</span>
+          Ödeme Dekontu / Ekran Görüntüsü{' '}
+          <span className="text-red-500">*</span>
         </Label>
-        
+
         {!file ? (
           <label
             htmlFor="proofFile"
-            className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
+            className="hover:bg-muted/50 flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
           >
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
-              <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-              <p className="mb-2 text-sm text-muted-foreground">
-                <span className="font-semibold">Tıklayarak yükleyin</span> veya sürükleyin
+              <Upload className="text-muted-foreground mb-2 h-8 w-8" />
+              <p className="text-muted-foreground mb-2 text-sm">
+                <span className="font-semibold">Tıklayarak yükleyin</span> veya
+                sürükleyin
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 JPG, PNG veya PDF (max 5MB)
               </p>
             </div>
@@ -204,21 +209,21 @@ export function PaymentProofUpload({
             />
           </label>
         ) : (
-          <div className="border rounded-lg p-4">
+          <div className="rounded-lg border p-4">
             <div className="flex items-start justify-between">
-              <div className="flex items-start gap-3 flex-1">
+              <div className="flex flex-1 items-start gap-3">
                 {previewUrl ? (
                   <img
                     src={previewUrl}
                     alt="Önizleme"
-                    className="w-16 h-16 object-cover rounded"
+                    className="h-16 w-16 rounded object-cover"
                   />
                 ) : (
-                  <FileText className="w-16 h-16 text-muted-foreground" />
+                  <FileText className="text-muted-foreground h-16 w-16" />
                 )}
                 <div className="flex-1">
-                  <p className="font-medium text-sm">{file.name}</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm font-medium">{file.name}</p>
+                  <p className="text-muted-foreground text-xs">
                     {(file.size / 1024 / 1024).toFixed(2)} MB
                   </p>
                 </div>
@@ -248,7 +253,7 @@ export function PaymentProofUpload({
           onChange={(e) => setPaymentReference(e.target.value)}
           maxLength={100}
         />
-        <p className="text-xs text-muted-foreground">
+        <p className="text-muted-foreground text-xs">
           Banka dekontunuzdaki işlem/referans numarasını giriniz
         </p>
       </div>
@@ -264,7 +269,7 @@ export function PaymentProofUpload({
           onChange={(e) => setDeclaredAmount(e.target.value)}
           placeholder={orderAmount.toFixed(2)}
         />
-        <p className="text-xs text-muted-foreground">
+        <p className="text-muted-foreground text-xs">
           Doğrulama için havale/EFT yaptığınız tutarı giriniz
         </p>
       </div>
@@ -275,11 +280,11 @@ export function PaymentProofUpload({
         <Input
           id="payerIban"
           placeholder="TR33 0006 1005 1978 6457 8413 26"
-          value={formatIban(payerIban)}
+          value={formatIBAN(payerIban)}
           onChange={(e) => setPayerIban(e.target.value.replace(/\s/g, ''))}
           maxLength={29} // 26 + 3 boşluk
         />
-        <p className="text-xs text-muted-foreground">
+        <p className="text-muted-foreground text-xs">
           Ödemeyi yaptığınız hesabın IBAN numarası (doğrulama için)
         </p>
       </div>
@@ -295,7 +300,7 @@ export function PaymentProofUpload({
           rows={3}
           maxLength={500}
         />
-        <p className="text-xs text-muted-foreground">
+        <p className="text-muted-foreground text-xs">
           {notes.length}/500 karakter
         </p>
       </div>
