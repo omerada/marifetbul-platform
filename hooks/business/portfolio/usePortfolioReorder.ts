@@ -11,7 +11,7 @@ import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { mutate } from 'swr';
 import { reorderPortfolio, type PortfolioResponse } from '@/lib/api/portfolio';
-import { useAuthState } from '@/hooks/shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
@@ -40,7 +40,7 @@ export interface UsePortfolioReorderReturn {
 export function usePortfolioReorder(
   initialItems: PortfolioResponse[]
 ): UsePortfolioReorderReturn {
-  const { user } = useAuthState();
+  const user = authSelectors.useUser();
   const [orderedItems, setOrderedItems] =
     useState<PortfolioResponse[]>(initialItems);
   const [originalItems, setOriginalItems] =
@@ -77,7 +77,9 @@ export function usePortfolioReorder(
 
     setIsSaving(true);
     try {
-      logger.info('[usePortfolioReorder] Saving new order', { itemCountorderedItemslength,  });
+      logger.info('[usePortfolioReorder] Saving new order', {
+        itemCountorderedItemslength,
+      });
 
       // Extract IDs in the new order
       const portfolioIds = orderedItems.map((item) => item.id);
@@ -97,7 +99,10 @@ export function usePortfolioReorder(
 
       return true;
     } catch (err) {
-      logger.error('[usePortfolioReorder] Save order failed', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        '[usePortfolioReorder] Save order failed',
+        err instanceof Error ? err : new Error(String(err))
+      );
       toast.error('Sıralama kaydedilemedi. Lütfen tekrar deneyin.');
       return false;
     } finally {

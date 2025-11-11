@@ -10,7 +10,7 @@
 import { useMemo } from 'react';
 import useSWR from 'swr';
 import { getMyPortfolio, type PortfolioResponse } from '@/lib/api/portfolio';
-import { useAuthState } from '@/hooks/shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
@@ -55,7 +55,7 @@ export interface UsePortfolioAnalyticsReturn {
 // ============================================================================
 
 export function usePortfolioAnalytics(): UsePortfolioAnalyticsReturn {
-  const { user } = useAuthState();
+  const user = authSelectors.useUser();
 
   // Fetch all user's portfolios
   const {
@@ -76,7 +76,9 @@ export function usePortfolioAnalytics(): UsePortfolioAnalyticsReturn {
   const analytics = useMemo(() => {
     if (!portfolios || portfolios.length === 0) return null;
 
-    logger.debug('[usePortfolioAnalytics] Calculating analytics', { countportfolioslength,  });
+    logger.debug('[usePortfolioAnalytics] Calculating analytics', {
+      countportfolioslength,
+    });
 
     // Basic metrics
     const totalPortfolios = portfolios.length;

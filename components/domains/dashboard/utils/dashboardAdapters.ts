@@ -53,10 +53,6 @@ import {
   Star,
   Store,
   Heart,
-  UserPlus,
-  TrendingUp,
-  Clock,
-  RefreshCcw,
   Users,
   Flag,
   DollarSign,
@@ -65,17 +61,6 @@ import {
   AlertTriangle,
   History,
 } from 'lucide-react';
-
-// ============================================================================
-// API RESPONSE TYPES
-// ============================================================================
-
-/**
- * Generic API response wrapper (for non-Admin dashboards still using mocks)
- * @deprecated Will be replaced with specific types in future sprints
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type LegacyApiResponse = any;
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -198,16 +183,12 @@ function generateFreelancerQuickActions(
  * @throws Error if API response is invalid
  */
 export function adaptFreelancerDashboard(
-  apiResponse: SellerDashboardApiResponse | LegacyApiResponse
+  apiResponse: SellerDashboardApiResponse
 ): FreelancerDashboard {
   // Type guard: Validate API response structure
   if (!isSellerDashboardApiResponse(apiResponse)) {
     logger.error(
-      'Invalid SellerDashboard API response - missing required fields',
-      {
-        received: apiResponse,
-        component: 'adaptFreelancerDashboard',
-      }
+      'Invalid SellerDashboard API response - missing required fields in adaptFreelancerDashboard'
     );
     throw new Error(
       'Failed to adapt Freelancer dashboard: Invalid API response structure'
@@ -350,16 +331,12 @@ export function adaptFreelancerDashboard(
  * @throws Error if API response is invalid
  */
 export function adaptEmployerDashboard(
-  apiResponse: BuyerDashboardApiResponse | LegacyApiResponse
+  apiResponse: BuyerDashboardApiResponse
 ): EmployerDashboard {
   // Type guard: Validate API response structure
   if (!isBuyerDashboardApiResponse(apiResponse)) {
     logger.error(
-      'Invalid BuyerDashboard API response - missing required fields',
-      {
-        received: apiResponse,
-        component: 'adaptEmployerDashboard',
-      }
+      'Invalid BuyerDashboard API response - missing required fields in adaptEmployerDashboard'
     );
     throw new Error(
       'Failed to adapt Employer dashboard: Invalid API response structure'
@@ -588,16 +565,12 @@ export function adaptEmployerDashboard(
  * @throws Error if API response is invalid
  */
 export function adaptAdminDashboard(
-  apiResponse: AdminDashboardApiResponse | LegacyApiResponse
+  apiResponse: AdminDashboardApiResponse
 ): AdminDashboard {
   // Validate API response structure
   if (!isAdminDashboardApiResponse(apiResponse)) {
     logger.error(
-      'Invalid AdminDashboard API response - missing required fields',
-      {
-        received: apiResponse,
-        component: 'adaptAdminDashboard',
-      }
+      'Invalid AdminDashboard API response - missing required fields in adaptAdminDashboard'
     );
     throw new Error(
       'Failed to adapt Admin dashboard: Invalid API response structure'
@@ -958,16 +931,12 @@ export function adaptAdminDashboard(
  * @throws Error if API response is invalid
  */
 export function adaptModeratorDashboard(
-  apiResponse: ModeratorDashboardApiResponse | LegacyApiResponse
+  apiResponse: ModeratorDashboardApiResponse
 ): ModeratorDashboard {
   // Validate API response structure
   if (!isModeratorDashboardApiResponse(apiResponse)) {
     logger.error(
-      'Invalid ModeratorDashboard API response - missing required fields',
-      {
-        received: apiResponse,
-        component: 'adaptModeratorDashboard',
-      }
+      'Invalid ModeratorDashboard API response - missing required fields in adaptModeratorDashboard'
     );
     throw new Error(
       'Failed to adapt Moderator dashboard: Invalid API response structure'
@@ -1224,7 +1193,6 @@ export function adaptDashboardData(
     | SellerDashboardApiResponse
     | BuyerDashboardApiResponse
     | ModeratorDashboardApiResponse
-    | LegacyApiResponse
 ):
   | FreelancerDashboard
   | EmployerDashboard
@@ -1232,13 +1200,17 @@ export function adaptDashboardData(
   | ModeratorDashboard {
   switch (role) {
     case 'FREELANCER':
-      return adaptFreelancerDashboard(apiResponse);
+      return adaptFreelancerDashboard(
+        apiResponse as SellerDashboardApiResponse
+      );
     case 'EMPLOYER':
-      return adaptEmployerDashboard(apiResponse);
+      return adaptEmployerDashboard(apiResponse as BuyerDashboardApiResponse);
     case 'ADMIN':
-      return adaptAdminDashboard(apiResponse);
+      return adaptAdminDashboard(apiResponse as AdminDashboardApiResponse);
     case 'MODERATOR':
-      return adaptModeratorDashboard(apiResponse);
+      return adaptModeratorDashboard(
+        apiResponse as ModeratorDashboardApiResponse
+      );
     default:
       throw new Error(`Unknown role: ${role}`);
   }

@@ -29,7 +29,7 @@ import {
   escalateDispute,
 } from '@/lib/api/disputes';
 import type { DisputeResponse, DisputeEvidence } from '@/types/dispute';
-import { useAuthState } from '@/hooks/shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import {
   disputeStatusLabels,
   disputeReasonLabels,
@@ -74,7 +74,7 @@ export default function UserDisputeDetailPage({
   params,
 }: UserDisputeDetailPageProps) {
   const router = useRouter();
-  useAuthState(); // Ensure authenticated
+  authSelectors.useIsAuthenticated(); // Ensure authenticated
   const [disputeId, setDisputeId] = useState<string>('');
   const [dispute, setDispute] = useState<DisputeResponse | null>(null);
   const [evidence, setEvidence] = useState<DisputeEvidence[]>([]);

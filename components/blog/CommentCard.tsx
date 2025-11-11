@@ -18,7 +18,7 @@ import { CommentForm } from './CommentForm';
 import { CommentEditForm } from './CommentEditForm';
 import { CommentReportModal } from './CommentReportModal';
 import type { BlogComment } from '@/lib/api/blog';
-import { useAuth } from '@/hooks/shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { useCommentActions } from '@/hooks/business/useCommentActions';
 
 // ================================================
@@ -75,7 +75,8 @@ export function CommentCard({
   // HOOKS
   // ================================================
 
-  const { user, isAuthenticated } = useAuth();
+  const user = authSelectors.useUser();
+  const isAuthenticated = authSelectors.useIsAuthenticated();
   const { deleteComment: deleteCommentAction } = useCommentActions();
 
   // ================================================

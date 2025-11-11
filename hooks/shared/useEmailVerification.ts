@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { unifiedAuthService } from '@/lib/core/auth/unifiedAuthService';
-import { useAuth } from '@/hooks/shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 
 export interface EmailVerificationState {
   isVerified: boolean;
@@ -54,7 +54,8 @@ export interface UseEmailVerificationResult
  * ```
  */
 export function useEmailVerification(): UseEmailVerificationResult {
-  const { user, isLoading: authLoading } = useAuth();
+  const user = authSelectors.useUser();
+  const authLoading = authSelectors.useIsLoading();
 
   const [isVerified, setIsVerified] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -88,11 +89,8 @@ export function useEmailVerification(): UseEmailVerificationResult {
     try {
       setIsLoading(true);
 
-      // Check if user object has emailVerified or isVerified property
-      // Some auth systems use isVerified, others use emailVerified
-      const verified =
-        user.isVerified === true ||
-        ('emailVerified' in user && user.emailVerified === true);
+      // Check if user is verified (verificationStatus === 'verified')
+      const verified = user.verificationStatus === 'verified';
       setIsVerified(verified);
 
       // Only show banner if:
@@ -101,7 +99,10 @@ export function useEmailVerification(): UseEmailVerificationResult {
       const dismissed = checkBannerDismissed();
       setShouldShowBanner(!verified && !dismissed);
     } catch (error) {
-      console.error('Error checking verification status:', error);
+      logger.error(
+        '[useEmailVerification] Error checking verification status',
+        error instanceof Error ? error : new Error(String(error))
+      );
       setIsVerified(false);
     } finally {
       setIsLoading(false);

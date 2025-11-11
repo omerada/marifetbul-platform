@@ -9,7 +9,7 @@ import {
   CheckCircle2,
   Star,
 } from 'lucide-react';
-import type { Proposal } from '@/types/core/jobs';
+import type { ProposalResponse as Proposal } from '@/types/backend-aligned';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';

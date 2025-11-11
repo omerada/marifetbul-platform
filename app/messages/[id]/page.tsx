@@ -22,7 +22,7 @@ import { Loading } from '@/components/ui';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
-import { useAuth } from '@/hooks/shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { useToast } from '@/hooks';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import {
@@ -50,7 +50,8 @@ import {
 export default function ConversationPage() {
   const params = useParams();
   const router = useRouter();
-  const { user, isAuthenticated } = useAuth();
+  const user = authSelectors.useUser();
+  const isAuthenticated = authSelectors.useIsAuthenticated();
   const { error: showErrorToast } = useToast();
   const conversationId = params?.id as string;
 
@@ -84,7 +85,11 @@ export default function ConversationPage() {
   const { markAsRead: _markAsRead, markAllAsRead } = useReadReceipts({
     conversationId: conversationId || '',
     onMessageRead: (event) => {
-      logger.debug('ConversationPage', { messageIdeventmessageId, readByeventreadByName, readAteventreadAt,  });
+      logger.debug('ConversationPage', {
+        messageIdeventmessageId,
+        readByeventreadByName,
+        readAteventreadAt,
+      });
     },
   });
 
@@ -107,9 +112,14 @@ export default function ConversationPage() {
         // Mark all messages as read (bulk operation)
         await markAllAsRead();
 
-        logger.info('ConversationPage', { conversationId, messageCountmessagesDatacontentlength,  });
+        logger.info('ConversationPage', {
+          conversationId,
+          messageCountmessagesDatacontentlength,
+        });
       } catch (error) {
-        logger.error('ConversationPage: Failed to load data', undefined, { error });
+        logger.error('ConversationPage: Failed to load data', undefined, {
+          error,
+        });
       } finally {
         setIsLoading(false);
       }
@@ -122,7 +132,7 @@ export default function ConversationPage() {
   useEffect(() => {
     if (!isConnected || !conversationId || !user) return;
 
-    logger.info('ConversationPage', { conversationId, userIduserid,  });
+    logger.info('ConversationPage', { conversationId, userIduserid });
 
     // Subscribe to new messages for this user
     const messageDestination = subscribe(
@@ -144,9 +154,13 @@ export default function ConversationPage() {
             // Mark as read if not from current user
             if (event.message.senderId !== user.id) {
               markAllAsRead().catch((err) =>
-                logger.error('ConversationPage: Failed to mark as read', undefined, {
-                  error: err,
-                })
+                logger.error(
+                  'ConversationPage: Failed to mark as read',
+                  undefined,
+                  {
+                    error: err,
+                  }
+                )
               );
             }
           } else if (event.type === 'MESSAGE_UPDATE') {
@@ -281,9 +295,11 @@ export default function ConversationPage() {
       // Replace optimistic message with real one
       setMessages((prev) => prev.map((m) => (m.id === tempId ? message : m)));
 
-      logger.info('ConversationPage', { messageIdmessageid,  });
+      logger.info('ConversationPage', { messageIdmessageid });
     } catch (error) {
-      logger.error('ConversationPage: Failed to send message', undefined, { error });
+      logger.error('ConversationPage: Failed to send message', undefined, {
+        error,
+      });
 
       // Remove optimistic message on error
       setMessages((prev) => prev.filter((m) => !m.id.startsWith('temp-')));

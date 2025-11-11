@@ -16,7 +16,7 @@
 import React, { useState, useEffect } from 'react';
 import { Send, MessageCircle, Loader2, CheckCircle2 } from 'lucide-react';
 import { useCommentSubmission } from '@/hooks/business/useCommentSubmission';
-import { useAuth } from '@/hooks/shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import type { BlogComment } from '@/lib/api/blog';
 
 // ================================================
@@ -66,7 +66,8 @@ export function CommentForm({
   // HOOKS
   // ================================================
 
-  const { user, isAuthenticated } = useAuth();
+  const user = authSelectors.useUser();
+  const isAuthenticated = authSelectors.useIsAuthenticated();
   const { isSubmitting, error, success, submitComment, resetState } =
     useCommentSubmission();
 

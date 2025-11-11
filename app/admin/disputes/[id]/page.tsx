@@ -34,7 +34,7 @@ import {
   getDisputeTimeline,
 } from '@/lib/api/disputes';
 import { orderApi } from '@/lib/api/orders';
-import { useAuthState } from '@/hooks/shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import type { DisputeResponse, DisputeEvidence } from '@/types/dispute';
 import type { OrderResponse } from '@/types/backend-aligned';
 import {
@@ -84,7 +84,7 @@ export default function AdminDisputeDetailPage({
   params,
 }: DisputeDetailPageProps) {
   const router = useRouter();
-  useAuthState(); // Ensure admin authenticated
+  authSelectors.useIsAuthenticated(); // Ensure admin authenticated
   const [disputeId, setDisputeId] = useState<string>('');
   const [dispute, setDispute] = useState<DisputeResponse | null>(null);
   const [order, setOrder] = useState<OrderResponse | null>(null);

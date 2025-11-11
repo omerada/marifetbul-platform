@@ -5,7 +5,7 @@ import { Header } from './Header';
 import { Footer } from './Footer';
 import { MobileNavigation } from '../shared/mobile/MobileNavigation';
 import { useResponsive } from '@/hooks';
-import { useAuth } from '@/hooks/shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -23,7 +23,8 @@ export function MainLayout({
   className = '',
 }: MainLayoutProps) {
   const { isMobile } = useResponsive();
-  const { user, isAuthenticated } = useAuth();
+  const user = authSelectors.useUser();
+  const isAuthenticated = authSelectors.useIsAuthenticated();
 
   return (
     <div className={`min-h-screen bg-gray-50 ${className}`}>

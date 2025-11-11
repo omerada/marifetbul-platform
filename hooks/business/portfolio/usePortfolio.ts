@@ -19,7 +19,7 @@ import {
   type CreatePortfolioRequest,
   type UpdatePortfolioRequest,
 } from '@/lib/api/portfolio';
-import { useAuthState } from '@/hooks/shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
@@ -54,7 +54,7 @@ export interface UsePortfolioReturn {
 // ============================================================================
 
 export function usePortfolio(): UsePortfolioReturn {
-  const { user } = useAuthState();
+  const user = authSelectors.useUser();
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -95,11 +95,16 @@ export function usePortfolio(): UsePortfolioReturn {
         await mutate(`/portfolios/user/${user.id}`);
 
         toast.success('Portfolio başarıyla oluşturuldu! 🎉');
-        logger.info('[usePortfolio] Portfolio created', { portfolioIdnewPortfolioid,  });
+        logger.info('[usePortfolio] Portfolio created', {
+          portfolioId: newPortfolio.id,
+        });
 
         return newPortfolio;
       } catch (err) {
-        logger.error('[usePortfolio] Create portfolio failed', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          '[usePortfolio] Create portfolio failed',
+          err instanceof Error ? err : new Error(String(err))
+        );
         toast.error('Portfolio oluşturulamadı. Lütfen tekrar deneyin.');
         return null;
       } finally {
@@ -124,7 +129,7 @@ export function usePortfolio(): UsePortfolioReturn {
 
       setIsUpdating(true);
       try {
-        logger.info('[usePortfolio] Updating portfolio', { portfolioId, data,  });
+        logger.info('[usePortfolio] Updating portfolio', { portfolioId, data });
 
         const updatedPortfolio = await updatePortfolioApi(portfolioId, data);
 
@@ -136,7 +141,10 @@ export function usePortfolio(): UsePortfolioReturn {
 
         return updatedPortfolio;
       } catch (err) {
-        logger.error('[usePortfolio] Update portfolio failed', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          '[usePortfolio] Update portfolio failed',
+          err instanceof Error ? err : new Error(String(err))
+        );
         toast.error('Portfolio güncellenemedi. Lütfen tekrar deneyin.');
         return null;
       } finally {
@@ -170,7 +178,10 @@ export function usePortfolio(): UsePortfolioReturn {
 
         return true;
       } catch (err) {
-        logger.error('[usePortfolio] Delete portfolio failed', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          '[usePortfolio] Delete portfolio failed',
+          err instanceof Error ? err : new Error(String(err))
+        );
         toast.error('Portfolio silinemedi. Lütfen tekrar deneyin.');
         return false;
       } finally {

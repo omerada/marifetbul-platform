@@ -46,7 +46,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { useProposals } from '@/hooks/business/proposals';
-import { useAuthState as useAuth } from '@/hooks/shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { getProposalById } from '@/lib/api/proposals';
 import type { ProposalResponse } from '@/types/backend-aligned';
 import logger from '@/lib/infrastructure/monitoring/logger';
@@ -56,7 +56,7 @@ export default function ProposalDetailPage() {
   const params = useParams();
   const router = useRouter();
   const proposalId = params.id as string;
-  const { user } = useAuth();
+  const user = authSelectors.useUser();
 
   const [proposal, setProposal] = useState<ProposalResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);

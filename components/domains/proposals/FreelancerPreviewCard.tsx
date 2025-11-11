@@ -9,14 +9,29 @@ import {
   TrendingUp,
   ExternalLink,
 } from 'lucide-react';
-import type { Proposal } from '@/types/core/jobs';
+import type { ProposalResponse as Proposal } from '@/types/backend-aligned';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { MessageButton } from '@/components/domains/messaging';
 
+// Freelancer data extracted from proposal
+interface FreelancerData {
+  id: string;
+  name: string;
+  avatar?: string;
+  rating?: number;
+  reviewCount?: number;
+  skills?: string[];
+  completedJobs?: number;
+  successRate?: number;
+  hourlyRate?: number;
+  firstName?: string;
+  lastName?: string;
+}
+
 interface FreelancerPreviewCardProps {
-  freelancer: Proposal['freelancer'];
+  freelancer: FreelancerData;
   freelancerId: string;
   proposal?: Proposal; // Optional for MessageButton context
   jobTitle?: string;
