@@ -42,7 +42,7 @@ export interface JobDetail extends Omit<Job, 'employer'> {
     location?: string;
     createdAt?: string;
   };
-  proposals: Proposal[];
+  proposals: import('@/types/backend-aligned').ProposalResponse[];
   attachments: FileAttachment[];
   requirements: string[];
   tags?: string[];
@@ -50,32 +50,11 @@ export interface JobDetail extends Omit<Job, 'employer'> {
   expiresAt?: string;
 }
 
-export interface Proposal {
-  id: string;
-  jobId: string;
-  freelancerId: string;
-  coverLetter: string;
-  proposedRate: number;
-  deliveryTime: number;
-  status: 'pending' | 'accepted' | 'rejected';
-  createdAt: string;
-  updatedAt?: string; // Added for core/jobs compatibility
-  // Additional fields for compatibility
-  freelancer?: {
-    id: string;
-    name?: string;
-    firstName?: string;
-    lastName?: string;
-    avatar?: string;
-    rating?: number;
-    reviewCount?: number;
-    title?: string;
-    skills?: string[];
-  };
-  proposedBudget?: number; // Alternative to proposedRate
-  proposedTimeline?: string; // Delivery timeline
-  attachments?: File[]; // Proposal attachments
-}
+/**
+ * @deprecated Use ProposalResponse from @/types/backend-aligned instead
+ * This type is kept for backward compatibility only
+ */
+export type { ProposalResponse as Proposal } from '@/types/backend-aligned';
 
 export interface FileAttachment {
   id: string;

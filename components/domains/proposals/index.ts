@@ -5,7 +5,8 @@
 
 export { ProposalCard } from './ProposalCard';
 export { FreelancerProposalCardV2 } from './FreelancerProposalCardV2';
-export { AcceptProposalModal } from './AcceptProposalModal';
+// AcceptProposalModal moved to jobs domain (more feature-rich with payment mode)
+export { AcceptProposalModal } from '../jobs/AcceptProposalModal';
 export { RejectProposalModal } from './RejectProposalModal';
 export { FreelancerProposalCard } from './FreelancerProposalCard';
 export { FreelancerPreviewCard } from './FreelancerPreviewCard';

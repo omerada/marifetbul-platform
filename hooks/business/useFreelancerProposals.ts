@@ -1,43 +1,42 @@
 'use client';
 
+/**
+ * ================================================
+ * @deprecated DEPRECATED HOOK - DO NOT USE
+ * ================================================
+ * This hook is deprecated and will be removed in the next version.
+ * 
+ * USE INSTEAD:
+ * - import { useProposals } from '@/hooks/business/proposals';
+ * 
+ * MIGRATION GUIDE:
+ * ```tsx
+ * // Old:
+ * const { proposals, stats, withdrawProposal } = useFreelancerProposals({ status: 'PENDING' });
+ * 
+ * // New:
+ * const { proposals, stats, withdrawProposal } = useProposals({ status: 'PENDING' });
+ * ```
+ * 
+ * REASON:
+ * - useProposals uses backend-aligned types (ProposalResponse)
+ * - Better error handling and loading states
+ * - More consistent with other hooks
+ * - Prevents type mismatches
+ * 
+ * @deprecated Use useProposals from @/hooks/business/proposals instead
+ * @since 2025-11-11
+ */
+
 import { useState, useEffect, useCallback } from 'react';
 import { useUIStore } from '@/lib/core/store/domains/ui/uiStore';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import type { ProposalResponse, ProposalStatus } from '@/types/backend-aligned';
 
-export type ProposalStatus =
-  | 'PENDING'
-  | 'ACCEPTED'
-  | 'REJECTED'
-  | 'WITHDRAWN'
-  | null;
-
-export interface Proposal {
-  id: string;
-  job: {
-    id: string;
-    title: string;
-    budget?: {
-      min: number;
-      max: number;
-      type: string;
-    };
-    employer: {
-      id: string;
-      firstName: string;
-      lastName: string;
-      avatar?: string;
-    };
-  };
-  coverLetter: string;
-  bidAmount: number;
-  deliveryTime: number;
-  status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'WITHDRAWN';
-  isViewed: boolean;
-  submittedAt: string;
-  respondedAt?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+/**
+ * @deprecated Use ProposalResponse from @/types/backend-aligned
+ */
+type Proposal = ProposalResponse;
 
 export interface ProposalStats {
   total: number;

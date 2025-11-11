@@ -76,39 +76,11 @@ export interface JobFormData {
   deadline?: string;
 }
 
-// Proposal types
-export interface Proposal {
-  id: string;
-  jobId: string;
-  freelancerId: string;
-  freelancer: Pick<
-    import('./base').User,
-    'id' | 'firstName' | 'lastName' | 'avatar' | 'userType'
-  > & {
-    userType: 'freelancer';
-    skills: string[];
-    hourlyRate?: number;
-    rating: number;
-    reviewCount?: number;
-  };
-  coverLetter: string;
-  proposedBudget: number;
-  proposedTimeline: string;
-  attachments?: string[];
-  status: 'pending' | 'accepted' | 'rejected' | 'withdrawn';
-  createdAt: string;
-  updatedAt: string;
-  milestones?: {
-    title: string;
-    description: string;
-    amount: number;
-    dueDate: string;
-  }[];
-  questions?: {
-    question: string;
-    answer: string;
-  }[];
-}
+/**
+ * @deprecated Use ProposalResponse from @/types/backend-aligned instead
+ * This type is kept for backward compatibility only
+ */
+export type { ProposalResponse as Proposal } from '@/types/backend-aligned';
 
 export interface JobsResponse {
   success: boolean;
