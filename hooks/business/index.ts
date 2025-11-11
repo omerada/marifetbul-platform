@@ -515,7 +515,7 @@ export {
 } from './dashboard/useSnapshots';
 export { useProposal } from './useProposal';
 export { useProposalEligibility } from './useProposalEligibility';
-export { useFreelancerProposals } from './useFreelancerProposals';
+// useFreelancerProposals removed - use useProposals from './proposals' instead
 export { useProposalNotifications } from './useProposalNotifications';
 export {
   type ProposalNotificationData,

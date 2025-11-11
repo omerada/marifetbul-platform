@@ -1,7 +1,8 @@
 // Consolidated order types
 import { User } from '../../core/base';
 
-export type Currency = 'USD' | 'EUR' | 'GBP' | 'TRY' | 'CAD' | 'AUD';
+// Platform only supports TRY (Turkish Lira)
+export type Currency = 'TRY';
 
 export type PaymentStatus =
   | 'pending'
