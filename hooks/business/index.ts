@@ -663,6 +663,19 @@ const BusinessHooks = {
 export default BusinessHooks;
 
 // ================================================
+// PAYMENT SYSTEM (Sprint 1 - Payment System)
+// ================================================
+export * from './payment'; // ✅ Unified Iyzico Payment Hook
+export { useIyzicoPayment } from './useIyzicoPayment';
+export type {
+  UseIyzicoPaymentOptions,
+  PaymentIntentData,
+  ConfirmPaymentData,
+  PaymentResult,
+  UseIyzicoPaymentReturn,
+} from './useIyzicoPayment';
+
+// ================================================
 // JOB POSTING & PROPOSALS (Sprint 1)
 // ================================================
 export * from './jobs'; // ✅ Job Posting System

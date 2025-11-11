@@ -35,6 +35,7 @@ import {
 import { formatCurrency } from '@/lib/shared/formatters';
 import { CreditCard, Building2, CheckCircle, AlertCircle } from 'lucide-react';
 import type { OrderResponse } from '@/types/backend-aligned';
+import IyzicoPaymentForm from '@/components/checkout/IyzicoPaymentForm';
 
 // ================================================
 // TYPES
@@ -511,22 +512,17 @@ export function UnifiedCheckout({
     }
   };
 
-  // Handle Iyzico payment (will be implemented in next sprint)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleIyzicoPayment = async () => {
-    setIsProcessing(true);
+  // Handle Iyzico payment success
+  const handleIyzicoSuccess = () => {
+    toast.success('Ödeme başarıyla tamamlandı!');
+    router.push(`/checkout/callback?orderId=${order.id}&status=success`);
+    onSuccess?.(order.id);
+  };
 
-    try {
-      // TODO: Implement Iyzico payment flow
-      // This will be implemented in next sprint
-      throw new Error('Iyzico entegrasyonu henüz aktif değil');
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Ödeme başarısız';
-      toast.error(message);
-      onError?.(message);
-      setIsProcessing(false);
-    }
+  // Handle Iyzico payment error
+  const handleIyzicoError = (error: string) => {
+    toast.error(error || 'Ödeme işlemi başarısız oldu');
+    onError?.(error);
   };
 
   // Render step content
@@ -566,13 +562,16 @@ export function UnifiedCheckout({
         }
 
         if (selectedMethod === 'IYZICO') {
-          // TODO: Render Iyzico payment form
           return (
-            <div className="text-center">
-              <p className="text-muted-foreground">
-                Iyzico ödeme formu yükleniyor...
-              </p>
-            </div>
+            <IyzicoPaymentForm
+              orderId={order.id}
+              amount={order.totalAmount}
+              currency="TRY"
+              onSuccess={handleIyzicoSuccess}
+              onError={handleIyzicoError}
+              onCancel={() => setSelectedMethod(null)}
+              isProcessing={isProcessing}
+            />
           );
         }
 

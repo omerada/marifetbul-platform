@@ -201,16 +201,126 @@ export const escrowReleaseSchema = z.object({
   notifyUsers: baseSchemas.optional.default(true),
 });
 
+// ================================================
+// IYZICO-SPECIFIC SCHEMAS (Sprint 1 - Payment System)
+// ================================================
+
+/**
+ * Luhn algorithm for credit card validation
+ */
+function luhnCheck(cardNumber: string): boolean {
+  const digits = cardNumber.replace(/\D/g, '');
+  let sum = 0;
+  let isEven = false;
+
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let digit = parseInt(digits[i], 10);
+    if (isEven) {
+      digit *= 2;
+      if (digit > 9) digit -= 9;
+    }
+    sum += digit;
+    isEven = !isEven;
+  }
+
+  return sum % 10 === 0;
+}
+
+/**
+ * Detect card type from card number
+ */
+export type IyzicoCardType = 'VISA' | 'MASTERCARD' | 'AMEX' | 'TROY' | 'UNKNOWN';
+
+export function detectCardType(cardNumber: string): IyzicoCardType {
+  const digits = cardNumber.replace(/\D/g, '');
+  if (/^4/.test(digits)) return 'VISA';
+  if (/^5[1-5]/.test(digits)) return 'MASTERCARD';
+  if (/^3[47]/.test(digits)) return 'AMEX';
+  if (/^9792/.test(digits)) return 'TROY';
+  return 'UNKNOWN';
+}
+
+/**
+ * Format card number (XXXX XXXX XXXX XXXX)
+ */
+export function formatCardNumber(value: string): string {
+  const digits = value.replace(/\D/g, '');
+  const groups = digits.match(/.{1,4}/g) || [];
+  return groups.join(' ');
+}
+
+/**
+ * Iyzico Payment Form Schema
+ */
+export const iyzicoPaymentSchema = z.object({
+  cardHolderName: z
+    .string()
+    .min(3, 'Kart sahibi adı en az 3 karakter olmalıdır')
+    .max(50, 'Kart sahibi adı en fazla 50 karakter olabilir')
+    .regex(/^[a-zA-ZçÇğĞıİöÖşŞüÜ\s]+$/, 'Sadece harf karakterleri kullanılabilir')
+    .transform((val) => val.toUpperCase().trim()),
+
+  cardNumber: z
+    .string()
+    .min(1, 'Kart numarası gereklidir')
+    .transform((val) => val.replace(/\s/g, ''))
+    .refine((val) => /^\d{13,19}$/.test(val), 'Geçerli bir kart numarası giriniz')
+    .refine((val) => luhnCheck(val), 'Geçersiz kart numarası'),
+
+  expiryMonth: z.string().regex(/^(0[1-9]|1[0-2])$/, 'Geçerli bir ay giriniz (01-12)'),
+  
+  expiryYear: z.string().regex(/^\d{2}$/, 'Geçerli bir yıl giriniz (YY formatında)'),
+  
+  cvc: z.string().regex(/^\d{3,4}$/, 'CVV 3 veya 4 rakam olmalıdır'),
+  
+  saveCard: z.boolean().optional().default(false),
+}).refine(
+  (data) => {
+    // Validate expiry date is not in the past
+    const currentYear = new Date().getFullYear() % 100;
+    const currentMonth = new Date().getMonth() + 1;
+    const year = parseInt(data.expiryYear, 10);
+    const month = parseInt(data.expiryMonth, 10);
+
+    if (year < currentYear) return false;
+    if (year === currentYear && month < currentMonth) return false;
+    return true;
+  },
+  { message: 'Kartınızın süresi dolmuştur', path: ['expiryMonth'] }
+);
+
+/**
+ * Saved Card Payment Schema
+ */
+export const savedCardPaymentSchema = z.object({
+  cardToken: z.string().min(1, 'Kart seçimi gereklidir'),
+  cvc: z.string().regex(/^\d{3,4}$/, 'CVV 3 veya 4 rakam olmalıdır'),
+});
+
+/**
+ * Payment Intent Schema
+ */
+export const paymentIntentSchema = z.object({
+  orderId: baseSchemas.uuid,
+  amount: baseSchemas.price.positive('Tutar 0\'dan büyük olmalıdır'),
+  currency: z.enum(['TRY']).default('TRY'),
+  returnUrl: z.string().url().optional(),
+  saveCard: z.boolean().optional().default(false),
+});
+
 // Type exports
 export type PaymentMethodType = z.infer<typeof paymentMethodSchema>;
 export type CurrencyType = z.infer<typeof currencySchema>;
 export type PaymentCardData = z.infer<typeof paymentCardSchema>;
 export type BillingAddressData = z.infer<typeof billingAddressSchema>;
-export type CreatePaymentRequestData = z.infer<
-  typeof createPaymentRequestSchema
->;
+export type CreatePaymentRequestData = z.infer<typeof createPaymentRequestSchema>;
 export type PaymentFormData = z.infer<typeof paymentFormDataSchema>;
 export type PaymentFiltersData = z.infer<typeof paymentFiltersSchema>;
 export type InvoiceGenerationData = z.infer<typeof invoiceGenerationSchema>;
 export type RefundRequestData = z.infer<typeof refundRequestSchema>;
 export type EscrowReleaseData = z.infer<typeof escrowReleaseSchema>;
+
+// Iyzico-specific types
+export type IyzicoPaymentFormData = z.infer<typeof iyzicoPaymentSchema>;
+export type SavedCardPaymentData = z.infer<typeof savedCardPaymentSchema>;
+export type PaymentIntentData = z.infer<typeof paymentIntentSchema>;

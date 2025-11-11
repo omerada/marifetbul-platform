@@ -2,13 +2,12 @@
 // PROPOSALS DOMAIN COMPONENTS
 // ================================================
 // All proposal-related components
+// Sprint 2: Cleaned up deprecated/duplicate components
 
-export { ProposalCard } from './ProposalCard';
 export { FreelancerProposalCardV2 } from './FreelancerProposalCardV2';
-// AcceptProposalModal moved to jobs domain (more feature-rich with payment mode)
+// Action modals moved to jobs domain (employer-centric functionality)
 export { AcceptProposalModal } from '../jobs/AcceptProposalModal';
-export { RejectProposalModal } from './RejectProposalModal';
-export { FreelancerProposalCard } from './FreelancerProposalCard';
+export { RejectProposalModal } from '../jobs/RejectProposalModal';
 export { FreelancerPreviewCard } from './FreelancerPreviewCard';
 export { ProposalDetailModal } from './ProposalDetailModal';
 export { ProposalComparisonView } from './ProposalComparisonView';
