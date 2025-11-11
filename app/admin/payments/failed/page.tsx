@@ -27,11 +27,6 @@ import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
 import {
   Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
 } from '@/components/ui/table';
 import {
   AlertCircle,
@@ -43,24 +38,18 @@ import {
   TrendingDown,
   Clock,
 } from 'lucide-react';
-import { paymentRetryApi } from '@/lib/api/payment-retry';
-import type { PaymentRetry } from '@/types/business/features/payment-retry';
+import * as paymentRetryApi from '@/lib/api/admin/payment-retry-admin-api';
+import type {
+  PaymentRetryDto,
+  PaymentRetryStatus,
+  PaymentFailureReason,
+} from '@/lib/api/admin/payment-retry-admin-api';
 import { formatCurrency, formatDate } from '@/lib/shared/formatters';
-import { Logger } from '@/lib/infrastructure/monitoring/logger';
-
-const logger = new Logger({});
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES
 // ================================================
-
-// Extended type for admin dashboard with payment details
-interface AdminPaymentRetry extends PaymentRetry {
-  orderId?: string;
-  amount: number;
-  lastError?: string;
-  errorCode?: string;
-}
 
 interface FailedPaymentStats {
   totalFailed: number;
@@ -82,9 +71,9 @@ interface FilterState {
 // ================================================
 
 export default function AdminFailedPaymentsPage() {
-  const [payments, setPayments] = useState<AdminPaymentRetry[]>([]);
+  const [payments, setPayments] = useState<PaymentRetryDto[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPayments, setSelectedPayments] = useState<Set<string>>(
+  const [selectedPayments, setSelectedPayments] = useState<Set<number>>(
     new Set()
   );
   const [filters, setFilters] = useState<FilterState>({
@@ -100,14 +89,45 @@ export default function AdminFailedPaymentsPage() {
   const fetchFailedPayments = async () => {
     try {
       setLoading(true);
-      // TODO: Backend endpoint for admin failed payments list
-      // const data = await paymentRetryApi.getAdminFailedPayments(filters);
-      // setPayments(data);
-      setPayments([]); // Placeholder
+      
+      // Fetch payment retries based on filters
+      const statusMap: Record<FilterState['status'], PaymentRetryStatus | undefined> = {
+        ALL: undefined,
+        EXHAUSTED: 'EXHAUSTED' as PaymentRetryStatus,
+        IN_PROGRESS: 'PENDING' as PaymentRetryStatus,
+        CANCELLED: 'CANCELLED' as PaymentRetryStatus,
+      };
+
+      const apiFilters = {
+        status: statusMap[filters.status],
+        // Date range filtering - simplified for now
+        ...(filters.dateRange !== 'ALL' && {
+          startDate: getDateRangeStart(filters.dateRange),
+        }),
+      };
+
+      const response = await paymentRetryApi.getPaymentRetries(apiFilters);
+      setPayments(response.content);
     } catch (error) {
       logger.error('Failed to fetch failed payments', error as Error);
+      setPayments([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Helper to get date range start
+  const getDateRangeStart = (range: FilterState['dateRange']): string => {
+    const now = new Date();
+    switch (range) {
+      case 'TODAY':
+        return new Date(now.setHours(0, 0, 0, 0)).toISOString();
+      case '7D':
+        return new Date(now.setDate(now.getDate() - 7)).toISOString();
+      case '30D':
+        return new Date(now.setDate(now.getDate() - 30)).toISOString();
+      default:
+        return '';
     }
   };
 
@@ -122,28 +142,28 @@ export default function AdminFailedPaymentsPage() {
   const stats: FailedPaymentStats = useMemo(() => {
     const totalFailed = payments.length;
     const exhaustedRetries = payments.filter(
-      (p) => p.status === 'EXHAUSTED'
+      (p: PaymentRetryDto) => p.status === 'EXHAUSTED'
     ).length;
-    const successfulRetries = payments.filter(
-      (p) => p.status === 'SUCCESS'
+    const completedRetries = payments.filter(
+      (p: PaymentRetryDto) => p.status === 'COMPLETED'
     ).length;
-    const totalAttempts = payments.reduce((sum, p) => sum + p.retryCount, 0);
+    const totalAttempts = payments.reduce((sum: number, p: PaymentRetryDto) => sum + p.retryCount, 0);
 
     const failureReasons: Record<string, number> = {};
-    payments.forEach((payment) => {
+    payments.forEach((payment: PaymentRetryDto) => {
       if (payment.failureReason) {
-        const reason = payment.errorCode || payment.failureReason;
+        const reason = payment.failureReason;
         failureReasons[reason] = (failureReasons[reason] || 0) + 1;
       }
     });
 
-    const totalAmount = payments.reduce((sum, p) => sum + p.amount, 0);
+    const totalAmount = payments.reduce((sum: number, p: PaymentRetryDto) => sum + p.amount, 0);
 
     return {
       totalFailed,
       exhaustedRetries,
       successRate:
-        totalFailed > 0 ? (successfulRetries / totalFailed) * 100 : 0,
+        totalFailed > 0 ? (completedRetries / totalFailed) * 100 : 0,
       averageRetries: totalFailed > 0 ? totalAttempts / totalFailed : 0,
       failureReasons,
       totalAmount,
@@ -155,18 +175,16 @@ export default function AdminFailedPaymentsPage() {
   // ================================================
 
   const filteredPayments = useMemo(() => {
-    return payments.filter((payment) => {
-      // Status filter
-      if (filters.status !== 'ALL' && payment.status !== filters.status) {
-        return false;
-      }
-
+    return payments.filter((payment: PaymentRetryDto) => {
+      // Status filter handled by API
+      
       // Search filter
       if (filters.searchQuery) {
         const query = filters.searchQuery.toLowerCase();
         return (
-          payment.paymentId.toLowerCase().includes(query) ||
-          payment.orderId?.toLowerCase().includes(query)
+          payment.id.toString().includes(query) ||
+          payment.paymentId.toString().includes(query) ||
+          payment.orderId.toString().includes(query)
         );
       }
 
@@ -178,10 +196,13 @@ export default function AdminFailedPaymentsPage() {
   // ACTIONS
   // ================================================
 
-  const handleManualRetry = async (paymentId: string) => {
+  const handleManualRetry = async (retryId: number) => {
     try {
-      await paymentRetryApi.manualRetryPayment(paymentId);
-      logger.info('Manual retry initiated', { paymentId });
+      await paymentRetryApi.triggerManualRetry({
+        paymentRetryId: retryId,
+        adminNote: 'Manual retry triggered from admin dashboard',
+      });
+      logger.info('Manual retry initiated', { retryId });
       await fetchFailedPayments();
     } catch (error) {
       logger.error('Manual retry failed', error as Error);
@@ -190,8 +211,11 @@ export default function AdminFailedPaymentsPage() {
 
   const handleBulkRetry = async () => {
     try {
-      const retryPromises = Array.from(selectedPayments).map((paymentId) =>
-        paymentRetryApi.manualRetryPayment(paymentId)
+      const retryPromises = Array.from(selectedPayments).map((retryId) =>
+        paymentRetryApi.triggerManualRetry({
+          paymentRetryId: retryId,
+          adminNote: 'Bulk retry triggered from admin dashboard',
+        })
       );
       await Promise.all(retryPromises);
       logger.info('Bulk retry completed', {
@@ -204,10 +228,10 @@ export default function AdminFailedPaymentsPage() {
     }
   };
 
-  const handleCancelRetry = async (paymentId: string) => {
+  const handleCancelRetry = async (retryId: number) => {
     try {
-      await paymentRetryApi.cancelPaymentRetry(paymentId);
-      logger.info('Retry cancelled', { paymentId });
+      await paymentRetryApi.cancelPaymentRetry(retryId, 'Cancelled by admin');
+      logger.info('Retry cancelled', { retryId });
       await fetchFailedPayments();
     } catch (error) {
       logger.error('Cancel retry failed', error as Error);
@@ -215,28 +239,30 @@ export default function AdminFailedPaymentsPage() {
   };
 
   const handleExportCSV = () => {
-    const csvContent = [
+    const csvData = [
       [
+        'Retry ID',
         'Payment ID',
         'Order ID',
         'Amount',
         'Status',
         'Retry Count',
-        'Last Error',
+        'Failure Reason',
         'Created At',
       ],
-      ...filteredPayments.map((p) => [
-        p.paymentId,
-        p.orderId || 'N/A',
-        p.amount.toString(),
+      ...filteredPayments.map((p: PaymentRetryDto) => [
+        p.id.toString(),
+        p.paymentId.toString(),
+        p.orderId.toString(),
+        formatCurrency(p.amount, p.currency),
         p.status,
         p.retryCount.toString(),
-        p.lastError || p.failureReason || 'N/A',
-        new Date(p.createdAt).toISOString(),
+        p.failureReason,
+        formatDate(p.createdAt),
       ]),
-    ]
-      .map((row) => row.join(','))
-      .join('\n');
+    ];
+
+    const csvContent = csvData.map((row: string[]) => row.join(',')).join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -257,11 +283,11 @@ export default function AdminFailedPaymentsPage() {
     setSelectedPayments(newSelection);
   };
 
-  const toggleSelectAll = () => {
+  const handleSelectAll = () => {
     if (selectedPayments.size === filteredPayments.length) {
       setSelectedPayments(new Set());
     } else {
-      setSelectedPayments(new Set(filteredPayments.map((p) => p.paymentId)));
+      setSelectedPayments(new Set(filteredPayments.map((p: PaymentRetryDto) => p.id)));
     }
   };
 
@@ -474,7 +500,7 @@ export default function AdminFailedPaymentsPage() {
                       checked={
                         selectedPayments.size === filteredPayments.length
                       }
-                      onChange={toggleSelectAll}
+                      onChange={handleSelectAll}
                       className="cursor-pointer"
                     />
                   </TableHead>

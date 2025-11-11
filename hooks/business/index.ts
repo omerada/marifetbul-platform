@@ -505,7 +505,7 @@ export {
   useAvatarUpload,
   useProfileValidation,
 } from './useProfile';
-export { useDashboard } from './useDashboard'; // Sprint 2: Removed useDashboardRefresh deprecated export
+export { useDashboard } from './useDashboard'; 
 export { useDashboardStats } from './dashboard/useDashboardStats';
 export {
   usePlatformSnapshot,
@@ -515,7 +515,6 @@ export {
 } from './dashboard/useSnapshots';
 export { useProposal } from './useProposal';
 export { useProposalEligibility } from './useProposalEligibility';
-// useFreelancerProposals removed - use useProposals from './proposals' instead
 export { useProposalNotifications } from './useProposalNotifications';
 export {
   type ProposalNotificationData,
