@@ -21,3 +21,5 @@ export { ProposalForm } from './ProposalForm';
 export { ProposalCard } from './ProposalCard';
 export { ProposalListItem } from './ProposalListItem';
 export { ProposalSubmitModal } from './ProposalSubmitModal';
+export { AcceptProposalModal } from './AcceptProposalModal';
+export { RejectProposalModal } from './RejectProposalModal';

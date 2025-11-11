@@ -43,6 +43,10 @@ import {
   type SortOption,
   type FilterStatus,
 } from '@/components/domains/proposals';
+import {
+  AcceptProposalModal,
+  RejectProposalModal,
+} from '@/components/domains/jobs';
 import { useJobs } from '@/hooks/business/useJobs';
 import { useProposals } from '@/hooks/business/proposals';
 import { useProposal } from '@/hooks/business/useProposal';
@@ -51,6 +55,7 @@ import { formatCurrency } from '@/lib/shared/formatters';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { toast } from 'sonner';
+import type { ProposalResponse } from '@/types/backend-aligned';
 
 export default function JobProposalsPage() {
   const router = useRouter();
@@ -60,6 +65,10 @@ export default function JobProposalsPage() {
   // State
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
+  const [selectedProposal, setSelectedProposal] =
+    useState<ProposalResponse | null>(null);
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
 
   // Hooks
   const { currentJob, fetchJobById, isLoading: jobLoading } = useJobs();
@@ -68,25 +77,13 @@ export default function JobProposalsPage() {
     isLoading: proposalsLoading,
     refresh: refreshProposals,
     setFilters,
+    acceptProposal,
+    rejectProposal,
+    isAccepting,
+    isRejecting,
   } = useProposals({
     jobId,
     sortBy: 'newest',
-  });
-
-  const {
-    acceptProposal,
-    rejectProposal,
-    isLoading: actionLoading,
-  } = useProposal({
-    onSuccess: () => {
-      toast.success('İşlem başarılı');
-      refreshProposals();
-    },
-    onError: (error) => {
-      const message =
-        error instanceof Error ? error.message : 'Bir hata oluştu';
-      toast.error('Hata', { description: message });
-    },
   });
 
   const { selectedProposals, toggleSelect, startComparison, clearSelection } =
@@ -134,26 +131,62 @@ export default function JobProposalsPage() {
   };
 
   // Handle proposal actions
-  const handleAccept = useCallback(
-    async (proposalId: string) => {
-      if (
-        !window.confirm('Bu teklifi kabul etmek istediğinize emin misiniz?')
-      ) {
-        return;
+  const handleAcceptClick = useCallback((proposal: ProposalResponse) => {
+    setSelectedProposal(proposal);
+    setShowAcceptModal(true);
+  }, []);
+
+  const handleRejectClick = useCallback((proposal: ProposalResponse) => {
+    setSelectedProposal(proposal);
+    setShowRejectModal(true);
+  }, []);
+
+  const handleAcceptProposal = useCallback(
+    async (paymentMode: 'ESCROW_PROTECTED' | 'MANUAL_IBAN') => {
+      if (!selectedProposal) return;
+
+      try {
+        const result = await acceptProposal(selectedProposal.id, {
+          message: `Teklifiniz ${paymentMode === 'ESCROW_PROTECTED' ? 'güvenli ödeme' : 'manuel IBAN'} yöntemiyle kabul edildi.`,
+        });
+
+        if (result) {
+          // Close modal
+          setShowAcceptModal(false);
+          setSelectedProposal(null);
+
+          // Refresh proposals
+          await refreshProposals();
+
+          // Redirect to orders page
+          // Order setup will be implemented in Epic 1.3
+          toast.success('Sipariş oluşturuldu', {
+            description: 'Siparişlerinizi görüntülemek için yönlendiriliyorsunuz',
+          });
+          
+          setTimeout(() => {
+            router.push('/dashboard/orders');
+          }, 1500);
+        }
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : 'Teklif kabul edilemedi';
+        toast.error('Hata', { description: message });
       }
-      await acceptProposal(proposalId);
     },
-    [acceptProposal]
+    [selectedProposal, acceptProposal, refreshProposals, router]
   );
 
-  const handleReject = useCallback(
-    async (proposalId: string) => {
-      if (!window.confirm('Bu teklifi reddetmek istediğinize emin misiniz?')) {
-        return;
-      }
-      await rejectProposal(proposalId);
+  const handleRejectProposal = useCallback(
+    async (reason?: string, message?: string) => {
+      if (!selectedProposal) return;
+
+      await rejectProposal(selectedProposal.id, { reason, message });
+      setShowRejectModal(false);
+      setSelectedProposal(null);
+      await refreshProposals();
     },
-    [rejectProposal]
+    [selectedProposal, rejectProposal, refreshProposals]
   );
 
   // Loading state
@@ -310,16 +343,40 @@ export default function JobProposalsPage() {
 
                   <ProposalListItem
                     proposal={proposal}
-                    onAccept={() => handleAccept(proposal.id)}
-                    onReject={() => handleReject(proposal.id)}
+                    onAccept={() => handleAcceptClick(proposal)}
+                    onReject={() => handleRejectClick(proposal)}
                     showActions={proposal.status === 'PENDING'}
-                    isLoading={actionLoading}
+                    isLoading={isAccepting || isRejecting}
                   />
                 </div>
               ))}
             </div>
           </div>
         </div>
+
+        {/* Modals */}
+        {selectedProposal && (
+          <>
+            <AcceptProposalModal
+              isOpen={showAcceptModal}
+              onClose={() => {
+                setShowAcceptModal(false);
+                setSelectedProposal(null);
+              }}
+              onAccept={handleAcceptProposal}
+              proposal={selectedProposal}
+            />
+            <RejectProposalModal
+              isOpen={showRejectModal}
+              onClose={() => {
+                setShowRejectModal(false);
+                setSelectedProposal(null);
+              }}
+              onReject={handleRejectProposal}
+              proposal={selectedProposal}
+            />
+          </>
+        )}
       </div>
     </div>
   );
