@@ -18,8 +18,10 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Copy, Check, Building2, AlertCircle, CreditCard } from 'lucide-react';
+import * as configurationApi from '@/lib/api/configuration-api';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES
@@ -138,7 +140,43 @@ export const IBANDisplayCard: React.FC<IBANDisplayCardProps> = ({
   onCopy,
 }) => {
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [bankAccount, setBankAccount] = useState<PlatformBankAccount | null>(null);
+  const [loading, setLoading] = useState(true);
   const referenceNumber = generateReference(orderId);
+
+  /**
+   * Fetch platform bank account from backend
+   */
+  useEffect(() => {
+    const fetchBankAccount = async () => {
+      try {
+        setLoading(true);
+        const account = await configurationApi.getPlatformBankAccount();
+        setBankAccount({
+          iban: account.iban,
+          accountHolder: account.accountHolder,
+          bankName: account.bankName,
+          branchCode: account.branchCode,
+          accountNumber: account.accountNumber,
+        });
+        logger.info('Platform bank account fetched successfully');
+      } catch (error) {
+        logger.error('Failed to fetch platform bank account', error as Error);
+        // Fallback to hardcoded values if API fails
+        setBankAccount({
+          iban: 'TR33 0006 1005 1978 6457 8413 26',
+          accountHolder: 'MarifetBul Teknoloji A.Ş.',
+          bankName: 'Garanti BBVA',
+          branchCode: '1005',
+          accountNumber: '6457841326',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBankAccount();
+  }, []);
 
   /**
    * Handle copy action
@@ -191,105 +229,115 @@ export const IBANDisplayCard: React.FC<IBANDisplayCardProps> = ({
         </div>
 
         {/* Bank Account Details */}
-        <div className="space-y-3">
-          {/* IBAN */}
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              IBAN Numarası
-            </label>
-            <div className="flex items-center gap-2">
+        {loading ? (
+          <div className="text-center py-8">
+            <p className="text-gray-500">Banka bilgileri yükleniyor...</p>
+          </div>
+        ) : !bankAccount ? (
+          <div className="rounded-lg bg-red-50 border border-red-200 p-4">
+            <p className="text-red-700">Banka bilgileri yüklenemedi. Lütfen daha sonra tekrar deneyin.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {/* IBAN */}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                IBAN Numarası
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={bankAccount.iban}
+                  readOnly
+                  className="flex-1 rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 font-mono text-sm text-gray-900 focus:outline-none"
+                />
+                <button
+                  onClick={() =>
+                    handleCopy(
+                      bankAccount.iban.replace(/\s/g, ''),
+                      'iban'
+                    )
+                  }
+                  className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  aria-label="IBAN'ı kopyala"
+                >
+                  {copiedField === 'iban' ? (
+                    <>
+                      <Check className="h-4 w-4" />
+                      <span>Kopyalandı</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4" />
+                      <span>Kopyala</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Account Holder */}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Hesap Sahibi
+              </label>
               <input
                 type="text"
-                value={PLATFORM_BANK_ACCOUNT.iban}
+                value={bankAccount.accountHolder}
                 readOnly
-                className="flex-1 rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 font-mono text-sm text-gray-900 focus:outline-none"
+                className="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 focus:outline-none"
               />
-              <button
-                onClick={() =>
-                  handleCopy(
-                    PLATFORM_BANK_ACCOUNT.iban.replace(/\s/g, ''),
-                    'iban'
-                  )
-                }
-                className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                aria-label="IBAN'ı kopyala"
-              >
-                {copiedField === 'iban' ? (
-                  <>
-                    <Check className="h-4 w-4" />
-                    <span>Kopyalandı</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-4 w-4" />
-                    <span>Kopyala</span>
-                  </>
-                )}
-              </button>
             </div>
-          </div>
 
-          {/* Account Holder */}
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              Hesap Sahibi
-            </label>
-            <input
-              type="text"
-              value={PLATFORM_BANK_ACCOUNT.accountHolder}
-              readOnly
-              className="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 focus:outline-none"
-            />
-          </div>
-
-          {/* Bank Name */}
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              Banka
-            </label>
-            <input
-              type="text"
-              value={PLATFORM_BANK_ACCOUNT.bankName}
-              readOnly
-              className="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 focus:outline-none"
-            />
-          </div>
-
-          {/* Reference Number */}
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              Açıklama (Referans Numarası)
-            </label>
-            <div className="flex items-center gap-2">
+            {/* Bank Name */}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Banka
+              </label>
               <input
                 type="text"
-                value={referenceNumber}
+                value={bankAccount.bankName}
                 readOnly
-                className="flex-1 rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 font-mono text-sm text-gray-900 focus:outline-none"
+                className="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 focus:outline-none"
               />
-              <button
-                onClick={() => handleCopy(referenceNumber, 'reference')}
-                className="flex items-center gap-2 rounded-lg bg-gray-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                aria-label="Referans numarasını kopyala"
-              >
-                {copiedField === 'reference' ? (
-                  <>
-                    <Check className="h-4 w-4" />
-                    <span>Kopyalandı</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-4 w-4" />
-                    <span>Kopyala</span>
-                  </>
-                )}
-              </button>
             </div>
-            <p className="mt-1 text-xs text-gray-500">
-              Havale açıklamasına bu referans numarasını yazınız
-            </p>
+
+            {/* Reference Number */}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Açıklama (Referans Numarası)
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={referenceNumber}
+                  readOnly
+                  className="flex-1 rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 font-mono text-sm text-gray-900 focus:outline-none"
+                />
+                <button
+                  onClick={() => handleCopy(referenceNumber, 'reference')}
+                  className="flex items-center gap-2 rounded-lg bg-gray-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                  aria-label="Referans numarasını kopyala"
+                >
+                  {copiedField === 'reference' ? (
+                    <>
+                      <Check className="h-4 w-4" />
+                      <span>Kopyalandı</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4" />
+                      <span>Kopyala</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <p className="mt-1 text-xs text-gray-500">
+                Havale açıklamasına bu referans numarasını yazınız
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Important Instructions */}
         <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">

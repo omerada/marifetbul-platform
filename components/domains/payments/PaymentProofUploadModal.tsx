@@ -28,6 +28,8 @@ import {
   FileImage,
   Loader2,
 } from 'lucide-react';
+import * as manualPaymentApi from '@/lib/api/manual-payment-api';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES
@@ -262,29 +264,28 @@ export const PaymentProofUploadModal: React.FC<
   const handleUpload = useCallback(async () => {
     if (!uploadState.file) return;
 
-    setUploadState((prev) => ({ ...prev, uploading: true, progress: 0, error: null }));
+    setUploadState((prev: UploadState) => ({ 
+      ...prev, 
+      uploading: true, 
+      progress: 0, 
+      error: null 
+    }));
 
     try {
-      // TODO: Replace with actual API call
-      // Simulated upload with progress
-      const formData = new FormData();
-      formData.append('file', uploadState.file);
-      formData.append('orderId', orderId);
-      formData.append('amount', amount.toString());
+      // Upload payment proof to backend
+      const response = await manualPaymentApi.uploadPaymentProof({
+        file: uploadState.file,
+        orderId,
+        amount,
+        currency: 'TRY',
+      });
 
-      // Simulate upload progress
-      for (let i = 0; i <= 100; i += 10) {
-        await new Promise((resolve) => setTimeout(resolve, 200));
-        setUploadState((prev) => ({ ...prev, progress: i }));
-      }
+      logger.info('Payment proof uploaded successfully', {
+        orderId,
+        fileUrl: response.fileUrl,
+      });
 
-      // TODO: Replace with actual endpoint
-      // const response = await apiClient.post('/api/v1/payments/manual/upload-proof', formData);
-      // const fileUrl = response.fileUrl;
-
-      const fileUrl = 'https://example.com/payment-proof.jpg'; // Mock URL
-
-      setUploadState((prev) => ({
+      setUploadState((prev: UploadState) => ({
         ...prev,
         uploading: false,
         success: true,
@@ -293,14 +294,20 @@ export const PaymentProofUploadModal: React.FC<
 
       // Call success callback after delay
       setTimeout(() => {
-        onUploadSuccess(fileUrl);
+        onUploadSuccess(response.fileUrl);
         resetState();
         onClose();
       }, 1500);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Yükleme sırasında hata oluştu';
-      setUploadState((prev) => ({
+      
+      logger.error('Payment proof upload failed', error as Error, {
+        orderId,
+        fileSize: uploadState.file.size,
+      });
+
+      setUploadState((prev: UploadState) => ({
         ...prev,
         uploading: false,
         error: errorMessage,
