@@ -14,6 +14,9 @@ export * from './domains/media';
 export * from './infrastructure/websocket';
 export * from './infrastructure/geocoding';
 
+// === API UTILITIES ===
+export * from './api/backend-proxy';
+
 // === SEO SYSTEM ===
 export * from './seo';
 

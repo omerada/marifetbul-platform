@@ -1,147 +1,54 @@
-import { NextRequest, NextResponse } from 'next/server';
-import logger from '@/lib/infrastructure/monitoring/logger';
+/**
+ * User Management API
+ * GET/PATCH /api/users/:id
+ * @version 2.0.0
+ * @updated November 11, 2025 - Modernized with backend-proxy
+ */
 
 export const dynamic = 'force-dynamic';
 
-const BACKEND_API_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+import { NextRequest } from 'next/server';
+import { createBackendProxy } from '@/lib/api/backend-proxy';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * Get User by ID
- * GET /api/users/:id
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const { id } = await params;
-    const backendUrl = `${BACKEND_API_URL}/users/${id}`;
+  const { id } = await params;
+  logger.debug('[User API] Fetching user', { userId: id });
 
-    logger.debug('[User API] Fetching user:', id);
-
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-
-    // Forward Authorization header if present
-    const authHeader = request.headers.get('Authorization');
-    if (authHeader) {
-      headers['Authorization'] = authHeader;
-    }
-
-    // Forward cookies from client to backend
-    const cookieHeader = request.headers.get('Cookie');
-    if (cookieHeader) {
-      headers['Cookie'] = cookieHeader;
-    }
-
-    const response = await fetch(backendUrl, {
-      method: 'GET',
-      headers,
-      credentials: 'include',
-    });
-
-    logger.debug('[User API] Backend response status:', response.status);
-
-    const data = await response.text();
-
-    // Forward all headers from backend
-    const responseHeaders = new Headers();
-    response.headers.forEach((value, key) => {
-      responseHeaders.append(key, value);
-    });
-
-    return new Response(data, {
-      status: response.status,
-      headers: responseHeaders,
-    });
-  } catch (error) {
-    logger.error('[User API] Error:', error instanceof Error ? error : new Error(String(error)));
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: 'USER_FETCH_FAILED',
-          message: 'Failed to fetch user',
-          details: error instanceof Error ? error.message : 'Unknown error',
-        },
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 }
-    );
-  }
+  return createBackendProxy({
+    method: 'GET',
+    endpoint: `/users/${id}`,
+    request,
+    logContext: 'User API',
+    preserveAllHeaders: true, // Preserve all response headers
+  });
 }
 
 /**
  * Update User by ID
- * PUT /api/users/:id
  */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const { id } = await params;
-    const backendUrl = `${BACKEND_API_URL}/users/${id}`;
+  const { id } = await params;
+  logger.debug('[User API] Updating user', { userId: id });
 
-    logger.debug('[User API] Updating user:', id);
+  // Get request body
+  const body = await request.text();
 
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-
-    // Forward Authorization header if present
-    const authHeader = request.headers.get('Authorization');
-    if (authHeader) {
-      headers['Authorization'] = authHeader;
-    }
-
-    // Forward cookies from client to backend
-    const cookieHeader = request.headers.get('Cookie');
-    if (cookieHeader) {
-      headers['Cookie'] = cookieHeader;
-    }
-
-    // Get request body
-    const body = await request.text();
-
-    const response = await fetch(backendUrl, {
-      method: 'PUT',
-      headers,
-      credentials: 'include',
-      body,
-    });
-
-    logger.debug('[User API] Update response status:', response.status);
-
-    const data = await response.text();
-
-    // Forward all headers from backend
-    const responseHeaders = new Headers();
-    response.headers.forEach((value, key) => {
-      responseHeaders.append(key, value);
-    });
-
-    return new Response(data, {
-      status: response.status,
-      headers: responseHeaders,
-    });
-  } catch (error) {
-    logger.error('[User API] Update error:', error instanceof Error ? error : new Error(String(error)));
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: 'USER_UPDATE_FAILED',
-          message: 'Failed to update user',
-          details: error instanceof Error ? error.message : 'Unknown error',
-        },
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 }
-    );
-  }
+  return createBackendProxy({
+    method: 'PUT', // Backend uses PUT
+    endpoint: `/users/${id}`,
+    request,
+    body,
+    logContext: 'User API',
+    preserveAllHeaders: true, // Preserve all response headers
+  });
 }

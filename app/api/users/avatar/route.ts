@@ -1,73 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
-import logger from '@/lib/infrastructure/monitoring/logger';
-
-export const dynamic = 'force-dynamic';
-
-const BACKEND_API_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
-
 /**
  * Upload User Avatar
  * POST /api/users/avatar
+ * @version 2.0.0
+ * @updated November 11, 2025 - Modernized with backend-proxy (FormData support)
  */
+
+export const dynamic = 'force-dynamic';
+
+import { NextRequest } from 'next/server';
+import { createBackendProxy } from '@/lib/api/backend-proxy';
+import logger from '@/lib/infrastructure/monitoring/logger';
+
 export async function POST(request: NextRequest) {
-  try {
-    const backendUrl = `${BACKEND_API_URL}/users/avatar`;
+  logger.debug('[Avatar Upload] Uploading avatar');
 
-    logger.debug('[Avatar Upload] Uploading avatar');
+  // Get FormData from request
+  const formData = await request.formData();
 
-    const headers: HeadersInit = {};
-
-    // Forward Authorization header if present
-    const authHeader = request.headers.get('Authorization');
-    if (authHeader) {
-      headers['Authorization'] = authHeader;
-    }
-
-    // Forward cookies from client to backend
-    const cookieHeader = request.headers.get('Cookie');
-    if (cookieHeader) {
-      headers['Cookie'] = cookieHeader;
-    }
-
-    // Get FormData from request
-    const formData = await request.formData();
-
-    const response = await fetch(backendUrl, {
-      method: 'POST',
-      headers,
-      credentials: 'include',
-      body: formData, // FormData is automatically handled
-    });
-
-    logger.debug('[Avatar Upload] Backend response status:', response.status);
-
-    const data = await response.text();
-
-    // Forward all headers from backend
-    const responseHeaders = new Headers();
-    response.headers.forEach((value, key) => {
-      responseHeaders.append(key, value);
-    });
-
-    return new Response(data, {
-      status: response.status,
-      headers: responseHeaders,
-    });
-  } catch (error) {
-    logger.error('[Avatar Upload] Error:', error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: 'AVATAR_UPLOAD_FAILED',
-          message: 'Failed to upload avatar',
-          details: error instanceof Error ? error.message : 'Unknown error',
-        },
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 }
-    );
-  }
+  return createBackendProxy({
+    method: 'POST',
+    endpoint: '/users/avatar',
+    request,
+    body: formData,
+    logContext: 'Avatar Upload API',
+    isFormData: true, // Enable FormData handling
+    preserveAllHeaders: true, // Preserve all response headers
+  });
 }

@@ -3,28 +3,15 @@
  * Proxies requests to backend Spring Boot API
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import logger from '@/lib/infrastructure/monitoring/logger';
-
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+import { NextRequest } from 'next/server';
+import { createBackendProxy } from '@/lib/api/backend-proxy';
 
 export async function GET(request: NextRequest) {
-  try {
-    const response = await fetch(`${BACKEND_URL}/api/v1/orders/statistics`, {
-      headers: {
-        Authorization: request.headers.get('Authorization') || '',
-        'Content-Type': 'application/json',
-      },
-    });
-
-    const data = await response.json();
-    return NextResponse.json(data, { status: response.status });
-  } catch (error) {
-    logger.error('Order statistics API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch order statistics' },
-      { status: 500 }
-    );
-  }
+  return createBackendProxy({
+    method: 'GET',
+    endpoint: '/api/v1/orders/statistics',
+    request,
+    useBaseUrl: true,
+    logContext: 'Order Statistics API',
+  });
 }

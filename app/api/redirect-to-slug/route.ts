@@ -15,7 +15,10 @@ export async function GET(request: NextRequest) {
 
     // Validate parameters
     if (!type || !id) {
-      console.error('Missing required parameters:', { type, id });
+      logger.error(
+        'Missing required parameters:',
+        new Error(`type: ${type}, id: ${id}`)
+      );
       return NextResponse.redirect(new URL('/marketplace', request.url));
     }
 
@@ -50,7 +53,10 @@ export async function GET(request: NextRequest) {
           { status: 301 }
         );
       } catch (error) {
-        logger.error('Failed to fetch package:', error);
+        logger.error(
+          'Failed to fetch package:',
+          error instanceof Error ? error : new Error(String(error))
+        );
         // Fallback to marketplace packages list
         return NextResponse.redirect(
           new URL('/marketplace/packages', request.url)
@@ -61,7 +67,10 @@ export async function GET(request: NextRequest) {
     // Unknown type - redirect to marketplace home
     return NextResponse.redirect(new URL('/marketplace', request.url));
   } catch (error) {
-    logger.error('Redirect error:', error);
+    logger.error(
+      'Redirect error:',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return NextResponse.redirect(new URL('/marketplace', request.url));
   }
 }

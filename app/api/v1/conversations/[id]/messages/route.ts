@@ -1,15 +1,15 @@
 /**
  * Conversation Messages API Route
  * Handles messages within a specific conversation
+ * @version 2.0.0
+ * @updated November 11, 2025 - Modernized with backend-proxy
  */
 
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
+import { createBackendProxy } from '@/lib/api/backend-proxy';
 import logger from '@/lib/infrastructure/monitoring/logger';
-
-const BACKEND_API_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
 
 /**
  * GET /api/v1/conversations/[id]/messages
@@ -19,125 +19,74 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const { id } = await params;
-    const conversationId = id;
-    const { searchParams } = new URL(request.url);
+  const { id } = await params;
 
-    const page = searchParams.get('page') || '0';
-    const pageSize = searchParams.get('pageSize') || '50';
+  return createBackendProxy({
+    method: 'GET',
+    endpoint: `/messages/conversations/${id}/messages`,
+    request,
+    logContext: 'Conversation Messages API',
+    enableDebugLogging: true,
 
-    const backendParams = new URLSearchParams({
-      page,
-      size: pageSize,
-      sort: 'sentAt,desc',
-    });
+    // Custom response transformer
+    transformResponse: (data: unknown) => {
+      const responseData = data as {
+        success?: boolean;
+        data?: {
+          content?: unknown[];
+          number?: number;
+          size?: number;
+          totalElements?: number;
+          totalPages?: number;
+          last?: boolean;
+          first?: boolean;
+        };
+      };
 
-    const backendUrl = `${BACKEND_API_URL}/messages/conversations/${conversationId}/messages?${backendParams.toString()}`;
-
-    if (process.env.NODE_ENV === 'development') {
-      logger.debug('[Conversation Messages API] GET request:', { conversationId, urlbackendUrl,  });
-    }
-
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-
-    const authHeader = request.headers.get('Authorization');
-    if (authHeader) {
-      headers['Authorization'] = authHeader;
-    }
-
-    const cookieHeader = request.headers.get('Cookie');
-    if (cookieHeader) {
-      headers['Cookie'] = cookieHeader;
-    }
-
-    const response = await fetch(backendUrl, {
-      method: 'GET',
-      headers,
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      logger.error('[Conversation Messages API] Backend error:', {
-        status: response.status,
-        error: errorText,
-      });
-
-      // Return empty array if not found
-      if (response.status === 404) {
-        return NextResponse.json({
+      if (responseData.success && responseData.data) {
+        const pageData = responseData.data;
+        return {
           success: true,
-          messages: [],
+          messages: pageData.content || [],
           pagination: {
-            page: 0,
-            pageSize: 50,
-            limit: 50,
-            total: 0,
-            totalPages: 0,
-            hasNext: false,
-            hasPrev: false,
+            page: pageData.number || 0,
+            pageSize: pageData.size || 50,
+            limit: pageData.size || 50,
+            total: pageData.totalElements || 0,
+            totalPages: pageData.totalPages || 0,
+            hasNext: !pageData.last,
+            hasPrev: !pageData.first,
           },
           timestamp: new Date().toISOString(),
-        });
+        };
       }
 
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: 'BACKEND_ERROR',
-            message: 'Failed to fetch messages from backend',
-          },
-          timestamp: new Date().toISOString(),
-        },
-        { status: response.status }
+      return data;
+    },
+
+    // Custom error handler - return empty array on 404
+    customErrorHandler: (error: unknown) => {
+      logger.error(
+        '[Conversation Messages API] Error:',
+        error instanceof Error ? error : new Error(String(error))
       );
-    }
-
-    const data = await response.json();
-
-    // Transform backend response
-    if (data.success && data.data) {
-      const pageData = data.data;
 
       return NextResponse.json({
         success: true,
-        messages: pageData.content || [],
+        messages: [],
         pagination: {
-          page: pageData.number || 0,
-          pageSize: pageData.size || 50,
-          limit: pageData.size || 50,
-          total: pageData.totalElements || 0,
-          totalPages: pageData.totalPages || 0,
-          hasNext: !pageData.last,
-          hasPrev: !pageData.first,
+          page: 0,
+          pageSize: 50,
+          limit: 50,
+          total: 0,
+          totalPages: 0,
+          hasNext: false,
+          hasPrev: false,
         },
         timestamp: new Date().toISOString(),
       });
-    }
-
-    return NextResponse.json(data);
-  } catch (error) {
-    logger.error('[Conversation Messages API] Error:', error instanceof Error ? error : new Error(String(error)));
-
-    return NextResponse.json({
-      success: true,
-      messages: [],
-      pagination: {
-        page: 0,
-        pageSize: 50,
-        limit: 50,
-        total: 0,
-        totalPages: 0,
-        hasNext: false,
-        hasPrev: false,
-      },
-      timestamp: new Date().toISOString(),
-    });
-  }
+    },
+  });
 }
 
 /**
@@ -148,57 +97,15 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const { id } = await params;
-    const conversationId = id;
-    const body = await request.json();
+  const { id } = await params;
+  const body = await request.json();
 
-    const backendUrl = `${BACKEND_API_URL}/messages/conversations/${conversationId}/messages`;
-
-    if (process.env.NODE_ENV === 'development') {
-      logger.debug('[Conversation Messages API] POST request:', { conversationId, urlbackendUrl, body,  });
-    }
-
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-
-    const authHeader = request.headers.get('Authorization');
-    if (authHeader) {
-      headers['Authorization'] = authHeader;
-    }
-
-    const cookieHeader = request.headers.get('Cookie');
-    if (cookieHeader) {
-      headers['Cookie'] = cookieHeader;
-    }
-
-    const response = await fetch(backendUrl, {
-      method: 'POST',
-      headers,
-      credentials: 'include',
-      body: JSON.stringify(body),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      return NextResponse.json(data, { status: response.status });
-    }
-
-    return NextResponse.json(data, { status: 201 });
-  } catch (error) {
-    logger.error('[Conversation Messages API] POST Error:', error instanceof Error ? error : new Error(String(error)));
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: 'Internal server error while sending message',
-        },
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 }
-    );
-  }
+  return createBackendProxy({
+    method: 'POST',
+    endpoint: `/messages/conversations/${id}/messages`,
+    request,
+    body,
+    logContext: 'Conversation Messages API',
+    enableDebugLogging: true,
+  });
 }

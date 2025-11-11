@@ -1,5 +1,6 @@
 // Tekil blog postu getiren endpoint
 import { NextRequest, NextResponse } from 'next/server';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { BlogPost } from '@/types/blog';
 // Not: Gerçek projede veritabanı ile değiştirilmeli
 const posts: BlogPost[] = [
@@ -113,7 +114,10 @@ export async function GET(
 
     return NextResponse.json(post);
   } catch (error) {
-    console.error('Blog post API error:', error);
+    logger.error(
+      'Blog post API error:',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return NextResponse.json(
       { error: 'Blog yazısı yüklenirken hata oluştu.' },
       { status: 500 }
