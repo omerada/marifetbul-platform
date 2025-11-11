@@ -166,7 +166,7 @@ export function useSearchSuggestions(query: string, type: 'jobs' | 'packages') {
           setSuggestions([]);
         }
       } catch (error) {
-        logger.error('Search suggestions fetch error:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Search suggestions fetch error:', error);
         setSuggestions([]);
       } finally {
         setIsLoading(false);
@@ -190,7 +190,7 @@ export function useFilterPersistence(key: string) {
         localStorage.setItem(key, JSON.stringify(filters));
       }
     } catch (error) {
-      logger.error('Failed to save filters to localStorage:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to save filters to localStorage:', error);
     }
   };
 
@@ -202,7 +202,7 @@ export function useFilterPersistence(key: string) {
       }
       return null;
     } catch (error) {
-      logger.error('Failed to load filters from localStorage:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to load filters from localStorage:', error);
       return null;
     }
   };
@@ -213,7 +213,7 @@ export function useFilterPersistence(key: string) {
         localStorage.removeItem(key);
       }
     } catch (error) {
-      logger.error('Failed to clear filters from localStorage:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to clear filters from localStorage:', error);
     }
   };
 

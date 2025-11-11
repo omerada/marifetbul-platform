@@ -10,6 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 const BACKEND_API_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
 
     if (!authHeader && !cookieHeader) {
       return NextResponse.json(
-        { error: 'Unauthorized', message: 'GiriÅŸ yapmanÄ±z gerekiyor' },
+        { error: 'Unauthorized', message: 'Giriþ yapmanýz gerekiyor' },
         { status: 401 }
       );
     }
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: data.error || 'Payment Intent Error',
-          message: data.message || 'Ã–deme oluÅŸturulamadÄ±',
+          message: data.message || 'Ödeme oluþturulamadý',
           errorCode: data.errorCode,
         },
         { status: backendResponse.status }
@@ -76,11 +77,11 @@ export async function POST(request: NextRequest) {
     // Return payment intent response
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    console.error('Payment intent creation error:', error);
+    logger.error('Payment intent creation error:', error);
     return NextResponse.json(
       {
         error: 'Internal Server Error',
-        message: 'Ã–deme oluÅŸturulurken bir hata oluÅŸtu',
+        message: 'Ödeme oluþturulurken bir hata oluþtu',
       },
       { status: 500 }
     );

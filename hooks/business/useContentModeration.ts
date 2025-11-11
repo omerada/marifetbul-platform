@@ -77,7 +77,7 @@ export function useContentModeration() {
         // Refresh current page after action
         await fetchModerationQueue(selectors.filters);
       } catch (error) {
-        logger.error('Moderation action failed:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Moderation action failed:', error);
       } finally {
         setIsActionLoading(false);
       }
@@ -91,7 +91,7 @@ export function useContentModeration() {
       try {
         await assignModerator(itemId, moderatorId);
       } catch (error) {
-        logger.error('Moderator assignment failed:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Moderator assignment failed:', error);
       } finally {
         setIsActionLoading(false);
       }
@@ -105,7 +105,7 @@ export function useContentModeration() {
       try {
         await escalateItem(itemId, reason);
       } catch (error) {
-        logger.error('Escalation failed:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Escalation failed:', error);
       } finally {
         setIsActionLoading(false);
       }

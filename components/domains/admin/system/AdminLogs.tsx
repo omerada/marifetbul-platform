@@ -172,7 +172,7 @@ export function AdminLogs() {
         a.click();
       }
     } catch (error) {
-      logger.error('Failed to export logs:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to export logs:', error);
     }
   };
 

@@ -76,7 +76,7 @@ export function PackagePerformance({
   ];
 
   // Custom tooltip
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const CustomTooltip = ({
     active,
     payload,

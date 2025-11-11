@@ -81,7 +81,7 @@ export function AcceptProposalModal({
       } catch (error) {
         logger.error(
           'Failed to fetch seller payment status in modal:',
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
         setSellerHasIban(false);
       } finally {
@@ -100,7 +100,7 @@ export function AcceptProposalModal({
     } catch (error) {
       logger.error(
         'Failed to accept proposal:',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     } finally {
       setIsSubmitting(false);

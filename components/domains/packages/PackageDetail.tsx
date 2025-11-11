@@ -133,7 +133,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
       });
       // Navigate to order confirmation or payment
     } catch (error) {
-      logger.error('Order creation error:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Order creation error:', error);
     }
   };
 

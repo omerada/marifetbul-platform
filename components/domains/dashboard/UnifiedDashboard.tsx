@@ -90,7 +90,7 @@ export function UnifiedDashboard({
       } catch (error) {
         logger.error(
           '[UnifiedDashboard] Moderation action failed',
-          error instanceof Error ? error : new Error(String(error)),
+          error,
           { itemId, action }
         );
 

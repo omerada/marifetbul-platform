@@ -148,7 +148,7 @@ export function SearchAutocomplete({
       } catch (error) {
         logger.error(
           'Failed to fetch search data',
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
       }
     };

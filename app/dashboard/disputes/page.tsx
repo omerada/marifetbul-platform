@@ -79,7 +79,7 @@ export default function UserDisputeDashboard() {
     } catch (error) {
       logger.error(
         'Failed to fetch disputes:',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       toast.error('Veri Yüklenemedi', {
         description: 'İtirazlar yüklenirken bir hata oluştu.',

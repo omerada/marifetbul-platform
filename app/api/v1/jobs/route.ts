@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import {
   JobService,
   type JobSearchParams,
@@ -46,7 +47,10 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('Jobs API error:', error);
+    logger.error(
+      'Jobs API error:',
+      error
+    );
     return NextResponse.json(
       {
         error: 'Internal server error',
@@ -72,7 +76,10 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Create job error:', error);
+    logger.error(
+      'Create job error:',
+      error
+    );
     return NextResponse.json(
       {
         error: 'Failed to create job',

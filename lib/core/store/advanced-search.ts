@@ -363,7 +363,7 @@ export const useAdvancedSearchStore = create<AdvancedSearchStore>()(
             } catch (error) {
               logger.warn(
                 'Failed to save recent searches to localStorage',
-                error instanceof Error ? error : new Error(String(error))
+                error
               );
             }
 
@@ -420,7 +420,7 @@ if (typeof window !== 'undefined') {
   } catch (error) {
     logger.warn(
       'Failed to load recent searches from localStorage',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
   }
 }

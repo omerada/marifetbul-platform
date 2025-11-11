@@ -335,7 +335,7 @@ function exportToCSV(
 
     logger.info('CSV export successful', { period, filename });
   } catch (error) {
-    logger.error('CSV export failed', error instanceof Error ? error : new Error(String(error)));
+    logger.error('CSV export failed', error);
     alert('CSV export başarısız oldu. Lütfen tekrar deneyin.');
   }
 }

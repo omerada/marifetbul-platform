@@ -305,7 +305,7 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
               : 'Dashboard verisi alınamadı';
           logger.error(
             '❌ Admin dashboard fetch failed',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
 
           set((state) => {
@@ -346,7 +346,7 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
               : 'Dashboard verisi alınamadı';
           logger.error(
             '❌ Real-time dashboard fetch failed',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
 
           set((state) => {
@@ -381,7 +381,7 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
         } catch (error) {
           logger.error(
             '❌ Dashboard cache refresh failed',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
           return false;
         }

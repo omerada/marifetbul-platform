@@ -102,7 +102,7 @@ export function NotificationSettingsPanel({
     } catch (error) {
       logger.error(
         'Ayarlar kaydedilemedi:',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     } finally {
       setIsLoading(false);

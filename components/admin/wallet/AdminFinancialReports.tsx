@@ -215,7 +215,7 @@ export const AdminFinancialReports: React.FC = () => {
     } catch (error) {
       logger.error(
         'Failed to load financial data:',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       toast.error('Finansal veriler yüklenemedi');
     } finally {

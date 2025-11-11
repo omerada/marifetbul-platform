@@ -115,7 +115,7 @@ export const useSupportStore = create<SupportState>()(
         } catch (error) {
           logger.error(
             'Failed to fetch tickets',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
           set({
             ticketsError: 'Ağ hatası: Destek talepleri yüklenemedi',
@@ -145,7 +145,7 @@ export const useSupportStore = create<SupportState>()(
         } catch (error) {
           logger.error(
             'Failed to fetch ticket by ID',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
           set({
             currentTicketError: 'Ağ hatası: Destek talebi yüklenemedi',
@@ -207,7 +207,7 @@ export const useSupportStore = create<SupportState>()(
         } catch (error) {
           logger.error(
             'Failed to create ticket',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
           set({
             createTicketError: 'Ağ hatası: Destek talebi oluşturulamadı',
@@ -270,7 +270,7 @@ export const useSupportStore = create<SupportState>()(
         } catch (error) {
           logger.error(
             'Failed to add ticket response',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
           set({
             responseSubmissionError: 'Ağ hatası: Yanıt gönderilemedi',
@@ -307,7 +307,7 @@ export const useSupportStore = create<SupportState>()(
         } catch (error) {
           logger.error(
             'Failed to close ticket',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
         }
       },

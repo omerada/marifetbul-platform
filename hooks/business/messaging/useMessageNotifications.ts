@@ -119,7 +119,7 @@ export function useMessageNotifications(options: UseNotificationOptions = {}) {
         return false;
       }
     } catch (error) {
-      logger.error('Error requesting notification permission:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Error requesting notification permission:', error);
       return false;
     }
   }, [updatePermissionState]);
@@ -198,7 +198,7 @@ export function useMessageNotifications(options: UseNotificationOptions = {}) {
           browserNotification.close();
         }, 5000);
       } catch (error) {
-        logger.error('Error showing browser notification:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Error showing browser notification:', error);
       }
     },
     [enableBrowserNotifications, permission.granted, onNotificationClick]

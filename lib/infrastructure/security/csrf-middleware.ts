@@ -52,7 +52,11 @@ export function validateCsrfFromRequest(
     const headerToken = request.headers.get(headerName);
 
     if (!headerToken) {
-      logger.warn('CSRF validation failed: No token in header', { methodrequestmethod, urlrequesturl, headerName,  });
+      logger.warn('CSRF validation failed: No token in header', {
+        method: request.method,
+        url: request.url,
+        headerName,
+      });
       return {
         valid: false,
         error: 'CSRF token missing from request header',
@@ -63,7 +67,10 @@ export function validateCsrfFromRequest(
     const cookieToken = getCsrfTokenFromCookie();
 
     if (!cookieToken) {
-      logger.warn('CSRF validation failed: No token in cookie', { methodrequestmethod, urlrequesturl,  });
+      logger.warn('CSRF validation failed: No token in cookie', {
+        method: request.method,
+        url: request.url,
+      });
       return {
         valid: false,
         error: 'CSRF token missing from cookie',
@@ -74,7 +81,10 @@ export function validateCsrfFromRequest(
     const isValid = validateCsrfToken(headerToken, cookieToken);
 
     if (!isValid) {
-      logger.warn('CSRF validation failed: Token mismatch', { methodrequestmethod, urlrequesturl, headerTokenheaderTokensubstring0, 8 }) + '...',
+      logger.warn('CSRF validation failed: Token mismatch', {
+        method: request.method,
+        url: request.url,
+        headerToken: headerToken.substring(0, 8) + '...',
         cookieToken: cookieToken.substring(0, 8) + '...',
       });
       return {
@@ -88,7 +98,7 @@ export function validateCsrfFromRequest(
       token: headerToken,
     };
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+    const err = error;
     logger.error('CSRF validation error', err, {
       method: request.method,
       url: request.url,
@@ -119,7 +129,11 @@ export function withCsrfProtection(
     const validation = validateCsrfFromRequest(request);
 
     if (!validation.valid) {
-      logger.warn('CSRF protection blocked request', { methodrequestmethod, urlrequesturl, errorvalidationerror,  });
+      logger.warn('CSRF protection blocked request', {
+        method: request.method,
+        url: request.url,
+        error: validation.error,
+      });
 
       return NextResponse.json(
         {
@@ -203,7 +217,9 @@ export function createCsrfMiddleware(
       // Check if path should skip CSRF validation
       const url = new URL(request.url);
       if (skipPaths.some((path) => url.pathname.startsWith(path))) {
-        logger.debug('CSRF validation skipped for path', { pathurlpathname,  });
+        logger.debug('CSRF validation skipped for path', {
+          path: url.pathname,
+        });
         return handler(request, context);
       }
 

@@ -95,7 +95,7 @@ export function ReviewFormModal({
           canReviewOrder ? null : 'Değerlendirme yapamazsınız'
         );
       } catch (error) {
-        logger.error('Error checking review eligibility:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Error checking review eligibility:', error);
         setCanReview(false);
         setIneligibilityReason('Değerlendirme uygunluğu kontrol edilemedi');
       } finally {

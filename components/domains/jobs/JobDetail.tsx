@@ -114,7 +114,7 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
       } catch (error) {
         logger.error(
           'Proposal action error:',
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
       }
     }
@@ -166,7 +166,7 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
     } catch (error) {
       logger.error(
         'Failed to accept proposal:',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       throw error;
     }

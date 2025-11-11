@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import logger from '@/lib/infrastructure/monitoring/logger';
@@ -44,10 +44,10 @@ export default function PayoutSystemPage() {
     } catch (error) {
       logger.error(
         'Failed to load bank accounts for payout',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         { component: 'PayoutSystemPage', action: 'loadBankAccounts' }
       );
-      showErrorToast('Hata', 'Banka hesaplarÄ± yÃ¼klenirken bir hata oluÅŸtu');
+      showErrorToast('Hata', 'Banka hesapları yüklenirken bir hata oluştu');
       setBankAccounts([]);
     }
   }, [showErrorToast]);
@@ -71,10 +71,10 @@ export default function PayoutSystemPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-3">
           <Download className="text-primary h-8 w-8" />
-          <h1 className="text-3xl font-bold">Para Ã‡ekme Sistemi</h1>
+          <h1 className="text-3xl font-bold">Para Çekme Sistemi</h1>
         </div>
         <p className="text-muted-foreground">
-          KazanÃ§larÄ±nÄ±zÄ± yÃ¶netin ve banka hesabÄ±nÄ±za aktarÄ±n
+          Kazançlarınızı yönetin ve banka hesabınıza aktarın
         </p>
       </div>
 
@@ -86,7 +86,7 @@ export default function PayoutSystemPage() {
           </TabsTrigger>
           <TabsTrigger value="history">
             <Clock className="mr-2 h-4 w-4" />
-            GeÃ§miÅŸ
+            Geçmiş
           </TabsTrigger>
           <TabsTrigger value="accounts">
             <Building2 className="mr-2 h-4 w-4" />
@@ -133,9 +133,9 @@ export default function PayoutSystemPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold">Banka HesaplarÄ±</h3>
+                <h3 className="text-lg font-semibold">Banka Hesapları</h3>
                 <p className="text-muted-foreground text-sm">
-                  Ã‡ekim iÅŸlemleri iÃ§in banka hesaplarÄ±nÄ±zÄ± yÃ¶netin
+                  Çekim işlemleri için banka hesaplarınızı yönetin
                 </p>
               </div>
               {!showAddAccountForm && (
@@ -152,8 +152,8 @@ export default function PayoutSystemPage() {
                 mode="create"
                 onSuccess={() => {
                   showSuccessToast(
-                    'BaÅŸarÄ±lÄ±',
-                    'Banka hesabÄ± eklendi. Admin onayÄ± bekleniyor.'
+                    'Başarılı',
+                    'Banka hesabı eklendi. Admin onayı bekleniyor.'
                   );
                   setShowAddAccountForm(false);
                   loadBankAccounts();
@@ -166,11 +166,11 @@ export default function PayoutSystemPage() {
             <BankAccountList
               onAddNew={() => setShowAddAccountForm(true)}
               onAccountDeleted={() => {
-                showSuccessToast('BaÅŸarÄ±lÄ±', 'Banka hesabÄ± kaldÄ±rÄ±ldÄ±');
+                showSuccessToast('Başarılı', 'Banka hesabı kaldırıldı');
                 loadBankAccounts();
               }}
               onDefaultChanged={() => {
-                showSuccessToast('BaÅŸarÄ±lÄ±', 'VarsayÄ±lan hesap gÃ¼ncellendi');
+                showSuccessToast('Başarılı', 'Varsayılan hesap güncellendi');
                 loadBankAccounts();
               }}
             />

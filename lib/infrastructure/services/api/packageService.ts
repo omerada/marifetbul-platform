@@ -67,7 +67,7 @@ export class PackageService {
     } catch (error) {
       logger.error(
         'Failed to fetch package',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return null;
     }
@@ -90,7 +90,7 @@ export class PackageService {
     } catch (error) {
       logger.error(
         'Failed to fetch package by slug',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return null;
     }
@@ -267,7 +267,7 @@ export class PackageService {
     } catch (error) {
       logger.error(
         'Failed to update package',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return null;
     }
@@ -285,7 +285,7 @@ export class PackageService {
     } catch (error) {
       logger.error(
         'Failed to delete package',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return false;
     }

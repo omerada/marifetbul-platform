@@ -37,7 +37,7 @@ export class SitemapGenerator {
     } catch (error) {
       logger.error(
         'Error generating blog sitemap',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return [];
     }
@@ -59,7 +59,7 @@ export class SitemapGenerator {
     } catch (error) {
       logger.error(
         'Error generating jobs sitemap',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return [];
     }
@@ -81,7 +81,7 @@ export class SitemapGenerator {
     } catch (error) {
       logger.error(
         'Error generating packages sitemap',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return [];
     }
@@ -103,7 +103,7 @@ export class SitemapGenerator {
     } catch (error) {
       logger.error(
         'Error generating profiles sitemap',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return [];
     }
@@ -125,7 +125,7 @@ export class SitemapGenerator {
     } catch (error) {
       logger.error(
         'Error generating categories sitemap',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return [];
     }
@@ -147,7 +147,7 @@ export class SitemapGenerator {
     } catch (error) {
       logger.error(
         'Error generating help sitemap',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return [];
     }

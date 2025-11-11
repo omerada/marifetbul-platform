@@ -110,7 +110,7 @@ export default function AdminBankAccountVerificationPage() {
       } catch (error) {
         logger.error(
           'Failed to fetch pending bank accounts',
-          error instanceof Error ? error : new Error(String(error)),
+          error,
           { component: 'AdminBankAccountVerificationPage', action: 'fetchPendingAccounts', page }
         );
         showError('Hata', 'Bekleyen hesaplar yüklenirken hata oluştu');
@@ -128,7 +128,7 @@ export default function AdminBankAccountVerificationPage() {
     } catch (error) {
       logger.error(
         'Failed to fetch bank account statistics',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         { component: 'AdminBankAccountVerificationPage', action: 'fetchStatistics' }
       );
     }
@@ -156,7 +156,7 @@ export default function AdminBankAccountVerificationPage() {
     } catch (error) {
       logger.error(
         'Failed to verify bank account',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         { component: 'AdminBankAccountVerificationPage', action: 'handleVerify', accountId }
       );
       showError('Hata', 'Hesap onaylanırken hata oluştu');
@@ -171,7 +171,7 @@ export default function AdminBankAccountVerificationPage() {
     } catch (error) {
       logger.error(
         'Failed to reject bank account',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         { component: 'AdminBankAccountVerificationPage', action: 'handleReject', accountId, reason }
       );
       showError('Hata', 'Hesap reddedilirken hata oluştu');
@@ -490,3 +490,4 @@ export default function AdminBankAccountVerificationPage() {
     </div>
   );
 }
+

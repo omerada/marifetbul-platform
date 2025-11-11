@@ -153,7 +153,7 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
         logger.info('Job created successfully', { jobId: newJob.id });
         return newJob;
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = error;
         logger.error('Failed to create job', err);
         toast.error('İlan oluşturulamadı', {
           description: err.message || 'Lütfen tekrar deneyin',
@@ -188,7 +188,7 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
         logger.info('Job updated successfully', { jobId: id });
         return updatedJob;
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = error;
         logger.error('Failed to update job', err);
         toast.error('İlan güncellenemedi', {
           description: err.message || 'Lütfen tekrar deneyin',
@@ -220,7 +220,7 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
         logger.info('Job deleted successfully', { jobId: id });
         return true;
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = error;
         logger.error('Failed to delete job', err);
         toast.error('İlan silinemedi', {
           description: err.message || 'Lütfen tekrar deneyin',
@@ -254,7 +254,7 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
         logger.info('Job published successfully', { jobId: id });
         return publishedJob;
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = error;
         logger.error('Failed to publish job', err);
         toast.error('İlan yayınlanamadı', {
           description: err.message || 'Lütfen tekrar deneyin',
@@ -288,7 +288,7 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
         logger.info('Job closed successfully', { jobId: id });
         return closedJob;
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = error;
         logger.error('Failed to close job', err);
         toast.error('İlan kapatılamadı', {
           description: err.message || 'Lütfen tekrar deneyin',

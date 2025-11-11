@@ -102,7 +102,7 @@ export function PublicPackageDetail({
       const response = await favoritesApi.togglePackageFavorite(pkg.id);
       setIsFavorited(response.isFavorited);
     } catch (error) {
-      logger.error('Failed to toggle favorite:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to toggle favorite:', error);
       // Revert on error
       setIsFavorited(!isFavorited);
     } finally {

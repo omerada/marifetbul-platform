@@ -177,7 +177,7 @@ export function useNotifications() {
     } catch (error) {
       logger.error(
         'Failed to setup WebSocket subscription',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   }, [user, preferences, mutate, mutateCount]);
@@ -204,7 +204,7 @@ export function useNotifications() {
       } catch (error) {
         logger.error(
           'Failed to mark notification as read:',
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
         toast.error('Bildirim okundu olarak işaretlenemedi');
       }
@@ -231,7 +231,7 @@ export function useNotifications() {
     } catch (error) {
       logger.error(
         'Failed to mark all as read:',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       toast.error('Bildirimler işaretlenemedi');
     }

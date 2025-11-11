@@ -51,7 +51,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
       onUserUpdate(formData);
       setIsEditingBasic(false);
     } catch (error) {
-      logger.error('Error updating user:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Error updating user:', error);
     }
   };
 

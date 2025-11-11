@@ -223,7 +223,7 @@ export function useUpdateProfile() {
         // Profile updated successfully
       },
       onError: (error: Error) => {
-        logger.error('Failed to update profile', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Failed to update profile', error);
       },
     }
   )();
@@ -255,7 +255,7 @@ export function useAvatarUpload() {
         // Avatar uploaded successfully
       },
       onError: (error: Error) => {
-        logger.error('Failed to upload avatar', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Failed to upload avatar', error);
       },
     }
   )();
@@ -275,7 +275,7 @@ export function useDeleteAvatar() {
         // Avatar deleted successfully
       },
       onError: (error: Error) => {
-        logger.error('Failed to delete avatar', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Failed to delete avatar', error);
       },
     }
   )();
@@ -305,7 +305,7 @@ export function useUpdateFreelancerProfile() {
         // Freelancer profile updated
       },
       onError: (error: Error) => {
-        logger.error('Failed to update freelancer profile', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Failed to update freelancer profile', error);
       },
     }
   )();
@@ -331,7 +331,7 @@ export function useUpdateEmployerProfile() {
         // Employer profile updated
       },
       onError: (error: Error) => {
-        logger.error('Failed to update employer profile', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Failed to update employer profile', error);
       },
     }
   )();

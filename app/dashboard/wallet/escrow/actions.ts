@@ -61,7 +61,7 @@ export async function releasePaymentFromEscrow(orderId: string): Promise<{
       message: data.message || 'Ödeme başarıyla serbest bırakıldı',
     };
   } catch (error) {
-    logger.error('Error releasing payment from escrow:', error instanceof Error ? error : new Error(String(error)));
+    logger.error('Error releasing payment from escrow:', error);
     return {
       success: false,
       message: 'Bir hata oluştu. Lütfen tekrar deneyin.',

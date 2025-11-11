@@ -341,7 +341,7 @@ export class MonitoringManager {
     } catch (error) {
       logger.error(
         'Failed to send monitoring data',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       // Restore data to buffer on failure
       this.buffer.metrics.push(...data.metrics);

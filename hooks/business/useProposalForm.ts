@@ -92,7 +92,7 @@ export function useProposalForm(jobId: string) {
         url: data.success ? data.data.url : '',
       };
     } catch (error) {
-      logger.error('File upload error:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('File upload error:', error);
       return { success: false, url: '' };
     }
   };
@@ -159,7 +159,7 @@ export function useProposalForm(jobId: string) {
       setUploadedFiles([]);
       setUploadProgress({});
     } catch (error) {
-      logger.error('Proposal submission error:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Proposal submission error:', error);
     }
   };
 

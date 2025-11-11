@@ -60,7 +60,7 @@ export function Sprint8AnalyticsDashboard({
         includeRawData: false,
       });
     } catch (error) {
-      logger.error('Export error:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Export error:', error);
     }
   };
 

@@ -180,7 +180,7 @@ export class JobService {
     } catch (error) {
       logger.error(
         'Failed to fetch job',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return null;
     }
@@ -214,7 +214,7 @@ export class JobService {
     } catch (error) {
       logger.error(
         'Failed to update job',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return null;
     }
@@ -227,7 +227,7 @@ export class JobService {
     } catch (error) {
       logger.error(
         'Failed to delete job',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return false;
     }

@@ -74,7 +74,7 @@ export const AdminPayoutDetailModal: React.FC<AdminPayoutDetailModalProps> = ({
     } catch (error) {
       logger.error(
         'Action failed:',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     } finally {
       setIsProcessing(false);

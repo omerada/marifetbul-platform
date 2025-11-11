@@ -54,7 +54,7 @@ export function SocialShare({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      logger.error('Failed to copy link:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to copy link:', error);
     }
   };
 

@@ -90,7 +90,7 @@ export const PayoutApprovalModal: React.FC<PayoutApprovalModalProps> = ({
       handleClose();
     } catch (error) {
       toast.error('Ödeme onaylanırken bir hata oluştu');
-      logger.error('Failed to approve payout:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to approve payout:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -116,7 +116,7 @@ export const PayoutApprovalModal: React.FC<PayoutApprovalModalProps> = ({
       handleClose();
     } catch (error) {
       toast.error('Ödeme reddedilirken bir hata oluştu');
-      logger.error('Failed to reject payout:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to reject payout:', error);
     } finally {
       setIsSubmitting(false);
     }

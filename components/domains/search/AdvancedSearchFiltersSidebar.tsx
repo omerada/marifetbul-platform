@@ -165,7 +165,7 @@ export function AdvancedSearchFiltersSidebar({
     } catch (error) {
       logger.error(
         'Failed to load filter presets',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   }, []);

@@ -143,7 +143,7 @@ export function useSocialShare() {
 
       return true;
     } catch (error) {
-      logger.error('Failed to copy link:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to copy link:', error);
       return false;
     }
   }, []);
@@ -164,7 +164,7 @@ export function useSocialShare() {
 
         return result;
       } catch (error) {
-        logger.error(`Login with ${provider.id} failed:`, error instanceof Error ? error : new Error(String(error)));
+        logger.error(`Login with ${provider.id} failed:`, error);
         throw error;
       }
     },
@@ -200,7 +200,7 @@ export function useSocialShare() {
         }
       } catch (error) {
         if ((error as Error).name !== 'AbortError') {
-          logger.error('Native sharing failed:', error instanceof Error ? error : new Error(String(error)));
+          logger.error('Native sharing failed:', error);
           throw error;
         }
       }

@@ -88,7 +88,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
         setSearchResults(results);
         setShowResults(true);
       } catch (error) {
-        logger.error('Geocoding search error:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Geocoding search error:', error);
         setSearchResults([]);
         setShowResults(false);
       }
@@ -135,7 +135,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
       setSearchQuery(address);
       setShowResults(false);
     } catch (error) {
-      logger.error('Current location error:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Current location error:', error);
     }
   }, [getCurrentPosition, unifiedLocation.currentPosition, onLocationSelect]);
 

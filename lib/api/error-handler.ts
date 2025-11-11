@@ -616,6 +616,66 @@ export function isTimeoutError(error: unknown): error is TimeoutError {
 }
 
 // ============================================================================
+// API ERROR HANDLER FOR ROUTES
+// ============================================================================
+
+/**
+ * Handle API errors in Next.js API routes
+ * Logs error and returns appropriate Response
+ *
+ * @param error - Error object (any type)
+ * @param request - Request object for context
+ * @param context - Additional context for logging
+ * @returns Response with error details
+ */
+export function handleApiError(
+  error: unknown,
+  request?: { url?: string; method?: string },
+  context?: Record<string, unknown>
+): Response {
+  const transformedError = transformError(error);
+
+  // Log error with context
+  const logContext = {
+    ...context,
+    url: request?.url,
+    method: request?.method,
+    errorCode: transformedError.code,
+    status: transformedError.status,
+  };
+
+  if (transformedError.status >= 500) {
+    apiLogger.error(
+      transformedError.message,
+      error,
+      logContext
+    );
+
+    // Capture in Sentry for server errors
+    if (error instanceof Error) {
+      captureSentryError(error, logContext);
+    }
+  } else {
+    apiLogger.warn(transformedError.message, logContext);
+  }
+
+  // Return standardized error response
+  return new Response(
+    JSON.stringify({
+      success: false,
+      error: transformedError.message,
+      code: transformedError.code,
+      details: transformedError.details,
+      timestamp: transformedError.timestamp,
+    }),
+    {
+      status: transformedError.status,
+      headers: { 'Content-Type': 'application/json' },
+    }
+  );
+}
+
+// ============================================================================
 // EXPORTS
 // ============================================================================
 

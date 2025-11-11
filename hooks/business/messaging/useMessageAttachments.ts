@@ -70,7 +70,7 @@ export function useMessageAttachments() {
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Dosya yüklenemedi');
       setError(error);
-      logger.error('File upload failed:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('File upload failed:', error);
       throw error;
     } finally {
       setIsUploading(false);

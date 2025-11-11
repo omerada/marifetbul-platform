@@ -86,7 +86,7 @@ function CheckoutCallbackContent() {
       } catch (error) {
         logger.error(
           'CheckoutCallback: Payment confirmation failed',
-          error instanceof Error ? error : new Error(String(error)),
+          error,
           {
             paymentIntentId: searchParams.get('paymentIntentId'),
             orderId: searchParams.get('orderId'),

@@ -57,7 +57,7 @@ async function fetchEscrowList(
   } catch (error) {
     logger.error(
       'Failed to fetch escrow list',
-      error instanceof Error ? error : new Error(String(error)),
+      error,
       { status }
     );
     throw error;

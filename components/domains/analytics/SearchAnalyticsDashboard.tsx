@@ -65,7 +65,7 @@ export function SearchAnalyticsDashboard({
       setAnalytics(data);
       setLastUpdated(new Date());
     } catch (error) {
-      logger.error('Failed to fetch search analytics:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to fetch search analytics:', error);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);

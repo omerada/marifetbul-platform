@@ -156,7 +156,7 @@ export class CategoryAnalytics {
       }).catch((error) =>
         logger.error(
           'Analytics endpoint failed',
-          error instanceof Error ? error : new Error(String(error))
+          error
         )
       );
     }

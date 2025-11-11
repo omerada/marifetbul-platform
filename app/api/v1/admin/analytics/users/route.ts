@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 const BACKEND_API_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
@@ -75,7 +76,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(transformedData);
   } catch (error) {
-    console.error('User analytics API proxy error:', error);
+    logger.error('User analytics API proxy error:', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

@@ -186,17 +186,17 @@ export function sanitizeHtml(
     // Sanitize HTML
     const clean = DOMPurify.sanitize(html, purifyConfig) as string;
 
-    logger.debug('HTML sanitized', { originalLengthhtmllength, cleanLengthcleanlength, configtypeofconfigstringconfigcustom,  });
+    logger.debug('HTML sanitized', {
+      originalLength: html.length,
+      cleanLength: clean.length,
+      config: typeof config === 'string' ? config : 'custom',
+    });
 
     return clean;
   } catch (error) {
-    logger.error(
-      'HTML sanitization error',
-      error instanceof Error ? error : new Error(String(error)),
-      {
-        htmlLength: html?.length,
-      }
-    );
+    logger.error('HTML sanitization error', error, {
+      htmlLength: html?.length,
+    });
 
     // Return empty string on error (fail safe)
     return '';
@@ -220,13 +220,9 @@ export function sanitizeToText(html: string): string {
 
     return text.trim();
   } catch (error) {
-    logger.error(
-      'Text sanitization error',
-      error instanceof Error ? error : new Error(String(error)),
-      {
-        htmlLength: html?.length,
-      }
-    );
+    logger.error('Text sanitization error', error, {
+      htmlLength: html?.length,
+    });
 
     return '';
   }
@@ -253,7 +249,8 @@ export function sanitizeUrl(url: string): string {
     const lowerUrl = trimmed.toLowerCase();
     for (const protocol of dangerousProtocols) {
       if (lowerUrl.startsWith(protocol)) {
-        logger.warn('Dangerous URL protocol blocked', { urltrimmedsubstring0, 50 }),
+        logger.warn('Dangerous URL protocol blocked', {
+          url: trimmed.substring(0, 50),
           protocol,
         });
         return '';
@@ -273,13 +270,9 @@ export function sanitizeUrl(url: string): string {
 
     return trimmed;
   } catch (error) {
-    logger.error(
-      'URL sanitization error',
-      error instanceof Error ? error : new Error(String(error)),
-      {
-        url: url?.substring(0, 50),
-      }
-    );
+    logger.error('URL sanitization error', error, {
+      url: url?.substring(0, 50),
+    });
 
     return '';
   }

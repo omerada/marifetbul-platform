@@ -152,7 +152,7 @@ export function useUnifiedSearch(
           store.addToHistory(searchQuery, searchFilters, store.results.length);
         }
       } catch (error) {
-        logger.error('Search failed:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Search failed:', error);
       }
     },
     [store, currentFilters, autoHistory]
@@ -186,7 +186,7 @@ export function useUnifiedSearch(
         try {
           await store.fetchSuggestions(query);
         } catch (error) {
-          logger.error('Suggestions failed:', error instanceof Error ? error : new Error(String(error)));
+          logger.error('Suggestions failed:', error);
         } finally {
           setIsTyping(false);
         }
@@ -264,7 +264,7 @@ export function useUnifiedSearch(
       try {
         store.saveSearch(name, store.query, currentFilters);
       } catch (error) {
-        logger.error('Save search failed:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Save search failed:', error);
       }
     },
     [store, currentFilters]

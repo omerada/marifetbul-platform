@@ -88,7 +88,7 @@ function trackPageView(pathname: string) {
     }).catch((error) =>
       logger.error(
         'Pageview tracking failed',
-        error instanceof Error ? error : new Error(String(error))
+        error
       )
     );
   }
@@ -118,7 +118,7 @@ function trackCustomEvent(
     }).catch((error) =>
       logger.error(
         'Custom event tracking failed',
-        error instanceof Error ? error : new Error(String(error))
+        error
       )
     );
   }
@@ -145,7 +145,7 @@ function trackConversion(conversionName: string, value?: number) {
     }).catch((error) =>
       logger.error(
         'Conversion tracking failed',
-        error instanceof Error ? error : new Error(String(error))
+        error
       )
     );
   }

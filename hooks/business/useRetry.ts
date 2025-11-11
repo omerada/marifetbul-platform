@@ -149,7 +149,7 @@ function defaultIsRetryable(error: Error): boolean {
  *     });
  *     logger.debug('Success:', result);
  *   } catch (error) {
- *     logger.error('All retries failed:', error instanceof Error ? error : new Error(String(error)));
+ *     logger.error('All retries failed:', error);
  *   }
  * };
  * ```

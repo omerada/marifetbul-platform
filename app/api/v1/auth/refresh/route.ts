@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
       headers: responseHeaders,
     });
   } catch (error) {
-    logger.error('[Token Refresh] Error:', error instanceof Error ? error : new Error(String(error)));
+    logger.error('[Token Refresh] Error:', error);
 
     return NextResponse.json(
       {

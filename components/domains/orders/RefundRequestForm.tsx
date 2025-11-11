@@ -104,7 +104,7 @@ export function RefundRequestForm({
         onSuccess();
       }
     } catch (error) {
-      logger.error('Failed to create refund:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to create refund:', error);
       toast.error('İade talebi oluşturulamadı. Lütfen tekrar deneyin.');
     } finally {
       setIsSubmitting(false);

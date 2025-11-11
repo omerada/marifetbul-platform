@@ -109,7 +109,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
         setCacheSize(`${(totalSize / (1024 * 1024)).toFixed(1)} MB`);
       }
     } catch (error) {
-      logger.error('Cache size calculation failed:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Cache size calculation failed:', error);
     }
   };
 
@@ -127,7 +127,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
 
       setInstallPrompt(null);
     } catch (error) {
-      logger.error('Installation failed:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Installation failed:', error);
     }
   };
 
@@ -148,7 +148,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
         });
       }
     } catch (error) {
-      logger.error('Notification permission failed:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Notification permission failed:', error);
     }
   };
 
@@ -163,7 +163,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
         alert('Önbellek temizlendi!');
       }
     } catch (error) {
-      logger.error('Cache clearing failed:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Cache clearing failed:', error);
     }
   };
 

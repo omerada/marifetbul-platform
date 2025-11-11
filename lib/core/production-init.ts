@@ -40,7 +40,7 @@ export async function initializeProductionApp() {
   } catch (error) {
     logger.error(
       'Failed to initialize production optimizations',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
     return null;
   }

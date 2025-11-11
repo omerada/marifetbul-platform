@@ -80,7 +80,7 @@ export function subscribeToNotifications(
           error as Error
         );
         callbacks.onError?.(
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
       }
     });
@@ -95,7 +95,7 @@ export function subscribeToNotifications(
   } catch (error) {
     logger.error('NotificationWebSocket: Failed to subscribe', error as Error);
     callbacks.onError?.(
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
     throw error;
   }
@@ -158,7 +158,7 @@ export function subscribeToBroadcastNotifications(
           error as Error
         );
         callbacks.onError?.(
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
       }
     });
@@ -177,7 +177,7 @@ export function subscribeToBroadcastNotifications(
       error as Error
     );
     callbacks.onError?.(
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
     throw error;
   }

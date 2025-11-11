@@ -124,7 +124,7 @@ export default function AdminQualityDashboard() {
     } catch (error) {
       logger.error(
         'Failed to fetch quality dashboard data',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         { component: 'AdminQualityDashboard', action: 'fetchDashboardData' }
       );
       toast.error('Veri Yüklenemedi', {

@@ -39,7 +39,7 @@ import {
   type BlogPost,
   type BlogPostSummary,
 } from '@/lib/api/blog';
-import { logger } from '@/lib/shared/utils/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // Dynamic rendering
 export const dynamicParams = true;

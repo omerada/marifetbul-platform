@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 const BACKEND_API_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
@@ -51,7 +52,7 @@ export async function GET(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Freelancer activities API proxy error:', error);
+    logger.error('Freelancer activities API proxy error:', error);
     return NextResponse.json(
       {
         success: false,

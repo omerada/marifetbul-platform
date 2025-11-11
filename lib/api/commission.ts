@@ -126,7 +126,7 @@ export async function getCommissions(
   } catch (error) {
     logger.error(
       'Failed to fetch commissions',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
     throw error;
   }
@@ -151,7 +151,7 @@ export async function getCommissionById(
   } catch (error) {
     logger.error(
       'Failed to fetch commission',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
     throw error;
   }
@@ -176,7 +176,7 @@ export async function getCommissionByPaymentId(
   } catch (error) {
     logger.error(
       'Failed to fetch commission by payment ID',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
     throw error;
   }
@@ -214,7 +214,7 @@ export async function getCommissionsBySeller(
   } catch (error) {
     logger.error(
       'Failed to fetch seller commissions',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
     throw error;
   }
@@ -246,7 +246,7 @@ export async function getCommissionStats(
   } catch (error) {
     logger.error(
       'Failed to fetch commission stats',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
     throw error;
   }
@@ -278,7 +278,7 @@ export async function getCommissionAnalytics(
   } catch (error) {
     logger.error(
       'Failed to fetch commission analytics',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
     throw error;
   }

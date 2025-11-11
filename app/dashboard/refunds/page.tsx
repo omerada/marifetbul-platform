@@ -61,7 +61,7 @@ export default function UserRefundsPage() {
     } catch (error) {
       logger.error(
         'Failed to fetch user refunds',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         {
           component: 'UserRefundsPage',
           action: 'fetch-refunds',
@@ -92,7 +92,7 @@ export default function UserRefundsPage() {
     } catch (error) {
       logger.error(
         'Failed to cancel refund request',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         {
           refundId,
           component: 'UserRefundsPage',

@@ -198,7 +198,7 @@ export async function validateToken(
   } catch (error) {
     logger.error(
       'Token validation error',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
     return null;
   }
@@ -223,7 +223,7 @@ export async function getUserFromRequest(
   } catch (error) {
     logger.error(
       'Failed to extract user from request',
-      error instanceof Error ? error : new Error(String(error)),
+      error,
       { url: request.url }
     );
     return null;

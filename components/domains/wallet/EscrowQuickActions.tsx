@@ -132,7 +132,7 @@ export function EscrowQuickActions({
     } catch (error) {
       logger.error(
         'Bulk release failed',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         { count: eligibleCount }
       );
 

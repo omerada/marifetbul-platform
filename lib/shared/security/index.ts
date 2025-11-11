@@ -223,10 +223,7 @@ export class SecureStorage {
     try {
       localStorage.setItem(this.PREFIX + key, JSON.stringify(data));
     } catch (error) {
-      logger.warn(
-        'Secure storage failed',
-        error instanceof Error ? error : new Error(String(error))
-      );
+      logger.warn('Secure storage failed', error);
     }
   }
 
@@ -565,8 +562,10 @@ export class SecurityMonitor {
       this.sendViolationReport(violation);
     }
 
-    logger.warn('Security violation detected', { newErrorTypeviolationtype, Detailsviolationdetails })
-    );
+    logger.warn('Security violation detected', {
+      type: violation.type,
+      details: violation.details,
+    });
   }
 
   private static sendViolationReport(violation: {

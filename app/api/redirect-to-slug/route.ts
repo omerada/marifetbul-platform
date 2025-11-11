@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -49,7 +50,7 @@ export async function GET(request: NextRequest) {
           { status: 301 }
         );
       } catch (error) {
-        console.error('Failed to fetch package:', error);
+        logger.error('Failed to fetch package:', error);
         // Fallback to marketplace packages list
         return NextResponse.redirect(
           new URL('/marketplace/packages', request.url)
@@ -60,7 +61,7 @@ export async function GET(request: NextRequest) {
     // Unknown type - redirect to marketplace home
     return NextResponse.redirect(new URL('/marketplace', request.url));
   } catch (error) {
-    console.error('Redirect error:', error);
+    logger.error('Redirect error:', error);
     return NextResponse.redirect(new URL('/marketplace', request.url));
   }
 }

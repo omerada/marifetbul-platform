@@ -119,7 +119,7 @@ export function SearchHistoryPanel({
     } catch (error) {
       logger.error(
         'Failed to export history',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       alert('Dışa aktarma başarısız oldu.');
     }
@@ -143,7 +143,7 @@ export function SearchHistoryPanel({
       } catch (error) {
         logger.error(
           'Import failed',
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
         alert('İçe aktarma sırasında hata oluştu.');
       }

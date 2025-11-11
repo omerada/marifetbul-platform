@@ -112,7 +112,7 @@ export function useMessageTemplates(
       const error =
         err instanceof Error ? err : new Error('Failed to fetch templates');
       setError(error);
-      logger.error('Failed to fetch templates:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to fetch templates:', error);
     } finally {
       setIsLoading(false);
     }

@@ -31,7 +31,7 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
     } catch (error) {
       logger.error(
         'Error reading localStorage',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return initialValue;
     }
@@ -49,7 +49,7 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
       } catch (error) {
         logger.error(
           'Error setting localStorage',
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
       }
     },
@@ -314,7 +314,7 @@ export abstract class BaseService {
     } catch (error) {
       logger.error(
         `${operation} failed`,
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       throw error;
     }

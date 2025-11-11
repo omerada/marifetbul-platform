@@ -68,7 +68,7 @@ export function FilePreviewModal({
     try {
       await fileUploadService.downloadFile(file.fileUrl, file.fileName);
     } catch (error) {
-      logger.error('Download failed:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Download failed:', error);
     }
   };
 

@@ -120,7 +120,7 @@ export function useModeratorActivity(
   // ============================================================================
 
   if (error) {
-    logger.error('Activity fetch error:', error instanceof Error ? error : new Error(String(error)));
+    logger.error('Activity fetch error:', error);
   }
 
   // ============================================================================

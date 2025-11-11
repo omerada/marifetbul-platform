@@ -76,7 +76,7 @@ const CategoriesPageClient: React.FC = () => {
       try {
         await Promise.all([fetchCategories(), fetchFeaturedCategories()]);
       } catch (error) {
-        logger.error('Error loading categories data:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Error loading categories data:', error);
       }
     };
 

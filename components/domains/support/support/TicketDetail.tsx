@@ -36,7 +36,7 @@ export function TicketDetail({ ticketId }: TicketDetailProps) {
     } catch (error) {
       logger.error(
         'Ticket kapatılırken hata',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   };

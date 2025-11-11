@@ -5,7 +5,7 @@
 // ================================================
 // Unified hooks for all API interactions using consistent patterns
 
-/* eslint-disable @typescript-eslint/ban-ts-comment */
+ 
 /* eslint-disable react-hooks/exhaustive-deps */
 // @ts-nocheck - Geçici olarak tip kontrollerini atla
 

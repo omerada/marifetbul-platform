@@ -242,7 +242,7 @@ export const useAuthStore = create<AuthStore>()(
           } catch (error) {
             logger.error(
               'Backend logout failed',
-              error instanceof Error ? error : new Error(String(error))
+              error
             );
             // Continue with client-side logout even if backend fails
           }
@@ -320,7 +320,7 @@ export const useAuthStore = create<AuthStore>()(
           } catch (error) {
             logger.error(
               'Token refresh failed',
-              error instanceof Error ? error : new Error(String(error))
+              error
             );
             // Don't always logout - only on 401 (handled above)
             throw error;
@@ -374,7 +374,7 @@ export const useAuthStore = create<AuthStore>()(
             // Network error - don't logout, might be temporary
             logger.error(
               'Auth status check failed (network error)',
-              error instanceof Error ? error : new Error(String(error))
+              error
             );
           }
         },

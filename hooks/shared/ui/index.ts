@@ -5,7 +5,7 @@
 // ================================================
 // Unified hooks for UI state management and interactions
 
-/* eslint-disable @typescript-eslint/ban-ts-comment */
+ 
 // @ts-nocheck - Geçici olarak tip kontrollerini atla
 
 import { useState, useCallback, useEffect, useRef } from 'react';
@@ -415,7 +415,7 @@ export function useClipboard() {
     } catch (error) {
       logger.error(
         'Failed to copy text:',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return false;
     }

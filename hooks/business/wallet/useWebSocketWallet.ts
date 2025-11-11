@@ -385,7 +385,7 @@ export function useWebSocketWallet(
 
       logger.error(
         'WebSocket connection failed',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   }, [

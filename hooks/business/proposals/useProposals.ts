@@ -170,7 +170,7 @@ export function useProposals(
         });
         return newProposal as unknown as ProposalResponse;
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = error;
         logger.error('Failed to create proposal', err);
         toast.error('Teklif gönderilemedi', {
           description: err.message || 'Lütfen tekrar deneyin',
@@ -205,7 +205,7 @@ export function useProposals(
         logger.info('Proposal updated successfully', { proposalId: id });
         return updatedProposal as unknown as ProposalResponse;
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = error;
         logger.error('Failed to update proposal', err);
         toast.error('Teklif güncellenemedi', {
           description: err.message || 'Lütfen tekrar deneyin',
@@ -237,7 +237,7 @@ export function useProposals(
         logger.info('Proposal withdrawn successfully', { proposalId: id });
         return true;
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = error;
         logger.error('Failed to withdraw proposal', err);
         toast.error('Teklif geri çekilemedi', {
           description: err.message || 'Lütfen tekrar deneyin',
@@ -269,7 +269,7 @@ export function useProposals(
         logger.info('Proposal deleted successfully', { proposalId: id });
         return true;
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = error;
         logger.error('Failed to delete proposal', err);
         toast.error('Teklif silinemedi', {
           description: err.message || 'Lütfen tekrar deneyin',
@@ -306,7 +306,7 @@ export function useProposals(
         logger.info('Proposal accepted successfully', { proposalId: id });
         return acceptedProposal as unknown as ProposalResponse;
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = error;
         logger.error('Failed to accept proposal', err);
         toast.error('Teklif kabul edilemedi', {
           description: err.message || 'Lütfen tekrar deneyin',
@@ -343,7 +343,7 @@ export function useProposals(
         logger.info('Proposal rejected successfully', { proposalId: id });
         return rejectedProposal as unknown as ProposalResponse;
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = error;
         logger.error('Failed to reject proposal', err);
         toast.error('Teklif reddedilemedi', {
           description: err.message || 'Lütfen tekrar deneyin',
@@ -375,7 +375,7 @@ export function useProposals(
         logger.info('Proposal shortlisted successfully', { proposalId: id });
         return shortlistedProposal as unknown as ProposalResponse;
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = error;
         logger.error('Failed to shortlist proposal', err);
         toast.error('Teklif kısa listeye eklenemedi', {
           description: err.message || 'Lütfen tekrar deneyin',

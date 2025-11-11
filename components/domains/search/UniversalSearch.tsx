@@ -122,7 +122,7 @@ export function UniversalSearch({
     } catch (error) {
       logger.error(
         'Search error',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       // Fallback to empty results
       setSuggestions([]);

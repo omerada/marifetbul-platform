@@ -299,7 +299,7 @@ export function withRateLimit(
       // Add rate limit headers if enabled
       return includeHeaders ? addRateLimitHeaders(response, result) : response;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+      const err = error;
       logger.error('Rate limit middleware error', err, {
         url: request.url,
         method: request.method,

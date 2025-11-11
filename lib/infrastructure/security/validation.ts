@@ -291,7 +291,7 @@ export function validateInput<T>(
       errors,
     };
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+    const err = error;
     logger.error('Validation error', err, {});
 
     return {

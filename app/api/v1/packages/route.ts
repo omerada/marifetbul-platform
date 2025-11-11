@@ -1,4 +1,5 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json({ success: true, data });
   } catch (error) {
-    console.error('Packages API proxy error:', error);
+    logger.error('Packages API proxy error:', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

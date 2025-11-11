@@ -76,7 +76,7 @@ export default function AdminPayoutsPage() {
     } catch (error) {
       logger.error(
         'Failed to fetch admin payouts',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         { component: 'AdminPayoutsPage', action: 'fetchPayouts', filters }
       );
       toast.error('Para çekme talepleri yüklenemedi');
@@ -92,7 +92,7 @@ export default function AdminPayoutsPage() {
     } catch (error) {
       logger.error(
         'Failed to fetch payout statistics',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         { component: 'AdminPayoutsPage', action: 'fetchStats' }
       );
     }
@@ -121,7 +121,7 @@ export default function AdminPayoutsPage() {
     } catch (error) {
       logger.error(
         'Failed to process payout',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         { component: 'AdminPayoutsPage', action: 'handleProcess', payoutId }
       );
       toast.error('Ödeme onaylanamadı');
@@ -138,7 +138,7 @@ export default function AdminPayoutsPage() {
     } catch (error) {
       logger.error(
         'Failed to complete payout',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         { component: 'AdminPayoutsPage', action: 'handleComplete', payoutId }
       );
       toast.error('İşlem başarısız');
@@ -155,7 +155,7 @@ export default function AdminPayoutsPage() {
     } catch (error) {
       logger.error(
         'Failed to mark payout as failed',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         {
           component: 'AdminPayoutsPage',
           action: 'handleFail',
@@ -177,7 +177,7 @@ export default function AdminPayoutsPage() {
     } catch (error) {
       logger.error(
         'Failed to cancel payout',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         { component: 'AdminPayoutsPage', action: 'handleCancel', payoutId }
       );
       toast.error('İşlem başarısız');

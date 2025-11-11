@@ -88,7 +88,7 @@ export class GeocodingService {
     } catch (error) {
       logger.error(
         'Geocoding error',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return null;
     }
@@ -127,7 +127,7 @@ export class GeocodingService {
     } catch (error) {
       logger.error(
         'Geocoding search error',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return [];
     }
@@ -164,7 +164,7 @@ export class GeocodingService {
     } catch (error) {
       logger.error(
         'Reverse geocoding error',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return null;
     }
@@ -201,7 +201,7 @@ export class GeocodingService {
     } catch (error) {
       logger.error(
         'Location details error',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return null;
     }

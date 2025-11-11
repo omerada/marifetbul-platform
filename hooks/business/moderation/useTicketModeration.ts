@@ -203,7 +203,7 @@ export function useTicketModeration(
 
       throw new Error('Invalid stats');
     } catch (error) {
-      logger.error('Failed to fetch ticket stats:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to fetch ticket stats:', error);
       return {
         total: 0,
         open: 0,
@@ -266,7 +266,7 @@ export function useTicketModeration(
         logger.info('Ticket assigned', { ticketId, moderatorId });
         return true;
       } catch (error) {
-        logger.error('Assign failed:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Assign failed:', error);
         toast.error('Atama başarısız');
         return false;
       } finally {
@@ -300,7 +300,7 @@ export function useTicketModeration(
         logger.info('Ticket resolved', { ticketId });
         return true;
       } catch (error) {
-        logger.error('Resolve failed:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Resolve failed:', error);
         toast.error('Çözme başarısız');
         return false;
       } finally {
@@ -329,7 +329,7 @@ export function useTicketModeration(
         logger.info('Ticket closed', { ticketId });
         return true;
       } catch (error) {
-        logger.error('Close failed:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Close failed:', error);
         toast.error('Kapatma başarısız');
         return false;
       } finally {
@@ -367,7 +367,7 @@ export function useTicketModeration(
         logger.info('Response added', { ticketId, isInternal });
         return true;
       } catch (error) {
-        logger.error('Add response failed:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Add response failed:', error);
         toast.error('Yanıt ekleme başarısız');
         return false;
       } finally {
@@ -393,7 +393,7 @@ export function useTicketModeration(
         logger.info('Priority updated', { ticketId, priority });
         return true;
       } catch (error) {
-        logger.error('Update priority failed:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Update priority failed:', error);
         toast.error('Güncelleme başarısız');
         return false;
       } finally {
@@ -440,7 +440,7 @@ export function useTicketModeration(
           return false;
         }
       } catch (error) {
-        logger.error('Bulk assign failed:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Bulk assign failed:', error);
         toast.error('Toplu atama başarısız');
         return false;
       } finally {
@@ -468,7 +468,7 @@ export function useTicketModeration(
         logger.info('Ticket escalated', { ticketId });
         return true;
       } catch (error) {
-        logger.error('Escalate failed:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Escalate failed:', error);
         toast.error('Yükseltme başarısız');
         return false;
       } finally {
@@ -501,7 +501,7 @@ export function useTicketModeration(
         logger.info('Bulk escalate success', { count: ticketIds.length });
         return true;
       } catch (error) {
-        logger.error('Bulk escalate failed:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Bulk escalate failed:', error);
         toast.error('Toplu yükseltme başarısız');
         return false;
       } finally {

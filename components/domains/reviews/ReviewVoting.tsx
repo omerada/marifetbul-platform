@@ -96,7 +96,7 @@ export function ReviewVoting({
       setHelpfulCount(prevHelpfulCount);
       setNotHelpfulCount(prevNotHelpfulCount);
       setUserVote(prevUserVote);
-      logger.error('Failed to vote:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to vote:', error);
     } finally {
       setIsVoting(false);
     }

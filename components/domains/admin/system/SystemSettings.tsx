@@ -119,7 +119,7 @@ export function SystemSettings({ className }: SystemSettingsProps) {
     try {
       await updateSettings(formData as Partial<PlatformSettings>);
     } catch (error) {
-      logger.error('Failed to save settings:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to save settings:', error);
     }
   };
 
@@ -128,7 +128,7 @@ export function SystemSettings({ className }: SystemSettingsProps) {
       await resetSettings();
       setShowResetDialog(false);
     } catch (error) {
-      logger.error('Failed to reset settings:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to reset settings:', error);
     }
   };
 

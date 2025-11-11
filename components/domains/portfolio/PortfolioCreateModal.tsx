@@ -142,7 +142,7 @@ export function PortfolioCreateModal({
       }
     } catch (error) {
       toast.error('Görsel yüklenirken hata oluştu', { id: 'upload' });
-      logger.error('Image upload error:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Image upload error:', error);
     } finally {
       setUploadingImage(false);
     }

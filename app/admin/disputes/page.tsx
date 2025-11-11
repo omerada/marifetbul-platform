@@ -59,7 +59,7 @@ export default function AdminDisputesPage() {
     } catch (error) {
       logger.error(
         'Failed to fetch admin disputes data',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         {
           component: 'AdminDisputesPage',
           action: 'fetchData',
@@ -172,7 +172,7 @@ export default function AdminDisputesPage() {
       } catch (error) {
         logger.error(
           'Failed to fetch order details for dispute resolution',
-          error instanceof Error ? error : new Error(String(error)),
+          error,
           {
             component: 'AdminDisputesPage',
             action: 'handleResolveDispute',

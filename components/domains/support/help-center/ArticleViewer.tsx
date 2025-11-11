@@ -65,7 +65,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
     } catch (error) {
       logger.error(
         'Rating failed',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   };
@@ -77,7 +77,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
     } catch (error) {
       logger.error(
         'Helpful vote failed',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   };
@@ -95,7 +95,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
         } catch (error) {
           logger.error(
             'Copy failed',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
         }
         break;

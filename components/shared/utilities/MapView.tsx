@@ -186,7 +186,7 @@ export const MapView: React.FC<MapViewProps> = ({
         setMapZoom(15);
       }
     } catch (error) {
-      logger.error('Failed to get current location:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to get current location:', error);
     }
   }, [getCurrentPosition, unifiedLocation.currentPosition]);
 

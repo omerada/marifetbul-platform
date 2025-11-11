@@ -74,7 +74,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
     } catch (error) {
       logger.error(
         'Search failed',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   }, [searchQuery, selectedCategory, sortBy, searchArticles]);

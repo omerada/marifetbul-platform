@@ -94,7 +94,7 @@ export async function createPortfolio(
     logger.info('Portfolio item created successfully', { id: response.id });
     return response;
   } catch (error) {
-    logger.error('Failed to create portfolio', error instanceof Error ? error : new Error(String(error)));
+    logger.error('Failed to create portfolio', error);
     throw error;
   }
 }
@@ -118,7 +118,7 @@ export async function updatePortfolio(
     logger.info('Portfolio item updated successfully', { id: portfolioId });
     return response;
   } catch (error) {
-    logger.error('Failed to update portfolio', error instanceof Error ? error : new Error(String(error)));
+    logger.error('Failed to update portfolio', error);
     throw error;
   }
 }
@@ -135,7 +135,7 @@ export async function deletePortfolio(portfolioId: string): Promise<void> {
 
     logger.info('Portfolio item deleted successfully', { id: portfolioId });
   } catch (error) {
-    logger.error('Failed to delete portfolio', error instanceof Error ? error : new Error(String(error)));
+    logger.error('Failed to delete portfolio', error);
     throw error;
   }
 }
@@ -156,7 +156,7 @@ export async function getPortfolio(
 
     return response;
   } catch (error) {
-    logger.error('Failed to fetch portfolio', error instanceof Error ? error : new Error(String(error)));
+    logger.error('Failed to fetch portfolio', error);
     throw error;
   }
 }
@@ -185,7 +185,7 @@ export async function getUserPortfolio(
 
     return response;
   } catch (error) {
-    logger.error('Failed to fetch user portfolio', error instanceof Error ? error : new Error(String(error)));
+    logger.error('Failed to fetch user portfolio', error);
     throw error;
   }
 }
@@ -205,7 +205,7 @@ export async function getMyPortfolio(): Promise<PortfolioResponse[]> {
     logger.debug('My portfolio fetched', { count: response.length });
     return response;
   } catch (error) {
-    logger.error('Failed to fetch my portfolio', error instanceof Error ? error : new Error(String(error)));
+    logger.error('Failed to fetch my portfolio', error);
     throw error;
   }
 }
@@ -222,7 +222,7 @@ export async function reorderPortfolio(portfolioIds: string[]): Promise<void> {
 
     logger.info('Portfolio items reordered successfully');
   } catch (error) {
-    logger.error('Failed to reorder portfolio', error instanceof Error ? error : new Error(String(error)));
+    logger.error('Failed to reorder portfolio', error);
     throw error;
   }
 }
@@ -276,7 +276,7 @@ export async function uploadPortfolioImage(
     logger.info('Portfolio image uploaded successfully', { imageIdimageDataid,  });
     return imageData;
   } catch (error) {
-    logger.error('Failed to upload portfolio image', error instanceof Error ? error : new Error(String(error)));
+    logger.error('Failed to upload portfolio image', error);
     throw error;
   }
 }
@@ -298,7 +298,7 @@ export async function deletePortfolioImage(
 
     logger.info('Portfolio image deleted successfully', { imageId });
   } catch (error) {
-    logger.error('Failed to delete portfolio image', error instanceof Error ? error : new Error(String(error)));
+    logger.error('Failed to delete portfolio image', error);
     throw error;
   }
 }

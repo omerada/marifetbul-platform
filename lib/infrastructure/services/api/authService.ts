@@ -88,7 +88,7 @@ export class AuthService {
     } catch (error) {
       logger.error(
         'Failed to get current user',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return null;
     }
@@ -114,7 +114,7 @@ export class AuthService {
     } catch (error) {
       logger.error(
         'Failed to update profile',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return null;
     }
@@ -140,7 +140,7 @@ export class AuthService {
     } catch (error) {
       logger.error(
         'Failed to change password',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return false;
     }
@@ -162,7 +162,7 @@ export class AuthService {
     } catch (error) {
       logger.error(
         'Failed to request password reset',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return false;
     }
@@ -188,7 +188,7 @@ export class AuthService {
     } catch (error) {
       logger.error(
         'Failed to reset password',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return false;
     }
@@ -210,7 +210,7 @@ export class AuthService {
     } catch (error) {
       logger.error(
         'Failed to verify email',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return false;
     }
@@ -229,7 +229,7 @@ export class AuthService {
     } catch (error) {
       logger.error(
         'Failed to resend verification',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return false;
     }
@@ -252,7 +252,7 @@ export class UserService {
     } catch (error) {
       logger.error(
         'Failed to fetch user',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return null;
     }
@@ -305,7 +305,7 @@ export class UserService {
     } catch (error) {
       logger.error(
         'Failed to fetch public profile',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return null;
     }
@@ -324,7 +324,7 @@ export class UserService {
     } catch (error) {
       logger.error(
         'Failed to toggle follow',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return false;
     }

@@ -179,7 +179,7 @@ export function useModeratorDashboard(
 
   const error = statsError || itemsError;
   if (error) {
-    logger.error('Dashboard error:', error instanceof Error ? error : new Error(String(error)));
+    logger.error('Dashboard error:', error);
   }
 
   // ============================================================================

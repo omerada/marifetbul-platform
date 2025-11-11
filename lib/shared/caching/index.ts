@@ -257,7 +257,7 @@ export class MemoryCache<T> implements ICache<T> {
     } catch (error) {
       logger.warn(
         'Failed to load cache from localStorage',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   }
@@ -279,7 +279,7 @@ export class MemoryCache<T> implements ICache<T> {
     } catch (error) {
       logger.warn(
         'Failed to save cache to localStorage',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   }
@@ -292,7 +292,7 @@ export class MemoryCache<T> implements ICache<T> {
     } catch (error) {
       logger.warn(
         'Failed to clear cache from localStorage',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   }

@@ -102,7 +102,7 @@ export function useAsyncOperation<TData, TParams = void>(
         return result;
       } catch (error) {
         const errorObj =
-          error instanceof Error ? error : new Error(String(error));
+          error;
 
         updateState({
           error: errorObj,

@@ -79,7 +79,7 @@ export default function AdminRefundsPage() {
     } catch (error) {
       logger.error(
         'Failed to fetch admin refunds list',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         {
           component: 'AdminRefundsPage',
           action: 'fetch-refunds',
@@ -105,7 +105,7 @@ export default function AdminRefundsPage() {
     } catch (error) {
       logger.error(
         'Failed to fetch refund statistics',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         {
           component: 'AdminRefundsPage',
           action: 'fetch-statistics',
@@ -137,7 +137,7 @@ export default function AdminRefundsPage() {
     } catch (error) {
       logger.error(
         'Failed to approve refund',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         {
           refundId,
           notes,
@@ -166,7 +166,7 @@ export default function AdminRefundsPage() {
     } catch (error) {
       logger.error(
         'Failed to reject refund',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         {
           refundId,
           reason,
@@ -197,7 +197,7 @@ export default function AdminRefundsPage() {
     } catch (error) {
       logger.error(
         'Failed to bulk approve refunds',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         {
           selectedCount: selectedRefundIds.size,
           notes,
@@ -219,7 +219,7 @@ export default function AdminRefundsPage() {
     } catch (error) {
       logger.error(
         'Failed to process refund',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         {
           refundId,
           component: 'AdminRefundsPage',

@@ -141,7 +141,7 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
 
       logger.error(
         '[Dashboard Store] Dashboard fetch error',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
 
       set({
@@ -279,7 +279,7 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
     } catch (error) {
       logger.error(
         '[Dashboard Store] Optimistic update failed',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   },

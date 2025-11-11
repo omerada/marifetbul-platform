@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    logger.error('Dashboard freelancer API error:', error instanceof Error ? error : new Error(String(error)));
+    logger.error('Dashboard freelancer API error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch freelancer dashboard data' },
       { status: 500 }

@@ -107,7 +107,7 @@ export function AdminDisputeDetailModal({
       } catch (error) {
         logger.error(
           'Failed to load order:',
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
         toast.error('Sipariş bilgileri yüklenemedi');
       } finally {

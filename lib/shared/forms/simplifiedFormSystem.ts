@@ -128,7 +128,7 @@ export function useForm(config: FormConfig) {
       } catch (error) {
         logger.error(
           'Form submission error',
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
       } finally {
         setState((prev) => ({ ...prev, isSubmitting: false }));
@@ -288,7 +288,7 @@ export const formHelpers = {
     } catch (error) {
       logger.warn(
         'Form data could not be saved to localStorage',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   },
@@ -301,7 +301,7 @@ export const formHelpers = {
     } catch (error) {
       logger.warn(
         'Form data could not be loaded from localStorage',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       return null;
     }
@@ -314,7 +314,7 @@ export const formHelpers = {
     } catch (error) {
       logger.warn(
         'Form data could not be cleared from localStorage',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   },

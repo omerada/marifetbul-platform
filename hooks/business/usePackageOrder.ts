@@ -88,7 +88,7 @@ export function usePackageOrder(packageId: string) {
     } catch (error) {
       logger.error(
         'Order creation error',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   };

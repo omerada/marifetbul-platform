@@ -753,7 +753,7 @@ describe('adaptFreelancerDashboard (Seller)', () => {
 
   describe('Edge Cases', () => {
     it('should throw error for invalid API response', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       expect(() =>
         adaptFreelancerDashboard(invalidSellerResponse as any)
       ).toThrow(
@@ -1255,7 +1255,7 @@ describe('adaptModeratorDashboard (Moderator)', () => {
 
   describe('Edge Cases', () => {
     it('should throw error for invalid API response', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       expect(() =>
         adaptModeratorDashboard(invalidModeratorResponse as any)
       ).toThrow(

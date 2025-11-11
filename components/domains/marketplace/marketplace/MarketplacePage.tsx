@@ -118,7 +118,7 @@ export function MarketplacePage() {
           await applyPackageFilters();
         }
       } catch (error) {
-        logger.error('Error applying advanced filters:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('Error applying advanced filters:', error);
       }
     },
     [mode, applyJobFilters, applyPackageFilters, updateFilters]
@@ -191,7 +191,7 @@ export function MarketplacePage() {
         await applyPackageFilters();
       }
     } catch (error) {
-      logger.error('Error clearing filters:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Error clearing filters:', error);
     }
   }, [mode, applyJobFilters, applyPackageFilters]);
 
@@ -203,7 +203,7 @@ export function MarketplacePage() {
         await applyPackageFilters();
       }
     } catch (error) {
-      logger.error('Error showing all items:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Error showing all items:', error);
     }
   }, [mode, applyJobFilters, applyPackageFilters]);
 

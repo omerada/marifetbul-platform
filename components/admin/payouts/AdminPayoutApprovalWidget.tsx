@@ -177,7 +177,7 @@ export function AdminPayoutApprovalWidget({
       const data = await payoutAdminApi.getPendingPayouts();
       setPayouts(data.slice(0, maxItems) as Payout[]);
     } catch (error) {
-      logger.error('Failed to load pending payouts:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to load pending payouts:', error);
       // Fallback to empty array on error
       setPayouts([]);
     } finally {
@@ -195,7 +195,7 @@ export function AdminPayoutApprovalWidget({
       // Remove from list after successful approval
       setPayouts((prev) => prev.filter((p) => p.id !== payoutId));
     } catch (error) {
-      logger.error('Failed to approve payout:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to approve payout:', error);
     } finally {
       setProcessingId(null);
     }
@@ -214,7 +214,7 @@ export function AdminPayoutApprovalWidget({
       // Remove from list after successful rejection
       setPayouts((prev) => prev.filter((p) => p.id !== payoutId));
     } catch (error) {
-      logger.error('Failed to reject payout:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to reject payout:', error);
     } finally {
       setProcessingId(null);
     }

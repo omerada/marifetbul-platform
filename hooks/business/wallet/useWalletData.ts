@@ -150,7 +150,7 @@ export function useWalletData(
       const error =
         err instanceof Error ? err : new Error('Failed to fetch wallet data');
       setError(error);
-      logger.error('❌ Failed to fetch wallet data:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('❌ Failed to fetch wallet data:', error);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -182,7 +182,7 @@ export function useWalletData(
           err instanceof Error
             ? err
             : new Error('Failed to fetch transactions');
-        logger.error('❌ Failed to fetch transactions:', error instanceof Error ? error : new Error(String(error)));
+        logger.error('❌ Failed to fetch transactions:', error);
         throw error;
       } finally {
         setIsLoadingTransactions(false);

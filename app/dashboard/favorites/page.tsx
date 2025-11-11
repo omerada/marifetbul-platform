@@ -116,7 +116,7 @@ export default function FavoritesPage() {
       setShowCreateFolder(false);
       logger.info('Folder created successfully');
     } catch (error) {
-      logger.error('Failed to create folder', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to create folder', error);
     }
   };
 

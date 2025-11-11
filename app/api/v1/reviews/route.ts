@@ -1,4 +1,5 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 const BACKEND_API_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    console.error('Reviews API error:', error);
+    logger.error('Reviews API error:', error);
     return NextResponse.json(
       { success: false, error: 'Server error' },
       { status: 500 }
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    console.error('Reviews API error:', error);
+    logger.error('Reviews API error:', error);
     return NextResponse.json(
       { success: false, error: 'Server error' },
       { status: 500 }

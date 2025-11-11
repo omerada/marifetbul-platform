@@ -52,7 +52,7 @@ export function BulkRefundActions({
       setShowNotesInput(false);
       toast.success(`${selectedCount} iade talebi başarıyla onaylandı`);
     } catch (error) {
-      logger.error('Bulk approve failed:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Bulk approve failed:', error);
       toast.error('Toplu onaylama sırasında bir hata oluştu');
     } finally {
       setIsProcessing(false);

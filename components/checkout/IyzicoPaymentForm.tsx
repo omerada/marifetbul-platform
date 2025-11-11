@@ -226,7 +226,7 @@ export function IyzicoPaymentForm({
       const errorMessage =
         error instanceof Error ? error.message : 'Ödeme işlemi sırasında bir hata oluştu';
 
-      logger.error('IyzicoPaymentForm: Payment error', error instanceof Error ? error : new Error(String(error)));
+      logger.error('IyzicoPaymentForm: Payment error', error);
       toast.error(errorMessage);
       onError(errorMessage);
     }

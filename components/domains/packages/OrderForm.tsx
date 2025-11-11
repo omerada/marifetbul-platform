@@ -66,7 +66,7 @@ export function OrderForm({
       } catch (error) {
         logger.error(
           'Failed to fetch seller payment status:',
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
         // Default to false if fetch fails
         setSellerHasIban(false);
@@ -131,7 +131,7 @@ export function OrderForm({
     } catch (error) {
       logger.error(
         'Error submitting order:',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     } finally {
       setIsSubmitting(false);

@@ -46,11 +46,11 @@ export function PortfolioGallery({
   useEffect(() => {
     if (isOwnProfile) {
       fetchMyPortfolios().catch((error) =>
-        logger.error('Failed to fetch my portfolios', error instanceof Error ? error : new Error(String(error)))
+        logger.error('Failed to fetch my portfolios', error)
       );
     } else if (userId) {
       fetchUserPortfolios(userId).catch((error) =>
-        logger.error('Failed to fetch user portfolios', error instanceof Error ? error : new Error(String(error)))
+        logger.error('Failed to fetch user portfolios', error)
       );
     }
   }, [isOwnProfile, userId, fetchMyPortfolios, fetchUserPortfolios]);
@@ -119,7 +119,7 @@ export function PortfolioGallery({
       } catch (error) {
         logger.error(
           'Portfolio deletion failed',
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
       }
     }
@@ -159,7 +159,7 @@ export function PortfolioGallery({
       await reorderPortfolios(newOrderIds);
       setDraggedItemId(targetItemId); // Update dragged position
     } catch (error) {
-      logger.error('Portfolio reorder failed', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Portfolio reorder failed', error);
     }
   };
 

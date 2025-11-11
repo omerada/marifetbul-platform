@@ -235,7 +235,7 @@ export function ProposalSubmitModal({
       } catch (error) {
         logger.error(
           'Proposal submission error',
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
       }
     },

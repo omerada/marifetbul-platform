@@ -57,7 +57,7 @@ export function ArticleRating({
     } catch (error) {
       logger.error(
         'Rating submission failed',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     } finally {
       setIsSubmitting(false);

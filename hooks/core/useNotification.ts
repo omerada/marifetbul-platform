@@ -126,7 +126,7 @@ export function useNotification(
       } catch (error) {
         logger.error(
           'Failed to fetch notifications:',
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
       } finally {
         setLocalLoading(false);
@@ -143,7 +143,7 @@ export function useNotification(
       } catch (error) {
         logger.error(
           'Failed to mark as read:',
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
       }
     },
@@ -156,7 +156,7 @@ export function useNotification(
     } catch (error) {
       logger.error(
         'Failed to mark all as read:',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   }, [store]);
@@ -168,7 +168,7 @@ export function useNotification(
       } catch (error) {
         logger.error(
           'Failed to delete notification:',
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
       }
     },
@@ -187,7 +187,7 @@ export function useNotification(
     } catch (error) {
       logger.error(
         'Failed to delete read notifications:',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   }, [store]);
@@ -198,7 +198,7 @@ export function useNotification(
     } catch (error) {
       logger.error(
         'Failed to fetch preferences:',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     }
   }, [store]);
@@ -210,7 +210,7 @@ export function useNotification(
       } catch (error) {
         logger.error(
           'Failed to update preferences:',
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
       }
     },

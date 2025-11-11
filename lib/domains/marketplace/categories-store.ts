@@ -164,7 +164,7 @@ export const useCategoryStore = create<CategoryStore>()(
         } catch (error) {
           logger.error(
             'Platform istatistikleri yüklenirken hata',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
         }
       },

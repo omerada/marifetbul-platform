@@ -123,7 +123,7 @@ export function extractInitials(name: string, maxChars = 2): string {
 export function formatPhoneNumber(phone: string): string {
   // Delegates to the canonical implementation in lib/shared/formatters
   // Keeps backward-compatible signature while avoiding duplicate logic.
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   const {
     formatPhoneNumber: canonicalFormatPhoneNumber,
   } = require('../formatters');
@@ -153,7 +153,7 @@ export function formatEmailDomain(email: string): string {
 
 export function formatCreditCard(cardNumber: string): string {
   // Delegate to canonical formatCardNumber implementation
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   const {
     formatCardNumber: canonicalFormatCardNumber,
   } = require('../formatters');

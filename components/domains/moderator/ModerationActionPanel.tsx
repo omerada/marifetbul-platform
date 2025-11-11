@@ -73,7 +73,7 @@ export function ModerationActionPanel({
       toast.success('İçerik onaylandı');
       logger.info(`Approved ${itemType}:`, itemId);
     } catch (error) {
-      logger.error(`Failed to approve ${itemType}:`, error instanceof Error ? error : new Error(String(error)));
+      logger.error(`Failed to approve ${itemType}:`, error);
       toast.error('Onaylama başarısız oldu');
     } finally {
       setIsApproving(false);
@@ -97,7 +97,7 @@ export function ModerationActionPanel({
       setShowRejectDialog(false);
       setRejectReason('');
     } catch (error) {
-      logger.error(`Failed to reject ${itemType}:`, error instanceof Error ? error : new Error(String(error)));
+      logger.error(`Failed to reject ${itemType}:`, error);
       toast.error('Reddetme başarısız oldu');
     } finally {
       setIsRejecting(false);
@@ -114,7 +114,7 @@ export function ModerationActionPanel({
       toast.success('İçerik spam olarak işaretlendi');
       logger.info(`Marked ${itemType} as spam:`, itemId);
     } catch (error) {
-      logger.error(`Failed to mark ${itemType} as spam:`, error instanceof Error ? error : new Error(String(error)));
+      logger.error(`Failed to mark ${itemType} as spam:`, error);
       toast.error('Spam işaretleme başarısız oldu');
     } finally {
       setIsMarkingSpam(false);

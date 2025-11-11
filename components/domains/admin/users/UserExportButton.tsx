@@ -264,7 +264,7 @@ export function UserExportButton({
     } catch (error) {
       logger.error(
         'Export failed:',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       showError('Hata', 'Dosya oluşturulurken bir hata oluştu');
     } finally {

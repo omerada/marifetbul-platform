@@ -43,7 +43,7 @@ export function getSearchHistory(): SearchHistoryItem[] {
   } catch (error) {
     logger.error(
       'Failed to get search history',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
     return [];
   }
@@ -84,7 +84,7 @@ export function addToSearchHistory(
   } catch (error) {
     logger.error(
       'Failed to add to search history',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
   }
 }
@@ -106,7 +106,7 @@ export function removeFromSearchHistory(query: string): void {
   } catch (error) {
     logger.error(
       'Failed to remove from search history',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
   }
 }
@@ -123,7 +123,7 @@ export function clearSearchHistory(): void {
   } catch (error) {
     logger.error(
       'Failed to clear search history',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
   }
 }
@@ -272,7 +272,7 @@ export function importSearchHistory(jsonData: string): boolean {
   } catch (error) {
     logger.error(
       'Failed to import search history',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
     return false;
   }

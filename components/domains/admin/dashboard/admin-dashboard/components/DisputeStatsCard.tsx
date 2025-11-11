@@ -39,7 +39,7 @@ export function DisputeStatsCard() {
       setStats(statsData);
       setRecentDisputes(disputesData);
     } catch (error) {
-      logger.error('Failed to fetch dispute stats:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to fetch dispute stats:', error);
     } finally {
       setIsLoading(false);
     }

@@ -616,14 +616,14 @@ export const useNotificationStore = create<NotificationStore>()(
             .catch((error: unknown) => {
               logger.error(
                 'Failed to establish real-time connection',
-                error instanceof Error ? error : new Error(String(error))
+                error
               );
               set({ isConnected: false });
             });
         } catch (error) {
           logger.error(
             'Error starting real-time connection',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
           set({ isConnected: false });
         }
@@ -637,7 +637,7 @@ export const useNotificationStore = create<NotificationStore>()(
         } catch (error) {
           logger.error(
             'Error stopping real-time connection',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
         }
       },

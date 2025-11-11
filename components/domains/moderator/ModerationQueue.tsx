@@ -199,7 +199,7 @@ export function ModerationQueue({
 
       logger.info(`Quick ${action} successful for item: ${itemId}`);
     } catch (error) {
-      logger.error(`Quick ${action} failed for item: ${itemId}`, error instanceof Error ? error : new Error(String(error)));
+      logger.error(`Quick ${action} failed for item: ${itemId}`, error);
     } finally {
       setActionLoading((prev) => ({ ...prev, [itemId]: false }));
     }

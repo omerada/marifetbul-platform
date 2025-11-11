@@ -10,6 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 const BACKEND_API_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: data.error || 'Payment Confirmation Error',
-          message: data.message || 'Ã–deme doÄŸrulanamadÄ±',
+          message: data.message || 'Ödeme doðrulanamadý',
           errorCode: data.errorCode,
           errorMessage: data.errorMessage,
         },
@@ -71,11 +72,11 @@ export async function POST(request: NextRequest) {
     // Return confirmation response
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    console.error('Payment confirmation error:', error);
+    logger.error('Payment confirmation error:', error);
     return NextResponse.json(
       {
         error: 'Internal Server Error',
-        message: 'Ã–deme doÄŸrulanÄ±rken bir hata oluÅŸtu',
+        message: 'Ödeme doðrulanýrken bir hata oluþtu',
       },
       { status: 500 }
     );

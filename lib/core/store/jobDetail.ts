@@ -119,7 +119,7 @@ export const useJobDetailStore = create<JobDetailStore>()(
         } catch (error) {
           logger.error(
             'Job detail fetch error',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
           set((state) => {
             state.error =
@@ -152,7 +152,7 @@ export const useJobDetailStore = create<JobDetailStore>()(
         } catch (error) {
           logger.error(
             'Proposals fetch error',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
           set((state) => {
             state.error =
@@ -206,7 +206,7 @@ export const useJobDetailStore = create<JobDetailStore>()(
         } catch (error) {
           logger.error(
             'Proposal submission error',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
           set((state) => {
             state.error =
@@ -259,7 +259,7 @@ export const useJobDetailStore = create<JobDetailStore>()(
         } catch (error) {
           logger.error(
             'Proposal status update error',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
           set((state) => {
             state.error =

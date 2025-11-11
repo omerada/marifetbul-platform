@@ -109,7 +109,7 @@ export const usePayment = (): UsePaymentReturn => {
     (error: Error | unknown, defaultMessage: string) => {
       logger.error(
         'Payment operation error',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
       const message = error instanceof Error ? error.message : defaultMessage;
       setError(message);

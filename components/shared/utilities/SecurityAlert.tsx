@@ -66,7 +66,7 @@ export function SecurityAlert({
     try {
       await onDismiss(alert.id);
     } catch (error) {
-      logger.error('Alert dismiss error:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Alert dismiss error:', error);
     } finally {
       setIsProcessing(false);
     }
@@ -79,7 +79,7 @@ export function SecurityAlert({
     try {
       await onAction(alert.id, action);
     } catch (error) {
-      logger.error('Alert action error:', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Alert action error:', error);
     } finally {
       setIsProcessing(false);
     }

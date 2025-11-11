@@ -80,7 +80,7 @@ const fetchAnalyticsData = async (
   } catch (error) {
     logger.error(
       'Analytics fetch error:',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
     // Return empty data structure on error
     return {
@@ -122,7 +122,7 @@ export function AnalyticsDashboard({
     } catch (error) {
       logger.error(
         'Failed to load analytics:',
-        error instanceof Error ? error : new Error(String(error))
+        error
       );
     } finally {
       setIsLoading(false);

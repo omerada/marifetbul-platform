@@ -85,7 +85,7 @@ export abstract class BaseService {
         lastError = error;
         logger.warn(
           `Operation ${operationName} failed (attempt ${attempt})`,
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
 
         if (attempt < (this.config.retryAttempts || 3)) {
@@ -166,7 +166,7 @@ export abstract class BaseService {
   protected logError(operation: string, error: unknown): void {
     logger.error(
       `[${this.constructor.name}] ${operation} failed`,
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
   }
 

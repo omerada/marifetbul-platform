@@ -121,7 +121,7 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
         } catch (error) {
           logger.error(
             'Failed to fetch categories',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
           set({
             categoriesError: 'Ağ hatası: Kategoriler yüklenemedi',
@@ -166,7 +166,7 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
         } catch (error) {
           logger.error(
             'Failed to fetch articles',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
           set({
             articlesError: 'Ağ hatası: Makaleler yüklenemedi',
@@ -195,7 +195,7 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
         } catch (error) {
           logger.error(
             'Failed to fetch featured articles',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
           set({ featuredLoading: false });
         }
@@ -225,7 +225,7 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
         } catch (error) {
           logger.error(
             'Failed to fetch article by ID',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
           set({
             currentArticleError: 'Ağ hatası: Makale yüklenemedi',
@@ -272,7 +272,7 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
         } catch (error) {
           logger.error(
             'Failed to search articles',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
           set({
             searchError: 'Ağ hatası: Arama yapılamadı',
@@ -311,7 +311,7 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
         } catch (error) {
           logger.error(
             'Rating submission failed',
-            error instanceof Error ? error : new Error(String(error))
+            error
           );
         }
       },

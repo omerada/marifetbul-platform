@@ -138,7 +138,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     logger.error(
       '[Conversations API] Error:',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
 
     // Return empty array instead of error to prevent blocking the UI
@@ -207,7 +207,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     logger.error(
       '[Conversations API] POST Error:',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
     return NextResponse.json(
       {

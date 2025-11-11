@@ -71,7 +71,7 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
       } catch (error) {
         logger.error(
           'Error archiving notification:',
-          error instanceof Error ? error : new Error(String(error))
+          error
         );
       }
     };

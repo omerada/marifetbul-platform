@@ -94,7 +94,7 @@ export default function EscrowManagementPage() {
     } catch (error) {
       logger.error(
         'Failed to release escrow payment',
-        error instanceof Error ? error : new Error(String(error)),
+        error,
         {
           escrowId,
           component: 'EscrowManagementPage',

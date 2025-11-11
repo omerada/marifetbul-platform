@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     logger.error(
       '[Moderator Stats API] Error',
-      error instanceof Error ? error : new Error(String(error))
+      error
     );
 
     return NextResponse.json(
