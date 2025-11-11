@@ -15,7 +15,7 @@ import { walletApi } from '@/lib/api/wallet';
 
 // Mock wallet API
 jest.mock('@/lib/api/wallet');
-jest.mock('@/lib/shared/utils/logger');
+jest.mock('@/lib/infrastructure/monitoring/logger');
 
 const mockWalletApi = walletApi as jest.Mocked<typeof walletApi>;
 

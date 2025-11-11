@@ -20,7 +20,7 @@ import * as searchAnalyticsApi from '@/lib/api/search-analytics';
 
 // Mock the API
 jest.mock('@/lib/api/search-analytics');
-jest.mock('@/lib/shared/utils/logger');
+jest.mock('@/lib/infrastructure/monitoring/logger');
 
 const mockGetSearchMetrics =
   searchAnalyticsApi.getSearchMetrics as jest.MockedFunction<

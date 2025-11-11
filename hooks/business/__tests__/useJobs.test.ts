@@ -13,8 +13,8 @@ import { useJobs } from '../useJobs';
 import type { JobResponse } from '@/types/backend-aligned';
 
 // Mock logger
-jest.mock('@/lib/shared/utils/logger', () => ({
-  logger: {
+jest.mock('@/lib/infrastructure/monitoring/logger', () => ({
+  default: {
     info: jest.fn(),
     error: jest.fn(),
     warn: jest.fn(),

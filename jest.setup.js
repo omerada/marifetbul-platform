@@ -85,12 +85,26 @@ jest.mock('@/lib/infrastructure/monitoring/logger', () => ({
   },
 }));
 
-// Mock shared utils logger
-jest.mock('@/lib/shared/utils/logger', () => ({
-  debug: jest.fn(),
-  info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
+// Mock production logger
+jest.mock('@/lib/infrastructure/monitoring/logger', () => ({
+  default: {
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+  },
+  apiLogger: {
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+  },
+  authLogger: {
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+  },
 }));
 
 // Suppress console errors in tests (optional - remove if you want to see all errors)

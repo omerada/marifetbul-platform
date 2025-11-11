@@ -12,8 +12,8 @@ import type { Order, OrdersResponse } from '../../../../types';
 global.fetch = jest.fn();
 
 // Mock logger
-jest.mock('@/lib/shared/utils/logger', () => ({
-  logger: {
+jest.mock('@/lib/infrastructure/monitoring/logger', () => ({
+  default: {
     info: jest.fn(),
     error: jest.fn(),
     warn: jest.fn(),
