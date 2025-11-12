@@ -160,43 +160,68 @@ export async function getRecentActivities(
 // ============================================================================
 
 /**
- * Get pending comments (awaiting moderation)
+ * Get pending comments (awaiting moderation) with FULL DETAILS
+ *
+ * SPRINT 1 - Story 1.5 & 1.6: Enhanced DTO Implementation
+ *
+ * BEFORE: Backend returned minimal data (commentId, status only)
+ *         Frontend used "Loading..." placeholders for missing data
+ * AFTER:  Backend returns CommentModerationDetailResponse with:
+ *         - Complete author info (name, username, avatar)
+ *         - Post context (title, slug)
+ *         - Moderation metadata (flagged count, reasons)
+ *
  * Backend: GET /api/v1/moderation/comments/pending
- * Returns: PageResponse<CommentModerationResponse>
+ * Returns: PageResponse<CommentModerationDetailResponse>
  */
 export async function getPendingComments(
   page = 0,
   size = 20
 ): Promise<{ comments: BlogCommentDto[]; total: number }> {
   const response = await apiClient.get<
-    ApiResponse<{
-      content: Array<{
-        commentId: string;
+    ApiResponse<
+      PageResponse<{
+        commentId: number;
+        content: string;
         status: string;
-        notes?: string;
-      }>;
-      totalElements: number;
-    }>
+        createdAt: string;
+        authorId: string;
+        authorName: string;
+        authorUsername: string;
+        authorAvatar?: string;
+        postId?: number;
+        postTitle: string;
+        postSlug?: string;
+        flaggedCount: number;
+        flagReasons: string[];
+        moderatedBy?: string;
+        moderatorName?: string;
+        moderatedAt?: string;
+        moderationReason?: string;
+        parentId?: number;
+        replyCount: number;
+        highPriority: boolean;
+      }>
+    >
   >('/api/v1/moderation/comments/pending', {
     page: page.toString(),
     size: size.toString(),
   });
 
-  // Transform backend CommentModerationResponse to frontend BlogCommentDto format
-  // Note: Backend returns minimal CommentModerationResponse, we need to fetch full comment data
-  // For now, return transformed data - TODO: Backend should return full comment details
+  // Transform backend CommentModerationDetailResponse to frontend BlogCommentDto format
+  // NOW WITH REAL DATA - NO MORE PLACEHOLDERS! 🎉
   const transformedComments: BlogCommentDto[] = response.data.content.map(
     (item) => ({
-      id: item.commentId,
-      postId: '0', // Will be filled by backend
-      postTitle: 'Loading...', // Will be filled by backend
-      content: item.notes || '',
-      authorName: 'User', // Will be filled by backend
-      authorId: '', // Will be filled by backend
+      id: item.commentId.toString(),
+      postId: item.postId?.toString() || '0',
+      postTitle: item.postTitle, // ✅ REAL DATA (was "Loading..." before)
+      content: item.content,
+      authorName: item.authorName, // ✅ REAL DATA (was "User" before)
+      authorId: item.authorId,
       status: item.status as CommentStatus,
-      flaggedCount: 0, // Will be filled by backend
-      flagReasons: [], // Will be filled by backend
-      createdAt: new Date().toISOString(), // Will be filled by backend
+      flaggedCount: item.flaggedCount, // ✅ REAL DATA (was 0 before)
+      flagReasons: item.flagReasons, // ✅ REAL DATA (was [] before)
+      createdAt: item.createdAt,
     })
   );
 
