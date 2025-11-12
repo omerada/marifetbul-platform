@@ -149,6 +149,14 @@ export {
 export { useRefundAnalytics } from './business/admin/useRefundAnalytics';
 export { useReportBuilder } from './business/admin/useReportBuilder';
 
+// Wallet & Bank Account hooks (Sprint 1: Wallet & Payout System)
+export {
+  useBankAccounts,
+  useVerifiedBankAccounts,
+  useDefaultBankAccount,
+  useBankAccountMutations,
+} from './business/useBankAccounts';
+
 // DATA HOOKS - Analytics, search, and data management
 export { useAnalytics } from './infrastructure/data/useAnalytics';
 export {

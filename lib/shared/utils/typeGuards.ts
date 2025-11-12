@@ -247,15 +247,6 @@ export function getBudgetRange(budget: number | JobBudget): {
 // VALIDATION HELPERS
 // ================================================
 
-/**
- * Validate phone number (Turkish format)
- * @deprecated Sprint 7 - Wrapper for canonical validation
- */
-export function isValidPhone(value: unknown): value is string {
-  if (!isString(value)) return false;
-  return isPhoneCanonical(value);
-}
-
 export function isValidTurkishId(value: unknown): value is string {
   if (!isString(value)) return false;
   if (!/^\d{11}$/.test(value) || value === '00000000000') return false;
@@ -382,7 +373,6 @@ export const TypeGuards = {
   isHttpsUrl,
 
   // Validation helpers
-  isValidPhone,
   isValidTurkishId,
   isValidPassword,
 

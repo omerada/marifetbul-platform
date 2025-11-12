@@ -215,7 +215,8 @@ export const ORDER_ENDPOINTS = {
   START: (orderId: string) => `/orders/${orderId}/start`,
   DELIVER: (orderId: string) => `/orders/${orderId}/deliver`,
   ACCEPT_DELIVERY: (orderId: string) => `/orders/${orderId}/accept`,
-  CONFIRM_MANUAL_PAYMENT: (orderId: string) => `/orders/${orderId}/confirm-manual-payment`,
+  CONFIRM_MANUAL_PAYMENT: (orderId: string) =>
+    `/orders/${orderId}/confirm-manual-payment`,
   REQUEST_REVISION: (orderId: string) => `/orders/${orderId}/revisions`, // Updated to match new API
   COMPLETE: (orderId: string) => `/orders/${orderId}/complete`,
 
@@ -235,10 +236,13 @@ export const ORDER_ENDPOINTS = {
   // Manual Payment Proofs
   UPLOAD_PAYMENT_PROOF: (orderId: string) => `/orders/${orderId}/payment-proof`,
   GET_PAYMENT_PROOF: (orderId: string) => `/orders/${orderId}/payment-proof`,
-  CONFIRM_PAYMENT_PROOF: (orderId: string) => `/orders/${orderId}/payment-proof/confirm`,
-  DISPUTE_PAYMENT_PROOF: (orderId: string) => `/orders/${orderId}/payment-proof/dispute`,
+  CONFIRM_PAYMENT_PROOF: (orderId: string) =>
+    `/orders/${orderId}/payment-proof/confirm`,
+  DISPUTE_PAYMENT_PROOF: (orderId: string) =>
+    `/orders/${orderId}/payment-proof/dispute`,
   GET_PENDING_PAYMENT_PROOFS: '/orders/payment-proofs/pending',
-  VERIFY_PAYMENT_PROOF_ADMIN: (proofId: string) => `/orders/payment-proofs/${proofId}/verify`,
+  VERIFY_PAYMENT_PROOF_ADMIN: (proofId: string) =>
+    `/orders/payment-proofs/${proofId}/verify`,
 
   // Admin
   ADMIN_ALL: '/admin/orders',
@@ -448,6 +452,8 @@ export const WALLET_ENDPOINTS = {
   GET_BALANCE: '/wallet/balance',
   GET_TRANSACTIONS: '/wallet/transactions',
   EXPORT_TRANSACTIONS: '/wallet/transactions/export',
+
+  // Bank Accounts - See lib/api/bank-accounts.ts for bank account operations
 
   // Payouts
   CREATE_PAYOUT: '/payouts',
