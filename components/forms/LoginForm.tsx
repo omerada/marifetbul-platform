@@ -10,11 +10,17 @@ import { Eye, EyeOff } from 'lucide-react';
 import { Button, Input, Checkbox } from '@/components/ui';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
 import { loginSchema, type LoginFormData } from '@/lib/core/validations/auth';
+import { TwoFactorLoginModal } from '@/components/domains/auth/TwoFactorLoginModal';
+import { twoFactorApi } from '@/lib/api/two-factor';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 export function LoginForm() {
   const router = useRouter();
-  const { login, isLoading, error, clearError } = useAuthStore();
+  const { login, isLoading, error, clearError, updateUser } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
+  const [show2FAModal, setShow2FAModal] = useState(false);
+  const [is2FALoading, setIs2FALoading] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
 
   const {
     register,
@@ -28,11 +34,19 @@ export function LoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       clearError();
-      await login({
+      const response = await login({
         email: data.email,
         password: data.password,
         rememberMe: data.rememberMe,
       });
+
+      // Check if 2FA is required
+      if (response?.twoFactorRequired) {
+        logger.debug('[Login] 2FA required, showing modal');
+        setUserEmail(data.email);
+        setShow2FAModal(true);
+        return;
+      }
 
       // Redirect to dashboard on successful login
       router.push('/dashboard');
@@ -40,6 +54,35 @@ export function LoginForm() {
       setError('root', {
         message: 'Giriş sırasında bir hata oluştu',
       });
+    }
+  };
+
+  const handle2FAVerification = async (code: string) => {
+    try {
+      setIs2FALoading(true);
+
+      logger.debug('[Login] Verifying 2FA code');
+      const response = await twoFactorApi.verifyLogin({ code });
+
+      // Since backend returns tokens in httpOnly cookies,
+      // we just need to update the user info
+      if (response.success && response.data?.user) {
+        updateUser(response.data.user);
+
+        logger.info('[Login] 2FA verification successful');
+
+        // Close modal and redirect
+        setShow2FAModal(false);
+        router.push('/dashboard');
+      }
+    } catch (err) {
+      logger.error(
+        '[Login] 2FA verification failed',
+        err instanceof Error ? err : new Error(String(err))
+      );
+      throw err; // Let modal handle the error
+    } finally {
+      setIs2FALoading(false);
     }
   };
 
@@ -132,6 +175,15 @@ export function LoginForm() {
           </p>
         </div>
       </form>
+
+      {/* 2FA Verification Modal */}
+      <TwoFactorLoginModal
+        isOpen={show2FAModal}
+        onSuccess={handle2FAVerification}
+        onClose={() => setShow2FAModal(false)}
+        isLoading={is2FALoading}
+        userEmail={userEmail}
+      />
     </div>
   );
 }

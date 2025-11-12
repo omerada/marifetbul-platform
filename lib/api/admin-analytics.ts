@@ -17,6 +17,7 @@
 
 import { apiRequest, handleApiError } from './client';
 import { Logger } from '@/lib/infrastructure/monitoring/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // Sprint 10: Removed unused formatter imports
@@ -560,7 +561,10 @@ export async function exportRevenueBreakdownCsv(
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
   } catch (error) {
-    console.error('Export failed:', error);
+    logger.error(
+      'Export failed:',
+      error instanceof Error ? error : new Error(String(error))
+    );
     throw error;
   }
 }

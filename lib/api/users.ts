@@ -3,12 +3,13 @@
  * USER API CLIENT
  * ================================================
  * API client for user-related operations
- * 
+ *
  * @version 1.0.0
  * @author MarifetBul Development Team
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * Payment status response from backend
@@ -28,7 +29,7 @@ export interface PaymentStatusResponse {
 
 /**
  * Get seller's payment configuration status
- * 
+ *
  * @param sellerId Seller user ID
  * @returns Payment status including IBAN configuration
  */
@@ -38,13 +39,13 @@ export async function getSellerPaymentStatus(
   const response = await apiClient.get<{ data: PaymentStatusResponse }>(
     `/api/v1/users/${sellerId}/payment-status`
   );
-  
+
   return response.data;
 }
 
 /**
  * Check if seller can accept manual IBAN payments
- * 
+ *
  * @param sellerId Seller user ID
  * @returns True if seller has valid IBAN configured
  */
@@ -55,7 +56,10 @@ export async function canSellerAcceptManualPayments(
     const status = await getSellerPaymentStatus(sellerId);
     return status.canAcceptManualPayments;
   } catch (error) {
-    console.error('Error checking seller payment status:', error);
+    logger.error(
+      'Error checking seller payment status:',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return false;
   }
 }

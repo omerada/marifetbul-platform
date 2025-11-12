@@ -23,6 +23,7 @@
  */
 
 import { validateFileUpload } from '@/lib/domains/order/error-handling';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // TYPES
@@ -226,7 +227,10 @@ class FileUploadService {
         results.push(result);
         completedFiles++;
       } catch (error) {
-        console.error(`Failed to upload ${file.name}:`, error);
+        logger.error(
+          `Failed to upload ${file.name}:`,
+          error instanceof Error ? error : new Error(String(error))
+        );
         // Continue with other files
       }
     }

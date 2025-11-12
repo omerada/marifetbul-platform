@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import type { FilterState } from '@/components/shared/filters';
+import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**
  * useFilterState Hook - Sprint 4 Day 1
@@ -255,7 +256,10 @@ export function useFilterState({
         localStorage.setItem(PRESETS_STORAGE_KEY, JSON.stringify(presets));
         return true;
       } catch (error) {
-        console.error('Failed to save preset:', error);
+        logger.error(
+          'Failed to save preset:',
+          error instanceof Error ? error : new Error(String(error))
+        );
         return false;
       }
     },
@@ -279,7 +283,10 @@ export function useFilterState({
       }
       return false;
     } catch (error) {
-      console.error('Failed to load preset:', error);
+      logger.error(
+        'Failed to load preset:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return false;
     }
   }, []);
@@ -292,7 +299,10 @@ export function useFilterState({
       const presetsJson = localStorage.getItem(PRESETS_STORAGE_KEY);
       return presetsJson ? JSON.parse(presetsJson) : [];
     } catch (error) {
-      console.error('Failed to get presets:', error);
+      logger.error(
+        'Failed to get presets:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return [];
     }
   }, []);
@@ -311,7 +321,10 @@ export function useFilterState({
       localStorage.setItem(PRESETS_STORAGE_KEY, JSON.stringify(filtered));
       return true;
     } catch (error) {
-      console.error('Failed to delete preset:', error);
+      logger.error(
+        'Failed to delete preset:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return false;
     }
   }, []);
@@ -337,7 +350,10 @@ export function useFilterState({
 
       localStorage.setItem(RECENT_FILTERS_KEY, JSON.stringify(trimmed));
     } catch (error) {
-      console.error('Failed to save recent filters:', error);
+      logger.error(
+        'Failed to save recent filters:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }, [filters, hasActiveFilters]);
 
@@ -349,7 +365,10 @@ export function useFilterState({
       const recentJson = localStorage.getItem(RECENT_FILTERS_KEY);
       return recentJson ? JSON.parse(recentJson) : [];
     } catch (error) {
-      console.error('Failed to get recent filters:', error);
+      logger.error(
+        'Failed to get recent filters:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return [];
     }
   }, []);

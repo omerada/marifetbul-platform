@@ -34,7 +34,6 @@ export { AuthService, UserService } from './api/authService';
 
 // Other Services
 export { MessagingService } from './messaging.service';
-export { PaymentService } from './payment.service';
 export { NotificationService } from './notification.service';
 
 // Service Types
@@ -45,12 +44,7 @@ export type {
   CreateConversationData,
 } from './messaging.service';
 
-export type {
-  CreatePaymentRequest,
-  PaymentFilters,
-  RefundRequest,
-  Invoice,
-} from './payment.service';
+// Note: PaymentService removed - Use lib/api/payment.ts instead (production-ready)
 
 export type {
   CreateNotificationRequest,

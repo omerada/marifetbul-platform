@@ -24,6 +24,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { PAYMENT_ENDPOINTS } from '@/lib/api/endpoints';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   IyzicoPaymentRequest,
   IyzicoPaymentResponse,
@@ -66,25 +67,25 @@ export interface PaymentResult {
 export interface UseIyzicoPaymentReturn {
   /** Create payment intent and handle 3D Secure if needed */
   initiatePayment: (data: PaymentIntentData) => Promise<PaymentResult>;
-  
+
   /** Confirm payment after 3D Secure callback */
   confirmPayment: (data: ConfirmPaymentData) => Promise<PaymentResult>;
-  
+
   /** Handle callback from 3D Secure page */
   handleCallback: (paymentIntentId: string) => Promise<PaymentResult>;
-  
+
   /** Check payment status */
   checkStatus: (paymentId: string) => Promise<PaymentResult>;
-  
+
   /** Current payment state */
   isProcessing: boolean;
-  
+
   /** Error message if any */
   error: IyzicoPaymentError | null;
-  
+
   /** Clear error state */
   clearError: () => void;
-  
+
   /** Current payment intent ID */
   currentPaymentIntentId: string | null;
 }
@@ -101,15 +102,15 @@ const IYZICO_ERROR_MESSAGES: Record<string, string> = {
   '10041': 'Kart limitiniz yetersiz',
   '10042': 'Kart limiti aşıldı',
   '10053': 'Kartınız çevrimiçi işlemlere kapalı',
-  
+
   // 3D Secure errors
   '10047': 'İşleminiz 3D Secure doğrulaması gerektirmektedir',
   '10048': '3D Secure doğrulama başarısız',
-  
+
   // Bank errors
   '10084': 'İşleminiz banka tarafından reddedildi',
   '10093': 'İşlem tekrar edilemez',
-  
+
   // General errors
   '10000': 'Genel bir hata oluştu',
   '10001': 'Zorunlu alanlar eksik',
@@ -124,22 +125,26 @@ function getErrorMessage(
   fallback = 'Ödeme işlemi başarısız oldu'
 ): string {
   if (typeof error === 'object' && error !== null) {
-    const err = error as { errorCode?: string; errorMessage?: string; message?: string };
-    
+    const err = error as {
+      errorCode?: string;
+      errorMessage?: string;
+      message?: string;
+    };
+
     // Check if we have a known Iyzico error code
     if (err.errorCode && IYZICO_ERROR_MESSAGES[err.errorCode]) {
       return IYZICO_ERROR_MESSAGES[err.errorCode];
     }
-    
+
     // Return error message from response
     if (err.errorMessage) return err.errorMessage;
     if (err.message) return err.message;
   }
-  
+
   if (error instanceof Error) {
     return error.message;
   }
-  
+
   return fallback;
 }
 
@@ -149,7 +154,7 @@ function createPaymentError(
   message?: string
 ): IyzicoPaymentError {
   const errorObj = error as { errorCode?: string; errorMessage?: string };
-  
+
   return {
     type,
     message: message || getErrorMessage(error),
@@ -167,18 +172,20 @@ export function useIyzicoPayment(
   options: UseIyzicoPaymentOptions = {}
 ): UseIyzicoPaymentReturn {
   const { autoRedirect = true, returnUrl, debug = false } = options;
-  
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<IyzicoPaymentError | null>(null);
-  const [currentPaymentIntentId, setCurrentPaymentIntentId] = useState<string | null>(null);
-  
+  const [currentPaymentIntentId, setCurrentPaymentIntentId] = useState<
+    string | null
+  >(null);
+
   // Prevent duplicate requests
   const processingRef = useRef(false);
-  
+
   const log = useCallback(
     (message: string, data?: unknown) => {
       if (debug) {
-        console.log(`[useIyzicoPayment] ${message}`, data || '');
+        logger.debug(`[useIyzicoPayment] ${message}`, { data });
       }
     },
     [debug]
@@ -204,7 +211,7 @@ export function useIyzicoPayment(
       processingRef.current = true;
       setIsProcessing(true);
       setError(null);
-      
+
       log('Initiating payment...', data);
 
       try {
@@ -232,7 +239,7 @@ export function useIyzicoPayment(
         // Check if 3D Secure is required
         if (response.requiresAction && response.nextActionUrl) {
           log('3D Secure required, redirecting...', response.nextActionUrl);
-          
+
           if (autoRedirect) {
             // Redirect to 3D Secure page
             window.location.href = response.nextActionUrl;
@@ -258,7 +265,7 @@ export function useIyzicoPayment(
         };
       } catch (err) {
         log('Payment initiation failed', err);
-        
+
         const paymentError = createPaymentError('api_error', err);
         setError(paymentError);
 
@@ -293,7 +300,7 @@ export function useIyzicoPayment(
       processingRef.current = true;
       setIsProcessing(true);
       setError(null);
-      
+
       log('Confirming payment...', data);
 
       try {
@@ -329,7 +336,7 @@ export function useIyzicoPayment(
         };
       } catch (err) {
         log('Payment confirmation failed', err);
-        
+
         const paymentError = createPaymentError('api_error', err);
         setError(paymentError);
 
@@ -377,7 +384,7 @@ export function useIyzicoPayment(
   const checkStatus = useCallback(
     async (paymentId: string): Promise<PaymentResult> => {
       log('Checking payment status...', paymentId);
-      
+
       setIsProcessing(true);
       setError(null);
 
@@ -399,7 +406,7 @@ export function useIyzicoPayment(
         };
       } catch (err) {
         log('Status check failed', err);
-        
+
         const paymentError = createPaymentError('api_error', err);
         setError(paymentError);
 

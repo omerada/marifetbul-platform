@@ -21,6 +21,13 @@ export interface LoginCredentials {
   rememberMe?: boolean;
 }
 
+export interface LoginResponse {
+  twoFactorRequired?: boolean;
+  user?: User;
+  accessToken?: string;
+  refreshToken?: string;
+}
+
 export interface RegisterData {
   firstName: string;
   lastName: string;
@@ -49,7 +56,7 @@ interface AuthState {
 
 interface AuthActions {
   // Authentication
-  login: (credentials: LoginCredentials) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<LoginResponse | undefined>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>; // Changed to async for backend logout call
 
@@ -93,7 +100,7 @@ export const useAuthStore = create<AuthStore>()(
 
         // Login with credentials
         login: async (credentials: LoginCredentials) => {
-          logger.debug('Auth Store: Login attempt', { emailcredentialsemail,  });
+          logger.debug('Auth Store: Login attempt', { emailcredentialsemail });
 
           set((draft) => {
             draft.isLoading = true;
@@ -115,7 +122,10 @@ export const useAuthStore = create<AuthStore>()(
               }),
             });
 
-            logger.debug('Auth Store: Response received', { statusresponsestatus, okresponseok,  });
+            logger.debug('Auth Store: Response received', {
+              statusresponsestatus,
+              okresponseok,
+            });
 
             if (!response.ok) {
               throw new Error(
@@ -124,16 +134,37 @@ export const useAuthStore = create<AuthStore>()(
             }
 
             const result = await response.json();
-            logger.debug('Auth Store: Response data received', { successresultsuccess, hasUserresultdatauser,  });
+            logger.debug('Auth Store: Response data received', {
+              success: result.success,
+              hasUser: !!result.data?.user,
+              twoFactorRequired: !!result.data?.twoFactorRequired,
+            });
 
             if (!result.success) {
-              logger.warn('Auth Store: API returned error', { errorresulterror,  });
+              logger.warn('Auth Store: API returned error', {
+                error: result.error,
+              });
               throw new Error(result.error || 'Giriş başarısız');
+            }
+
+            // Check if 2FA is required
+            if (result.data?.twoFactorRequired) {
+              logger.info('Auth Store: 2FA required for this user');
+              set((draft) => {
+                draft.isLoading = false;
+              });
+              return {
+                twoFactorRequired: true,
+              };
             }
 
             const { user } = result.data;
             // NOTE: Token is now in httpOnly cookie, not returned in response
-            logger.debug('Auth Store: User data received', { userIduserid, emailuseremail, roleuserrole,  });
+            logger.debug('Auth Store: User data received', {
+              userIduserid,
+              emailuseremail,
+              roleuserrole,
+            });
 
             const now = Date.now();
             const expiry =
@@ -162,6 +193,11 @@ export const useAuthStore = create<AuthStore>()(
             logger.info(
               'Auth Store: Login successful - cookies managed by backend'
             );
+
+            return {
+              user,
+              twoFactorRequired: false,
+            };
           } catch (error) {
             set((draft) => {
               draft.error =
@@ -240,10 +276,7 @@ export const useAuthStore = create<AuthStore>()(
             });
             logger.info('Backend logout successful - token blacklisted');
           } catch (error) {
-            logger.error(
-              'Backend logout failed',
-              error
-            );
+            logger.error('Backend logout failed', error);
             // Continue with client-side logout even if backend fails
           }
 
@@ -318,10 +351,7 @@ export const useAuthStore = create<AuthStore>()(
 
             logger.info('Token refreshed - new cookie set by backend');
           } catch (error) {
-            logger.error(
-              'Token refresh failed',
-              error
-            );
+            logger.error('Token refresh failed', error);
             // Don't always logout - only on 401 (handled above)
             throw error;
           }
@@ -372,10 +402,7 @@ export const useAuthStore = create<AuthStore>()(
             }
           } catch (error) {
             // Network error - don't logout, might be temporary
-            logger.error(
-              'Auth status check failed (network error)',
-              error
-            );
+            logger.error('Auth status check failed (network error)', error);
           }
         },
 

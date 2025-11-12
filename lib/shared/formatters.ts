@@ -11,7 +11,9 @@
  */
 
 // ================================================
-// CONSTANTS
+import logger from '@/lib/infrastructure/monitoring/logger';
+
+// Constants
 // ================================================
 
 export const CURRENCY_SYMBOLS: Record<string, string> = {
@@ -84,7 +86,10 @@ export function formatCurrency(
 
     return formatted;
   } catch (error) {
-    console.error('Currency formatting error:', error);
+    logger.error(
+      'Currency formatting error:',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return `${CURRENCY_SYMBOLS[currency] || ''}${amount.toFixed(2)}`;
   }
 }
@@ -114,7 +119,10 @@ export function formatCompactCurrency(
       maximumFractionDigits: 1,
     }).format(amount);
   } catch (error) {
-    console.error('Compact currency formatting error:', error);
+    logger.error(
+      'Compact currency formatting error:',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return formatCurrency(amount, currency, { maximumFractionDigits: 0 });
   }
 }
@@ -190,7 +198,10 @@ export function formatDate(
 
     return new Intl.DateTimeFormat(locale, dateOptions).format(dateObj);
   } catch (error) {
-    console.error('Date formatting error:', error);
+    logger.error(
+      'Date formatting error:',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return '-';
   }
 }
@@ -268,7 +279,10 @@ export function formatDateRange(
 
     return `${formatDate(start, 'SHORT')} - ${formatDate(end, 'SHORT')}`;
   } catch (error) {
-    console.error('Date range formatting error:', error);
+    logger.error(
+      'Date range formatting error:',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return '-';
   }
 }
@@ -313,7 +327,10 @@ export function formatNumber(
       useGrouping,
     }).format(num);
   } catch (error) {
-    console.error('Number formatting error:', error);
+    logger.error(
+      'Number formatting error:',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return num.toString();
   }
 }
@@ -346,7 +363,10 @@ export function formatPercentage(
       maximumFractionDigits,
     }).format(value);
   } catch (error) {
-    console.error('Percentage formatting error:', error);
+    logger.error(
+      'Percentage formatting error:',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return `%${(value * 100).toFixed(maximumFractionDigits)}`;
   }
 }

@@ -19,6 +19,7 @@
 
 import { apiClient } from '@/lib/infrastructure/api/client';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import type { User } from '@/types';
 
 // ============================================================================
 // TYPES
@@ -114,10 +115,7 @@ export const twoFactorApi = {
 
       return response;
     } catch (error) {
-      logger.error(
-        '[2FA API] Failed to get 2FA status',
-        error
-      );
+      logger.error('[2FA API] Failed to get 2FA status', error);
       throw error;
     }
   },
@@ -138,10 +136,7 @@ export const twoFactorApi = {
 
       return response;
     } catch (error) {
-      logger.error(
-        '[2FA API] Failed to setup authenticator',
-        error
-      );
+      logger.error('[2FA API] Failed to setup authenticator', error);
       throw error;
     }
   },
@@ -166,10 +161,7 @@ export const twoFactorApi = {
 
       return response;
     } catch (error) {
-      logger.error(
-        '[2FA API] Failed to enable 2FA',
-        error
-      );
+      logger.error('[2FA API] Failed to enable 2FA', error);
       throw error;
     }
   },
@@ -194,9 +186,41 @@ export const twoFactorApi = {
 
       return response;
     } catch (error) {
+      logger.error('[2FA API] Failed to verify 2FA code', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Verify 2FA code during login (complete authentication)
+   */
+  async verifyLogin(request: Verify2FARequest): Promise<{
+    success: boolean;
+    data?: {
+      user: User;
+      accessToken: string;
+      refreshToken: string;
+    };
+  }> {
+    try {
+      logger.debug('[2FA API] Verifying 2FA code for login');
+
+      const response = await apiClient.post<{
+        success: boolean;
+        data?: {
+          user: User;
+          accessToken: string;
+          refreshToken: string;
+        };
+      }>(`${BASE_PATH}/verify-login`, request);
+
+      logger.info('[2FA API] 2FA login verification completed');
+
+      return response;
+    } catch (error) {
       logger.error(
-        '[2FA API] Failed to verify 2FA code',
-        error
+        '[2FA API] Failed to verify 2FA login code',
+        error instanceof Error ? error : new Error(String(error))
       );
       throw error;
     }
@@ -218,10 +242,7 @@ export const twoFactorApi = {
 
       return response;
     } catch (error) {
-      logger.error(
-        '[2FA API] Failed to disable 2FA',
-        error
-      );
+      logger.error('[2FA API] Failed to disable 2FA', error);
       throw error;
     }
   },
@@ -244,10 +265,7 @@ export const twoFactorApi = {
 
       return response;
     } catch (error) {
-      logger.error(
-        '[2FA API] Failed to generate recovery codes',
-        error
-      );
+      logger.error('[2FA API] Failed to generate recovery codes', error);
       throw error;
     }
   },
@@ -267,10 +285,7 @@ export const twoFactorApi = {
 
       return response;
     } catch (error) {
-      logger.error(
-        '[2FA API] Failed to get recovery codes',
-        error
-      );
+      logger.error('[2FA API] Failed to get recovery codes', error);
       throw error;
     }
   },
@@ -293,10 +308,7 @@ export const twoFactorApi = {
 
       return response;
     } catch (error) {
-      logger.error(
-        '[2FA API] Failed to setup SMS 2FA',
-        error
-      );
+      logger.error('[2FA API] Failed to setup SMS 2FA', error);
       throw error;
     }
   },
