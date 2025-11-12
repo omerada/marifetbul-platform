@@ -304,17 +304,21 @@ export interface OrderEvent {
  * Confirmation Status Enum
  * Backend: ManualPaymentProof.ConfirmationStatus
  */
-export type ConfirmationStatus = 'PENDING' | 'CONFIRMED' | 'REJECTED' | 'DISPUTED';
+export type ConfirmationStatus =
+  | 'PENDING'
+  | 'CONFIRMED'
+  | 'REJECTED'
+  | 'DISPUTED';
 
 /**
  * Verification Status Enum
  * Backend: ManualPaymentProof.VerificationStatus
  */
-export type VerificationStatus = 
-  | 'PENDING' 
-  | 'AUTO_VERIFIED' 
-  | 'MANUALLY_VERIFIED' 
-  | 'REJECTED' 
+export type VerificationStatus =
+  | 'PENDING'
+  | 'AUTO_VERIFIED'
+  | 'MANUALLY_VERIFIED'
+  | 'REJECTED'
   | 'UNDER_REVIEW';
 
 /**
@@ -482,22 +486,26 @@ export interface ProposalQuestion {
 
 /**
  * Authentication Response (matches AuthResponse.java)
+ * Enhanced with 2FA support
  */
 export interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
+  accessToken: string | null; // null when 2FA required
+  refreshToken: string | null; // null when 2FA required
   tokenType: string; // Always "Bearer"
-  expiresIn: number; // milliseconds
+  expiresIn: number | null; // milliseconds, null when 2FA required
   user: UserResponse;
+  twoFactorRequired?: boolean; // true if 2FA verification needed
 }
 
 /**
- * Login Request
+ * Login Request (matches LoginRequest.java)
+ * Enhanced with 2FA code support
  */
 export interface LoginRequest {
   usernameOrEmail: string;
   password: string;
   rememberMe?: boolean;
+  twoFactorCode?: string; // 6-digit TOTP or 8-char backup code
 }
 
 /**

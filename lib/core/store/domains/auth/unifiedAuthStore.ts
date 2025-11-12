@@ -92,8 +92,15 @@ interface AuthState {
 interface AuthActions {
   // Authentication
   login: (
-    credentials: Omit<LoginRequest, 'usernameOrEmail'> & { email: string }
-  ) => Promise<void>;
+    credentials: Omit<LoginRequest, 'usernameOrEmail'> & {
+      email: string;
+      twoFactorCode?: string; // Support 2FA code
+    }
+  ) => Promise<{
+    twoFactorRequired?: boolean;
+    success?: boolean;
+    message?: string;
+  } | void>;
   register: (
     data: Omit<RegisterRequest, 'role'> & {
       userType: 'freelancer' | 'employer';
@@ -144,6 +151,7 @@ export const useUnifiedAuthStore = create<UnifiedAuthStore>()(
 
         /**
          * Login user
+         * Returns response with twoFactorRequired flag if 2FA is needed
          */
         login: async (credentials) => {
           logger.info('AuthStore: Login attempt', { email: credentials.email });
@@ -158,12 +166,27 @@ export const useUnifiedAuthStore = create<UnifiedAuthStore>()(
               usernameOrEmail: credentials.email,
               password: credentials.password,
               rememberMe: credentials.rememberMe,
+              twoFactorCode: credentials.twoFactorCode, // Pass 2FA code if provided
             });
 
             if (!response.success || !response.data) {
-              throw new Error(response.message || 'Login failed');
+              set((draft) => {
+                draft.isLoading = false;
+                draft.error = response.message || 'Login failed';
+              });
+              return { success: false, message: response.message };
             }
 
+            // Check if 2FA is required
+            if (response.data.twoFactorRequired) {
+              logger.info('AuthStore: 2FA required');
+              set((draft) => {
+                draft.isLoading = false;
+              });
+              return { twoFactorRequired: true };
+            }
+
+            // Normal login success (no 2FA or 2FA verified)
             const { user, expiresIn } = response.data;
 
             // Calculate token expiry
@@ -190,7 +213,9 @@ export const useUnifiedAuthStore = create<UnifiedAuthStore>()(
                   get().logout();
                 },
                 onSessionWarning: (remainingMinutes) => {
-                  logger.warn('AuthStore: Session expiring soon', { remainingMinutes,  });
+                  logger.warn('AuthStore: Session expiring soon', {
+                    remainingMinutes,
+                  });
                   // You can show a warning modal here
                 },
                 onTokenRefreshed: () => {
@@ -266,7 +291,7 @@ export const useUnifiedAuthStore = create<UnifiedAuthStore>()(
               });
             }
 
-            logger.info('AuthStore: Registration successful', { userIduserid,  });
+            logger.info('AuthStore: Registration successful', { userIduserid });
           } catch (error) {
             const errorMessage =
               error instanceof Error

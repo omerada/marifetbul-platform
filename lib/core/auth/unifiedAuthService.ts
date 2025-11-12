@@ -37,6 +37,7 @@ export interface LoginRequest {
   usernameOrEmail: string;
   password: string;
   rememberMe?: boolean;
+  twoFactorCode?: string; // 6-digit TOTP or 8-char backup code
 }
 
 export interface RegisterRequest {
@@ -136,7 +137,9 @@ class UnifiedAuthService {
       );
 
       if (response.success && response.data) {
-        logger.info('Auth: Registration successful', { userIdresponsedatauserid,  });
+        logger.info('Auth: Registration successful', {
+          userIdresponsedatauserid,
+        });
       }
 
       return response;
@@ -158,7 +161,9 @@ class UnifiedAuthService {
    * @throws Error on invalid credentials or account locked
    */
   async login(request: LoginRequest): Promise<ApiResponse<AuthResponse>> {
-    logger.info('Auth: Login attempt', { usernameOrEmailrequestusernameOrEmail,  });
+    logger.info('Auth: Login attempt', {
+      usernameOrEmailrequestusernameOrEmail,
+    });
 
     try {
       const response = await apiClient.post<ApiResponse<AuthResponse>>(
@@ -170,7 +175,10 @@ class UnifiedAuthService {
       );
 
       if (response.success && response.data) {
-        logger.info('Auth: Login successful', { userIdresponsedatauserid, rolesresponsedatauserroles,  });
+        logger.info('Auth: Login successful', {
+          userIdresponsedatauserid,
+          rolesresponsedatauserroles,
+        });
 
         // Clear any cached user data
         this.invalidateUserCache();
@@ -462,7 +470,7 @@ class UnifiedAuthService {
       );
 
       if (response.success && response.data) {
-        logger.debug('Auth: Current user fetched', { userIdresponsedataid,  });
+        logger.debug('Auth: Current user fetched', { userIdresponsedataid });
       }
 
       return response;

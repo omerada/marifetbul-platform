@@ -8,19 +8,19 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
 
 import { Button, Input, Checkbox } from '@/components/ui';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useUnifiedAuthStore as useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { loginSchema, type LoginFormData } from '@/lib/core/validations/auth';
 import { TwoFactorLoginModal } from '@/components/domains/auth/TwoFactorLoginModal';
-import { twoFactorApi } from '@/lib/api/two-factor';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 export function LoginForm() {
   const router = useRouter();
-  const { login, isLoading, error, clearError, updateUser } = useAuthStore();
+  const { login, isLoading, error, clearError } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [show2FAModal, setShow2FAModal] = useState(false);
   const [is2FALoading, setIs2FALoading] = useState(false);
   const [userEmail, setUserEmail] = useState('');
+  const [userPassword, setUserPassword] = useState(''); // Store password for 2FA retry
 
   const {
     register,
@@ -34,6 +34,11 @@ export function LoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       clearError();
+
+      // Store credentials for 2FA retry
+      setUserEmail(data.email);
+      setUserPassword(data.password);
+
       const response = await login({
         email: data.email,
         password: data.password,
@@ -43,7 +48,6 @@ export function LoginForm() {
       // Check if 2FA is required
       if (response?.twoFactorRequired) {
         logger.debug('[Login] 2FA required, showing modal');
-        setUserEmail(data.email);
         setShow2FAModal(true);
         return;
       }
@@ -60,20 +64,26 @@ export function LoginForm() {
   const handle2FAVerification = async (code: string) => {
     try {
       setIs2FALoading(true);
+      logger.debug('[Login] Re-attempting login with 2FA code');
 
-      logger.debug('[Login] Verifying 2FA code');
-      const response = await twoFactorApi.verifyLogin({ code });
+      // Re-attempt login with 2FA code
+      const response = await login({
+        email: userEmail,
+        password: userPassword,
+        rememberMe: true,
+        twoFactorCode: code, // Include 2FA code
+      });
 
-      // Since backend returns tokens in httpOnly cookies,
-      // we just need to update the user info
-      if (response.success && response.data?.user) {
-        updateUser(response.data.user);
-
+      if (response?.success !== false) {
         logger.info('[Login] 2FA verification successful');
-
-        // Close modal and redirect
         setShow2FAModal(false);
+
+        // Clear stored password from memory
+        setUserPassword('');
+
         router.push('/dashboard');
+      } else {
+        throw new Error(response?.message || '2FA verification failed');
       }
     } catch (err) {
       logger.error(
