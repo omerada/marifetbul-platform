@@ -4,24 +4,29 @@
  * ================================================
  * Central export hub for moderator domain components
  *
- * Sprint 1 - Story 1.1: Review Moderation System
- * @version 2.0.0
+ * SPRINT 1 - MODERATION CONSOLIDATION (Nov 2025)
+ * - Removed deprecated queue components (now using Unified components)
+ * - Kept specialized moderator-only tools
+ *
+ * @version 3.0.0 - Consolidated
  * @author MarifetBul Development Team
- * @updated November 3, 2025
+ * @updated November 12, 2025
  */
 
 // ============================================================================
-// CORE COMPONENTS
+// DEPRECATED COMPONENTS REMOVED
 // ============================================================================
-
-export { ModerationQueue } from './ModerationQueue';
-export { ModerationQueueContainer } from './ModerationQueueContainer';
-export { ModeratorStatsWidget } from './ModeratorStatsWidget';
-export { QuickActionButtons } from './QuickActionButtons';
-export { ModerationActionPanel } from './ModerationActionPanel';
-export { ModerationHistory } from './ModerationHistory';
-export { ModerationFilters } from './ModerationFilters';
-export { BulkModerationPanel } from './BulkModerationPanel';
+// The following components have been replaced by Unified components:
+// - ModerationQueue → Use UnifiedCommentQueue or UnifiedReviewQueue
+// - ModerationQueueContainer → Use UnifiedCommentQueue or UnifiedReviewQueue
+// - ModeratorStatsWidget → Use UnifiedDashboard stats
+// - QuickActionButtons → Integrated into Unified components
+// - ModerationActionPanel → Integrated into Unified components
+// - ModerationHistory → Use ModeratorActivityTimeline
+// - ModerationFilters → Integrated into Unified components
+// - BulkModerationPanel → Integrated into Unified components
+//
+// See: components/domains/moderation/shared/
 
 // ============================================================================
 // ESCALATION FEATURE (Sprint 1 - Task 6)
@@ -57,7 +62,7 @@ export type {
   PendingItem,
   PendingItemType,
   Priority,
-  ModeratorActivity,
+  ModerationActivity,
   ActionType,
   BlogCommentDto,
   ReviewDto,
