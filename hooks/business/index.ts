@@ -15,7 +15,7 @@ import {
   useToggleFavorite,
   type SearchFilters,
 } from '../infrastructure/api';
-import { useAuthState } from '../shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
@@ -94,7 +94,7 @@ export function useUnifiedSearch() {
 // ================================================
 
 export function useFavoritesManager() {
-  const { user } = useAuthState();
+  const user = authSelectors.useUser();
   const favorites = useFavorites(user?.id || '');
   const toggleFavorite = useToggleFavorite();
 
@@ -302,7 +302,7 @@ export function useBreadcrumbs() {
 // ================================================
 
 export function useAnalyticsTracker() {
-  const { user } = useAuthState();
+  const user = authSelectors.useUser();
 
   const track = useCallback(
     (event: string, properties?: Record<string, unknown>) => {
@@ -496,16 +496,13 @@ export function usePerformanceMonitor() {
 // EXPORTS
 // ================================================
 
-// Re-export auth state from shared hooks
-export { useAuthState } from '../shared/useAuth';
-
 // Re-export specific business hooks
 export {
   useProfile,
   useAvatarUpload,
   useProfileValidation,
 } from './useProfile';
-export { useDashboard } from './useDashboard'; 
+export { useDashboard } from './useDashboard';
 export { useDashboardStats } from './dashboard/useDashboardStats';
 export {
   usePlatformSnapshot,

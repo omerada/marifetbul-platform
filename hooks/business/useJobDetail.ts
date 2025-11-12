@@ -2,11 +2,11 @@
 
 import { useEffect } from 'react';
 import { useJobDetailStore } from '@/lib/core/store';
-import { useAuthState as useAuth } from '../shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 
 export function useJobDetail(jobId: string) {
   const store = useJobDetailStore();
-  const { user } = useAuth();
+  const user = authSelectors.useUser();
 
   useEffect(() => {
     if (jobId) {

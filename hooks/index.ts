@@ -2,8 +2,8 @@
 // Clean, organized export structure by category
 
 // CORE HOOKS - Essential app functionality
-// Updated to use unified auth from shared
-export { useAuth } from './shared/useAuth';
+// Auth hooks migrated to unifiedAuthStore (authSelectors)
+// Import directly from: @/lib/core/store/domains/auth/unifiedAuthStore
 
 export { useAuthGuard } from './core/useAuthGuard';
 
@@ -98,6 +98,8 @@ export { useFollowersList } from './business/useFollowersList';
 export { useFollowingList } from './business/useFollowingList';
 export { useNotifications } from './business/useNotifications';
 export { useNotificationPreferences } from './business/useNotificationPreferences';
+export { useDeviceManagement } from './business/useDeviceManagement';
+export type { UseDeviceManagementReturn } from './business/useDeviceManagement';
 export { useJobProposals } from './business/useJobProposals';
 export type {
   JobProposalSummary,

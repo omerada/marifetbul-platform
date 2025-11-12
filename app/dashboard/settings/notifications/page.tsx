@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
@@ -11,11 +11,20 @@ import {
   Smartphone,
   CheckCircle2,
   XCircle,
+  Send,
+  Info,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useNotificationPreferences } from '@/hooks';
+import {
+  sendTestNotification,
+  getNotificationPermission,
+} from '@/lib/infrastructure/services/push-notification.service';
+import { toast } from 'sonner';
 
 export default function NotificationSettingsPage() {
+  const [isTestingSending, setIsTestingSending] = useState(false);
+
   const {
     preferences,
     isLoading,
@@ -29,6 +38,32 @@ export default function NotificationSettingsPage() {
     disableAllPushNotifications,
     resetToDefaults,
   } = useNotificationPreferences();
+
+  const handleTestNotification = async () => {
+    const permission = getNotificationPermission();
+
+    if (permission !== 'granted') {
+      toast.error(
+        'Bildirim izni verilmedi. Lütfen tarayıcı ayarlarınızdan bildirimlere izin verin.'
+      );
+      return;
+    }
+
+    setIsTestingSending(true);
+    try {
+      const result = await sendTestNotification();
+      if (!result) {
+        toast.error('Test bildirimi gönderilemedi. Lütfen tekrar deneyin.');
+      }
+    } catch (error) {
+      toast.error(
+        'Bir hata oluştu: ' +
+          (error instanceof Error ? error.message : 'Bilinmeyen hata')
+      );
+    } finally {
+      setIsTestingSending(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -156,6 +191,26 @@ export default function NotificationSettingsPage() {
       </div>
 
       <div className="mx-auto max-w-4xl space-y-6">
+        {/* Permission Info Banner */}
+        {getNotificationPermission() !== 'granted' && (
+          <Card className="border-blue-200 bg-blue-50 p-4">
+            <div className="flex items-start gap-3">
+              <Info className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600" />
+              <div className="flex-1">
+                <h4 className="font-medium text-blue-900">
+                  Push Bildirimler Devre Dışı
+                </h4>
+                <p className="mt-1 text-sm text-blue-700">
+                  Push bildirimleri almak için tarayıcınızdan bildirim izni
+                  vermeniz gerekmektedir. Ana sayfadaki bildirim izni
+                  penceresini kullanabilir veya tarayıcı ayarlarından izin
+                  verebilirsiniz.
+                </p>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* Email Notifications */}
         <Card className="p-6">
           <div className="mb-4 flex items-center justify-between border-b pb-4">
@@ -249,6 +304,21 @@ export default function NotificationSettingsPage() {
               </h3>
             </div>
             <div className="flex gap-2">
+              <Link href="/dashboard/settings/devices">
+                <Button variant="outline" size="sm">
+                  <Smartphone className="mr-1 h-4 w-4" />
+                  Cihazları Yönet
+                </Button>
+              </Link>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleTestNotification}
+                disabled={isUpdating || isTestingSending}
+              >
+                <Send className="mr-1 h-4 w-4" />
+                {isTestingSending ? 'Gönderiliyor...' : 'Test Gönder'}
+              </Button>
               <Button
                 variant="outline"
                 size="sm"

@@ -8,7 +8,7 @@
 import { useMemo, useCallback } from 'react';
 import { createDataHook, createMutationHook } from '../../shared/base/patterns';
 import { apiClient } from '@/lib/infrastructure/api/client';
-import { useAuthState } from '../../shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import type { User, Freelancer, Employer } from '@/types';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
@@ -61,7 +61,7 @@ interface ProfileCompleteness {
  * Responsibility: Fetch and cache profile data
  */
 export function useProfile(userId?: string) {
-  const { user: currentUser } = useAuthState();
+  const currentUser = authSelectors.useUser();
   const targetUserId = userId || currentUser?.id;
 
   return createDataHook(
@@ -346,7 +346,8 @@ export function useUpdateEmployerProfile() {
  * Responsibility: Handle profile access control logic
  */
 export function useProfilePermissions(profileUserId?: string) {
-  const { user: currentUser, isAuthenticated } = useAuthState();
+  const currentUser = authSelectors.useUser();
+  const isAuthenticated = authSelectors.useIsAuthenticated();
 
   const isOwnProfile = useMemo(() => {
     return isAuthenticated && currentUser?.id === profileUserId;

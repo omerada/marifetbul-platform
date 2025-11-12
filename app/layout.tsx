@@ -7,6 +7,8 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { ToastProvider } from '@/components/providers/ToastProvider';
 import { MonitoringProvider } from '@/components/providers/MonitoringProvider';
 import { OrderNotificationProvider } from '@/components/providers/OrderNotificationProvider';
+import { NotificationProvider } from '@/components/providers/NotificationProvider';
+import { PushPermissionModal } from '@/components/notifications';
 import NotificationsBell from '@/components/shared/NotificationsBell';
 import { ToastManager } from '@/components/shared/ToastManager';
 import { SEOHead } from '@/components/shared/seo/SEOHead';
@@ -101,12 +103,17 @@ export default function RootLayout({
             <AuthProvider>
               <SessionProvider>
                 <ToastProvider>
-                  <OrderNotificationProvider />
-                  <ToastManager />
-                  <div className="fixed top-4 right-4 z-50">
-                    <NotificationsBell />
-                  </div>
-                  {children}
+                  <NotificationProvider
+                    verbose={process.env.NODE_ENV === 'development'}
+                  >
+                    <OrderNotificationProvider />
+                    <PushPermissionModal />
+                    <ToastManager />
+                    <div className="fixed top-4 right-4 z-50">
+                      <NotificationsBell />
+                    </div>
+                    {children}
+                  </NotificationProvider>
                 </ToastProvider>
               </SessionProvider>
             </AuthProvider>

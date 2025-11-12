@@ -2,11 +2,11 @@
 
 import { useEffect } from 'react';
 import { usePackageDetailStore } from '@/lib/core/store';
-import { useAuthState as useAuth } from '../shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 
 export function usePackageDetail(packageId: string) {
   const store = usePackageDetailStore();
-  const { user } = useAuth();
+  const user = authSelectors.useUser();
 
   useEffect(() => {
     if (packageId) {

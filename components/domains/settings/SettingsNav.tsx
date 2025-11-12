@@ -14,7 +14,15 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
-import { User, Bell, CreditCard, Shield, Lock, FileText } from 'lucide-react';
+import {
+  User,
+  Bell,
+  CreditCard,
+  Shield,
+  Lock,
+  FileText,
+  Smartphone,
+} from 'lucide-react';
 
 interface SettingsNavItem {
   label: string;
@@ -44,6 +52,12 @@ export function SettingsNav() {
       href: '/dashboard/settings/notifications',
       icon: <Bell className="h-5 w-5" />,
       description: 'Bildirim tercihleri',
+    },
+    {
+      label: 'Cihazlar',
+      href: '/dashboard/settings/devices',
+      icon: <Smartphone className="h-5 w-5" />,
+      description: 'Push bildirim cihazları',
     },
     {
       label: 'Ödeme',
@@ -145,6 +159,12 @@ export function MobileSettingsNav() {
       href: '/dashboard/settings/notifications',
       icon: <Bell className="h-4 w-4" />,
       description: 'Bildirimler',
+    },
+    {
+      label: 'Cihazlar',
+      href: '/dashboard/settings/devices',
+      icon: <Smartphone className="h-4 w-4" />,
+      description: 'Cihazlar',
     },
     {
       label: 'Ödeme',

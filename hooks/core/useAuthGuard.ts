@@ -2,14 +2,16 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthState as useAuth } from '../shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 
 /**
  * Custom hook for route protection and role-based access control
  * Redirects users to appropriate pages based on authentication status and roles
  */
 export function useAuthGuard(requiredRole?: 'employer' | 'freelancer') {
-  const { isAuthenticated, user, isLoading } = useAuth();
+  const isAuthenticated = authSelectors.useIsAuthenticated();
+  const user = authSelectors.useUser();
+  const isLoading = authSelectors.useIsLoading();
   const router = useRouter();
 
   useEffect(() => {
@@ -50,7 +52,8 @@ export function useAuthGuard(requiredRole?: 'employer' | 'freelancer') {
  * Hook for checking if user has access to specific features
  */
 export function usePermissions() {
-  const { user, isAuthenticated } = useAuth();
+  const user = authSelectors.useUser();
+  const isAuthenticated = authSelectors.useIsAuthenticated();
 
   const canPostJobs = isAuthenticated && user?.userType === 'employer';
   const canCreatePackages = isAuthenticated && user?.userType === 'freelancer';

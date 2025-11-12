@@ -19,7 +19,7 @@ import {
 } from '@/lib/api/moderation-history';
 import type { PageResponse } from '@/types/backend-aligned';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import { useAuth } from '@/hooks/shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 
 // ============================================================================
 // QUERY KEYS
@@ -420,7 +420,7 @@ export function useModerationAudit(
  */
 export function useTrackModerationAction() {
   const recordMutation = useRecordModerationAction();
-  const { user } = useAuth();
+  const user = authSelectors.useUser();
 
   const trackAction = useCallback(
     async (

@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuthState } from '@/hooks/shared/useAuth';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { Card, CardContent } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Loader2, AlertTriangle, RefreshCw, ShieldX } from 'lucide-react';
@@ -156,7 +156,9 @@ export function AuthLayoutWrapper({
   showLoadingIndicator = true,
   loadingMessage,
 }: AuthLayoutWrapperProps) {
-  const { isAuthenticated, isLoading, error } = useAuthState();
+  const isAuthenticated = authSelectors.useIsAuthenticated();
+  const isLoading = authSelectors.useIsLoading();
+  const error = authSelectors.useError();
   const router = useRouter();
   const pathname = usePathname();
   const [isHydrated, setIsHydrated] = useState(false);
@@ -228,7 +230,10 @@ export function ProtectedRoute({
   showUnauthorizedMessage = false,
   fallback,
 }: ProtectedRouteProps) {
-  const { user, isAuthenticated, isLoading, error } = useAuthState();
+  const user = authSelectors.useUser();
+  const isAuthenticated = authSelectors.useIsAuthenticated();
+  const isLoading = authSelectors.useIsLoading();
+  const error = authSelectors.useError();
   const router = useRouter();
   const pathname = usePathname();
   const [authChecked, setAuthChecked] = useState(false);
@@ -321,15 +326,21 @@ export function ProtectedRoute({
  * Hook for getting current authentication state
  */
 export function useAuthLayoutState() {
-  const authState = useAuthState();
+  const user = authSelectors.useUser();
+  const isAuthenticated = authSelectors.useIsAuthenticated();
+  const isLoading = authSelectors.useIsLoading();
+  const error = authSelectors.useError();
 
   return {
-    ...authState,
-    isReady: !authState.isLoading,
+    user,
+    isAuthenticated,
+    isLoading,
+    error,
+    isReady: !isLoading,
     canAccess: (role?: string) => {
-      if (!authState.isAuthenticated || !authState.user) return false;
+      if (!isAuthenticated || !user) return false;
       if (!role) return true;
-      return authState.user.role === role;
+      return user.role === role;
     },
   };
 }
@@ -339,7 +350,8 @@ export function useAuthLayoutState() {
  */
 export function useAuthRedirect() {
   const router = useRouter();
-  const { isAuthenticated, user } = useAuthState();
+  const isAuthenticated = authSelectors.useIsAuthenticated();
+  const user = authSelectors.useUser();
 
   const redirectToLogin = (returnUrl?: string) => {
     const loginUrl = new URL('/login', window.location.origin);
