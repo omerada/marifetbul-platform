@@ -65,7 +65,7 @@ export function useModerationStats(refreshInterval = 30000) {
     error,
     isLoading,
     mutate: refresh,
-  } = useSWR<ModerationStats>('/api/v1/moderator/stats', getModerationStats, {
+  } = useSWR<ModerationStats>('/api/v1/moderation/stats', getModerationStats, {
     refreshInterval,
     revalidateOnFocus: true,
     dedupingInterval: 10000, // Prevent duplicate requests within 10s
