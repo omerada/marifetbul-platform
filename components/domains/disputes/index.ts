@@ -16,6 +16,8 @@ export type {
 // Other components
 export { DisputeCreationModal } from './DisputeCreationModal';
 export { EvidenceUploadV2 } from './EvidenceUploadV2';
+export { EvidenceGallery } from './EvidenceGallery';
+export type { EvidenceItem } from './EvidenceGallery';
 export { DisputeTimeline, createTimelineEvents } from './DisputeTimeline';
 export type { DisputeEvent, DisputeEventType } from './DisputeTimeline';
 export { DisputeCard } from './DisputeCard';

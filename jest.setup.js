@@ -6,6 +6,21 @@
 // Import jest-dom matchers
 import '@testing-library/jest-dom';
 
+// Mock Sentry
+jest.mock('@sentry/nextjs', () => ({
+  init: jest.fn(),
+  captureException: jest.fn(),
+  captureMessage: jest.fn(),
+  withScope: jest.fn(),
+  configureScope: jest.fn(),
+  setContext: jest.fn(),
+  setUser: jest.fn(),
+  setTag: jest.fn(),
+  setTags: jest.fn(),
+  setExtra: jest.fn(),
+  setExtras: jest.fn(),
+}));
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter: () => ({

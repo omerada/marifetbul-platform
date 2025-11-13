@@ -12,6 +12,8 @@ const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jsdom',
   moduleNameMapper: {
+    // Mock Sentry
+    '^@sentry/nextjs$': '<rootDir>/__mocks__/@sentry/nextjs.ts',
     // Mock lucide-react to avoid ESM issues
     '^lucide-react$': '<rootDir>/__mocks__/lucide-react.tsx',
     // Path aliases
