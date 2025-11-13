@@ -6,8 +6,21 @@
 // Core types (User, Freelancer, Employer, ApiResponse, etc.)
 export * from './core/base';
 
-// Dashboard types (FreelancerDashboard, EmployerDashboard) - Sprint 1 cleanup
-export type { FreelancerDashboard, EmployerDashboard } from './core/dashboard';
+// Dashboard types (FreelancerDashboard, EmployerDashboard, AdminDashboard, ModeratorDashboard) - Sprint 1 cleanup
+export type {
+  FreelancerDashboard,
+  EmployerDashboard,
+  AdminDashboard,
+  ModeratorDashboard,
+  UnifiedDashboardData,
+  DashboardPeriod,
+  ModerationItem,
+  ActivityItem,
+  QuickAction,
+  ChartWidgetData,
+  CacheMetadata,
+  TrendIndicator,
+} from './core/dashboard';
 
 // Shared utilities (Performance, SEO, Location, etc.)
 export * from './shared/performance';

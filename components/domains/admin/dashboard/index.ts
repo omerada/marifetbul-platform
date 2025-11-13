@@ -54,6 +54,17 @@ export { CategoryPerformanceSummary } from './CategoryPerformanceSummary';
 export { PackagePerformanceWidget } from './PackagePerformanceWidget';
 export { PackageTrendChart } from './PackageTrendChart';
 
-// Admin Dashboard Sub-components
-export * from './admin-dashboard/components';
-export * from './admin-dashboard/types/adminDashboardTypes';
+/**
+ * ================================================
+ * SPRINT 1 DAY 3 - CLEANUP COMPLETED
+ * ================================================
+ * REMOVED: ./admin-dashboard/components (duplicate, unused)
+ * REMOVED: ./admin-dashboard/types/adminDashboardTypes (duplicate)
+ *
+ * Reason: These components were duplicate implementations that
+ * were never used in production. Unified dashboard widgets are
+ * now in @/components/domains/dashboard/widgets
+ *
+ * Migration: No migration needed - components were unused
+ * @removed 2025-11-13
+ */

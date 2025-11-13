@@ -36,11 +36,12 @@ export { CommentModerationNotes } from './reviews/CommentModerationNotes';
 
 export {
   CommentCardSkeleton as ModerationCommentCardSkeleton,
-  StatsCardSkeleton as ModerationStatsCardSkeleton,
   ModerationQueueSkeleton,
   DashboardWidgetSkeleton as ModerationDashboardWidgetSkeleton,
   RecentCommentsSkeleton as ModerationRecentCommentsSkeleton,
 } from './reviews/LoadingSkeletons';
+
+// Sprint 1 Day 3: StatsCardSkeleton removed (unused component)
 
 // ================================================
 // BULK ACTION COMPONENTS (Sprint 1 - EPIC 2)
@@ -89,10 +90,13 @@ export type { FlagStatisticsPanelProps } from './reviews/FlagStatisticsPanel';
 // ================================================
 
 export { ModeratorAnalyticsDashboard } from './reviews/ModeratorAnalyticsDashboard';
-export { ModeratorDashboard as ModerationDashboardWidget } from './reviews/ModeratorDashboard';
+export { ModeratorDashboardWidget } from './reviews/ModeratorDashboardWidget';
 
 export type { ModeratorAnalyticsDashboardProps } from './reviews/ModeratorAnalyticsDashboard';
-export type { ModeratorDashboardProps as ModerationDashboardWidgetProps } from './reviews/ModeratorDashboard';
+export type { ModeratorDashboardWidgetProps } from './reviews/ModeratorDashboardWidget';
+
+// Backward compatibility (deprecated - remove in next major version)
+export { ModeratorDashboardWidget as ModerationDashboardWidget } from './reviews/ModeratorDashboardWidget';
 
 // ================================================
 // DASHBOARD WIDGETS

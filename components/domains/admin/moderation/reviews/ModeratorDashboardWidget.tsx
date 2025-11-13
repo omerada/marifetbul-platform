@@ -2,20 +2,28 @@
 
 /**
  * ================================================
- * UNIFIED MODERATOR DASHBOARD WIDGET
+ * MODERATOR DASHBOARD WIDGET
  * ================================================
- * Main dashboard combining all Sprint 3 moderation features
+ * Tabbed widget for moderation tools and analytics
+ *
+ * ⚠️ RENAMED: ModeratorDashboard → ModeratorDashboardWidget
+ * Reason: Avoid confusion with ModeratorDashboardView (main dashboard)
  *
  * Sprint: Sprint 3 - Day 4 (Final Integration)
- * Features: Combines all moderation tools and analytics
+ * Updated: Sprint 1 - Dashboard Consolidation (Nov 13, 2025)
  *
- * @version 2.0.0 - Updated to use UnifiedCommentQueue
+ * Features:
+ * - Moderation queue management
+ * - Advanced filtering
+ * - Flag statistics
+ * - Auto-moderation rules
+ * - Analytics & SLA metrics
+ *
+ * @version 3.0.0 - Renamed for clarity
  * @author MarifetBul Development Team
  * @created November 2, 2025
- * @updated November 8, 2025 - Removed deprecated CommentModerationQueue
+ * @updated November 13, 2025 - Renamed to Widget
  */
-
-'use client';
 
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
@@ -26,15 +34,34 @@ import { FlagStatisticsPanel } from './FlagStatisticsPanel';
 import { AutoModerationRulesPanel } from './AutoModerationRulesPanel';
 import { ModeratorAnalyticsDashboard } from './ModeratorAnalyticsDashboard';
 
-export interface ModeratorDashboardProps {
+// ============================================================================
+// TYPES
+// ============================================================================
+
+export interface ModeratorDashboardWidgetProps {
   className?: string;
   defaultTab?: 'queue' | 'filters' | 'flags' | 'rules' | 'analytics';
 }
 
-export function ModeratorDashboard({
+// ============================================================================
+// COMPONENT
+// ============================================================================
+
+/**
+ * ModeratorDashboardWidget
+ *
+ * Tabbed widget combining all moderation tools and analytics.
+ * Used within admin panels and moderator workspaces.
+ *
+ * @example
+ * ```tsx
+ * <ModeratorDashboardWidget defaultTab="queue" />
+ * ```
+ */
+export function ModeratorDashboardWidget({
   className = '',
   defaultTab = 'queue',
-}: ModeratorDashboardProps) {
+}: ModeratorDashboardWidgetProps) {
   const [activeTab, setActiveTab] = useState(defaultTab);
 
   return (
@@ -246,3 +273,5 @@ export function ModeratorDashboard({
     </div>
   );
 }
+
+export default ModeratorDashboardWidget;

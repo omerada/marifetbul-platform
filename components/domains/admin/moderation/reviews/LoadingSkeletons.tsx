@@ -49,24 +49,15 @@ export const CommentCardSkeleton: React.FC = () => (
 );
 
 // ================================================
-// STATS CARD SKELETON
-// ================================================
-
-export const StatsCardSkeleton: React.FC = () => (
-  <div className="animate-pulse rounded-lg border border-gray-200 bg-white p-6">
-    <div className="flex items-center justify-between">
-      <div className="space-y-2">
-        <div className="h-4 w-24 rounded bg-gray-200" />
-        <div className="h-8 w-16 rounded bg-gray-200" />
-      </div>
-      <div className="h-12 w-12 rounded-full bg-gray-200" />
-    </div>
-  </div>
-);
-
-// ================================================
 // MODERATION QUEUE SKELETON
 // ================================================
+
+/**
+ * SPRINT 1 DAY 3 - REMOVED UNUSED COMPONENT
+ * ================================================
+ * StatsCardSkeleton was removed as it's never used in the codebase
+ * Use StatsCard.Skeleton from @/components/domains/dashboard/widgets instead
+ */
 
 export const ModerationQueueSkeleton: React.FC = () => (
   <div className="space-y-4">
@@ -161,7 +152,6 @@ export const RecentCommentsSkeleton: React.FC = () => (
 
 const LoadingSkeletons = {
   CommentCardSkeleton,
-  StatsCardSkeleton,
   ModerationQueueSkeleton,
   DashboardWidgetSkeleton,
   RecentCommentsSkeleton,

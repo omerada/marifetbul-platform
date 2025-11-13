@@ -1,16 +1,49 @@
 /**
- * @fileoverview Unified Dashboard TypeScript Type Definitions
+ * @fileoverview Unified Dashboard Component Type Definitions
  * @module components/domains/dashboard/types
  *
- * Central type definitions for the unified dashboard system.
- * Supports all 4 user roles: ADMIN, MODERATOR, FREELANCER, EMPLOYER
+ * Component-specific types for the unified dashboard system.
+ * Core dashboard data types are now in @/types/core/dashboard
  *
  * @created 2025-11-01
- * @sprint Sprint 1 - Task 1.3
+ * @updated 2025-11-13 - Sprint 1: Moved core types to @/types/core/dashboard
+ * @sprint Sprint 1 - Dashboard Consolidation
  */
 
 import { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
+
+// Import core dashboard types from canonical location
+import type {
+  FreelancerDashboard,
+  EmployerDashboard,
+  AdminDashboard,
+  ModeratorDashboard,
+  UnifiedDashboardData,
+  DashboardPeriod,
+  ModerationItem,
+  ActivityItem,
+  QuickAction,
+  ChartWidgetData,
+  CacheMetadata,
+  TrendIndicator,
+} from '@/types/core/dashboard';
+
+// Re-export for convenience
+export type {
+  FreelancerDashboard,
+  EmployerDashboard,
+  AdminDashboard,
+  ModeratorDashboard,
+  UnifiedDashboardData,
+  DashboardPeriod,
+  ModerationItem,
+  ActivityItem,
+  QuickAction,
+  ChartWidgetData,
+  CacheMetadata,
+  TrendIndicator,
+};
 
 // ============================================================================
 // USER ROLES
@@ -31,20 +64,8 @@ export type DashboardViewMode =
   | 'employer';
 
 // ============================================================================
-// COMMON DASHBOARD TYPES
+// COMPONENT-SPECIFIC TYPES
 // ============================================================================
-
-/**
- * Period configuration for dashboard data
- */
-export interface DashboardPeriod {
-  /** Number of days to include in the period */
-  days: number;
-  /** Start date (ISO string) */
-  startDate: string;
-  /** End date (ISO string) */
-  endDate: string;
-}
 
 /**
  * Time range filter options
@@ -83,20 +104,6 @@ export interface LoadingState {
   additional: boolean;
 }
 
-/**
- * Cache metadata
- */
-export interface CacheMetadata {
-  /** Whether data is from cache */
-  fromCache: boolean;
-  /** When the cache was generated */
-  generatedAt: string;
-  /** Cache expiry time */
-  expiresAt?: string;
-  /** Cache key */
-  cacheKey?: string;
-}
-
 // ============================================================================
 // STATS TYPES
 // ============================================================================
@@ -105,20 +112,6 @@ export interface CacheMetadata {
  * Trend direction
  */
 export type TrendDirection = 'up' | 'down' | 'neutral';
-
-/**
- * Trend indicator
- */
-export interface TrendIndicator {
-  /** Percentage change */
-  percentage: number;
-  /** Trend direction */
-  direction: TrendDirection;
-  /** Whether the trend is positive (green) or negative (red) */
-  isPositive: boolean;
-  /** Label for the trend (e.g., "vs last month") */
-  label?: string;
-}
 
 /**
  * Single stat card data
@@ -390,296 +383,14 @@ export interface QuickActionsConfig {
 // ROLE-SPECIFIC DASHBOARD DATA
 // ============================================================================
 
-/**
- * Freelancer dashboard data
- */
-export interface FreelancerDashboard {
-  /** User's earnings summary */
-  earnings: {
-    total: number;
-    pending: number;
-    available: number;
-    currency: string;
-    trend?: TrendIndicator;
-  };
-  /** Order statistics */
-  orders: {
-    active: number;
-    completed: number;
-    cancelled: number;
-    totalRevenue: number;
-  };
-  /** Package statistics */
-  packages: {
-    total: number;
-    active: number;
-    paused: number;
-    views: number;
-  };
-  /** Rating statistics */
-  ratings: {
-    average: number;
-    count: number;
-    distribution: Record<number, number>;
-  };
-  /** Message statistics - SPRINT EPIC 1 Story 1.1 */
-  messages?: {
-    unread: number;
-    averageResponseTime: number; // in hours
-    responseRate: number; // percentage 0-100
-    pendingResponses: number;
-  };
-  /** Pending actions - SPRINT EPIC 1 Story 1.2 */
-  pendingActions?: {
-    ordersToAccept: number;
-    ordersToDeliver: number;
-    reviewsToGive: number;
-  };
-  /** Performance metrics - SPRINT EPIC 1 Story 1.3 */
-  performance?: {
-    conversionRate: number; // percentage 0-100
-    onTimeDeliveryRate: number; // percentage 0-100
-    averageDeliveryTime: number; // in hours
-  };
-  /** Top package - SPRINT EPIC 1 Story 1.3 */
-  topPackage?: {
-    packageId: string;
-    title: string;
-    orders: number;
-    revenue: number;
-  };
-  /** Recent activities */
-  recentActivities: ActivityItem[];
-  /** Quick actions */
-  quickActions: QuickAction[];
-  /** Performance charts */
-  charts: {
-    earnings: ChartWidgetData;
-    orders: ChartWidgetData;
-    views: ChartWidgetData;
-  };
-  /** Period info */
-  period: DashboardPeriod;
-  /** Cache metadata */
-  cache?: CacheMetadata;
-}
-
-/**
- * Employer dashboard data
- */
-export interface EmployerDashboard {
-  /** Spending summary */
-  spending: {
-    total: number;
-    thisMonth: number;
-    currency: string;
-    trend?: TrendIndicator;
-  };
-  /** Order statistics */
-  orders: {
-    active: number;
-    completed: number;
-    cancelled: number;
-    totalSpent: number;
-  };
-  /** Favorites */
-  favorites: {
-    packages: number;
-    sellers: number;
-  };
-  /** Message statistics - SPRINT EPIC 1 Story 1.1 */
-  messages?: {
-    unread: number;
-    activeConversations: number;
-    pendingResponses: number;
-  };
-  /** Pending actions - SPRINT EPIC 1 Story 1.2 */
-  pendingActions?: {
-    ordersToApprove: number;
-    reviewsToGive: number;
-  };
-  /** Recent order - SPRINT EPIC 2 Story 2.1 */
-  recentOrder?: {
-    orderId: string;
-    orderNumber: string;
-    packageTitle: string;
-    sellerName: string;
-    status: string;
-    lastUpdate: string;
-  };
-  /** Recent activities */
-  recentActivities: ActivityItem[];
-  /** Quick actions */
-  quickActions: QuickAction[];
-  /** Spending charts */
-  charts: {
-    spending: ChartWidgetData;
-    orders: ChartWidgetData;
-  };
-  /** Period info */
-  period: DashboardPeriod;
-  /** Cache metadata */
-  cache?: CacheMetadata;
-}
-
-/**
- * Admin dashboard data
- */
-export interface AdminDashboard {
-  /** Platform-wide statistics */
-  stats: {
-    users: {
-      total: number;
-      active: number;
-      new: number;
-      trend?: TrendIndicator;
-    };
-    packages: {
-      total: number;
-      active: number;
-      paused: number;
-      trend?: TrendIndicator;
-    };
-    orders: {
-      total: number;
-      completed: number;
-      active: number;
-      revenue: number;
-      trend?: TrendIndicator;
-    };
-    revenue: {
-      total: number;
-      commission: number;
-      currency: string;
-      trend?: TrendIndicator;
-    };
-  };
-  /** System health */
-  systemHealth: {
-    status: 'healthy' | 'warning' | 'critical';
-    uptime: number;
-    cpu: number;
-    memory: number;
-    storage: number;
-    activeConnections: number;
-    cacheHitRate: number;
-    lastChecked: string;
-  };
-  /** Search metrics */
-  searchMetrics: {
-    totalSearches: number;
-    avgResultsPerSearch: number;
-    topSearchTerms: Array<{ term: string; count: number }>;
-    noResultsCount: number;
-  };
-  /** Top packages */
-  topPackages: Array<{
-    id: string;
-    title: string;
-    seller: string;
-    revenue: number;
-    orders: number;
-  }>;
-  /** Recent activities */
-  recentActivities: ActivityItem[];
-  /** Quick actions */
-  quickActions: QuickAction[];
-  /** Analytics charts */
-  charts: {
-    userGrowth: ChartWidgetData;
-    revenue: ChartWidgetData;
-    orders: ChartWidgetData;
-    searchAnalytics: ChartWidgetData;
-  };
-  /** Period info */
-  period: DashboardPeriod;
-  /** Cache metadata */
-  cache?: CacheMetadata;
-}
-
-/**
- * Moderator dashboard data
- */
-export interface ModeratorDashboard {
-  /** Moderation statistics */
-  stats: {
-    pendingItems: number;
-    approvedToday: number;
-    rejectedToday: number;
-    spamDetected: number;
-    avgResponseTime: number;
-  };
-  /** Moderation queue */
-  queue: {
-    items: ModerationItem[];
-    total: number;
-    page: number;
-    pageSize: number;
-  };
-  /** Moderator activities */
-  recentActivities: ActivityItem[];
-  /** Quick actions */
-  quickActions: QuickAction[];
-  /** Moderation charts - Sprint 1 Task 1.2: Updated with real chart types */
-  charts: {
-    actionsToday: ChartWidgetData;
-    categoryBreakdown: ChartWidgetData;
-    moderationVolume: ChartWidgetData;
-    responseTime: ChartWidgetData;
-  };
-  /** Period info */
-  period: DashboardPeriod;
-}
-
-/**
- * Moderation item
- */
-export interface ModerationItem {
-  /** Unique identifier */
-  id: string;
-  /** Item type (package, comment, dispute, etc.) */
-  type: 'package' | 'comment' | 'dispute' | 'report' | 'user';
-  /** Item title */
-  title: string;
-  /** Item description/content */
-  content: string;
-  /** Submitted by */
-  submittedBy: {
-    id: string;
-    name: string;
-    avatar?: string;
-  };
-  /** Submission timestamp */
-  submittedAt: string;
-  /** Current status */
-  status: 'pending' | 'approved' | 'rejected' | 'spam';
-  /** Priority */
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  /** Flags/reports count */
-  flagsCount?: number;
-  /** Moderation history */
-  history?: Array<{
-    action: string;
-    moderator: string;
-    timestamp: string;
-    reason?: string;
-  }>;
-  /** Related entity */
-  entity?: {
-    id: string;
-    type: string;
-    url?: string;
-  };
-}
-
-/**
- * Union type for all dashboard data types
- */
-export type UnifiedDashboardData =
-  | FreelancerDashboard
-  | EmployerDashboard
-  | AdminDashboard
-  | ModeratorDashboard;
+// ============================================================================
+// DASHBOARD DATA TYPES - RE-EXPORTED FROM CORE
+// ============================================================================
+// NOTE: All dashboard data interfaces (FreelancerDashboard, EmployerDashboard,
+// AdminDashboard, ModeratorDashboard) are now defined in types/core/dashboard.ts
+// and re-exported at the top of this file for convenience.
+// This eliminates duplication and establishes a single source of truth.
+// ============================================================================
 
 // ============================================================================
 // COMPONENT PROP TYPES

@@ -20,11 +20,12 @@ export { CommentFilterBar } from './CommentFilterBar';
 export { CommentSearchBar } from './CommentSearchBar';
 export {
   CommentCardSkeleton as ModerationCommentCardSkeleton,
-  StatsCardSkeleton as ModerationStatsCardSkeleton,
   ModerationQueueSkeleton,
   DashboardWidgetSkeleton as ModerationDashboardWidgetSkeleton,
   RecentCommentsSkeleton as ModerationRecentCommentsSkeleton,
 } from './LoadingSkeletons';
+
+// Sprint 1 Day 3: StatsCardSkeleton removed (unused component)
 
 export type {
   ModerationNote,
