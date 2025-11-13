@@ -27,10 +27,10 @@ import {
 import { UnifiedButton, Badge } from '@/components/ui';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { toast } from 'sonner';
-import { useCommentModeration } from '@/hooks/business/useCommentModeration';
+import { useCommentModeration } from '@/hooks/business/moderation';
 import { UnifiedCommentModerationCard } from './UnifiedCommentModerationCard';
 import type { UserRole } from './UnifiedCommentModerationCard';
-import type { CommentModerationStatus } from '@/hooks/business/useCommentModeration';
+import type { CommentModerationStatus } from '@/hooks/business/moderation';
 
 // ============================================================================
 // TYPES
@@ -128,10 +128,7 @@ export function UnifiedCommentQueue({
       logger.info('Bulk comments approved', { count });
     } catch (error) {
       toast.error('Toplu onaylama başarısız oldu');
-      logger.error(
-        'Bulk approve comments failed',
-        error
-      );
+      logger.error('Bulk approve comments failed', error);
     }
   };
 
@@ -153,10 +150,7 @@ export function UnifiedCommentQueue({
       logger.info('Bulk comments rejected', { count });
     } catch (error) {
       toast.error('Toplu reddetme başarısız oldu');
-      logger.error(
-        'Bulk reject comments failed',
-        error
-      );
+      logger.error('Bulk reject comments failed', error);
     }
   };
 
@@ -178,10 +172,7 @@ export function UnifiedCommentQueue({
       logger.info('Bulk comments marked as spam', { count });
     } catch (error) {
       toast.error('Toplu spam işaretleme başarısız oldu');
-      logger.error(
-        'Bulk mark spam failed',
-        error
-      );
+      logger.error('Bulk mark spam failed', error);
     }
   };
 
@@ -396,7 +387,11 @@ export function UnifiedCommentQueue({
                 role === 'moderator'
                   ? async (id, reason, priority) => {
                       // Escalate to admin logic
-                      logger.info('Comment escalated', { id, reason, priority,  });
+                      logger.info('Comment escalated', {
+                        id,
+                        reason,
+                        priority,
+                      });
                       toast.success('Yorum yöneticiye yükseltildi');
                       return true;
                     }

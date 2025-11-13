@@ -1,6 +1,29 @@
 /**
  * ================================================
- * USE REVIEW MODERATION HOOK
+ * ⚠️ DEPRECATED - USE REVIEW MODERATION HOOK
+ * ================================================
+ *
+ * @deprecated This hook is deprecated and will be removed in future versions.
+ * Use `@/hooks/business/moderation/useReviewModeration` instead.
+ *
+ * Migration path:
+ * ```ts
+ * // OLD (deprecated):
+ * import { useReviewModeration } from '@/hooks/business/useReviewModeration';
+ *
+ * // NEW (production-ready):
+ * import { useReviewModeration } from '@/hooks/business/moderation';
+ * ```
+ *
+ * This file kept for backward compatibility only.
+ * Exported as `useReviewModerationLists` in `@/hooks/business`.
+ *
+ * Sprint: Moderation System Production Ready
+ * Deprecated: November 13, 2025
+ * Will be removed: Sprint 2
+ *
+ * ================================================
+ * ORIGINAL DOCUMENTATION (deprecated)
  * ================================================
  * SWR hook for fetching pending/flagged reviews
  *

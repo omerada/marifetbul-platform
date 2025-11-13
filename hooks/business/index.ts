@@ -535,14 +535,22 @@ export { useCommentActions } from './useCommentActions';
 export { type UseCommentActionsReturn } from './useCommentActions';
 
 // ================================================
-// COMMENT MODERATION (Sprint 1 - Comment Moderation Completion)
-// ============================================================================
-export { useCommentModeration } from './useCommentModeration';
+// MODERATION SYSTEM (Production-Ready - Sprint: Moderation System)
+// ================================================
+// Centralized moderation hooks - NO DUPLICATES
+export * from './moderation';
+
+// ================================================
+// DEPRECATED - Legacy moderation hooks (will be removed)
+// ================================================
+// @deprecated Use hooks from './moderation' instead
+// These exports kept temporarily for backward compatibility
+export { useCommentModeration as useCommentModerationLegacy } from './useCommentModeration';
 export {
   type CommentModerationStatus,
   type CommentModerationFilters,
   type CommentModerationData,
-  type UseCommentModerationReturn,
+  type UseCommentModerationReturn as UseCommentModerationReturnLegacy,
   type BulkActionResult,
 } from './useCommentModeration';
 export { useOptimisticModeration } from './useOptimisticModeration';
@@ -555,29 +563,13 @@ export {
 // ================================================
 // REVIEW MODERATION LISTS (Sprint 1 - Story 4)
 // ================================================
+// @deprecated Use hooks from './moderation' instead
 export {
   usePendingReviews,
   useFlaggedReviews,
   useReviewModeration as useReviewModerationLists,
 } from './useReviewModeration';
 export type { ReviewModerationTab } from './useReviewModeration';
-
-// ================================================
-// REVIEW MODERATION (Sprint 1 - Story 1.1)
-// ================================================
-export { useReviewModeration } from './moderation/useReviewModeration';
-export type {
-  ReviewModerationFilters,
-  ReviewModerationStats,
-  UseReviewModerationOptions,
-  UseReviewModerationReturn,
-} from './moderation/useReviewModeration';
-
-// ================================================
-// TICKET MODERATION (Sprint 1 - Story 1.2)
-// ================================================
-export { useTicketModeration } from './moderation/useTicketModeration';
-export type {
   TicketStatus,
   TicketPriority,
   TicketModerationFilters,

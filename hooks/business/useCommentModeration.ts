@@ -2,7 +2,30 @@
 
 /**
  * ================================================
- * COMMENT MODERATION HOOK
+ * ⚠️ DEPRECATED - COMMENT MODERATION HOOK
+ * ================================================
+ *
+ * @deprecated This hook is deprecated and will be removed in future versions.
+ * Use `@/hooks/business/moderation/useCommentModeration` instead.
+ *
+ * Migration path:
+ * ```ts
+ * // OLD (deprecated):
+ * import { useCommentModeration } from '@/hooks/business/useCommentModeration';
+ *
+ * // NEW (production-ready):
+ * import { useCommentModeration } from '@/hooks/business/moderation';
+ * ```
+ *
+ * This file kept for backward compatibility only.
+ * Exported as `useCommentModerationLegacy` in `@/hooks/business`.
+ *
+ * Sprint: Moderation System Production Ready
+ * Deprecated: November 13, 2025
+ * Will be removed: Sprint 2
+ *
+ * ================================================
+ * ORIGINAL DOCUMENTATION (deprecated)
  * ================================================
  * Business logic for comment moderation (admin)
  * Supports filtering, bulk operations, and moderation actions

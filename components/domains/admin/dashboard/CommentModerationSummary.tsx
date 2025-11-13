@@ -23,7 +23,7 @@ import {
   TrendingUp,
   ArrowRight,
 } from 'lucide-react';
-import { useCommentModeration } from '@/hooks/business/useCommentModeration';
+import { useCommentModeration } from '@/hooks/business/moderation';
 import { DashboardWidgetSkeleton } from '../moderation/reviews/LoadingSkeletons';
 
 // ================================================
@@ -62,13 +62,13 @@ export function CommentModerationSummary({
   // HOOKS
   // ================================================
 
-  const moderation = useCommentModeration();
+  const { comments, stats, isLoading, error, refresh } = useCommentModeration();
 
   // ================================================
   // RENDER - Loading
   // ================================================
 
-  if (moderation.loading && !moderation.data) {
+  if (isLoading && !comments.length) {
     return <DashboardWidgetSkeleton />;
   }
 
@@ -76,7 +76,7 @@ export function CommentModerationSummary({
   // RENDER - Error
   // ================================================
 
-  if (moderation.error) {
+  if (error) {
     return (
       <div
         className={`rounded-lg border border-red-200 bg-red-50 p-6 ${className}`}
@@ -87,9 +87,9 @@ export function CommentModerationSummary({
             <h3 className="font-semibold text-red-900">
               Veri Yüklenirken Hata
             </h3>
-            <p className="mt-1 text-sm text-red-700">{moderation.error}</p>
+            <p className="mt-1 text-sm text-red-700">{error.message}</p>
             <button
-              onClick={() => moderation.refresh()}
+              onClick={() => refresh()}
               className="mt-3 text-sm font-medium text-red-600 hover:text-red-700"
             >
               Tekrar Dene
@@ -100,10 +100,9 @@ export function CommentModerationSummary({
     );
   }
 
-  const data = moderation.data;
-  if (!data) return null;
+  if (!stats) return null;
 
-  const recentComments = data.comments.slice(0, maxRecentComments);
+  const recentComments = comments.slice(0, maxRecentComments);
 
   // ================================================
   // RENDER - Main
@@ -121,14 +120,14 @@ export function CommentModerationSummary({
                 Bekleyen Yorumlar
               </p>
               <p className="mt-2 text-3xl font-bold text-orange-600">
-                {data.pending}
+                {stats.pending}
               </p>
             </div>
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
               <Clock className="h-6 w-6 text-orange-600" />
             </div>
           </div>
-          {data.pending > 0 && (
+          {stats.pending > 0 && (
             <Link
               href="/admin/moderation?status=PENDING"
               className="mt-4 flex items-center text-sm font-medium text-orange-600 hover:text-orange-700"
@@ -145,7 +144,7 @@ export function CommentModerationSummary({
             <div>
               <p className="text-sm font-medium text-gray-600">Onaylanan</p>
               <p className="mt-2 text-3xl font-bold text-green-600">
-                {data.approved}
+                {stats.approved}
               </p>
             </div>
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
@@ -167,7 +166,7 @@ export function CommentModerationSummary({
             <div>
               <p className="text-sm font-medium text-gray-600">Reddedilen</p>
               <p className="mt-2 text-3xl font-bold text-red-600">
-                {data.rejected}
+                {stats.rejected}
               </p>
             </div>
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
@@ -189,7 +188,7 @@ export function CommentModerationSummary({
             <div>
               <p className="text-sm font-medium text-gray-600">Spam</p>
               <p className="mt-2 text-3xl font-bold text-gray-600">
-                {data.spam}
+                {stats.spam}
               </p>
             </div>
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">

@@ -22,7 +22,7 @@ import {
   Clock,
   List,
 } from 'lucide-react';
-import type { CommentModerationFilters } from '@/hooks/business/useCommentModeration';
+import type { CommentModerationFilters } from '@/hooks/business/moderation';
 
 // ================================================
 // TYPES
