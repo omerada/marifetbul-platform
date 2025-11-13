@@ -6,8 +6,8 @@
  *
  * Features:
  * - Password change
- * - Two-factor authentication (placeholder)
- * - Session management (placeholder)
+ * - Two-factor authentication (2FA)
+ * - Active session management
  * - Real-time validation
  *
  * @author MarifetBul Development Team

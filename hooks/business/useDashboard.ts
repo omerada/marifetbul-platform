@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import useDashboardStore from '@/lib/core/store/dashboard';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 /**

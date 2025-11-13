@@ -35,7 +35,8 @@ export { useApiError } from './shared/useApiError';
 export type { ApiErrorState, UseApiErrorReturn } from './shared/useApiError';
 
 // BUSINESS HOOKS - Domain logic and business features
-export { useJobs } from './business/useJobs';
+export { useJobs } from './business/jobs/useJobs';
+export type { JobFilters, UseJobsReturn } from './business/jobs/useJobs';
 export { useJobDetail } from './business/useJobDetail';
 export { usePackages } from './business/usePackages';
 export { usePackageDetail } from './business/usePackageDetail';

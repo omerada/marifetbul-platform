@@ -30,7 +30,7 @@ import {
 import { ProposalForm } from '@/components/domains/jobs/ProposalForm';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card } from '@/components/ui/Card';
-import { useJobs } from '@/hooks/business/useJobs';
+import { useJobs } from '@/hooks/business/jobs/useJobs';
 import { useProposals } from '@/hooks/business/proposals';
 import { useProposalEligibility } from '@/hooks/business/useProposalEligibility';
 import logger from '@/lib/infrastructure/monitoring/logger';

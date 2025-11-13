@@ -25,7 +25,7 @@ import type {
   UpdateProfileRequest,
   ChangePasswordRequest,
 } from '@/lib/core/auth/unifiedAuthService';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================

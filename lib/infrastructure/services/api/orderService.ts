@@ -488,14 +488,16 @@ class OrderService {
 
   /**
    * Get disputed orders (admin only)
-   * GET /api/v1/admin/orders/disputes
+   * GET /api/v1/disputes (uses dispute API instead of order API)
+   * @deprecated Use getAllDisputes from dispute API instead
    */
   async getDisputedOrders(
     filters?: OrderFilters
   ): Promise<ApiResponse<PageResponse<OrderSummaryResponse>>> {
     const params = this.buildQueryParams(filters);
+    // Redirect to disputes API endpoint
     return apiClient.get<ApiResponse<PageResponse<OrderSummaryResponse>>>(
-      ORDER_ENDPOINTS.ADMIN_DISPUTES,
+      '/api/v1/disputes',
       params
     );
   }
@@ -534,18 +536,26 @@ class OrderService {
       receiverIban?: string;
       declaredAmount?: number;
     }
-  ): Promise<ApiResponse<import('@/types/backend-aligned').ManualPaymentProofResponse>> {
+  ): Promise<
+    ApiResponse<import('@/types/backend-aligned').ManualPaymentProofResponse>
+  > {
     const formData = new FormData();
     formData.append('paymentReference', request.paymentReference);
     if (request.notes) formData.append('notes', request.notes);
     formData.append('proofFile', request.proofFile);
     if (request.payerIban) formData.append('payerIban', request.payerIban);
-    if (request.receiverIban) formData.append('receiverIban', request.receiverIban);
-    if (request.declaredAmount) formData.append('declaredAmount', String(request.declaredAmount));
+    if (request.receiverIban)
+      formData.append('receiverIban', request.receiverIban);
+    if (request.declaredAmount)
+      formData.append('declaredAmount', String(request.declaredAmount));
 
-    return apiClient.post(ORDER_ENDPOINTS.UPLOAD_PAYMENT_PROOF(orderId), formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    return apiClient.post(
+      ORDER_ENDPOINTS.UPLOAD_PAYMENT_PROOF(orderId),
+      formData,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }
+    );
   }
 
   /**
@@ -554,7 +564,9 @@ class OrderService {
    */
   async getPaymentProof(
     orderId: string
-  ): Promise<ApiResponse<import('@/types/backend-aligned').ManualPaymentProofResponse>> {
+  ): Promise<
+    ApiResponse<import('@/types/backend-aligned').ManualPaymentProofResponse>
+  > {
     return apiClient.get(ORDER_ENDPOINTS.GET_PAYMENT_PROOF(orderId));
   }
 
@@ -568,8 +580,13 @@ class OrderService {
       confirmed: boolean;
       reason?: string;
     }
-  ): Promise<ApiResponse<import('@/types/backend-aligned').ManualPaymentProofResponse>> {
-    return apiClient.put(ORDER_ENDPOINTS.CONFIRM_PAYMENT_PROOF(orderId), request);
+  ): Promise<
+    ApiResponse<import('@/types/backend-aligned').ManualPaymentProofResponse>
+  > {
+    return apiClient.put(
+      ORDER_ENDPOINTS.CONFIRM_PAYMENT_PROOF(orderId),
+      request
+    );
   }
 
   /**
@@ -583,7 +600,9 @@ class OrderService {
       supportingDocuments?: File[];
       requestedResolution?: string;
     }
-  ): Promise<ApiResponse<import('@/types/backend-aligned').ManualPaymentProofResponse>> {
+  ): Promise<
+    ApiResponse<import('@/types/backend-aligned').ManualPaymentProofResponse>
+  > {
     const formData = new FormData();
     formData.append('disputeReason', request.disputeReason);
     if (request.requestedResolution) {
@@ -595,9 +614,13 @@ class OrderService {
       });
     }
 
-    return apiClient.post(ORDER_ENDPOINTS.DISPUTE_PAYMENT_PROOF(orderId), formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    return apiClient.post(
+      ORDER_ENDPOINTS.DISPUTE_PAYMENT_PROOF(orderId),
+      formData,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }
+    );
   }
 
   /**
@@ -618,7 +641,9 @@ class OrderService {
     proofId: string,
     approved: boolean,
     notes?: string
-  ): Promise<ApiResponse<import('@/types/backend-aligned').ManualPaymentProofResponse>> {
+  ): Promise<
+    ApiResponse<import('@/types/backend-aligned').ManualPaymentProofResponse>
+  > {
     const url = `${ORDER_ENDPOINTS.VERIFY_PAYMENT_PROOF_ADMIN(proofId)}?approved=${approved}${notes ? `&notes=${encodeURIComponent(notes)}` : ''}`;
     return apiClient.put(url, null);
   }

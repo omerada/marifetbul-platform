@@ -12,7 +12,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { PaymentModal } from '@/components/shared/PaymentModal';
+// UPDATED: Use UnifiedCheckout instead of deprecated PaymentModal
+import { UnifiedCheckout } from '@/components/checkout/UnifiedCheckout';
 import { CreditCard, AlertTriangle } from 'lucide-react';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { useRouter } from 'next/navigation';

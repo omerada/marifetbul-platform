@@ -18,12 +18,15 @@
 
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import useSWR from 'swr';
 import {
   OrderStatsWidget,
   RecentOrdersList,
   OrderQuickActions,
 } from '@/components/domains/orders';
-import { useOrderStats, useOrders, useWebSocket } from '@/hooks';
+import { useOrderStats, useWebSocket } from '@/hooks';
+import { getOrders } from '@/lib/api/orders';
+import type { Order } from '@/types/business/features/orders';
 import { toast } from 'sonner';
 
 // ================================================
@@ -56,18 +59,29 @@ export default function OrderDashboardPage({
     refresh: refreshStats,
   } = useOrderStats({ autoLoad: true, enablePolling: false });
 
-  // Fetch recent orders
+  // Fetch recent orders with SWR
   const {
-    orders,
+    data: ordersData,
     isLoading: ordersLoading,
     error: ordersError,
-    refresh: refreshOrders,
-  } = useOrders({
-    autoLoad: true,
-    pageSize: 5, // Only fetch last 5
-    sortBy: 'createdAt',
-    sortOrder: 'desc',
-  });
+    mutate: refreshOrders,
+  } = useSWR<Order[]>(
+    'recent-orders',
+    async () => {
+      const response = await getOrders({
+        page: 0,
+        size: 5,
+        sort: 'createdAt,desc',
+      });
+      return response.content;
+    },
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: true,
+    }
+  );
+
+  const orders = ordersData || [];
 
   // WebSocket
   const { subscribe, unsubscribe, isConnected } = useWebSocket({

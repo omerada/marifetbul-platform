@@ -159,13 +159,3 @@ export const InteractionButtons = React.memo<InteractionButtonsProps>(
 );
 
 InteractionButtons.displayName = 'InteractionButtons';
-
-// ================================================
-// EXPORTS
-// ================================================
-
-const InteractionComponents = {
-  InteractionButtons,
-};
-
-export default InteractionComponents;

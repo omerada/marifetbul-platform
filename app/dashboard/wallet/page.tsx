@@ -15,7 +15,7 @@
 
 import { useEffect } from 'react';
 import { redirect } from 'next/navigation';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { Loading } from '@/components/ui';
 import { Card } from '@/components/ui/Card';
 import { AlertCircle, Wallet } from 'lucide-react';

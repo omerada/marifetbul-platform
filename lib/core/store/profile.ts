@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { User, Freelancer, PortfolioItem } from '@/types';
-import { useAuthStore } from './domains/auth/authStore';
+import { useUnifiedAuthStore } from './domains/auth/unifiedAuthStore';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import * as portfolioApi from '@/lib/api/portfolio';
 
@@ -69,10 +69,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
         });
       }
     } catch (error) {
-      logger.error(
-        'Profile fetch error',
-        error
-      );
+      logger.error('Profile fetch error', error);
       set({
         error: 'Profil yüklenirken bir hata oluştu',
         isLoading: false,
@@ -117,7 +114,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
         });
 
         // Update auth store if this is the current user
-        const authStore = useAuthStore.getState();
+        const authStore = useUnifiedAuthStore.getState();
         if (authStore.user?.id === currentProfile.id) {
           authStore.updateUser(updatedProfile);
         }
@@ -131,10 +128,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
         throw new Error(data.error);
       }
     } catch (error) {
-      logger.error(
-        'Profile update error',
-        error
-      );
+      logger.error('Profile update error', error);
       set({
         error: 'Profil güncellenirken bir hata oluştu',
         isUpdating: false,
@@ -191,7 +185,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
         });
 
         // Update auth store
-        const authStore = useAuthStore.getState();
+        const authStore = useUnifiedAuthStore.getState();
         if (authStore.user?.id === currentProfile.id) {
           authStore.updateUser(updatedProfile);
         }
@@ -208,10 +202,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
         throw new Error(data.error);
       }
     } catch (error) {
-      logger.error(
-        'Avatar upload error',
-        error
-      );
+      logger.error('Avatar upload error', error);
       set({
         error: 'Avatar yüklenirken bir hata oluştu',
         uploadProgress: 0,
@@ -262,10 +253,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
 
       return newItem;
     } catch (error) {
-      logger.error(
-        'Portfolio add error',
-        error
-      );
+      logger.error('Portfolio add error', error);
       set({
         error: 'Portfolio eklenirken bir hata oluştu',
         isUpdating: false,
@@ -318,10 +306,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
 
       return updatedItem;
     } catch (error) {
-      logger.error(
-        'Portfolio update error',
-        error
-      );
+      logger.error('Portfolio update error', error);
       set({
         error: 'Portfolio güncellenirken bir hata oluştu',
         isUpdating: false,
@@ -360,10 +345,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
         lastSaved: new Date(),
       });
     } catch (error) {
-      logger.error(
-        'Portfolio remove error',
-        error
-      );
+      logger.error('Portfolio remove error', error);
       set({
         error: 'Portfolio silinirken bir hata oluştu',
         isUpdating: false,
@@ -388,10 +370,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
         lastSaved: new Date(),
       });
     } catch (error) {
-      logger.error(
-        'Auto-save error',
-        error
-      );
+      logger.error('Auto-save error', error);
       // Don't show error for auto-save failures
     }
   },

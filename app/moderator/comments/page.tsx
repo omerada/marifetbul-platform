@@ -17,7 +17,7 @@
 import { useSearchParams } from 'next/navigation';
 import { MessageSquare, Shield, UserCheck } from 'lucide-react';
 import { UnifiedCommentQueue } from '@/components/domains/moderation/shared';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { UnifiedErrorBoundary } from '@/components/ui/UnifiedErrorBoundary';
 import { Loading } from '@/components/ui';
 

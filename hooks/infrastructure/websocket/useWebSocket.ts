@@ -34,7 +34,7 @@ import {
   type SubscriptionCallback,
 } from '@/lib/infrastructure/websocket/WebSocketService';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { useMessagingStore } from '@/lib/core/store/domains/messaging/MessagingStore';
 import { useNotificationStore } from '@/lib/core/store/notificationStore';
 import { useOrderStore } from '@/lib/core/store/orders';

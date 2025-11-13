@@ -36,7 +36,7 @@ jest.mock('@/lib/core/store/domains/auth/authStore', () => ({
 
 // Import mocked modules
 import { unifiedAuthService } from '@/lib/core/auth/unifiedAuthService';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 
 const mockUpdateProfile = unifiedAuthService.updateProfile as jest.Mock;
 const mockChangePassword = unifiedAuthService.changePassword as jest.Mock;

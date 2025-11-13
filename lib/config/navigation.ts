@@ -143,8 +143,10 @@ export const freelancerDashboardNavigation: NavigationItem[] = [
 
 /**
  * Dashboard Navigation - Employer
- * @deprecated Use unified /dashboard route instead. These routes redirect automatically.
- * Keep for backward compatibility with matchPaths
+ * @deprecated This is kept for backward compatibility in getNavigationByRole().
+ * New code should use unified /dashboard route or getDashboardNavigation() from @/lib/shared/navigation
+ * These routes redirect automatically to unified dashboard.
+ * Scheduled for removal: Sprint 3
  */
 export const employerDashboardNavigation: NavigationItem[] = [
   {

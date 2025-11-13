@@ -541,18 +541,18 @@ export { type UseCommentActionsReturn } from './useCommentActions';
 export * from './moderation';
 
 // ================================================
-// DEPRECATED - Legacy moderation hooks (will be removed)
+// DEPRECATED MODERATION HOOKS - REMOVED
 // ================================================
-// @deprecated Use hooks from './moderation' instead
-// These exports kept temporarily for backward compatibility
-export { useCommentModeration as useCommentModerationLegacy } from './useCommentModeration';
-export {
-  type CommentModerationStatus,
-  type CommentModerationFilters,
-  type CommentModerationData,
-  type UseCommentModerationReturn as UseCommentModerationReturnLegacy,
-  type BulkActionResult,
-} from './useCommentModeration';
+// ✅ CLEANUP COMPLETED (Sprint 1): Deprecated hooks silindi
+// Production-ready versions: @/hooks/business/moderation
+//
+// Migration yapıldı:
+// - useCommentModeration → hooks/business/moderation/useCommentModeration
+// - useReviewModeration → hooks/business/moderation/useReviewModeration
+//
+// @removed 2025-11-13
+// ================================================
+
 export { useOptimisticModeration } from './useOptimisticModeration';
 export {
   type OptimisticAction,
@@ -560,16 +560,8 @@ export {
   type UseOptimisticModerationReturn,
 } from './useOptimisticModeration';
 
-// ================================================
-// REVIEW MODERATION LISTS (Sprint 1 - Story 4)
-// ================================================
-// @deprecated Use hooks from './moderation' instead
-export {
-  usePendingReviews,
-  useFlaggedReviews,
-  useReviewModeration as useReviewModerationLists,
-} from './useReviewModeration';
-export type { ReviewModerationTab } from './useReviewModeration';
+export { useTicketModeration } from './moderation/useTicketModeration';
+export type {
   TicketStatus,
   TicketPriority,
   TicketModerationFilters,

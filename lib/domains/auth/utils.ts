@@ -6,7 +6,7 @@
  * For fresh data from backend, use lib/shared/utils/auth.ts async functions.
  */
 
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useUnifiedAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 
 /**
  * Get current user ID from auth store (cached state)
@@ -16,7 +16,7 @@ import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
  * import { getCurrentUserId } from '@/lib/shared/utils/auth'
  */
 export function getCurrentUserId(): string | null {
-  return useAuthStore.getState().getCurrentUserId();
+  return useUnifiedAuthStore.getState().getCurrentUserId();
 }
 
 /**
@@ -24,14 +24,14 @@ export function getCurrentUserId(): string | null {
  * Returns null if user is not authenticated
  */
 export function getCurrentUser() {
-  return useAuthStore.getState().user;
+  return useUnifiedAuthStore.getState().user;
 }
 
 /**
  * Check if user is authenticated
  */
 export function isAuthenticated(): boolean {
-  return useAuthStore.getState().isAuthenticated;
+  return useUnifiedAuthStore.getState().isAuthenticated;
 }
 
 /**

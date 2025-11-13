@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { useToast } from '@/hooks';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { Shield, Eye, EyeOff, AlertCircle } from 'lucide-react';

@@ -15,7 +15,7 @@ import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronLeft, Building2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { AddBankAccountModal } from '@/components/domains/wallet';
+import { BankAccountForm } from '@/components/domains/wallet/core/BankAccountForm';
 
 // ================================================
 // MAIN COMPONENT (wrapped in Suspense)
@@ -63,13 +63,8 @@ function AddBankAccountContent() {
           <CardTitle>Banka Hesap Bilgileri</CardTitle>
         </CardHeader>
         <CardContent>
-          {/* Use existing AddBankAccountModal component */}
-          {/* We'll render it as open by default and handle close */}
-          <AddBankAccountModal
-            isOpen={true}
-            onClose={handleCancel}
-            onSuccess={handleSuccess}
-          />
+          {/* Use BankAccountForm component */}
+          <BankAccountForm onSuccess={handleSuccess} onCancel={handleCancel} />
         </CardContent>
       </Card>
 

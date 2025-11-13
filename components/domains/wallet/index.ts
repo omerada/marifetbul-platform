@@ -160,6 +160,12 @@ export type { RecentTransactionsWidgetProps } from './RecentTransactionsWidget';
 export { TransactionFilters } from './TransactionFilters';
 export type { TransactionFiltersProps } from './TransactionFilters';
 
+// ⚠️ DEPRECATED: TransactionList - Use TransactionDisplay instead
+// Kept for backward compatibility with tests only
+// TODO Sprint 1 Day 5: Migrate tests and remove
+/**
+ * @deprecated Use TransactionDisplay from './TransactionDisplay'
+ */
 export { TransactionList } from './TransactionList';
 export type {
   TransactionListProps,
@@ -184,9 +190,7 @@ export type { TransactionDetailsModalProps } from './TransactionDetailsModal';
 // ============================================================================
 // ================================================
 
-// Bank account management
-export { AddBankAccountModal } from './AddBankAccountModal';
-export type { AddBankAccountModalProps } from './AddBankAccountModal';
+// Bank account management - REMOVED AddBankAccountModal (duplicate of BankAccountForm)
 
 export { TransactionFiltersPanel } from './TransactionFiltersPanel';
 export type { TransactionFilters as TransactionFilterValues } from './TransactionFiltersPanel';

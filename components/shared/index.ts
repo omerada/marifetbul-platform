@@ -19,16 +19,14 @@ export { NotificationFilter } from './NotificationFilter';
 
 // Interaction components
 export { InteractionButtons } from './InteractionButtons';
-export { default as InteractionComponents } from './InteractionButtons';
 
 // Media components
 export { ImageCarousel } from './ImageCarousel';
-export { default as ImageCarouselComponent } from './ImageCarousel';
 export { ImageUpload } from './ImageUpload';
 export type { UploadedImage } from './ImageUpload';
 
 // Payment & Wallet components
-export { PaymentModal } from './PaymentModal';
+// REMOVED: PaymentModal (DEPRECATED - Use UnifiedCheckout from @/components/checkout)
 
 // Review components
 export { ReviewPromptCard } from './ReviewPromptCard';

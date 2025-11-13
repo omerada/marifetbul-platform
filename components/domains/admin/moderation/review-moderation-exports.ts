@@ -95,9 +95,6 @@ export { ModeratorDashboardWidget } from './reviews/ModeratorDashboardWidget';
 export type { ModeratorAnalyticsDashboardProps } from './reviews/ModeratorAnalyticsDashboard';
 export type { ModeratorDashboardWidgetProps } from './reviews/ModeratorDashboardWidget';
 
-// Backward compatibility (deprecated - remove in next major version)
-export { ModeratorDashboardWidget as ModerationDashboardWidget } from './reviews/ModeratorDashboardWidget';
-
 // ================================================
 // DASHBOARD WIDGETS
 // ================================================

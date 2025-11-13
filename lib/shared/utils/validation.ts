@@ -12,7 +12,7 @@ export function isEmail(email: string): boolean {
   return emailRegex.test(email);
 }
 
-// Legacy alias
+// Modern alias for consistency
 export const isValidEmail = isEmail;
 
 // ================================================
@@ -63,12 +63,9 @@ export function isURL(url: string): boolean {
   }
 }
 
-// Legacy alias
+// Modern aliases for consistency
 export const isUrl = isURL;
-
-export function isValidUrl(url: string): boolean {
-  return isURL(url);
-}
+export const isValidUrl = isURL;
 
 export function isHttpsUrl(url: string): boolean {
   try {
@@ -222,8 +219,8 @@ export function validateRange(
 // ================================================
 // FILE VALIDATION
 // ================================================
-// Note: Primary file validation moved to @/lib/core/validations/file
-// These are legacy helpers for backward compatibility
+// Note: Primary file validation in @/lib/core/validations/file
+// These are utility helpers for quick validation
 
 export function validateFileSize(file: File, maxSizeInMB: number): boolean {
   const maxSizeInBytes = maxSizeInMB * 1024 * 1024;

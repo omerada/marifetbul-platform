@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useOrderStore } from '@/lib/core/store/orders';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow, format } from 'date-fns';
 import { tr } from 'date-fns/locale';

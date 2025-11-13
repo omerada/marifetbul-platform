@@ -14,7 +14,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import {
   canAccessAdmin,
   canManageUsers,

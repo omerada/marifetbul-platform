@@ -47,7 +47,7 @@ import {
   AcceptProposalModal,
   RejectProposalModal,
 } from '@/components/domains/jobs';
-import { useJobs } from '@/hooks/business/useJobs';
+import { useJobs } from '@/hooks/business/jobs/useJobs';
 import { useProposals } from '@/hooks/business/proposals';
 import { useProposal } from '@/hooks/business/useProposal';
 import { useProposalComparison } from '@/hooks/business/proposals';
@@ -161,9 +161,10 @@ export default function JobProposalsPage() {
           // Redirect to orders page
           // Order setup will be implemented in Epic 1.3
           toast.success('Sipariş oluşturuldu', {
-            description: 'Siparişlerinizi görüntülemek için yönlendiriliyorsunuz',
+            description:
+              'Siparişlerinizi görüntülemek için yönlendiriliyorsunuz',
           });
-          
+
           setTimeout(() => {
             router.push('/dashboard/orders');
           }, 1500);

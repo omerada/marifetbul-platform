@@ -13,7 +13,7 @@ import { subscribeToNotifications } from '@/lib/infrastructure/websocket/notific
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { playNotificationAlert } from '@/lib/utils/notificationSound';
 import { useNotificationPreferences } from './useNotificationPreferences';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import type { Notification } from '@/types/domains/notification';
 
 // Simple converter for notification API responses

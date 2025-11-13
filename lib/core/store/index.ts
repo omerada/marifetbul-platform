@@ -6,8 +6,11 @@
 // === CORE STORES ===
 // Essential application state
 
-// Auth store - core authentication state
-export { useAuthStore as default } from './domains/auth/authStore';
+// Auth store - unified authentication state
+export {
+  useUnifiedAuthStore,
+  useAuthStore,
+} from './domains/auth/unifiedAuthStore';
 
 // Notification store - optimized notifications
 export { useNotificationStore } from './notification';

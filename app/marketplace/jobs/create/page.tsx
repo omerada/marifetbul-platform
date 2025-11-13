@@ -14,7 +14,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { JobPostingWizard } from '@/components/forms';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 
 export default function CreateJobPage() {
   const router = useRouter();

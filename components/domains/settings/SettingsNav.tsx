@@ -13,7 +13,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import {
   User,
   Bell,

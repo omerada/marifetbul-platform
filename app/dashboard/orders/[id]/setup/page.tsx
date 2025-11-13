@@ -23,7 +23,14 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, Loader2, CheckCircle, DollarSign, List, AlertCircle } from 'lucide-react';
+import {
+  ArrowLeft,
+  Loader2,
+  CheckCircle,
+  DollarSign,
+  List,
+  AlertCircle,
+} from 'lucide-react';
 import { Card, Button, Badge } from '@/components/ui';
 import { MilestoneCreationWizard } from '@/components/domains/orders';
 import { orderApi } from '@/lib/api/orders';
@@ -56,7 +63,8 @@ export default function OrderSetupPage() {
         const data = await orderApi.getOrderById(orderId);
         setOrder(data);
       } catch (err) {
-        const error = err instanceof Error ? err : new Error('Sipariş yüklenemedi');
+        const error =
+          err instanceof Error ? err : new Error('Sipariş yüklenemedi');
         setError(error);
         logger.error('Failed to fetch order', error);
       } finally {
@@ -72,10 +80,13 @@ export default function OrderSetupPage() {
     if (order) {
       // If order already has milestones or is not PENDING, redirect to detail page
       if (order.status !== 'PENDING' && order.status !== 'ACCEPTED') {
-        logger.warn('Order not in PENDING/ACCEPTED status, redirecting to detail', {
-          orderId: order.id,
-          status: order.status,
-        });
+        logger.warn(
+          'Order not in PENDING/ACCEPTED status, redirecting to detail',
+          {
+            orderId: order.id,
+            status: order.status,
+          }
+        );
         toast.info('Sipariş zaten kurulmuş', {
           description: 'Sipariş detay sayfasına yönlendiriliyorsunuz',
         });
@@ -90,8 +101,8 @@ export default function OrderSetupPage() {
     try {
       logger.info('Starting order with single payment', { orderId: order.id });
 
-      // TODO: Call startOrder API when ready
-      // For now, just redirect to detail page
+      // Note: Order will be automatically started by backend when payment is confirmed
+      // Frontend just needs to redirect to detail page for tracking
       toast.success('Sipariş başlatıldı', {
         description: 'Freelancer çalışmaya başlayabilir',
       });
@@ -115,7 +126,7 @@ export default function OrderSetupPage() {
     try {
       logger.info('Milestones created successfully', { orderId: order.id });
 
-      toast.success('Milestone\'lar oluşturuldu', {
+      toast.success("Milestone'lar oluşturuldu", {
         description: 'Sipariş detaylarını görüntüleyebilirsiniz',
       });
 
@@ -144,11 +155,16 @@ export default function OrderSetupPage() {
       <div className="container mx-auto max-w-4xl px-4 py-8">
         <Card className="p-8 text-center">
           <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
-          <h2 className="mb-2 text-2xl font-bold text-gray-900">Sipariş bulunamadı</h2>
+          <h2 className="mb-2 text-2xl font-bold text-gray-900">
+            Sipariş bulunamadı
+          </h2>
           <p className="mb-6 text-gray-600">
-            {error?.message || 'Aradığınız sipariş bulunamadı veya erişim yetkiniz yok.'}
+            {error?.message ||
+              'Aradığınız sipariş bulunamadı veya erişim yetkiniz yok.'}
           </p>
-          <Button onClick={() => router.push('/dashboard/orders')}>Siparişlerime Dön</Button>
+          <Button onClick={() => router.push('/dashboard/orders')}>
+            Siparişlerime Dön
+          </Button>
         </Card>
       </div>
     );
@@ -158,14 +174,20 @@ export default function OrderSetupPage() {
     <div className="container mx-auto max-w-4xl px-4 py-8">
       {/* Header */}
       <div className="mb-6">
-        <Button variant="ghost" onClick={() => router.push('/dashboard/orders')} className="mb-4">
+        <Button
+          variant="ghost"
+          onClick={() => router.push('/dashboard/orders')}
+          className="mb-4"
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Geri Dön
         </Button>
 
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="mb-2 text-3xl font-bold text-gray-900">Sipariş Kurulumu</h1>
+            <h1 className="mb-2 text-3xl font-bold text-gray-900">
+              Sipariş Kurulumu
+            </h1>
             <p className="text-gray-600">
               Sipariş için ödeme yapısını seçin ve işi başlatın
             </p>
@@ -176,11 +198,15 @@ export default function OrderSetupPage() {
 
       {/* Order Summary */}
       <Card className="mb-6 p-6">
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">Sipariş Özeti</h2>
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">
+          Sipariş Özeti
+        </h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <p className="text-sm text-gray-600">İş</p>
-            <p className="font-medium text-gray-900">{order.jobTitle || 'Özel Sipariş'}</p>
+            <p className="font-medium text-gray-900">
+              {order.jobTitle || 'Özel Sipariş'}
+            </p>
           </div>
           <div>
             <p className="text-sm text-gray-600">Freelancer</p>
@@ -207,9 +233,12 @@ export default function OrderSetupPage() {
 
       {/* Setup Type Selection */}
       <Card className="p-6">
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">Ödeme Yapısı Seçin</h2>
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">
+          Ödeme Yapısı Seçin
+        </h2>
         <p className="mb-6 text-sm text-gray-600">
-          İşi tek ödemede mi tamamlatmak istersiniz yoksa aşamalara mı bölmek istersiniz?
+          İşi tek ödemede mi tamamlatmak istersiniz yoksa aşamalara mı bölmek
+          istersiniz?
         </p>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -226,7 +255,9 @@ export default function OrderSetupPage() {
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white">
               <DollarSign className="h-6 w-6" />
             </div>
-            <h3 className="mb-2 text-lg font-semibold text-gray-900">Tek Ödeme</h3>
+            <h3 className="mb-2 text-lg font-semibold text-gray-900">
+              Tek Ödeme
+            </h3>
             <p className="text-sm text-gray-600">
               Proje tamamlandığında toplam tutarı ödeyin. Basit ve hızlı.
             </p>
@@ -251,13 +282,16 @@ export default function OrderSetupPage() {
               <List className="h-6 w-6" />
             </div>
             <div className="mb-2 flex items-center gap-2">
-              <h3 className="text-lg font-semibold text-gray-900">Aşamalı Ödeme</h3>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Aşamalı Ödeme
+              </h3>
               <Badge variant="success" className="text-xs">
                 Önerilen
               </Badge>
             </div>
             <p className="text-sm text-gray-600">
-              Projeyi aşamalara bölün ve her aşama için ödeme yapın. Daha güvenli.
+              Projeyi aşamalara bölün ve her aşama için ödeme yapın. Daha
+              güvenli.
             </p>
             {setupType === 'milestones' && (
               <div className="absolute top-4 right-4">
@@ -275,10 +309,17 @@ export default function OrderSetupPage() {
                 <div className="rounded-lg bg-blue-50 p-4">
                   <p className="text-sm text-blue-900">
                     ✓ Freelancer işi tamamladığında toplam{' '}
-                    <strong>{formatCurrency(order.totalAmount, order.currency)}</strong> ödenecektir.
+                    <strong>
+                      {formatCurrency(order.totalAmount, order.currency)}
+                    </strong>{' '}
+                    ödenecektir.
                   </p>
                 </div>
-                <Button onClick={handleSinglePayment} className="w-full" size="lg">
+                <Button
+                  onClick={handleSinglePayment}
+                  className="w-full"
+                  size="lg"
+                >
                   İşi Başlat
                 </Button>
               </div>
@@ -288,7 +329,8 @@ export default function OrderSetupPage() {
               <div className="space-y-4">
                 <div className="rounded-lg bg-green-50 p-4">
                   <p className="text-sm text-green-900">
-                    ✓ Her aşama tamamlandığında ilgili tutar ödenecektir. Daha kontrollü ve güvenli.
+                    ✓ Her aşama tamamlandığında ilgili tutar ödenecektir. Daha
+                    kontrollü ve güvenli.
                   </p>
                 </div>
                 <Button

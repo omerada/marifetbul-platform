@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import useProfileStore from '@/lib/core/store/profile';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { Freelancer, Employer } from '@/types';
 
 export function useProfile(userId?: string) {

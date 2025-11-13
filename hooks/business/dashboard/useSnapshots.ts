@@ -18,7 +18,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import type {
   PlatformSnapshot,

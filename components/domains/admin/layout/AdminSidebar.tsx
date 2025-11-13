@@ -16,7 +16,7 @@
 
 import { useMemo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { NAVIGATION_ITEMS } from './sidebar/config/navigationConfig';
 import {
   filterNavigationByPermissions,

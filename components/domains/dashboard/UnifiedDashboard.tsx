@@ -8,7 +8,7 @@
 
 import React, { useMemo, useCallback } from 'react';
 import { toast } from 'sonner';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { useDashboard } from '@/hooks/business/useDashboard';
 import {
   approveComment,

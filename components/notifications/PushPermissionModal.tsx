@@ -36,7 +36,7 @@ import {
   isPushNotificationSupported,
   getNotificationPermission,
 } from '@/lib/infrastructure/services/push-notification.service';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { toast } from 'sonner';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { cn } from '@/lib/utils';

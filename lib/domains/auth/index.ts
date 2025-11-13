@@ -6,5 +6,8 @@
 // Domain utilities
 export * from './utils';
 
-// Auth store (main export)
-export { useAuthStore as default } from '../../core/store/domains/auth/authStore';
+// Auth store (unified)
+export {
+  useUnifiedAuthStore,
+  useAuthStore,
+} from '../../core/store/domains/auth/unifiedAuthStore';

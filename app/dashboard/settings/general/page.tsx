@@ -32,7 +32,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { useSettings } from '@/hooks/business/useSettings';
 import { useUserPreferences } from '@/hooks/business/useUserPreferences';
 import {

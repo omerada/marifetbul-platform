@@ -291,7 +291,9 @@ export const useUnifiedAuthStore = create<UnifiedAuthStore>()(
               });
             }
 
-            logger.info('AuthStore: Registration successful', { userIduserid });
+            logger.info('AuthStore: Registration successful', {
+              userId: user.id,
+            });
           } catch (error) {
             const errorMessage =
               error instanceof Error

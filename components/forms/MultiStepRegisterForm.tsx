@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronLeft, ChevronRight, Check, User, Building } from 'lucide-react';
 
 import { Button, Input, Card, Checkbox } from '@/components/ui';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import {
   registerSchema,
   type RegisterFormData,

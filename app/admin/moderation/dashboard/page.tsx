@@ -1,11 +1,14 @@
 /**
  * ================================================
- * BLOG MODERATION DASHBOARD PAGE
+ * BLOG COMMENT MODERATION DASHBOARD
  * ================================================
- * Comprehensive blog comment moderation dashboard
+ * Specialized dashboard for blog comment moderation
  * with real-time notifications, stats, and activity log
  *
- * Sprint 2 - Day 4: Admin Moderation Dashboard
+ * Note: This is a specialized moderation dashboard for blog comments,
+ * separate from the unified admin dashboard at /dashboard
+ *
+ * Sprint 2 - Day 4: Blog Comment Moderation
  * @author MarifetBul Development Team
  * @version 2.0.0 - Enhanced with real-time features
  */

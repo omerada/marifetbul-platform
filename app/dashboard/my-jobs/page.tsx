@@ -24,7 +24,7 @@ import { MyJobCard } from '@/components/domains/jobs/MyJobCard';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
-import { useJobs } from '@/hooks/business/useJobs';
+import { useJobs } from '@/hooks/business/jobs/useJobs';
 import type { JobStatus } from '@/types/backend-aligned';
 
 export default function MyJobsPage() {

@@ -20,7 +20,7 @@ import {
   type CommissionAnalytics,
 } from '@/lib/api/commission';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { toast } from 'sonner';
 
 // ============================================================================

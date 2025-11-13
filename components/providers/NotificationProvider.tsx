@@ -21,7 +21,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import {
   subscribeToPushNotifications,
   unsubscribeFromPushNotifications,

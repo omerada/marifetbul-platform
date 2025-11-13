@@ -52,7 +52,7 @@ jest.mock('@/lib/core/store/domains/auth/authStore', () => ({
 }));
 
 import useProfileStore from '@/lib/core/store/profile';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 
 const mockUseAuthStore = useAuthStore as unknown as jest.Mock;
 const mockUseProfileStore = useProfileStore as unknown as jest.Mock;

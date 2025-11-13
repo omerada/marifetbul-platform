@@ -13,7 +13,7 @@
 
 import { Suspense, lazy } from 'react';
 import { redirect } from 'next/navigation';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { Loading } from '@/components/ui';
 
 export const dynamic = 'force-dynamic';

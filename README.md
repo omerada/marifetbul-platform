@@ -28,13 +28,6 @@ Modern, ölçeklenebilir ve güvenli freelance platformu. Spring Boot backend + 
 
 ---
 
-## 🔄 Refactoring & Sprint Planı
-
-> **Durum:** 📍 Sprint 1 Ready to Start  
-> **Son Güncelleme:** 11 Kasım 2025
-
-MarifetBul projesi için kapsamlı bir analiz ve refactoring planı hazırlandı. Detaylı dokümanlar için:
-
 ## ✨ Özellikler
 
 ### 🎯 Core Features

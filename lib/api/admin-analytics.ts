@@ -19,11 +19,6 @@ import { apiRequest, handleApiError } from './client';
 import { Logger } from '@/lib/infrastructure/monitoring/logger';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
-// ============================================================================
-// Sprint 10: Removed unused formatter imports
-// ============================================================================
-// Removed deprecated wrapper functions - consumers should import from @/lib/shared/formatters directly
-
 const API_BASE = '/api/v1/admin/analytics';
 
 // ================================================
@@ -513,10 +508,6 @@ export async function getMonthlyNewUserTrend(
 // ================================================
 // HELPER FUNCTIONS
 // ================================================
-// ============================================================================
-// Sprint 10: Removed deprecated formatCurrency() wrapper
-// ============================================================================
-// Use @/lib/shared/formatters::formatCurrency directly
 
 // ==================== Export Functions ====================
 
@@ -570,13 +561,7 @@ export async function exportRevenueBreakdownCsv(
 }
 
 // ==================== Utility Functions ====================
-// ============================================================================
-// Sprint 10: Removed deprecated formatter wrappers
-// ============================================================================
-// Removed: formatNumber() - Use @/lib/shared/formatters::formatNumber
-// Removed: formatPercentage() - Use @/lib/shared/formatters::formatPercentage
-// Removed: formatCurrency() - Use @/lib/shared/formatters::formatCurrency
-// All deprecated since Sprint 6, no active consumers found
+// Note: Formatter helpers removed in Sprint 10. Use @/lib/shared/formatters directly.
 
 /**
  * Get trend icon/color based on trend type

@@ -21,7 +21,7 @@ import { useRouter } from 'next/navigation';
 import { Briefcase, Loader2 } from 'lucide-react';
 import { JobCard, JobFilters } from '@/components/domains/jobs';
 import { Button } from '@/components/ui';
-import { useJobs } from '@/hooks/business/useJobs';
+import { useJobs } from '@/hooks/business/jobs/useJobs';
 import type { JobFilters as JobFiltersType } from '@/lib/api/jobs';
 
 export default function JobsPage() {

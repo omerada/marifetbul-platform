@@ -246,7 +246,6 @@ export const ORDER_ENDPOINTS = {
 
   // Admin
   ADMIN_ALL: '/admin/orders',
-  ADMIN_DISPUTES: '/admin/orders/disputes',
   ADMIN_RESOLVE: (orderId: string) => `/admin/orders/${orderId}/resolve`,
 } as const;
 

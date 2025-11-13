@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/layout';
 import { Loading } from '@/components/ui';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { MessagesList } from '@/components/domains/messaging';
 import {
   useConversations,

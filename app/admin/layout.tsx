@@ -18,7 +18,7 @@
 
 import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
   BarChart3,

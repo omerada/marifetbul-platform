@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useAuthStore } from '@/lib/core/store/domains/auth/authStore';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { AppLayout } from '@/components/layout';
 import { ProfileEditForm } from '@/components/shared/features';
 import { Loading } from '@/components/ui';

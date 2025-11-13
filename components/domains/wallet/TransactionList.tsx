@@ -2,11 +2,22 @@
 
 /**
  * ================================================
- * TRANSACTION LIST COMPONENT
+ * TRANSACTION LIST COMPONENT - DEPRECATED
  * ================================================
- * Advanced transaction list with sorting, filtering, and pagination
+ * ⚠️ DEPRECATED: Use TransactionDisplay instead
  *
- * Features:
+ * This component is kept for backward compatibility with existing tests.
+ * For new implementations, use @/components/domains/wallet/TransactionDisplay
+ *
+ * @deprecated Use TransactionDisplay from @/components/domains/wallet/TransactionDisplay
+ * @see TransactionDisplay - Unified component with table/list/card views
+ *
+ * Migration Path:
+ * - Replace <TransactionList /> with <TransactionDisplay viewMode="list" />
+ * - Update filters to use TransactionFilters from TransactionDisplay
+ * - Remove this file after test migration (Sprint 1 Day 5)
+ *
+ * Features (moved to TransactionDisplay):
  * - Sortable columns (date, amount, type)
  * - Virtual scrolling for performance
  * - Infinite scroll pagination
@@ -16,7 +27,7 @@
  *
  * Sprint 1 - Epic 1.1 - Day 2
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 1.0.0 - Deprecated (Use TransactionDisplay)
  */
 
 'use client';

@@ -165,9 +165,3 @@ export const ImageCarousel = React.memo<ImageCarouselProps>(
 );
 
 ImageCarousel.displayName = 'ImageCarousel';
-
-// ================================================
-// EXPORTS
-// ================================================
-
-export default ImageCarousel;
