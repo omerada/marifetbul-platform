@@ -274,6 +274,79 @@ export interface RevenueBreakdown {
 }
 
 // ================================================
+// BATCH PAYOUT TYPES
+// ================================================
+
+export enum PayoutBatchStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  PROCESSING = 'PROCESSING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED',
+}
+
+export interface BatchPayoutApprovalRequest {
+  payoutIds: string[];
+  notes?: string;
+  autoProcess?: boolean; // If true, starts processing immediately
+}
+
+export interface BatchPayoutItemResponse {
+  payoutId: string;
+  status: PayoutStatus;
+  errorMessage?: string;
+}
+
+export interface PayoutBatchResponse {
+  id: string;
+  batchNumber: string; // Format: BATCH-YYYYMMDD-XXXXX
+  status: PayoutBatchStatus;
+  totalCount: number;
+  successCount: number;
+  failureCount: number;
+  progressPercentage: number;
+  totalAmount: number;
+  currency: string;
+  approvedBy?: string;
+  approvedByName?: string;
+  approvedAt?: string;
+  startedAt?: string;
+  completedAt?: string;
+  errorMessage?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+  payouts?: Payout[]; // Included in detailed view
+}
+
+export interface BatchPayoutApprovalResponse {
+  batch: PayoutBatchResponse;
+  items: BatchPayoutItemResponse[];
+  message: string;
+}
+
+export interface BatchProcessingStats {
+  totalBatches: number;
+  pendingBatches: number;
+  processingBatches: number;
+  completedBatches: number;
+  failedBatches: number;
+  totalPayouts: number;
+  totalAmount: number;
+  successRate: number; // Percentage
+  averageProcessingTime: number; // In seconds
+  lastBatchCreatedAt?: string;
+  oldestPendingBatch?: {
+    id: string;
+    batchNumber: string;
+    createdAt: string;
+    waitingTime: number; // In minutes
+  };
+}
+
+// ================================================
 // ADMIN TYPES
 // ================================================
 

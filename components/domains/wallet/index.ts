@@ -160,19 +160,6 @@ export type { RecentTransactionsWidgetProps } from './RecentTransactionsWidget';
 export { TransactionFilters } from './TransactionFilters';
 export type { TransactionFiltersProps } from './TransactionFilters';
 
-// ⚠️ DEPRECATED: TransactionList - Use TransactionDisplay instead
-// Kept for backward compatibility with tests only
-// TODO Sprint 1 Day 5: Migrate tests and remove
-/**
- * @deprecated Use TransactionDisplay from './TransactionDisplay'
- */
-export { TransactionList } from './TransactionList';
-export type {
-  TransactionListProps,
-  SortField,
-  SortDirection,
-} from './TransactionList';
-
 export { TransactionDetailsModal } from './TransactionDetailsModal';
 export type { TransactionDetailsModalProps } from './TransactionDetailsModal';
 
