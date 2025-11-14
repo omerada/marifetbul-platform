@@ -3,10 +3,11 @@
  * COMMISSION API CLIENT
  * ================================================
  * API client for commission-related operations
- * Backend: CommissionController.java
+ * Backend: UnifiedCommissionController.java
  *
- * Sprint Day 1 - Task 5: Commission API Integration
- * @version 1.0.0
+ * Sprint 1 - Task 1.1.3: Updated to use UnifiedCommissionController
+ * @version 2.0.0
+ * @updated 2025-11-14 - Migrated to /api/v1/admin/commissions
  */
 
 import { apiClient } from '@/lib/infrastructure/api/client';
@@ -87,6 +88,40 @@ export const CommissionAnalyticsSchema = z.object({
 
 export type CommissionAnalytics = z.infer<typeof CommissionAnalyticsSchema>;
 
+/**
+ * Commission Rule DTO
+ */
+export const CommissionRuleSchema = z.object({
+  id: z.string().uuid(),
+  ruleType: z.enum(['GLOBAL', 'CATEGORY', 'USER']),
+  rate: z.number(),
+  validFrom: z.string(),
+  validTo: z.string().optional(),
+  isActive: z.boolean(),
+  description: z.string().optional(),
+  categoryId: z.string().uuid().optional(),
+  userId: z.string().uuid().optional(),
+  createdBy: z.string().uuid(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export type CommissionRule = z.infer<typeof CommissionRuleSchema>;
+
+/**
+ * Commission Rule Request DTO
+ */
+export interface CommissionRuleRequest {
+  ruleType: 'GLOBAL' | 'CATEGORY' | 'USER';
+  rate: number;
+  validFrom: string;
+  validTo?: string;
+  isActive: boolean;
+  description?: string;
+  categoryId?: string;
+  userId?: string;
+}
+
 // ============================================================================
 // API FUNCTIONS
 // ============================================================================
@@ -116,7 +151,7 @@ export async function getCommissions(
 
     const response = await apiClient.get<
       ApiResponse<PaginatedResponse<CommissionTransaction>>
-    >(`/admin/commissions?${params}`);
+    >(`/admin/commissions/transactions?${params}`);
 
     logger.info('Commissions fetched successfully', {
       totalElements: response.data.totalElements,
@@ -124,10 +159,7 @@ export async function getCommissions(
 
     return response.data;
   } catch (error) {
-    logger.error(
-      'Failed to fetch commissions',
-      error
-    );
+    logger.error('Failed to fetch commissions', error);
     throw error;
   }
 }
@@ -143,16 +175,13 @@ export async function getCommissionById(
     logger.debug('Fetching commission by ID', { commissionId });
 
     const response = await apiClient.get<ApiResponse<CommissionTransaction>>(
-      `/admin/commissions/${commissionId}`
+      `/admin/commissions/transactions/${commissionId}`
     );
 
     logger.info('Commission fetched successfully', { commissionId });
     return response.data;
   } catch (error) {
-    logger.error(
-      'Failed to fetch commission',
-      error
-    );
+    logger.error('Failed to fetch commission', error);
     throw error;
   }
 }
@@ -168,16 +197,13 @@ export async function getCommissionByPaymentId(
     logger.debug('Fetching commission by payment ID', { paymentId });
 
     const response = await apiClient.get<ApiResponse<CommissionTransaction>>(
-      `/admin/commissions/payment/${paymentId}`
+      `/admin/commissions/transactions/payment/${paymentId}`
     );
 
     logger.info('Commission fetched by payment ID', { paymentId });
     return response.data;
   } catch (error) {
-    logger.error(
-      'Failed to fetch commission by payment ID',
-      error
-    );
+    logger.error('Failed to fetch commission by payment ID', error);
     throw error;
   }
 }
@@ -203,7 +229,7 @@ export async function getCommissionsBySeller(
 
     const response = await apiClient.get<
       ApiResponse<PaginatedResponse<CommissionTransaction>>
-    >(`/admin/commissions/seller/${sellerId}?${params}`);
+    >(`/admin/commissions/transactions/seller/${sellerId}?${params}`);
 
     logger.info('Seller commissions fetched', {
       sellerId,
@@ -212,10 +238,7 @@ export async function getCommissionsBySeller(
 
     return response.data;
   } catch (error) {
-    logger.error(
-      'Failed to fetch seller commissions',
-      error
-    );
+    logger.error('Failed to fetch seller commissions', error);
     throw error;
   }
 }
@@ -244,10 +267,7 @@ export async function getCommissionStats(
     logger.info('Commission stats fetched', { startDate, endDate });
     return response.data;
   } catch (error) {
-    logger.error(
-      'Failed to fetch commission stats',
-      error
-    );
+    logger.error('Failed to fetch commission stats', error);
     throw error;
   }
 }
@@ -276,10 +296,7 @@ export async function getCommissionAnalytics(
     logger.info('Commission analytics fetched', { startDate, endDate });
     return response.data;
   } catch (error) {
-    logger.error(
-      'Failed to fetch commission analytics',
-      error
-    );
+    logger.error('Failed to fetch commission analytics', error);
     throw error;
   }
 }
@@ -314,6 +331,201 @@ export async function getMyCommissionSummary(): Promise<{
     return response.data;
   } catch (error) {
     logger.warn('Commission summary endpoint not available', { error });
+    throw error;
+  }
+}
+
+// ==================== COMMISSION RULES API ====================
+
+/**
+ * Create a new commission rule (Admin only)
+ */
+export async function createCommissionRule(
+  request: CommissionRuleRequest
+): Promise<CommissionRule> {
+  try {
+    logger.debug('Creating commission rule', { request });
+
+    const response = await apiClient.post<ApiResponse<CommissionRule>>(
+      '/admin/commissions/rules',
+      request
+    );
+
+    logger.info('Commission rule created successfully', {
+      ruleId: response.data.id,
+    });
+
+    return response.data;
+  } catch (error) {
+    logger.error('Failed to create commission rule', error);
+    throw error;
+  }
+}
+
+/**
+ * Get all commission rules
+ */
+export async function getAllCommissionRules(): Promise<CommissionRule[]> {
+  try {
+    logger.debug('Fetching all commission rules');
+
+    const response = await apiClient.get<ApiResponse<CommissionRule[]>>(
+      '/admin/commissions/rules'
+    );
+
+    logger.info('Commission rules fetched', {
+      count: response.data.length,
+    });
+
+    return response.data;
+  } catch (error) {
+    logger.error('Failed to fetch commission rules', error);
+    throw error;
+  }
+}
+
+/**
+ * Get active commission rules
+ */
+export async function getActiveCommissionRules(): Promise<CommissionRule[]> {
+  try {
+    logger.debug('Fetching active commission rules');
+
+    const response = await apiClient.get<ApiResponse<CommissionRule[]>>(
+      '/admin/commissions/rules/active'
+    );
+
+    logger.info('Active commission rules fetched', {
+      count: response.data.length,
+    });
+
+    return response.data;
+  } catch (error) {
+    logger.error('Failed to fetch active commission rules', error);
+    throw error;
+  }
+}
+
+/**
+ * Get commission rule by ID
+ */
+export async function getCommissionRuleById(
+  ruleId: string
+): Promise<CommissionRule> {
+  try {
+    logger.debug('Fetching commission rule', { ruleId });
+
+    const response = await apiClient.get<ApiResponse<CommissionRule>>(
+      `/admin/commissions/rules/${ruleId}`
+    );
+
+    logger.info('Commission rule fetched', { ruleId });
+    return response.data;
+  } catch (error) {
+    logger.error('Failed to fetch commission rule', error);
+    throw error;
+  }
+}
+
+/**
+ * Update commission rule
+ */
+export async function updateCommissionRule(
+  ruleId: string,
+  request: CommissionRuleRequest
+): Promise<CommissionRule> {
+  try {
+    logger.debug('Updating commission rule', { ruleId, request });
+
+    const response = await apiClient.put<ApiResponse<CommissionRule>>(
+      `/admin/commissions/rules/${ruleId}`,
+      request
+    );
+
+    logger.info('Commission rule updated', { ruleId });
+    return response.data;
+  } catch (error) {
+    logger.error('Failed to update commission rule', error);
+    throw error;
+  }
+}
+
+/**
+ * Delete commission rule
+ */
+export async function deleteCommissionRule(ruleId: string): Promise<void> {
+  try {
+    logger.debug('Deleting commission rule', { ruleId });
+
+    await apiClient.delete(`/admin/commissions/rules/${ruleId}`);
+
+    logger.info('Commission rule deleted', { ruleId });
+  } catch (error) {
+    logger.error('Failed to delete commission rule', error);
+    throw error;
+  }
+}
+
+/**
+ * Activate commission rule
+ */
+export async function activateCommissionRule(
+  ruleId: string
+): Promise<CommissionRule> {
+  try {
+    logger.debug('Activating commission rule', { ruleId });
+
+    const response = await apiClient.post<ApiResponse<CommissionRule>>(
+      `/admin/commissions/rules/${ruleId}/activate`
+    );
+
+    logger.info('Commission rule activated', { ruleId });
+    return response.data;
+  } catch (error) {
+    logger.error('Failed to activate commission rule', error);
+    throw error;
+  }
+}
+
+/**
+ * Deactivate commission rule
+ */
+export async function deactivateCommissionRule(
+  ruleId: string
+): Promise<CommissionRule> {
+  try {
+    logger.debug('Deactivating commission rule', { ruleId });
+
+    const response = await apiClient.post<ApiResponse<CommissionRule>>(
+      `/admin/commissions/rules/${ruleId}/deactivate`
+    );
+
+    logger.info('Commission rule deactivated', { ruleId });
+    return response.data;
+  } catch (error) {
+    logger.error('Failed to deactivate commission rule', error);
+    throw error;
+  }
+}
+
+/**
+ * Get expiring commission rules (next 7 days)
+ */
+export async function getExpiringCommissionRules(): Promise<CommissionRule[]> {
+  try {
+    logger.debug('Fetching expiring commission rules');
+
+    const response = await apiClient.get<ApiResponse<CommissionRule[]>>(
+      '/admin/commissions/rules/expiring'
+    );
+
+    logger.info('Expiring commission rules fetched', {
+      count: response.data.length,
+    });
+
+    return response.data;
+  } catch (error) {
+    logger.error('Failed to fetch expiring commission rules', error);
     throw error;
   }
 }
@@ -362,6 +574,7 @@ export function formatCommissionTransaction(
 // ============================================================================
 
 export const commissionApi = {
+  // Transaction APIs
   getCommissions,
   getCommissionById,
   getCommissionByPaymentId,
@@ -369,6 +582,19 @@ export const commissionApi = {
   getCommissionStats,
   getCommissionAnalytics,
   getMyCommissionSummary,
+
+  // Rule APIs
+  createCommissionRule,
+  getAllCommissionRules,
+  getActiveCommissionRules,
+  getCommissionRuleById,
+  updateCommissionRule,
+  deleteCommissionRule,
+  activateCommissionRule,
+  deactivateCommissionRule,
+  getExpiringCommissionRules,
+
+  // Helpers
   calculateCommission,
   formatCommissionTransaction,
 };
