@@ -5,14 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Progress } from '@/components/ui/Progress';
 import {
-  TrendingUp,
   Clock,
   CheckCircle,
-  AlertCircle,
   MessageSquare,
   Star,
   BarChart3,
 } from 'lucide-react';
+import { StatsCard } from '@/components/domains/dashboard/widgets/StatsCard';
 import type { SupportAnalytics } from '@/types';
 
 interface SupportStatsProps {
@@ -37,51 +36,93 @@ export function SupportStats({
       {/* Overview Stats */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          title="Toplam Destek Talepleri"
-          value={overview?.totalTickets?.toLocaleString() || '0'}
-          subtitle={`${overview?.openTickets || 0} açık`}
-          icon={<MessageSquare className="h-4 w-4" />}
-          trend={
-            (overview?.resolvedTickets || 0) >
-            (overview?.totalTickets || 0) * 0.8
-              ? 'positive'
-              : 'neutral'
-          }
+          data={{
+            id: 'total-tickets',
+            title: 'Toplam Destek Talepleri',
+            value: overview?.totalTickets?.toLocaleString() || '0',
+            subtitle: `${overview?.openTickets || 0} açık`,
+            icon: MessageSquare,
+            iconColor: 'blue',
+            trend: {
+              percentage: Math.round(
+                ((overview?.resolvedTickets || 0) /
+                  (overview?.totalTickets || 1)) *
+                  100
+              ),
+              direction:
+                (overview?.resolvedTickets || 0) >
+                (overview?.totalTickets || 0) * 0.8
+                  ? 'up'
+                  : 'neutral',
+              isPositive:
+                (overview?.resolvedTickets || 0) >
+                (overview?.totalTickets || 0) * 0.8,
+            },
+          }}
         />
 
         <StatsCard
-          title="Ortalama Çözüm Süresi"
-          value={`${overview?.averageResolutionTime || 0}s`}
-          subtitle="hedef: 24s"
-          icon={<Clock className="h-4 w-4" />}
-          trend={
-            (overview?.averageResolutionTime || 0) <= 24
-              ? 'positive'
-              : 'negative'
-          }
+          data={{
+            id: 'resolution-time',
+            title: 'Ortalama Çözüm Süresi',
+            value: `${overview?.averageResolutionTime || 0}s`,
+            subtitle: 'hedef: 24s',
+            icon: Clock,
+            iconColor: 'orange',
+            trend: {
+              percentage: Math.abs(
+                Math.round(
+                  (((overview?.averageResolutionTime || 0) - 24) / 24) * 100
+                )
+              ),
+              direction:
+                (overview?.averageResolutionTime || 0) <= 24 ? 'down' : 'up',
+              isPositive: (overview?.averageResolutionTime || 0) <= 24,
+            },
+          }}
         />
 
         <StatsCard
-          title="Müşteri Memnuniyeti"
-          value={`${overview?.customerSatisfaction || 0}/5`}
-          subtitle={`${overview?.firstCallResolution || 0}% ilk çözüm`}
-          icon={<Star className="h-4 w-4" />}
-          trend={
-            (overview?.customerSatisfaction || 0) >= 4.5
-              ? 'positive'
-              : 'neutral'
-          }
+          data={{
+            id: 'satisfaction',
+            title: 'Müşteri Memnuniyeti',
+            value: `${overview?.customerSatisfaction || 0}/5`,
+            subtitle: `${overview?.firstCallResolution || 0}% ilk çözüm`,
+            icon: Star,
+            iconColor: 'yellow',
+            trend: {
+              percentage: Math.round(
+                ((overview?.customerSatisfaction || 0) / 5) * 100
+              ),
+              direction:
+                (overview?.customerSatisfaction || 0) >= 4.5 ? 'up' : 'neutral',
+              isPositive: (overview?.customerSatisfaction || 0) >= 4.5,
+            },
+          }}
         />
 
         <StatsCard
-          title="Çözümlenen Talepler"
-          value={`${Math.round(
-            ((overview?.resolvedTickets || 0) / (overview?.totalTickets || 1)) *
-              100
-          )}%`}
-          subtitle={`${overview?.resolvedTickets || 0} / ${overview?.totalTickets || 0}`}
-          icon={<CheckCircle className="h-4 w-4" />}
-          trend="positive"
+          data={{
+            id: 'resolved-tickets',
+            title: 'Çözümlenen Talepler',
+            value: `${Math.round(
+              ((overview?.resolvedTickets || 0) /
+                (overview?.totalTickets || 1)) *
+                100
+            )}%`,
+            subtitle: `${overview?.resolvedTickets || 0} / ${overview?.totalTickets || 0}`,
+            icon: CheckCircle,
+            iconColor: 'green',
+            trend: {
+              percentage: Math.round(
+                ((overview?.resolvedTickets || 0) /
+                  (overview?.totalTickets || 1)) *
+                  100
+              ),
+              direction: 'up',
+              isPositive: true,
+            },
+          }}
         />
       </div>
 
@@ -153,45 +194,7 @@ export function SupportStats({
   );
 }
 
-interface StatsCardProps {
-  title: string;
-  value: string;
-  subtitle: string;
-  icon: React.ReactNode;
-  trend: 'positive' | 'negative' | 'neutral';
-}
-
-function StatsCard({ title, value, subtitle, icon, trend }: StatsCardProps) {
-  const trendColors = {
-    positive: 'text-green-600',
-    negative: 'text-red-600',
-    neutral: 'text-muted-foreground',
-  };
-
-  const trendIcons = {
-    positive: <TrendingUp className="h-3 w-3" />,
-    negative: <AlertCircle className="h-3 w-3" />,
-    neutral: <BarChart3 className="h-3 w-3" />,
-  };
-
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {icon}
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-        <div
-          className={`flex items-center gap-1 text-xs ${trendColors[trend]}`}
-        >
-          {trendIcons[trend]}
-          {subtitle}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+// Internal StatsCard removed - now using unified StatsCard from dashboard widgets
 
 function SupportStatsSkeleton({ className }: { className?: string }) {
   return (

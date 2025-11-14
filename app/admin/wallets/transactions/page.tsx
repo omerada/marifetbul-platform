@@ -39,11 +39,12 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
 import { formatCurrency } from '@/lib/shared/formatters';
 import { cn } from '@/lib/utils';
-import { AdvancedTransactionFilters } from '@/components/domains/wallet';
-import type { TransactionFiltersState } from '@/components/domains/wallet/core/AdvancedTransactionFilters';
+import { UnifiedTransactionFilters } from '@/components/domains/wallet';
+import type { TransactionFilters as UITransactionFilters } from '@/types/business/features/wallet';
 import {
   walletAdminApi,
   type TransactionResponse,
+  type TransactionFilters as ApiTransactionFilters,
 } from '@/lib/api/admin/wallet-admin-api';
 
 // ============================================================================
@@ -86,7 +87,7 @@ export default function AdminWalletTransactionsPage() {
     hasPrevious: false,
   });
 
-  const [filters, setFilters] = useState<TransactionFiltersState>({});
+  const [filters, setFilters] = useState<UITransactionFilters>({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -101,10 +102,9 @@ export default function AdminWalletTransactionsPage() {
       setError(null);
 
       try {
-        // Build API filter from UI filters
-        const apiFilter = {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          type: filters.types?.[0] as any, // Backend supports specific transaction types
+        // Build API filter from UI filters (convert enum to string)
+        const apiFilter: ApiTransactionFilters = {
+          type: filters.type as ApiTransactionFilters['type'], // Convert enum to API string literal
           startDate: filters.startDate,
           endDate: filters.endDate,
           minAmount: filters.minAmount,
@@ -172,7 +172,7 @@ export default function AdminWalletTransactionsPage() {
   /**
    * Handle filter changes
    */
-  const handleFiltersChange = (newFilters: TransactionFiltersState) => {
+  const handleFiltersChange = (newFilters: UITransactionFilters) => {
     setFilters(newFilters);
   };
 
@@ -468,7 +468,8 @@ export default function AdminWalletTransactionsPage() {
 
         {/* Advanced Filters */}
         <div className="mb-6">
-          <AdvancedTransactionFilters
+          <UnifiedTransactionFilters
+            variant="advanced"
             filters={filters}
             onFiltersChange={handleFiltersChange}
             onClear={handleClearFilters}

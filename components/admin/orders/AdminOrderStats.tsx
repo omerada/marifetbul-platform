@@ -9,7 +9,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Card } from '@/components/ui/Card';
+import { StatsCardCompact } from '@/components/domains/dashboard/widgets/StatsCard';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { formatCurrency } from '@/lib/shared/formatters';
 import {
@@ -67,12 +67,15 @@ export function AdminOrderStats({ className }: AdminOrderStatsProps) {
         className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 ${className}`}
       >
         {[...Array(5)].map((_, i) => (
-          <Card key={i} className="p-4">
-            <div className="animate-pulse space-y-2">
-              <div className="h-4 w-20 rounded bg-gray-200" />
-              <div className="h-8 w-12 rounded bg-gray-200" />
-            </div>
-          </Card>
+          <StatsCardCompact
+            key={i}
+            isLoading={true}
+            data={{
+              id: `loading-${i}`,
+              title: '',
+              value: '',
+            }}
+          />
         ))}
       </div>
     );
@@ -86,75 +89,55 @@ export function AdminOrderStats({ className }: AdminOrderStatsProps) {
     <div
       className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 ${className}`}
     >
-      <Card className="p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-600">Toplam Sipariş</p>
-            <p className="text-2xl font-bold text-blue-600">
-              {stats.totalOrders}
-            </p>
-          </div>
-          <div className="rounded-lg bg-blue-100 p-3">
-            <Package className="h-6 w-6 text-blue-600" />
-          </div>
-        </div>
-      </Card>
+      <StatsCardCompact
+        data={{
+          id: 'total-orders',
+          title: 'Toplam Sipariş',
+          value: stats.totalOrders.toString(),
+          icon: Package,
+          iconColor: 'blue',
+        }}
+      />
 
-      <Card className="p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-600">Aktif Sipariş</p>
-            <p className="text-2xl font-bold text-yellow-600">
-              {stats.activeOrders}
-            </p>
-          </div>
-          <div className="rounded-lg bg-yellow-100 p-3">
-            <AlertCircle className="h-6 w-6 text-yellow-600" />
-          </div>
-        </div>
-      </Card>
+      <StatsCardCompact
+        data={{
+          id: 'active-orders',
+          title: 'Aktif Sipariş',
+          value: stats.activeOrders.toString(),
+          icon: AlertCircle,
+          iconColor: 'yellow',
+        }}
+      />
 
-      <Card className="p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-600">Tamamlanan</p>
-            <p className="text-2xl font-bold text-green-600">
-              {stats.completedOrders}
-            </p>
-          </div>
-          <div className="rounded-lg bg-green-100 p-3">
-            <CheckCircle className="h-6 w-6 text-green-600" />
-          </div>
-        </div>
-      </Card>
+      <StatsCardCompact
+        data={{
+          id: 'completed-orders',
+          title: 'Tamamlanan',
+          value: stats.completedOrders.toString(),
+          icon: CheckCircle,
+          iconColor: 'green',
+        }}
+      />
 
-      <Card className="p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-600">Toplam Gelir</p>
-            <p className="text-2xl font-bold text-purple-600">
-              {formatCurrency(stats.totalRevenue)}
-            </p>
-          </div>
-          <div className="rounded-lg bg-purple-100 p-3">
-            <DollarSign className="h-6 w-6 text-purple-600" />
-          </div>
-        </div>
-      </Card>
+      <StatsCardCompact
+        data={{
+          id: 'total-revenue',
+          title: 'Toplam Gelir',
+          value: formatCurrency(stats.totalRevenue),
+          icon: DollarSign,
+          iconColor: 'purple',
+        }}
+      />
 
-      <Card className="p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-600">Ort. Sipariş</p>
-            <p className="text-2xl font-bold text-indigo-600">
-              {formatCurrency(stats.averageOrderValue)}
-            </p>
-          </div>
-          <div className="rounded-lg bg-indigo-100 p-3">
-            <TrendingUp className="h-6 w-6 text-indigo-600" />
-          </div>
-        </div>
-      </Card>
+      <StatsCardCompact
+        data={{
+          id: 'average-order',
+          title: 'Ort. Sipariş',
+          value: formatCurrency(stats.averageOrderValue),
+          icon: TrendingUp,
+          iconColor: 'blue',
+        }}
+      />
     </div>
   );
 }

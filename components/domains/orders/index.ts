@@ -23,7 +23,22 @@ export { ApproveDeliveryModal } from './ApproveDeliveryModal';
 export { RequestRevisionModal } from './RequestRevisionModal';
 export { AcceptOrderModal } from './AcceptOrderModal';
 export { CancelOrderModal } from './CancelOrderModal';
-export { EscrowReleaseModal } from './EscrowReleaseModal';
+
+// ================================================
+// SPRINT 2 CLEANUP - UNUSED ESCROW COMPONENTS ✅
+// ================================================
+// EscrowReleaseModal.tsx (341 lines) - DELETED
+//   - Duplicate of wallet/ReleaseEscrowFlow
+//   - Never used, ReleaseEscrowFlow is canonical
+//   - Removed: 2025-11-14
+//
+// EscrowStatus.tsx (221 lines) - DELETED
+//   - Never used in production
+//   - StatusBadge provides needed functionality
+//   - Removed: 2025-11-14
+//
+// Total reduction: 562 lines of duplicate/unused code
+// ================================================
 
 // Order revision components (Sprint 1.3)
 export { OrderRevisionList } from './OrderRevisionList';

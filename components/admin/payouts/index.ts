@@ -18,8 +18,8 @@ export type { AdminPayoutTableProps } from './AdminPayoutTable';
 export { AdminPayoutDetailModal } from './AdminPayoutDetailModal';
 export type { AdminPayoutDetailModalProps } from './AdminPayoutDetailModal';
 
-export { PayoutApprovalModal } from './PayoutApprovalModal';
-export type { PayoutApprovalModalProps } from './PayoutApprovalModal';
+// Sprint 1 Cleanup: PayoutApprovalModal removed (unused - 447 lines)
+// Functionality merged into AdminPayoutDetailModal
 
 export { BulkPayoutActions } from './BulkPayoutActions';
 export type { BulkPayoutActionsProps } from './BulkPayoutActions';

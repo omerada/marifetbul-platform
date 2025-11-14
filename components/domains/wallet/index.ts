@@ -19,11 +19,10 @@ export {
   IBANInput,
   BankSelector,
   BankVerificationStatus,
-  WalletCard,
   QuickStatsGrid,
   PayoutRequestForm,
   PayoutEligibilityWidget,
-  AdvancedTransactionFilters,
+  UnifiedTransactionFilters,
   TransactionExportModal,
   TransactionExportButtons,
 } from './core';
@@ -31,9 +30,10 @@ export type {
   BankAccountFormData,
   BankAccountFormProps,
   BankAccountListProps,
-  WalletCardProps,
   PayoutRequestFormProps,
   TransactionExportButtonsProps,
+  UnifiedTransactionFiltersProps,
+  FilterVariant,
 } from './core';
 
 // ================================================
@@ -113,11 +113,21 @@ export type {
   StatusDistribution,
 } from './EscrowTimelineChart';
 
-export { EscrowQuickActions } from './EscrowQuickActions';
-export type {
-  EscrowQuickActionsProps,
-  FilterPreset,
-} from './EscrowQuickActions';
+// ================================================
+// SPRINT 2 CLEANUP - UNUSED ESCROW COMPONENTS ✅
+// ================================================
+// EscrowQuickActions.tsx (327 lines) - DELETED
+//   - Never used in production
+//   - Bulk actions available through EscrowActions
+//   - Removed: 2025-11-14
+//
+// EscrowViewer.tsx (511 lines) - DELETED
+//   - Duplicate functionality of EscrowList
+//   - Never imported anywhere
+//   - Removed: 2025-11-14
+//
+// Total reduction: 838 lines of unused code
+// ================================================
 
 // Sprint 1 - Epic 1.3 - Payout System (Days 6-7)
 export { PayoutRequestFlow } from './PayoutRequestFlow';
@@ -157,27 +167,23 @@ export type { RecentTransactionsWidgetProps } from './RecentTransactionsWidget';
 // TRANSACTION COMPONENTS
 // ================================================
 
-export { TransactionFilters } from './TransactionFilters';
-export type { TransactionFiltersProps } from './TransactionFilters';
-
 export { TransactionDetailsModal } from './TransactionDetailsModal';
 export type { TransactionDetailsModalProps } from './TransactionDetailsModal';
 
 // ================================================
-// DEPRECATED - REMOVED IN SPRINT 1 DAY 2
+// SPRINT 1 CLEANUP COMPLETED ✅
 // ================================================
-// PayoutRequestModal.tsx - DELETED
-// PayoutRequestWizard.tsx - DELETED
-// Replaced by: PayoutRequestFlow (active, 800 lines)
-// Migration complete: 2025-11-06
-// ============================================================================
-
-// ✅ PayoutRequestForm: Used in app/dashboard/wallet/payouts/request/page.tsx
-
-// ============================================================================
+// Successfully removed duplicate transaction filter components:
+// ✅ TransactionFilters.tsx (183 lines) - DELETED
+// ✅ TransactionFiltersPanel.tsx (412 lines) - DELETED
+// ✅ AdvancedTransactionFilters.tsx (408 lines) - DELETED
+// ✅ TransactionDisplay/Filters.tsx (proxy) - DELETED
+//
+// Replacement: UnifiedTransactionFilters (370 lines)
+// - Supports variant="simple" and variant="advanced"
+// - Single source of truth for all transaction filtering
+// - Type-safe with TransactionFilters interface
+//
+// Migration complete: 2025-11-14
+// Code reduction: 1,191 lines → 370 lines (69% reduction)
 // ================================================
-
-// Bank account management - REMOVED AddBankAccountModal (duplicate of BankAccountForm)
-
-export { TransactionFiltersPanel } from './TransactionFiltersPanel';
-export type { TransactionFilters as TransactionFilterValues } from './TransactionFiltersPanel';

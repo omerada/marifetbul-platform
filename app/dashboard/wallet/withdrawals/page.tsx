@@ -238,7 +238,14 @@ function getStatusBadgeVariant(
 
 export default function WithdrawalHistoryPage() {
   // Data fetching
-  const { payouts, isLoading, refresh, cancelPayout } = usePayouts();
+  const {
+    payouts,
+    isLoading,
+    refresh,
+    cancelPayout,
+    requestPayout,
+    fetchPayouts,
+  } = usePayouts();
 
   // Filter state
   const [filters, setFilters] = useState<FilterState>({
@@ -303,19 +310,93 @@ export default function WithdrawalHistoryPage() {
     [cancelPayout]
   );
 
-  const handleRetryPayout = useCallback(async (payoutId: string) => {
-    try {
-      // TODO: Implement retry payout API call
-      logger.info('Payout retry requested', { payoutId });
-    } catch (error) {
-      logger.error('Failed to retry payout', error as Error, { payoutId });
-    }
-  }, []);
+  const handleRetryPayout = useCallback(
+    async (payoutId: string) => {
+      try {
+        logger.info('Payout retry requested', { payoutId });
 
-  const handleExportCSV = () => {
+        // Find the failed payout
+        const failedPayout = filteredPayouts.find((p) => p.id === payoutId);
+        if (!failedPayout) {
+          throw new Error('Payout not found');
+        }
+
+        // Retry by creating a new payout request with same details
+        await requestPayout({
+          amount: failedPayout.amount,
+          method: failedPayout.method,
+          bankAccountInfo: failedPayout.bankAccountInfo,
+          notes: `Retry of failed payout ${payoutId}`,
+        });
+
+        // Refresh the list
+        await fetchPayouts();
+
+        logger.info('Payout retry successful', { payoutId });
+      } catch (error) {
+        logger.error('Failed to retry payout', error as Error, { payoutId });
+        throw error;
+      }
+    },
+    [filteredPayouts, requestPayout, fetchPayouts]
+  );
+
+  const handleExportCSV = useCallback(() => {
     logger.info('Exporting withdrawal history to CSV');
-    // TODO: Implement CSV export
-  };
+
+    try {
+      // Prepare CSV headers
+      const headers = [
+        'ID',
+        'Tarih',
+        'Tutar',
+        'Durum',
+        'Yöntem',
+        'Banka Hesabı',
+        'Açıklama',
+      ];
+
+      // Convert payouts to CSV rows
+      const rows = filteredPayouts.map((payout) => [
+        payout.id,
+        new Date(payout.requestedAt).toLocaleString('tr-TR'),
+        formatCurrency(payout.amount),
+        payout.status,
+        payout.method,
+        payout.bankAccountInfo?.iban || '-',
+        payout.description || '-',
+      ]);
+
+      // Create CSV content
+      const csvContent = [
+        headers.join(','),
+        ...rows.map((row) => row.map((cell) => `"${cell}"`).join(',')),
+      ].join('\n');
+
+      // Create blob and download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+
+      link.setAttribute('href', url);
+      link.setAttribute(
+        'download',
+        `cekim-gecmisi-${new Date().toISOString().split('T')[0]}.csv`
+      );
+      link.style.visibility = 'hidden';
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      logger.info('CSV export completed', {
+        rowCount: filteredPayouts.length,
+      });
+    } catch (error) {
+      logger.error('Failed to export CSV', error as Error);
+      throw error;
+    }
+  }, [filteredPayouts]);
 
   // ==================== RENDER ====================
 

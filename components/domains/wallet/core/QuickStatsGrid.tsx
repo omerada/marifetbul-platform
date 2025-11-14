@@ -4,7 +4,7 @@ import {
   TrendingUp,
   Package,
 } from 'lucide-react';
-import { Card } from '@/components/ui';
+import { StatsCardCompact } from '@/components/domains/dashboard/widgets/StatsCard';
 
 interface QuickStat {
   label: string;
@@ -19,42 +19,59 @@ interface QuickStatsGridProps {
 
 /**
  * Quick Stats Grid Component
- * Displays a grid of quick statistics
+ * Displays a grid of quick statistics using unified StatsCardCompact
  */
 export function QuickStatsGrid({ stats }: QuickStatsGridProps) {
   const getIcon = (type: QuickStat['icon']) => {
     switch (type) {
       case 'up':
-        return <ArrowUpRight className="h-4 w-4" />;
+        return ArrowUpRight;
       case 'down':
-        return <ArrowDownRight className="h-4 w-4" />;
+        return ArrowDownRight;
       case 'trending':
-        return <TrendingUp className="h-4 w-4" />;
+        return TrendingUp;
       case 'package':
-        return <Package className="h-4 w-4" />;
+        return Package;
+    }
+  };
+
+  const getIconColor = (type: QuickStat['icon']): string => {
+    switch (type) {
+      case 'up':
+        return 'green';
+      case 'down':
+        return 'red';
+      case 'trending':
+        return 'blue';
+      case 'package':
+        return 'purple';
     }
   };
 
   return (
     <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
       {stats.map((stat, index) => (
-        <Card key={index} className="p-4">
-          <div className="mb-2 flex items-center justify-between">
-            <span className="text-muted-foreground text-xs">{stat.label}</span>
-            {getIcon(stat.icon)}
-          </div>
-          <div className="text-xl font-bold">{stat.value}</div>
-          {stat.change !== undefined && (
-            <div
-              className={`mt-1 text-xs ${
-                stat.change >= 0 ? 'text-green-600' : 'text-red-600'
-              }`}
-            >
-              {stat.change >= 0 ? '+' : ''}
-              {stat.change}% bu ay
-            </div>
-          )}
-        </Card>
+        <StatsCardCompact
+          key={index}
+          data={{
+            id: `quick-stat-${index}`,
+            title: stat.label,
+            value:
+              typeof stat.value === 'number'
+                ? stat.value.toLocaleString()
+                : stat.value,
+            icon: getIcon(stat.icon),
+            iconColor: getIconColor(stat.icon),
+            ...(stat.change !== undefined && {
+              trend: {
+                percentage: Math.abs(stat.change),
+                direction: stat.change >= 0 ? 'up' : 'down',
+                isPositive: stat.change >= 0,
+                label: 'bu ay',
+              },
+            }),
+          }}
+        />
       ))}
     </div>
   );

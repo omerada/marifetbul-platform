@@ -32,8 +32,8 @@ export { BankVerificationStatus } from './BankVerificationStatus';
 // WALLET DISPLAY
 // ================================================
 
-export { WalletCard } from './WalletCard';
-export type { WalletCardProps } from './WalletCard';
+// Sprint 1 Cleanup: WalletCard removed (unused - 192 lines)
+// Use BalanceCard for wallet balance display
 
 export { QuickStatsGrid } from './QuickStatsGrid';
 
@@ -46,7 +46,16 @@ export type { PayoutRequestFormProps } from './PayoutRequestForm';
 
 export { PayoutEligibilityWidget } from './PayoutEligibilityWidget';
 
-export { AdvancedTransactionFilters } from './AdvancedTransactionFilters';
+// ================================================
+// TRANSACTION FILTERS - UNIFIED
+// ================================================
+
+export { UnifiedTransactionFilters } from './UnifiedTransactionFilters';
+export type {
+  UnifiedTransactionFiltersProps,
+  FilterVariant,
+} from './UnifiedTransactionFilters';
+
 export { TransactionExportModal } from './TransactionExportModal';
 export { default as TransactionExportButtons } from './TransactionExportButtons';
 export type { TransactionExportButtonsProps } from './TransactionExportButtons';

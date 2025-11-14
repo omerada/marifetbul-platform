@@ -245,7 +245,10 @@ export default function ProposalEditPage() {
               coverLetter: proposal.coverLetter,
               bidAmount: proposal.proposedBudget,
               deliveryTime: proposal.deliveryDays,
-              // TODO: Map milestones from backend format (dueDate) to form format (durationDays)
+              // Milestones are stored as JSON string in ProposalForm
+              milestones: proposal.milestones
+                ? JSON.stringify(proposal.milestones)
+                : undefined,
             }}
           />
         </Card>

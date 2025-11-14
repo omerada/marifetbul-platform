@@ -21,14 +21,9 @@
 
 import React from 'react';
 import { Card } from '@/components/ui/Card';
+import { StatsCard } from '@/components/domains/dashboard/widgets/StatsCard';
 import { formatCurrency } from '@/lib/shared/formatters';
-import {
-  Package,
-  CheckCircle,
-  AlertCircle,
-  TrendingUp,
-  Clock,
-} from 'lucide-react';
+import { Package, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 import type { OrderStats } from '@/types/business/features/orders';
 
 // ================================================
@@ -48,38 +43,7 @@ interface OrderStatsWidgetProps {
   onStatClick?: (statType: keyof OrderStats) => void;
 }
 
-interface StatCardProps {
-  icon: React.ReactNode;
-  label: string;
-  value: number | string;
-  color: string;
-  onClick?: () => void;
-}
-
-// ================================================
-// SUB-COMPONENTS
-// ================================================
-
-function StatCard({ icon, label, value, color, onClick }: StatCardProps) {
-  return (
-    <Card
-      className={`p-4 transition-all hover:shadow-md ${
-        onClick ? 'cursor-pointer' : ''
-      }`}
-      onClick={onClick}
-    >
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-muted-foreground text-sm">{label}</p>
-          <p className={`text-2xl font-bold ${color}`}>{value}</p>
-        </div>
-        <div className={`rounded-lg ${color.replace('text-', 'bg-')}/10 p-3`}>
-          {icon}
-        </div>
-      </div>
-    </Card>
-  );
-}
+// Internal StatCard removed - now using unified StatsCard from dashboard widgets
 
 // ================================================
 // MAIN COMPONENT
@@ -153,39 +117,63 @@ export function OrderStatsWidget({
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {/* Total Orders */}
-      <StatCard
-        icon={<Package className="h-6 w-6 text-blue-600" />}
-        label="Toplam Siparişler"
-        value={stats.totalOrders || 0}
-        color="text-blue-600"
+      <StatsCard
+        data={{
+          id: 'total-orders',
+          title: 'Toplam Siparişler',
+          value: (stats.totalOrders || 0).toString(),
+          icon: Package,
+          iconColor: 'blue',
+          metadata: {
+            onClick: () => onStatClick?.('totalOrders'),
+          },
+        }}
         onClick={() => onStatClick?.('totalOrders')}
       />
 
       {/* Completed Orders */}
-      <StatCard
-        icon={<CheckCircle className="h-6 w-6 text-green-600" />}
-        label="Tamamlanan"
-        value={stats.completedOrders || 0}
-        color="text-green-600"
+      <StatsCard
+        data={{
+          id: 'completed-orders',
+          title: 'Tamamlanan',
+          value: (stats.completedOrders || 0).toString(),
+          icon: CheckCircle,
+          iconColor: 'green',
+          metadata: {
+            onClick: () => onStatClick?.('completedOrders'),
+          },
+        }}
         onClick={() => onStatClick?.('completedOrders')}
       />
 
       {/* Cancelled Orders */}
-      <StatCard
-        icon={<Clock className="h-6 w-6 text-gray-600" />}
-        label="İptal Edilen"
-        value={stats.cancelledOrders || 0}
-        color="text-gray-600"
+      <StatsCard
+        data={{
+          id: 'cancelled-orders',
+          title: 'İptal Edilen',
+          value: (stats.cancelledOrders || 0).toString(),
+          icon: Clock,
+          iconColor: 'gray',
+          metadata: {
+            onClick: () => onStatClick?.('cancelledOrders'),
+          },
+        }}
         onClick={() => onStatClick?.('cancelledOrders')}
       />
 
       {/* Revenue (for sellers) */}
       {showRevenue && stats.totalRevenue !== undefined && (
-        <StatCard
-          icon={<TrendingUp className="h-6 w-6 text-purple-600" />}
-          label="Toplam Gelir"
-          value={formatCurrency(stats.totalRevenue)}
-          color="text-purple-600"
+        <StatsCard
+          data={{
+            id: 'total-revenue',
+            title: 'Toplam Gelir',
+            value: formatCurrency(stats.totalRevenue),
+            icon: Package, // Using Package instead of TrendingUp for consistency
+            iconColor: 'purple',
+            metadata: {
+              onClick: () => onStatClick?.('totalRevenue'),
+            },
+          }}
           onClick={() => onStatClick?.('totalRevenue')}
         />
       )}
