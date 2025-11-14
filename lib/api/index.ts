@@ -42,6 +42,15 @@ export type {
   BuyerSnapshotDto,
 } from './buyer-dashboard';
 
+// Export Moderator Dashboard API
+export { moderatorDashboardApi } from './moderator-dashboard';
+export type {
+  ModeratorDashboardApiResponse,
+  ModerationStatsDto,
+  PendingItemsResponse,
+  ActivityLogDto,
+} from '@/types/backend/dashboard';
+
 // Export Dashboard Analytics API
 export {
   getEarningsTrend,

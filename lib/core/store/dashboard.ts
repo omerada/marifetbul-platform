@@ -5,16 +5,12 @@ import { useUnifiedAuthStore } from './domains/auth/unifiedAuthStore';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { sellerDashboardApi } from '@/lib/api/seller-dashboard';
 import { buyerDashboardApi } from '@/lib/api/buyer-dashboard';
+import { moderatorDashboardApi } from '@/lib/api/moderator-dashboard';
 import {
-  getModerationStats,
-  getPendingItems,
-  getRecentActivities,
-} from '@/lib/api/moderation';
-import { adaptModeratorDashboard } from '@/components/domains/dashboard/utils/dashboardAdapters';
-import {
-  transformSellerDashboardV2,
-  transformBuyerDashboardV2,
-} from '@/lib/api/transformers/dashboard';
+  adaptFreelancerDashboard,
+  adaptEmployerDashboard,
+  adaptModeratorDashboard,
+} from '@/components/domains/dashboard/utils/dashboardAdapters';
 
 // Enhanced error type for better error handling
 export interface DashboardError {
@@ -102,27 +98,24 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
       if (userType === 'freelancer') {
         const backendData =
           await sellerDashboardApi.getSellerDashboardByDays(days);
-        dashboardData = transformSellerDashboardV2(backendData);
+        dashboardData = adaptFreelancerDashboard(backendData);
       } else if (userType === 'employer') {
         const backendData =
           await buyerDashboardApi.getBuyerDashboardByDays(days);
-        dashboardData = transformBuyerDashboardV2(backendData);
+        dashboardData = adaptEmployerDashboard(backendData);
       } else if (userType === 'moderator') {
-        // SPRINT 1 - Task 1.1: MODERATOR Dashboard Support
+        // SPRINT 1 - Story 2: MODERATOR Dashboard Support
+        // Using new unified moderator dashboard API
         logger.debug('[Dashboard Store] Fetching moderator dashboard data');
 
-        // Fetch all moderator data in parallel for better performance
-        const [stats, pendingItems, activities] = await Promise.all([
-          getModerationStats(),
-          getPendingItems(1, 10), // First page, 10 items
-          getRecentActivities(1, 20), // First page, 20 activities
-        ]);
+        // Fetch complete moderator dashboard (stats + pending + activities)
+        const moderatorData = await moderatorDashboardApi.getDashboard();
 
         // Transform to ModeratorDashboard format
         dashboardData = adaptModeratorDashboard({
-          stats,
-          pendingItems: pendingItems.items || [],
-          activities: activities.activities || [],
+          stats: moderatorData.stats,
+          pendingItems: moderatorData.pendingItems.items || [],
+          activities: moderatorData.recentActivities.activities || [],
           periodDays: days,
         });
       } else {

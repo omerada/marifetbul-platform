@@ -414,7 +414,7 @@ export function WalletDashboard({
       externalOnViewPayouts();
     } else {
       // Navigate to existing payouts page
-      window.location.href = '/dashboard/wallet/payouts';
+      window.location.href = '/dashboard/wallet?tab=payouts';
     }
   };
 

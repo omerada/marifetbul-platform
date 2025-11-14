@@ -46,6 +46,7 @@ import {
   QuickActions,
   WalletBalanceWidget,
   PendingMilestonesWidget,
+  AnalyticsChartWidget,
 } from '../widgets';
 import type { FreelancerDashboard } from '../types/dashboard.types';
 import { formatCompactNumber } from '../utils';
@@ -351,6 +352,20 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
                 />
               </div>
             )}
+          </DashboardSection>
+        )}
+
+        {/* Analytics Integration - Sprint 1 Story 4 */}
+        {canViewFinancials && (
+          <DashboardSection
+            title="Gelişmiş Analizler"
+            subtitle="Kazanç trendi, gelir dağılımı ve işlem özeti"
+          >
+            <AnalyticsChartWidget
+              allowTypeSwitch
+              defaultRange="30d"
+              showRangeSelector
+            />
           </DashboardSection>
         )}
 

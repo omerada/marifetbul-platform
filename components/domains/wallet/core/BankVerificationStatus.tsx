@@ -153,7 +153,7 @@ export const BankVerificationStatus: React.FC<BankVerificationStatusProps> = ({
                 Hesap Ekle
               </Button>
             ) : (
-              <Link href="/dashboard/wallet/bank-accounts">
+              <Link href="/dashboard/wallet?tab=accounts">
                 <Button variant="primary" size="sm" className="mt-3">
                   <Building2 className="mr-2 h-4 w-4" />
                   Hesap Ekle
@@ -198,7 +198,7 @@ export const BankVerificationStatus: React.FC<BankVerificationStatusProps> = ({
               </div>
             </div>
           </div>
-          <Link href="/dashboard/wallet/bank-accounts">
+          <Link href="/dashboard/wallet?tab=accounts">
             <Button variant="ghost" size="sm">
               <ArrowRight className="h-4 w-4" />
             </Button>
@@ -264,7 +264,7 @@ export const BankVerificationStatus: React.FC<BankVerificationStatusProps> = ({
           </div>
         </div>
 
-        <Link href="/dashboard/wallet/bank-accounts">
+        <Link href="/dashboard/wallet?tab=accounts">
           <Button variant="outline" className="mt-4 w-full">
             Tüm Hesapları Yönet
             <ArrowRight className="ml-2 h-4 w-4" />

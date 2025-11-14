@@ -41,26 +41,26 @@ export type {
   TransactionUpdateData,
 } from './useWebSocketWallet';
 
-// Main hooks
-export { useWallet } from './useWallet';
-export type { UseWalletReturn } from './useWallet';
-
-export { useBalance } from './useBalance';
-export type { UseBalanceReturn } from './useBalance';
-
+// Main hooks (Active - in production use)
 export { useTransactions } from './useTransactions';
 export type { UseTransactionsReturn } from './useTransactions';
 
 export { usePayouts } from './usePayouts';
 export type { UsePayoutsReturn } from './usePayouts';
 
-// Real-time polling hook
-export { useWalletPolling } from './useWalletPolling';
-export type {
-  UseWalletPollingReturn,
-  UseWalletPollingOptions,
-} from './useWalletPolling';
-
-// Payment methods hook
-export { usePaymentMethods } from './usePaymentMethods';
-export type { UsePaymentMethodsReturn } from './usePaymentMethods';
+// ================================================
+// CLEANUP NOTE - Sprint 3
+// ================================================
+// Deleted unused hooks (4 files, ~800 lines):
+// - useWallet.ts - Never used (replaced by useWalletData)
+// - useBalance.ts - Never used (replaced by useWalletData)
+// - usePaymentMethods.ts - Never used (256 lines)
+// - useWalletPolling.ts - Never used (252 lines)
+//
+// Canonical wallet hooks:
+// - useWalletData (comprehensive wallet + balance)
+// - useTransactions (transaction management)
+// - usePayouts (payout operations)
+// - useBankAccounts (bank account management)
+// - useEscrowList (escrow operations)
+// ================================================

@@ -412,59 +412,11 @@ function generateCSV(transactions: Transaction[]): string {
 }
 
 // ================================================
-// SELECTORS (Hooks)
+// EXPORTS
 // ================================================
-
-export const useWallet = () => useWalletStore((state) => state.wallet);
-export const useBalance = () => useWalletStore((state) => state.balance);
-export const useTransactions = () =>
-  useWalletStore((state) => state.transactions);
-export const usePayouts = () => useWalletStore((state) => state.payouts);
-export const usePayoutEligibility = () =>
-  useWalletStore((state) => state.eligibility);
-export const usePayoutLimits = () => useWalletStore((state) => state.limits);
-export const useWalletUI = () => useWalletStore((state) => state.ui);
-
+// Direct store access for advanced use cases
+// For most cases, use business hooks from @/hooks/business/wallet:
+// - useWalletData (wallet + balance + auto-refresh)
+// - useTransactions (transactions + filters + pagination)
+// - usePayouts (payouts + management)
 // ================================================
-// ACTIONS (Hooks)
-// ================================================
-
-export const useWalletActions = () => {
-  const fetchWallet = useWalletStore((state) => state.fetchWallet);
-  const fetchBalance = useWalletStore((state) => state.fetchBalance);
-  const fetchTransactions = useWalletStore((state) => state.fetchTransactions);
-  const fetchPayouts = useWalletStore((state) => state.fetchPayouts);
-  const fetchEligibility = useWalletStore((state) => state.fetchEligibility);
-  const fetchLimits = useWalletStore((state) => state.fetchLimits);
-  const requestPayout = useWalletStore((state) => state.requestPayout);
-  const cancelPayout = useWalletStore((state) => state.cancelPayout);
-  const exportTransactions = useWalletStore(
-    (state) => state.exportTransactions
-  );
-  const setPayoutModalOpen = useWalletStore(
-    (state) => state.setPayoutModalOpen
-  );
-  const setSelectedTransaction = useWalletStore(
-    (state) => state.setSelectedTransaction
-  );
-  const setSelectedPayout = useWalletStore((state) => state.setSelectedPayout);
-  const clearError = useWalletStore((state) => state.clearError);
-  const reset = useWalletStore((state) => state.reset);
-
-  return {
-    fetchWallet,
-    fetchBalance,
-    fetchTransactions,
-    fetchPayouts,
-    fetchEligibility,
-    fetchLimits,
-    requestPayout,
-    cancelPayout,
-    exportTransactions,
-    setPayoutModalOpen,
-    setSelectedTransaction,
-    setSelectedPayout,
-    clearError,
-    reset,
-  };
-};

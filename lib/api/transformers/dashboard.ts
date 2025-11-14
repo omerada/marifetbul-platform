@@ -1,4 +1,39 @@
 /**
+ * ================================================
+ * DASHBOARD DTO TRANSFORMERS - DEPRECATED
+ * ================================================
+ *
+ * ⚠️ DEPRECATION NOTICE - Sprint 1 Story 5
+ *
+ * This file contains legacy dashboard transformers that are being phased out.
+ *
+ * **Current Status:**
+ * - V1 transformers (transformSellerDashboard, transformBuyerDashboard) → Used only in legacy tests
+ * - V2 transformers (transformSellerDashboardV2, transformBuyerDashboardV2) → REPLACED
+ *
+ * **Migration Path:**
+ * - Use adapters from: @/components/domains/dashboard/utils/dashboardAdapters
+ *   * adaptFreelancerDashboard() - Replaces transformSellerDashboardV2()
+ *   * adaptEmployerDashboard() - Replaces transformBuyerDashboardV2()
+ *   * adaptAdminDashboard() - For admin dashboard
+ *   * adaptModeratorDashboard() - For moderator dashboard
+ *
+ * **Production Code:**
+ * ✅ All production code migrated to new adapters (as of 2025-11-14)
+ * ✅ lib/core/store/dashboard.ts - Now using adapters
+ *
+ * **Remaining Usage:**
+ * - __tests__/lib/api/transformers/dashboard.test.ts (V1 tests only)
+ *
+ * **Removal Plan:**
+ * - Sprint 1 Story 6: Update legacy tests to use adapters
+ * - Sprint 2: Remove this file entirely
+ *
+ * @deprecated Since Sprint 1 Story 5 (2025-11-14)
+ * @see @/components/domains/dashboard/utils/dashboardAdapters for current implementation
+ */
+
+/**
  * Dashboard DTO Transformers
  * Transforms backend DTOs to frontend types
  */

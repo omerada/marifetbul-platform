@@ -27,6 +27,14 @@ export { WalletBalanceWidget } from './WalletBalanceWidget';
 // Chart components
 export { ChartWidget } from './ChartWidget';
 
+// Analytics components (Sprint 1 - Story 4)
+export { AnalyticsChartWidget } from './AnalyticsChartWidget';
+export type {
+  AnalyticsChartWidgetProps,
+  AnalyticsChartType,
+  DateRange,
+} from './AnalyticsChartWidget';
+
 // Milestone components (Sprint 1 - Story 1.6)
 export { PendingMilestonesWidget } from './PendingMilestonesWidget';
 export { AwaitingAcceptanceWidget } from './AwaitingAcceptanceWidget';

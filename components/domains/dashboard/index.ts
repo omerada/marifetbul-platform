@@ -19,7 +19,7 @@ export * from './types/dashboard.types';
 // ============================================================================
 export { default as UnifiedDashboard } from './UnifiedDashboard';
 export { DashboardSidebar } from './DashboardSidebar';
-export { DashboardHeader } from './DashboardHeader';
+// DashboardHeader moved to widgets - import from './widgets' instead
 
 // ============================================================================
 // LOADING STATES (Sprint 1 - Epic 1.3) - EXISTING
@@ -78,6 +78,7 @@ export type {
 } from './views';
 
 // Shared widgets (Day 3-4) ✅ COMPLETE
+// Note: DashboardHeader is exported from ./widgets
 export * from './widgets';
 
 // Hooks (Day 5) ✅ COMPLETE

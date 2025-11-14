@@ -1,14 +1,13 @@
 /**
  * ================================================
- * WALLET DASHBOARD PAGE - Unified Wallet Route
+ * WALLET PAGE - UNIFIED TAB-BASED INTERFACE
  * ================================================
- * Main wallet page with role-based access control
- * - FREELANCER → Shows wallet dashboard
- * - EMPLOYER → Access denied (no wallet access)
- * - ADMIN → Redirects to /admin/wallets
+ * Main wallet page with consolidated tab navigation
+ * Replaces separate pages: payouts/, withdrawals/, escrow/, bank-accounts/
  *
- * Sprint Day 1 - Task 4: Wallet Route Cleanup
- * @version 2.0.0
+ * Sprint 1 - Story 3: Wallet Consolidation
+ * @version 3.0.0
+ * @updated 2025-11-14
  */
 
 'use client';
@@ -19,7 +18,7 @@ import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { Loading } from '@/components/ui';
 import { Card } from '@/components/ui/Card';
 import { AlertCircle, Wallet } from 'lucide-react';
-import { WalletDashboard } from '@/components/domains/wallet';
+import { UnifiedWalletPage } from './UnifiedWalletPage';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,7 +31,6 @@ export default function WalletPage() {
       if (user.role === 'ADMIN') {
         redirect('/admin/wallets');
       }
-      // Non-authenticated users
     } else if (!isLoading && !user) {
       redirect('/login');
     }
@@ -79,13 +77,9 @@ export default function WalletPage() {
     );
   }
 
-  // Show wallet dashboard for freelancers
+  // Show unified wallet dashboard for freelancers
   if (user?.role === 'FREELANCER') {
-    return (
-      <div className="container mx-auto px-4 py-6">
-        <WalletDashboard defaultView="overview" showAnalytics={true} />
-      </div>
-    );
+    return <UnifiedWalletPage />;
   }
 
   // Fallback - should not reach here

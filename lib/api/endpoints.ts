@@ -570,6 +570,22 @@ export const DASHBOARD_ENDPOINTS = {
   EARNINGS_TREND: '/dashboard/analytics/earnings-trend',
   REVENUE_BREAKDOWN: '/dashboard/analytics/revenue-breakdown',
   TRANSACTION_SUMMARY: '/dashboard/analytics/transaction-summary',
+
+  // ================================================
+  // MODERATOR DASHBOARD
+  // Path: /api/v1/dashboard/moderator
+  // Authorization: hasAnyRole('MODERATOR', 'ADMIN')
+  // Sprint 1 - Story 2: Moderator Dashboard Implementation
+  // ================================================
+
+  // Moderator Dashboard
+  MODERATOR_STATS: '/dashboard/moderator/stats',
+  MODERATOR_PENDING_ITEMS: '/dashboard/moderator/pending-items',
+  MODERATOR_RECENT_ACTIVITY: '/dashboard/moderator/recent-activity',
+  MODERATOR_PERFORMANCE: '/dashboard/moderator/performance',
+
+  // Admin-only Moderator Endpoints
+  MODERATOR_ALL_ACTIVITY: '/dashboard/moderator/admin/all-activity',
 } as const;
 
 // ================================================
