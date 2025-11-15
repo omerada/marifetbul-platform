@@ -23,4 +23,5 @@ export type { DisputeEvent, DisputeEventType } from './DisputeTimeline';
 export { DisputeCard } from './DisputeCard';
 export { DisputeStatistics } from './DisputeStatistics';
 export { DisputeFilters } from './DisputeFilters';
+export { DisputeAnalytics } from './DisputeAnalytics';
 export { default as DisputeMessaging } from './DisputeMessaging';

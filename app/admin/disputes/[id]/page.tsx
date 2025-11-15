@@ -48,6 +48,7 @@ import { Button, Loading } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import DisputeResolutionModal from '@/components/domains/admin/disputes/DisputeResolutionModal';
 import { DisputeMessaging } from '@/components/domains/disputes';
+import { EvidenceGallery } from '@/components/domains/disputes/EvidenceGallery';
 import {
   ArrowLeft,
   Calendar,
@@ -420,65 +421,7 @@ export default function AdminDisputeDetailPage({
                 Kanıtlar ({evidence.length})
               </h2>
 
-              {evidence.length === 0 ? (
-                <div className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center">
-                  <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
-                  <p className="mt-2 text-sm text-gray-600">
-                    Henüz kanıt yüklenmedi
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {evidence.map((item) => (
-                    <div
-                      key={item.id}
-                      className="group relative overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow hover:shadow-md"
-                    >
-                      {/* Evidence Preview */}
-                      <div
-                        className="relative aspect-video cursor-pointer bg-gray-100"
-                        onClick={() => setSelectedImage(item.fileUrl)}
-                      >
-                        <Image
-                          src={item.fileUrl}
-                          alt={item.fileName}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                        />
-                        <div className="absolute inset-0 bg-black opacity-0 transition-opacity group-hover:opacity-10" />
-                      </div>
-
-                      {/* Evidence Info */}
-                      <div className="p-3">
-                        <p className="truncate text-sm font-medium text-gray-900">
-                          {item.fileName}
-                        </p>
-                        <div className="mt-1 flex items-center justify-between">
-                          <span className="text-xs text-gray-500">
-                            {formatDistanceToNow(new Date(item.uploadedAt), {
-                              addSuffix: true,
-                              locale: tr,
-                            })}
-                          </span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              handleDownloadEvidence(
-                                item.fileUrl,
-                                item.fileName
-                              )
-                            }
-                          >
-                            <Download className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <EvidenceGallery evidence={evidence} />
             </Card>
 
             {/* Resolution Summary (if resolved) */}

@@ -277,11 +277,16 @@ export interface DisputeFilters {
  */
 export interface DisputeStatisticsExtended extends DisputeStatistics {
   totalDisputes: number;
+  openDisputes: number;
+  inProgressDisputes: number;
   resolvedDisputes: number;
+  rejectedDisputes: number;
+  closedDisputes: number;
   resolutionRate: number;
   favorBuyerCount: number;
   favorSellerCount: number;
   mutualAgreementCount: number;
+  reasonDistribution: Record<string, number>;
   topReasons: Array<{
     reason: DisputeReason;
     count: number;

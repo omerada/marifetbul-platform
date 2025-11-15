@@ -1,20 +1,18 @@
-'use client';
-
-import { redirect } from 'next/navigation';
-
 /**
  * ================================================
  * MODERATOR DASHBOARD PAGE
  * ================================================
- * Moderator page redirects to unified dashboard
- * UnifiedDashboard will render ModeratorDashboardView based on role
+ * Sprint 1 - Task 1: Moderator Dashboard View
  *
- * This fixes the 404 error when accessing /moderator directly
- * Sprint 1 Day 3 - Dashboard Consolidation
+ * Direct moderator dashboard access with role-based routing.
+ * UnifiedDashboard automatically renders ModeratorDashboardView for moderators.
  *
- * @version 1.0.0
- * @created 2025-11-13
+ * @version 2.0.0 - Sprint 1 Production Ready
+ * @created 2025-11-15
  */
+
+import { UnifiedDashboard } from '@/components/domains/dashboard';
+
 export default function ModeratorPage() {
-  redirect('/dashboard');
+  return <UnifiedDashboard />;
 }

@@ -15,6 +15,7 @@ import { orderApi } from '@/lib/api/orders';
 import type {
   DisputeResponse,
   DisputeStatistics,
+  DisputeStatisticsExtended,
   DisputeFilters as DisputeFiltersType,
 } from '@/types/dispute';
 import DisputeResolutionModal from '@/components/domains/admin/disputes/DisputeResolutionModal';
@@ -23,12 +24,19 @@ import { AdminDisputeQueue } from '@/components/domains/admin/disputes/AdminDisp
 import {
   DisputeStatistics as DisputeStatsComponent,
   DisputeFilters,
+  DisputeAnalytics,
 } from '@/components/domains/disputes';
 import { useWebSocket } from '@/hooks';
+import { Button } from '@/components/ui';
 
 export default function AdminDisputesPage() {
   const [disputes, setDisputes] = useState<DisputeResponse[]>([]);
   const [statistics, setStatistics] = useState<DisputeStatistics | null>(null);
+  const [extendedStats, setExtendedStats] =
+    useState<DisputeStatisticsExtended | null>(null);
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics'>(
+    'overview'
+  );
   const [selectedDispute, setSelectedDispute] =
     useState<DisputeResponse | null>(null);
   const [orderTotalAmount, setOrderTotalAmount] = useState<number>(0);
@@ -56,17 +64,58 @@ export default function AdminDisputesPage() {
 
       setDisputes(disputesData);
       setStatistics(statsData);
+
+      // Mock extended statistics (TODO: Replace with real API)
+      if (disputesData.length > 0) {
+        const openCount = disputesData.filter(
+          (d) => d.status === 'OPEN'
+        ).length;
+        const inProgressCount = disputesData.filter(
+          (d) => d.status === 'IN_PROGRESS'
+        ).length;
+        const resolvedCount = disputesData.filter(
+          (d) => d.status === 'RESOLVED'
+        ).length;
+        const rejectedCount = disputesData.filter(
+          (d) => d.status === 'REJECTED'
+        ).length;
+        const closedCount = disputesData.filter(
+          (d) => d.status === 'CLOSED'
+        ).length;
+
+        const reasonDist: Record<string, number> = {};
+        disputesData.forEach((d) => {
+          reasonDist[d.reason] = (reasonDist[d.reason] || 0) + 1;
+        });
+
+        setExtendedStats({
+          openDisputesCount: statsData.openDisputesCount,
+          averageResolutionTimeHours: statsData.averageResolutionTimeHours,
+          totalDisputes: disputesData.length,
+          openDisputes: openCount,
+          inProgressDisputes: inProgressCount,
+          resolvedDisputes: resolvedCount,
+          rejectedDisputes: rejectedCount,
+          closedDisputes: closedCount,
+          resolutionRate:
+            disputesData.length > 0
+              ? (resolvedCount / disputesData.length) * 100
+              : 0,
+          favorBuyerCount: 0,
+          favorSellerCount: 0,
+          mutualAgreementCount: 0,
+          reasonDistribution: reasonDist,
+          topReasons: [],
+          disputesOverTime: [],
+        });
+      }
     } catch (error) {
-      logger.error(
-        'Failed to fetch admin disputes data',
-        error,
-        {
-          component: 'AdminDisputesPage',
-          action: 'fetchData',
-          currentPage,
-          filters: activeFilters,
-        }
-      );
+      logger.error('Failed to fetch admin disputes data', error, {
+        component: 'AdminDisputesPage',
+        action: 'fetchData',
+        currentPage,
+        filters: activeFilters,
+      });
       toast.error('Veri Yüklenemedi', {
         description: 'İtirazlar yüklenirken bir hata oluştu.',
       });
@@ -205,34 +254,62 @@ export default function AdminDisputesPage() {
   return (
     <div className="space-y-6 p-6">
       {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-bold">İtiraz Yönetimi</h1>
-        <p className="text-muted-foreground mt-2">
-          Tüm itirazları görüntüleyin, yönetin ve çözümleyin
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">İtiraz Yönetimi</h1>
+          <p className="text-muted-foreground mt-2">
+            Tüm itirazları görüntüleyin, yönetin ve çözümleyin
+          </p>
+        </div>
+
+        {/* Tab Switcher */}
+        <div className="flex gap-2">
+          <Button
+            variant={activeTab === 'overview' ? 'primary' : 'outline'}
+            size="sm"
+            onClick={() => setActiveTab('overview')}
+          >
+            Genel Bakış
+          </Button>
+          <Button
+            variant={activeTab === 'analytics' ? 'primary' : 'outline'}
+            size="sm"
+            onClick={() => setActiveTab('analytics')}
+          >
+            Analitikler
+          </Button>
+        </div>
       </div>
 
-      {/* Statistics Cards - Sprint 1 Day 1.2 */}
-      <DisputeStatsComponent
-        statistics={statistics}
-        isLoading={isLoading}
-        onRefresh={fetchData}
-      />
+      {/* Content based on active tab */}
+      {activeTab === 'overview' ? (
+        <>
+          {/* Statistics Cards - Sprint 1 Day 1.2 */}
+          <DisputeStatsComponent
+            statistics={statistics}
+            isLoading={isLoading}
+            onRefresh={fetchData}
+          />
 
-      {/* Advanced Filters - Sprint 1 Day 1.3 */}
-      <DisputeFilters
-        onFiltersChange={handleFiltersChange}
-        initialFilters={activeFilters}
-      />
+          {/* Advanced Filters - Sprint 1 Day 1.3 */}
+          <DisputeFilters
+            onFiltersChange={handleFiltersChange}
+            initialFilters={activeFilters}
+          />
 
-      {/* Disputes Queue - Sprint 16 Story 3.3 */}
-      <AdminDisputeQueue
-        disputes={disputes}
-        isLoading={isLoading}
-        onRefresh={fetchData}
-        onViewDetails={handleViewDispute}
-        onResolveDispute={handleResolveDispute}
-      />
+          {/* Disputes Queue - Sprint 16 Story 3.3 */}
+          <AdminDisputeQueue
+            disputes={disputes}
+            isLoading={isLoading}
+            onRefresh={fetchData}
+            onViewDetails={handleViewDispute}
+            onResolveDispute={handleResolveDispute}
+          />
+        </>
+      ) : (
+        /* Analytics Dashboard - Sprint 1 Week 2 */
+        <DisputeAnalytics statistics={extendedStats} onRefresh={fetchData} />
+      )}
 
       {/* Detail Modal */}
       {selectedDispute && (

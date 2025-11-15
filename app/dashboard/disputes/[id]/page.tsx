@@ -40,6 +40,8 @@ import { Card } from '@/components/ui/Card';
 import { Button, Loading } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { DisputeMessaging } from '@/components/domains/disputes';
+import { EvidenceUploadV2 } from '@/components/domains/disputes/EvidenceUploadV2';
+import { EvidenceGallery } from '@/components/domains/disputes/EvidenceGallery';
 import {
   ArrowLeft,
   Calendar,
@@ -57,6 +59,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { formatDate } from '@/lib/shared/formatters';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import { useWebSocket } from '@/hooks/infrastructure/websocket/useWebSocket';
 
 // ================================================
 // TYPES
@@ -89,7 +92,8 @@ export default function UserDisputeDetailPage({
   >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEscalating, setIsEscalating] = useState(false);
-  const [showEvidenceUpload, setShowEvidenceUpload] = useState(false);
+
+  const socket = useWebSocket();
 
   // Resolve params promise
   useEffect(() => {
@@ -129,6 +133,49 @@ export default function UserDisputeDetailPage({
   useEffect(() => {
     fetchDisputeData();
   }, [fetchDisputeData]);
+
+  // WebSocket subscription for real-time updates
+  useEffect(() => {
+    if (!socket.isConnected || !disputeId) return;
+
+    const subscriptionId = socket.subscribe(
+      `/topic/disputes/${disputeId}`,
+      (message: unknown) => {
+        try {
+          if (!message || typeof message !== 'object' || !('body' in message)) {
+            return;
+          }
+
+          const msgBody = (message as { body: string }).body;
+          const payload = JSON.parse(msgBody);
+
+          // Handle different event types
+          if (payload.type === 'DISPUTE_STATUS_CHANGED') {
+            toast.info('İtiraz Durumu Güncellendi', {
+              description: `Yeni durum: ${disputeStatusLabels[payload.newStatus as keyof typeof disputeStatusLabels]}`,
+            });
+            fetchDisputeData();
+          } else if (payload.type === 'EVIDENCE_UPLOADED') {
+            toast.success('Yeni Kanıt Eklendi', {
+              description: 'Kanıt listesi güncellendi',
+            });
+            fetchDisputeData();
+          } else if (payload.type === 'DISPUTE_MESSAGE') {
+            // Message component handles this via its own WebSocket
+          }
+        } catch (err) {
+          logger.error(
+            'Failed to parse dispute WebSocket update',
+            err instanceof Error ? err : new Error(String(err))
+          );
+        }
+      }
+    );
+
+    return () => {
+      socket.unsubscribe(subscriptionId);
+    };
+  }, [socket, disputeId, fetchDisputeData]);
 
   // Handle escalate dispute
   const handleEscalate = async () => {
@@ -349,45 +396,37 @@ export default function UserDisputeDetailPage({
 
           {/* Right Column - Actions & Evidence (1/3 width) */}
           <div className="space-y-6">
-            {/* Actions Card */}
+            {/* Evidence Upload */}
             {!isResolved && (
+              <Card className="p-6">
+                <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
+                  <Upload className="h-5 w-5 text-purple-600" />
+                  Kanıt Yükle
+                </h2>
+                <EvidenceUploadV2
+                  disputeId={disputeId}
+                  onUploadComplete={fetchDisputeData}
+                />
+              </Card>
+            )}
+
+            {/* Actions Card */}
+            {!isResolved && canEscalate && (
               <Card className="p-6">
                 <h2 className="mb-4 text-lg font-semibold text-gray-900">
                   İşlemler
                 </h2>
 
-                <div className="space-y-3">
-                  {canEscalate && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleEscalate}
-                      disabled={isEscalating}
-                      className="w-full text-red-700 hover:bg-red-50"
-                    >
-                      <AlertTriangle className="mr-2 h-4 w-4" />
-                      {isEscalating ? 'Yükseltiliyor...' : 'İtirazı Yükselt'}
-                    </Button>
-                  )}
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowEvidenceUpload(!showEvidenceUpload)}
-                    className="w-full"
-                  >
-                    <Upload className="mr-2 h-4 w-4" />
-                    Kanıt Ekle
-                  </Button>
-                </div>
-
-                {showEvidenceUpload && (
-                  <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
-                    <p className="text-sm text-gray-600">
-                      Kanıt ekleme özelliği yakında aktif olacak.
-                    </p>
-                  </div>
-                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleEscalate}
+                  disabled={isEscalating}
+                  className="w-full text-red-700 hover:bg-red-50"
+                >
+                  <AlertTriangle className="mr-2 h-4 w-4" />
+                  {isEscalating ? 'Yükseltiliyor...' : 'İtirazı Yükselt'}
+                </Button>
               </Card>
             )}
 
@@ -398,38 +437,7 @@ export default function UserDisputeDetailPage({
                 Kanıtlar ({evidence.length})
               </h2>
 
-              {evidence.length === 0 ? (
-                <div className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center">
-                  <FileText className="mx-auto h-12 w-12 text-gray-400" />
-                  <p className="mt-2 text-sm text-gray-600">
-                    Henüz kanıt yüklenmedi
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {evidence.map((item) => (
-                    <div
-                      key={item.id}
-                      className="group relative overflow-hidden rounded-lg border border-gray-200 bg-white"
-                    >
-                      <div className="relative aspect-video bg-gray-100">
-                        <Image
-                          src={item.fileUrl}
-                          alt={item.fileName}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                        />
-                      </div>
-                      <div className="p-3">
-                        <p className="truncate text-sm font-medium text-gray-900">
-                          {item.fileName}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <EvidenceGallery evidence={evidence} />
             </Card>
 
             {/* Resolution Summary (if resolved) */}
