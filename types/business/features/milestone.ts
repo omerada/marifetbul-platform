@@ -412,3 +412,47 @@ export function formatMilestoneAmount(
     currency,
   }).format(amount);
 }
+
+/**
+ * Check if milestone can be started
+ */
+export function canStartMilestone(milestone: OrderMilestone): boolean {
+  return milestone.status === MilestoneStatus.PENDING;
+}
+
+/**
+ * Check if milestone can be rejected
+ */
+export function canRejectMilestone(milestone: OrderMilestone): boolean {
+  return milestone.status === MilestoneStatus.DELIVERED;
+}
+
+/**
+ * Get milestone status color
+ */
+export function getMilestoneStatusColor(status: MilestoneStatus): string {
+  const colors: Record<MilestoneStatus, string> = {
+    [MilestoneStatus.PENDING]: '#94a3b8', // gray-400
+    [MilestoneStatus.IN_PROGRESS]: '#3b82f6', // blue-500
+    [MilestoneStatus.DELIVERED]: '#f59e0b', // amber-500
+    [MilestoneStatus.ACCEPTED]: '#10b981', // green-500
+    [MilestoneStatus.REVISION_REQUESTED]: '#ef4444', // red-500
+    [MilestoneStatus.CANCELED]: '#6b7280', // gray-500
+  };
+  return colors[status] || colors[MilestoneStatus.PENDING];
+}
+
+/**
+ * Get milestone status text
+ */
+export function getMilestoneStatusText(status: MilestoneStatus): string {
+  const texts: Record<MilestoneStatus, string> = {
+    [MilestoneStatus.PENDING]: 'Bekliyor',
+    [MilestoneStatus.IN_PROGRESS]: 'Devam Ediyor',
+    [MilestoneStatus.DELIVERED]: 'Teslim Edildi',
+    [MilestoneStatus.ACCEPTED]: 'Onaylandı',
+    [MilestoneStatus.REVISION_REQUESTED]: 'Revizyon İstendi',
+    [MilestoneStatus.CANCELED]: 'İptal Edildi',
+  };
+  return texts[status] || texts[MilestoneStatus.PENDING];
+}
