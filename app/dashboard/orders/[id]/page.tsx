@@ -41,11 +41,6 @@ import {
   IBANDisplayCard,
   ManualPaymentConfirmationForm,
   PaymentModeDisplay,
-  MilestoneListCard,
-  MilestoneAcceptancePanel,
-  MilestoneCreationWizard,
-  MilestoneEditForm,
-  MilestoneDeletionModal,
   UnifiedDeliveryButton,
 } from '@/components/domains/orders';
 import { RefundCreationForm } from '@/components/domains/refunds';
@@ -86,24 +81,14 @@ export default function OrderDetailPage() {
   const [showRefundForm, setShowRefundForm] = useState(false);
   const [showRetryHistory, setShowRetryHistory] = useState(false);
 
-  // Sprint 1.3: Milestone action modals
-  const [selectedMilestone, setSelectedMilestone] =
-    useState<MilestoneResponse | null>(null);
-  const [showAcceptancePanel, setShowAcceptancePanel] = useState(false);
-
-  // Sprint 2: Milestone CRUD modals
-  const [showCreationWizard, setShowCreationWizard] = useState(false);
-  const [showEditForm, setShowEditForm] = useState(false);
-  const [showDeletionModal, setShowDeletionModal] = useState(false);
+  // Milestone management moved to dedicated page:
+  // /dashboard/orders/[id]/milestones
 
   // Get authenticated user
   const { user } = useAuth();
 
   // WebSocket for real-time updates
   const socket = useWebSocket();
-
-  // Sprint 1.3: Milestone actions hook
-  const { startMilestone, isStarting } = useMilestoneActions();
 
   // Real-time order updates with toast notifications
   useOrderUpdates({
@@ -401,49 +386,11 @@ export default function OrderDetailPage() {
   };
 
   // ================================================
-  // SPRINT 2: MILESTONE CRUD HANDLERS
+  // MILESTONE MANAGEMENT
   // ================================================
-
-  // Handle edit milestone click
-  const handleEditMilestone = (milestone: MilestoneResponse) => {
-    setSelectedMilestone(milestone);
-    setShowEditForm(true);
-  };
-
-  // Handle delete milestone click
-  const handleDeleteMilestone = (milestone: MilestoneResponse) => {
-    setSelectedMilestone(milestone);
-    setShowDeletionModal(true);
-  };
-
-  // Handle milestone creation success
-  const handleMilestoneCreated = () => {
-    toast.success('Milestone Oluşturuldu', {
-      description: "Milestone'lar başarıyla oluşturuldu.",
-    });
-    setShowCreationWizard(false);
-    loadOrder(); // Reload to get updated milestones
-  };
-
-  // Handle milestone edit success
-  const handleMilestoneEdited = () => {
-    toast.success('Milestone Güncellendi', {
-      description: 'Milestone başarıyla güncellendi.',
-    });
-    setShowEditForm(false);
-    setSelectedMilestone(null);
-    loadOrder(); // Reload to get updated milestones
-  };
-
-  // Handle milestone delete success
-  const handleMilestoneDeleted = () => {
-    toast.success('Milestone Silindi', {
-      description: 'Milestone başarıyla silindi.',
-    });
-    setShowDeletionModal(false);
-    setSelectedMilestone(null);
-    loadOrder(); // Reload to get updated milestones
-  };
+  // Milestone CRUD operations moved to dedicated page:
+  // /dashboard/orders/[id]/milestones
+  // This keeps order detail page focused and maintainable
 
   // Loading state
   if (isLoading) {
@@ -857,101 +804,92 @@ export default function OrderDetailPage() {
             </Card>
           )}
 
-          {/* Sprint 1.2 & Sprint 2: Milestone List with CRUD */}
+          {/* ================================================
+               MILESTONE MANAGEMENT SECTION (PRODUCTION-READY)
+               ================================================
+               Sprint 1: Clean, maintainable milestone integration
+               - Single source of truth: /dashboard/orders/[id]/milestones
+               - No duplicate components
+               - Simple preview card with link to dedicated page
+               ================================================ */}
           {order.milestones && order.milestones.length > 0 && (
-            <div>
+            <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-blue-50 p-6">
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Milestone Yönetimi
-                </h2>
                 <div className="flex items-center gap-3">
-                  {/* Sprint 1: Link to dedicated milestone page */}
-                  <Link
-                    href={`/dashboard/orders/${order.id}/milestones`}
-                    className="text-primary-600 hover:text-primary-700 text-sm font-medium underline"
-                  >
-                    View All Milestones →
-                  </Link>
-
-                  {userRole === 'seller' && order.status === 'PAID' && (
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={() => setShowCreationWizard(true)}
-                    >
-                      <Package className="mr-2 h-4 w-4" />
-                      Yeni Milestone
-                    </Button>
-                  )}
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-600 text-white">
+                    <Package className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Milestone Bazlı Ödeme
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {order.milestones.length} milestone tanımlanmış
+                    </p>
+                  </div>
                 </div>
+                <Link href={`/dashboard/orders/${order.id}/milestones`}>
+                  <Button variant="default" size="sm">
+                    Milestone'ları Yönet →
+                  </Button>
+                </Link>
               </div>
 
-              <MilestoneListCard
-                milestones={order.milestones}
-                userRole={userRole}
-                orderId={order.id}
-                currency={order.currency}
-                onStartClick={async (milestone) => {
-                  try {
-                    await startMilestone(milestone.id);
-                    await loadOrder();
-                    toast.success('Başarılı', {
-                      description: 'Milestone çalışması başlatıldı',
-                    });
-                  } catch (err) {
-                    toast.error('Hata', {
-                      description:
-                        err instanceof Error
-                          ? err.message
-                          : 'Başlatma başarısız',
-                    });
-                  }
-                }}
-                onDeliverClick={async (milestone) => {
-                  // onDeliverClick callback is now for post-delivery reload
-                  await loadOrder();
-                  toast.success('Başarılı', {
-                    description: 'Milestone teslim edildi',
-                  });
-                }}
-                onAcceptClick={(milestone) => {
-                  setSelectedMilestone(milestone);
-                  setShowAcceptancePanel(true);
-                }}
-                onRejectClick={(milestone) => {
-                  setSelectedMilestone(milestone);
-                  setShowAcceptancePanel(true);
-                }}
-                onEditClick={handleEditMilestone}
-                onDeleteClick={handleDeleteMilestone}
-              />
-            </div>
+              {/* Quick Progress Summary */}
+              <div className="mt-4 rounded-lg border border-purple-200 bg-white p-4">
+                <div className="mb-3 flex items-center justify-between text-sm">
+                  <span className="font-medium text-gray-700">İlerleme</span>
+                  <span className="text-purple-600">
+                    {
+                      order.milestones.filter((m) => m.status === 'ACCEPTED')
+                        .length
+                    }{' '}
+                    / {order.milestones.length} tamamlandı
+                  </span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-gray-200">
+                  <div
+                    className="h-2 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-500"
+                    style={{
+                      width: `${Math.round(
+                        (order.milestones.filter((m) => m.status === 'ACCEPTED')
+                          .length /
+                          order.milestones.length) *
+                          100
+                      )}%`,
+                    }}
+                  />
+                </div>
+                <p className="mt-3 text-center text-xs text-gray-500">
+                  Detaylı milestone yönetimi için yukarıdaki butona tıklayın
+                </p>
+              </div>
+            </Card>
           )}
 
-          {/* Show "Create Milestone" button if no milestones exist */}
+          {/* Milestone Feature Available Notice (No Milestones Yet) */}
           {(!order.milestones || order.milestones.length === 0) &&
-            userRole === 'seller' &&
-            order.status === 'PAID' && (
-              <Card className="p-8 text-center">
-                <Package className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-                <h3 className="mb-2 text-lg font-medium text-gray-900">
-                  Milestone Bulunmuyor
-                </h3>
-                <p className="mb-6 text-sm text-gray-600">
-                  Bu sipariş için henüz milestone tanımlanmamış. Milestone
-                  oluşturarak işi adımlara bölebilirsiniz.
-                </p>
-                <div className="flex items-center justify-center gap-3">
-                  <Button
-                    variant="default"
-                    onClick={() => setShowCreationWizard(true)}
-                  >
-                    <Package className="mr-2 h-4 w-4" />
-                    İlk Milestone'u Oluştur
-                  </Button>
-                  <Link href={`/dashboard/orders/${order.id}/milestones`}>
-                    <Button variant="outline">Milestone Sayfasına Git</Button>
-                  </Link>
+            (order.status === 'PAID' || order.status === 'PENDING_PAYMENT') && (
+              <Card className="border-purple-100 bg-purple-50 p-6">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-purple-100">
+                    <Package className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="mb-1 font-semibold text-gray-900">
+                      Milestone Bazlı Ödeme Kullanılabilir
+                    </h3>
+                    <p className="mb-4 text-sm text-gray-600">
+                      Bu siparişi milestone'lara bölerek adım adım ödeme
+                      alabilirsiniz. Her milestone teslim edilip onaylandığında
+                      ödeme otomatik serbest bırakılır.
+                    </p>
+                    <Link href={`/dashboard/orders/${order.id}/milestones`}>
+                      <Button variant="default" size="sm">
+                        Milestone Yönetimi →
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </Card>
             )}
@@ -1385,64 +1323,6 @@ export default function OrderDetailPage() {
           isOpen={showDisputeModal}
           onClose={() => setShowDisputeModal(false)}
           onSuccess={handleDisputeCreated}
-        />
-      )}
-
-      {/* Sprint 1.3: Milestone Acceptance Panel */}
-      {selectedMilestone && showAcceptancePanel && (
-        <MilestoneAcceptancePanel
-          milestone={selectedMilestone}
-          isOpen={showAcceptancePanel}
-          onClose={() => {
-            setShowAcceptancePanel(false);
-            setSelectedMilestone(null);
-          }}
-          onSuccess={async () => {
-            await loadOrder(); // Reload to get updated milestones
-            setShowAcceptancePanel(false);
-            setSelectedMilestone(null);
-          }}
-        />
-      )}
-
-      {/* Sprint 2: Milestone Creation Wizard */}
-      {showCreationWizard && order && (
-        <MilestoneCreationWizard
-          orderId={order.id}
-          orderTotal={order.totalAmount}
-          currency={order.currency}
-          isOpen={showCreationWizard}
-          onClose={() => setShowCreationWizard(false)}
-          onSuccess={handleMilestoneCreated}
-        />
-      )}
-
-      {/* Sprint 2: Milestone Edit Form */}
-      {selectedMilestone && showEditForm && (
-        <MilestoneEditForm
-          milestone={selectedMilestone}
-          currency={order?.currency || 'TRY'}
-          isOpen={showEditForm}
-          onClose={() => {
-            setShowEditForm(false);
-            setSelectedMilestone(null);
-          }}
-          onSuccess={handleMilestoneEdited}
-        />
-      )}
-
-      {/* Sprint 2: Milestone Deletion Modal */}
-      {selectedMilestone && showDeletionModal && (
-        <MilestoneDeletionModal
-          milestone={selectedMilestone}
-          orderId={order?.id || ''}
-          currency={order?.currency || 'TRY'}
-          isOpen={showDeletionModal}
-          onClose={() => {
-            setShowDeletionModal(false);
-            setSelectedMilestone(null);
-          }}
-          onSuccess={handleMilestoneDeleted}
         />
       )}
     </div>

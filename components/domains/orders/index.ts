@@ -60,6 +60,7 @@ export type { ManualPaymentConfirmationFormProps } from './ManualPaymentConfirma
 export type { PaymentModeDisplayProps } from './PaymentModeDisplay';
 
 // Sprint 1 - Story 1.2: Milestone List & Progress Display
+// @deprecated MilestoneListCard - Use MilestoneList from @/components/domains/milestones instead
 export { MilestoneListCard } from './MilestoneListCard';
 export type { MilestoneListCardProps } from './MilestoneListCard';
 

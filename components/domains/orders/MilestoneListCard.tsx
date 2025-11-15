@@ -2,6 +2,16 @@
  * ================================================
  * MILESTONE LIST CARD
  * ================================================
+ * @deprecated This component is deprecated. Use MilestoneList from @/components/domains/milestones instead.
+ *
+ * DEPRECATION NOTICE:
+ * - Date: 2025-01-14
+ * - Reason: Duplicate functionality with components/domains/milestones/MilestoneList.tsx
+ * - Migration: Use dedicated /dashboard/orders/[id]/milestones page for milestone management
+ * - Preview: Use milestone preview card in order detail page
+ * - Will be removed: Sprint 2 cleanup phase
+ *
+ * Original Description:
  * Comprehensive milestone list with actions
  *
  * Features:

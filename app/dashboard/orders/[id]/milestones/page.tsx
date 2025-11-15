@@ -19,11 +19,16 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
-import { ChevronLeft, AlertCircle } from 'lucide-react';
+import { ChevronLeft, AlertCircle, Wifi, WifiOff } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
-import { MilestoneList } from '@/components/domains/milestones';
+import { Badge } from '@/components/ui/Badge';
+import {
+  MilestoneList,
+  CreateMilestoneForm,
+} from '@/components/domains/milestones';
 import { useOrderMilestones } from '@/hooks/business/useMilestones';
+import { useWebSocket } from '@/hooks/infrastructure/websocket';
 import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { orderApi } from '@/lib/api/orders';
 import type { OrderResponse } from '@/types/backend-aligned';
@@ -46,6 +51,7 @@ export default function OrderMilestonesPage() {
   const [order, setOrder] = useState<OrderResponse | null>(null);
   const [orderLoading, setOrderLoading] = useState(true);
   const [orderError, setOrderError] = useState<string | null>(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   // Determine user role from order
   const userRole: 'FREELANCER' | 'EMPLOYER' =
@@ -56,7 +62,63 @@ export default function OrderMilestonesPage() {
       : 'FREELANCER';
 
   // Fetch milestones
-  const { milestones, isLoading, error } = useOrderMilestones(orderId);
+  const { milestones, isLoading, error, refetch } = useOrderMilestones(orderId);
+
+  // WebSocket for real-time updates (Sprint 1 - Story 1.8)
+  const { isConnected: wsConnected, subscribe } = useWebSocket({
+    autoConnect: true,
+    enableStoreIntegration: true,
+    onConnect: () => {
+      logger.info('[OrderMilestonesPage] WebSocket connected');
+    },
+    onDisconnect: () => {
+      logger.info('[OrderMilestonesPage] WebSocket disconnected');
+    },
+  });
+
+  // Subscribe to milestone updates
+  useEffect(() => {
+    if (!wsConnected || !orderId) return;
+
+    logger.info('[OrderMilestonesPage] Subscribing to milestone updates', {
+      orderId,
+    });
+
+    // Subscribe to order-specific milestone updates
+    const subscriptionId = subscribe(
+      `/topic/orders/${orderId}/milestones`,
+      (message: unknown) => {
+        logger.info('[OrderMilestonesPage] Milestone update received', {
+          message,
+        });
+
+        // Refetch milestones on any update
+        refetch();
+
+        // Show toast notification
+        const payload = message as {
+          type?: string;
+          milestoneId?: string;
+          status?: string;
+        };
+
+        if (payload.type === 'MILESTONE_CREATED') {
+          toast.success('Yeni milestone eklendi');
+        } else if (payload.type === 'MILESTONE_DELIVERED') {
+          toast.info('Milestone teslim edildi');
+        } else if (payload.type === 'MILESTONE_ACCEPTED') {
+          toast.success('Milestone onaylandı');
+        } else if (payload.type === 'MILESTONE_REVISION_REQUESTED') {
+          toast.warning('Revizyon istendi');
+        }
+      }
+    );
+
+    return () => {
+      logger.info('[OrderMilestonesPage] Unsubscribing from milestone updates');
+      // Cleanup will be handled by useWebSocket hook
+    };
+  }, [wsConnected, orderId, subscribe, refetch]);
 
   // Load order details for role detection
   const loadOrder = useCallback(async () => {
@@ -166,31 +228,68 @@ export default function OrderMilestonesPage() {
             <p className="text-gray-600">
               Track and manage milestone-based progress for this order
             </p>
-            <p className="mt-1 text-sm text-gray-500">
-              Your role:{' '}
-              {userRole === 'FREELANCER'
-                ? 'Freelancer (Seller)'
-                : 'Employer (Buyer)'}
-            </p>
+            <div className="mt-2 flex items-center gap-4">
+              <p className="text-sm text-gray-500">
+                Your role:{' '}
+                {userRole === 'FREELANCER'
+                  ? 'Freelancer (Seller)'
+                  : 'Employer (Buyer)'}
+              </p>
+              {/* WebSocket Status Indicator */}
+              <Badge
+                variant={wsConnected ? 'success' : 'outline'}
+                className="gap-1.5"
+              >
+                {wsConnected ? (
+                  <>
+                    <Wifi className="h-3 w-3" />
+                    <span className="text-xs">Live Updates</span>
+                  </>
+                ) : (
+                  <>
+                    <WifiOff className="h-3 w-3" />
+                    <span className="text-xs">Offline</span>
+                  </>
+                )}
+              </Badge>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Milestone List */}
-      <Card className="p-6">
-        <MilestoneList
-          orderId={orderId}
-          userRole={userRole}
-          showCreateButton={userRole === 'FREELANCER'}
-          onCreateClick={() => {
-            logger.info('[OrderMilestonesPage] Create milestone clicked');
-            toast.info('Coming Soon', {
-              description:
-                'Milestone creation will be implemented in Story 1.7',
-            });
-          }}
-        />
-      </Card>
+      {/* Milestone List or Create Form */}
+      {showCreateForm ? (
+        <Card className="p-6">
+          <CreateMilestoneForm
+            orderId={orderId}
+            orderTotal={order.totalAmount}
+            currency={order.currency}
+            onSuccess={(milestones) => {
+              logger.info('[OrderMilestonesPage] Milestones created', {
+                count: milestones.length,
+              });
+              setShowCreateForm(false);
+              refetch();
+            }}
+            onCancel={() => setShowCreateForm(false)}
+          />
+        </Card>
+      ) : (
+        <Card className="p-6">
+          <MilestoneList
+            orderId={orderId}
+            userRole={userRole}
+            showCreateButton={
+              userRole === 'FREELANCER' &&
+              (!milestones || milestones.length === 0)
+            }
+            onCreateClick={() => {
+              logger.info('[OrderMilestonesPage] Create milestone clicked');
+              setShowCreateForm(true);
+            }}
+          />
+        </Card>
+      )}
 
       {/* Sprint 1 Debug Info (remove in production) */}
       {process.env.NODE_ENV === 'development' && (
