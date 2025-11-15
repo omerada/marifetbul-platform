@@ -70,6 +70,10 @@ function getTransactionIcon(type: TransactionType) {
     case TransactionType.ESCROW_HOLD:
       return <Clock className="h-5 w-5 text-amber-600" />;
 
+    case TransactionType.MILESTONE_PAYMENT:
+      // Sprint 1 - Story 2.3: Milestone payment icon
+      return <ArrowDownCircle className="h-5 w-5 text-purple-600" />;
+
     case TransactionType.FEE:
       return <CreditCard className="h-5 w-5 text-gray-600" />;
 
@@ -84,6 +88,7 @@ function getTransactionLabel(type: TransactionType): string {
     [TransactionType.DEBIT]: 'Giden Ödeme',
     [TransactionType.ESCROW_HOLD]: 'Ödeme Tutuldu',
     [TransactionType.ESCROW_RELEASE]: 'Ödeme Serbest',
+    [TransactionType.MILESTONE_PAYMENT]: 'Milestone Ödemesi', // Sprint 1 - Story 2.3
     [TransactionType.PAYOUT]: 'Para Çekme',
     [TransactionType.REFUND]: 'İade',
     [TransactionType.FEE]: 'Komisyon',

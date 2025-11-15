@@ -19,6 +19,7 @@ import {
   DollarSign,
   RefreshCw,
   Receipt,
+  Target, // Sprint 1 - Story 2.3: Milestone icon
 } from 'lucide-react';
 import { TransactionType } from '@/types/business/features/wallet';
 
@@ -26,11 +27,13 @@ import { TransactionType } from '@/types/business/features/wallet';
 // TYPE LABELS
 // ============================================================================
 
+// Sprint 1 - Story 2.3: Added MILESTONE_PAYMENT label
 const TRANSACTION_TYPE_LABELS: Record<TransactionType, string> = {
   [TransactionType.CREDIT]: 'Gelen Para',
   [TransactionType.DEBIT]: 'Giden Para',
   [TransactionType.ESCROW_HOLD]: 'Emanet Tutuldu',
   [TransactionType.ESCROW_RELEASE]: 'Emanet Serbest',
+  [TransactionType.MILESTONE_PAYMENT]: 'Milestone Ödemesi', // Sprint 1 - Story 2.3
   [TransactionType.PAYOUT]: 'Para Çekme',
   [TransactionType.REFUND]: 'İade',
   [TransactionType.FEE]: 'Komisyon',
@@ -54,11 +57,13 @@ type BadgeVariant =
   | 'secondary'
   | 'destructive';
 
+// Sprint 1 - Story 2.3: Added MILESTONE_PAYMENT badge variant
 const TRANSACTION_TYPE_BADGE_VARIANTS: Record<TransactionType, BadgeVariant> = {
   [TransactionType.CREDIT]: 'success',
   [TransactionType.DEBIT]: 'warning',
   [TransactionType.ESCROW_HOLD]: 'secondary',
   [TransactionType.ESCROW_RELEASE]: 'default',
+  [TransactionType.MILESTONE_PAYMENT]: 'success', // Sprint 1 - Story 2.3 (purple variant)
   [TransactionType.PAYOUT]: 'warning',
   [TransactionType.REFUND]: 'default',
   [TransactionType.FEE]: 'destructive',
@@ -82,6 +87,7 @@ interface IconConfig {
   colorClass: string;
 }
 
+// Sprint 1 - Story 2.3: Added MILESTONE_PAYMENT icon config
 const TRANSACTION_TYPE_ICONS: Record<TransactionType, IconConfig> = {
   [TransactionType.CREDIT]: {
     icon: <ArrowDownCircle className="h-5 w-5" />,
@@ -99,9 +105,13 @@ const TRANSACTION_TYPE_ICONS: Record<TransactionType, IconConfig> = {
     icon: <Unlock className="h-5 w-5" />,
     colorClass: 'bg-blue-100 text-blue-600',
   },
+  [TransactionType.MILESTONE_PAYMENT]: {
+    icon: <Target className="h-5 w-5" />, // Sprint 1 - Story 2.3: Milestone icon
+    colorClass: 'bg-purple-100 text-purple-600',
+  },
   [TransactionType.PAYOUT]: {
     icon: <DollarSign className="h-5 w-5" />,
-    colorClass: 'bg-purple-100 text-purple-600',
+    colorClass: 'bg-indigo-100 text-indigo-600', // Changed from purple to indigo
   },
   [TransactionType.REFUND]: {
     icon: <RefreshCw className="h-5 w-5" />,
@@ -166,11 +176,14 @@ export function isTransactionPending(type: TransactionType): boolean {
 
 /**
  * Check if transaction is completed/success
+ * Sprint 1 - Story 2.3: Added MILESTONE_PAYMENT to completed types
  */
 export function isTransactionCompleted(type: TransactionType): boolean {
-  return [TransactionType.CREDIT, TransactionType.ESCROW_RELEASE].includes(
-    type
-  );
+  return [
+    TransactionType.CREDIT,
+    TransactionType.ESCROW_RELEASE,
+    TransactionType.MILESTONE_PAYMENT, // Sprint 1 - Story 2.3
+  ].includes(type);
 }
 
 /**

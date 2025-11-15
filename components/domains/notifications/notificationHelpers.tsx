@@ -22,6 +22,7 @@ import {
   Star,
   Zap,
   Eye,
+  Target,
 } from 'lucide-react';
 
 export type BadgeVariant = 'success' | 'destructive' | 'default' | 'secondary';
@@ -32,6 +33,9 @@ export type BadgeVariant = 'success' | 'destructive' | 'default' | 'secondary';
 export function getNotificationIcon(type: string) {
   const iconClasses = 'h-4 w-4';
 
+  // Milestone notifications (Sprint 1)
+  if (type.includes('milestone'))
+    return <Target className={`${iconClasses} text-purple-600`} />;
   if (type.includes('payment'))
     return <DollarSign className={`${iconClasses} text-green-600`} />;
   if (type.includes('escrow'))
@@ -72,6 +76,10 @@ export function getNotificationIcon(type: string) {
  * Get badge label for notification type
  */
 export function getNotificationBadge(type: string): string {
+  // Milestone notifications (Sprint 1)
+  if (type.includes('milestone')) {
+    return 'Milestone';
+  }
   if (
     type.includes('payment') ||
     type.includes('escrow') ||
@@ -95,6 +103,10 @@ export function getNotificationBadge(type: string): string {
  * Get badge variant (color) for notification type
  */
 export function getBadgeVariant(type: string): BadgeVariant {
+  // Milestone delivered/accepted (Sprint 1)
+  if (type.includes('milestone')) {
+    return 'success'; // Purple would be better but using success for now
+  }
   if (type.includes('payment') || type.includes('escrow')) {
     return 'success';
   }
@@ -141,6 +153,10 @@ export const NOTIFICATION_FILTERS = {
   unread: {
     label: 'Okunmamış',
     matcher: (n: { isRead: boolean }) => !n.isRead,
+  },
+  milestone: {
+    label: 'Milestone',
+    matcher: (n: { type: string }) => n.type.includes('milestone'),
   },
   payment: {
     label: 'Ödeme',

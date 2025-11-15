@@ -61,9 +61,14 @@ export function Select({
 interface SelectTriggerProps {
   className?: string;
   placeholder?: string;
+  disabled?: boolean;
 }
 
-export function SelectTrigger({ className, placeholder }: SelectTriggerProps) {
+export function SelectTrigger({
+  className,
+  placeholder,
+  disabled,
+}: SelectTriggerProps) {
   const context = useContext(SelectContext);
   if (!context) throw new Error('SelectTrigger must be used within Select');
 
@@ -73,6 +78,7 @@ export function SelectTrigger({ className, placeholder }: SelectTriggerProps) {
     <button
       type="button"
       onClick={() => setOpen(!open)}
+      disabled={disabled}
       className={cn(
         'border-input bg-background ring-offset-background flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm',
         'placeholder:text-muted-foreground focus:ring-ring focus:ring-2 focus:ring-offset-2 focus:outline-none',

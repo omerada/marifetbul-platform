@@ -43,6 +43,10 @@ import {
   QuickActions,
   WalletBalanceWidget,
 } from '../widgets';
+import {
+  MyRefundsWidget,
+  RefundStatsWidget,
+} from '@/components/domains/refunds';
 import type { EmployerDashboard } from '../types/dashboard.types';
 import { formatCurrency, formatCompactNumber } from '../utils';
 
@@ -261,6 +265,24 @@ export const EmployerDashboardView = memo<EmployerDashboardViewProps>(
           subtitle="Bakiye ve harcama bilgileriniz"
         >
           <WalletBalanceWidget />
+        </DashboardSection>
+
+        {/* Refunds Widget - SPRINT 3 STORY 3.1 */}
+        <DashboardSection
+          title="İade Taleplerim"
+          subtitle="Son iade talepleriniz"
+        >
+          <div className="space-y-4">
+            {/* Stats - Story 3.2 */}
+            <RefundStatsWidget compact />
+
+            {/* Recent Refunds - Story 3.1 */}
+            <MyRefundsWidget
+              maxItems={5}
+              showViewAll
+              viewAllUrl="/dashboard/refunds"
+            />
+          </div>
         </DashboardSection>
 
         {/* Charts Section */}

@@ -49,6 +49,10 @@ import {
   AnalyticsChartWidget,
 } from '../widgets';
 import { MilestoneStatsWidget } from '../widgets/MilestoneStatsWidget';
+import {
+  MyRefundsWidget,
+  RefundStatsWidget,
+} from '@/components/domains/refunds';
 import type { FreelancerDashboard } from '../types/dashboard.types';
 import { formatCompactNumber } from '../utils';
 import { formatCurrency } from '@/lib/shared/formatters';
@@ -320,6 +324,24 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
           subtitle="Aşamalı ödeme durumunuz"
         >
           <MilestoneStatsWidget />
+        </DashboardSection>
+
+        {/* Refunds Widget - SPRINT 3 STORY 3.1 */}
+        <DashboardSection
+          title="İade Taleplerim"
+          subtitle="Son iade talepleriniz"
+        >
+          <div className="space-y-4">
+            {/* Stats - Story 3.2 */}
+            <RefundStatsWidget compact />
+
+            {/* Recent Refunds - Story 3.1 */}
+            <MyRefundsWidget
+              maxItems={5}
+              showViewAll
+              viewAllUrl="/dashboard/refunds"
+            />
+          </div>
         </DashboardSection>
 
         {/* Charts Section */}

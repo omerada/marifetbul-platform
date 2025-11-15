@@ -11,11 +11,13 @@ import type { Transaction as BackendTransaction } from '@/lib/api/validators';
 // ================================================
 
 // Transaction Type Enum
+// Sprint 1 - Story 2.3: Added MILESTONE_PAYMENT type
 export enum TransactionType {
   CREDIT = 'CREDIT',
   DEBIT = 'DEBIT',
   ESCROW_HOLD = 'ESCROW_HOLD',
   ESCROW_RELEASE = 'ESCROW_RELEASE',
+  MILESTONE_PAYMENT = 'MILESTONE_PAYMENT', // Sprint 1 - Milestone payments
   PAYOUT = 'PAYOUT',
   REFUND = 'REFUND',
   FEE = 'FEE',
