@@ -16,17 +16,19 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Users, Briefcase } from 'lucide-react';
 
 export default function MilestoneTestPage() {
-  const [userRole, setUserRole] = useState<'FREELANCER' | 'EMPLOYER'>('FREELANCER');
-  
+  const [userRole, setUserRole] = useState<'FREELANCER' | 'EMPLOYER'>(
+    'FREELANCER'
+  );
+
   // Test order ID - replace with real order ID from your backend
   const testOrderId = '123e4567-e89b-12d3-a456-426614174000';
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-5xl mx-auto px-4">
+      <div className="mx-auto max-w-5xl px-4">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="mb-2 text-3xl font-bold text-gray-900">
             🚀 Milestone Payment System
           </h1>
           <p className="text-gray-600">
@@ -35,10 +37,10 @@ export default function MilestoneTestPage() {
         </div>
 
         {/* Role Switcher */}
-        <Card className="p-6 mb-6 bg-gradient-to-r from-purple-50 to-blue-50">
+        <Card className="mb-6 bg-gradient-to-r from-purple-50 to-blue-50 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-1">
+              <h2 className="mb-1 text-lg font-semibold text-gray-900">
                 Test Rolü
               </h2>
               <p className="text-sm text-gray-600">
@@ -69,24 +71,28 @@ export default function MilestoneTestPage() {
           <div className="mt-4 flex items-center gap-2">
             <span className="text-sm text-gray-600">Aktif Rol:</span>
             <Badge variant="outline" className="font-medium">
-              {userRole === 'FREELANCER' ? '👨‍💻 Freelancer (Seller)' : '🏢 Employer (Buyer)'}
+              {userRole === 'FREELANCER'
+                ? '👨‍💻 Freelancer (Seller)'
+                : '🏢 Employer (Buyer)'}
             </Badge>
           </div>
         </Card>
 
         {/* Order Info */}
-        <Card className="p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">
+        <Card className="mb-6 p-6">
+          <h2 className="mb-3 text-lg font-semibold text-gray-900">
             Sipariş Bilgileri
           </h2>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-gray-600">Sipariş ID:</span>
-              <p className="font-mono text-xs text-gray-900 mt-1">{testOrderId}</p>
+              <p className="mt-1 font-mono text-xs text-gray-900">
+                {testOrderId}
+              </p>
             </div>
             <div>
               <span className="text-gray-600">Paket:</span>
-              <p className="text-gray-900 mt-1">Web Tasarım - Premium</p>
+              <p className="mt-1 text-gray-900">Web Tasarım - Premium</p>
             </div>
           </div>
         </Card>
@@ -115,8 +121,8 @@ export default function MilestoneTestPage() {
         </div>
 
         {/* Documentation */}
-        <Card className="p-6 mt-8 bg-blue-50 border-blue-200">
-          <h3 className="text-lg font-semibold text-blue-900 mb-3">
+        <Card className="mt-8 border-blue-200 bg-blue-50 p-6">
+          <h3 className="mb-3 text-lg font-semibold text-blue-900">
             📚 Test Notları
           </h3>
           <ul className="space-y-2 text-sm text-blue-800">
@@ -124,37 +130,44 @@ export default function MilestoneTestPage() {
               ✅ <strong>Story 1.1:</strong> MilestoneList component tamamlandı
             </li>
             <li>
-              ⏳ <strong>Story 1.2:</strong> API client zaten mevcut (lib/api/milestones.ts)
+              ⏳ <strong>Story 1.2:</strong> API client zaten mevcut
+              (lib/api/milestones.ts)
             </li>
             <li>
-              ⏳ <strong>Story 1.3:</strong> Hooks zaten mevcut (hooks/business/useMilestones.ts)
+              ⏳ <strong>Story 1.3:</strong> Hooks zaten mevcut
+              (hooks/business/useMilestones.ts)
             </li>
             <li>
-              🔜 <strong>Story 1.4:</strong> DeliverMilestoneModal component eklenecek
+              🔜 <strong>Story 1.4:</strong> DeliverMilestoneModal component
+              eklenecek
             </li>
             <li>
-              🔜 <strong>Story 1.5:</strong> AcceptMilestoneModal component eklenecek
+              🔜 <strong>Story 1.5:</strong> AcceptMilestoneModal component
+              eklenecek
             </li>
             <li>
-              🔜 <strong>Story 1.6:</strong> RejectMilestoneModal component eklenecek
+              🔜 <strong>Story 1.6:</strong> RejectMilestoneModal component
+              eklenecek
             </li>
           </ul>
         </Card>
 
         {/* API Note */}
-        <Card className="p-6 mt-4 bg-yellow-50 border-yellow-200">
-          <h3 className="text-lg font-semibold text-yellow-900 mb-2">
+        <Card className="mt-4 border-yellow-200 bg-yellow-50 p-6">
+          <h3 className="mb-2 text-lg font-semibold text-yellow-900">
             ⚠️ Backend Bağlantısı
           </h3>
           <p className="text-sm text-yellow-800">
-            Bu test sayfası backend API&apos;ye gerçek istek gönderir. Backend sunucunuzun 
-            <code className="mx-1 px-2 py-1 bg-yellow-100 rounded text-xs">
+            Bu test sayfası backend API&apos;ye gerçek istek gönderir. Backend
+            sunucunuzun
+            <code className="mx-1 rounded bg-yellow-100 px-2 py-1 text-xs">
               localhost:8080
             </code>
             adresinde çalıştığından emin olun.
           </p>
-          <p className="text-sm text-yellow-800 mt-2">
-            Test için backend&apos;de örnek milestone&apos;ları olan bir sipariş oluşturmanız gerekebilir.
+          <p className="mt-2 text-sm text-yellow-800">
+            Test için backend&apos;de örnek milestone&apos;ları olan bir sipariş
+            oluşturmanız gerekebilir.
           </p>
         </Card>
       </div>

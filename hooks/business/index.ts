@@ -682,3 +682,18 @@ export type {
 
 export { useDisputeMessages } from './useDisputeMessages';
 export type { UseDisputeMessagesReturn } from './useDisputeMessages';
+
+// ================================================
+// MILESTONES (Sprint 1 - Milestone Payment System)
+// ================================================
+export {
+  useOrderMilestones,
+  useMilestone,
+  useMilestoneActions,
+} from './useMilestones';
+
+export { useMilestoneWebSocket } from './useMilestoneWebSocket'; // Story 1.8 ✅
+export type {
+  UseMilestoneWebSocketOptions,
+  UseMilestoneWebSocketReturn,
+} from './useMilestoneWebSocket';

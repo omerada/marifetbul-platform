@@ -34,6 +34,9 @@ import {
   DollarSign,
   FileText,
 } from 'lucide-react';
+import {
+  useOrderMilestones,
+  useMilestoneActions,
 import { useOrderMilestones, useMilestoneActions } from '@/hooks/business/useMilestones';
 import {
   OrderMilestone,
@@ -48,6 +51,9 @@ import {
 } from '@/types/business/features/milestone';
 import { formatDate } from '@/lib/shared/utils/date';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import { DeliverMilestoneModal } from './DeliverMilestoneModal';
+import { AcceptMilestoneModal } from './AcceptMilestoneModal';
+import { RejectMilestoneModal } from './RejectMilestoneModal';
 
 // ============================================================================
 // TYPES
@@ -99,12 +105,12 @@ function MilestoneCard({
   const showRejectButton = isEmployer && canRejectMilestone(milestone);
 
   return (
-    <Card className="p-6 border-l-4" style={{ borderLeftColor: statusColor }}>
+    <Card className="border-l-4 p-6" style={{ borderLeftColor: statusColor }}>
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
+      <div className="mb-4 flex items-start justify-between">
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-purple-100 text-purple-700 font-semibold text-sm">
+          <div className="mb-2 flex items-center gap-3">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-purple-100 text-sm font-semibold text-purple-700">
               {milestone.sequence}
             </span>
             <h3 className="text-lg font-semibold text-gray-900">
@@ -112,7 +118,9 @@ function MilestoneCard({
             </h3>
           </div>
           {milestone.description && (
-            <p className="text-sm text-gray-600 ml-11">{milestone.description}</p>
+            <p className="ml-11 text-sm text-gray-600">
+              {milestone.description}
+            </p>
           )}
         </div>
 
@@ -127,7 +135,7 @@ function MilestoneCard({
       </div>
 
       {/* Metadata */}
-      <div className="grid grid-cols-2 gap-4 ml-11 mb-4">
+      <div className="mb-4 ml-11 grid grid-cols-2 gap-4">
         {/* Amount */}
         <div className="flex items-center gap-2 text-sm">
           <DollarSign className="h-4 w-4 text-gray-400" />
@@ -149,8 +157,8 @@ function MilestoneCard({
 
       {/* Delivery Files */}
       {milestone.attachments && milestone.attachments.length > 0 && (
-        <div className="ml-11 mb-4">
-          <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+        <div className="mb-4 ml-11">
+          <div className="mb-2 flex items-center gap-2 text-sm text-gray-600">
             <FileText className="h-4 w-4" />
             <span className="font-medium">Teslim Edilen Dosyalar:</span>
           </div>
@@ -171,18 +179,22 @@ function MilestoneCard({
       )}
 
       {/* Revision Request */}
-      {milestone.status === MilestoneStatus.REVISION_REQUESTED && milestone.deliveryNotes && (
-        <Alert variant="destructive" className="ml-11 mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            <strong>Revizyon İstendi:</strong> {milestone.deliveryNotes}
-          </AlertDescription>
-        </Alert>
-      )}
+      {milestone.status === MilestoneStatus.REVISION_REQUESTED &&
+        milestone.deliveryNotes && (
+          <Alert variant="destructive" className="mb-4 ml-11">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Revizyon İstendi:</strong> {milestone.deliveryNotes}
+            </AlertDescription>
+          </Alert>
+        )}
 
       {/* Action Buttons */}
-      {(showStartButton || showDeliverButton || showAcceptButton || showRejectButton) && (
-        <div className="flex items-center gap-3 ml-11 mt-4 pt-4 border-t">
+      {(showStartButton ||
+        showDeliverButton ||
+        showAcceptButton ||
+        showRejectButton) && (
+        <div className="mt-4 ml-11 flex items-center gap-3 border-t pt-4">
           {showStartButton && (
             <Button
               onClick={() => onStart(milestone.id)}
@@ -232,7 +244,7 @@ function MilestoneCard({
               loading={isLoading}
               variant="outline"
               size="sm"
-              className="gap-2 text-red-600 hover:text-red-700 hover:border-red-600"
+              className="gap-2 text-red-600 hover:border-red-600 hover:text-red-700"
             >
               <XCircle className="h-4 w-4" />
               Revizyon İste
@@ -242,7 +254,7 @@ function MilestoneCard({
       )}
 
       {/* Timestamps */}
-      <div className="ml-11 mt-4 pt-4 border-t text-xs text-gray-500 space-y-1">
+      <div className="mt-4 ml-11 space-y-1 border-t pt-4 text-xs text-gray-500">
         {milestone.deliveredAt && (
           <div>Teslim Edildi: {formatDate(milestone.deliveredAt)}</div>
         )}
@@ -277,14 +289,15 @@ export function MilestoneList({
   onCreateClick,
 }: MilestoneListProps) {
   const { milestones, isLoading, error } = useOrderMilestones(orderId);
-  const {
-    startMilestone,
-    acceptMilestone,
-    isStarting,
-    isAccepting,
-  } = useMilestoneActions();
+  const { startMilestone, acceptMilestone, isStarting, isAccepting } =
+    useMilestoneActions();
 
-  const [selectedMilestoneId, setSelectedMilestoneId] = useState<string | null>(null);
+  const [selectedMilestoneId, setSelectedMilestoneId] = useState<string | null>(
+    null
+  );
+  const [deliverModalMilestone, setDeliverModalMilestone] = useState<OrderMilestone | null>(null);
+  const [acceptModalMilestone, setAcceptModalMilestone] = useState<OrderMilestone | null>(null);
+  const [rejectModalMilestone, setRejectModalMilestone] = useState<OrderMilestone | null>(null);
 
   // ========== HANDLERS ==========
 
@@ -293,33 +306,34 @@ export function MilestoneList({
       setSelectedMilestoneId(milestoneId);
       await startMilestone(milestoneId);
     } catch (error) {
-      logger.error('[MilestoneList] Start failed', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        '[MilestoneList] Start failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
     } finally {
       setSelectedMilestoneId(null);
     }
   };
 
   const handleDeliver = (milestoneId: string) => {
-    setSelectedMilestoneId(milestoneId);
-    // TODO: Open DeliverMilestoneModal (Story 1.4)
-    logger.info('[MilestoneList] Deliver clicked - modal TODO', { milestoneId });
+    const milestone = milestones?.find((m) => m.id === milestoneId);
+    if (milestone) {
+      setDeliverModalMilestone(milestone);
+    }
   };
 
-  const handleAccept = async (milestoneId: string) => {
-    try {
-      setSelectedMilestoneId(milestoneId);
-      await acceptMilestone(milestoneId);
-    } catch (error) {
-      logger.error('[MilestoneList] Accept failed', error instanceof Error ? error : new Error(String(error)));
-    } finally {
-      setSelectedMilestoneId(null);
+  const handleAccept = (milestoneId: string) => {
+    const milestone = milestones?.find((m) => m.id === milestoneId);
+    if (milestone) {
+      setAcceptModalMilestone(milestone);
     }
   };
 
   const handleReject = (milestoneId: string) => {
-    setSelectedMilestoneId(milestoneId);
-    // TODO: Open RejectMilestoneModal (Story 1.6)
-    logger.info('[MilestoneList] Reject clicked - modal TODO', { milestoneId });
+    const milestone = milestones?.find((m) => m.id === milestoneId);
+    if (milestone) {
+      setRejectModalMilestone(milestone);
+    }
   };
 
   // ========== LOADING STATE ==========
@@ -328,10 +342,10 @@ export function MilestoneList({
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="p-6 animate-pulse">
-            <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
-            <div className="h-4 bg-gray-100 rounded w-2/3 mb-2"></div>
-            <div className="h-4 bg-gray-100 rounded w-1/2"></div>
+          <Card key={i} className="animate-pulse p-6">
+            <div className="mb-4 h-6 w-1/3 rounded bg-gray-200"></div>
+            <div className="mb-2 h-4 w-2/3 rounded bg-gray-100"></div>
+            <div className="h-4 w-1/2 rounded bg-gray-100"></div>
           </Card>
         ))}
       </div>
@@ -356,11 +370,11 @@ export function MilestoneList({
   if (!milestones || milestones.length === 0) {
     return (
       <Card className="p-8 text-center">
-        <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        <Clock className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+        <h3 className="mb-2 text-lg font-semibold text-gray-900">
           Henüz Milestone Eklenmemiş
         </h3>
-        <p className="text-sm text-gray-600 mb-4">
+        <p className="mb-4 text-sm text-gray-600">
           Bu sipariş için henüz milestone tanımlanmamış.
         </p>
         {showCreateButton && onCreateClick && (
@@ -375,19 +389,56 @@ export function MilestoneList({
   // ========== MILESTONE LIST ==========
 
   const isActionLoading = (id: string) =>
-    selectedMilestoneId === id && (isStarting || isAccepting);
+    selectedMilestoneId === id && isStarting;
 
   // Calculate progress
   const completedCount = milestones.filter(
     (m) => m.status === MilestoneStatus.ACCEPTED
   ).length;
-  const progressPercent = Math.round((completedCount / milestones.length) * 100);
+  const progressPercent = Math.round(
+    (completedCount / milestones.length) * 100
+  );
 
   return (
-    <div className="space-y-6">
-      {/* Progress Summary */}
-      <Card className="p-6 bg-gradient-to-br from-purple-50 to-blue-50">
-        <div className="flex items-center justify-between mb-3">
+    <>
+      {/* Deliver Modal */}
+      {deliverModalMilestone && (
+        <DeliverMilestoneModal
+          milestone={deliverModalMilestone}
+          onClose={() => setDeliverModalMilestone(null)}
+          onSuccess={() => {
+            // Modal will trigger SWR revalidation via useMilestoneActions
+            logger.info('[MilestoneList] Milestone delivered successfully');
+          }}
+        />
+      )}
+
+      {/* Accept Modal */}
+      {acceptModalMilestone && (
+        <AcceptMilestoneModal
+          milestone={acceptModalMilestone}
+          onClose={() => setAcceptModalMilestone(null)}
+          onSuccess={() => {
+            logger.info('[MilestoneList] Milestone accepted successfully');
+          }}
+        />
+      )}
+
+      {/* Reject Modal */}
+      {rejectModalMilestone && (
+        <RejectMilestoneModal
+          milestone={rejectModalMilestone}
+          onClose={() => setRejectModalMilestone(null)}
+          onSuccess={() => {
+            logger.info('[MilestoneList] Milestone revision requested');
+          }}
+        />
+      )}
+
+      <div className="space-y-6">
+        {/* Progress Summary */}
+        <Card className="p-6 bg-gradient-to-br from-purple-50 to-blue-50">
+        <div className="mb-3 flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-900">
               Milestone İlerlemesi
@@ -402,9 +453,9 @@ export function MilestoneList({
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+        <div className="h-3 w-full overflow-hidden rounded-full bg-gray-200">
           <div
-            className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-500"
+            className="h-3 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-500"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -435,6 +486,7 @@ export function MilestoneList({
         ))}
       </div>
     </div>
+    </>
   );
 }
 
