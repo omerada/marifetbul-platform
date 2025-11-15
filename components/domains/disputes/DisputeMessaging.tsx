@@ -160,16 +160,13 @@ export function DisputeMessaging({
 
       try {
         // Upload to dispute evidence
-        const success = await uploadEvidence(disputeId, {
+        const result = await uploadEvidence(disputeId, {
           file: attachmentFile,
           description: 'Message attachment',
         });
 
-        if (success) {
-          // Get the uploaded evidence from the list (it's the latest one)
-          // For now, we'll use a placeholder URL until we have the evidence object
-          // TODO: Refactor uploadEvidence to return the evidence object
-          attachmentUrl = URL.createObjectURL(attachmentFile);
+        if (result) {
+          attachmentUrl = result.url || '';
           attachmentName = attachmentFile.name;
           attachmentType = attachmentFile.type;
         } else {

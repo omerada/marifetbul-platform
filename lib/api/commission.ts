@@ -151,7 +151,7 @@ export async function getCommissions(
 
     const response = await apiClient.get<
       ApiResponse<PaginatedResponse<CommissionTransaction>>
-    >(`/admin/commissions/transactions?${params}`);
+    >(`/api/v1/admin/commissions/transactions?${params}`);
 
     logger.info('Commissions fetched successfully', {
       totalElements: response.data.totalElements,
@@ -175,7 +175,7 @@ export async function getCommissionById(
     logger.debug('Fetching commission by ID', { commissionId });
 
     const response = await apiClient.get<ApiResponse<CommissionTransaction>>(
-      `/admin/commissions/transactions/${commissionId}`
+      `/api/v1/admin/commissions/transactions/${commissionId}`
     );
 
     logger.info('Commission fetched successfully', { commissionId });
@@ -229,9 +229,9 @@ export async function getCommissionsBySeller(
 
     const response = await apiClient.get<
       ApiResponse<PaginatedResponse<CommissionTransaction>>
-    >(`/admin/commissions/transactions/seller/${sellerId}?${params}`);
+    >(`/api/v1/admin/commissions/transactions/seller/${sellerId}?${params}`);
 
-    logger.info('Seller commissions fetched', {
+    logger.info('Seller commissions fetched successfully', {
       sellerId,
       totalElements: response.data.totalElements,
     });
@@ -261,7 +261,7 @@ export async function getCommissionStats(
     });
 
     const response = await apiClient.get<ApiResponse<CommissionStats>>(
-      `/admin/commissions/stats?${params}`
+      `/api/v1/admin/commissions/stats?${params}`
     );
 
     logger.info('Commission stats fetched', { startDate, endDate });
@@ -290,7 +290,7 @@ export async function getCommissionAnalytics(
     });
 
     const response = await apiClient.get<ApiResponse<CommissionAnalytics>>(
-      `/admin/commissions/analytics?${params}`
+      `/api/v1/admin/commissions/analytics?${params}`
     );
 
     logger.info('Commission analytics fetched', { startDate, endDate });
@@ -347,7 +347,7 @@ export async function createCommissionRule(
     logger.debug('Creating commission rule', { request });
 
     const response = await apiClient.post<ApiResponse<CommissionRule>>(
-      '/admin/commissions/rules',
+      '/api/v1/admin/commissions/rules',
       request
     );
 
@@ -370,7 +370,7 @@ export async function getAllCommissionRules(): Promise<CommissionRule[]> {
     logger.debug('Fetching all commission rules');
 
     const response = await apiClient.get<ApiResponse<CommissionRule[]>>(
-      '/admin/commissions/rules'
+      '/api/v1/admin/commissions/rules'
     );
 
     logger.info('Commission rules fetched', {
@@ -392,7 +392,7 @@ export async function getActiveCommissionRules(): Promise<CommissionRule[]> {
     logger.debug('Fetching active commission rules');
 
     const response = await apiClient.get<ApiResponse<CommissionRule[]>>(
-      '/admin/commissions/rules/active'
+      '/api/v1/admin/commissions/rules/active'
     );
 
     logger.info('Active commission rules fetched', {
@@ -416,7 +416,7 @@ export async function getCommissionRuleById(
     logger.debug('Fetching commission rule', { ruleId });
 
     const response = await apiClient.get<ApiResponse<CommissionRule>>(
-      `/admin/commissions/rules/${ruleId}`
+      `/api/v1/admin/commissions/rules/${ruleId}`
     );
 
     logger.info('Commission rule fetched', { ruleId });
@@ -438,7 +438,7 @@ export async function updateCommissionRule(
     logger.debug('Updating commission rule', { ruleId, request });
 
     const response = await apiClient.put<ApiResponse<CommissionRule>>(
-      `/admin/commissions/rules/${ruleId}`,
+      `/api/v1/admin/commissions/rules/${ruleId}`,
       request
     );
 
@@ -457,7 +457,7 @@ export async function deleteCommissionRule(ruleId: string): Promise<void> {
   try {
     logger.debug('Deleting commission rule', { ruleId });
 
-    await apiClient.delete(`/admin/commissions/rules/${ruleId}`);
+    await apiClient.delete(`/api/v1/admin/commissions/rules/${ruleId}`);
 
     logger.info('Commission rule deleted', { ruleId });
   } catch (error) {
@@ -476,7 +476,7 @@ export async function activateCommissionRule(
     logger.debug('Activating commission rule', { ruleId });
 
     const response = await apiClient.post<ApiResponse<CommissionRule>>(
-      `/admin/commissions/rules/${ruleId}/activate`
+      `/api/v1/admin/commissions/rules/${ruleId}/activate`
     );
 
     logger.info('Commission rule activated', { ruleId });
@@ -497,7 +497,7 @@ export async function deactivateCommissionRule(
     logger.debug('Deactivating commission rule', { ruleId });
 
     const response = await apiClient.post<ApiResponse<CommissionRule>>(
-      `/admin/commissions/rules/${ruleId}/deactivate`
+      `/api/v1/admin/commissions/rules/${ruleId}/deactivate`
     );
 
     logger.info('Commission rule deactivated', { ruleId });
@@ -516,7 +516,7 @@ export async function getExpiringCommissionRules(): Promise<CommissionRule[]> {
     logger.debug('Fetching expiring commission rules');
 
     const response = await apiClient.get<ApiResponse<CommissionRule[]>>(
-      '/admin/commissions/rules/expiring'
+      '/api/v1/admin/commissions/rules/expiring'
     );
 
     logger.info('Expiring commission rules fetched', {

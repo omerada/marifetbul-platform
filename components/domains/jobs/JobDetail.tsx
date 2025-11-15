@@ -112,10 +112,7 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
       try {
         await updateProposalStatus(proposalId, action);
       } catch (error) {
-        logger.error(
-          'Proposal action error:',
-          error
-        );
+        logger.error('Proposal action error:', error);
       }
     }
     // For 'accepted', we'll use the modal
@@ -157,17 +154,17 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
       const data = await response.json();
 
       if (data.success) {
-        logger.info('Proposal accepted successfully with payment mode:', paymentMode);
+        logger.info(
+          'Proposal accepted successfully with payment mode:',
+          paymentMode
+        );
         // Refresh job detail to get updated proposals
         await refreshJobDetail();
       } else {
         throw new Error(data.error || 'Teklif kabul edilemedi');
       }
     } catch (error) {
-      logger.error(
-        'Failed to accept proposal:',
-        error
-      );
+      logger.error('Failed to accept proposal:', error);
       throw error;
     }
   };
@@ -538,7 +535,6 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
           }}
           onAccept={handleAcceptProposal}
           proposal={selectedProposal}
-          sellerHasIban={true} // TODO: Fetch from seller profile
         />
       )}
     </div>

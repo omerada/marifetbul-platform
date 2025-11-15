@@ -36,6 +36,7 @@ import { formatCurrency } from '@/lib/shared/formatters';
 import { CreditCard, Building2, CheckCircle, AlertCircle } from 'lucide-react';
 import type { OrderResponse } from '@/types/backend-aligned';
 import IyzicoPaymentForm from '@/components/checkout/IyzicoPaymentForm';
+import { confirmManualPayment } from '@/lib/api/orders';
 
 // ================================================
 // TYPES
@@ -384,7 +385,7 @@ function ManualIBANPayment({
  * Success Screen
  */
 interface SuccessScreenProps {
-  order: Order;
+  order: OrderResponse;
   paymentMethod: PaymentMethod;
   onClose: () => void;
 }
@@ -493,11 +494,10 @@ export function UnifiedCheckout({
     setIsProcessing(true);
 
     try {
-      // TODO: API call to mark payment as pending
-      // await api.orders.confirmManualPayment(order.id);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await confirmManualPayment({
+        orderId: order.id,
+        paymentMethod: 'MANUAL_TRANSFER',
+      });
 
       setStep('success');
       toast.success('Ödeme bildiriminiz alındı');
@@ -511,6 +511,8 @@ export function UnifiedCheckout({
       setIsProcessing(false);
     }
   };
+
+  const router = useRouter();
 
   // Handle Iyzico payment success
   const handleIyzicoSuccess = () => {

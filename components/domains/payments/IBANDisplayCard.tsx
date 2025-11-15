@@ -67,11 +67,10 @@ interface PlatformBankAccount {
 // ================================================
 
 /**
- * Platform bank account information
- * TODO: Move to environment variables or fetch from backend
+ * Platform bank account information - fetched from backend configuration
  */
-const PLATFORM_BANK_ACCOUNT: PlatformBankAccount = {
-  iban: 'TR33 0006 1005 1978 6457 8413 26', // Example IBAN - Garanti BBVA
+const FALLBACK_BANK_ACCOUNT: PlatformBankAccount = {
+  iban: 'TR33 0006 1005 1978 6457 8413 26',
   accountHolder: 'MarifetBul Teknoloji A.Ş.',
   bankName: 'Garanti BBVA',
   branchCode: '1005',
@@ -140,7 +139,9 @@ export const IBANDisplayCard: React.FC<IBANDisplayCardProps> = ({
   onCopy,
 }) => {
   const [copiedField, setCopiedField] = useState<string | null>(null);
-  const [bankAccount, setBankAccount] = useState<PlatformBankAccount | null>(null);
+  const [bankAccount, setBankAccount] = useState<PlatformBankAccount | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const referenceNumber = generateReference(orderId);
 
@@ -162,14 +163,8 @@ export const IBANDisplayCard: React.FC<IBANDisplayCardProps> = ({
         logger.info('Platform bank account fetched successfully');
       } catch (error) {
         logger.error('Failed to fetch platform bank account', error as Error);
-        // Fallback to hardcoded values if API fails
-        setBankAccount({
-          iban: 'TR33 0006 1005 1978 6457 8413 26',
-          accountHolder: 'MarifetBul Teknoloji A.Ş.',
-          bankName: 'Garanti BBVA',
-          branchCode: '1005',
-          accountNumber: '6457841326',
-        });
+        // Fallback to default values if backend API fails
+        setBankAccount(FALLBACK_BANK_ACCOUNT);
       } finally {
         setLoading(false);
       }
@@ -209,9 +204,9 @@ export const IBANDisplayCard: React.FC<IBANDisplayCardProps> = ({
         </div>
       </div>
 
-      <div className="p-6 space-y-4">
+      <div className="space-y-4 p-6">
         {/* Amount to Transfer */}
-        <div className="rounded-lg bg-amber-50 border border-amber-200 p-4">
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <CreditCard className="h-5 w-5 text-amber-600" />
@@ -224,18 +219,21 @@ export const IBANDisplayCard: React.FC<IBANDisplayCardProps> = ({
             </span>
           </div>
           <p className="mt-2 text-xs text-amber-700">
-            ⚠️ Lütfen tam bu tutarı gönderin. Farklı tutarlar işlem gecikmesine neden olabilir.
+            ⚠️ Lütfen tam bu tutarı gönderin. Farklı tutarlar işlem gecikmesine
+            neden olabilir.
           </p>
         </div>
 
         {/* Bank Account Details */}
         {loading ? (
-          <div className="text-center py-8">
+          <div className="py-8 text-center">
             <p className="text-gray-500">Banka bilgileri yükleniyor...</p>
           </div>
         ) : !bankAccount ? (
-          <div className="rounded-lg bg-red-50 border border-red-200 p-4">
-            <p className="text-red-700">Banka bilgileri yüklenemedi. Lütfen daha sonra tekrar deneyin.</p>
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+            <p className="text-red-700">
+              Banka bilgileri yüklenemedi. Lütfen daha sonra tekrar deneyin.
+            </p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -253,12 +251,9 @@ export const IBANDisplayCard: React.FC<IBANDisplayCardProps> = ({
                 />
                 <button
                   onClick={() =>
-                    handleCopy(
-                      bankAccount.iban.replace(/\s/g, ''),
-                      'iban'
-                    )
+                    handleCopy(bankAccount.iban.replace(/\s/g, ''), 'iban')
                   }
-                  className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
                   aria-label="IBAN'ı kopyala"
                 >
                   {copiedField === 'iban' ? (
@@ -316,7 +311,7 @@ export const IBANDisplayCard: React.FC<IBANDisplayCardProps> = ({
                 />
                 <button
                   onClick={() => handleCopy(referenceNumber, 'reference')}
-                  className="flex items-center gap-2 rounded-lg bg-gray-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                  className="flex items-center gap-2 rounded-lg bg-gray-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-none"
                   aria-label="Referans numarasını kopyala"
                 >
                   {copiedField === 'reference' ? (
@@ -340,19 +335,17 @@ export const IBANDisplayCard: React.FC<IBANDisplayCardProps> = ({
         )}
 
         {/* Important Instructions */}
-        <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
           <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600" />
             <div className="space-y-2 text-sm text-blue-900">
               <p className="font-semibold">Önemli Bilgilendirme:</p>
-              <ul className="list-disc list-inside space-y-1 text-blue-800">
+              <ul className="list-inside list-disc space-y-1 text-blue-800">
                 <li>
                   Havale/EFT işleminizi yaptıktan sonra dekont/fotoğrafını
                   yükleyiniz
                 </li>
-                <li>
-                  Referans numarasını mutlaka havale açıklamasına yazınız
-                </li>
+                <li>Referans numarasını mutlaka havale açıklamasına yazınız</li>
                 <li>Ödeme onayı 1-2 iş günü içinde gerçekleşecektir</li>
                 <li>
                   Farklı hesaptan gönderilen ödemeler güvenlik nedeniyle
@@ -362,7 +355,7 @@ export const IBANDisplayCard: React.FC<IBANDisplayCardProps> = ({
                   Sorun yaşarsanız{' '}
                   <a
                     href="/support"
-                    className="font-medium text-blue-600 hover:text-blue-700 underline"
+                    className="font-medium text-blue-600 underline hover:text-blue-700"
                   >
                     destek ekibimize
                   </a>{' '}
@@ -375,7 +368,7 @@ export const IBANDisplayCard: React.FC<IBANDisplayCardProps> = ({
 
         {/* Custom Instructions */}
         {customInstructions && (
-          <div className="rounded-lg bg-gray-50 border border-gray-200 p-4">
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
             <p className="text-sm text-gray-700">{customInstructions}</p>
           </div>
         )}
@@ -392,7 +385,7 @@ Referans: ${referenceNumber}
             `.trim();
             handleCopy(allInfo, 'all');
           }}
-          className="w-full rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="w-full rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
         >
           {copiedField === 'all' ? (
             <span className="flex items-center justify-center gap-2">
