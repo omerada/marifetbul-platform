@@ -32,7 +32,7 @@ import { Button } from '@/components/ui';
 import { Textarea } from '@/components/ui/Textarea';
 import { XCircle, Loader2, AlertCircle } from 'lucide-react';
 import type { ProposalResponse } from '@/types/backend-aligned';
-import { logger } from '@/lib/infrastructure/monitoring/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { formatCurrency } from '@/lib/shared/formatters';
 
 const REJECTION_REASONS = [

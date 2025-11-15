@@ -20,6 +20,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { StatCard } from '@/components/ui';
 import {
   TrendingUp,
   TrendingDown,
@@ -28,7 +29,7 @@ import {
   Info,
   Download,
   BarChart3,
-  PieChart as PieChartIcon,
+  PieChartIcon,
 } from 'lucide-react';
 import {
   LineChart,
@@ -344,44 +345,7 @@ function exportToCSV(
 // COMPONENTS
 // ============================================================================
 
-function StatCard({
-  label,
-  value,
-  icon: Icon,
-  trend,
-  className = '',
-}: {
-  label: string;
-  value: string;
-  icon: typeof DollarSign;
-  trend?: 'up' | 'down' | 'neutral';
-  className?: string;
-}) {
-  return (
-    <div className={`rounded-lg border bg-white p-4 ${className}`}>
-      <div className="mb-2 flex items-center justify-between">
-        <span className="text-sm font-medium text-gray-600">{label}</span>
-        <Icon className="h-4 w-4 text-gray-400" />
-      </div>
-      <div className="flex items-end gap-2">
-        <p className="text-2xl font-bold text-gray-900">{value}</p>
-        {trend && trend !== 'neutral' && (
-          <div
-            className={`flex items-center gap-1 text-xs font-medium ${
-              trend === 'up' ? 'text-green-600' : 'text-red-600'
-            }`}
-          >
-            {trend === 'up' ? (
-              <TrendingUp className="h-3 w-3" />
-            ) : (
-              <TrendingDown className="h-3 w-3" />
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+// StatCard component now imported from @/components/ui
 
 // ============================================================================
 // MAIN COMPONENT
@@ -480,20 +444,23 @@ export function CommissionBreakdown({
           <StatCard
             label="Toplam Kazanç"
             value={formatCurrency(commissionData.totalEarnings, 'TRY')}
-            icon={DollarSign}
+            icon={<DollarSign className="h-4 w-4" />}
             trend="up"
+            variant="compact"
           />
           <StatCard
             label="Platform Ücreti"
             value={formatCurrency(commissionData.platformFees, 'TRY')}
-            icon={Percent}
+            icon={<Percent className="h-4 w-4" />}
             trend="down"
+            variant="compact"
           />
           <StatCard
             label="Net Kazanç"
             value={formatCurrency(commissionData.netEarnings, 'TRY')}
-            icon={TrendingUp}
+            icon={<TrendingUp className="h-4 w-4" />}
             trend="up"
+            variant="compact"
             className="col-span-2"
           />
         </div>

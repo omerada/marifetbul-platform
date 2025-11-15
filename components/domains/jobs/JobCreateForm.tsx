@@ -40,7 +40,7 @@ import {
   jobPostingSchema,
   type JobPostingFormData,
 } from '@/lib/core/validations/jobs';
-import { logger } from '@/lib/infrastructure/monitoring/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { toast } from 'sonner';
 
 // ================================================

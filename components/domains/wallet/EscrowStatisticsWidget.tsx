@@ -23,6 +23,10 @@
 
 import React, { useMemo } from 'react';
 import {
+  StatCard,
+  StatCardSkeleton as UnifiedStatCardSkeleton,
+} from '@/components/ui';
+import {
   Lock,
   Clock,
   TrendingUp,
@@ -58,18 +62,7 @@ export interface EscrowStatisticsWidgetProps {
   className?: string;
 }
 
-interface StatCardProps {
-  title: string;
-  value: string | number;
-  subtitle?: string;
-  icon: React.ReactNode;
-  trend?: 'up' | 'down' | 'neutral';
-  badge?: {
-    text: string;
-    variant: 'default' | 'success' | 'warning' | 'destructive';
-  };
-  className?: string;
-}
+// StatCard types now imported from @/components/ui
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -118,78 +111,7 @@ function calculateHoldDays(createdAt: string): number {
   return diffDays;
 }
 
-// ============================================================================
-// STAT CARD COMPONENT
-// ============================================================================
-
-function StatCard({
-  title,
-  value,
-  subtitle,
-  icon,
-  trend,
-  badge,
-  className,
-}: StatCardProps) {
-  return (
-    <Card className={cn('transition-shadow hover:shadow-md', className)}>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium text-gray-600">
-          {title}
-        </CardTitle>
-        <div className="text-gray-400">{icon}</div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-baseline justify-between">
-          <div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-gray-900">{value}</span>
-              {trend && (
-                <TrendingUp
-                  className={cn(
-                    'h-4 w-4',
-                    trend === 'up' && 'text-green-600',
-                    trend === 'down' && 'rotate-180 text-red-600',
-                    trend === 'neutral' && 'text-gray-400'
-                  )}
-                />
-              )}
-            </div>
-            {subtitle && (
-              <p className="mt-1 text-xs text-gray-500">{subtitle}</p>
-            )}
-          </div>
-          {badge && (
-            <Badge variant={badge.variant} className="ml-2">
-              {badge.text}
-            </Badge>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// ============================================================================
-// LOADING SKELETON
-// ============================================================================
-
-function StatCardSkeleton() {
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
-          <div className="h-5 w-5 animate-pulse rounded bg-gray-200" />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-2 h-8 w-32 animate-pulse rounded bg-gray-200" />
-        <div className="h-3 w-20 animate-pulse rounded bg-gray-200" />
-      </CardContent>
-    </Card>
-  );
-}
+// StatCard and StatCardSkeleton now imported from @/components/ui
 
 // ============================================================================
 // MAIN COMPONENT
@@ -222,10 +144,10 @@ export function EscrowStatisticsWidget({
       <div
         className={cn('grid gap-4 md:grid-cols-2 lg:grid-cols-4', className)}
       >
-        <StatCardSkeleton />
-        <StatCardSkeleton />
-        <StatCardSkeleton />
-        <StatCardSkeleton />
+        <UnifiedStatCardSkeleton />
+        <UnifiedStatCardSkeleton />
+        <UnifiedStatCardSkeleton />
+        <UnifiedStatCardSkeleton />
       </div>
     );
   }
@@ -254,16 +176,17 @@ export function EscrowStatisticsWidget({
     <div className={cn('grid gap-4 md:grid-cols-2 lg:grid-cols-4', className)}>
       {/* Total Escrow Amount */}
       <StatCard
-        title="Toplam Emanet"
+        label="Toplam Emanet"
         value={formatCurrency(stats.totalAmount, stats.currency)}
         subtitle="Güvende tutulan toplam"
         icon={<DollarSign className="h-5 w-5" />}
         trend={stats.activeCount > 0 ? 'up' : 'neutral'}
+        variant="detailed"
       />
 
       {/* Active Escrows Count */}
       <StatCard
-        title="Aktif Emanetler"
+        label="Aktif Emanetler"
         value={stats.activeCount}
         subtitle={`${stats.activeCount} adet işlem`}
         icon={<Lock className="h-5 w-5" />}
@@ -275,11 +198,12 @@ export function EscrowStatisticsWidget({
               }
             : undefined
         }
+        variant="detailed"
       />
 
       {/* Pending Releases */}
       <StatCard
-        title="Serbest Bırakılmayı Bekleyen"
+        label="Serbest Bırakılmayı Bekleyen"
         value={stats.pendingReleaseCount}
         subtitle={
           stats.pendingReleaseCount > 0 ? 'Dikkat gerekiyor' : 'Hepsi güncel'
@@ -302,11 +226,12 @@ export function EscrowStatisticsWidget({
                 variant: 'success',
               }
         }
+        variant="detailed"
       />
 
       {/* Average Hold Time */}
       <StatCard
-        title="Ortalama Bekleme Süresi"
+        label="Ortalama Bekleme Süresi"
         value={`${stats.averageHoldDays} gün`}
         subtitle={
           stats.averageHoldDays > 7
@@ -321,6 +246,7 @@ export function EscrowStatisticsWidget({
               ? 'down'
               : 'neutral'
         }
+        variant="detailed"
       />
     </div>
   );

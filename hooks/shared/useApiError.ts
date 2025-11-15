@@ -12,7 +12,7 @@
 import { useState, useCallback } from 'react';
 import {
   ApiError,
-  getUserFriendlyErrorMessage,
+  getUserErrorMessage,
   requiresReauth,
   isClientError,
   isServerError,

@@ -26,6 +26,7 @@ import {
   type PageResponse,
   RefundStatus,
 } from '@/lib/api/admin/refund-admin-api';
+import { StatCard } from '@/components/ui';
 import { DollarSign, TrendingUp, Clock, CheckCircle2 } from 'lucide-react';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
@@ -77,16 +78,12 @@ export default function AdminRefundsPage() {
       setRefunds(response.content);
       setTotalPages(response.totalPages);
     } catch (error) {
-      logger.error(
-        'Failed to fetch admin refunds list',
-        error,
-        {
-          component: 'AdminRefundsPage',
-          action: 'fetch-refunds',
-          filters,
-          currentPage,
-        }
-      );
+      logger.error('Failed to fetch admin refunds list', error, {
+        component: 'AdminRefundsPage',
+        action: 'fetch-refunds',
+        filters,
+        currentPage,
+      });
       toast.error('İade talepleri yüklenemedi');
     } finally {
       setIsLoading(false);
@@ -103,14 +100,10 @@ export default function AdminRefundsPage() {
         totalAmountPending: statistics.pendingAmount,
       });
     } catch (error) {
-      logger.error(
-        'Failed to fetch refund statistics',
-        error,
-        {
-          component: 'AdminRefundsPage',
-          action: 'fetch-statistics',
-        }
-      );
+      logger.error('Failed to fetch refund statistics', error, {
+        component: 'AdminRefundsPage',
+        action: 'fetch-statistics',
+      });
     }
   };
 
@@ -135,16 +128,12 @@ export default function AdminRefundsPage() {
       fetchStatistics();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error(
-        'Failed to approve refund',
-        error,
-        {
-          refundId,
-          notes,
-          component: 'AdminRefundsPage',
-          action: 'approve-refund',
-        }
-      );
+      logger.error('Failed to approve refund', error, {
+        refundId,
+        notes,
+        component: 'AdminRefundsPage',
+        action: 'approve-refund',
+      });
       toast.error('İade talebi onaylanamadı');
     }
   };
@@ -164,17 +153,13 @@ export default function AdminRefundsPage() {
       fetchStatistics();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error(
-        'Failed to reject refund',
-        error,
-        {
-          refundId,
-          reason,
-          notes,
-          component: 'AdminRefundsPage',
-          action: 'reject-refund',
-        }
-      );
+      logger.error('Failed to reject refund', error, {
+        refundId,
+        reason,
+        notes,
+        component: 'AdminRefundsPage',
+        action: 'reject-refund',
+      });
       toast.error('İade talebi reddedilemedi');
     }
   };
@@ -195,16 +180,12 @@ export default function AdminRefundsPage() {
       fetchRefunds();
       fetchStatistics();
     } catch (error) {
-      logger.error(
-        'Failed to bulk approve refunds',
-        error,
-        {
-          selectedCount: selectedRefundIds.size,
-          notes,
-          component: 'AdminRefundsPage',
-          action: 'bulk-approve',
-        }
-      );
+      logger.error('Failed to bulk approve refunds', error, {
+        selectedCount: selectedRefundIds.size,
+        notes,
+        component: 'AdminRefundsPage',
+        action: 'bulk-approve',
+      });
       toast.error('Toplu onaylama işlemi başarısız oldu');
     }
   };
@@ -217,15 +198,11 @@ export default function AdminRefundsPage() {
       fetchStatistics();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error(
-        'Failed to process refund',
-        error,
-        {
-          refundId,
-          component: 'AdminRefundsPage',
-          action: 'process-refund',
-        }
-      );
+      logger.error('Failed to process refund', error, {
+        refundId,
+        component: 'AdminRefundsPage',
+        action: 'process-refund',
+      });
       toast.error('İade işleme alınamadı');
     }
   };
@@ -273,28 +250,32 @@ export default function AdminRefundsPage() {
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          title="Bekleyen Talepler"
+          label="Bekleyen Talepler"
           value={stats.totalPending}
-          icon={Clock}
+          icon={<Clock className="h-6 w-6" />}
           color="yellow"
+          testId="stat-card-pending"
         />
         <StatCard
-          title="Onaylanan"
+          label="Onaylanan"
           value={stats.totalApproved}
-          icon={CheckCircle2}
+          icon={<CheckCircle2 className="h-6 w-6" />}
           color="green"
+          testId="stat-card-approved"
         />
         <StatCard
-          title="Bugün Tamamlanan"
+          label="Bugün Tamamlanan"
           value={stats.totalCompletedToday}
-          icon={TrendingUp}
+          icon={<TrendingUp className="h-6 w-6" />}
           color="blue"
+          testId="stat-card-completed"
         />
         <StatCard
-          title="Bekleyen Tutar"
+          label="Bekleyen Tutar"
           value={`₺${stats.totalAmountPending.toLocaleString('tr-TR')}`}
-          icon={DollarSign}
+          icon={<DollarSign className="h-6 w-6" />}
           color="purple"
+          testId="stat-card-amount"
         />
       </div>
 
@@ -343,36 +324,4 @@ export default function AdminRefundsPage() {
   );
 }
 
-// ================================================
-// STAT CARD COMPONENT
-// ================================================
-
-interface StatCardProps {
-  title: string;
-  value: string | number;
-  icon: React.ComponentType<{ className?: string }>;
-  color: 'yellow' | 'green' | 'blue' | 'purple';
-}
-
-function StatCard({ title, value, icon: Icon, color }: StatCardProps) {
-  const colorClasses = {
-    yellow: 'bg-yellow-500/10 text-yellow-600',
-    green: 'bg-green-500/10 text-green-600',
-    blue: 'bg-blue-500/10 text-blue-600',
-    purple: 'bg-purple-500/10 text-purple-600',
-  };
-
-  return (
-    <div className="bg-card rounded-lg border p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-muted-foreground text-sm font-medium">{title}</p>
-          <p className="mt-2 text-3xl font-bold">{value}</p>
-        </div>
-        <div className={`rounded-full p-3 ${colorClasses[color]}`}>
-          <Icon className="h-6 w-6" />
-        </div>
-      </div>
-    </div>
-  );
-}
+// StatCard component now imported from @/components/ui

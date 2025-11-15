@@ -14,7 +14,7 @@
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import { Button } from '@/components/ui';
+import { Button, StatCard } from '@/components/ui';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import {
   Table,
@@ -59,14 +59,10 @@ export default function UserRefundsPage() {
       const data = await getMyRefunds();
       setRefunds(data);
     } catch (error) {
-      logger.error(
-        'Failed to fetch user refunds',
-        error,
-        {
-          component: 'UserRefundsPage',
-          action: 'fetch-refunds',
-        }
-      );
+      logger.error('Failed to fetch user refunds', error, {
+        component: 'UserRefundsPage',
+        action: 'fetch-refunds',
+      });
       toast.error('İade talepleri yüklenemedi');
     } finally {
       setIsLoading(false);
@@ -90,15 +86,11 @@ export default function UserRefundsPage() {
       toast.success('İade talebi iptal edildi');
       fetchRefunds();
     } catch (error) {
-      logger.error(
-        'Failed to cancel refund request',
-        error,
-        {
-          refundId,
-          component: 'UserRefundsPage',
-          action: 'cancel-refund',
-        }
-      );
+      logger.error('Failed to cancel refund request', error, {
+        refundId,
+        component: 'UserRefundsPage',
+        action: 'cancel-refund',
+      });
       toast.error('İade talebi iptal edilemedi');
     } finally {
       setCancellingId(null);
@@ -142,11 +134,19 @@ export default function UserRefundsPage() {
 
       {/* Stats Cards */}
       <div className="mb-6 grid gap-4 md:grid-cols-4">
-        <StatCard label="Toplam Talep" value={refunds.length} color="blue" />
+        <StatCard
+          label="Toplam Talep"
+          value={refunds.length}
+          color="blue"
+          variant="compact"
+          testId="stat-card-total"
+        />
         <StatCard
           label="Beklemede"
           value={refunds.filter((r) => r.status === 'PENDING').length}
           color="yellow"
+          variant="compact"
+          testId="stat-card-pending"
         />
         <StatCard
           label="Onaylandı"
@@ -156,11 +156,15 @@ export default function UserRefundsPage() {
             ).length
           }
           color="green"
+          variant="compact"
+          testId="stat-card-approved"
         />
         <StatCard
           label="Tamamlandı"
           value={refunds.filter((r) => r.status === 'COMPLETED').length}
           color="green"
+          variant="compact"
+          testId="stat-card-completed"
         />
       </div>
 
@@ -267,28 +271,4 @@ export default function UserRefundsPage() {
   );
 }
 
-// ================================================
-// STAT CARD COMPONENT
-// ================================================
-
-interface StatCardProps {
-  label: string;
-  value: number;
-  color: 'blue' | 'yellow' | 'green' | 'red';
-}
-
-function StatCard({ label, value, color }: StatCardProps) {
-  const colorClasses = {
-    blue: 'bg-blue-500/10 text-blue-700 border-blue-200',
-    yellow: 'bg-yellow-500/10 text-yellow-700 border-yellow-200',
-    green: 'bg-green-500/10 text-green-700 border-green-200',
-    red: 'bg-red-500/10 text-red-700 border-red-200',
-  };
-
-  return (
-    <div className={`rounded-lg border p-4 ${colorClasses[color]}`}>
-      <p className="text-sm font-medium opacity-80">{label}</p>
-      <p className="mt-2 text-3xl font-bold">{value}</p>
-    </div>
-  );
-}
+// StatCard component now imported from @/components/ui

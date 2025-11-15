@@ -16,7 +16,7 @@ import { useState, useCallback, useEffect } from 'react';
 import useSWR from 'swr';
 import type { PageResponse, ProposalResponse } from '@/types/backend-aligned';
 import * as proposalsAPI from '@/lib/api/proposals';
-import { logger } from '@/lib/infrastructure/monitoring/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { toast } from 'sonner';
 import type { ProposalStatus } from '@/lib/core/validations/proposals';
 

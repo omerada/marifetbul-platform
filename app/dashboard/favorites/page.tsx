@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { AppLayout } from '@/components/layout';
 import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Loading } from '@/components/ui';
+import { Loading, StatCard } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { useFavorites } from '@/hooks/infrastructure/data/useFavorites';
 import { Freelancer, Job, ServicePackage } from '@/types';
@@ -430,34 +430,7 @@ export default function FavoritesPage() {
 // SUB-COMPONENTS
 // ================================================
 
-interface StatCardProps {
-  label: string;
-  value: number;
-  icon: React.ReactNode;
-  active: boolean;
-  onClick: () => void;
-}
-
-function StatCard({ label, value, icon, active, onClick }: StatCardProps) {
-  return (
-    <button
-      onClick={onClick}
-      className={`rounded-lg border p-4 text-left transition-all ${
-        active
-          ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-500'
-          : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
-      }`}
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
-          <p className="text-xs text-gray-600">{label}</p>
-        </div>
-        {icon}
-      </div>
-    </button>
-  );
-}
+// StatCard component now imported from @/components/ui
 
 interface FolderCardProps {
   folder: { id: string; name: string; itemCount?: number; color?: string };

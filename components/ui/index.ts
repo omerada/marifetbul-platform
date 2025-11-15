@@ -79,6 +79,15 @@ export { Pagination, MobilePagination } from './Pagination';
 export { ScrollArea } from './ScrollArea';
 export { Slider } from './Slider';
 
+// Stats Components - Sprint 1: Duplicate Elimination
+export { StatCard, StatCardSkeleton } from './cards/StatCard';
+export type {
+  StatCardProps,
+  StatCardColor,
+  StatCardVariant,
+  StatCardTrend,
+} from './cards/StatCard';
+
 // Skeleton Components
 export {
   Skeleton,

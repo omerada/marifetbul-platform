@@ -14,7 +14,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui';
+import { Button, StatCard } from '@/components/ui';
 import {
   refundAdminApi,
   type RefundStatisticsDto,
@@ -86,18 +86,21 @@ export function RefundStatisticsDashboard() {
                   label="Toplam İade"
                   value={stats.totalRefunds}
                   subValue={`₺${stats.totalAmount.toLocaleString('tr-TR')}`}
-                  icon={TrendingUp}
+                  icon={<TrendingUp className="h-5 w-5" />}
+                  variant="compact"
                 />
                 <StatCard
                   label="Ortalama İşlem Süresi"
                   value={`${stats.averageProcessingTimeHours.toFixed(1)} saat`}
-                  icon={Clock}
+                  icon={<Clock className="h-5 w-5" />}
+                  variant="compact"
                 />
                 <StatCard
                   label="Başarı Oranı"
                   value={`%${(stats.successRate * 100).toFixed(1)}`}
                   subValue={`Onay: %${(stats.approvalRate * 100).toFixed(1)}`}
-                  icon={CheckCircle}
+                  icon={<CheckCircle className="h-5 w-5" />}
+                  variant="compact"
                 />
               </div>
 
@@ -160,29 +163,7 @@ export function RefundStatisticsDashboard() {
 // HELPER COMPONENTS
 // ================================================
 
-interface StatCardProps {
-  label: string;
-  value: string | number;
-  subValue?: string;
-  icon: React.ComponentType<{ className?: string }>;
-}
-
-function StatCard({ label, value, subValue, icon: Icon }: StatCardProps) {
-  return (
-    <div className="bg-muted/50 rounded-lg p-4">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-muted-foreground text-sm">{label}</p>
-          <p className="mt-1 text-2xl font-bold">{value}</p>
-          {subValue && (
-            <p className="text-muted-foreground mt-1 text-xs">{subValue}</p>
-          )}
-        </div>
-        <Icon className="text-muted-foreground h-5 w-5" />
-      </div>
-    </div>
-  );
-}
+// StatCard component now imported from @/components/ui
 
 interface StatusBarProps {
   label: string;

@@ -75,6 +75,14 @@ export interface OrderWithComputed extends OrderResponse {
     reason?: string;
     note?: string;
   };
+
+  // Payment-related fields (future sprint - payment integration)
+  // Temporarily added for backward compatibility
+  paymentMode?: 'ONLINE' | 'MANUAL_IBAN' | 'ESCROW';
+  paymentProofUrl?: string;
+  paymentConfirmedAt?: string;
+  buyerPaymentConfirmed?: boolean;
+  sellerPaymentConfirmed?: boolean;
 }
 
 /**
@@ -185,6 +193,12 @@ export function enrichOrder(order: OrderResponse): OrderWithComputed {
           note: order.cancellationNote,
         }
       : undefined,
+    // Payment-related fields (temporary defaults for Sprint 2)
+    paymentMode: undefined, // Will be properly integrated in payment sprint
+    paymentProofUrl: undefined,
+    paymentConfirmedAt: undefined,
+    buyerPaymentConfirmed: false,
+    sellerPaymentConfirmed: false,
   };
 }
 

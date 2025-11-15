@@ -405,18 +405,14 @@ export default function OrderDetailPage() {
   // ================================================
 
   // Handle edit milestone click
-  const handleEditMilestone = (
-    milestone: OrderMilestone | MilestoneResponse
-  ) => {
-    setSelectedMilestone(milestone as OrderMilestone);
+  const handleEditMilestone = (milestone: MilestoneResponse) => {
+    setSelectedMilestone(milestone);
     setShowEditForm(true);
   };
 
   // Handle delete milestone click
-  const handleDeleteMilestone = (
-    milestone: OrderMilestone | MilestoneResponse
-  ) => {
-    setSelectedMilestone(milestone as OrderMilestone);
+  const handleDeleteMilestone = (milestone: MilestoneResponse) => {
+    setSelectedMilestone(milestone);
     setShowDeletionModal(true);
   };
 
@@ -868,16 +864,26 @@ export default function OrderDetailPage() {
                 <h2 className="text-lg font-semibold text-gray-900">
                   Milestone Yönetimi
                 </h2>
-                {userRole === 'seller' && order.status === 'PAID' && (
-                  <Button
-                    variant="default"
-                    size="sm"
-                    onClick={() => setShowCreationWizard(true)}
+                <div className="flex items-center gap-3">
+                  {/* Sprint 1: Link to dedicated milestone page */}
+                  <Link
+                    href={`/dashboard/orders/${order.id}/milestones`}
+                    className="text-primary-600 hover:text-primary-700 text-sm font-medium underline"
                   >
-                    <Package className="mr-2 h-4 w-4" />
-                    Yeni Milestone
-                  </Button>
-                )}
+                    View All Milestones →
+                  </Link>
+
+                  {userRole === 'seller' && order.status === 'PAID' && (
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => setShowCreationWizard(true)}
+                    >
+                      <Package className="mr-2 h-4 w-4" />
+                      Yeni Milestone
+                    </Button>
+                  )}
+                </div>
               </div>
 
               <MilestoneListCard
@@ -935,13 +941,18 @@ export default function OrderDetailPage() {
                   Bu sipariş için henüz milestone tanımlanmamış. Milestone
                   oluşturarak işi adımlara bölebilirsiniz.
                 </p>
-                <Button
-                  variant="default"
-                  onClick={() => setShowCreationWizard(true)}
-                >
-                  <Package className="mr-2 h-4 w-4" />
-                  İlk Milestone'u Oluştur
-                </Button>
+                <div className="flex items-center justify-center gap-3">
+                  <Button
+                    variant="default"
+                    onClick={() => setShowCreationWizard(true)}
+                  >
+                    <Package className="mr-2 h-4 w-4" />
+                    İlk Milestone'u Oluştur
+                  </Button>
+                  <Link href={`/dashboard/orders/${order.id}/milestones`}>
+                    <Button variant="outline">Milestone Sayfasına Git</Button>
+                  </Link>
+                </div>
               </Card>
             )}
 

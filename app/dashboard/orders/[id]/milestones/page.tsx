@@ -1,0 +1,212 @@
+/**
+ * ================================================
+ * ORDER MILESTONES PAGE - SPRINT 1
+ * ================================================
+ * Clean, focused milestone management page
+ *
+ * Features:
+ * - Display milestone list
+ * - Milestone actions (start, deliver, accept, reject)
+ * - Real-time WebSocket updates
+ * - Type-safe implementation
+ *
+ * @sprint Sprint 1 - Milestone Frontend Integration
+ * @author MarifetBul Development Team
+ * @version 1.0.0
+ */
+
+'use client';
+
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams } from 'next/navigation';
+import { ChevronLeft, AlertCircle } from 'lucide-react';
+import { Card } from '@/components/ui/Card';
+import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { MilestoneList } from '@/components/domains/milestones';
+import { useOrderMilestones } from '@/hooks/business/useMilestones';
+import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
+import { orderApi } from '@/lib/api/orders';
+import type { OrderResponse } from '@/types/backend-aligned';
+import logger from '@/lib/infrastructure/monitoring/logger';
+import Link from 'next/link';
+import { toast } from 'sonner';
+
+// ================================================
+// COMPONENT
+// ================================================
+
+export default function OrderMilestonesPage() {
+  const params = useParams();
+  const orderId = params?.id as string;
+
+  // Get current user from auth store
+  const user = authSelectors.useUser();
+
+  // Order state for role detection
+  const [order, setOrder] = useState<OrderResponse | null>(null);
+  const [orderLoading, setOrderLoading] = useState(true);
+  const [orderError, setOrderError] = useState<string | null>(null);
+
+  // Determine user role from order
+  const userRole: 'FREELANCER' | 'EMPLOYER' =
+    order && user
+      ? order.sellerId === user.id
+        ? 'FREELANCER'
+        : 'EMPLOYER'
+      : 'FREELANCER';
+
+  // Fetch milestones
+  const { milestones, isLoading, error } = useOrderMilestones(orderId);
+
+  // Load order details for role detection
+  const loadOrder = useCallback(async () => {
+    if (!orderId) return;
+
+    try {
+      setOrderLoading(true);
+      setOrderError(null);
+
+      const response = await orderApi.getOrder(orderId);
+      const data = 'data' in response ? response.data : response;
+      setOrder(data);
+
+      logger.info('[OrderMilestonesPage] Order loaded', {
+        orderId,
+        sellerId: data.sellerId,
+        buyerId: data.buyerId,
+        userId: user?.id,
+        role: data.sellerId === user?.id ? 'FREELANCER' : 'EMPLOYER',
+      });
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Failed to load order';
+      setOrderError(message);
+      toast.error('Order Load Failed', { description: message });
+      logger.error('[OrderMilestonesPage] Order load failed', err as Error);
+    } finally {
+      setOrderLoading(false);
+    }
+  }, [orderId, user?.id]);
+
+  useEffect(() => {
+    loadOrder();
+  }, [loadOrder]);
+
+  // Log for debugging
+  React.useEffect(() => {
+    if (orderId) {
+      logger.info('[OrderMilestonesPage] Loading milestones', {
+        orderId,
+        userId: user?.id,
+        userRole,
+      });
+    }
+  }, [orderId, user?.id, userRole]);
+
+  // ================================================
+  // RENDER
+  // ================================================
+
+  // Loading state
+  if (orderLoading || isLoading) {
+    return (
+      <div className="container mx-auto max-w-7xl px-4 py-8">
+        <div className="space-y-4">
+          <div className="bg-muted h-8 w-48 animate-pulse rounded" />
+          <div className="bg-muted h-12 w-full animate-pulse rounded" />
+          <div className="bg-muted h-64 w-full animate-pulse rounded" />
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (orderError || error) {
+    return (
+      <div className="container mx-auto max-w-7xl px-4 py-8">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {orderError || error?.message || 'Failed to load milestone data'}
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  // No order found
+  if (!order) {
+    return (
+      <div className="container mx-auto max-w-7xl px-4 py-8">
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>Order not found</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto max-w-7xl px-4 py-8">
+      {/* Header */}
+      <div className="mb-6">
+        <Link
+          href={`/dashboard/orders/${orderId}`}
+          className="text-primary-600 hover:text-primary-700 mb-4 inline-flex items-center text-sm"
+        >
+          <ChevronLeft className="mr-1 h-4 w-4" />
+          Back to Order Detail
+        </Link>
+
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="mb-2 text-3xl font-bold text-gray-900">
+              Milestones - Order #{order.orderNumber}
+            </h1>
+            <p className="text-gray-600">
+              Track and manage milestone-based progress for this order
+            </p>
+            <p className="mt-1 text-sm text-gray-500">
+              Your role:{' '}
+              {userRole === 'FREELANCER'
+                ? 'Freelancer (Seller)'
+                : 'Employer (Buyer)'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Milestone List */}
+      <Card className="p-6">
+        <MilestoneList
+          orderId={orderId}
+          userRole={userRole}
+          showCreateButton={userRole === 'FREELANCER'}
+          onCreateClick={() => {
+            logger.info('[OrderMilestonesPage] Create milestone clicked');
+            toast.info('Coming Soon', {
+              description:
+                'Milestone creation will be implemented in Story 1.7',
+            });
+          }}
+        />
+      </Card>
+
+      {/* Sprint 1 Debug Info (remove in production) */}
+      {process.env.NODE_ENV === 'development' && (
+        <Card className="mt-6 border-blue-200 bg-blue-50 p-4">
+          <h3 className="mb-2 text-sm font-semibold text-blue-900">
+            Sprint 1 Debug Info
+          </h3>
+          <div className="space-y-1 text-xs text-blue-800">
+            <div>Order ID: {orderId}</div>
+            <div>User Role: {userRole}</div>
+            <div>Milestones Count: {milestones?.length || 0}</div>
+            <div>Loading: {isLoading ? 'Yes' : 'No'}</div>
+            <div>Error: {error ? error.message : 'None'}</div>
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+}

@@ -20,7 +20,7 @@ import type {
   JobStatus,
 } from '@/types/backend-aligned';
 import * as jobsAPI from '@/lib/api/jobs';
-import { logger } from '@/lib/infrastructure/monitoring/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 import { toast } from 'sonner';
 
 // ================================================

@@ -27,6 +27,7 @@ import { Card } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/UnifiedSkeleton';
+import { StatCard } from '@/components/ui';
 import {
   DollarSign,
   TrendingUp,
@@ -39,72 +40,7 @@ import {
 } from 'lucide-react';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
-// ================================================
-// TYPES
-// ================================================
-
-interface StatCardProps {
-  title: string;
-  value: string | number;
-  subtitle?: string;
-  icon: React.ReactNode;
-  trend?: {
-    value: number;
-    isPositive: boolean;
-  };
-  isLoading?: boolean;
-}
-
-// ================================================
-// STAT CARD COMPONENT
-// ================================================
-
-const StatCard: React.FC<StatCardProps> = ({
-  title,
-  value,
-  subtitle,
-  icon,
-  trend,
-  isLoading,
-}) => {
-  if (isLoading) {
-    return (
-      <Card className="p-6">
-        <Skeleton className="h-24" />
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="p-6 transition-shadow hover:shadow-lg">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <h3 className="mt-2 text-2xl font-bold text-gray-900">{value}</h3>
-          {subtitle && <p className="mt-1 text-sm text-gray-500">{subtitle}</p>}
-          {trend && (
-            <div
-              className={`mt-2 flex items-center text-sm ${
-                trend.isPositive ? 'text-green-600' : 'text-red-600'
-              }`}
-            >
-              <TrendingUp
-                className={`mr-1 h-4 w-4 ${!trend.isPositive && 'rotate-180'}`}
-              />
-              <span>
-                {trend.isPositive ? '+' : ''}
-                {trend.value}%
-              </span>
-            </div>
-          )}
-        </div>
-        <div className="text-primary-600 bg-primary-50 rounded-lg p-3">
-          {icon}
-        </div>
-      </div>
-    </Card>
-  );
-};
+// StatCard component now imported from @/components/ui
 
 // ================================================
 // MAIN COMPONENT
@@ -205,35 +141,43 @@ export const CommissionDashboard: React.FC = () => {
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          title="Toplam Komisyon"
+          label="Toplam Komisyon"
           value={formatCurrency(totalCommission)}
           subtitle="Son 30 gün"
           icon={<DollarSign className="h-6 w-6" />}
           isLoading={isLoadingStats}
+          variant="detailed"
+          testId="stat-card-commission"
         />
 
         <StatCard
-          title="Ortalama Oran"
+          label="Ortalama Oran"
           value={`%${(avgCommissionRate * 100).toFixed(2)}`}
           subtitle="Platform geneli"
           icon={<TrendingUp className="h-6 w-6" />}
           isLoading={isLoadingStats}
+          variant="detailed"
+          testId="stat-card-rate"
         />
 
         <StatCard
-          title="Toplam İşlem"
+          label="Toplam İşlem"
           value={totalOrders}
           subtitle="Son 30 gün"
           icon={<FileText className="h-6 w-6" />}
           isLoading={isLoadingStats}
+          variant="detailed"
+          testId="stat-card-orders"
         />
 
         <StatCard
-          title="Aktif Kurallar"
+          label="Aktif Kurallar"
           value={`${activeRulesCount}/${totalRulesCount}`}
           subtitle="Toplam kurallar"
           icon={<Settings className="h-6 w-6" />}
           isLoading={isLoading}
+          variant="detailed"
+          testId="stat-card-rules"
         />
       </div>
 

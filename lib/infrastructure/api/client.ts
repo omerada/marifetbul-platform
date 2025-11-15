@@ -7,7 +7,7 @@ import {
   addCsrfTokenToHeaders,
   requiresCsrfProtection,
 } from '../security/csrf';
-import { transformApiError, isRetriableError } from '@/lib/api/errors';
+import { transformError, isRetriable } from '@/lib/api/errors';
 
 interface RequestOptions extends RequestInit {
   caching?: {
@@ -134,7 +134,7 @@ class ApiClient {
 
             if (!retryResponse.ok) {
               const errorData = await retryResponse.json().catch(() => ({}));
-              const apiError = transformApiError({
+              const apiError = transformError({
                 status: retryResponse.status,
                 message: errorData.message || errorData.error,
                 code: errorData.code,
@@ -162,7 +162,7 @@ class ApiClient {
             if (typeof window !== 'undefined') {
               window.location.href = '/login?session=expired';
             }
-            throw transformApiError({
+            throw transformError({
               status: 401,
               message: 'Session expired. Please login again.',
               code: 'SESSION_EXPIRED',
@@ -173,7 +173,7 @@ class ApiClient {
         if (!response.ok) {
           // Transform HTTP errors to custom error classes
           const errorData = await response.json().catch(() => ({}));
-          const apiError = transformApiError({
+          const apiError = transformError({
             status: response.status,
             message: errorData.message || errorData.error,
             code: errorData.code,
@@ -228,7 +228,7 @@ class ApiClient {
         const duration = performance.now() - startTime;
 
         // Transform unknown errors to ApiError
-        const apiError = transformApiError(error);
+        const apiError = transformError(error);
 
         // Log structured error
         apiLogger.error('API request exception', apiError, {
@@ -261,7 +261,7 @@ class ApiClient {
           if (retryOptions?.shouldRetry) {
             return retryOptions.shouldRetry(error);
           }
-          return isRetriableError(error);
+          return isRetriable(error);
         },
       });
     }

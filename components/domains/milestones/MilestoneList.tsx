@@ -37,7 +37,7 @@ import {
 import {
   useOrderMilestones,
   useMilestoneActions,
-import { useOrderMilestones, useMilestoneActions } from '@/hooks/business/useMilestones';
+} from '@/hooks/business/useMilestones';
 import {
   OrderMilestone,
   MilestoneStatus,
@@ -295,9 +295,12 @@ export function MilestoneList({
   const [selectedMilestoneId, setSelectedMilestoneId] = useState<string | null>(
     null
   );
-  const [deliverModalMilestone, setDeliverModalMilestone] = useState<OrderMilestone | null>(null);
-  const [acceptModalMilestone, setAcceptModalMilestone] = useState<OrderMilestone | null>(null);
-  const [rejectModalMilestone, setRejectModalMilestone] = useState<OrderMilestone | null>(null);
+  const [deliverModalMilestone, setDeliverModalMilestone] =
+    useState<OrderMilestone | null>(null);
+  const [acceptModalMilestone, setAcceptModalMilestone] =
+    useState<OrderMilestone | null>(null);
+  const [rejectModalMilestone, setRejectModalMilestone] =
+    useState<OrderMilestone | null>(null);
 
   // ========== HANDLERS ==========
 
@@ -437,55 +440,55 @@ export function MilestoneList({
 
       <div className="space-y-6">
         {/* Progress Summary */}
-        <Card className="p-6 bg-gradient-to-br from-purple-50 to-blue-50">
-        <div className="mb-3 flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">
-              Milestone İlerlemesi
-            </h3>
-            <p className="text-sm text-gray-600">
-              {completedCount} / {milestones.length} tamamlandı
-            </p>
+        <Card className="bg-gradient-to-br from-purple-50 to-blue-50 p-6">
+          <div className="mb-3 flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Milestone İlerlemesi
+              </h3>
+              <p className="text-sm text-gray-600">
+                {completedCount} / {milestones.length} tamamlandı
+              </p>
+            </div>
+            <div className="text-3xl font-bold text-purple-600">
+              {progressPercent}%
+            </div>
           </div>
-          <div className="text-3xl font-bold text-purple-600">
-            {progressPercent}%
+
+          {/* Progress Bar */}
+          <div className="h-3 w-full overflow-hidden rounded-full bg-gray-200">
+            <div
+              className="h-3 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-500"
+              style={{ width: `${progressPercent}%` }}
+            />
           </div>
-        </div>
+        </Card>
 
-        {/* Progress Bar */}
-        <div className="h-3 w-full overflow-hidden rounded-full bg-gray-200">
-          <div
-            className="h-3 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-500"
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-      </Card>
+        {/* Create Button (Optional) */}
+        {showCreateButton && onCreateClick && (
+          <div className="flex justify-end">
+            <Button onClick={onCreateClick} variant="outline" size="sm">
+              + Yeni Milestone Ekle
+            </Button>
+          </div>
+        )}
 
-      {/* Create Button (Optional) */}
-      {showCreateButton && onCreateClick && (
-        <div className="flex justify-end">
-          <Button onClick={onCreateClick} variant="outline" size="sm">
-            + Yeni Milestone Ekle
-          </Button>
+        {/* Milestone Cards */}
+        <div className="space-y-4">
+          {milestones.map((milestone) => (
+            <MilestoneCard
+              key={milestone.id}
+              milestone={milestone}
+              userRole={userRole}
+              onStart={handleStart}
+              onDeliver={handleDeliver}
+              onAccept={handleAccept}
+              onReject={handleReject}
+              isLoading={isActionLoading(milestone.id)}
+            />
+          ))}
         </div>
-      )}
-
-      {/* Milestone Cards */}
-      <div className="space-y-4">
-        {milestones.map((milestone) => (
-          <MilestoneCard
-            key={milestone.id}
-            milestone={milestone}
-            userRole={userRole}
-            onStart={handleStart}
-            onDeliver={handleDeliver}
-            onAccept={handleAccept}
-            onReject={handleReject}
-            isLoading={isActionLoading(milestone.id)}
-          />
-        ))}
       </div>
-    </div>
     </>
   );
 }

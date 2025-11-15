@@ -14,7 +14,6 @@
  */
 
 import * as Sentry from '@sentry/nextjs';
-import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
 // TYPES
@@ -33,7 +32,8 @@ interface SentryUser {
 const SENTRY_ENABLED = process.env.NEXT_PUBLIC_ENABLE_SENTRY === 'true';
 const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
 
-logger.info(
+// eslint-disable-next-line no-console
+console.log(
   SENTRY_ENABLED && SENTRY_DSN
     ? '✅ Sentry integration active'
     : 'ℹ️ Sentry is disabled'
