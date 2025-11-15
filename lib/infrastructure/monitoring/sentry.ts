@@ -49,7 +49,7 @@ console.log(
 export function setSentryUser(user: SentryUser): void {
   if (!SENTRY_ENABLED) return;
 
-  logger.debug('Setting Sentry user context', { userIduserid, emailuseremail,  });
+  logger.debug('Setting Sentry user context', { userIduserid, emailuseremail });
 
   Sentry.setUser({
     id: user.id,

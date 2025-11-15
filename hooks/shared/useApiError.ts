@@ -81,7 +81,7 @@ export function useApiError(): UseApiErrorReturn {
       // Set error state
       setErrorState({
         error: apiError,
-        message: getUserFriendlyErrorMessage(apiError),
+        message: getUserErrorMessage(apiError),
         fieldErrors: apiError.details as Record<string, string[]> | null,
         isClientError: isClientError(apiError),
         isServerError: isServerError(apiError),
