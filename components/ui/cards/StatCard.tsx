@@ -24,8 +24,13 @@
 'use client';
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
-import { Badge } from '@/components/ui/badge';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Badge,
+} from '@/components/ui';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -73,7 +78,14 @@ export interface StatCardProps {
   /** Optional badge */
   badge?: {
     text: string;
-    variant?: 'default' | 'success' | 'warning' | 'error';
+    variant?:
+      | 'default'
+      | 'secondary'
+      | 'success'
+      | 'warning'
+      | 'destructive'
+      | 'outline'
+      | 'premium';
   };
 
   /** Custom className */
@@ -272,7 +284,22 @@ export function StatCard({
               )}
             </div>
             {badge && (
-              <Badge variant={badge.variant || 'default'} className="ml-2">
+              <Badge
+                variant={
+                  (badge.variant === 'error'
+                    ? 'destructive'
+                    : badge.variant) as
+                    | 'default'
+                    | 'success'
+                    | 'warning'
+                    | 'secondary'
+                    | 'outline'
+                    | 'destructive'
+                    | 'premium'
+                    | undefined
+                }
+                className="ml-2"
+              >
                 {badge.text}
               </Badge>
             )}
@@ -335,7 +362,21 @@ export function StatCard({
           </div>
         )}
         {badge && (
-          <Badge variant={badge.variant || 'default'}>{badge.text}</Badge>
+          <Badge
+            variant={
+              (badge.variant === 'error' ? 'destructive' : badge.variant) as
+                | 'default'
+                | 'success'
+                | 'warning'
+                | 'secondary'
+                | 'outline'
+                | 'destructive'
+                | 'premium'
+                | undefined
+            }
+          >
+            {badge.text}
+          </Badge>
         )}
       </div>
     </Card>
