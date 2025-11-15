@@ -38,6 +38,7 @@ export type {
 // Milestone components (Sprint 1 - Story 1.6)
 export { PendingMilestonesWidget } from './PendingMilestonesWidget';
 export { AwaitingAcceptanceWidget } from './AwaitingAcceptanceWidget';
+export { MilestoneStatsWidget } from './MilestoneStatsWidget'; // Story 1.5 ✅
 
 // Layout components
 export { DashboardHeader } from './DashboardHeader';

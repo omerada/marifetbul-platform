@@ -48,6 +48,7 @@ import {
   PendingMilestonesWidget,
   AnalyticsChartWidget,
 } from '../widgets';
+import { MilestoneStatsWidget } from '../widgets/MilestoneStatsWidget';
 import type { FreelancerDashboard } from '../types/dashboard.types';
 import { formatCompactNumber } from '../utils';
 import { formatCurrency } from '@/lib/shared/formatters';
@@ -311,6 +312,14 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
           subtitle="Bakiye ve kazanç bilgileriniz"
         >
           <WalletBalanceWidget showTrend />
+        </DashboardSection>
+
+        {/* Milestone Stats Widget - STORY 1.5 */}
+        <DashboardSection
+          title="Milestone İstatistikleri"
+          subtitle="Aşamalı ödeme durumunuz"
+        >
+          <MilestoneStatsWidget />
         </DashboardSection>
 
         {/* Charts Section */}

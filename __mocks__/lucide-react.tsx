@@ -67,6 +67,12 @@ export const Trash = createMockIcon('Trash');
 export const Copy = createMockIcon('Copy');
 export const Share = createMockIcon('Share');
 export const Save = createMockIcon('Save');
+export const Play = createMockIcon('Play');
+export const PlayCircle = createMockIcon('PlayCircle');
+export const Ban = createMockIcon('Ban');
+export const Lock = createMockIcon('Lock');
+export const Unlock = createMockIcon('Unlock');
+export const Snowflake = createMockIcon('Snowflake');
 
 // Time & Calendar
 export const Clock = createMockIcon('Clock');

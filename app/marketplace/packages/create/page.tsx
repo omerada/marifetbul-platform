@@ -13,8 +13,12 @@ import {
   Card,
   CardHeader,
   CardContent,
+  Checkbox,
 } from '@/components/ui';
 import { useToast } from '@/hooks';
+import { CreateMilestoneForm } from '@/components/domains/milestones';
+import type { CreateOrderMilestoneRequest } from '@/types/business/features/milestone';
+import { Info, Package } from 'lucide-react';
 
 // Zod validation schema
 const packageSchema = z.object({
@@ -99,6 +103,10 @@ export default function CreatePackagePage() {
   const router = useRouter();
   const { success, error } = useToast();
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [enableMilestones, setEnableMilestones] = useState(false);
+  const [milestones, setMilestones] = useState<CreateOrderMilestoneRequest[]>(
+    []
+  );
 
   const {
     register,
@@ -110,9 +118,37 @@ export default function CreatePackagePage() {
   });
 
   const selectedCategory = watch('category');
+  const currentPrice = watch('price');
 
-  const onSubmit = async (_: PackageFormData) => {
+  const onSubmit = async (data: PackageFormData) => {
     try {
+      // Milestone validation
+      if (enableMilestones) {
+        if (milestones.length === 0) {
+          error('En az bir milestone tanımlamalısınız');
+          return;
+        }
+
+        const totalMilestoneAmount = milestones.reduce(
+          (sum, m) => sum + m.amount,
+          0
+        );
+
+        if (totalMilestoneAmount !== currentPrice) {
+          error(
+            `Milestone tutarları toplamı (${totalMilestoneAmount} TL) paket fiyatına (${currentPrice} TL) eşit olmalıdır`
+          );
+          return;
+        }
+      }
+
+      // TODO: Backend integration - save package with milestones
+      // const packageData = {
+      //   ...data,
+      //   images: uploadedImages,
+      //   milestones: enableMilestones ? milestones : undefined,
+      // };
+
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       success('Paket başarıyla oluşturuldu!');
@@ -322,6 +358,64 @@ export default function CreatePackagePage() {
                   </p>
                 )}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Milestone Tabanlı Ödeme - STORY 1.2 */}
+          <Card>
+            <CardHeader>
+              <h2 className="flex items-center gap-2 text-xl font-semibold">
+                <Package className="h-5 w-5" />
+                Milestone Tabanlı Ödeme
+              </h2>
+              <p className="text-gray-600">
+                İşi aşamalara bölerek her aşamada ödeme alın (opsiyonel)
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-start gap-3 rounded-lg bg-blue-50 p-4">
+                <Info className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600" />
+                <div className="text-sm text-blue-800">
+                  <p className="mb-1 font-medium">
+                    Milestone sistemi nasıl çalışır?
+                  </p>
+                  <ul className="list-inside list-disc space-y-1 text-blue-700">
+                    <li>İşi aşamalara (milestone) bölersiniz</li>
+                    <li>Her aşamayı teslim ettikçe ödeme alırsınız</li>
+                    <li>Alıcı her aşamayı onaylar veya revizyon talep eder</li>
+                    <li>
+                      Tüm milestone tutarları toplamı paket fiyatına eşit
+                      olmalıdır
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  id="enableMilestones"
+                  checked={enableMilestones}
+                  onCheckedChange={(checked) =>
+                    setEnableMilestones(checked === true)
+                  }
+                />
+                <label
+                  htmlFor="enableMilestones"
+                  className="cursor-pointer text-sm font-medium"
+                >
+                  Bu paket için milestone tabanlı ödeme kullan
+                </label>
+              </div>
+
+              {enableMilestones && (
+                <div className="mt-6 border-t pt-6">
+                  <CreateMilestoneForm
+                    totalAmount={watch('price') || 0}
+                    milestones={milestones}
+                    onChange={setMilestones}
+                  />
+                </div>
+              )}
             </CardContent>
           </Card>
 

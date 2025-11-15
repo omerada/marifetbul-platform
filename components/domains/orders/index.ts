@@ -59,10 +59,10 @@ export type { IBANDisplayCardProps } from './IBANDisplayCard';
 export type { ManualPaymentConfirmationFormProps } from './ManualPaymentConfirmationForm';
 export type { PaymentModeDisplayProps } from './PaymentModeDisplay';
 
-// Sprint 1 - Story 1.2: Milestone List & Progress Display
-// @deprecated MilestoneListCard - Use MilestoneList from @/components/domains/milestones instead
-export { MilestoneListCard } from './MilestoneListCard';
-export type { MilestoneListCardProps } from './MilestoneListCard';
+// Sprint 1 - Story 1.2: Milestone Components MOVED
+// @removed MilestoneListCard - Deprecated, use MilestoneList from @/components/domains/milestones
+// Clean migration completed: All milestone UI now uses canonical components
+// Date: 2025-11-15 (Sprint 1 Story 1.1)
 
 // Sprint 1 - Story 1.3: Milestone Delivery & Acceptance
 // Note: MilestoneDeliveryForm removed - Use UnifiedDeliveryModal with mode='milestone'

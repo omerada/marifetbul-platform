@@ -53,7 +53,8 @@ import type { OrderResponse, MilestoneResponse } from '@/types/backend-aligned';
 import { enrichOrder, type OrderWithComputed } from '@/types/backend-aligned';
 import type { OrderMilestone } from '@/types/business/features/milestone';
 import { useWebSocket, useAuth, useOrderUpdates } from '@/hooks';
-import { useMilestoneActions } from '@/hooks/business/useMilestones';
+import { MilestoneList } from '@/components/domains/milestones';
+import { useMilestoneWebSocket } from '@/hooks/business/useMilestoneWebSocket';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { getDisputeByOrderId } from '@/lib/api/disputes';
@@ -112,6 +113,29 @@ export default function OrderDetailPage() {
     },
     onCompleted: (updatedOrder) => {
       setOrder(enrichOrder(updatedOrder as unknown as OrderResponse));
+    },
+  });
+
+  // STORY 1.4: Real-time milestone notifications
+  useMilestoneWebSocket({
+    orderId: orderId || undefined,
+    autoRevalidate: true,
+    showToasts: true,
+    onMilestoneDelivered: (data) => {
+      logger.info('[OrderDetail] Milestone delivered', data);
+      loadOrder(); // Refresh order data
+    },
+    onMilestoneAccepted: (data) => {
+      logger.info('[OrderDetail] Milestone accepted', data);
+      loadOrder(); // Refresh order data
+    },
+    onMilestoneRevisionRequested: (data) => {
+      logger.info('[OrderDetail] Milestone revision requested', data);
+      loadOrder(); // Refresh order data
+    },
+    onMilestoneStatusChanged: (data) => {
+      logger.info('[OrderDetail] Milestone status changed', data);
+      loadOrder(); // Refresh order data
     },
   });
 
@@ -805,70 +829,36 @@ export default function OrderDetailPage() {
           )}
 
           {/* ================================================
-               MILESTONE MANAGEMENT SECTION (PRODUCTION-READY)
+               MILESTONE MANAGEMENT - PRODUCTION READY ✅
                ================================================
-               Sprint 1: Clean, maintainable milestone integration
-               - Single source of truth: /dashboard/orders/[id]/milestones
-               - No duplicate components
-               - Simple preview card with link to dedicated page
+               Sprint 1 Story 1.1: Clean milestone integration
+               - Single MilestoneList component (no duplicates)
+               - Link to dedicated management page
+               - Inline preview + promo for unused orders
                ================================================ */}
-          {order.milestones && order.milestones.length > 0 && (
-            <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-blue-50 p-6">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-600 text-white">
-                    <Package className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      Milestone Bazlı Ödeme
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      {order.milestones.length} milestone tanımlanmış
-                    </p>
-                  </div>
-                </div>
+          {order.milestones && order.milestones.length > 0 ? (
+            <Card className="p-6">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  <Package className="mr-2 inline-block h-5 w-5" />
+                  Milestone Yönetimi
+                </h2>
                 <Link href={`/dashboard/orders/${order.id}/milestones`}>
-                  <Button variant="default" size="sm">
-                    Milestone'ları Yönet →
+                  <Button variant="outline" size="sm">
+                    Detaylı Yönetim →
                   </Button>
                 </Link>
               </div>
 
-              {/* Quick Progress Summary */}
-              <div className="mt-4 rounded-lg border border-purple-200 bg-white p-4">
-                <div className="mb-3 flex items-center justify-between text-sm">
-                  <span className="font-medium text-gray-700">İlerleme</span>
-                  <span className="text-purple-600">
-                    {
-                      order.milestones.filter((m) => m.status === 'ACCEPTED')
-                        .length
-                    }{' '}
-                    / {order.milestones.length} tamamlandı
-                  </span>
-                </div>
-                <div className="h-2 overflow-hidden rounded-full bg-gray-200">
-                  <div
-                    className="h-2 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-500"
-                    style={{
-                      width: `${Math.round(
-                        (order.milestones.filter((m) => m.status === 'ACCEPTED')
-                          .length /
-                          order.milestones.length) *
-                          100
-                      )}%`,
-                    }}
-                  />
-                </div>
-                <p className="mt-3 text-center text-xs text-gray-500">
-                  Detaylı milestone yönetimi için yukarıdaki butona tıklayın
-                </p>
-              </div>
+              {/* Clean MilestoneList Component - Single Source of Truth */}
+              <MilestoneList
+                orderId={order.id}
+                userRole={userRole === 'seller' ? 'FREELANCER' : 'EMPLOYER'}
+                showCreateButton={false}
+              />
             </Card>
-          )}
-
-          {/* Milestone Feature Available Notice (No Milestones Yet) */}
-          {(!order.milestones || order.milestones.length === 0) &&
+          ) : (
+            /* Milestone Feature Available Notice (No Milestones Yet) */
             (order.status === 'PAID' || order.status === 'PENDING_PAYMENT') && (
               <Card className="border-purple-100 bg-purple-50 p-6">
                 <div className="flex items-start gap-4">
@@ -892,7 +882,8 @@ export default function OrderDetailPage() {
                   </div>
                 </div>
               </Card>
-            )}
+            )
+          )}
 
           {/* Order Information */}
           <Card className="p-6">
@@ -960,40 +951,6 @@ export default function OrderDetailPage() {
               )}
             </div>
           </Card>
-
-          {/* Milestone List - Show if order has milestones */}
-          {order.milestones && order.milestones.length > 0 && (
-            <MilestoneListCard
-              milestones={order.milestones}
-              userRole={userRole}
-              orderId={order.id}
-              currency={order.financials.currency}
-              onStartClick={async (milestone) => {
-                try {
-                  await startMilestone(milestone.id);
-                  await loadOrder(); // Reload to get updated milestones
-                } catch (error) {
-                  // Error already handled by hook with toast
-                  logger.error('Start milestone failed', error as Error);
-                }
-              }}
-              onDeliverClick={async (_milestone) => {
-                // onDeliverClick callback is now for post-delivery reload
-                await loadOrder();
-                toast.success('Başarılı', {
-                  description: 'Milestone teslim edildi',
-                });
-              }}
-              onAcceptClick={(milestone) => {
-                setSelectedMilestone(milestone);
-                setShowAcceptancePanel(true);
-              }}
-              onRejectClick={(milestone) => {
-                setSelectedMilestone(milestone);
-                setShowAcceptancePanel(true); // Opens acceptance panel which has reject option
-              }}
-            />
-          )}
 
           {/* Delivery Information */}
           {order.delivery?.deliveryNote && (

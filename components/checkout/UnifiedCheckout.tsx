@@ -31,12 +31,23 @@ import {
   CardContent,
   UnifiedButton as Button,
   Badge,
+  Alert,
+  AlertTitle,
+  AlertDescription,
 } from '@/components/ui';
 import { formatCurrency } from '@/lib/shared/formatters';
-import { CreditCard, Building2, CheckCircle, AlertCircle } from 'lucide-react';
+import {
+  CreditCard,
+  Building2,
+  CheckCircle,
+  AlertCircle,
+  Package,
+  Calendar,
+} from 'lucide-react';
 import type { OrderResponse } from '@/types/backend-aligned';
 import IyzicoPaymentForm from '@/components/checkout/IyzicoPaymentForm';
 import { confirmManualPayment } from '@/lib/api/orders';
+import { useMilestones } from '@/hooks/business/useMilestones';
 
 // ================================================
 // TYPES
@@ -79,6 +90,10 @@ function OrderReview({ order, onContinue, onCancel }: OrderReviewProps) {
   const tax = order.platformFee || 0;
   const discount = 0;
   const total = order.totalAmount;
+
+  // Fetch milestones for this order (if any)
+  const { milestones, isLoading: loadingMilestones } = useMilestones(order.id);
+  const hasMilestones = milestones && milestones.length > 0;
 
   return (
     <div className="space-y-6">
@@ -134,6 +149,76 @@ function OrderReview({ order, onContinue, onCancel }: OrderReviewProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Milestone Preview - STORY 1.3 */}
+      {hasMilestones && !loadingMilestones && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardContent className="pt-6">
+            <div className="mb-4 flex items-center gap-2">
+              <Package className="h-5 w-5 text-blue-600" />
+              <h3 className="text-lg font-semibold text-blue-900">
+                Aşamalı Ödeme Planı
+              </h3>
+            </div>
+
+            <Alert className="mb-4 border-blue-200 bg-white">
+              <AlertCircle className="h-4 w-4 text-blue-600" />
+              <AlertTitle className="text-blue-900">
+                Milestone Tabanlı Ödeme
+              </AlertTitle>
+              <AlertDescription className="text-blue-700">
+                Bu sipariş {milestones.length} aşamaya bölünmüştür. Her aşama
+                için ayrı ödeme yapacak ve teslim edilen işi onaylayacaksınız.
+              </AlertDescription>
+            </Alert>
+
+            <div className="space-y-3">
+              {milestones.map((milestone, index) => {
+                const dueDate = milestone.dueDate
+                  ? new Date(milestone.dueDate).toLocaleDateString('tr-TR')
+                  : 'Belirtilmemiş';
+
+                return (
+                  <div
+                    key={milestone.id}
+                    className="flex items-start gap-3 rounded-lg border border-blue-200 bg-white p-4"
+                  >
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white">
+                      {index + 1}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-gray-900">
+                        {milestone.title}
+                      </p>
+                      {milestone.description && (
+                        <p className="mt-1 text-sm text-gray-600">
+                          {milestone.description}
+                        </p>
+                      )}
+                      <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
+                        <span className="flex items-center gap-1 text-gray-600">
+                          <Calendar className="h-4 w-4" />
+                          {dueDate}
+                        </span>
+                        <Badge
+                          variant="outline"
+                          className="border-blue-200 bg-blue-50 text-blue-700"
+                        >
+                          {formatCurrency(milestone.amount)}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <p className="mt-4 text-center text-sm text-blue-700">
+              Toplam ödeme her aşamada {milestones.length} kere gerçekleşecektir
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Actions */}
       <div className="flex gap-3">
