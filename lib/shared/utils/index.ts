@@ -205,7 +205,13 @@ import {
   AsyncUtils,
 } from './async';
 
-import { logger, debug, info, warn, error } from './logger';
+import {
+  logger,
+  debug,
+  info,
+  warn,
+  error,
+} from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // RE-EXPORT ALL UTILITIES

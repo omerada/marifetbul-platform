@@ -486,21 +486,7 @@ class OrderService {
     );
   }
 
-  /**
-   * Get disputed orders (admin only)
-   * GET /api/v1/disputes (uses dispute API instead of order API)
-   * @deprecated Use getAllDisputes from dispute API instead
-   */
-  async getDisputedOrders(
-    filters?: OrderFilters
-  ): Promise<ApiResponse<PageResponse<OrderSummaryResponse>>> {
-    const params = this.buildQueryParams(filters);
-    // Redirect to disputes API endpoint
-    return apiClient.get<ApiResponse<PageResponse<OrderSummaryResponse>>>(
-      '/api/v1/disputes',
-      params
-    );
-  }
+  // REMOVED: getDisputedOrders - Use import { getAllDisputes } from '@/lib/api/disputes'
 
   /**
    * Resolve dispute (admin only)

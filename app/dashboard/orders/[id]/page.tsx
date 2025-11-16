@@ -1325,17 +1325,6 @@ export default function OrderDetailPage() {
         </div>
       </div>
 
-      {/* Messaging Section */}
-      <div className="mt-6">
-        <h2 className="mb-4 text-xl font-semibold text-gray-900">Mesajlaşma</h2>
-        <OrderMessagingPanel
-          order={order}
-          currentUserId={user?.id || 'guest'}
-          userRole={userRole}
-          conversationId={order.id} // Using order ID as conversation ID for now
-        />
-      </div>
-
       {/* Dispute Creation Modal */}
       {showDisputeModal && (
         <DisputeCreationModal

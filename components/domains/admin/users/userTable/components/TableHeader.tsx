@@ -9,7 +9,7 @@
 import React from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { CardTitle } from '@/components/ui/Card';
-import { Users, Download, RefreshCw } from 'lucide-react';
+import { Users, RefreshCw } from 'lucide-react';
 import { TableHeaderProps } from '../types/userTableTypes';
 
 export function TableHeader({
@@ -18,7 +18,6 @@ export function TableHeader({
   userCount,
   isLoading,
   onRefresh,
-  onExport,
 }: TableHeaderProps) {
   return (
     <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
@@ -43,31 +42,19 @@ export function TableHeader({
           <span>{userCount} kullanıcı yüklendi</span>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onExport('csv')}
-            disabled={isLoading}
-            className="border-gray-300 hover:border-blue-300"
-          >
-            <Download className="mr-2 h-4 w-4" />
-            Dışa Aktar
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onRefresh}
-            disabled={isLoading}
-            className="border-gray-300 hover:border-blue-300"
-          >
-            <RefreshCw
-              className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}
-            />
-            Yenile
-          </Button>
-        </div>
+        {/* Refresh Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onRefresh}
+          disabled={isLoading}
+          className="border-gray-300 hover:border-blue-300"
+        >
+          <RefreshCw
+            className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}
+          />
+          Yenile
+        </Button>
       </div>
     </div>
   );

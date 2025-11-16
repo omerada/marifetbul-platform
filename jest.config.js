@@ -48,8 +48,8 @@ const customJestConfig = {
   },
   coverageReporters: ['text', 'lcov', 'html'],
   transformIgnorePatterns: [
-    // Don't transform anything in node_modules (including lucide-react since it's mocked)
-    'node_modules/',
+    // Transform lucide-react ESM modules
+    'node_modules/(?!(lucide-react)/)',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],

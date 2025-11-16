@@ -100,7 +100,7 @@ export interface TableHeaderProps {
   userCount: number;
   isLoading: boolean;
   onRefresh: () => void;
-  onExport: (format: 'csv' | 'xlsx') => void;
+  // onExport removed - use UserExportButton component instead
 }
 
 export interface TableFiltersProps {

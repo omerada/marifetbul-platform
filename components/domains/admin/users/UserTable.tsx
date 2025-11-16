@@ -147,7 +147,6 @@ export function UserTable({ className }: UserTableProps) {
               userCount={users.length}
               isLoading={isLoading}
               onRefresh={() => onFilterChange({})}
-              onExport={() => {}} // Deprecated, using UserExportButton now
             />
 
             {/* Export Button */}
