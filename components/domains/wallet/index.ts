@@ -97,6 +97,13 @@ export { createEscrowTimelineEvent } from './EscrowTimeline';
 export { EscrowCard, EscrowCardSkeleton } from './EscrowCard';
 export type { EscrowCardProps, EscrowCardData } from './EscrowCard';
 
+// ================================================
+// MILESTONE INTEGRATION (Sprint 1 Story 1.6)
+// ================================================
+
+export { MilestoneTransactionBadge } from './MilestoneTransactionBadge';
+export type { MilestoneTransactionBadgeProps } from './MilestoneTransactionBadge';
+
 export { EscrowActions, EscrowActionPermissions } from './EscrowActions';
 export type { EscrowActionsProps } from './EscrowActions';
 

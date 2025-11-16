@@ -42,6 +42,8 @@ import {
   ManualPaymentConfirmationForm,
   PaymentModeDisplay,
   UnifiedDeliveryButton,
+  OrderDetailTabs,
+  type OrderTab,
 } from '@/components/domains/orders';
 import { RefundCreationForm } from '@/components/domains/refunds';
 import { StatusBadge } from '@/components/shared/StatusBadge';
@@ -81,6 +83,10 @@ export default function OrderDetailPage() {
   const [refund, setRefund] = useState<RefundDto | null>(null);
   const [showRefundForm, setShowRefundForm] = useState(false);
   const [showRetryHistory, setShowRetryHistory] = useState(false);
+
+  // Story 1.1: Tab navigation state
+  const [activeTab, setActiveTab] = useState<OrderTab>('details');
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
 
   // Milestone management moved to dedicated page:
   // /dashboard/orders/[id]/milestones
@@ -122,19 +128,31 @@ export default function OrderDetailPage() {
     autoRevalidate: true,
     showToasts: true,
     onMilestoneDelivered: (data) => {
-      logger.info('[OrderDetail] Milestone delivered', data);
+      logger.info('[OrderDetail] Milestone delivered', {
+        milestoneId: data.milestone.id,
+        deliveryNotes: data.deliveryNotes,
+      });
       loadOrder(); // Refresh order data
     },
     onMilestoneAccepted: (data) => {
-      logger.info('[OrderDetail] Milestone accepted', data);
+      logger.info('[OrderDetail] Milestone accepted', {
+        milestoneId: data.milestone.id,
+        paymentReleased: data.paymentReleased,
+      });
       loadOrder(); // Refresh order data
     },
     onMilestoneRevisionRequested: (data) => {
-      logger.info('[OrderDetail] Milestone revision requested', data);
+      logger.info('[OrderDetail] Milestone revision requested', {
+        milestoneId: data.id,
+        orderId: orderId,
+      });
       loadOrder(); // Refresh order data
     },
     onMilestoneStatusChanged: (data) => {
-      logger.info('[OrderDetail] Milestone status changed', data);
+      logger.info('[OrderDetail] Milestone status changed', {
+        milestoneId: data.id,
+        status: data.status,
+      });
       loadOrder(); // Refresh order data
     },
   });
@@ -185,7 +203,7 @@ export default function OrderDetailPage() {
       setDispute(disputeData);
     } catch (_err) {
       // No dispute found is OK - user might be about to create one
-      logger.debug('No dispute found for order:', orderId);
+      logger.debug('No dispute found for order', { orderId });
     }
   }, [orderId, order]);
 
@@ -575,468 +593,514 @@ export default function OrderDetailPage() {
         />
       </Card>
 
+      {/* Story 1.1: Tab Navigation ✅ */}
+      <Card className="mb-6">
+        <OrderDetailTabs
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          hasMilestones={(order.milestones?.length ?? 0) > 0}
+          unreadMessages={unreadMessagesCount}
+          pendingMilestones={
+            order.milestones?.filter(
+              (m: MilestoneResponse) => m.status === 'DELIVERED'
+            ).length ?? 0
+          }
+        />
+      </Card>
+
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Content - 2 columns */}
         <div className="space-y-6 lg:col-span-2">
-          {/* Payment Mode Display - Show payment info for all payment modes */}
-          <PaymentModeDisplay
-            paymentMode={order.paymentMode}
-            orderStatus={order.status}
-            paymentProofUrl={order.paymentProofUrl}
-            paymentConfirmedAt={order.paymentConfirmedAt}
-            buyerConfirmed={order.buyerPaymentConfirmed}
-            sellerConfirmed={order.sellerPaymentConfirmed}
-            userRole={userRole}
-            onViewProof={() => {
-              logger.info('Payment proof viewed', { orderId: order.id });
-            }}
-          />
+          {/* ================================================
+               TAB CONTENT - Story 1.1 ✅
+               ================================================ */}
 
-          {/* IBAN Display - Show for manual payment pending */}
-          {order.paymentMode === 'MANUAL_IBAN' &&
-            order.status === 'PENDING_PAYMENT' &&
-            order.sellerIban && (
-              <IBANDisplayCard
-                iban={order.sellerIban}
+          {/* DETAILS TAB */}
+          {activeTab === 'details' && (
+            <>
+              {/* Payment Mode Display - Show payment info for all payment modes */}
+              <PaymentModeDisplay
+                paymentMode={order.paymentMode}
                 orderStatus={order.status}
+                paymentProofUrl={order.paymentProofUrl}
+                paymentConfirmedAt={order.paymentConfirmedAt}
+                buyerConfirmed={order.buyerPaymentConfirmed}
+                sellerConfirmed={order.sellerPaymentConfirmed}
                 userRole={userRole}
-                sellerName={order.seller?.fullName || order.seller?.username}
-                orderAmount={order.financials.total}
-                currency={order.financials.currency}
-                orderNumber={order.orderNumber}
-                isPaymentConfirmed={false}
-              />
-            )}
-
-          {/* Manual Payment Confirmation - Show for seller when payment pending */}
-          {order.paymentMode === 'MANUAL_IBAN' &&
-            order.status === 'PENDING_PAYMENT' &&
-            userRole === 'seller' && (
-              <ManualPaymentConfirmationForm
-                orderId={order.id}
-                orderNumber={order.orderNumber}
-                orderAmount={order.financials.total}
-                currency={order.financials.currency}
-                buyerName={order.buyer?.fullName || order.buyer?.username}
-                onSuccess={handleManualPaymentSuccess}
-              />
-            )}
-
-          {/* Dispute Information - Show if disputed */}
-          {order.status === 'DISPUTED' && dispute && (
-            <Card className="border-2 border-yellow-300 bg-yellow-50 p-6">
-              <div className="mb-4 flex items-start justify-between">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-200">
-                    <AlertCircle className="h-5 w-5 text-yellow-700" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-semibold text-yellow-900">
-                      İtiraz Durumu
-                    </h2>
-                    <p className="text-sm text-yellow-700">
-                      Bu sipariş için bir itiraz açılmıştır
-                    </p>
-                  </div>
-                </div>
-                <Badge variant="warning" size="md">
-                  {dispute.status}
-                </Badge>
-              </div>
-
-              <div className="space-y-3 border-t border-yellow-200 pt-4">
-                <div>
-                  <label className="text-sm font-medium text-yellow-800">
-                    İtiraz Nedeni
-                  </label>
-                  <p className="text-yellow-900">
-                    {dispute.reasonDisplayName || dispute.reason}
-                  </p>
-                </div>
-
-                {dispute.description && (
-                  <div>
-                    <label className="text-sm font-medium text-yellow-800">
-                      Açıklama
-                    </label>
-                    <p className="text-sm text-yellow-900">
-                      {dispute.description}
-                    </p>
-                  </div>
-                )}
-
-                <div>
-                  <label className="text-sm font-medium text-yellow-800">
-                    Oluşturulma Tarihi
-                  </label>
-                  <p className="text-sm text-yellow-900">
-                    {formatDate(dispute.createdAt)}
-                  </p>
-                </div>
-
-                {dispute.resolvedAt && (
-                  <div>
-                    <label className="text-sm font-medium text-yellow-800">
-                      Çözüm Tarihi
-                    </label>
-                    <p className="text-sm text-yellow-900">
-                      {formatDate(dispute.resolvedAt)}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div className="mt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => router.push(`/disputes/${dispute.id}`)}
-                  className="w-full"
-                >
-                  İtiraz Detaylarını Görüntüle
-                </Button>
-              </div>
-            </Card>
-          )}
-
-          {/* Payment Retry Status - Show if payment failed and retry exists */}
-          {order.paymentId && (
-            <div className="space-y-4">
-              <PaymentRetryStatus
-                paymentId={order.paymentId}
-                showDetails={true}
-                onRetrySuccess={() => {
-                  toast.success('Ödeme Başarılı', {
-                    description:
-                      'Ödemeniz başarıyla tamamlandı. Sipariş durumu güncelleniyor...',
-                  });
-                  loadOrder();
+                onViewProof={() => {
+                  logger.info('Payment proof viewed', { orderId: order.id });
                 }}
               />
 
-              {/* Toggle for Retry History */}
-              {showRetryHistory && (
-                <PaymentRetryHistory
-                  paymentId={order.paymentId}
-                  className="mt-4"
-                />
+              {/* IBAN Display - Show for manual payment pending */}
+              {order.paymentMode === 'MANUAL_IBAN' &&
+                order.status === 'PENDING_PAYMENT' &&
+                order.sellerIban && (
+                  <IBANDisplayCard
+                    iban={order.sellerIban}
+                    orderStatus={order.status}
+                    userRole={userRole}
+                    sellerName={
+                      order.seller?.fullName || order.seller?.username
+                    }
+                    orderAmount={order.financials.total}
+                    currency={order.financials.currency}
+                    orderNumber={order.orderNumber}
+                    isPaymentConfirmed={false}
+                  />
+                )}
+
+              {/* Manual Payment Confirmation - Show for seller when payment pending */}
+              {order.paymentMode === 'MANUAL_IBAN' &&
+                order.status === 'PENDING_PAYMENT' &&
+                userRole === 'seller' && (
+                  <ManualPaymentConfirmationForm
+                    orderId={order.id}
+                    orderNumber={order.orderNumber}
+                    orderAmount={order.financials.total}
+                    currency={order.financials.currency}
+                    buyerName={order.buyer?.fullName || order.buyer?.username}
+                    onSuccess={handleManualPaymentSuccess}
+                  />
+                )}
+
+              {/* Dispute Information - Show if disputed */}
+              {order.status === 'DISPUTED' && dispute && (
+                <Card className="border-2 border-yellow-300 bg-yellow-50 p-6">
+                  <div className="mb-4 flex items-start justify-between">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-200">
+                        <AlertCircle className="h-5 w-5 text-yellow-700" />
+                      </div>
+                      <div>
+                        <h2 className="text-lg font-semibold text-yellow-900">
+                          İtiraz Durumu
+                        </h2>
+                        <p className="text-sm text-yellow-700">
+                          Bu sipariş için bir itiraz açılmıştır
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant="warning" size="md">
+                      {dispute.status}
+                    </Badge>
+                  </div>
+
+                  <div className="space-y-3 border-t border-yellow-200 pt-4">
+                    <div>
+                      <label className="text-sm font-medium text-yellow-800">
+                        İtiraz Nedeni
+                      </label>
+                      <p className="text-yellow-900">
+                        {dispute.reasonDisplayName || dispute.reason}
+                      </p>
+                    </div>
+
+                    {dispute.description && (
+                      <div>
+                        <label className="text-sm font-medium text-yellow-800">
+                          Açıklama
+                        </label>
+                        <p className="text-sm text-yellow-900">
+                          {dispute.description}
+                        </p>
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="text-sm font-medium text-yellow-800">
+                        Oluşturulma Tarihi
+                      </label>
+                      <p className="text-sm text-yellow-900">
+                        {formatDate(dispute.createdAt)}
+                      </p>
+                    </div>
+
+                    {dispute.resolvedAt && (
+                      <div>
+                        <label className="text-sm font-medium text-yellow-800">
+                          Çözüm Tarihi
+                        </label>
+                        <p className="text-sm text-yellow-900">
+                          {formatDate(dispute.resolvedAt)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => router.push(`/disputes/${dispute.id}`)}
+                      className="w-full"
+                    >
+                      İtiraz Detaylarını Görüntüle
+                    </Button>
+                  </div>
+                </Card>
               )}
 
-              <button
-                onClick={() => setShowRetryHistory(!showRetryHistory)}
-                className="text-primary-600 hover:text-primary-700 w-full py-2 text-center text-sm font-medium"
-              >
-                {showRetryHistory
-                  ? 'Deneme Geçmişini Gizle'
-                  : 'Deneme Geçmişini Göster'}
-              </button>
-            </div>
-          )}
+              {/* Payment Retry Status - Show if payment failed and retry exists */}
+              {order.paymentId && (
+                <div className="space-y-4">
+                  <PaymentRetryStatus
+                    paymentId={order.paymentId}
+                    showDetails={true}
+                    onRetrySuccess={() => {
+                      toast.success('Ödeme Başarılı', {
+                        description:
+                          'Ödemeniz başarıyla tamamlandı. Sipariş durumu güncelleniyor...',
+                      });
+                      loadOrder();
+                    }}
+                  />
 
-          {/* Refund Information - Show if refund exists */}
-          {refund && (
-            <Card className="border-2 border-blue-300 bg-blue-50 p-6">
-              <div className="mb-4 flex items-start justify-between">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-200">
-                    <DollarSign className="h-5 w-5 text-blue-700" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-semibold text-blue-900">
-                      İade Talebi
-                    </h2>
-                    <p className="text-sm text-blue-700">
-                      Bu sipariş için iade talebi oluşturulmuştur
-                    </p>
-                  </div>
+                  {/* Toggle for Retry History */}
+                  {showRetryHistory && (
+                    <PaymentRetryHistory
+                      paymentId={order.paymentId}
+                      className="mt-4"
+                    />
+                  )}
+
+                  <button
+                    onClick={() => setShowRetryHistory(!showRetryHistory)}
+                    className="text-primary-600 hover:text-primary-700 w-full py-2 text-center text-sm font-medium"
+                  >
+                    {showRetryHistory
+                      ? 'Deneme Geçmişini Gizle'
+                      : 'Deneme Geçmişini Göster'}
+                  </button>
                 </div>
-                <Badge
-                  variant={
-                    refund.status === 'APPROVED'
-                      ? 'success'
-                      : refund.status === 'REJECTED'
-                        ? 'destructive'
-                        : refund.status === 'COMPLETED'
+              )}
+
+              {/* Refund Information - Show if refund exists */}
+              {refund && (
+                <Card className="border-2 border-blue-300 bg-blue-50 p-6">
+                  <div className="mb-4 flex items-start justify-between">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-200">
+                        <DollarSign className="h-5 w-5 text-blue-700" />
+                      </div>
+                      <div>
+                        <h2 className="text-lg font-semibold text-blue-900">
+                          İade Talebi
+                        </h2>
+                        <p className="text-sm text-blue-700">
+                          Bu sipariş için iade talebi oluşturulmuştur
+                        </p>
+                      </div>
+                    </div>
+                    <Badge
+                      variant={
+                        refund.status === 'APPROVED'
                           ? 'success'
-                          : 'warning'
-                  }
-                  size="md"
-                >
-                  {refund.status}
-                </Badge>
-              </div>
-
-              <div className="space-y-3 border-t border-blue-200 pt-4">
-                <div>
-                  <label className="text-sm font-medium text-blue-800">
-                    İade Tutarı
-                  </label>
-                  <p className="text-blue-900">
-                    {formatCurrency(refund.amount, refund.currency)}
-                  </p>
-                </div>
-
-                {refund.reason && (
-                  <div>
-                    <label className="text-sm font-medium text-blue-800">
-                      İade Nedeni
-                    </label>
-                    <p className="text-blue-900">{refund.reason}</p>
+                          : refund.status === 'REJECTED'
+                            ? 'destructive'
+                            : refund.status === 'COMPLETED'
+                              ? 'success'
+                              : 'warning'
+                      }
+                      size="md"
+                    >
+                      {refund.status}
+                    </Badge>
                   </div>
-                )}
 
-                {refund.description && (
+                  <div className="space-y-3 border-t border-blue-200 pt-4">
+                    <div>
+                      <label className="text-sm font-medium text-blue-800">
+                        İade Tutarı
+                      </label>
+                      <p className="text-blue-900">
+                        {formatCurrency(refund.amount, refund.currency)}
+                      </p>
+                    </div>
+
+                    {refund.reason && (
+                      <div>
+                        <label className="text-sm font-medium text-blue-800">
+                          İade Nedeni
+                        </label>
+                        <p className="text-blue-900">{refund.reason}</p>
+                      </div>
+                    )}
+
+                    {refund.description && (
+                      <div>
+                        <label className="text-sm font-medium text-blue-800">
+                          Açıklama
+                        </label>
+                        <p className="text-sm text-blue-900">
+                          {refund.description}
+                        </p>
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="text-sm font-medium text-blue-800">
+                        Oluşturulma Tarihi
+                      </label>
+                      <p className="text-sm text-blue-900">
+                        {formatDate(refund.createdAt)}
+                      </p>
+                    </div>
+
+                    {refund.processedAt && (
+                      <div>
+                        <label className="text-sm font-medium text-blue-800">
+                          İşlem Tarihi
+                        </label>
+                        <p className="text-sm text-blue-900">
+                          {formatDate(refund.processedAt)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-4">
+                    <Button
+                      variant="outline"
+                      onClick={() =>
+                        router.push(`/dashboard/refunds/${refund.id}`)
+                      }
+                      className="w-full"
+                    >
+                      İade Detaylarını Görüntüle
+                    </Button>
+                  </div>
+                </Card>
+              )}
+
+              {/* Order Information - Details Tab */}
+              <Card className="p-6">
+                <h2 className="mb-4 text-lg font-semibold text-gray-900">
+                  <Package className="mr-2 inline-block h-5 w-5" />
+                  Sipariş Bilgileri
+                </h2>
+                <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium text-blue-800">
-                      Açıklama
+                    <label className="text-sm font-medium text-gray-600">
+                      Paket/Hizmet
                     </label>
-                    <p className="text-sm text-blue-900">
-                      {refund.description}
+                    <p className="text-gray-900">
+                      {order.packageDetails?.packageTitle ||
+                        order.customDescription ||
+                        'Özel Sipariş'}
                     </p>
                   </div>
-                )}
 
-                <div>
-                  <label className="text-sm font-medium text-blue-800">
-                    Oluşturulma Tarihi
-                  </label>
-                  <p className="text-sm text-blue-900">
-                    {formatDate(refund.createdAt)}
-                  </p>
+                  {order.requirements && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">
+                        Gereksinimler
+                      </label>
+                      <p className="whitespace-pre-wrap text-gray-900">
+                        {order.requirements}
+                      </p>
+                    </div>
+                  )}
+
+                  {order.packageDetails && (
+                    <>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <div>
+                          <label className="text-sm font-medium text-gray-600">
+                            Paket Seviyesi
+                          </label>
+                          <p className="text-gray-900">
+                            {order.packageDetails.tier}
+                          </p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-600">
+                            Teslimat Süresi
+                          </label>
+                          <p className="text-gray-900">
+                            {order.packageDetails.deliveryDays} gün
+                          </p>
+                        </div>
+                      </div>
+                      {order.packageDetails.features &&
+                        order.packageDetails.features.length > 0 && (
+                          <div>
+                            <label className="text-sm font-medium text-gray-600">
+                              Özellikler
+                            </label>
+                            <ul className="mt-2 list-inside list-disc text-gray-900">
+                              {order.packageDetails.features.map(
+                                (feature, i) => (
+                                  <li key={i}>{feature}</li>
+                                )
+                              )}
+                            </ul>
+                          </div>
+                        )}
+                    </>
+                  )}
                 </div>
+              </Card>
 
-                {refund.processedAt && (
-                  <div>
-                    <label className="text-sm font-medium text-blue-800">
-                      İşlem Tarihi
-                    </label>
-                    <p className="text-sm text-blue-900">
-                      {formatDate(refund.processedAt)}
-                    </p>
+              {/* Delivery Information */}
+              {order.delivery?.deliveryNote && (
+                <Card className="p-6">
+                  <h2 className="mb-4 text-lg font-semibold text-gray-900">
+                    <FileText className="mr-2 inline-block h-5 w-5" />
+                    Teslimat Bilgileri
+                  </h2>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">
+                        Teslimat Notu
+                      </label>
+                      <p className="whitespace-pre-wrap text-gray-900">
+                        {order.delivery.deliveryNote}
+                      </p>
+                    </div>
+                    {order.delivery.submittedAt && (
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">
+                          Teslim Tarihi
+                        </label>
+                        <p className="text-gray-900">
+                          {formatDate(order.delivery.submittedAt)}
+                        </p>
+                      </div>
+                    )}
+                    {order.delivery.attachments &&
+                      order.delivery.attachments.length > 0 && (
+                        <div>
+                          <label className="text-sm font-medium text-gray-600">
+                            Ekler ({order.delivery.attachments.length})
+                          </label>
+                          <div className="mt-2 space-y-2">
+                            {order.delivery.attachments.map((url, i) => (
+                              <a
+                                key={i}
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary-600 hover:text-primary-700 block text-sm underline"
+                              >
+                                Ek #{i + 1}
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                   </div>
-                )}
-              </div>
+                </Card>
+              )}
 
-              <div className="mt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => router.push(`/dashboard/refunds/${refund.id}`)}
-                  className="w-full"
-                >
-                  İade Detaylarını Görüntüle
-                </Button>
-              </div>
-            </Card>
+              {/* Revisions */}
+              {order.revisions && (
+                <Card className="p-6">
+                  <h2 className="mb-4 text-lg font-semibold text-gray-900">
+                    Revizyon Bilgileri
+                  </h2>
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">
+                        Kullanılan
+                      </label>
+                      <p className="text-2xl font-semibold text-gray-900">
+                        {order.revisions.revisionsUsed}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">
+                        Kalan
+                      </label>
+                      <p className="text-2xl font-semibold text-gray-900">
+                        {order.revisions.revisionsRemaining}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">
+                        Toplam
+                      </label>
+                      <p className="text-2xl font-semibold text-gray-900">
+                        {order.revisions.revisionLimit}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              )}
+            </>
           )}
+          {/* End Details Tab */}
 
           {/* ================================================
-               MILESTONE MANAGEMENT - PRODUCTION READY ✅
-               ================================================
-               Sprint 1 Story 1.1: Clean milestone integration
-               - Single MilestoneList component (no duplicates)
-               - Link to dedicated management page
-               - Inline preview + promo for unused orders
+               MILESTONES TAB - Story 1.1 ✅
                ================================================ */}
-          {order.milestones && order.milestones.length > 0 ? (
-            <Card className="p-6">
-              <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  <Package className="mr-2 inline-block h-5 w-5" />
-                  Milestone Yönetimi
-                </h2>
-                <Link href={`/dashboard/orders/${order.id}/milestones`}>
-                  <Button variant="outline" size="sm">
-                    Detaylı Yönetim →
-                  </Button>
-                </Link>
-              </div>
-
-              {/* Clean MilestoneList Component - Single Source of Truth */}
-              <MilestoneList
-                orderId={order.id}
-                userRole={userRole === 'seller' ? 'FREELANCER' : 'EMPLOYER'}
-                showCreateButton={false}
-              />
-            </Card>
-          ) : (
-            /* Milestone Feature Available Notice (No Milestones Yet) */
-            (order.status === 'PAID' || order.status === 'PENDING_PAYMENT') && (
-              <Card className="border-purple-100 bg-purple-50 p-6">
-                <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-purple-100">
-                    <Package className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="mb-1 font-semibold text-gray-900">
-                      Milestone Bazlı Ödeme Kullanılabilir
-                    </h3>
-                    <p className="mb-4 text-sm text-gray-600">
-                      Bu siparişi milestone'lara bölerek adım adım ödeme
-                      alabilirsiniz. Her milestone teslim edilip onaylandığında
-                      ödeme otomatik serbest bırakılır.
-                    </p>
+          {activeTab === 'milestones' && (
+            <>
+              {order.milestones && order.milestones.length > 0 ? (
+                <Card className="p-6">
+                  <div className="mb-6 flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      <Package className="mr-2 inline-block h-5 w-5" />
+                      Milestone Yönetimi
+                    </h2>
                     <Link href={`/dashboard/orders/${order.id}/milestones`}>
-                      <Button variant="default" size="sm">
-                        Milestone Yönetimi →
+                      <Button variant="outline" size="sm">
+                        Detaylı Yönetim →
                       </Button>
                     </Link>
                   </div>
-                </div>
-              </Card>
-            )
-          )}
 
-          {/* Order Information */}
-          <Card className="p-6">
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">
-              <Package className="mr-2 inline-block h-5 w-5" />
-              Sipariş Bilgileri
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-600">
-                  Paket/Hizmet
-                </label>
-                <p className="text-gray-900">
-                  {order.packageDetails?.packageTitle ||
-                    order.customDescription ||
-                    'Özel Sipariş'}
-                </p>
-              </div>
-
-              {order.requirements && (
-                <div>
-                  <label className="text-sm font-medium text-gray-600">
-                    Gereksinimler
-                  </label>
-                  <p className="whitespace-pre-wrap text-gray-900">
-                    {order.requirements}
-                  </p>
-                </div>
-              )}
-
-              {order.packageDetails && (
-                <>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">
-                        Paket Seviyesi
-                      </label>
-                      <p className="text-gray-900">
-                        {order.packageDetails.tier}
-                      </p>
+                  {/* Clean MilestoneList Component - Single Source of Truth */}
+                  <MilestoneList
+                    orderId={order.id}
+                    userRole={userRole === 'seller' ? 'FREELANCER' : 'EMPLOYER'}
+                    showCreateButton={false}
+                  />
+                </Card>
+              ) : (
+                /* Milestone Feature Available Notice (No Milestones Yet) */
+                <Card className="border-purple-100 bg-purple-50 p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-purple-100">
+                      <Package className="h-6 w-6 text-purple-600" />
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">
-                        Teslimat Süresi
-                      </label>
-                      <p className="text-gray-900">
-                        {order.packageDetails.deliveryDays} gün
+                    <div className="flex-1">
+                      <h3 className="mb-1 font-semibold text-gray-900">
+                        Milestone Bazlı Ödeme Kullanılabilir
+                      </h3>
+                      <p className="mb-4 text-sm text-gray-600">
+                        Bu siparişi milestone'lara bölerek adım adım ödeme
+                        alabilirsiniz. Her milestone teslim edilip
+                        onaylandığında ödeme otomatik serbest bırakılır.
                       </p>
+                      <Link href={`/dashboard/orders/${order.id}/milestones`}>
+                        <Button variant="default" size="sm">
+                          Milestone Oluştur →
+                        </Button>
+                      </Link>
                     </div>
                   </div>
-                  {order.packageDetails.features &&
-                    order.packageDetails.features.length > 0 && (
-                      <div>
-                        <label className="text-sm font-medium text-gray-600">
-                          Özellikler
-                        </label>
-                        <ul className="mt-2 list-inside list-disc text-gray-900">
-                          {order.packageDetails.features.map((feature, i) => (
-                            <li key={i}>{feature}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                </>
+                </Card>
               )}
-            </div>
-          </Card>
+            </>
+          )}
+          {/* End Milestones Tab */}
 
-          {/* Delivery Information */}
-          {order.delivery?.deliveryNote && (
+          {/* ================================================
+               MESSAGES TAB - Story 1.1 ✅
+               ================================================ */}
+          {activeTab === 'messages' && (
             <Card className="p-6">
-              <h2 className="mb-4 text-lg font-semibold text-gray-900">
-                <FileText className="mr-2 inline-block h-5 w-5" />
-                Teslimat Bilgileri
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-600">
-                    Teslimat Notu
-                  </label>
-                  <p className="whitespace-pre-wrap text-gray-900">
-                    {order.delivery.deliveryNote}
-                  </p>
-                </div>
-                {order.delivery.submittedAt && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">
-                      Teslim Tarihi
-                    </label>
-                    <p className="text-gray-900">
-                      {formatDate(order.delivery.submittedAt)}
-                    </p>
-                  </div>
-                )}
-                {order.delivery.attachments &&
-                  order.delivery.attachments.length > 0 && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">
-                        Ekler ({order.delivery.attachments.length})
-                      </label>
-                      <div className="mt-2 space-y-2">
-                        {order.delivery.attachments.map((url, i) => (
-                          <a
-                            key={i}
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary-600 hover:text-primary-700 block text-sm underline"
-                          >
-                            Ek #{i + 1}
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-              </div>
+              <OrderMessagingPanel
+                orderId={order.id}
+                userRole={userRole}
+                onNewMessage={() => {
+                  // Update unread count
+                  setUnreadMessagesCount(0);
+                }}
+              />
             </Card>
           )}
-
-          {/* Revisions */}
-          {order.revisions && (
-            <Card className="p-6">
-              <h2 className="mb-4 text-lg font-semibold text-gray-900">
-                Revizyon Bilgileri
-              </h2>
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div>
-                  <label className="text-sm font-medium text-gray-600">
-                    Kullanılan
-                  </label>
-                  <p className="text-2xl font-semibold text-gray-900">
-                    {order.revisions.revisionsUsed}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-600">
-                    Kalan
-                  </label>
-                  <p className="text-2xl font-semibold text-gray-900">
-                    {order.revisions.revisionsRemaining}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-600">
-                    Toplam
-                  </label>
-                  <p className="text-2xl font-semibold text-gray-900">
-                    {order.revisions.revisionLimit}
-                  </p>
-                </div>
-              </div>
-            </Card>
-          )}
+          {/* End Messages Tab */}
         </div>
 
         {/* Sidebar - 1 column */}

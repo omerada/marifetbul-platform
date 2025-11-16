@@ -11,7 +11,7 @@
 
 import { renderHook, waitFor } from '@testing-library/react';
 import { useMilestoneActions } from '@/hooks/business/useMilestones';
-import { milestoneApi } from '@/lib/api/milestones';
+import { milestoneApiEnhanced as milestoneApi } from '@/lib/api/milestones-enhanced';
 import { toast } from 'sonner';
 
 // Mock dependencies

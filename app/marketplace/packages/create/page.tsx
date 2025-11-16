@@ -16,9 +16,8 @@ import {
   Checkbox,
 } from '@/components/ui';
 import { useToast } from '@/hooks';
-import { CreateMilestoneForm } from '@/components/domains/milestones';
 import type { CreateOrderMilestoneRequest } from '@/types/business/features/milestone';
-import { Info, Package } from 'lucide-react';
+import { Info, Package, Plus } from 'lucide-react';
 
 // Zod validation schema
 const packageSchema = z.object({
@@ -427,11 +426,74 @@ export default function CreatePackagePage() {
 
               {enableMilestones && (
                 <div className="mt-6 border-t pt-6">
-                  <CreateMilestoneForm
-                    totalAmount={watch('price') || 0}
-                    milestones={milestones}
-                    onChange={setMilestones}
-                  />
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-medium">Milestone Planı</h3>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => {
+                          const newMilestone: CreateOrderMilestoneRequest = {
+                            title: '',
+                            description: '',
+                            amount: 0,
+                            sequence: milestones.length + 1,
+                            dueDate: new Date(
+                              Date.now() + 7 * 24 * 60 * 60 * 1000
+                            ).toISOString(),
+                          };
+                          setMilestones([...milestones, newMilestone]);
+                        }}
+                      >
+                        <Plus className="mr-1 h-4 w-4" />
+                        Milestone Ekle
+                      </Button>
+                    </div>
+                    {milestones.map((milestone, index) => (
+                      <div
+                        key={index}
+                        className="space-y-3 rounded-lg border p-4"
+                      >
+                        <Input
+                          placeholder="Milestone Başlığı"
+                          value={milestone.title}
+                          onChange={(e) => {
+                            const updated = [...milestones];
+                            updated[index] = {
+                              ...milestone,
+                              title: e.target.value,
+                            };
+                            setMilestones(updated);
+                          }}
+                        />
+                        <Input
+                          type="number"
+                          placeholder="Tutar (TL)"
+                          value={milestone.amount || ''}
+                          onChange={(e) => {
+                            const updated = [...milestones];
+                            updated[index] = {
+                              ...milestone,
+                              amount: parseFloat(e.target.value) || 0,
+                            };
+                            setMilestones(updated);
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => {
+                            setMilestones(
+                              milestones.filter((_, i) => i !== index)
+                            );
+                          }}
+                        >
+                          Sil
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </CardContent>

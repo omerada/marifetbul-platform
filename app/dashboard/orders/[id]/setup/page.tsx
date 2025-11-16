@@ -32,7 +32,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { Card, Button, Badge } from '@/components/ui';
-import { MilestoneCreationWizard } from '@/components/domains/orders';
+import { CreateMilestoneForm } from '@/components/domains/milestones';
 import { orderApi } from '@/lib/api/orders';
 import type { OrderResponse } from '@/types/backend-aligned';
 import { formatCurrency } from '@/lib/shared/formatters';
@@ -347,9 +347,9 @@ export default function OrderSetupPage() {
         )}
       </Card>
 
-      {/* Milestone Creation Wizard (Modal) */}
+      {/* Milestone Creation Form (Modal) */}
       {showMilestoneWizard && order && (
-        <MilestoneCreationWizard
+        <CreateMilestoneForm
           orderId={order.id}
           orderTotal={order.totalAmount}
           currency={order.currency}

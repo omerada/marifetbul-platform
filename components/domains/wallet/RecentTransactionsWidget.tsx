@@ -27,6 +27,7 @@ import {
 import { useTransactions } from '@/hooks/business/wallet';
 import { TransactionType } from '@/types/business/features/wallet';
 import { formatCurrency, formatRelativeTime } from '@/lib/shared/formatters';
+import { MilestoneTransactionBadge } from './MilestoneTransactionBadge';
 import Link from 'next/link';
 
 // ================================================
@@ -172,51 +173,84 @@ export const RecentTransactionsWidget: React.FC<
                 transaction.type === TransactionType.ESCROW_RELEASE ||
                 transaction.type === TransactionType.REFUND;
 
+              // Sprint 1 Story 1.6: Extract milestone info from metadata
+              const isMilestonePayment =
+                transaction.type === TransactionType.MILESTONE_PAYMENT;
+              const milestoneData = isMilestonePayment
+                ? (transaction.metadata as {
+                    milestoneSequence?: number;
+                    milestoneTotalCount?: number;
+                    milestoneTitle?: string;
+                    orderId?: string;
+                  })
+                : undefined;
+
               return (
                 <div
                   key={transaction.id}
-                  className="group flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-50"
+                  className="group flex flex-col gap-2 rounded-lg p-3 transition-colors hover:bg-gray-50"
                 >
-                  {/* Icon */}
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 transition-all group-hover:bg-white group-hover:shadow-sm">
-                    {getTransactionIcon(transaction.type as TransactionType)}
-                  </div>
+                  <div className="flex items-center gap-3">
+                    {/* Icon */}
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 transition-all group-hover:bg-white group-hover:shadow-sm">
+                      {getTransactionIcon(transaction.type as TransactionType)}
+                    </div>
 
-                  {/* Details */}
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-gray-900">
-                      {getTransactionLabel(transaction.type as TransactionType)}
-                    </p>
-                    <div className="mt-0.5 flex items-center gap-2">
-                      <p className="text-muted-foreground text-xs">
-                        {formatRelativeTime(transaction.createdAt)}
+                    {/* Details */}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-gray-900">
+                        {getTransactionLabel(
+                          transaction.type as TransactionType
+                        )}
                       </p>
-                      {transaction.description && (
-                        <>
-                          <span className="text-xs text-gray-300">•</span>
-                          <p className="text-muted-foreground truncate text-xs">
-                            {transaction.description}
-                          </p>
-                        </>
-                      )}
+                      <div className="mt-0.5 flex items-center gap-2">
+                        <p className="text-muted-foreground text-xs">
+                          {formatRelativeTime(transaction.createdAt)}
+                        </p>
+                        {transaction.description && !isMilestonePayment && (
+                          <>
+                            <span className="text-xs text-gray-300">•</span>
+                            <p className="text-muted-foreground truncate text-xs">
+                              {transaction.description}
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Amount */}
+                    <div className="flex-shrink-0 text-right">
+                      <p
+                        className={`text-sm font-semibold ${
+                          isCredit
+                            ? 'text-green-600'
+                            : transaction.amount < 0
+                              ? 'text-red-600'
+                              : 'text-gray-900'
+                        }`}
+                      >
+                        {isCredit && '+'}
+                        {formatCurrency(Math.abs(transaction.amount))}
+                      </p>
                     </div>
                   </div>
 
-                  {/* Amount */}
-                  <div className="flex-shrink-0 text-right">
-                    <p
-                      className={`text-sm font-semibold ${
-                        isCredit
-                          ? 'text-green-600'
-                          : transaction.amount < 0
-                            ? 'text-red-600'
-                            : 'text-gray-900'
-                      }`}
-                    >
-                      {isCredit && '+'}
-                      {formatCurrency(Math.abs(transaction.amount))}
-                    </p>
-                  </div>
+                  {/* Sprint 1 Story 1.6: Milestone badge for milestone payments */}
+                  {isMilestonePayment &&
+                    milestoneData?.milestoneSequence &&
+                    milestoneData?.milestoneTotalCount &&
+                    milestoneData?.milestoneTitle && (
+                      <div className="ml-13">
+                        <MilestoneTransactionBadge
+                          sequence={milestoneData.milestoneSequence}
+                          totalCount={milestoneData.milestoneTotalCount}
+                          title={milestoneData.milestoneTitle}
+                          orderId={milestoneData.orderId}
+                          compact
+                          showLink
+                        />
+                      </div>
+                    )}
                 </div>
               );
             })}

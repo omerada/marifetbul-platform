@@ -228,7 +228,7 @@ export function notifyMilestoneOverdue(
 
   logger.error('[MilestoneNotifications] Milestone overdue', {
     milestoneId: data.milestoneId,
-    daysOverdue,
+    daysOverdue: daysOverdue,
   });
 
   if (!showToast) return;

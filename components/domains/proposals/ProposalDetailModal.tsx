@@ -226,31 +226,41 @@ export const ProposalDetailModal = memo<ProposalDetailModalProps>(
                     Kilometre Taşları
                   </h3>
                   <div className="space-y-3">
-                    {proposal.milestones.map((milestone, index) => (
-                      <div
-                        key={index}
-                        className="rounded-lg border bg-white p-4 transition-shadow hover:shadow-sm"
-                      >
-                        <div className="mb-2 flex items-start justify-between">
-                          <h4 className="font-semibold text-gray-900">
-                            {index + 1}. {milestone.title}
-                          </h4>
-                          <Badge variant="secondary">
-                            {formatBudget(milestone.amount)}
-                          </Badge>
+                    {proposal.milestones.map(
+                      (
+                        milestone: {
+                          title: string;
+                          amount: number;
+                          description?: string;
+                          dueDate?: string;
+                        },
+                        index
+                      ) => (
+                        <div
+                          key={index}
+                          className="rounded-lg border bg-white p-4 transition-shadow hover:shadow-sm"
+                        >
+                          <div className="mb-2 flex items-start justify-between">
+                            <h4 className="font-semibold text-gray-900">
+                              {index + 1}. {milestone.title}
+                            </h4>
+                            <Badge variant="secondary">
+                              {formatBudget(milestone.amount)}
+                            </Badge>
+                          </div>
+                          <p className="mb-2 text-sm text-gray-600">
+                            {milestone.description}
+                          </p>
+                          <div className="flex items-center text-xs text-gray-500">
+                            <Calendar className="mr-1 h-3 w-3" />
+                            Teslim:{' '}
+                            {new Date(milestone.dueDate).toLocaleDateString(
+                              'tr-TR'
+                            )}
+                          </div>
                         </div>
-                        <p className="mb-2 text-sm text-gray-600">
-                          {milestone.description}
-                        </p>
-                        <div className="flex items-center text-xs text-gray-500">
-                          <Calendar className="mr-1 h-3 w-3" />
-                          Teslim:{' '}
-                          {new Date(milestone.dueDate).toLocaleDateString(
-                            'tr-TR'
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    )}
                   </div>
                 </section>
               )}

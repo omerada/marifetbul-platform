@@ -64,18 +64,20 @@ export type { PaymentModeDisplayProps } from './PaymentModeDisplay';
 // Clean migration completed: All milestone UI now uses canonical components
 // Date: 2025-11-15 (Sprint 1 Story 1.1)
 
-// Sprint 1 - Story 1.3: Milestone Delivery & Acceptance
-// Note: MilestoneDeliveryForm removed - Use UnifiedDeliveryModal with mode='milestone'
-export { MilestoneAcceptancePanel } from './MilestoneAcceptancePanel';
-export type { MilestoneAcceptancePanelProps } from './MilestoneAcceptancePanel';
-
-// Sprint 2 - Story 2: Milestone Creation & Editing
-export { MilestoneCreationWizard } from './MilestoneCreationWizard';
-export { MilestoneEditForm } from './MilestoneEditForm';
-export { MilestoneDeletionModal } from './MilestoneDeletionModal';
-export type { MilestoneCreationWizardProps } from './MilestoneCreationWizard';
-export type { MilestoneEditFormProps } from './MilestoneEditForm';
-export type { MilestoneDeletionModalProps } from './MilestoneDeletionModal';
+// ================================================
+// MILESTONE COMPONENTS - REMOVED (Sprint 1 Cleanup)
+// ================================================
+// All milestone components moved to @/components/domains/milestones
+// Migration completed: 2025-11-16
+//
+// Removed deprecated components:
+// - MilestoneAcceptancePanel → Use AcceptMilestoneModal
+// - MilestoneCreationWizard → Use CreateMilestoneForm
+// - MilestoneEditForm → Not needed in current flow
+//
+// Clean imports from milestones:
+// import { AcceptMilestoneModal, CreateMilestoneForm, MilestoneList } from '@/components/domains/milestones';
+// ================================================
 
 // Order UI components
 export {
@@ -85,12 +87,15 @@ export {
 export { OrderTimeline } from './OrderTimeline';
 export { OrderWorkflowStepper } from './OrderWorkflowStepper';
 export { OrderActions } from './OrderActions';
+export { OrderDetailTabs } from './OrderDetailTabs'; // Story 1.1 ✅
+export type { OrderDetailTabsProps, OrderTab } from './OrderDetailTabs';
 export { OrderCard, OrderCardSkeleton } from './OrderCard';
 export { OrderMessagingPanel } from './OrderMessagingPanel';
 export { OrderMessageBadge } from './OrderMessageBadge';
 export { OrderListFilters } from './OrderListFilters';
-export { EscrowStatus } from './EscrowStatus';
 export { DeliveryManager } from './DeliveryManager';
+
+// @deprecated EscrowStatus removed - use StatusBadge from @/components/ui/Badge
 
 // Sprint 2: Order Dashboard Components
 export { OrderStatsWidget } from './OrderStatsWidget';
@@ -110,6 +115,15 @@ export type { OrderActionsProps } from './OrderActions';
 export type { AcceptOrderModalProps } from './AcceptOrderModal';
 export type { CancelOrderModalProps } from './CancelOrderModal';
 export type { OrderListFiltersProps } from './OrderListFilters';
+
+// ================================================
+// CLEAN ARCHITECTURE NOTES
+// ================================================
+// - Milestone components: @/components/domains/milestones
+// - Order workflow: @/components/domains/orders
+// - Payment flow: @/components/checkout
+// - Admin tools: @/components/admin
+// ================================================
 export type { OrderCardProps } from './OrderCard';
 export type { OrderMessagingPanelProps } from './OrderMessagingPanel';
 export type { OrderMessageBadgeProps } from './OrderMessageBadge';

@@ -47,7 +47,7 @@ import {
 import type { OrderResponse } from '@/types/backend-aligned';
 import IyzicoPaymentForm from '@/components/checkout/IyzicoPaymentForm';
 import { confirmManualPayment } from '@/lib/api/orders';
-import { useMilestones } from '@/hooks/business/useMilestones';
+import { useOrderMilestones } from '@/hooks/business/useMilestones';
 
 // ================================================
 // TYPES
@@ -92,7 +92,9 @@ function OrderReview({ order, onContinue, onCancel }: OrderReviewProps) {
   const total = order.totalAmount;
 
   // Fetch milestones for this order (if any)
-  const { milestones, isLoading: loadingMilestones } = useMilestones(order.id);
+  const { milestones, isLoading: loadingMilestones } = useOrderMilestones(
+    order.id
+  );
   const hasMilestones = milestones && milestones.length > 0;
 
   return (

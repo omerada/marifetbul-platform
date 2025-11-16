@@ -51,6 +51,7 @@ import {
 } from '@/types/business/features/milestone';
 import { formatDate } from '@/lib/shared/utils/date';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import { useAutoAcceptanceCountdown } from '@/hooks/business/useAutoAcceptanceCountdown';
 import { DeliverMilestoneModal } from './DeliverMilestoneModal';
 import { AcceptMilestoneModal } from './AcceptMilestoneModal';
 import { RejectMilestoneModal } from './RejectMilestoneModal';
@@ -98,6 +99,12 @@ function MilestoneCard({
   const isFreelancer = userRole === 'FREELANCER';
   const isEmployer = userRole === 'EMPLOYER';
 
+  // Sprint 1 Story 1.8: Auto-acceptance countdown
+  const countdown = useAutoAcceptanceCountdown(
+    milestone.deliveredAt,
+    milestone.status
+  );
+
   // Role-based action permissions
   const showStartButton = isFreelancer && canStartMilestone(milestone);
   const showDeliverButton = isFreelancer && canDeliverMilestone(milestone);
@@ -125,13 +132,31 @@ function MilestoneCard({
         </div>
 
         {/* Status Badge */}
-        <Badge
-          variant="outline"
-          className="ml-4"
-          style={{ borderColor: statusColor, color: statusColor }}
-        >
-          {statusText}
-        </Badge>
+        <div className="ml-4 flex flex-col items-end gap-2">
+          <Badge
+            variant="outline"
+            style={{ borderColor: statusColor, color: statusColor }}
+          >
+            {statusText}
+          </Badge>
+
+          {/* Sprint 1 Story 1.8: Auto-acceptance countdown */}
+          {countdown &&
+            !countdown.isExpired &&
+            milestone.status === 'DELIVERED' && (
+              <Badge
+                variant="outline"
+                className={`text-xs ${
+                  countdown.hours < 24
+                    ? 'border-red-300 bg-red-50 text-red-700'
+                    : 'border-yellow-300 bg-yellow-50 text-yellow-700'
+                }`}
+              >
+                <Clock className="mr-1 h-3 w-3" />
+                Otomatik onay: {countdown.formattedTime}
+              </Badge>
+            )}
+        </div>
       </div>
 
       {/* Metadata */}

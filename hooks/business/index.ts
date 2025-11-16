@@ -697,3 +697,9 @@ export type {
   UseMilestoneWebSocketOptions,
   UseMilestoneWebSocketReturn,
 } from './useMilestoneWebSocket';
+
+export {
+  useAutoAcceptanceCountdown,
+  useIsCloseToAutoAccept,
+} from './useAutoAcceptanceCountdown'; // Story 1.8 ✅
+export type { CountdownTime } from './useAutoAcceptanceCountdown';

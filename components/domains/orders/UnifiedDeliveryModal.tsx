@@ -53,7 +53,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { orderApi } from '@/lib/api/orders';
-import { milestoneApi } from '@/lib/api/milestones';
+import { milestoneApiEnhanced as milestoneApi } from '@/lib/api/milestones-enhanced';
 import { fileUploadService } from '@/lib/services/file-upload.service';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { cn } from '@/lib/utils';

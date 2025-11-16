@@ -11,7 +11,7 @@ export { ServiceDetail } from './ServiceDetail';
 
 // Order Components
 export { OrderForm } from './OrderForm';
-export { OrderTimeline } from './OrderTimeline';
+// OrderTimeline REMOVED - Use from @/components/domains/orders instead (Sprint 1 Cleanup)
 
 // Payment Components
 // PaymentHistory removed - was unused duplicate (Sprint Day 3)
