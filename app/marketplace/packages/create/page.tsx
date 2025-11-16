@@ -142,18 +142,36 @@ export default function CreatePackagePage() {
         }
       }
 
-      // TODO: Backend integration - save package with milestones
-      // const packageData = {
-      //   ...data,
-      //   images: uploadedImages,
-      //   milestones: enableMilestones ? milestones : undefined,
-      // };
+      // Package data with milestones
+      const packageData = {
+        title: data.title,
+        description: data.description,
+        categoryId: data.category, // Map to UUID
+        basicTier: {
+          price: data.price,
+          deliveryDays: data.deliveryDays,
+          revisionCount: 2, // Default
+          features: data.features.split('\n').filter((f) => f.trim()),
+        },
+        highlights: data.features
+          .split('\n')
+          .filter((f) => f.trim())
+          .slice(0, 5),
+        deliverables: data.features.split('\n').filter((f) => f.trim()),
+        requirements: ['Proje detayları', 'Referans görseller'],
+        keywords: data.skills.split(',').map((s) => s.trim()),
+        milestoneTemplates: enableMilestones ? milestones : undefined,
+      };
 
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const result = await createPackage(packageData);
 
-      success('Paket başarıyla oluşturuldu!');
-      router.push('/marketplace?view=packages');
-    } catch {
+      if (result) {
+        success('Paket başarıyla oluşturuldu!');
+        router.push('/marketplace?view=packages');
+      } else {
+        error('Paket oluşturulurken bir hata oluştu');
+      }
+    } catch (err) {
       error('Paket oluşturulurken bir hata oluştu');
     }
   };

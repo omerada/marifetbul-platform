@@ -52,6 +52,19 @@ export interface PackageTierInfo {
 }
 
 /**
+ * Package Milestone Template
+ * Sprint 4: Milestone-based package orders
+ */
+export interface PackageMilestoneTemplate {
+  id?: string; // UUID (when reading)
+  title: string; // 5-100 chars
+  description: string; // 10-500 chars
+  amount: number; // BigDecimal (10-50000 TL)
+  order: number; // 1-100
+  estimatedDays?: number; // 1-365 days (optional)
+}
+
+/**
  * Package Entity (Complete)
  * Matches backend Package entity
  */
@@ -198,6 +211,9 @@ export interface CreatePackageRequest {
   // SEO
   metaDescription?: string | null; // max 160 chars
   keywords: string[]; // max 10
+
+  // Milestone Templates (Sprint 4)
+  milestoneTemplates?: PackageMilestoneTemplate[]; // max 10
 }
 
 /**

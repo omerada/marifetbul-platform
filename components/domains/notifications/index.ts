@@ -1,10 +1,11 @@
 // ================================================
-// NOTIFICATIONS DOMAIN COMPONENTS
+// NOTIFICATIONS DOMAIN COMPONENTS - PRODUCTION READY
 // ================================================
-// All notification related components
-// Includes notification center, items, settings, and push notifications
+// Sprint 1: Notification & Real-time System
+// Clean, maintainable, no duplicates
+// @version 2.0.0
 
-// Notification Components
+// Core Notification Components
 export { NotificationBell } from './NotificationBell';
 export { NotificationCenter } from './NotificationCenter';
 export { NotificationModal } from './NotificationModal';
@@ -23,4 +24,4 @@ export {
 
 // Notification Settings
 export { NotificationSettingsPanel } from './NotificationSettings';
-export { PushNotificationToggle } from './PushNotificationToggle';
+// Note: PushNotificationToggle removed - integrated into NotificationSettings

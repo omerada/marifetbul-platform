@@ -14,6 +14,7 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 import { playNotificationAlert } from '@/lib/utils/notificationSound';
 import { useNotificationPreferences } from './useNotificationPreferences';
 import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
+import { showPriorityNotificationToast } from '@/lib/shared/notifications/toastNotificationHelper';
 import type { Notification } from '@/types/domains/notification';
 
 // Simple converter for notification API responses
@@ -131,30 +132,23 @@ export function useNotifications() {
               preferences.followPush);
 
           if (shouldPlayAlert) {
-            playNotificationAlert({
-              sound: true,
-              vibration: true,
-              doNotDisturb: preferences.doNotDisturb,
-              dndStartTime: preferences.dndStartTime,
-              dndEndTime: preferences.dndEndTime,
+            const soundPlayer = () =>
+              playNotificationAlert({
+                sound: true,
+                vibration: true,
+                doNotDisturb: preferences.doNotDisturb,
+                dndStartTime: preferences.dndStartTime,
+                dndEndTime: preferences.dndEndTime,
+              });
+
+            // Show toast with priority-based styling and sound
+            showPriorityNotificationToast(notification, soundPlayer);
+          } else {
+            // Show toast without sound
+            showPriorityNotificationToast(notification, () => {
+              // No sound when push notifications are disabled
             });
           }
-
-          // Show toast notification
-          toast.success(notification.title, {
-            description: notification.content,
-            action: notification.actionUrl
-              ? {
-                  label: 'Görüntüle',
-                  onClick: () => {
-                    if (notification.actionUrl) {
-                      window.location.href = notification.actionUrl;
-                    }
-                  },
-                }
-              : undefined,
-            duration: 5000,
-          });
         },
         onError: (error) => {
           logger.error(
@@ -175,10 +169,7 @@ export function useNotifications() {
         unsubscribe();
       };
     } catch (error) {
-      logger.error(
-        'Failed to setup WebSocket subscription',
-        error
-      );
+      logger.error('Failed to setup WebSocket subscription', error);
     }
   }, [user, preferences, mutate, mutateCount]);
 
@@ -202,10 +193,7 @@ export function useNotifications() {
         mutate();
         mutateCount();
       } catch (error) {
-        logger.error(
-          'Failed to mark notification as read:',
-          error
-        );
+        logger.error('Failed to mark notification as read:', error);
         toast.error('Bildirim okundu olarak işaretlenemedi');
       }
     },
@@ -229,10 +217,7 @@ export function useNotifications() {
 
       toast.success(`${updatedCount} bildirim okundu olarak işaretlendi`);
     } catch (error) {
-      logger.error(
-        'Failed to mark all as read:',
-        error
-      );
+      logger.error('Failed to mark all as read:', error);
       toast.error('Bildirimler işaretlenemedi');
     }
   }, [mutate, mutateCount]);

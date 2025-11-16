@@ -30,7 +30,7 @@ export type {
   ToastContextType,
 } from './core/useToast';
 export { useAsyncOperation } from './core/useUnifiedAsync';
-export { useNotification } from './core/useNotification';
+// export { useNotification } from './core/useNotification'; // DEPRECATED - Removed (use useNotifications from business)
 export { useApiError } from './shared/useApiError';
 export type { ApiErrorState, UseApiErrorReturn } from './shared/useApiError';
 

@@ -9,7 +9,7 @@ import { MonitoringProvider } from '@/components/providers/MonitoringProvider';
 import { OrderNotificationProvider } from '@/components/providers/OrderNotificationProvider';
 import { NotificationProvider } from '@/components/providers/NotificationProvider';
 import { PushPermissionModal } from '@/components/notifications';
-import NotificationsBell from '@/components/shared/NotificationsBell';
+import { NotificationBell } from '@/components/domains/notifications';
 import { ToastManager } from '@/components/shared/ToastManager';
 import { SEOHead } from '@/components/shared/seo/SEOHead';
 import { SkipToContent } from '@/components/shared/accessibility';
