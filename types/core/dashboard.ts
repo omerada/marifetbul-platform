@@ -128,6 +128,16 @@ export interface FreelancerDashboard {
   analytics: FreelancerAnalytics;
   recommendations: Recommendation[];
   notifications: EnhancedNotification[];
+  /** Sprint 1 - Story 1.4: Milestone data for dashboard widget */
+  milestones?: {
+    active: Array<import('@/types/business/features/milestone').OrderMilestone>;
+    stats: {
+      total: number;
+      inProgress: number;
+      pending: number;
+      delivered: number;
+    };
+  };
   chartData?: {
     earnings: Array<{ date: string; amount: number; orderCount?: number }>;
     packages: Array<{
@@ -177,6 +187,18 @@ export interface EmployerDashboard {
   analytics: EmployerAnalytics;
   recommendations: Recommendation[];
   notifications: EnhancedNotification[];
+  /** Sprint 1 - Story 1.4: Milestone data for dashboard widget */
+  milestones?: {
+    pendingAcceptance: Array<
+      import('@/types/business/features/milestone').OrderMilestone
+    >;
+    stats: {
+      total: number;
+      pendingAcceptance: number;
+      inProgress: number;
+      accepted: number;
+    };
+  };
   chartData?: {
     spending: Array<{ date: string; amount: number; jobCount?: number }>;
     hiring: {

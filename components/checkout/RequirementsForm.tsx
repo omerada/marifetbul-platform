@@ -53,6 +53,7 @@ interface SimpleMilestone {
   title: string;
   amount: number;
   description: string;
+  dueDate: string; // Sprint 1.1: Added due date
 }
 
 export function RequirementsForm({
@@ -70,7 +71,7 @@ export function RequirementsForm({
   // Sprint 1.1: Milestone-based project
   const [useMilestones, setUseMilestones] = useState(false);
   const [milestones, setMilestones] = useState<SimpleMilestone[]>([
-    { id: '1', title: '', amount: 0, description: '' },
+    { id: '1', title: '', amount: 0, description: '', dueDate: '' },
   ]);
 
   const maxRequirementsLength = 2000;
@@ -78,18 +79,32 @@ export function RequirementsForm({
 
   // Add milestone
   const handleAddMilestone = () => {
+    if (milestones.length >= 10) {
+      setErrors({
+        ...errors,
+        milestones: 'Maksimum 10 milestone ekleyebilirsiniz',
+      });
+      return;
+    }
     const newId = (milestones.length + 1).toString();
     setMilestones([
       ...milestones,
-      { id: newId, title: '', amount: 0, description: '' },
+      { id: newId, title: '', amount: 0, description: '', dueDate: '' },
     ]);
+    setErrors({ ...errors, milestones: undefined });
   };
 
   // Remove milestone
   const handleRemoveMilestone = (id: string) => {
-    if (milestones.length > 1) {
-      setMilestones(milestones.filter((m) => m.id !== id));
+    if (milestones.length <= 2) {
+      setErrors({
+        ...errors,
+        milestones: 'En az 2 milestone olmalıdır',
+      });
+      return;
     }
+    setMilestones(milestones.filter((m) => m.id !== id));
+    setErrors({ ...errors, milestones: undefined });
   };
 
   // Update milestone
@@ -127,16 +142,34 @@ export function RequirementsForm({
 
     // Validate milestones if enabled
     if (useMilestones) {
+      // Minimum 2 milestones required
+      if (milestones.length < 2) {
+        newErrors.milestones = 'En az 2 milestone tanımlamalısınız';
+      }
+
+      // Check for empty fields
       const invalidMilestone = milestones.find(
-        (m) => !m.title.trim() || m.amount <= 0
+        (m) => !m.title.trim() || m.amount <= 0 || !m.dueDate
       );
       if (invalidMilestone) {
         newErrors.milestones =
-          "Tüm milestone'lar için başlık ve tutar girilmelidir";
+          "Tüm milestone'lar için başlık, tutar ve teslim tarihi girilmelidir";
       }
 
+      // Check total amount
       if (Math.abs(remainingAmount) > 0.01) {
         newErrors.milestones = `Milestone toplamı paket fiyatına eşit olmalıdır (${remainingAmount.toFixed(2)} TL fark var)`;
+      }
+
+      // Check due dates are in the future
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const invalidDate = milestones.find((m) => {
+        const dueDate = new Date(m.dueDate);
+        return dueDate < today;
+      });
+      if (invalidDate) {
+        newErrors.milestones = 'Teslim tarihleri gelecekte olmalıdır';
       }
     }
 
@@ -152,6 +185,7 @@ export function RequirementsForm({
           title: m.title.trim(),
           description: m.description.trim() || `Aşama ${index + 1}`,
           amount: Number(m.amount),
+          dueDate: m.dueDate, // Sprint 1.1: Include due date
         }))
       : undefined;
 
@@ -254,12 +288,19 @@ export function RequirementsForm({
         {useMilestones && (
           <div className="mb-6 space-y-4 rounded-lg border border-purple-200 bg-purple-50 p-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-purple-900">Proje Aşamaları</h3>
+              <h3 className="font-medium text-purple-900">
+                Proje Aşamaları ({milestones.length}/10)
+              </h3>
               <button
                 type="button"
                 onClick={handleAddMilestone}
-                className="flex items-center gap-1 rounded-lg bg-purple-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-purple-700"
-                disabled={isLoading}
+                className="flex items-center gap-1 rounded-lg bg-purple-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={isLoading || milestones.length >= 10}
+                title={
+                  milestones.length >= 10
+                    ? 'Maksimum 10 milestone ekleyebilirsiniz'
+                    : 'Yeni milestone ekle'
+                }
               >
                 <Plus className="h-4 w-4" />
                 Aşama Ekle
@@ -277,12 +318,13 @@ export function RequirementsForm({
                     <span className="text-sm font-medium text-gray-700">
                       Aşama {index + 1}
                     </span>
-                    {milestones.length > 1 && (
+                    {milestones.length > 2 && (
                       <button
                         type="button"
                         onClick={() => handleRemoveMilestone(milestone.id)}
-                        className="text-red-600 hover:text-red-700"
+                        className="text-red-600 transition-colors hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                         disabled={isLoading}
+                        title="Bu aşamayı sil (en az 2 aşama gerekli)"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -327,6 +369,26 @@ export function RequirementsForm({
                           )
                         }
                         placeholder="0.00"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+                        disabled={isLoading}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-1 block text-xs font-medium text-gray-700">
+                        Teslim Tarihi *
+                      </label>
+                      <input
+                        type="date"
+                        value={milestone.dueDate}
+                        onChange={(e) =>
+                          handleUpdateMilestone(
+                            milestone.id,
+                            'dueDate',
+                            e.target.value
+                          )
+                        }
+                        min={new Date().toISOString().split('T')[0]}
                         className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                         disabled={isLoading}
                       />

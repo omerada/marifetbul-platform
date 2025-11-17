@@ -17,6 +17,7 @@ import {
   type ApproveRefundRequest,
   type RejectRefundRequest,
   type BulkApproveRefundsRequest,
+  type BulkApprovalResponse,
   type PageResponse,
   RefundStatus,
   RefundReasonCategory,
@@ -31,6 +32,7 @@ export type {
   ApproveRefundRequest,
   RejectRefundRequest,
   BulkApproveRefundsRequest,
+  BulkApprovalResponse,
   PageResponse,
 };
 export { RefundStatus, RefundReasonCategory, RefundMethod };
@@ -106,11 +108,15 @@ export async function rejectRefund(
 
 /**
  * Bulk approve refunds
+ * Sprint 1 - Story 1.1: Admin Bulk Operations
  */
 export async function bulkApproveRefunds(
   request: BulkApproveRefundsRequest
-): Promise<number> {
-  return apiClient.post<number>('/api/v1/refunds/bulk-approve', request);
+): Promise<BulkApprovalResponse> {
+  return apiClient.post<BulkApprovalResponse>(
+    '/api/v1/refunds/bulk-approve',
+    request
+  );
 }
 
 /**

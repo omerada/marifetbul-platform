@@ -5,21 +5,21 @@
  * BULK REFUND ACTIONS COMPONENT
  * ================================================
  * Component for bulk refund approval actions
+ * Sprint 1 - Story 1.1: Enhanced with detailed response handling
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
- * @created October 31, 2025
+ * @version 2.0.0
+ * @updated November 17, 2025 - Enhanced response handling
  */
-
-'use client';
 
 import { useState } from 'react';
 import { Button } from '@/components/ui';
 import { Textarea } from '@/components/ui/Textarea';
 import { Label } from '@/components/ui/Label';
-import { CheckCircle, X } from 'lucide-react';
+import { CheckCircle, X, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import type { BulkApprovalResponse } from '@/types/business/features/refund';
 
 // ================================================
 // TYPES
@@ -27,7 +27,7 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface BulkRefundActionsProps {
   selectedCount: number;
-  onBulkApprove: (notes?: string) => Promise<void>;
+  onBulkApprove: (notes?: string) => Promise<BulkApprovalResponse>;
   onClearSelection: () => void;
 }
 
@@ -47,13 +47,42 @@ export function BulkRefundActions({
   const handleBulkApprove = async () => {
     setIsProcessing(true);
     try {
-      await onBulkApprove(notes);
+      const response = await onBulkApprove(notes);
+
+      // Show detailed success/failure toast
+      if (response.failedCount === 0) {
+        toast.success('Toplu Onay Başarılı', {
+          description: `${response.approvedCount} iade talebi onaylandı. Toplam: ₺${response.totalAmountApproved?.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}`,
+          duration: 5000,
+        });
+      } else if (response.approvedCount > 0) {
+        toast.warning('Kısmi Başarı', {
+          description: `${response.approvedCount} onaylandı, ${response.failedCount} başarısız oldu.`,
+          duration: 7000,
+        });
+      } else {
+        toast.error('Toplu Onay Başarısız', {
+          description: `${response.failedCount} iade talebi onaylanamadı.`,
+          duration: 7000,
+        });
+      }
+
+      // Log detailed errors
+      if (response.errors && response.errors.length > 0) {
+        logger.error('[BulkRefundActions] Bulk approval errors:', {
+          errors: response.errors,
+          failedCount: response.failedCount,
+        });
+      }
+
       setNotes('');
       setShowNotesInput(false);
-      toast.success(`${selectedCount} iade talebi başarıyla onaylandı`);
     } catch (error) {
-      logger.error('Bulk approve failed:', error);
-      toast.error('Toplu onaylama sırasında bir hata oluştu');
+      logger.error('[BulkRefundActions] Bulk approve failed:', error);
+      toast.error('Hata', {
+        description:
+          'Toplu onaylama sırasında bir hata oluştu. Lütfen tekrar deneyin.',
+      });
     } finally {
       setIsProcessing(false);
     }

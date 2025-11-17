@@ -130,3 +130,7 @@ export const MapPin = createMockIcon('MapPin');
 export const MessageCircle = createMockIcon('MessageCircle');
 export const ListTodo = createMockIcon('ListTodo');
 export const Inbox = createMockIcon('Inbox');
+
+// Additional Icons
+export const StickyNote = createMockIcon('StickyNote');
+export const CircleCheck = createMockIcon('CircleCheck');

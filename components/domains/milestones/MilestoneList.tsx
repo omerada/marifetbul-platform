@@ -327,6 +327,12 @@ export function MilestoneList({
   const [rejectModalMilestone, setRejectModalMilestone] =
     useState<OrderMilestone | null>(null);
 
+  // Sprint 1.2: Filter and sort state
+  const [statusFilter, setStatusFilter] = useState<MilestoneStatus | 'ALL'>(
+    'ALL'
+  );
+  const [sortBy, setSortBy] = useState<'sequence' | 'dueDate'>('sequence');
+
   // ========== HANDLERS ==========
 
   const handleStart = async (milestoneId: string) => {
@@ -419,6 +425,20 @@ export function MilestoneList({
   const isActionLoading = (id: string) =>
     selectedMilestoneId === id && isStarting;
 
+  // Sprint 1.2: Filter and sort milestones
+  const filteredMilestones = milestones
+    .filter((m) => statusFilter === 'ALL' || m.status === statusFilter)
+    .sort((a, b) => {
+      if (sortBy === 'sequence') {
+        return a.sequence - b.sequence;
+      } else {
+        // Sort by due date
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      }
+    });
+
   // Calculate progress
   const completedCount = milestones.filter(
     (m) => m.status === MilestoneStatus.ACCEPTED
@@ -489,6 +509,89 @@ export function MilestoneList({
           </div>
         </Card>
 
+        {/* Sprint 1.2: Filters and Sort */}
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          {/* Status Filter */}
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">Durum:</label>
+            <select
+              value={statusFilter}
+              onChange={(e) =>
+                setStatusFilter(e.target.value as MilestoneStatus | 'ALL')
+              }
+              className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+            >
+              <option value="ALL">Tümü ({milestones.length})</option>
+              <option value={MilestoneStatus.PENDING}>
+                Beklemede (
+                {
+                  milestones.filter((m) => m.status === MilestoneStatus.PENDING)
+                    .length
+                }
+                )
+              </option>
+              <option value={MilestoneStatus.IN_PROGRESS}>
+                Devam Ediyor (
+                {
+                  milestones.filter(
+                    (m) => m.status === MilestoneStatus.IN_PROGRESS
+                  ).length
+                }
+                )
+              </option>
+              <option value={MilestoneStatus.DELIVERED}>
+                Teslim Edildi (
+                {
+                  milestones.filter(
+                    (m) => m.status === MilestoneStatus.DELIVERED
+                  ).length
+                }
+                )
+              </option>
+              <option value={MilestoneStatus.ACCEPTED}>
+                Onaylandı (
+                {
+                  milestones.filter(
+                    (m) => m.status === MilestoneStatus.ACCEPTED
+                  ).length
+                }
+                )
+              </option>
+              <option value={MilestoneStatus.REVISION_REQUESTED}>
+                Revizyon (
+                {
+                  milestones.filter(
+                    (m) => m.status === MilestoneStatus.REVISION_REQUESTED
+                  ).length
+                }
+                )
+              </option>
+            </select>
+          </div>
+
+          {/* Sort */}
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">
+              Sıralama:
+            </label>
+            <select
+              value={sortBy}
+              onChange={(e) =>
+                setSortBy(e.target.value as 'sequence' | 'dueDate')
+              }
+              className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+            >
+              <option value="sequence">Sıra Numarasına Göre</option>
+              <option value="dueDate">Teslim Tarihine Göre</option>
+            </select>
+          </div>
+
+          {/* Result Count */}
+          <div className="text-sm text-gray-600">
+            {filteredMilestones.length} milestone gösteriliyor
+          </div>
+        </div>
+
         {/* Create Button (Optional) */}
         {showCreateButton && onCreateClick && (
           <div className="flex justify-end">
@@ -500,18 +603,36 @@ export function MilestoneList({
 
         {/* Milestone Cards */}
         <div className="space-y-4">
-          {milestones.map((milestone) => (
-            <MilestoneCard
-              key={milestone.id}
-              milestone={milestone}
-              userRole={userRole}
-              onStart={handleStart}
-              onDeliver={handleDeliver}
-              onAccept={handleAccept}
-              onReject={handleReject}
-              isLoading={isActionLoading(milestone.id)}
-            />
-          ))}
+          {filteredMilestones.length > 0 ? (
+            filteredMilestones.map((milestone) => (
+              <MilestoneCard
+                key={milestone.id}
+                milestone={milestone}
+                userRole={userRole}
+                onStart={handleStart}
+                onDeliver={handleDeliver}
+                onAccept={handleAccept}
+                onReject={handleReject}
+                isLoading={isActionLoading(milestone.id)}
+              />
+            ))
+          ) : (
+            <Card className="p-8 text-center">
+              <AlertCircle className="mx-auto mb-3 h-12 w-12 text-gray-400" />
+              <p className="text-gray-600">
+                Seçilen filtreye uygun milestone bulunamadı
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setStatusFilter('ALL')}
+                className="mt-4"
+              >
+                Filtreyi Temizle
+              </Button>
+            </Card>
+          )}
+        </div>
         </div>
       </div>
     </>

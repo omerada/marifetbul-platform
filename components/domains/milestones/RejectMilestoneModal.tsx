@@ -48,6 +48,48 @@ export interface RejectMilestoneModalProps {
 const MIN_REASON_LENGTH = 20;
 const MAX_REASON_LENGTH = 500;
 
+/**
+ * Predefined rejection reason templates
+ * Sprint 1.3 enhancement
+ */
+const REJECTION_TEMPLATES = [
+  {
+    id: 'quality',
+    label: 'Kalite Sorunu',
+    text: 'Teslim edilen iş kalite standartlarını karşılamıyor. Lütfen aşağıdaki noktaları gözden geçirin ve düzeltin:\n\n- ',
+  },
+  {
+    id: 'incomplete',
+    label: 'Eksik Teslimat',
+    text: 'İş gereksinimleri tam olarak karşılanmadı. Eksik olan kısımlar:\n\n- ',
+  },
+  {
+    id: 'requirements',
+    label: 'Gereksinimler Uyumsuz',
+    text: 'Teslim edilen iş başlangıçta belirtilen gereksinimlerle uyuşmuyor. Değiştirilmesi gerekenler:\n\n- ',
+  },
+  {
+    id: 'errors',
+    label: 'Hatalar Var',
+    text: 'İşte şu hatalar tespit edildi, lütfen düzeltin:\n\n- ',
+  },
+  {
+    id: 'design',
+    label: 'Tasarım/Görsel Sorun',
+    text: 'Tasarım veya görsel öğeler beklentileri karşılamıyor. Düzeltilmesi gerekenler:\n\n- ',
+  },
+  {
+    id: 'functionality',
+    label: 'İşlevsellik Sorunu',
+    text: 'Bazı özellikler beklendiği gibi çalışmıyor. Sorunlu alanlar:\n\n- ',
+  },
+  {
+    id: 'custom',
+    label: 'Özel Neden',
+    text: '',
+  },
+] as const;
+
 // ============================================================================
 // MAIN COMPONENT
 // ============================================================================
@@ -72,6 +114,7 @@ export function RejectMilestoneModal({
   const { rejectMilestone, isRejecting } = useMilestoneActions();
 
   const [reason, setReason] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('custom');
   const [error, setError] = useState('');
 
   // ========== VALIDATION ==========
@@ -146,6 +189,20 @@ export function RejectMilestoneModal({
     [error]
   );
 
+  // ========== TEMPLATE CHANGE ==========
+
+  const handleTemplateChange = useCallback(
+    (templateId: string) => {
+      setSelectedTemplate(templateId);
+      const template = REJECTION_TEMPLATES.find((t) => t.id === templateId);
+      if (template) {
+        setReason(template.text);
+        if (error) setError('');
+      }
+    },
+    [error]
+  );
+
   // ========== RENDER ==========
 
   const canSubmit =
@@ -203,6 +260,29 @@ export function RejectMilestoneModal({
                 detaylı olarak açıklayın.
               </AlertDescription>
             </Alert>
+
+            {/* Template Selector */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Hızlı Şablon Seçin
+              </label>
+              <select
+                value={selectedTemplate}
+                onChange={(e) => handleTemplateChange(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 transition-shadow focus:border-transparent focus:ring-2 focus:ring-red-500"
+                disabled={isRejecting}
+              >
+                {REJECTION_TEMPLATES.map((template) => (
+                  <option key={template.id} value={template.id}>
+                    {template.label}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1.5 text-xs text-gray-500">
+                Hazır şablonlardan birini seçebilir veya kendi nedeninizi
+                yazabilirsiniz
+              </p>
+            </div>
 
             {/* Reason Input */}
             <div>

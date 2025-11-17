@@ -16,13 +16,14 @@ import { useState, useCallback, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { WalletDashboard } from '@/components/domains/wallet';
-import { PayoutDashboard } from '@/components/domains/wallet/PayoutDashboard';
+import { PayoutDashboard } from '@/components/domains/wallet';
 import { UnifiedPayoutHistory } from '@/components/domains/wallet';
-import { EscrowList } from '@/components/domains/wallet';
+import { EscrowList, EscrowBalanceCard } from '@/components/domains/wallet';
 import { BankAccountList, BankAccountForm } from '@/components/domains/wallet';
 import { useWalletData } from '@/hooks/business/wallet/useWalletData';
 import { usePayouts } from '@/hooks/business/wallet/usePayouts';
 import { useBankAccounts } from '@/hooks/business/wallet/useBankAccounts';
+import { useEscrowDetails } from '@/hooks/business/wallet/useEscrowDetails';
 import { useToast } from '@/hooks/core/useToast';
 import {
   Wallet,
@@ -109,6 +110,12 @@ export function UnifiedWalletPage() {
   } = usePayouts();
 
   const { refresh: refreshAccounts } = useBankAccounts();
+
+  const {
+    escrowDetails,
+    totalEscrow,
+    isLoading: escrowLoading,
+  } = useEscrowDetails();
 
   // ========================================================================
   // HANDLERS
@@ -284,6 +291,17 @@ export function UnifiedWalletPage() {
 
         {/* Escrow Tab */}
         <TabsContent value="escrow" className="space-y-6">
+          {/* Escrow Balance Breakdown */}
+          <EscrowBalanceCard
+            totalBalance={wallet?.totalBalance || 0}
+            availableBalance={availableBalance || 0}
+            lockedBalance={totalEscrow}
+            currency="TRY"
+            escrowDetails={escrowDetails}
+            isLoading={escrowLoading}
+          />
+
+          {/* Escrow Transaction List */}
           <Card className="p-6">
             <div className="mb-4 flex items-center justify-between">
               <div>

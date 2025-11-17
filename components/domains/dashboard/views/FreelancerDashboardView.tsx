@@ -53,6 +53,7 @@ import {
   MyRefundsWidget,
   RefundStatsWidget,
 } from '@/components/domains/refunds';
+import { MilestoneProgressWidget } from '@/components/domains/milestones';
 import type { FreelancerDashboard } from '../types/dashboard.types';
 import { formatCompactNumber } from '../utils';
 import { formatCurrency } from '@/lib/shared/formatters';
@@ -428,6 +429,21 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
                 maxItems: 10,
               }}
               isLoading={isLoading}
+            />
+          </DashboardSection>
+        )}
+
+        {/* Milestone Progress Widget - Sprint 1 Story 1.4 */}
+        {data.milestones && data.milestones.active.length > 0 && (
+          <DashboardSection
+            title="Milestone Takibi"
+            subtitle="Aktif milestone ilerlemesi"
+          >
+            <MilestoneProgressWidget
+              milestones={data.milestones.active}
+              role="FREELANCER"
+              currency="TRY"
+              showDetails
             />
           </DashboardSection>
         )}

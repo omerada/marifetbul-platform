@@ -47,6 +47,7 @@ import {
   MyRefundsWidget,
   RefundStatsWidget,
 } from '@/components/domains/refunds';
+import { MilestoneProgressWidget } from '@/components/domains/milestones';
 import type { EmployerDashboard } from '../types/dashboard.types';
 import { formatCurrency, formatCompactNumber } from '../utils';
 
@@ -446,6 +447,21 @@ export const EmployerDashboardView = memo<EmployerDashboardViewProps>(
                 </button>
               </div>
             </div>
+          </DashboardSection>
+        )}
+
+        {/* Milestone Progress Widget - Sprint 1 Story 1.4 */}
+        {data.milestones && data.milestones.pendingAcceptance.length > 0 && (
+          <DashboardSection
+            title="Milestone İncelemeleri"
+            subtitle="Onayınızı bekleyen milestone'lar"
+          >
+            <MilestoneProgressWidget
+              milestones={data.milestones.pendingAcceptance}
+              role="EMPLOYER"
+              currency="TRY"
+              showDetails
+            />
           </DashboardSection>
         )}
 

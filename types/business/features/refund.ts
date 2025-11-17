@@ -153,7 +153,31 @@ export interface RejectRefundRequest {
  */
 export interface BulkApproveRefundsRequest {
   refundIds: string[];
-  adminNotes?: string;
+  notes?: string; // Changed from adminNotes to match backend
+}
+
+/**
+ * Response for bulk refund approval (Admin)
+ * Sprint 1 - Story 1.1: Bulk Refund Approval
+ */
+export interface BulkApprovalResponse {
+  totalRequested: number;
+  approvedCount: number;
+  failedCount: number;
+  successfulIds?: string[];
+  failedIds?: string[];
+  errors?: BulkApprovalError[];
+  totalAmountApproved?: number;
+  notes?: string;
+}
+
+/**
+ * Error detail for bulk approval operations
+ */
+export interface BulkApprovalError {
+  refundId: string;
+  errorMessage: string;
+  errorCode?: string;
 }
 
 // ================================================

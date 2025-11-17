@@ -171,14 +171,18 @@ export default function AdminRefundsPage() {
     }
 
     try {
-      const count = await refundAdminApi.bulkApproveRefunds({
+      const response = await refundAdminApi.bulkApproveRefunds({
         refundIds: Array.from(selectedRefundIds),
-        adminNotes: notes,
+        notes,
       });
-      toast.success(`${count} iade talebi toplu olarak onaylandı`);
+
+      // Clear selection and refresh
       setSelectedRefundIds(new Set());
       fetchRefunds();
       fetchStatistics();
+
+      // Return response for BulkRefundActions component to handle
+      return response;
     } catch (error) {
       logger.error('Failed to bulk approve refunds', error, {
         selectedCount: selectedRefundIds.size,
@@ -186,7 +190,7 @@ export default function AdminRefundsPage() {
         component: 'AdminRefundsPage',
         action: 'bulk-approve',
       });
-      toast.error('Toplu onaylama işlemi başarısız oldu');
+      throw error; // Re-throw for component to handle
     }
   };
 

@@ -97,6 +97,10 @@ export { createEscrowTimelineEvent } from './EscrowTimeline';
 export { EscrowCard, EscrowCardSkeleton } from './EscrowCard';
 export type { EscrowCardProps, EscrowCardData } from './EscrowCard';
 
+// Sprint 1 - Story 2.1: Escrow Balance Breakdown
+export { EscrowBalanceCard } from './EscrowBalanceCard';
+export type { EscrowBalanceCardProps, EscrowDetail } from './EscrowBalanceCard';
+
 // ================================================
 // MILESTONE INTEGRATION (Sprint 1 Story 1.6)
 // ================================================
