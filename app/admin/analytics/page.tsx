@@ -37,6 +37,22 @@ import {
  */
 const ANALYTICS_SECTIONS = [
   {
+    title: 'Advanced Analytics Dashboard',
+    description:
+      'Interactive charts for revenue, conversions, and user behavior analytics',
+    href: '/admin/analytics/advanced',
+    icon: TrendingUp,
+    color: 'from-purple-500 to-pink-600',
+    bgColor: 'bg-purple-50',
+    textColor: 'text-purple-600',
+    features: [
+      'Real-time revenue charts',
+      'Conversion funnel analysis',
+      'User activity tracking',
+      'CSV/PDF export',
+    ],
+  },
+  {
     title: 'Gelir Analitikleri',
     description:
       'Dönemsel gelir raporları, ödeme metodu dağılımı ve işlem metrikleri',

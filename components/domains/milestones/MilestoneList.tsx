@@ -633,7 +633,6 @@ export function MilestoneList({
             </Card>
           )}
         </div>
-        </div>
       </div>
     </>
   );

@@ -78,6 +78,7 @@ export function exportToCSV<T extends Record<string, unknown>>(
 
 /**
  * Format date for export
+ * @deprecated Use formatDate from @/lib/shared/formatters or exportService formatters instead
  */
 export function formatDateForExport(date: string | Date): string {
   const d = typeof date === 'string' ? new Date(date) : date;
@@ -92,6 +93,7 @@ export function formatDateForExport(date: string | Date): string {
 
 /**
  * Format currency for export (without symbol)
+ * @deprecated Use formatCurrency from @/lib/shared/formatters or exportService formatters instead
  */
 export function formatCurrencyForExport(amount: number): string {
   return amount.toFixed(2).replace('.', ',');

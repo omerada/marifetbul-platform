@@ -1,7 +1,24 @@
 /**
  * ================================================
- * IBAN DISPLAY CARD COMPONENT
+ * IBAN DISPLAY CARD COMPONENT (DEPRECATED)
  * ================================================
+ * @deprecated Use UnifiedIBANDisplay from @/components/shared/payments instead
+ *
+ * This component is kept for backwards compatibility but will be removed in v2.0.
+ * Migration guide:
+ *
+ * Old:
+ * ```tsx
+ * import { IBANDisplayCard } from '@/components/domains/payments/IBANDisplayCard';
+ * <IBANDisplayCard orderId={id} amount={amount} />
+ * ```
+ *
+ * New:
+ * ```tsx
+ * import { UnifiedIBANDisplay } from '@/components/shared/payments';
+ * <UnifiedIBANDisplay type="platform" orderId={id} amount={amount} />
+ * ```
+ *
  * Displays platform IBAN information for manual bank transfers
  *
  * Features:

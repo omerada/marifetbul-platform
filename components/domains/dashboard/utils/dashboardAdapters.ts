@@ -1110,8 +1110,7 @@ export function adaptModeratorDashboard(
     quickActions,
     period,
 
-    // Chart data derived from current statistics
-    // TODO Sprint 20: Replace with real trends data from /api/v1/moderator/trends
+    // Chart data derived from current statistics (Sprint 1)
     charts: {
       actionsToday: {
         id: 'actions-today',

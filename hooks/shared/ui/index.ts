@@ -5,7 +5,6 @@
 // ================================================
 // Unified hooks for UI state management and interactions
 
- 
 // @ts-nocheck - Geçici olarak tip kontrollerini atla
 
 import { useState, useCallback, useEffect, useRef } from 'react';
@@ -403,7 +402,14 @@ export function useScrollDirection() {
 // CLIPBOARD HOOKS
 // ================================================
 
-export function useClipboard() {
+// New unified clipboard hook in separate file for better organization
+export { useClipboard } from './useClipboard';
+
+/**
+ * @deprecated Use the new useClipboard hook from './useClipboard' instead
+ * This legacy implementation is kept for backwards compatibility
+ */
+export function useClipboardLegacy() {
   const [copied, setCopied] = useState(false);
 
   const copy = useCallback(async (text: string) => {
@@ -413,10 +419,7 @@ export function useClipboard() {
       setTimeout(() => setCopied(false), 2000);
       return true;
     } catch (error) {
-      logger.error(
-        'Failed to copy text:',
-        error
-      );
+      logger.error('Failed to copy text:', error);
       return false;
     }
   }, []);

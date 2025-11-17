@@ -65,46 +65,87 @@ export default function AdminDisputesPage() {
       setDisputes(disputesData);
       setStatistics(statsData);
 
-      // Mock extended statistics (TODO: Replace with real API)
+      // Calculate extended statistics from real data
       if (disputesData.length > 0) {
-        const openCount = disputesData.filter(
-          (d) => d.status === 'OPEN'
-        ).length;
-        const inProgressCount = disputesData.filter(
-          (d) => d.status === 'IN_PROGRESS'
-        ).length;
-        const resolvedCount = disputesData.filter(
-          (d) => d.status === 'RESOLVED'
-        ).length;
-        const rejectedCount = disputesData.filter(
-          (d) => d.status === 'REJECTED'
-        ).length;
-        const closedCount = disputesData.filter(
-          (d) => d.status === 'CLOSED'
-        ).length;
+        const statusCounts = disputesData.reduce(
+          (acc, d) => {
+            acc[d.status] = (acc[d.status] || 0) + 1;
+            return acc;
+          },
+          {} as Record<string, number>
+        );
 
         const reasonDist: Record<string, number> = {};
         disputesData.forEach((d) => {
           reasonDist[d.reason] = (reasonDist[d.reason] || 0) + 1;
         });
 
+        const totalDisputesForPercentage = disputesData.length || 1;
+        const topReasons = Object.entries(reasonDist)
+          .sort(([, a], [, b]) => b - a)
+          .slice(0, 5)
+          .map(([reason, count]) => ({
+            reason,
+            count,
+            percentage: (count / totalDisputesForPercentage) * 100,
+          }));
+
+        // Calculate resolution type counts
+        const resolutionTypes = disputesData
+          .filter((d) => d.resolutionType)
+          .reduce(
+            (acc, d) => {
+              if (d.resolutionType) {
+                acc[d.resolutionType] = (acc[d.resolutionType] || 0) + 1;
+              }
+              return acc;
+            },
+            {} as Record<string, number>
+          );
+
+        const totalDisputes = disputesData.length;
+        const resolvedCount = statusCounts['RESOLVED'] || 0;
+
         setExtendedStats({
           openDisputesCount: statsData.openDisputesCount,
           averageResolutionTimeHours: statsData.averageResolutionTimeHours,
-          totalDisputes: disputesData.length,
-          openDisputes: openCount,
-          inProgressDisputes: inProgressCount,
+          totalDisputes,
+          openDisputes: statusCounts['OPEN'] || 0,
+          inProgressDisputes:
+            (statusCounts['UNDER_REVIEW'] || 0) +
+            (statusCounts['AWAITING_BUYER_RESPONSE'] || 0) +
+            (statusCounts['AWAITING_SELLER_RESPONSE'] || 0) +
+            (statusCounts['ESCALATED'] || 0),
           resolvedDisputes: resolvedCount,
-          rejectedDisputes: rejectedCount,
-          closedDisputes: closedCount,
+          rejectedDisputes: 0, // Backend doesn't use REJECTED status
+          closedDisputes: statusCounts['CLOSED'] || 0,
           resolutionRate:
-            disputesData.length > 0
-              ? (resolvedCount / disputesData.length) * 100
-              : 0,
+            totalDisputes > 0 ? (resolvedCount / totalDisputes) * 100 : 0,
+          favorBuyerCount:
+            (resolutionTypes['FAVOR_BUYER_FULL_REFUND'] || 0) +
+            (resolutionTypes['FAVOR_BUYER_PARTIAL_REFUND'] || 0),
+          favorSellerCount: resolutionTypes['FAVOR_SELLER_NO_REFUND'] || 0,
+          mutualAgreementCount: resolutionTypes['MUTUAL_AGREEMENT'] || 0,
+          reasonDistribution: reasonDist,
+          topReasons,
+          disputesOverTime: [], // Would require time-series data from backend
+        });
+      } else {
+        // Empty state
+        setExtendedStats({
+          openDisputesCount: 0,
+          averageResolutionTimeHours: 0,
+          totalDisputes: 0,
+          openDisputes: 0,
+          inProgressDisputes: 0,
+          resolvedDisputes: 0,
+          rejectedDisputes: 0,
+          closedDisputes: 0,
+          resolutionRate: 0,
           favorBuyerCount: 0,
           favorSellerCount: 0,
           mutualAgreementCount: 0,
-          reasonDistribution: reasonDist,
+          reasonDistribution: {},
           topReasons: [],
           disputesOverTime: [],
         });

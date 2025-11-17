@@ -82,8 +82,9 @@ export function unescapeHTML(html: string): string {
 // ================================================
 // NUMBER FORMATTING
 // ================================================
-// Sprint 10: Migrated to canonical formatters
-// Use @/lib/shared/formatters for comprehensive number formatting
+// Sprint 1: Use canonical formatters from @/lib/shared/formatters
+
+import { formatPercentage as canonicalFormatPercentage } from '@/lib/shared/formatters';
 
 export function formatBytes(bytes: number, decimals = 2): string {
   if (bytes === 0) return '0 Bytes';
@@ -97,9 +98,8 @@ export function formatBytes(bytes: number, decimals = 2): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-export function formatPercentage(value: number, decimals = 1): string {
-  return `${(value * 100).toFixed(decimals)}%`;
-}
+// Re-export canonical formatter
+export { canonicalFormatPercentage as formatPercentage };
 
 export function formatCompactNumber(num: number): string {
   return new Intl.NumberFormat('tr-TR', {
@@ -123,7 +123,7 @@ export function extractInitials(name: string, maxChars = 2): string {
 export function formatPhoneNumber(phone: string): string {
   // Delegates to the canonical implementation in lib/shared/formatters
   // Keeps backward-compatible signature while avoiding duplicate logic.
-   
+
   const {
     formatPhoneNumber: canonicalFormatPhoneNumber,
   } = require('../formatters');
@@ -153,7 +153,7 @@ export function formatEmailDomain(email: string): string {
 
 export function formatCreditCard(cardNumber: string): string {
   // Delegate to canonical formatCardNumber implementation
-   
+
   const {
     formatCardNumber: canonicalFormatCardNumber,
   } = require('../formatters');

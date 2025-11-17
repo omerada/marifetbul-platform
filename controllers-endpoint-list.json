@@ -1,0 +1,1384 @@
+{
+  "project": "MarifetBul Backend",
+  "analysisDate": "2025-11-17",
+  "totalControllers": 55,
+  "totalDomains": 28,
+  "domains": [
+    {
+      "domain": "auth",
+      "path": "com.marifetbul.api.domain.auth.controller",
+      "controllers": [
+        {
+          "name": "AuthController",
+          "basePath": "/api/v1/auth",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/register",
+              "description": "Kullanıcı kaydı",
+              "auth": "public"
+            },
+            {
+              "method": "POST",
+              "path": "/login",
+              "description": "Giriş",
+              "auth": "public"
+            },
+            {
+              "method": "POST",
+              "path": "/refresh",
+              "description": "Token yenileme",
+              "auth": "public"
+            },
+            {
+              "method": "POST",
+              "path": "/logout",
+              "description": "Çıkış",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/forgot-password",
+              "description": "Şifre sıfırlama",
+              "auth": "public"
+            }
+          ]
+        },
+        {
+          "name": "TwoFactorController",
+          "basePath": "/api/v1/auth/2fa",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/enable",
+              "description": "2FA aktifleştir",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/disable",
+              "description": "2FA kapat",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/verify",
+              "description": "2FA doğrula",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/qr-code",
+              "description": "QR kod al",
+              "auth": "authenticated"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "payment",
+      "path": "com.marifetbul.api.domain.payment.controller",
+      "controllers": [
+        {
+          "name": "PaymentController",
+          "basePath": "/api/v1/payments",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/intent",
+              "description": "Ödeme intent oluştur",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/confirm",
+              "description": "Ödeme onayla",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/webhook",
+              "description": "Iyzico webhook",
+              "auth": "public",
+              "security": "signature"
+            },
+            {
+              "method": "GET",
+              "path": "/{id}",
+              "description": "Ödeme detayı",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/history",
+              "description": "Ödeme geçmişi",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/order/{orderId}",
+              "description": "Sipariş ödemeleri",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/{id}/refund",
+              "description": "Ödeme iadesi",
+              "auth": "admin"
+            }
+          ]
+        },
+        {
+          "name": "RefundController",
+          "basePath": "/api/v1/refunds",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/",
+              "description": "İade talebi oluştur",
+              "auth": "authenticated"
+            },
+            {
+              "method": "PATCH",
+              "path": "/{refundId}/approve",
+              "description": "İade onayla",
+              "auth": "admin"
+            },
+            {
+              "method": "PATCH",
+              "path": "/{refundId}/reject",
+              "description": "İade reddet",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/bulk-approve",
+              "description": "Toplu iade onayı",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/{refundId}/process",
+              "description": "İade işle",
+              "auth": "admin"
+            },
+            {
+              "method": "GET",
+              "path": "/{refundId}",
+              "description": "İade detayı",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/orders/{orderId}",
+              "description": "Sipariş iadeleri",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/my-refunds",
+              "description": "İadelerim",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/pending",
+              "description": "Bekleyen iadeler",
+              "auth": "admin"
+            },
+            {
+              "method": "GET",
+              "path": "/statistics",
+              "description": "İade istatistikleri",
+              "auth": "admin"
+            }
+          ]
+        },
+        {
+          "name": "UnifiedWalletController",
+          "basePath": "/api/v1/wallet",
+          "status": "complete",
+          "description": "3 controller birleştirildi (Wallet, WalletAdmin, WalletEscrow)",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/",
+              "description": "Cüzdan bilgisi",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/balance",
+              "description": "Bakiye detayları",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/check-balance",
+              "description": "Yeterli bakiye kontrolü",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/transactions",
+              "description": "İşlem geçmişi",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/transactions/filtered",
+              "description": "Filtreli işlemler",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/credit",
+              "description": "Bakiye ekle",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/debit",
+              "description": "Bakiye düş",
+              "auth": "admin"
+            },
+            {
+              "method": "GET",
+              "path": "/analytics/earnings-trend",
+              "description": "Kazanç trendi",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/analytics/revenue-breakdown",
+              "description": "Gelir dağılımı",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/escrow/release/{orderId}",
+              "description": "Escrow'dan serbest bırak",
+              "auth": "buyer"
+            },
+            {
+              "method": "GET",
+              "path": "/admin/all",
+              "description": "Tüm cüzdanlar",
+              "auth": "admin"
+            },
+            {
+              "method": "GET",
+              "path": "/admin/{userId}",
+              "description": "Kullanıcı cüzdanı",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/admin/{userId}/adjust",
+              "description": "Bakiye düzenle",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/admin/{userId}/freeze",
+              "description": "Cüzdan dondur",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/admin/{userId}/unfreeze",
+              "description": "Cüzdan çöz",
+              "auth": "admin"
+            },
+            {
+              "method": "GET",
+              "path": "/admin/statistics",
+              "description": "Platform istatistikleri",
+              "auth": "admin"
+            },
+            {
+              "method": "GET",
+              "path": "/admin/transactions",
+              "description": "Tüm işlemler",
+              "auth": "admin"
+            }
+          ]
+        },
+        {
+          "name": "UnifiedPayoutController",
+          "basePath": "/api/v1/payouts",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/request",
+              "description": "Ödeme çekimi talebi",
+              "auth": "seller"
+            },
+            {
+              "method": "GET",
+              "path": "/my-payouts",
+              "description": "Ödemelerim",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/{id}",
+              "description": "Ödeme detayı",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/cancel/{id}",
+              "description": "Ödeme iptali",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/admin/all",
+              "description": "Tüm ödemeler",
+              "auth": "admin"
+            },
+            {
+              "method": "GET",
+              "path": "/admin/pending",
+              "description": "Bekleyen ödemeler",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/admin/process/{id}",
+              "description": "Ödeme işle",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/admin/reject/{id}",
+              "description": "Ödeme reddet",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/admin/process-batch",
+              "description": "Toplu işleme",
+              "auth": "admin"
+            }
+          ]
+        },
+        {
+          "name": "UnifiedBankAccountController",
+          "basePath": "/api/v1/bank-accounts",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/",
+              "description": "Banka hesabı ekle",
+              "auth": "seller"
+            },
+            {
+              "method": "GET",
+              "path": "/my-accounts",
+              "description": "Hesaplarım",
+              "auth": "authenticated"
+            },
+            {
+              "method": "PUT",
+              "path": "/{id}",
+              "description": "Hesap güncelle",
+              "auth": "authenticated"
+            },
+            {
+              "method": "DELETE",
+              "path": "/{id}",
+              "description": "Hesap sil",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/{id}/set-default",
+              "description": "Varsayılan hesap yap",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/{id}/verify",
+              "description": "Hesap doğrula",
+              "auth": "admin"
+            }
+          ]
+        },
+        {
+          "name": "UnifiedCommissionController",
+          "basePath": "/api/v1/admin/commissions",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/",
+              "description": "Komisyon listesi",
+              "auth": "admin"
+            },
+            {
+              "method": "GET",
+              "path": "/{id}",
+              "description": "Komisyon detayı",
+              "auth": "admin"
+            },
+            {
+              "method": "PUT",
+              "path": "/{id}",
+              "description": "Komisyon güncelle",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/calculate",
+              "description": "Komisyon hesapla",
+              "auth": "admin"
+            },
+            {
+              "method": "GET",
+              "path": "/statistics",
+              "description": "Komisyon istatistikleri",
+              "auth": "admin"
+            }
+          ]
+        },
+        {
+          "name": "BankInfoController",
+          "basePath": "/api/v1/banks",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/",
+              "description": "Banka listesi",
+              "auth": "public"
+            },
+            {
+              "method": "GET",
+              "path": "/search",
+              "description": "Banka ara",
+              "auth": "public"
+            },
+            {
+              "method": "GET",
+              "path": "/{code}",
+              "description": "Banka detayı",
+              "auth": "public"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "order",
+      "path": "com.marifetbul.api.domain.order.controller",
+      "controllers": [
+        {
+          "name": "OrderController",
+          "basePath": "/api/v1/orders",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/job",
+              "description": "İş ilanından sipariş",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/package",
+              "description": "Paketten sipariş",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/custom",
+              "description": "Özel sipariş",
+              "auth": "authenticated"
+            },
+            {
+              "method": "PUT",
+              "path": "/{orderId}/accept",
+              "description": "Siparişi kabul et",
+              "auth": "seller"
+            },
+            {
+              "method": "PUT",
+              "path": "/{orderId}/start",
+              "description": "İşe başla",
+              "auth": "seller"
+            },
+            {
+              "method": "PUT",
+              "path": "/{orderId}/mark-payment-sent",
+              "description": "Ödeme gönderildi",
+              "auth": "buyer"
+            },
+            {
+              "method": "PUT",
+              "path": "/{orderId}/confirm-manual-payment",
+              "description": "Manuel ödeme onayla",
+              "auth": "seller"
+            },
+            {
+              "method": "PUT",
+              "path": "/{orderId}/deliver",
+              "description": "Teslim et",
+              "auth": "seller"
+            },
+            {
+              "method": "PUT",
+              "path": "/{orderId}/approve",
+              "description": "Onayla",
+              "auth": "buyer"
+            },
+            {
+              "method": "PUT",
+              "path": "/{orderId}/cancel",
+              "description": "İptal et",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/{orderId}",
+              "description": "Sipariş detayı",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/buyer/me",
+              "description": "Alımlarım",
+              "auth": "buyer"
+            },
+            {
+              "method": "GET",
+              "path": "/seller/me",
+              "description": "Satışlarım",
+              "auth": "seller"
+            },
+            {
+              "method": "GET",
+              "path": "/filter",
+              "description": "Gelişmiş filtreleme",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/search/enhanced",
+              "description": "Gelişmiş arama",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/{orderId}/revisions",
+              "description": "Revizyon talebi",
+              "auth": "buyer"
+            },
+            {
+              "method": "PUT",
+              "path": "/{orderId}/revisions/{revisionId}/accept",
+              "description": "Revizyon kabul",
+              "auth": "seller"
+            },
+            {
+              "method": "POST",
+              "path": "/{orderId}/object-release",
+              "description": "Otomatik tamamlamaya itiraz",
+              "auth": "buyer",
+              "note": "Story 1.5 - Escrow Auto-Release Enhancement"
+            },
+            {
+              "method": "GET",
+              "path": "/statistics",
+              "description": "Platform istatistikleri",
+              "auth": "admin"
+            }
+          ]
+        },
+        {
+          "name": "OrderAdminController",
+          "basePath": "/api/v1/admin/orders",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/",
+              "description": "Tüm siparişler",
+              "auth": "admin"
+            },
+            {
+              "method": "PUT",
+              "path": "/{id}/status",
+              "description": "Durum değiştir",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/{id}/refund",
+              "description": "İade başlat",
+              "auth": "admin"
+            }
+          ]
+        },
+        {
+          "name": "MilestoneController",
+          "basePath": "/api/v1",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/orders/{orderId}/milestones",
+              "description": "Milestone oluştur",
+              "auth": "seller"
+            },
+            {
+              "method": "PUT",
+              "path": "/milestones/{id}/submit",
+              "description": "Milestone teslim et",
+              "auth": "seller"
+            },
+            {
+              "method": "PUT",
+              "path": "/milestones/{id}/accept",
+              "description": "Milestone kabul et",
+              "auth": "buyer"
+            },
+            {
+              "method": "GET",
+              "path": "/orders/{orderId}/milestones",
+              "description": "Milestone listesi",
+              "auth": "authenticated"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "user",
+      "path": "com.marifetbul.api.domain.user.controller",
+      "controllers": [
+        {
+          "name": "UserController",
+          "basePath": "/api/v1/users",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/me",
+              "description": "Profil bilgileri",
+              "auth": "authenticated"
+            },
+            {
+              "method": "PUT",
+              "path": "/me",
+              "description": "Profil güncelle",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/{id}",
+              "description": "Kullanıcı profili",
+              "auth": "public"
+            },
+            {
+              "method": "POST",
+              "path": "/avatar",
+              "description": "Avatar yükle",
+              "auth": "authenticated"
+            },
+            {
+              "method": "PUT",
+              "path": "/password",
+              "description": "Şifre değiştir",
+              "auth": "authenticated"
+            }
+          ]
+        },
+        {
+          "name": "UserAdminController",
+          "basePath": "/api/v1/admin/users",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/",
+              "description": "Kullanıcı listesi",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/{id}/suspend",
+              "description": "Askıya al (temporary/permanent)",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/{id}/ban",
+              "description": "Banla",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/{id}/unsuspend",
+              "description": "Askıyı kaldır",
+              "auth": "admin"
+            },
+            {
+              "method": "DELETE",
+              "path": "/{id}",
+              "description": "Kullanıcı sil",
+              "auth": "admin"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "moderation",
+      "path": "com.marifetbul.api.domain.moderation.controller",
+      "controllers": [
+        {
+          "name": "ModerationController",
+          "basePath": "/api/v1/moderation",
+          "status": "complete",
+          "description": "Unified moderation - Review, Comment, Report",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/stats",
+              "description": "Moderasyon istatistikleri",
+              "auth": "moderator"
+            },
+            {
+              "method": "GET",
+              "path": "/queue",
+              "description": "Moderasyon kuyruğu (Advanced filtering)",
+              "auth": "moderator"
+            },
+            {
+              "method": "GET",
+              "path": "/activities",
+              "description": "Moderasyon aktiviteleri",
+              "auth": "moderator"
+            },
+            {
+              "method": "GET",
+              "path": "/reviews/pending",
+              "description": "Bekleyen incelemeler",
+              "auth": "moderator"
+            },
+            {
+              "method": "POST",
+              "path": "/reviews/{id}/approve",
+              "description": "İnceleme onayla",
+              "auth": "moderator"
+            },
+            {
+              "method": "POST",
+              "path": "/reviews/{id}/reject",
+              "description": "İnceleme reddet",
+              "auth": "moderator"
+            },
+            {
+              "method": "POST",
+              "path": "/reviews/{id}/escalate",
+              "description": "Admin'e yönlendir",
+              "auth": "moderator"
+            },
+            {
+              "method": "POST",
+              "path": "/reviews/bulk/approve",
+              "description": "Toplu onaylama",
+              "auth": "moderator"
+            },
+            {
+              "method": "GET",
+              "path": "/comments/pending",
+              "description": "Bekleyen yorumlar",
+              "auth": "moderator"
+            },
+            {
+              "method": "POST",
+              "path": "/comments/{id}/approve",
+              "description": "Yorum onayla",
+              "auth": "moderator"
+            },
+            {
+              "method": "POST",
+              "path": "/comments/{id}/spam",
+              "description": "Spam işaretle",
+              "auth": "moderator"
+            },
+            {
+              "method": "POST",
+              "path": "/comments/bulk/escalate",
+              "description": "Toplu yönlendirme",
+              "auth": "moderator"
+            }
+          ]
+        },
+        {
+          "name": "UserModerationController",
+          "basePath": "/api/v1/dashboard/moderator/users",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/",
+              "description": "Kullanıcı listesi",
+              "auth": "moderator"
+            },
+            {
+              "method": "POST",
+              "path": "/{id}/warn",
+              "description": "Uyarı ver",
+              "auth": "moderator"
+            },
+            {
+              "method": "POST",
+              "path": "/{id}/suspend",
+              "description": "Askıya al",
+              "auth": "moderator"
+            }
+          ]
+        },
+        {
+          "name": "ReportController",
+          "basePath": "/api/v1/dashboard/moderator/reports",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/",
+              "description": "Rapor listesi",
+              "auth": "moderator"
+            },
+            {
+              "method": "POST",
+              "path": "/{id}/review",
+              "description": "Rapor incele",
+              "auth": "moderator"
+            },
+            {
+              "method": "POST",
+              "path": "/{id}/resolve",
+              "description": "Rapor çöz",
+              "auth": "moderator"
+            }
+          ]
+        },
+        {
+          "name": "AppealController",
+          "basePath": "/api/v1/moderation/appeals",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/",
+              "description": "İtiraz oluştur",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/my-appeals",
+              "description": "İtirazlarım",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/{id}/review",
+              "description": "İtiraz incele",
+              "auth": "admin"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "notification",
+      "path": "com.marifetbul.api.domain.notification.controller",
+      "controllers": [
+        {
+          "name": "NotificationController",
+          "basePath": "/api/v1/notifications",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/",
+              "description": "Bildirimler",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/unread",
+              "description": "Okunmamış",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/recent",
+              "description": "Son bildirimler",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/{id}",
+              "description": "Bildirim detayı",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/count",
+              "description": "Bildirim sayısı",
+              "auth": "authenticated"
+            },
+            {
+              "method": "PUT",
+              "path": "/{id}/read",
+              "description": "Okundu işaretle",
+              "auth": "authenticated"
+            },
+            {
+              "method": "PUT",
+              "path": "/mark-all-read",
+              "description": "Tümünü okundu işaretle",
+              "auth": "authenticated"
+            },
+            {
+              "method": "DELETE",
+              "path": "/{id}",
+              "description": "Bildirim sil",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/",
+              "description": "Bildirim oluştur",
+              "auth": "admin"
+            }
+          ]
+        },
+        {
+          "name": "PushNotificationController",
+          "basePath": "/api/v1/notifications/push",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/send",
+              "description": "Push notification gönder",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/send-to-user",
+              "description": "Kullanıcıya gönder",
+              "auth": "admin"
+            }
+          ]
+        },
+        {
+          "name": "NotificationPreferencesController",
+          "basePath": "/api/v1/notifications/preferences",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/",
+              "description": "Tercihler",
+              "auth": "authenticated"
+            },
+            {
+              "method": "PUT",
+              "path": "/",
+              "description": "Tercihleri güncelle",
+              "auth": "authenticated"
+            }
+          ]
+        },
+        {
+          "name": "DeviceTokenController",
+          "basePath": "/api/v1/device-tokens",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/",
+              "description": "Token kaydet",
+              "auth": "authenticated"
+            },
+            {
+              "method": "DELETE",
+              "path": "/{token}",
+              "description": "Token sil",
+              "auth": "authenticated"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "message",
+      "path": "com.marifetbul.api.domain.message.controller",
+      "controllers": [
+        {
+          "name": "MessageController",
+          "basePath": "/api/v1/messages",
+          "status": "complete",
+          "features": [
+            "Rate limiting: 50 msg/min",
+            "File attachments: 3 files, 10MB"
+          ],
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/",
+              "description": "Mesaj gönder",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/{id}",
+              "description": "Mesaj detayı",
+              "auth": "authenticated"
+            },
+            {
+              "method": "PUT",
+              "path": "/{id}/mark-read",
+              "description": "Okundu işaretle",
+              "auth": "authenticated"
+            },
+            {
+              "method": "DELETE",
+              "path": "/{id}",
+              "description": "Mesaj sil",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/unread",
+              "description": "Okunmamış mesajlar",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/unread-count",
+              "description": "Okunmamış sayısı",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/search",
+              "description": "Mesaj ara",
+              "auth": "authenticated"
+            },
+            {
+              "method": "POST",
+              "path": "/attachments",
+              "description": "Dosya yükle",
+              "auth": "authenticated"
+            }
+          ]
+        },
+        {
+          "name": "ConversationController",
+          "basePath": "/api/v1/conversations",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/",
+              "description": "Konuşma listesi",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/{id}",
+              "description": "Konuşma detayı",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/{id}/messages",
+              "description": "Konuşma mesajları",
+              "auth": "authenticated"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "admin",
+      "path": "com.marifetbul.api.domain.admin.controller",
+      "controllers": [
+        {
+          "name": "AdminReportController",
+          "basePath": "/api/v1/admin/reports",
+          "status": "incomplete",
+          "missing": ["PDF Export"],
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/generate",
+              "description": "Rapor oluştur",
+              "auth": "admin"
+            },
+            {
+              "method": "GET",
+              "path": "/types",
+              "description": "Rapor tipleri",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/export/csv",
+              "description": "CSV export",
+              "auth": "admin",
+              "status": "complete"
+            },
+            {
+              "method": "POST",
+              "path": "/export/pdf",
+              "description": "PDF export",
+              "auth": "admin",
+              "status": "NOT_IMPLEMENTED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "packages",
+      "path": "com.marifetbul.api.domain.packages.controller",
+      "controllers": [
+        {
+          "name": "PackageController",
+          "basePath": "/api/v1/packages",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/",
+              "description": "Paket listesi",
+              "auth": "public"
+            },
+            {
+              "method": "GET",
+              "path": "/{id}",
+              "description": "Paket detayı",
+              "auth": "public"
+            },
+            {
+              "method": "GET",
+              "path": "/search",
+              "description": "Paket ara",
+              "auth": "public"
+            }
+          ]
+        },
+        {
+          "name": "PackageSellerController",
+          "basePath": "/api/v1/seller/packages",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/",
+              "description": "Paket oluştur",
+              "auth": "seller"
+            },
+            {
+              "method": "PUT",
+              "path": "/{id}",
+              "description": "Paket güncelle",
+              "auth": "seller"
+            },
+            {
+              "method": "DELETE",
+              "path": "/{id}",
+              "description": "Paket sil",
+              "auth": "seller"
+            },
+            {
+              "method": "GET",
+              "path": "/my-packages",
+              "description": "Paketlerim",
+              "auth": "seller"
+            }
+          ]
+        },
+        {
+          "name": "PackageAdminController",
+          "basePath": "/api/v1/admin/packages",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/",
+              "description": "Tüm paketler",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/{id}/approve",
+              "description": "Paket onayla",
+              "auth": "admin"
+            },
+            {
+              "method": "POST",
+              "path": "/{id}/reject",
+              "description": "Paket reddet",
+              "auth": "admin"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "blog",
+      "path": "com.marifetbul.api.domain.blog.controller",
+      "controllers": [
+        {
+          "name": "BlogPostController",
+          "basePath": "/api/v1/blog/posts",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/",
+              "description": "Blog yazıları",
+              "auth": "public"
+            },
+            {
+              "method": "GET",
+              "path": "/{id}",
+              "description": "Yazı detayı",
+              "auth": "public"
+            },
+            {
+              "method": "POST",
+              "path": "/",
+              "description": "Yazı oluştur",
+              "auth": "admin"
+            },
+            {
+              "method": "PUT",
+              "path": "/{id}",
+              "description": "Yazı güncelle",
+              "auth": "admin"
+            }
+          ]
+        },
+        {
+          "name": "BlogCommentController",
+          "basePath": "/api/v1/blog",
+          "status": "complete",
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/posts/{postId}/comments",
+              "description": "Yorum yap",
+              "auth": "authenticated"
+            },
+            {
+              "method": "GET",
+              "path": "/posts/{postId}/comments",
+              "description": "Yorumlar",
+              "auth": "public"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "other",
+      "controllers": [
+        {
+          "name": "DashboardController",
+          "basePath": "/api/v1/dashboard",
+          "status": "complete"
+        },
+        {
+          "name": "DisputeController",
+          "basePath": "/api/v1/disputes",
+          "status": "complete"
+        },
+        {
+          "name": "FavoriteController",
+          "basePath": "/api/v1/favorites",
+          "status": "complete"
+        },
+        {
+          "name": "JobController",
+          "basePath": "/api/v1/jobs",
+          "status": "complete"
+        },
+        {
+          "name": "PortfolioController",
+          "basePath": "/api/v1/portfolios",
+          "status": "complete"
+        },
+        {
+          "name": "ProposalController",
+          "basePath": "/api/v1/proposals",
+          "status": "complete"
+        },
+        {
+          "name": "ReviewController",
+          "basePath": "/api/v1/reviews",
+          "status": "complete"
+        },
+        {
+          "name": "PrivacySettingsController",
+          "basePath": "/api/v1/settings/privacy",
+          "status": "complete"
+        },
+        {
+          "name": "SupportTicketController",
+          "basePath": "/api/v1/support/tickets",
+          "status": "complete"
+        },
+        {
+          "name": "CategoryController",
+          "basePath": "/api/v1/categories",
+          "status": "complete"
+        },
+        {
+          "name": "SearchAnalyticsController",
+          "basePath": "/api/v1/analytics/search",
+          "status": "complete"
+        },
+        {
+          "name": "SchedulerAdminController",
+          "basePath": "/api/admin/schedulers",
+          "status": "complete"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalEndpoints": "300+",
+    "completionRate": "99%",
+    "missingFeatures": [
+      {
+        "feature": "PDF Export",
+        "location": "AdminReportController.java",
+        "priority": "Low",
+        "workaround": "CSV export available"
+      }
+    ],
+    "criticalIssues": [],
+    "recommendations": [
+      "PDF export implementasyonu gelecek sprint'e eklenebilir",
+      "Advanced analytics dashboard geliştirilebilir",
+      "Machine learning fraud detection eklenebilir"
+    ]
+  }
+}

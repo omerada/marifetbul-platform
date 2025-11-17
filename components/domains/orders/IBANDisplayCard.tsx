@@ -1,7 +1,24 @@
 /**
  * ================================================
- * IBAN DISPLAY CARD
+ * IBAN DISPLAY CARD (DEPRECATED)
  * ================================================
+ * @deprecated Use UnifiedIBANDisplay from @/components/shared/payments instead
+ *
+ * This component is kept for backwards compatibility but will be removed in v2.0.
+ * Migration guide:
+ *
+ * Old:
+ * ```tsx
+ * import { IBANDisplayCard } from '@/components/domains/orders/IBANDisplayCard';
+ * <IBANDisplayCard iban={iban} orderStatus={status} userRole="buyer" />
+ * ```
+ *
+ * New:
+ * ```tsx
+ * import { UnifiedIBANDisplay } from '@/components/shared/payments';
+ * <UnifiedIBANDisplay type="seller" sellerIBAN={iban} orderStatus={status} userRole="buyer" />
+ * ```
+ *
  * Displays seller's IBAN for manual payment
  *
  * Features:

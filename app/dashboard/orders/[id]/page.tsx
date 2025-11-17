@@ -50,6 +50,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge';
 import { orderApi } from '@/lib/api/orders';
 import { PaymentRetryStatus } from '@/components/domains/payments/PaymentRetryStatus';
 import { PaymentRetryHistory } from '@/components/domains/payments/PaymentRetryHistory';
+import { PaymentRetryButton } from '@/components/domains/payments';
 import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 import type { OrderResponse, MilestoneResponse } from '@/types/backend-aligned';
 import { enrichOrder, type OrderWithComputed } from '@/types/backend-aligned';
@@ -631,6 +632,31 @@ export default function OrderDetailPage() {
                   logger.info('Payment proof viewed', { orderId: order.id });
                 }}
               />
+
+              {/* Payment Retry UI - Sprint 1.3: Show retry button for failed payments */}
+              {order.payment?.id &&
+                order.paymentStatus === 'FAILED' &&
+                userRole === 'buyer' && (
+                  <PaymentRetryButton
+                    paymentId={order.payment.id}
+                    onRetrySuccess={() => {
+                      logger.info('Payment retry succeeded', {
+                        orderId: order.id,
+                      });
+                      toast.success('Ödeme başarılı!', {
+                        description: 'Ödemeniz başarıyla tamamlandı.',
+                      });
+                      // Reload order to reflect payment status change
+                      loadOrder();
+                    }}
+                    onRetryFailure={(reason) => {
+                      logger.warn('Payment retry failed', {
+                        orderId: order.id,
+                        reason,
+                      });
+                    }}
+                  />
+                )}
 
               {/* IBAN Display - Show for manual payment pending */}
               {order.paymentMode === 'MANUAL_IBAN' &&
