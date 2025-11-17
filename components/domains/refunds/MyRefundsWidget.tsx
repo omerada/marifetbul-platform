@@ -27,6 +27,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
 import { useMyRefunds, useRefundActions } from '@/hooks/business/useRefunds';
 import { RefundDto, RefundStatus } from '@/types/business/features/refund';
+import { UserRefundDetailModal } from './UserRefundDetailModal';
 import {
   RotateCcw,
   Clock,
@@ -266,6 +267,9 @@ export function MyRefundsWidget({
 }: MyRefundsWidgetProps) {
   const { refunds, isLoading, error } = useMyRefunds();
   const { cancelRefund, isCanceling } = useRefundActions();
+  const [selectedRefund, setSelectedRefund] = React.useState<RefundDto | null>(
+    null
+  );
 
   const displayRefunds = refunds?.slice(0, maxItems) || [];
 
@@ -273,7 +277,7 @@ export function MyRefundsWidget({
     logger.info('[MyRefundsWidget] View refund details', {
       refundId: refund.id,
     });
-    // TODO: Open UserRefundDetailModal (Story 2.3)
+    setSelectedRefund(refund);
   };
 
   const handleCancel = async (refundId: string) => {
@@ -348,6 +352,16 @@ export function MyRefundsWidget({
           </div>
         )}
       </CardContent>
+
+      {/* Refund Detail Modal */}
+      {selectedRefund && (
+        <UserRefundDetailModal
+          refundId={selectedRefund.id}
+          orderId={selectedRefund.orderId}
+          open={!!selectedRefund}
+          onClose={() => setSelectedRefund(null)}
+        />
+      )}
     </Card>
   );
 }

@@ -142,51 +142,6 @@ export const freelancerDashboardNavigation: NavigationItem[] = [
 ];
 
 /**
- * Dashboard Navigation - Employer
- * @deprecated This is kept for backward compatibility in getNavigationByRole().
- * New code should use unified /dashboard route or getDashboardNavigation() from @/lib/shared/navigation
- * These routes redirect automatically to unified dashboard.
- * Scheduled for removal: Sprint 3
- */
-export const employerDashboardNavigation: NavigationItem[] = [
-  {
-    href: '/dashboard',
-    label: 'Özet',
-    icon: Home,
-  },
-  {
-    href: '/dashboard/my-jobs',
-    label: 'İş İlanlarım',
-    icon: Briefcase,
-  },
-  {
-    href: '/dashboard/orders',
-    label: 'Siparişler',
-    icon: Package,
-  },
-  {
-    href: '/dashboard/my-proposals',
-    label: 'Gelen Teklifler',
-    icon: FileText,
-  },
-  {
-    href: '/search?type=freelancers',
-    label: 'Freelancerlar',
-    icon: User,
-  },
-  {
-    href: '/dashboard/reviews',
-    label: 'Değerlendirmeler',
-    icon: Shield,
-  },
-  {
-    href: '/dashboard/analytics',
-    label: 'Analitik',
-    icon: Grid,
-  },
-];
-
-/**
  * Moderator Tools Navigation
  * Note: Main moderator dashboard is at /dashboard (UnifiedDashboard)
  * These are moderator-specific tools and actions
@@ -335,25 +290,6 @@ export const supportNavigation: NavigationItem[] = [
 ];
 
 /**
- * Helper function to get navigation items by user role
- */
-export function getNavigationByRole(
-  userType?: 'freelancer' | 'employer' | 'admin'
-): NavigationItem[] {
-  if (!userType) return mainNavigation;
-
-  if (userType === 'freelancer') {
-    return [...mainNavigation, ...freelancerDashboardNavigation];
-  }
-
-  if (userType === 'employer') {
-    return [...mainNavigation, ...employerDashboardNavigation];
-  }
-
-  return mainNavigation;
-}
-
-/**
  * Helper function to check if path is active
  */
 export function isNavItemActive(pathname: string, href: string): boolean {
@@ -369,13 +305,11 @@ const navigationConfig = {
   mainNavigation,
   marketplaceNavigation,
   freelancerDashboardNavigation,
-  employerDashboardNavigation,
   moderatorToolsNavigation,
   settingsNavigation,
   footerNavigation,
   userMenuNavigation,
   supportNavigation,
-  getNavigationByRole,
   isNavItemActive,
 };
 

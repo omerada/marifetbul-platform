@@ -36,7 +36,9 @@ import type {
  * Story 1.2: Uses enhanced cache keys
  */
 export function useOrderMilestones(orderId?: string) {
-  const cacheKey = orderId ? MILESTONE_CACHE_KEYS.orderMilestones(orderId) : null;
+  const cacheKey = orderId
+    ? MILESTONE_CACHE_KEYS.orderMilestones(orderId)
+    : null;
 
   const {
     data: milestones,
@@ -68,7 +70,9 @@ export function useOrderMilestones(orderId?: string) {
  * Story 1.2: Uses enhanced cache keys
  */
 export function useMilestone(milestoneId?: string) {
-  const cacheKey = milestoneId ? MILESTONE_CACHE_KEYS.milestone(milestoneId) : null;
+  const cacheKey = milestoneId
+    ? MILESTONE_CACHE_KEYS.milestone(milestoneId)
+    : null;
 
   const {
     data: milestone,
@@ -117,7 +121,10 @@ export function useMilestoneActions() {
   ) => {
     setIsCreating(true);
     try {
-      const milestone = await milestoneApiEnhanced.createMilestone(orderId, data);
+      const milestone = await milestoneApiEnhanced.createMilestone(
+        orderId,
+        data
+      );
       await mutate(MILESTONE_CACHE_KEYS.orderMilestones(orderId));
       toast.success('Milestone oluşturuldu');
       return milestone;
@@ -126,16 +133,8 @@ export function useMilestoneActions() {
         error instanceof MilestoneApiError
           ? error.message
           : 'Milestone oluşturulamadı';
-      
+
       logger.error('[useMilestones] Create failed', error as Error);
-      toast.error(errorMessage);
-      throw error;
-    } finally {
-      setIsCreating(false);
-    }
-  };
-      const errorMessage =
-        error instanceof Error ? error.message : 'Milestone oluşturulamadı';
       toast.error(errorMessage);
       throw error;
     } finally {
@@ -177,14 +176,19 @@ export function useMilestoneActions() {
   ) => {
     setIsUpdating(true);
     try {
-      const updated = await milestoneApiEnhanced.updateMilestone(milestoneId, data);
+      const updated = await milestoneApiEnhanced.updateMilestone(
+        milestoneId,
+        data
+      );
       await mutate(MILESTONE_CACHE_KEYS.milestone(milestoneId));
       await mutate(MILESTONE_CACHE_KEYS.orderMilestones(updated.orderId));
       toast.success('Milestone güncellendi');
       return updated;
     } catch (error) {
       const errorMessage =
-        error instanceof MilestoneApiError ? error.message : 'Milestone güncellenemedi';
+        error instanceof MilestoneApiError
+          ? error.message
+          : 'Milestone güncellenemedi';
       logger.error('[useMilestones] Update failed', error as Error);
       toast.error(errorMessage);
       throw error;
@@ -203,7 +207,9 @@ export function useMilestoneActions() {
       toast.success('Milestone silindi');
     } catch (error) {
       const errorMessage =
-        error instanceof MilestoneApiError ? error.message : 'Milestone silinemedi';
+        error instanceof MilestoneApiError
+          ? error.message
+          : 'Milestone silinemedi';
       logger.error('[useMilestones] Delete failed', error as Error);
       toast.error(errorMessage);
       throw error;
@@ -224,7 +230,9 @@ export function useMilestoneActions() {
       return milestone;
     } catch (error) {
       const errorMessage =
-        error instanceof MilestoneApiError ? error.message : 'Milestone başlatılamadı';
+        error instanceof MilestoneApiError
+          ? error.message
+          : 'Milestone başlatılamadı';
       logger.error('[useMilestones] Start failed', error as Error);
       toast.error(errorMessage);
       throw error;
@@ -241,14 +249,19 @@ export function useMilestoneActions() {
   ) => {
     setIsDelivering(true);
     try {
-      const milestone = await milestoneApiEnhanced.deliverMilestone(milestoneId, data);
+      const milestone = await milestoneApiEnhanced.deliverMilestone(
+        milestoneId,
+        data
+      );
       await mutate(MILESTONE_CACHE_KEYS.milestone(milestoneId));
       await mutate(MILESTONE_CACHE_KEYS.orderMilestones(milestone.orderId));
       toast.success('Milestone teslim edildi');
       return milestone;
     } catch (error) {
       const errorMessage =
-        error instanceof MilestoneApiError ? error.message : 'Milestone teslim edilemedi';
+        error instanceof MilestoneApiError
+          ? error.message
+          : 'Milestone teslim edilemedi';
       logger.error('[useMilestones] Delivery failed', error as Error);
       toast.error(errorMessage);
       throw error;
@@ -269,7 +282,9 @@ export function useMilestoneActions() {
       return milestone;
     } catch (error) {
       const errorMessage =
-        error instanceof MilestoneApiError ? error.message : 'Milestone onaylandı';
+        error instanceof MilestoneApiError
+          ? error.message
+          : 'Milestone onaylandı';
       logger.error('[useMilestones] Acceptance failed', error as Error);
       toast.error(errorMessage);
       throw error;
@@ -283,14 +298,19 @@ export function useMilestoneActions() {
   const rejectMilestone = async (milestoneId: string, reason: string) => {
     setIsRejecting(true);
     try {
-      const milestone = await milestoneApiEnhanced.rejectMilestone(milestoneId, reason);
+      const milestone = await milestoneApiEnhanced.rejectMilestone(
+        milestoneId,
+        reason
+      );
       await mutate(MILESTONE_CACHE_KEYS.milestone(milestoneId));
       await mutate(MILESTONE_CACHE_KEYS.orderMilestones(milestone.orderId));
       toast.success('Milestone reddedildi, revizyon istendi');
       return milestone;
     } catch (error) {
       const errorMessage =
-        error instanceof MilestoneApiError ? error.message : 'Milestone reddedilemedi';
+        error instanceof MilestoneApiError
+          ? error.message
+          : 'Milestone reddedilemedi';
       logger.error('[useMilestones] Rejection failed', error as Error);
       toast.error(errorMessage);
       throw error;
@@ -304,21 +324,21 @@ export function useMilestoneActions() {
   const cancelMilestone = async (milestoneId: string, reason: string) => {
     setIsCanceling(true);
     try {
-      const milestone = await milestoneApiEnhanced.cancelMilestone(milestoneId, reason);
+      const milestone = await milestoneApiEnhanced.cancelMilestone(
+        milestoneId,
+        reason
+      );
       await mutate(MILESTONE_CACHE_KEYS.milestone(milestoneId));
       await mutate(MILESTONE_CACHE_KEYS.orderMilestones(milestone.orderId));
       toast.success('Milestone iptal edildi');
       return milestone;
     } catch (error) {
       const errorMessage =
-        error instanceof MilestoneApiError ? error.message : 'Milestone iptal edilemedi';
+        error instanceof MilestoneApiError
+          ? error.message
+          : 'Milestone iptal edilemedi';
       logger.error('[useMilestones] Cancellation failed', error as Error);
       toast.error(errorMessage);
-      throw error;
-    } finally {
-      setIsCanceling(false);
-    }
-  };
       throw error;
     } finally {
       setIsCanceling(false);

@@ -357,13 +357,6 @@ export type {
   MessageThread,
 } from './business/features/messaging';
 
-// Import types for local use
-import type { Message, Conversation } from './business/features/messaging';
-
-// Legacy compatibility aliases
-export type { Message as BasicMessage } from './business/features/messaging';
-export type { Conversation as BasicConversation } from './business/features/messaging';
-
 // Message search result interface
 export interface MessageSearchResult {
   message: Message;
