@@ -1,30 +1,28 @@
 'use client';
 
 /**
- * UserTable Component
+ * ================================================
+ * USER TABLE - UNIFIED DATA TABLE VERSION
+ * ================================================
+ * Sprint 2 - Story 2.1: First Migration
  *
- * User management table with modular architecture.
- * Refactored: 853 lines → 256 lines (-70%)
+ * Migrated from 256 lines to ~100 lines using UnifiedDataTable.
+ * All features preserved: filters, bulk actions, selection, pagination, export.
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0
+ * @since 2025-11-19
  */
 
-'use client';
-
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { UnifiedDataTable } from '@/lib/components/unified/UnifiedDataTable';
+import type {
+  Column,
+  BulkAction,
+  RowAction,
+} from '@/lib/components/unified/UnifiedDataTable';
 import { useUserManagement } from '@/hooks';
-import {
-  AdminUserData,
-  UserActionType,
-} from './userTable/types/userTableTypes';
-import logger from '@/lib/infrastructure/monitoring/logger';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader as TableHeaderComponent,
-  TableRow,
-} from '@/components/ui/table';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,28 +33,90 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/AlertDialog';
-import { Checkbox } from '@/components/ui/Checkbox';
-import {
-  BulkActions,
-  TableHeader,
-  TableFilters,
-  UserRow,
-  TablePagination,
-  EmptyState,
-  LoadingState,
-} from './userTable/components';
+import { Badge } from '@/components/ui/Badge';
+import { Avatar } from '@/components/ui/Avatar';
 import { SimpleErrorDisplay } from '@/components/ui/SimpleErrorDisplay';
 import { useUserTableActions } from './userTable/hooks/useUserTableActions';
 import { formatUserName } from './userTable/utils/userTableHelpers';
 import { UserActivityTimeline } from './UserActivityTimeline';
 import { UserExportButton } from './UserExportButton';
+import { TableFilters } from './userTable/components';
+import type {
+  AdminUserData,
+  UserStatus,
+} from './userTable/types/userTableTypes';
+import {
+  UserIcon,
+  MailIcon,
+  CheckCircleIcon,
+  BanIcon,
+  PlayIcon,
+  ActivityIcon,
+  TrashIcon,
+} from 'lucide-react';
 
 interface UserTableProps {
   className?: string;
 }
 
+// ============================================================================
+// STATUS BADGE COMPONENT
+// ============================================================================
+
+function StatusBadge({ status }: { status: UserStatus }) {
+  const variants: Record<UserStatus, { color: string; label: string }> = {
+    active: { color: 'bg-green-100 text-green-800', label: 'Aktif' },
+    inactive: { color: 'bg-gray-100 text-gray-800', label: 'Pasif' },
+    suspended: {
+      color: 'bg-yellow-100 text-yellow-800',
+      label: 'Askıya Alındı',
+    },
+    banned: { color: 'bg-red-100 text-red-800', label: 'Yasaklandı' },
+    pending_verification: {
+      color: 'bg-blue-100 text-blue-800',
+      label: 'Doğrulama Bekliyor',
+    },
+  };
+
+  const variant = variants[status] || variants.inactive;
+
+  return (
+    <Badge className={`${variant.color} px-2 py-1 text-xs font-medium`}>
+      {variant.label}
+    </Badge>
+  );
+}
+
+// ============================================================================
+// ROLE BADGE COMPONENT
+// ============================================================================
+
+function RoleBadge({ role }: { role: string }) {
+  const variants: Record<string, { color: string; label: string }> = {
+    admin: { color: 'bg-purple-100 text-purple-800', label: 'Yönetici' },
+    moderator: { color: 'bg-indigo-100 text-indigo-800', label: 'Moderatör' },
+    employer: { color: 'bg-blue-100 text-blue-800', label: 'İş Veren' },
+    freelancer: { color: 'bg-teal-100 text-teal-800', label: 'Freelancer' },
+  };
+
+  const variant = variants[role] || {
+    color: 'bg-gray-100 text-gray-800',
+    label: role,
+  };
+
+  return (
+    <Badge className={`${variant.color} px-2 py-1 text-xs font-medium`}>
+      {variant.label}
+    </Badge>
+  );
+}
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+
 export function UserTable({ className }: UserTableProps) {
-  // Hook integration
+  // Hooks
   const {
     users,
     isLoading,
@@ -68,71 +128,198 @@ export function UserTable({ className }: UserTableProps) {
     onPageChange,
     onBulkAction,
     onBulkToggle,
-    onSelectAll,
     onSearch,
   } = useUserManagement();
 
-  const {
-    handleActivate,
-    handleSuspend,
-    handleBan,
-    handleVerify,
-    handleDelete,
-  } = useUserTableActions();
+  const { handleActivate, handleSuspend, handleVerify, handleDelete } =
+    useUserTableActions();
 
-  // Get selected users for export
-  const selectedUsersForExport = users.filter((u) =>
-    bulkSelection.selectedIds.includes(u.id)
-  ) as AdminUserData[];
-
-  // Local state for dialogs
+  // Local state
   const [actionUser, setActionUser] = useState<AdminUserData | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showActivityTimeline, setShowActivityTimeline] = useState(false);
   const [selectedUserForActivity, setSelectedUserForActivity] =
     useState<AdminUserData | null>(null);
 
-  // Handle user action
-  const handleUserAction = async (action: UserActionType, userId: string) => {
-    switch (action) {
-      case 'activate':
-        await handleActivate(userId);
-        break;
-      case 'suspend':
-        await handleSuspend(userId);
-        break;
-      case 'ban':
-        await handleBan(userId);
-        break;
-      case 'verify':
-        await handleVerify(userId);
-        break;
-      case 'view':
-        // View user details - Navigate to user edit page
-        window.location.href = `/admin/users/${userId}/edit`;
-        break;
-      case 'email':
-        // Email user - Open mail client or show email dialog
-        // Future: setShowEmailModal(true); setSelectedUser(userId);
-        logger.debug('Email user feature to be implemented:', userId);
-        break;
-      case 'activity':
-        // Show activity timeline
-        const user = users.find((u) => u.id === userId);
-        if (user) {
-          setSelectedUserForActivity(user as AdminUserData);
-          setShowActivityTimeline(true);
-        }
-        break;
-      default:
-        break;
-    }
-  };
+  // ============================================================================
+  // COLUMN DEFINITIONS
+  // ============================================================================
 
-  // Error state
+  const columns = useMemo<Column<AdminUserData>[]>(
+    () => [
+      {
+        id: 'user',
+        header: 'Kullanıcı',
+        render: (_, row) => (
+          <div className="flex items-center gap-3">
+            <Avatar
+              src={row.avatarUrl || undefined}
+              alt={formatUserName(row)}
+              size="sm"
+            />
+            <div>
+              <div className="font-medium text-gray-900">
+                {formatUserName(row)}
+              </div>
+              <div className="text-sm text-gray-500">{row.email}</div>
+            </div>
+          </div>
+        ),
+        sortable: true,
+        sortFn: (a, b) =>
+          formatUserName(a).localeCompare(formatUserName(b), 'tr'),
+      },
+      {
+        id: 'userType',
+        header: 'Rol',
+        accessor: 'userType',
+        render: (value) => <RoleBadge role={value as string} />,
+        sortable: true,
+      },
+      {
+        id: 'accountStatus',
+        header: 'Durum',
+        accessor: 'accountStatus',
+        render: (value) => <StatusBadge status={value as UserStatus} />,
+        sortable: true,
+      },
+      {
+        id: 'createdAt',
+        header: 'Katılım',
+        accessor: 'createdAt',
+        formatter: 'date',
+        sortable: true,
+      },
+      {
+        id: 'lastActiveAt',
+        header: 'Son Aktivite',
+        accessor: 'lastActiveAt',
+        formatter: 'date',
+        sortable: true,
+      },
+    ],
+    []
+  );
+
+  // ============================================================================
+  // ROW ACTIONS
+  // ============================================================================
+
+  const rowActions = useMemo<RowAction<AdminUserData>[]>(
+    () => [
+      {
+        id: 'view',
+        label: 'Görüntüle',
+        icon: UserIcon,
+        onClick: (user) => {
+          window.location.href = `/admin/users/${user.id}/edit`;
+        },
+      },
+      {
+        id: 'activity',
+        label: 'Aktivite',
+        icon: ActivityIcon,
+        onClick: (user) => {
+          setSelectedUserForActivity(user);
+          setShowActivityTimeline(true);
+        },
+      },
+      {
+        id: 'email',
+        label: 'E-posta Gönder',
+        icon: MailIcon,
+        onClick: (_user) => {
+          // Future: Show email modal
+        },
+      },
+      {
+        id: 'activate',
+        label: 'Aktifleştir',
+        icon: PlayIcon,
+        onClick: (user) => handleActivate(user.id),
+        show: (user: AdminUserData) => user.accountStatus !== 'active',
+      },
+      {
+        id: 'suspend',
+        label: 'Askıya Al',
+        icon: BanIcon,
+        onClick: (user) => handleSuspend(user.id),
+        show: (user: AdminUserData) => user.accountStatus === 'active',
+      },
+      {
+        id: 'verify',
+        label: 'Doğrula',
+        icon: CheckCircleIcon,
+        onClick: (user) => handleVerify(user.id),
+        show: (user: AdminUserData) => user.verificationStatus === 'pending',
+      },
+      {
+        id: 'delete',
+        label: 'Sil',
+        icon: TrashIcon,
+        variant: 'danger',
+        onClick: (user) => {
+          setActionUser(user);
+          setShowDeleteDialog(true);
+        },
+      },
+    ],
+    [handleActivate, handleSuspend, handleVerify]
+  );
+
+  // ============================================================================
+  // BULK ACTIONS
+  // ============================================================================
+
+  const bulkActions = useMemo<BulkAction[]>(
+    () => [
+      {
+        id: 'verify',
+        label: 'Doğrula',
+        icon: CheckCircleIcon,
+        onClick: (selectedIds) =>
+          onBulkAction({
+            userIds: selectedIds,
+            action: 'verify',
+          }),
+      },
+      {
+        id: 'suspend',
+        label: 'Askıya Al',
+        icon: BanIcon,
+        variant: 'warning',
+        onClick: (selectedIds) =>
+          onBulkAction({
+            userIds: selectedIds,
+            action: 'suspend',
+          }),
+      },
+      {
+        id: 'ban',
+        label: 'Yasakla',
+        icon: BanIcon,
+        variant: 'danger',
+        onClick: (selectedIds) =>
+          onBulkAction({
+            userIds: selectedIds,
+            action: 'ban',
+          }),
+      },
+    ],
+    [onBulkAction]
+  );
+
+  // ============================================================================
+  // RENDER
+  // ============================================================================
+
   if (error) {
     return <SimpleErrorDisplay error={error} className={className} />;
   }
+
+  const selectedUsersForExport = users.filter((u) =>
+    bulkSelection.selectedIds.includes(u.id)
+  ) as AdminUserData[];
 
   return (
     <div className={`space-y-4 p-6 ${className}`}>
@@ -140,16 +327,14 @@ export function UserTable({ className }: UserTableProps) {
       <Card className="border-0 bg-gradient-to-r from-white to-gray-50 shadow-xl">
         <CardHeader className="pb-4">
           <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
-            {/* Title Section */}
-            <TableHeader
-              title="Kullanıcı Yönetimi"
-              description="Platform kullanıcılarını ve izinlerini yönetin"
-              userCount={users.length}
-              isLoading={isLoading}
-              onRefresh={() => onFilterChange({})}
-            />
-
-            {/* Export Button */}
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Kullanıcı Yönetimi
+              </h1>
+              <p className="text-sm text-gray-500">
+                Platform kullanıcılarını ve izinlerini yönetin
+              </p>
+            </div>
             <UserExportButton
               users={users as AdminUserData[]}
               selectedUsers={selectedUsersForExport}
@@ -160,120 +345,56 @@ export function UserTable({ className }: UserTableProps) {
         </CardHeader>
         <CardContent>
           <TableFilters
-            filters={filters as any}
-            onFilterChange={onFilterChange as any}
+            filters={filters as Parameters<typeof TableFilters>[0]['filters']}
+            onFilterChange={
+              onFilterChange as Parameters<
+                typeof TableFilters
+              >[0]['onFilterChange']
+            }
             onSearch={onSearch}
           />
-
-          {/* Bulk Actions */}
-          {bulkSelection.selectedCount > 0 && (
-            <div className="mt-6">
-              <BulkActions
-                selectedCount={bulkSelection.selectedCount}
-                onAction={(action: string) =>
-                  onBulkAction({
-                    userIds: bulkSelection.selectedIds,
-                    action: action as
-                      | 'suspend'
-                      | 'unsuspend'
-                      | 'ban'
-                      | 'unban'
-                      | 'verify'
-                      | 'unverify',
-                  })
-                }
-                onClear={() =>
-                  bulkSelection.selectedIds.forEach((id: string) =>
-                    onBulkToggle(id)
-                  )
-                }
-              />
-            </div>
-          )}
         </CardContent>
       </Card>
 
-      {/* Users Table Card */}
+      {/* Unified Data Table */}
       <Card className="border-0 bg-gradient-to-br from-white to-gray-50 shadow-xl">
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table className="min-w-full">
-              <TableHeaderComponent>
-                <TableRow className="border-b border-gray-200 bg-gray-50/50">
-                  <TableHead className="w-12 py-4">
-                    <Checkbox
-                      checked={bulkSelection.isAllSelected}
-                      onChange={onSelectAll}
-                      className="rounded-md"
-                    />
-                  </TableHead>
-                  <TableHead className="py-4 font-semibold text-gray-700">
-                    Kullanıcı
-                  </TableHead>
-                  <TableHead className="py-4 font-semibold text-gray-700">
-                    Rol
-                  </TableHead>
-                  <TableHead className="py-4 font-semibold text-gray-700">
-                    Durum
-                  </TableHead>
-                  <TableHead className="py-4 font-semibold text-gray-700">
-                    Katılım
-                  </TableHead>
-                  <TableHead className="py-4 font-semibold text-gray-700">
-                    Son Aktivite
-                  </TableHead>
-                  <TableHead className="py-4 text-right font-semibold text-gray-700">
-                    İşlemler
-                  </TableHead>
-                </TableRow>
-              </TableHeaderComponent>
-              <TableBody>
-                {isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="py-12 text-center">
-                      <LoadingState />
-                    </TableCell>
-                  </TableRow>
-                ) : users.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7}>
-                      <EmptyState
-                        hasFilters={!!filters.search || !!filters.status}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  users.map((user: AdminUserData) => (
-                    <UserRow
-                      key={user.id}
-                      user={user as any}
-                      isSelected={bulkSelection.selectedIds.includes(user.id)}
-                      onSelect={() => onBulkToggle(user.id)}
-                      onAction={(action) => {
-                        setActionUser(user as AdminUserData);
-                        if (action === 'delete') {
-                          setShowDeleteDialog(true);
-                        } else {
-                          handleUserAction(action, user.id);
-                        }
-                      }}
-                    />
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          <UnifiedDataTable<AdminUserData>
+            data={users}
+            columns={columns}
+            isLoading={isLoading}
+            emptyMessage="Kullanıcı bulunamadı"
+            selection={{
+              enabled: true,
+              rowIdAccessor: 'id',
+              selectedIds: bulkSelection.selectedIds,
+              onSelectionChange: (ids) => {
+                // Update selection in store
+                ids.forEach((id) => {
+                  if (!bulkSelection.selectedIds.includes(id)) {
+                    onBulkToggle(id);
+                  }
+                });
+                bulkSelection.selectedIds.forEach((id) => {
+                  if (!ids.includes(id)) {
+                    onBulkToggle(id);
+                  }
+                });
+              },
+            }}
+            pagination={{
+              enabled: true,
+              currentPage: pagination.currentPage,
+              pageSize: pagination.pageSize,
+              totalItems: pagination.total,
+              onPageChange,
+            }}
+            bulkActions={bulkActions}
+            rowActions={rowActions}
+            className="min-h-[400px]"
+          />
         </CardContent>
       </Card>
-
-      {/* Pagination Card */}
-      {pagination.totalPages > 1 && (
-        <TablePagination
-          pagination={pagination}
-          onPageChange={onPageChange}
-          isLoading={isLoading}
-        />
-      )}
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

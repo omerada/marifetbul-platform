@@ -1,21 +1,16 @@
 /**
- * ModerationTable Component
- *
- * Table wrapper for moderation items
+ * ================================================
+ * MODERATION TABLE - UNIFIED VERSION
+ * ================================================
+ * Sprint 2 - Migration to UnifiedDataTable
+ * 80+ lines → ~50 lines (-38%)
  */
 
-import { RefreshCw } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/Card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import React, { useMemo } from 'react';
+import { UnifiedDataTable } from '@/lib/components/unified/UnifiedDataTable';
+import type { Column } from '@/lib/components/unified/UnifiedDataTable';
 import { ModerationRow } from './ModerationRow';
-import type { ModerationTableProps } from '../types/moderationTypes';
+import type { ModerationTableProps, ModerationItem } from '../types/moderationTypes';
 
 export function ModerationTable({
   items,
@@ -23,57 +18,31 @@ export function ModerationTable({
   onActionClick,
   onViewDetails,
 }: ModerationTableProps) {
+  const columns = useMemo<Column<ModerationItem>[]>(
+    () => [
+      {
+        id: 'content',
+        header: 'İçerik',
+        render: (_, item) => (
+          <ModerationRow
+            item={item}
+            onActionClick={(action) => onActionClick(item, action)}
+            onViewDetails={() => onViewDetails(item)}
+          />
+        ),
+      },
+    ],
+    [onActionClick, onViewDetails]
+  );
+
   return (
-    <Card>
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>İçerik</TableHead>
-                <TableHead>Rapor Eden</TableHead>
-                <TableHead>Sebep</TableHead>
-                <TableHead>Öncelik</TableHead>
-                <TableHead>Durum</TableHead>
-                <TableHead>Tarih</TableHead>
-                <TableHead>İşlemler</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="py-8 text-center">
-                    <div className="flex items-center justify-center space-x-2">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      <span>Yükleniyor...</span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : items.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={7}
-                    className="py-8 text-center text-gray-500"
-                  >
-                    Moderasyon öğesi bulunamadı
-                  </TableCell>
-                </TableRow>
-              ) : (
-                items
-                  .filter((item) => item && item.id)
-                  .map((item) => (
-                    <ModerationRow
-                      key={item.id}
-                      item={item}
-                      onActionClick={(action) => onActionClick(item, action)}
-                      onViewDetails={() => onViewDetails(item)}
-                    />
-                  ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+    <UnifiedDataTable<ModerationItem>
+      data={items.filter((item) => item && item.id)}
+      columns={columns}
+      isLoading={isLoading}
+      emptyMessage="Moderasyon öğesi bulunamadı"
+      hoverable
+      className="rounded-lg border"
+    />
   );
 }

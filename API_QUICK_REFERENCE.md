@@ -273,12 +273,33 @@ POST /api/v1/admin/reports/generate
 }
 
 # Export to CSV
-POST /api/v1/admin/reports/export/csv
-{
-  "reportType": "REVENUE",
-  "startDate": "2025-10-01T00:00:00Z",
-  "endDate": "2025-11-01T00:00:00Z"
-}
+GET /api/v1/admin/reports/export/csv?reportType=REVENUE&startDate=2025-01-01&endDate=2025-01-31&groupBy=DAILY
+
+# Export to PDF (NEW - Sprint 1)
+GET /api/v1/admin/reports/export/pdf?reportType=REVENUE&startDate=2025-01-01&endDate=2025-01-31&groupBy=DAILY
+
+# PDF Export Features:
+# ✅ Professional MarifetBul branding
+# ✅ Turkish language support (Türkçe karakterler)
+# ✅ Summary statistics (Toplam, Ortalama, Min/Max, Trend)
+# ✅ Detailed data tables with proper formatting
+# ✅ Generation metadata footer
+# ✅ iText 8.0.5 for high-quality PDF output
+
+# Report Types:
+# - REVENUE: Gelir raporu (revenue, orderCount, averageOrderValue)
+# - ORDERS: Sipariş raporu (totalOrders, completedOrders, cancelledOrders, completionRate)
+# - USERS: Kullanıcı raporu (newUsers, activeUsers)
+# - REFUNDS: İade raporu (refundAmount, refundCount, averageRefund)
+
+# Group By Options:
+# - DAILY: Günlük gruplama
+# - WEEKLY: Haftalık gruplama
+# - MONTHLY: Aylık gruplama
+
+# Response: Binary PDF file
+# Content-Type: application/pdf
+# Content-Disposition: attachment; filename="{reportType}_Report_{startDate}_{endDate}.pdf"
 ```
 
 ---

@@ -1121,8 +1121,7 @@
         {
           "name": "AdminReportController",
           "basePath": "/api/v1/admin/reports",
-          "status": "incomplete",
-          "missing": ["PDF Export"],
+          "status": "complete",
           "endpoints": [
             {
               "method": "POST",
@@ -1137,18 +1136,87 @@
               "auth": "admin"
             },
             {
-              "method": "POST",
+              "method": "GET",
               "path": "/export/csv",
-              "description": "CSV export",
+              "description": "CSV export - Gelir, sipariş, kullanıcı ve iade raporlarını CSV formatında dışa aktarır",
               "auth": "admin",
-              "status": "complete"
+              "status": "complete",
+              "parameters": [
+                {
+                  "name": "reportType",
+                  "type": "ReportType",
+                  "required": true,
+                  "description": "REVENUE, ORDERS, USERS, REFUNDS"
+                },
+                {
+                  "name": "startDate",
+                  "type": "LocalDate",
+                  "required": true,
+                  "description": "Başlangıç tarihi (YYYY-MM-DD)"
+                },
+                {
+                  "name": "endDate",
+                  "type": "LocalDate",
+                  "required": true,
+                  "description": "Bitiş tarihi (YYYY-MM-DD)"
+                },
+                {
+                  "name": "groupBy",
+                  "type": "GroupByType",
+                  "required": true,
+                  "description": "DAILY, WEEKLY, MONTHLY"
+                }
+              ]
             },
             {
-              "method": "POST",
+              "method": "GET",
               "path": "/export/pdf",
-              "description": "PDF export",
+              "description": "PDF export - Gelir, sipariş, kullanıcı ve iade raporlarını profesyonel PDF formatında dışa aktarır",
               "auth": "admin",
-              "status": "NOT_IMPLEMENTED"
+              "status": "complete",
+              "implementationDate": "2025-01-19",
+              "features": [
+                "Professional branding with MarifetBul logo",
+                "Turkish language support",
+                "Summary statistics section",
+                "Detailed data tables",
+                "Generation metadata footer",
+                "iText 8.0.5 PDF library"
+              ],
+              "parameters": [
+                {
+                  "name": "reportType",
+                  "type": "ReportType",
+                  "required": true,
+                  "description": "REVENUE, ORDERS, USERS, REFUNDS"
+                },
+                {
+                  "name": "startDate",
+                  "type": "LocalDate",
+                  "required": true,
+                  "description": "Başlangıç tarihi (YYYY-MM-DD)"
+                },
+                {
+                  "name": "endDate",
+                  "type": "LocalDate",
+                  "required": true,
+                  "description": "Bitiş tarihi (YYYY-MM-DD)"
+                },
+                {
+                  "name": "groupBy",
+                  "type": "GroupByType",
+                  "required": true,
+                  "description": "DAILY, WEEKLY, MONTHLY"
+                }
+              ],
+              "response": {
+                "contentType": "application/pdf",
+                "fileName": "{reportType}_Report_{startDate}_{endDate}.pdf"
+              },
+              "example": {
+                "request": "GET /api/v1/admin/reports/export/pdf?reportType=REVENUE&startDate=2025-01-01&endDate=2025-01-31&groupBy=DAILY",
+                "response": "Binary PDF file download"
+              }
             }
           ]
         }

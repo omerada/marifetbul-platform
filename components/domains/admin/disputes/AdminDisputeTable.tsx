@@ -1,22 +1,30 @@
 'use client';
 
-import React from 'react';
+/**
+ * ================================================
+ * ADMIN DISPUTE TABLE - UNIFIED DATA TABLE VERSION
+ * ================================================
+ * Sprint 2 - Story 4.1: Second Migration
+ *
+ * Migrated from 140 lines to ~60 lines using UnifiedDataTable.
+ * Features: View action, status badges, date formatting.
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0
+ * @since 2025-11-19
+ */
+
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import { Eye, AlertCircle } from 'lucide-react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Eye } from 'lucide-react';
+import { UnifiedDataTable } from '@/lib/components/unified/UnifiedDataTable';
+import type {
+  Column,
+  RowAction,
+} from '@/lib/components/unified/UnifiedDataTable';
 import { Badge } from '@/components/ui/Badge';
-import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
-import { TableSkeleton } from '@/components/ui/loading/TableSkeleton';
 import type { DisputeResponse } from '@/types/dispute';
 import { disputeStatusLabels, disputeReasonLabels } from '@/types/dispute';
 
@@ -43,90 +51,124 @@ export function AdminDisputeTable({
   isLoading,
   error,
 }: AdminDisputeTableProps) {
-  if (isLoading) {
-    return <TableSkeleton rows={5} columns={6} showActions={true} />;
-  }
+  // ============================================================================
+  // COLUMN DEFINITIONS
+  // ============================================================================
 
-  if (error) {
-    return (
-      <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>
-          {error || 'İtirazlar yüklenirken bir hata oluştu'}
-        </AlertDescription>
-      </Alert>
-    );
-  }
+  const columns = useMemo<Column<DisputeResponse>[]>(
+    () => [
+      {
+        id: 'id',
+        header: 'ID',
+        accessor: 'id',
+        render: (value) => (
+          <span className="font-mono text-xs">
+            {(value as string).slice(0, 8)}...
+          </span>
+        ),
+        width: '120px',
+      },
+      {
+        id: 'orderId',
+        header: 'Sipariş',
+        accessor: 'orderId',
+        render: (value) => (
+          <Link
+            href={`/admin/orders/${value}`}
+            className="text-primary font-mono text-xs hover:underline"
+          >
+            {(value as string).slice(0, 8)}...
+          </Link>
+        ),
+        width: '120px',
+      },
+      {
+        id: 'raisedBy',
+        header: 'Açan',
+        accessor: 'raisedByUserFullName',
+        sortable: true,
+      },
+      {
+        id: 'reason',
+        header: 'Neden',
+        accessor: 'reason',
+        render: (value) => (
+          <span className="text-sm">
+            {disputeReasonLabels[value as keyof typeof disputeReasonLabels]}
+          </span>
+        ),
+        sortable: true,
+      },
+      {
+        id: 'status',
+        header: 'Durum',
+        accessor: 'status',
+        render: (value) => (
+          <Badge variant={statusVariants[value as string] || 'default'}>
+            {disputeStatusLabels[value as keyof typeof disputeStatusLabels]}
+          </Badge>
+        ),
+        sortable: true,
+      },
+      {
+        id: 'createdAt',
+        header: 'Oluşturulma',
+        accessor: 'createdAt',
+        render: (value) => (
+          <span className="text-muted-foreground text-sm">
+            {formatDistanceToNow(new Date(value as string), {
+              addSuffix: true,
+              locale: tr,
+            })}
+          </span>
+        ),
+        sortable: true,
+        width: '150px',
+      },
+    ],
+    []
+  );
 
-  if (!disputes || disputes.length === 0) {
-    return (
-      <div className="py-12 text-center">
-        <AlertCircle className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-        <h3 className="mb-2 text-lg font-semibold">İtiraz Bulunamadı</h3>
-        <p className="text-muted-foreground">
-          Filtrelerinize uygun itiraz bulunmuyor.
-        </p>
-      </div>
-    );
-  }
+  // ============================================================================
+  // ROW ACTIONS
+  // ============================================================================
+
+  const rowActions = useMemo<RowAction<DisputeResponse>[]>(
+    () => [
+      {
+        id: 'view',
+        label: 'Görüntüle',
+        icon: Eye,
+        onClick: (dispute) => {
+          window.location.href = `/admin/disputes/${dispute.id}`;
+        },
+      },
+    ],
+    []
+  );
+
+  // ============================================================================
+  // RENDER
+  // ============================================================================
 
   return (
     <div className="overflow-hidden rounded-lg border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Sipariş</TableHead>
-            <TableHead>Açan</TableHead>
-            <TableHead>Neden</TableHead>
-            <TableHead>Durum</TableHead>
-            <TableHead>Oluşturulma</TableHead>
-            <TableHead className="text-right">İşlemler</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {disputes.map((dispute) => (
-            <TableRow key={dispute.id}>
-              <TableCell className="font-mono text-xs">
-                {dispute.id.slice(0, 8)}...
-              </TableCell>
-              <TableCell className="font-mono text-xs">
-                <Link
-                  href={`/admin/orders/${dispute.orderId}`}
-                  className="text-primary hover:underline"
-                >
-                  {dispute.orderId.slice(0, 8)}...
-                </Link>
-              </TableCell>
-              <TableCell>{dispute.raisedByUserFullName}</TableCell>
-              <TableCell>
-                <span className="text-sm">
-                  {disputeReasonLabels[dispute.reason]}
-                </span>
-              </TableCell>
-              <TableCell>
-                <Badge variant={statusVariants[dispute.status] || 'default'}>
-                  {disputeStatusLabels[dispute.status]}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-muted-foreground text-sm">
-                {formatDistanceToNow(new Date(dispute.createdAt), {
-                  addSuffix: true,
-                  locale: tr,
-                })}
-              </TableCell>
-              <TableCell className="text-right">
-                <Link href={`/admin/disputes/${dispute.id}`}>
-                  <Button variant="ghost" size="sm">
-                    <Eye className="mr-2 h-4 w-4" />
-                    Görüntüle
-                  </Button>
-                </Link>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <UnifiedDataTable<DisputeResponse>
+        data={disputes}
+        columns={columns}
+        isLoading={isLoading}
+        error={error || undefined}
+        emptyMessage="Filtrelerinize uygun itiraz bulunmuyor."
+        rowActions={rowActions}
+        sorting={{
+          enabled: true,
+          serverSide: false,
+        }}
+        hoverable={true}
+        className="min-h-[300px]"
+      />
     </div>
   );
 }
+
+export default AdminDisputeTable;

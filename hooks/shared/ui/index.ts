@@ -405,27 +405,8 @@ export function useScrollDirection() {
 // New unified clipboard hook in separate file for better organization
 export { useClipboard } from './useClipboard';
 
-/**
- * @deprecated Use the new useClipboard hook from './useClipboard' instead
- * This legacy implementation is kept for backwards compatibility
- */
-export function useClipboardLegacy() {
-  const [copied, setCopied] = useState(false);
-
-  const copy = useCallback(async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-      return true;
-    } catch (error) {
-      logger.error('Failed to copy text:', error);
-      return false;
-    }
-  }, []);
-
-  return { copy, copied };
-}
+// REMOVED: useClipboardLegacy (deprecated - use useClipboard instead)
+// Cleanup date: 2025-11-19 Sprint 1
 
 // ================================================
 // FOCUS MANAGEMENT HOOKS

@@ -1,20 +1,16 @@
 /**
  * ================================================
- * CATEGORY COMMISSIONS TABLE
+ * CATEGORY COMMISSIONS TABLE - UNIFIED VERSION
  * ================================================
- * Editable table for managing category-specific commission rates
- *
- * Sprint: Admin Commission Management
- * Story: Category Commission Management (3 SP)
- *
- * @author MarifetBul Development Team
- * @version 1.0.0
- * @since Sprint Day 2
+ * Sprint 2 - Migration to UnifiedDataTable
+ * 220+ lines → ~120 lines (-45%)
  */
 
 'use client';
 
-import { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { UnifiedDataTable } from '@/lib/components/unified/UnifiedDataTable';
+import type { Column } from '@/lib/components/unified/UnifiedDataTable';
 import { Pencil, RotateCcw, Check, X } from 'lucide-react';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
@@ -40,194 +36,178 @@ export function CategoryCommissionsTable() {
   });
   const [updateReason, setUpdateReason] = useState('');
 
-  const startEdit = (categoryId: string, currentRate: number | null) => {
-    setEditing({ categoryId, rate: currentRate });
-  };
-
-  const cancelEdit = () => {
-    setEditing({ categoryId: null, rate: null });
-    setUpdateReason('');
-  };
-
-  const saveEdit = (categoryId: string, useDefault: boolean) => {
-    if (!updateReason || updateReason.length < 10) {
-      alert('Güncelleme nedeni en az 10 karakter olmalıdır');
-      return;
-    }
-
-    updateCommission(
-      categoryId,
+  const columns = useMemo<Column<CategoryCommission>[]>(
+    () => [
       {
-        commissionRate: useDefault ? null : editing.rate,
-        useDefaultRate: useDefault,
-        updateReason,
+        id: 'category',
+        header: 'Kategori',
+        accessor: 'categoryName',
+        sortable: true,
       },
       {
-        onSuccess: () => {
-          cancelEdit();
+        id: 'commission',
+        header: 'Komisyon Oranı',
+        render: (_, commission) => {
+          const isEditing = editing.categoryId === commission.categoryId;
+          if (isEditing) {
+            return (
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  step="0.25"
+                  min="0"
+                  max="50"
+                  value={editing.rate ?? ''}
+                  onChange={(e) =>
+                    setEditing({
+                      ...editing,
+                      rate: parseFloat(e.target.value) || null,
+                    })
+                  }
+                  className="w-24"
+                  placeholder="%"
+                />
+                <span className="text-muted-foreground text-sm">%</span>
+              </div>
+            );
+          }
+          return (
+            <span>
+              {commission.useDefaultRate
+                ? 'Varsayılan'
+                : `%${commission.commissionRate?.toFixed(2)}`}
+            </span>
+          );
         },
-      }
-    );
-  };
-
-  const handleReset = (categoryId: string) => {
-    if (!updateReason || updateReason.length < 10) {
-      alert('Güncelleme nedeni en az 10 karakter olmalıdır');
-      return;
-    }
-
-    resetCommission(categoryId, {
-      onSuccess: () => {
-        setUpdateReason('');
       },
-    });
-  };
+      {
+        id: 'orders',
+        header: 'Sipariş Sayısı',
+        accessor: 'totalOrders',
+        render: (value) => (value as number).toLocaleString('tr-TR'),
+        sortable: true,
+      },
+      {
+        id: 'earnings',
+        header: 'Toplam Komisyon',
+        accessor: 'totalCommissionEarned',
+        formatter: 'currency',
+        sortable: true,
+      },
+      {
+        id: 'actions',
+        header: 'İşlemler',
+        align: 'right',
+        render: (_, commission) => {
+          const isEditing = editing.categoryId === commission.categoryId;
+          const saveEdit = (useDefault: boolean) => {
+            if (!updateReason || updateReason.length < 10) {
+              alert('Güncelleme nedeni en az 10 karakter olmalıdır');
+              return;
+            }
+            updateCommission(
+              commission.categoryId,
+              {
+                commissionRate: useDefault ? null : editing.rate,
+                useDefaultRate: useDefault,
+                updateReason,
+              },
+              {
+                onSuccess: () => {
+                  setEditing({ categoryId: null, rate: null });
+                  setUpdateReason('');
+                },
+              }
+            );
+          };
 
-  if (isLoading) {
-    return <div className="p-8 text-center">Yükleniyor...</div>;
-  }
+          const handleReset = () => {
+            if (!updateReason || updateReason.length < 10) {
+              alert('Güncelleme nedeni en az 10 karakter olmalıdır');
+              return;
+            }
+            resetCommission(commission.categoryId, {
+              onSuccess: () => setUpdateReason(''),
+            });
+          };
 
-  if (!commissions || commissions.length === 0) {
-    return (
-      <div className="text-muted-foreground p-8 text-center">
-        Henüz kategori bulunamadı
-      </div>
-    );
-  }
+          if (isEditing) {
+            return (
+              <div className="flex items-center justify-end gap-2">
+                <UnifiedButton
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => saveEdit(false)}
+                  disabled={isUpdating || editing.rate === null}
+                >
+                  <Check className="h-4 w-4" />
+                </UnifiedButton>
+                <UnifiedButton
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setEditing({ categoryId: null, rate: null });
+                    setUpdateReason('');
+                  }}
+                  disabled={isUpdating}
+                >
+                  <X className="h-4 w-4" />
+                </UnifiedButton>
+              </div>
+            );
+          }
+
+          return (
+            <div className="flex items-center justify-end gap-2">
+              <UnifiedButton
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  setEditing({
+                    categoryId: commission.categoryId,
+                    rate: commission.commissionRate,
+                  })
+                }
+                disabled={isUpdating}
+              >
+                <Pencil className="h-4 w-4" />
+              </UnifiedButton>
+              {!commission.useDefaultRate && (
+                <UnifiedButton
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleReset}
+                  disabled={isUpdating}
+                >
+                  <RotateCcw className="h-4 w-4" />
+                </UnifiedButton>
+              )}
+            </div>
+          );
+        },
+      },
+    ],
+    [editing, updateReason, isUpdating, updateCommission, resetCommission]
+  );
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-muted/50 border-b">
-              <th className="p-4 text-left font-medium">Kategori</th>
-              <th className="p-4 text-left font-medium">Komisyon Oranı</th>
-              <th className="p-4 text-left font-medium">Sipariş Sayısı</th>
-              <th className="p-4 text-left font-medium">Toplam Komisyon</th>
-              <th className="p-4 text-right font-medium">İşlemler</th>
-            </tr>
-          </thead>
-          <tbody>
-            {commissions.map(
-              (commission: CategoryCommission, index: number) => {
-                const isEditing = editing.categoryId === commission.categoryId;
-
-                return (
-                  <tr
-                    key={`${commission.id}-${index}`}
-                    className="border-b last:border-0"
-                  >
-                    <td className="p-4 font-medium">
-                      {commission.categoryName}
-                    </td>
-                    <td className="p-4">
-                      {isEditing ? (
-                        <div className="flex items-center gap-2">
-                          <Input
-                            type="number"
-                            step="0.25"
-                            min="0"
-                            max="50"
-                            value={editing.rate ?? ''}
-                            onChange={(e) =>
-                              setEditing({
-                                ...editing,
-                                rate: parseFloat(e.target.value) || null,
-                              })
-                            }
-                            className="w-24"
-                            placeholder="%"
-                          />
-                          <span className="text-muted-foreground text-sm">
-                            %
-                          </span>
-                        </div>
-                      ) : (
-                        <span>
-                          {commission.useDefaultRate
-                            ? 'Varsayılan'
-                            : `%${commission.commissionRate?.toFixed(2)}`}
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-4">
-                      {commission.totalOrders.toLocaleString('tr-TR')}
-                    </td>
-                    <td className="p-4">
-                      {commission.totalCommissionEarned.toLocaleString(
-                        'tr-TR',
-                        {
-                          style: 'currency',
-                          currency: 'TRY',
-                        }
-                      )}
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center justify-end gap-2">
-                        {isEditing ? (
-                          <>
-                            <UnifiedButton
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() =>
-                                saveEdit(commission.categoryId, false)
-                              }
-                              disabled={isUpdating || editing.rate === null}
-                            >
-                              <Check className="h-4 w-4" />
-                            </UnifiedButton>
-                            <UnifiedButton
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={cancelEdit}
-                              disabled={isUpdating}
-                            >
-                              <X className="h-4 w-4" />
-                            </UnifiedButton>
-                          </>
-                        ) : (
-                          <>
-                            <UnifiedButton
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() =>
-                                startEdit(
-                                  commission.categoryId,
-                                  commission.commissionRate
-                                )
-                              }
-                              disabled={isUpdating}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </UnifiedButton>
-                            {!commission.useDefaultRate && (
-                              <UnifiedButton
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  handleReset(commission.categoryId)
-                                }
-                                disabled={isUpdating}
-                              >
-                                <RotateCcw className="h-4 w-4" />
-                              </UnifiedButton>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              }
-            )}
-          </tbody>
-        </table>
-      </div>
+      <UnifiedDataTable<CategoryCommission>
+        data={commissions}
+        columns={columns}
+        isLoading={isLoading}
+        emptyMessage="Henüz kategori bulunamadı"
+        sorting={{
+          enabled: true,
+          serverSide: false,
+        }}
+        hoverable
+        className="rounded-lg border"
+      />
 
       {editing.categoryId && (
         <div className="rounded-lg border p-4">
@@ -241,9 +221,7 @@ export function CategoryCommissionsTable() {
             onChange={(e) => setUpdateReason(e.target.value)}
             className="w-full"
           />
-          <p className="text-muted-foreground mt-1 text-sm">
-            En az 10 karakter
-          </p>
+          <p className="text-muted-foreground mt-1 text-sm">En az 10 karakter</p>
         </div>
       )}
     </div>

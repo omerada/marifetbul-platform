@@ -51,11 +51,10 @@ export type { MilestoneRevisionModalProps } from './MilestoneRevisionModal';
 export type { RevisionHistoryTimelineProps } from './RevisionHistoryTimeline';
 export type { MilestoneProgressTrackerProps } from './MilestoneProgressTracker';
 
-// Sprint 1 - Story 1.1: Manual Payment & IBAN Display
-export { IBANDisplayCard } from './IBANDisplayCard';
+// Sprint 1 - Story 1.1: Manual Payment Display
+// REMOVED: IBANDisplayCard (deprecated - use UnifiedIBANDisplay from @/components/shared/payments)
 export { ManualPaymentConfirmationForm } from './ManualPaymentConfirmationForm';
 export { PaymentModeDisplay } from './PaymentModeDisplay';
-export type { IBANDisplayCardProps } from './IBANDisplayCard';
 export type { ManualPaymentConfirmationFormProps } from './ManualPaymentConfirmationForm';
 export type { PaymentModeDisplayProps } from './PaymentModeDisplay';
 

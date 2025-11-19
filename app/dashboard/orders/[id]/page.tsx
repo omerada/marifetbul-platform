@@ -38,7 +38,6 @@ import {
   OrderWorkflowStepper,
   OrderActions,
   OrderMessagingPanel,
-  IBANDisplayCard,
   ManualPaymentConfirmationForm,
   PaymentModeDisplay,
   UnifiedDeliveryButton,

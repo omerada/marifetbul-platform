@@ -42,6 +42,7 @@ Modern, ölçeklenebilir ve güvenli freelance platformu. Spring Boot backend + 
 - ✅ **Analytics Dashboard**: Paket ve kullanıcı istatistikleri
 - ✅ **Blog Sistemi**: SEO-friendly blog platformu
 - ✅ **Destek Sistemi**: Ticket-based support management
+- ✅ **PDF Rapor Export**: Admin raporlarını profesyonel PDF formatında dışa aktarma (iText 8)
 
 ### 🔐 Security
 
@@ -87,6 +88,7 @@ Modern, ölçeklenebilir ve güvenli freelance platformu. Spring Boot backend + 
 ├── JWT (jjwt 0.12.6)         # Token authentication
 ├── MapStruct 1.6.3           # DTO mapping
 ├── Lombok 1.18.36            # Code generation
+├── iText 8.0.5               # PDF generation
 ├── Iyzico SDK                 # Payment processing
 ├── SendGrid                   # Email service
 ├── AWS S3                     # File storage
@@ -440,9 +442,35 @@ GET    /api/v1/proposals/my            # Tekliflerim
 GET    /api/v1/conversations           # Konuşma listesi
 GET    /api/v1/conversations/{id}      # Konuşma detayı
 POST   /api/v1/conversations           # Yeni konuşma başlat
-POST   /api/v1/messages                # Mesaj gönder
-GET    /api/v1/messages/{conversationId} # Mesajlar
+GET    /api/v1/messages                # Mesaj gönder
 ```
+
+#### Admin Reports & Analytics
+
+```http
+# Report Generation
+GET    /api/v1/admin/reports/export/pdf    # PDF rapor dışa aktarma
+GET    /api/v1/admin/reports/export/csv    # CSV rapor dışa aktarma
+
+# Example: Revenue Report PDF Export
+GET /api/v1/admin/reports/export/pdf?reportType=REVENUE&startDate=2025-01-01&endDate=2025-01-31&groupBy=DAILY
+
+# Report Types: REVENUE, ORDERS, USERS, REFUNDS
+# Group By: DAILY, WEEKLY, MONTHLY
+
+# Response: Binary PDF file with professional formatting
+# - MarifetBul branding
+# - Turkish language support
+# - Summary statistics
+# - Detailed data tables
+# - Generation metadata
+```
+
+### 📊 Response Format
+
+GET /api/v1/messages/{conversationId} # Mesajlar
+
+````
 
 #### Categories & Blog
 
@@ -450,7 +478,7 @@ GET    /api/v1/messages/{conversationId} # Mesajlar
 GET    /api/v1/categories              # Kategori listesi
 GET    /api/v1/blog/posts              # Blog yazıları
 GET    /api/v1/blog/posts/{slug}       # Blog yazı detayı
-```
+````
 
 ### 📊 Response Format
 

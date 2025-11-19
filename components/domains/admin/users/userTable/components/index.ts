@@ -1,16 +1,21 @@
 /**
  * UserTable Components Barrel Export
  *
- * Centralized exports for all userTable components
+ * Centralized exports for userTable components
+ * Updated for Sprint 2: Removed deprecated components (now using UnifiedDataTable)
  */
 
-export { BulkActions } from './BulkActions';
-export { TableHeader } from './TableHeader';
+// Only TableFilters remains - all other components deprecated
 export { TableFilters } from './TableFilters';
-export { UserRow } from './UserRow';
-export { ActionMenu } from './ActionMenu';
-export { TablePagination } from './TablePagination';
-export { EmptyState } from './EmptyState';
-export { LoadingState } from './LoadingState';
-// Error Handling - REMOVED (Use SimpleErrorDisplay from @/components/ui instead)
-// Deprecated: ErrorState removed - use SimpleErrorDisplay or UnifiedErrorBoundary
+
+// ============================================================================
+// DEPRECATED - Removed in Sprint 2 (UnifiedDataTable Migration)
+// ============================================================================
+// - BulkActions → Use UnifiedDataTable's bulkActions prop
+// - TableHeader → Use UnifiedDataTable's built-in header
+// - TablePagination → Use UnifiedDataTable's pagination prop
+// - UserRow → Use UnifiedDataTable's columns + rowActions
+// - ActionMenu → Use UnifiedDataTable's rowActions
+// - EmptyState → Use UnifiedDataTable's emptyMessage/emptyState
+// - LoadingState → Use UnifiedDataTable's isLoading prop
+// - ErrorState → Use SimpleErrorDisplay from @/components/ui
