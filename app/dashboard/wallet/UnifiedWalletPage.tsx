@@ -20,6 +20,7 @@ import { PayoutDashboard } from '@/components/domains/wallet';
 import { UnifiedPayoutHistory } from '@/components/domains/wallet';
 import { EscrowList, EscrowBalanceCard } from '@/components/domains/wallet';
 import { BankAccountList, BankAccountForm } from '@/components/domains/wallet';
+import { TransactionDisplay } from '@/components/domains/wallet/TransactionDisplay';
 import { useWalletData } from '@/hooks/business/wallet/useWalletData';
 import { usePayouts } from '@/hooks/business/wallet/usePayouts';
 import { useBankAccounts } from '@/hooks/business/wallet/useBankAccounts';
@@ -83,7 +84,7 @@ const TAB_CONFIG = {
 export function UnifiedWalletPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { success: showSuccess } = useToast();
+  const { success: showSuccess, toast } = useToast();
 
   // Get initial tab from URL query parameter
   const initialTab = (searchParams.get('tab') as WalletTab) || 'overview';
@@ -235,16 +236,26 @@ export function UnifiedWalletPage() {
         {/* Transactions Tab */}
         <TabsContent value="transactions" className="space-y-6">
           <Card className="p-6">
-            <div className="mb-4">
+            <div className="mb-6">
               <h3 className="text-lg font-semibold">Tüm İşlemler</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Gelir ve gider hareketlerinizi görüntüleyin
               </p>
             </div>
-            {/* Transaction list will be added here */}
-            <div className="text-center text-gray-500">
-              İşlem listesi yakında eklenecek
-            </div>
+
+            {/* Transaction Display Component */}
+            <TransactionDisplay
+              transactions={transactions || []}
+              isLoading={walletLoading}
+              viewMode="table"
+              allowViewModeChange={true}
+              showFilters={true}
+              showExport={true}
+              showRefresh={true}
+              showPagination={false}
+              onRefresh={refreshWallet}
+              emptyMessage="Henüz işlem geçmişiniz bulunmuyor"
+            />
           </Card>
         </TabsContent>
 
@@ -311,7 +322,41 @@ export function UnifiedWalletPage() {
                 </p>
               </div>
             </div>
-            <EscrowList transactions={[]} />
+            <EscrowList
+              transactions={
+                (transactions ||
+                  []) as unknown as import('@/types/business/features/wallet').Transaction[]
+              }
+              isLoading={walletLoading}
+              onReleaseRequest={(item) => {
+                logger.info('[UnifiedWalletPage] Escrow release requested', {
+                  escrowId: item.id,
+                  orderId: item.orderId,
+                });
+                toast({
+                  title: 'Emanet Serbest Bırakma',
+                  description: 'İşlem için onay bekleniyor...',
+                  variant: 'default',
+                });
+              }}
+              onDisputeRequest={(item) => {
+                logger.info('[UnifiedWalletPage] Escrow dispute requested', {
+                  escrowId: item.id,
+                  orderId: item.orderId,
+                });
+                toast({
+                  title: 'İtiraz Bildirimi',
+                  description:
+                    'Destek ekibimiz en kısa sürede iletişime geçecek',
+                  variant: 'default',
+                });
+              }}
+              onItemClick={(item) => {
+                if (item.orderId) {
+                  router.push(`/dashboard/orders?orderId=${item.orderId}`);
+                }
+              }}
+            />
           </Card>
         </TabsContent>
 

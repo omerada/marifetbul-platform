@@ -84,6 +84,14 @@ export type {
   UseModerationActivitiesReturn,
 } from './business/useModerationActivities';
 
+// SPRINT: Admin Commission Management - Commission hooks
+export { useCommissionSettings } from './business/useCommissionSettings';
+export { useCategoryCommissions } from './business/useCategoryCommissions';
+export {
+  useCommissionAnalytics,
+  useCommissionHistory,
+} from './business/useCommissionAnalytics';
+
 // Business hooks
 export * from './business/useOrder';
 export * from './business/useReviews';

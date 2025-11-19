@@ -105,6 +105,11 @@ export { OrderActivityLog } from './OrderActivityLog';
 export { OrderAttachmentsViewer } from './OrderAttachmentsViewer';
 export { OrderExportButton } from './OrderExportButton';
 
+// Type exports for Order Dashboard Components
+export type { OrderStatsWidgetProps } from './OrderStatsWidget';
+export type { RecentOrdersListProps } from './RecentOrdersList';
+export type { OrderQuickActionsProps } from './OrderQuickActions';
+
 // Order creation forms (Dual Payment System)
 export { CustomOrderForm } from './CustomOrderForm';
 

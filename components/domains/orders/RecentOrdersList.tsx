@@ -42,7 +42,7 @@ import {
 // TYPES
 // ================================================
 
-interface RecentOrdersListProps {
+export interface RecentOrdersListProps {
   /** Orders to display */
   orders: Order[];
   /** Loading state */
@@ -55,6 +55,8 @@ interface RecentOrdersListProps {
   userRole?: 'buyer' | 'seller';
   /** Show "View All" link */
   showViewAll?: boolean;
+  /** Callback when "View All" is clicked */
+  onViewAll?: () => void;
 }
 
 // ================================================
@@ -165,10 +167,19 @@ export function RecentOrdersList({
   isLoading = false,
   error = null,
   maxItems = 5,
-  userRole,
-  showViewAll = true,
+  userRole = 'buyer',
+  showViewAll = false,
+  onViewAll,
 }: RecentOrdersListProps) {
   const router = useRouter();
+
+  const handleViewAll = () => {
+    if (onViewAll) {
+      onViewAll();
+    } else {
+      router.push('/dashboard/orders');
+    }
+  };
 
   // ================================================
   // LOADING STATE
@@ -245,7 +256,7 @@ export function RecentOrdersList({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => router.push('/dashboard/orders')}
+            onClick={handleViewAll}
             className="text-sm text-blue-600 hover:text-blue-700"
           >
             Tümünü Gör
@@ -267,7 +278,7 @@ export function RecentOrdersList({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => router.push('/dashboard/orders')}
+            onClick={handleViewAll}
             className="text-sm text-blue-600 hover:text-blue-700"
           >
             +{orders.length - maxItems} sipariş daha

@@ -26,7 +26,7 @@ import { Plus, List, Filter, Search } from 'lucide-react';
 // TYPES
 // ================================================
 
-interface OrderQuickActionsProps {
+export interface OrderQuickActionsProps {
   /** User role */
   userRole?: 'buyer' | 'seller';
 }

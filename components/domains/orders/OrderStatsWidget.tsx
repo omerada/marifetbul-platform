@@ -30,7 +30,7 @@ import type { OrderStats } from '@/types/business/features/orders';
 // TYPES
 // ================================================
 
-interface OrderStatsWidgetProps {
+export interface OrderStatsWidgetProps {
   /** Statistics data */
   stats: OrderStats | null;
   /** Loading state */

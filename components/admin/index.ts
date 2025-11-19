@@ -8,6 +8,14 @@
  */
 
 // ================================================
+// COMMISSION MANAGEMENT COMPONENTS
+// ================================================
+// Sprint: Admin Commission Management (NEW)
+
+export { CommissionSettingsForm } from './CommissionSettingsForm';
+export { CategoryCommissionsTable } from './CategoryCommissionsTable';
+
+// ================================================
 // WALLET & BANK ACCOUNT COMPONENTS
 // ================================================
 
