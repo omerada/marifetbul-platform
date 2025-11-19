@@ -94,8 +94,6 @@ export { OrderMessageBadge } from './OrderMessageBadge';
 export { OrderListFilters } from './OrderListFilters';
 export { DeliveryManager } from './DeliveryManager';
 
-// @deprecated EscrowStatus removed - use StatusBadge from @/components/ui/Badge
-
 // Sprint 2: Order Dashboard Components
 export { OrderStatsWidget } from './OrderStatsWidget';
 export { RecentOrdersList } from './RecentOrdersList';

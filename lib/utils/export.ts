@@ -76,25 +76,5 @@ export function exportToCSV<T extends Record<string, unknown>>(
   downloadCSV(csv, filename);
 }
 
-/**
- * Format date for export
- * @deprecated Use formatDate from @/lib/shared/formatters or exportService formatters instead
- */
-export function formatDateForExport(date: string | Date): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
-  return d.toLocaleDateString('tr-TR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
-/**
- * Format currency for export (without symbol)
- * @deprecated Use formatCurrency from @/lib/shared/formatters or exportService formatters instead
- */
-export function formatCurrencyForExport(amount: number): string {
-  return amount.toFixed(2).replace('.', ',');
-}
+// REMOVED: Deprecated formatDateForExport and formatCurrencyForExport
+// Use formatDate and formatCurrency from @/lib/shared/formatters instead
