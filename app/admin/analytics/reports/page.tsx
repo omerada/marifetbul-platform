@@ -22,7 +22,7 @@
 'use client';
 
 import { FileBarChart } from 'lucide-react';
-import { ReportBuilder } from '@/components/admin/analytics';
+import { ReportBuilder } from '@/components/domains/admin';
 
 /**
  * Admin Custom Reports Page

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
-import BatchPayoutManager from '@/components/admin/payouts/BatchPayoutManager';
+import { BatchPayoutManager } from '@/components/domains/admin/finance';
 
 export const metadata: Metadata = {
   title: 'Toplu Para Çekme İşlemleri | Admin Panel',

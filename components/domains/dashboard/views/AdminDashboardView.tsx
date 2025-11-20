@@ -9,11 +9,17 @@
  * - Search metrics
  * - Top performing packages
  *
+ * Self-contained component with internal data fetching and transformation.
+ *
  * @created 2025-11-02
- * @sprint Sprint 1 - Day 7
+ * @updated 2025-01-20 - Story 2: Made self-contained with internal data management
+ * @sprint Sprint 1 - Story 2
  */
 
-import { memo } from 'react';
+'use client';
+
+import { memo, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Users,
   Package,
@@ -32,6 +38,8 @@ import {
 
 // Hooks
 import { useDashboardPermissions } from '../hooks';
+import { useAdminDashboard } from '@/hooks/business/useAdminDashboard';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 
 // Widgets
 import {
@@ -45,13 +53,16 @@ import {
 
 // Types
 import type { AdminDashboard, StatCardData } from '../types/dashboard.types';
+import type { AdminDashboardBackendDTO } from '@/types/dto/dashboard';
 
 // Utils
-import {
-  formatCurrency,
-  formatCompactNumber,
-  formatPercentage,
-} from '../utils';
+import { formatCompactNumber } from '../utils';
+import { formatCurrency, formatPercentage } from '@/lib/shared/formatters';
+import { adaptAdminDashboard } from '../utils/dashboardAdapters';
+import logger from '@/lib/infrastructure/monitoring/logger';
+
+// Components
+import { Loading } from '@/components/ui';
 
 // ============================================================================
 // TYPES
@@ -61,14 +72,6 @@ import {
  * AdminDashboardView component props
  */
 export interface AdminDashboardViewProps {
-  /** Admin dashboard data */
-  data: AdminDashboard | null;
-  /** Loading state */
-  isLoading?: boolean;
-  /** Error state */
-  error?: Error | null;
-  /** Refresh callback */
-  onRefresh?: () => void;
   /** Custom className */
   className?: string;
 }
@@ -225,21 +228,164 @@ function prepareQuickActions() {
  * Complete dashboard view for admin users with platform statistics,
  * system health monitoring, analytics, and management tools.
  *
+ * Self-contained component - handles data fetching, transformation,
+ * auth checks, and error handling internally.
+ *
  * @example
  * ```tsx
- * <AdminDashboardView
- *   data={adminData}
- *   isLoading={false}
- *   onRefresh={handleRefresh}
- * />
+ * <AdminDashboardView />
  * ```
  */
 export const AdminDashboardView = memo<AdminDashboardViewProps>(
-  ({ data, isLoading = false, error, className }) => {
+  ({ className }) => {
+    const router = useRouter();
+    const { user, loading: authLoading } = useAuthStore();
     const { canViewFinancials, canViewCharts, canViewSystemHealth } =
       useDashboardPermissions();
 
+    // Fetch dashboard data
+    const {
+      data: backendData,
+      isLoading: dashboardLoading,
+      error,
+      refresh,
+    } = useAdminDashboard();
+
+    // Transform backend DTO to frontend type
+    const transformedData = useMemo(() => {
+      if (!backendData) return null;
+
+      try {
+        // Map backend DTO structure to expected API response format
+        const apiResponse: AdminDashboardBackendDTO = {
+          stats: backendData.stats ?? {
+            users: {
+              total: 0,
+              active: 0,
+              new: 0,
+              banned: 0,
+              trend: { value: 0, direction: 'neutral' },
+            },
+            packages: {
+              total: 0,
+              active: 0,
+              pending: 0,
+              rejected: 0,
+              trend: { value: 0, direction: 'neutral' },
+            },
+            orders: {
+              total: 0,
+              completed: 0,
+              pending: 0,
+              cancelled: 0,
+              trend: { value: 0, direction: 'neutral' },
+            },
+            revenue: {
+              total: 0,
+              commission: 0,
+              pending: 0,
+              currency: 'TRY',
+              trend: { value: 0, direction: 'neutral' },
+            },
+          },
+          charts: backendData.charts ?? {
+            revenue: {
+              id: 'revenue',
+              title: 'Revenue',
+              type: 'line',
+              data: [],
+              config: { currency: 'TRY' },
+            },
+            userGrowth: {
+              id: 'user-growth',
+              title: 'User Growth',
+              type: 'line',
+              data: [],
+            },
+            orders: { id: 'orders', title: 'Orders', type: 'bar', data: [] },
+            searchAnalytics: {
+              id: 'search-analytics',
+              title: 'Search Analytics',
+              type: 'line',
+              data: [],
+            },
+          },
+          systemHealth: backendData.systemHealth ?? {
+            status: 'healthy',
+            cpu: 0,
+            memory: 0,
+            storage: 0,
+            activeConnections: 0,
+            cacheHitRate: 0,
+            lastChecked: new Date().toISOString(),
+          },
+          topPackages: backendData.topPackages ?? [],
+          recentActivities: backendData.recentActivities ?? [],
+          searchMetrics: {
+            totalSearches: backendData.searchMetrics?.totalSearches ?? 0,
+            avgResultsPerSearch:
+              backendData.searchMetrics?.avgResultsPerSearch ?? 0,
+            noResultsCount: backendData.searchMetrics?.noResultsCount ?? 0,
+            topSearchTerms: backendData.searchMetrics?.topSearchTerms ?? [],
+          },
+          period: {
+            start: backendData.period?.start ?? '',
+            end: backendData.period?.end ?? '',
+            days: backendData.period?.days ?? 30,
+          },
+          activityMetrics: {
+            totalActivities: backendData.activityMetrics?.totalActivities ?? 0,
+            activitiesByType:
+              backendData.activityMetrics?.activitiesByType ?? {},
+            activitiesByCategory:
+              backendData.activityMetrics?.activitiesByCategory ?? {},
+            activitiesByHour:
+              backendData.activityMetrics?.activitiesByHour ?? {},
+          },
+          cacheAgeSeconds: backendData.cacheAgeSeconds ?? 0,
+        };
+
+        return adaptAdminDashboard(apiResponse);
+      } catch (transformError) {
+        logger.error(
+          'Failed to transform admin dashboard data',
+          transformError instanceof Error
+            ? transformError
+            : new Error(String(transformError))
+        );
+        return null;
+      }
+    }, [backendData]);
+
+    // Redirect non-admin users
+    useEffect(() => {
+      if (!authLoading && user && user.role !== 'ADMIN') {
+        logger.warn('Non-admin user attempted to access admin dashboard', {
+          userId: user.id,
+          role: user.role,
+        });
+        router.push('/dashboard');
+      }
+    }, [user, authLoading, router]);
+
+    // Loading state during auth check
+    if (authLoading) {
+      return (
+        <div className="flex h-screen items-center justify-center bg-gray-50">
+          <Loading size="lg" text="Yetki kontrol ediliyor..." />
+        </div>
+      );
+    }
+
+    // User not found or not admin
+    if (!user || user.role !== 'ADMIN') {
+      return null; // Will redirect in useEffect
+    }
+
     // Loading state
+    const isLoading = dashboardLoading;
+    const data = transformedData;
+
     if (isLoading || !data) {
       return (
         <div className={className}>
@@ -266,7 +412,7 @@ export const AdminDashboardView = memo<AdminDashboardViewProps>(
             role="ADMIN"
           />
           <div className="bg-destructive/10 border-destructive rounded-lg border p-4">
-            <p className="text-destructive">{error.message}</p>
+            <p className="text-destructive">{error}</p>
           </div>
         </div>
       );

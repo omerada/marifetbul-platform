@@ -18,8 +18,10 @@ import { useState } from 'react';
 import { Metadata } from 'next';
 import { Settings, List } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { CommissionSettingsForm } from '@/components/admin/CommissionSettingsForm';
-import { CategoryCommissionsTable } from '@/components/admin/CategoryCommissionsTable';
+import {
+  CommissionSettingsForm,
+  CategoryCommissionsTable,
+} from '@/components/domains/admin/finance';
 import { useCommissionSettings } from '@/hooks';
 
 type TabType = 'settings' | 'categories';

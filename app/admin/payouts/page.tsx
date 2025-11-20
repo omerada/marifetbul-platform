@@ -19,8 +19,8 @@ import {
   AdminPayoutFilters,
   AdminPayoutDetailModal,
   BulkPayoutActions,
-} from '@/components/admin/payouts';
-import { UnifiedAdminWalletModal } from '@/components/admin/wallet/UnifiedAdminWalletModal';
+  UnifiedAdminWalletModal,
+} from '@/components/domains/admin/finance';
 import {
   payoutAdminApi,
   type PayoutFilters,
@@ -74,11 +74,11 @@ export default function AdminPayoutsPage() {
       setPayouts(response.content);
       setTotalPages(response.totalPages);
     } catch (error) {
-      logger.error(
-        'Failed to fetch admin payouts',
-        error,
-        { component: 'AdminPayoutsPage', action: 'fetchPayouts', filters }
-      );
+      logger.error('Failed to fetch admin payouts', error, {
+        component: 'AdminPayoutsPage',
+        action: 'fetchPayouts',
+        filters,
+      });
       toast.error('Para çekme talepleri yüklenemedi');
     } finally {
       setIsLoading(false);
@@ -90,11 +90,10 @@ export default function AdminPayoutsPage() {
       const data = await payoutAdminApi.getPayoutStats();
       setStats(data);
     } catch (error) {
-      logger.error(
-        'Failed to fetch payout statistics',
-        error,
-        { component: 'AdminPayoutsPage', action: 'fetchStats' }
-      );
+      logger.error('Failed to fetch payout statistics', error, {
+        component: 'AdminPayoutsPage',
+        action: 'fetchStats',
+      });
     }
   };
 
@@ -119,11 +118,11 @@ export default function AdminPayoutsPage() {
       fetchStats();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error(
-        'Failed to process payout',
-        error,
-        { component: 'AdminPayoutsPage', action: 'handleProcess', payoutId }
-      );
+      logger.error('Failed to process payout', error, {
+        component: 'AdminPayoutsPage',
+        action: 'handleProcess',
+        payoutId,
+      });
       toast.error('Ödeme onaylanamadı');
     }
   };
@@ -136,11 +135,11 @@ export default function AdminPayoutsPage() {
       fetchStats();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error(
-        'Failed to complete payout',
-        error,
-        { component: 'AdminPayoutsPage', action: 'handleComplete', payoutId }
-      );
+      logger.error('Failed to complete payout', error, {
+        component: 'AdminPayoutsPage',
+        action: 'handleComplete',
+        payoutId,
+      });
       toast.error('İşlem başarısız');
     }
   };
@@ -153,16 +152,12 @@ export default function AdminPayoutsPage() {
       fetchStats();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error(
-        'Failed to mark payout as failed',
-        error,
-        {
-          component: 'AdminPayoutsPage',
-          action: 'handleFail',
-          payoutId,
-          reason,
-        }
-      );
+      logger.error('Failed to mark payout as failed', error, {
+        component: 'AdminPayoutsPage',
+        action: 'handleFail',
+        payoutId,
+        reason,
+      });
       toast.error('İşlem başarısız');
     }
   };
@@ -175,11 +170,11 @@ export default function AdminPayoutsPage() {
       fetchStats();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error(
-        'Failed to cancel payout',
-        error,
-        { component: 'AdminPayoutsPage', action: 'handleCancel', payoutId }
-      );
+      logger.error('Failed to cancel payout', error, {
+        component: 'AdminPayoutsPage',
+        action: 'handleCancel',
+        payoutId,
+      });
       toast.error('İşlem başarısız');
     }
   };

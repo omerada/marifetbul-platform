@@ -34,7 +34,7 @@ describe('BatchPayoutManager', () => {
   import { render, screen, fireEvent, waitFor } from '@testing-library/react';
   import userEvent from '@testing-library/user-event';
   import '@testing-library/jest-dom';
-  import BatchPayoutManager from '@/components/admin/payouts/BatchPayoutManager';
+  import { BatchPayoutManager } from '@/components/domains/admin/finance';
   
   describe('Rendering Tests', () => {
     it('should render stats correctly', async () => {

@@ -24,7 +24,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { usePortfolio } from '@/hooks/business/portfolio';
 import { PortfolioModal } from '@/components/domains/portfolio';
-import { PortfolioApprovalPanel } from '@/components/admin/portfolio/PortfolioApprovalPanel';
+import { PortfolioApprovalPanel } from '@/components/domains/admin';
 import type { PortfolioResponse } from '@/lib/api/portfolio';
 
 export const dynamic = 'force-dynamic';

@@ -50,6 +50,28 @@ export { default as AdminLogs } from './system/AdminLogs';
 // Support Components
 export { default as AdminSupportTickets } from './support/AdminSupportTickets';
 
+// ================================================
+// FINANCE COMPONENTS (Sprint 1 - Consolidation)
+// ================================================
+// Consolidated from components/admin/ to single source of truth
+export * from './finance';
+
+// ================================================
+// ANALYTICS COMPONENTS
+// ================================================
+export { ReportBuilder } from './analytics/ReportBuilder';
+
+// ================================================
+// PORTFOLIO MANAGEMENT
+// ================================================
+export { PortfolioApprovalPanel } from './portfolio/PortfolioApprovalPanel';
+
+// ================================================
+// ORDER MANAGEMENT
+// ================================================
+export { AdminOrdersTable } from './orders/AdminOrdersTable';
+export { AdminOrderStats } from './orders/AdminOrderStats';
+
 // Refund Management Components (Sprint 1)
 export * from './refunds';
 

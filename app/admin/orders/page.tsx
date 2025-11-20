@@ -8,8 +8,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AdminOrderStats } from '@/components/admin/orders/AdminOrderStats';
-import { AdminOrdersTable } from '@/components/admin/orders/AdminOrdersTable';
+import { AdminOrderStats, AdminOrdersTable } from '@/components/domains/admin';
 import { Button } from '@/components/ui';
 import { Input } from '@/components/ui/Input';
 import { Search, Filter } from 'lucide-react';

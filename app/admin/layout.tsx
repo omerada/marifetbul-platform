@@ -32,6 +32,7 @@ import {
   Bell,
   ChevronRight,
   Activity,
+  Lock,
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -91,6 +92,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       icon: Shield,
       current: pathname === '/admin/moderation',
       description: 'İçerik denetimi',
+    },
+    {
+      name: 'Güvenlik',
+      href: '/admin/settings/security',
+      icon: Lock,
+      current: pathname === '/admin/settings/security',
+      description: '2FA & Güvenlik ayarları',
     },
     {
       name: 'Ayarlar',

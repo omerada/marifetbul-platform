@@ -30,7 +30,7 @@ import type { PeriodType } from '@/hooks/business/admin/useRevenueAnalytics';
 import {
   RevenueBreakdownWidget,
   RevenueChart,
-} from '@/components/admin/analytics';
+} from '@/components/domains/admin/dashboard/widgets';
 import { toast } from 'sonner';
 
 /**

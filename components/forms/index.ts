@@ -2,6 +2,7 @@
 // AUTHENTICATION FORMS
 // ================================================
 export { LoginForm } from './LoginForm';
+export { AdminLoginForm } from './AdminLoginForm';
 export { RegisterForm } from './RegisterForm';
 export { MultiStepRegisterForm } from './MultiStepRegisterForm';
 export { ForgotPasswordForm } from './ForgotPasswordForm';

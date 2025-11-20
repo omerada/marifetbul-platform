@@ -24,7 +24,7 @@ import {
   BankAccountVerificationTable,
   BankAccountStatistics,
   type BankAccountStats,
-} from '@/components/admin/wallet';
+} from '@/components/domains/admin/finance';
 import {
   getPendingBankAccounts,
   verifyBankAccount,

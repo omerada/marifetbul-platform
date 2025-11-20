@@ -17,7 +17,7 @@
  */
 
 import { Metadata } from 'next';
-import { AdminFinancialReports } from '@/components/admin/wallet';
+import { AdminFinancialReports } from '@/components/domains/admin/finance';
 
 export const metadata: Metadata = {
   title: 'Finansal Raporlar | Admin - MarifetBul',

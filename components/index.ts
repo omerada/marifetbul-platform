@@ -88,6 +88,19 @@ export { TransactionDisplay } from './domains/wallet/TransactionDisplay';
 export { default as TransactionExportButtons } from './domains/wallet/core/TransactionExportButtons';
 
 // ================================================
-// Admin Components
-export { AdminPayoutApprovalWidget } from './admin/payouts/AdminPayoutApprovalWidget';
-export { default as BatchPayoutManager } from './admin/payouts/BatchPayoutManager';
+// ADMIN COMPONENTS (Sprint 1 - Consolidated)
+// ================================================
+// ⚠️ DEPRECATED: Direct imports from @/components/admin
+// ✅ USE: @/components/domains/admin for all admin components
+//
+// All admin components moved to canonical location:
+// @/components/domains/admin/
+//
+// Finance: @/components/domains/admin/finance
+// Analytics: @/components/domains/admin/analytics
+// Orders: @/components/domains/admin/orders
+// Portfolio: @/components/domains/admin/portfolio
+// etc.
+//
+// For backwards compatibility, re-export from domains:
+export * from './domains/admin';

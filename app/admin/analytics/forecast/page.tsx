@@ -32,7 +32,7 @@ import {
 import {
   RevenueComparisonChart,
   RevenueForecastWidget,
-} from '@/components/admin/analytics';
+} from '@/components/domains/admin/dashboard/widgets';
 import { toast } from 'sonner';
 import {
   exportToCSV,

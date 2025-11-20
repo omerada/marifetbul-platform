@@ -31,7 +31,7 @@ import {
 import {
   RefundStatisticsWidget,
   RefundTrendChart,
-} from '@/components/admin/analytics';
+} from '@/components/domains/admin/dashboard/widgets';
 import { toast } from 'sonner';
 import { exportToCSV, formatCurrencyForExport } from '@/lib/utils/export';
 import { formatCurrency } from '@/lib/shared/formatters';

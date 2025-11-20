@@ -18,7 +18,7 @@
  */
 
 import { Metadata } from 'next';
-import { CommissionRulesManagement } from '@/components/admin/commission/CommissionRulesManagement';
+import { CommissionRulesManagement } from '@/components/domains/admin/finance';
 
 export const metadata: Metadata = {
   title: 'Komisyon Kuralları | Admin - MarifetBul',

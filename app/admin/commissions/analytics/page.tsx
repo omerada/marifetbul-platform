@@ -19,7 +19,7 @@
  */
 
 import { Metadata } from 'next';
-import { CommissionAnalytics } from '@/components/admin/commission/CommissionAnalytics';
+import { CommissionAnalytics } from '@/components/domains/admin/finance';
 
 export const metadata: Metadata = {
   title: 'Komisyon Analizi | Admin - MarifetBul',

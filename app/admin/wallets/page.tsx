@@ -17,7 +17,7 @@
  */
 
 import { Metadata } from 'next';
-import { AdminWalletManagement } from '@/components/admin/wallet';
+import { AdminWalletManagement } from '@/components/domains/admin/finance';
 
 export const metadata: Metadata = {
   title: 'Cüzdan Yönetimi | Admin - MarifetBul',
