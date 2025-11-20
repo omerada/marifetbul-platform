@@ -19,7 +19,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Briefcase, Loader2 } from 'lucide-react';
-import { JobCard, JobFilters } from '@/components/domains/jobs';
+import { JobCard, JobFilters, FilterChips } from '@/components/domains/jobs';
 import { Button } from '@/components/ui';
 import { useJobs } from '@/hooks/business/jobs/useJobs';
 import type { JobFilters as JobFiltersType } from '@/lib/api/jobs';
@@ -43,6 +43,47 @@ export default function JobsPage() {
   // Handle filter change
   const handleFilterChange = useCallback((newFilters: JobFiltersType) => {
     setFiltersState({ ...newFilters, page: 0 }); // Reset to first page on filter change
+  }, []);
+
+  // Handle filter removal from chips
+  const handleRemoveFilter = useCallback(
+    (filterKey: keyof JobFiltersType, value?: string) => {
+      setFiltersState((prev) => {
+        const newFilters = { ...prev };
+
+        if (filterKey === 'experienceLevel' && value) {
+          // Remove specific experience level
+          const current = Array.isArray(newFilters.experienceLevel)
+            ? newFilters.experienceLevel
+            : [];
+          const updated = current.filter((v) => v !== value);
+          newFilters.experienceLevel = updated.length > 0 ? updated : undefined;
+        } else if (filterKey === 'skills' && value) {
+          // Remove specific skill
+          const current = Array.isArray(newFilters.skills)
+            ? newFilters.skills
+            : [];
+          const updated = current.filter((v) => v !== value);
+          newFilters.skills = updated.length > 0 ? updated : undefined;
+        } else {
+          // Remove entire filter
+          delete newFilters[filterKey];
+        }
+
+        newFilters.page = 0; // Reset to first page
+        return newFilters;
+      });
+    },
+    []
+  );
+
+  // Handle clear all filters
+  const handleClearAllFilters = useCallback(() => {
+    setFiltersState({
+      status: 'OPEN',
+      size: 20,
+      sortBy: 'latest',
+    });
   }, []);
 
   // Handle job click
@@ -79,6 +120,16 @@ export default function JobsPage() {
 
           {/* Jobs List */}
           <div className="lg:col-span-3">
+            {/* Filter Chips */}
+            <div className="mb-4">
+              <FilterChips
+                filters={filters}
+                onRemoveFilter={handleRemoveFilter}
+                onClearAll={handleClearAllFilters}
+                isLoading={isLoading}
+              />
+            </div>
+
             {/* Results Header */}
             <div className="mb-6 flex items-center justify-between">
               <div className="text-sm text-gray-600">

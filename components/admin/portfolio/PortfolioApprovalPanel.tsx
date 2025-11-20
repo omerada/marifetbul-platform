@@ -24,7 +24,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Textarea } from '@/components/ui/Textarea';
 import { CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import { apiClient } from '@/lib/infrastructure/api/client';
+import { portfolioAdminApi } from '@/lib/api/portfolio-admin';
 
 interface PortfolioApprovalPanelProps {
   portfolioId: string;
@@ -46,7 +46,7 @@ export function PortfolioApprovalPanel({
   const handleApprove = async () => {
     setIsApproving(true);
     try {
-      await apiClient.post(`/api/v1/admin/portfolio/${portfolioId}/approve`);
+      await portfolioAdminApi.approvePortfolio(portfolioId);
       toast.success('Portfolyo onaylandı');
       onApproved?.();
     } catch (error) {
@@ -70,7 +70,7 @@ export function PortfolioApprovalPanel({
 
     setIsRejecting(true);
     try {
-      await apiClient.post(`/api/v1/admin/portfolio/${portfolioId}/reject`, {
+      await portfolioAdminApi.rejectPortfolio(portfolioId, {
         reason: rejectionReason,
         moderationNotes: moderationNotes.trim() || undefined,
       });

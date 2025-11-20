@@ -97,7 +97,7 @@ describe('E2E Happy Path Scenarios', () => {
       // Step 2: Redirect happens
       await waitFor(
         () => {
-          expect(mockPush).toHaveBeenCalledWith('/dashboard/employer/orders');
+          expect(mockPush).toHaveBeenCalledWith('/dashboard/orders');
         },
         { timeout: 2000 }
       );

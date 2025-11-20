@@ -80,9 +80,7 @@ export function ReviewPromptCard({
 
   const handleWriteReview = () => {
     // Navigate to review submission page
-    router.push(
-      `/dashboard/buyer/orders/${orderId}/review?packageId=${packageId}`
-    );
+    router.push(`/dashboard/orders/${orderId}/review?packageId=${packageId}`);
   };
 
   const handleRemindLater = () => {

@@ -112,7 +112,7 @@ export function getDashboardNavigation(role: 'freelancer' | 'employer') {
       label: 'Siparişler',
       href: '/dashboard/orders',
       icon: 'Package',
-      matchPaths: ['/dashboard/orders', '/dashboard/employer/orders'],
+      matchPaths: ['/dashboard/orders'],
     },
     {
       label: 'Teklifler',

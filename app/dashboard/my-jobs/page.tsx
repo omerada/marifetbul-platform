@@ -21,11 +21,15 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Briefcase, Loader2, Filter, AlertCircle } from 'lucide-react';
 import { MyJobCard } from '@/components/domains/jobs/MyJobCard';
+import {
+  JobCloseModal,
+  JobReopenModal,
+} from '@/components/domains/jobs/JobStatusModals';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { useJobs } from '@/hooks/business/jobs/useJobs';
-import type { JobStatus } from '@/types/backend-aligned';
+import type { JobStatus, JobResponse } from '@/types/backend-aligned';
 
 export default function MyJobsPage() {
   const router = useRouter();
@@ -35,18 +39,12 @@ export default function MyJobsPage() {
     'all'
   );
   const [currentPage, setCurrentPage] = useState(0);
+  const [closeModalOpen, setCloseModalOpen] = useState(false);
+  const [reopenModalOpen, setReopenModalOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<JobResponse | null>(null);
 
   // Use Jobs Hook
-  const {
-    jobs,
-    isLoading,
-    error,
-    pagination,
-    fetchMyJobs,
-    closeJob,
-    reopenJob,
-    deleteJob,
-  } = useJobs();
+  const { jobs, isLoading, error, pagination, fetchMyJobs } = useJobs();
 
   // Initial load
   useEffect(() => {
@@ -66,29 +64,20 @@ export default function MyJobsPage() {
 
   // Handle close job
   const handleCloseJob = async (jobId: string) => {
-    if (!confirm('Bu işi kapatmak istediğinizden emin misiniz?')) return;
+    const job = jobs?.find((j) => j.id === jobId);
+    if (!job) return;
 
-    const success = await closeJob(jobId);
-    if (success) {
-      // Reload jobs
-      fetchMyJobs({
-        page: currentPage,
-        size: 20,
-        status: selectedStatus === 'all' ? undefined : selectedStatus,
-      });
-    }
+    setSelectedJob(job);
+    setCloseModalOpen(true);
   };
 
   // Handle reopen job
   const handleReopenJob = async (jobId: string) => {
-    const success = await reopenJob(jobId);
-    if (success) {
-      fetchMyJobs({
-        page: currentPage,
-        size: 20,
-        status: selectedStatus === 'all' ? undefined : selectedStatus,
-      });
-    }
+    const job = jobs?.find((j) => j.id === jobId);
+    if (!job) return;
+
+    setSelectedJob(job);
+    setReopenModalOpen(true);
   };
 
   // Handle delete job
@@ -100,14 +89,17 @@ export default function MyJobsPage() {
     )
       return;
 
-    const success = await deleteJob(jobId);
-    if (success) {
-      fetchMyJobs({
-        page: currentPage,
-        size: 20,
-        status: selectedStatus === 'all' ? undefined : selectedStatus,
-      });
-    }
+    // TODO: Implement delete job API call
+    console.log('Delete job:', jobId);
+  };
+
+  // Handle modal success
+  const handleModalSuccess = () => {
+    fetchMyJobs({
+      page: currentPage,
+      size: 20,
+      status: selectedStatus === 'all' ? undefined : selectedStatus,
+    });
   };
 
   // Get job counts by status
@@ -349,6 +341,24 @@ export default function MyJobsPage() {
             </div>
           )}
       </div>
+
+      {/* Modals */}
+      {selectedJob && (
+        <>
+          <JobCloseModal
+            isOpen={closeModalOpen}
+            onClose={() => setCloseModalOpen(false)}
+            onSuccess={handleModalSuccess}
+            job={selectedJob}
+          />
+          <JobReopenModal
+            isOpen={reopenModalOpen}
+            onClose={() => setReopenModalOpen(false)}
+            onSuccess={handleModalSuccess}
+            job={selectedJob}
+          />
+        </>
+      )}
     </div>
   );
 }

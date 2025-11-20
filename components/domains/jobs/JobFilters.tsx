@@ -3,6 +3,9 @@
 /**
  * JobFilters Component
  * Filter controls for job listing page
+ *
+ * Sprint: Marketplace Advanced Filters
+ * Enhanced with skills multi-select and budget range slider
  */
 
 'use client';
@@ -12,13 +15,28 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
-import { Search, X, Filter, MapPin } from 'lucide-react';
+import { MultiSelect } from '@/components/ui/MultiSelect';
+import { Slider } from '@/components/ui/Slider';
+import {
+  Search,
+  X,
+  Filter,
+  MapPin,
+  ArrowDown,
+  ArrowUp,
+  TrendingDown,
+  TrendingUp,
+  Calendar,
+  Users,
+  ChevronDown,
+} from 'lucide-react';
 import type { JobFilters as JobFiltersType } from '@/lib/api/jobs';
 import type { CategoryResponse } from '@/types/backend-aligned';
 import {
   JOB_SORT_OPTIONS,
   EXPERIENCE_LEVEL_OPTIONS,
   BUDGET_TYPE_OPTIONS,
+  POPULAR_SKILLS,
 } from '@/types/business/job';
 
 export interface JobFiltersProps {
@@ -74,6 +92,7 @@ export function JobFilters({
       filters.experienceLevel ||
       filters.isRemote !== undefined ||
       filters.location ||
+      filters.skills?.length ||
       filters.search
     );
   };
@@ -86,6 +105,7 @@ export function JobFilters({
     if (filters.experienceLevel) count++;
     if (filters.isRemote !== undefined) count++;
     if (filters.location) count++;
+    if (filters.skills?.length) count++;
     if (filters.search) count++;
     return count;
   };
@@ -166,39 +186,77 @@ export function JobFilters({
           </div>
         )}
 
-        {/* Budget Range */}
+        {/* Budget Range - ENHANCED with Slider */}
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-700">
             Bütçe Aralığı
           </label>
-          <div className="grid grid-cols-2 gap-2">
-            <Input
-              type="number"
-              placeholder="Min"
-              value={localFilters.budgetMin || ''}
-              onChange={(e) =>
-                handleFilterChange(
-                  'budgetMin',
-                  e.target.value ? Number(e.target.value) : undefined
-                )
-              }
-              disabled={isLoading}
-              min="0"
-            />
-            <Input
-              type="number"
-              placeholder="Max"
-              value={localFilters.budgetMax || ''}
-              onChange={(e) =>
-                handleFilterChange(
-                  'budgetMax',
-                  e.target.value ? Number(e.target.value) : undefined
-                )
-              }
-              disabled={isLoading}
-              min="0"
-            />
+
+          {/* Show current range */}
+          <div className="mb-3 flex items-center justify-between text-sm text-gray-600">
+            <span className="font-medium">
+              ₺{(localFilters.budgetMin || 0).toLocaleString('tr-TR')}
+            </span>
+            <span className="font-medium">
+              ₺{(localFilters.budgetMax || 100000).toLocaleString('tr-TR')}
+            </span>
           </div>
+
+          {/* Range slider */}
+          <Slider
+            value={[
+              localFilters.budgetMin || 0,
+              localFilters.budgetMax || 100000,
+            ]}
+            onValueChange={(range) => {
+              const [min, max] = range;
+              const newFilters = { ...localFilters };
+              newFilters.budgetMin = min > 0 ? min : undefined;
+              newFilters.budgetMax = max < 100000 ? max : undefined;
+              setLocalFilters(newFilters);
+              onFilterChange(newFilters);
+            }}
+            min={0}
+            max={100000}
+            step={1000}
+            disabled={isLoading}
+            className="mb-3"
+          />
+
+          {/* Manual inputs (collapsible) */}
+          <details className="mt-2">
+            <summary className="cursor-pointer text-xs text-gray-500 hover:text-gray-700">
+              Manuel giriş
+            </summary>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <Input
+                type="number"
+                placeholder="Min"
+                value={localFilters.budgetMin || ''}
+                onChange={(e) =>
+                  handleFilterChange(
+                    'budgetMin',
+                    e.target.value ? Number(e.target.value) : undefined
+                  )
+                }
+                disabled={isLoading}
+                min="0"
+              />
+              <Input
+                type="number"
+                placeholder="Max"
+                value={localFilters.budgetMax || ''}
+                onChange={(e) =>
+                  handleFilterChange(
+                    'budgetMax',
+                    e.target.value ? Number(e.target.value) : undefined
+                  )
+                }
+                disabled={isLoading}
+                min="0"
+              />
+            </div>
+          </details>
         </div>
 
         {/* Budget Type */}
@@ -261,6 +319,30 @@ export function JobFilters({
           </div>
         </div>
 
+        {/* Skills Multi-Select - NEW */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-gray-700">
+            Yetenekler
+          </label>
+          <MultiSelect
+            options={POPULAR_SKILLS.map((skill) => ({
+              value: skill.toLowerCase(),
+              label: skill,
+            }))}
+            value={localFilters.skills || []}
+            onChange={(skills) =>
+              handleFilterChange(
+                'skills',
+                skills.length > 0 ? skills : undefined
+              )
+            }
+            placeholder="Yetenek seç..."
+            disabled={isLoading}
+            maxDisplay={2}
+            searchable
+          />
+        </div>
+
         {/* Remote Work */}
         <div>
           <label className="flex items-center gap-2 text-sm">
@@ -296,23 +378,50 @@ export function JobFilters({
           />
         </div>
 
-        {/* Sort */}
+        {/* Sort - ENHANCED with Icons */}
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-700">
             Sıralama
           </label>
-          <select
-            value={localFilters.sortBy || 'latest'}
-            onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-            disabled={isLoading}
-          >
-            {JOB_SORT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+
+          {/* Custom sort dropdown with icons */}
+          <div className="relative">
+            <select
+              value={localFilters.sortBy || 'latest'}
+              onChange={(e) => handleFilterChange('sortBy', e.target.value)}
+              className="w-full appearance-none rounded-md border border-gray-300 bg-white py-2 pr-8 pl-10 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:bg-gray-100"
+              disabled={isLoading}
+            >
+              {JOB_SORT_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+
+            {/* Icon for selected option */}
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+              {(() => {
+                const selectedOption = JOB_SORT_OPTIONS.find(
+                  (opt) => opt.value === (localFilters.sortBy || 'latest')
+                );
+                const IconComponent = {
+                  ArrowDown,
+                  ArrowUp,
+                  TrendingDown,
+                  TrendingUp,
+                  Calendar,
+                  Users,
+                }[selectedOption?.icon || 'ArrowDown'];
+                return <IconComponent className="h-4 w-4" />;
+              })()}
+            </div>
+
+            {/* Chevron down */}
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-500">
+              <ChevronDown className="h-4 w-4" />
+            </div>
+          </div>
         </div>
       </div>
     </Card>

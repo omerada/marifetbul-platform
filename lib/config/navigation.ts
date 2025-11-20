@@ -115,7 +115,7 @@ export const freelancerDashboardNavigation: NavigationItem[] = [
     icon: Package,
   },
   {
-    href: '/dashboard/freelancer/orders',
+    href: '/dashboard/orders',
     label: 'Siparişler',
     icon: Briefcase,
   },

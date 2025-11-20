@@ -114,7 +114,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       await login(page, 'buyer');
 
       // 2. Navigate to completed orders
-      await page.goto('/dashboard/employer/orders?status=COMPLETED');
+      await page.goto('/dashboard/orders?status=COMPLETED');
       await page.waitForLoadState('networkidle');
 
       // 3. Find an order that already has a review
@@ -150,7 +150,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       // 8. Try to navigate directly to review page (should redirect or show error)
       const currentUrl = page.url();
       const orderId = currentUrl.split('/').pop();
-      await page.goto(`/dashboard/employer/orders/${orderId}/review`);
+      await page.goto(`/dashboard/orders/${orderId}/review`);
 
       // 9. Should redirect back to order detail or show error message
       await expect(async () => {
@@ -275,7 +275,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       await login(page, 'buyer');
 
       // 2. Navigate to completed order
-      await page.goto('/dashboard/employer/orders?status=COMPLETED');
+      await page.goto('/dashboard/orders?status=COMPLETED');
       await page.waitForLoadState('networkidle');
 
       // 3. Click on first completed order

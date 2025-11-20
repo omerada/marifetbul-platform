@@ -59,7 +59,7 @@ export function useProposal(options: UseProposalOptions = {}) {
 
         // Redirect to orders page after short delay
         setTimeout(() => {
-          router.push('/dashboard/employer/orders');
+          router.push('/dashboard/orders');
         }, 1500);
 
         logger.info('[useProposal] Proposal accepted successfully', {

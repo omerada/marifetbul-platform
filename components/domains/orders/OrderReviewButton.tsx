@@ -45,7 +45,7 @@ export function OrderReviewButton({
     if (onReviewStart) {
       onReviewStart();
     } else {
-      router.push(`/dashboard/employer/orders/${orderId}/review`);
+      router.push(`/dashboard/orders/${orderId}/review`);
     }
   };
 
@@ -154,7 +154,7 @@ export function OrderReviewButtonCompact({
     if (onReviewStart) {
       onReviewStart();
     } else {
-      router.push(`/dashboard/employer/orders/${orderId}/review`);
+      router.push(`/dashboard/orders/${orderId}/review`);
     }
   };
 

@@ -129,7 +129,7 @@ export function useOrder(options: UseOrderOptions = {}) {
 
         // Redirect to order detail page after 1.5 seconds
         setTimeout(() => {
-          router.push(`/dashboard/freelancer/orders/${orderId}`);
+          router.push(`/dashboard/orders/${orderId}`);
         }, 1500);
 
         logger.info('Order delivered successfully', { orderId, params });
@@ -366,7 +366,10 @@ export function useOrder(options: UseOrderOptions = {}) {
 
         options.onSuccess?.();
 
-        logger.info('Dispute opened successfully', { orderId, reasonparamsreason,  });
+        logger.info('Dispute opened successfully', {
+          orderId,
+          reasonparamsreason,
+        });
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : 'Bilinmeyen bir hata oluştu';

@@ -62,8 +62,8 @@ export function DashboardSidebar() {
     {
       label: 'Siparişler',
       icon: <Briefcase className="h-5 w-5" />,
-      href: '/dashboard/freelancer/orders',
-      matchPaths: ['/dashboard/freelancer/orders'],
+      href: '/dashboard/orders',
+      matchPaths: ['/dashboard/orders'],
     },
     {
       label: 'İade Taleplerim',
@@ -114,7 +114,7 @@ export function DashboardSidebar() {
       label: 'Siparişler',
       icon: <Package className="h-5 w-5" />,
       href: '/dashboard/orders',
-      matchPaths: ['/dashboard/orders', '/dashboard/employer/orders'],
+      matchPaths: ['/dashboard/orders'],
     },
     {
       label: 'İade Taleplerim',

@@ -633,6 +633,39 @@ export const ADMIN_ENDPOINTS = {
 } as const;
 
 // ================================================
+// PORTFOLIO SYSTEM
+// ================================================
+
+export const PORTFOLIO_ENDPOINTS = {
+  // User Portfolio Operations
+  GET_MY_PORTFOLIO: '/portfolios/my-portfolio',
+  GET_USER_PORTFOLIO: (userId: string) => `/portfolios/user/${userId}`,
+  GET_PORTFOLIO_BY_ID: (portfolioId: string) => `/portfolios/${portfolioId}`,
+  CREATE_PORTFOLIO: '/portfolios',
+  UPDATE_PORTFOLIO: (portfolioId: string) => `/portfolios/${portfolioId}`,
+  DELETE_PORTFOLIO: (portfolioId: string) => `/portfolios/${portfolioId}`,
+  REORDER_PORTFOLIO: '/portfolios/reorder',
+
+  // Portfolio Images
+  UPLOAD_IMAGE: (portfolioId: string) => `/portfolios/${portfolioId}/images`,
+  DELETE_IMAGE: (portfolioId: string, imageId: string) =>
+    `/portfolios/${portfolioId}/images/${imageId}`,
+
+  // Admin Portfolio Moderation (Sprint 1 - NEW)
+  ADMIN_PENDING_PORTFOLIOS: '/admin/portfolio/pending',
+  ADMIN_PORTFOLIOS_BY_STATUS: (status: string) =>
+    `/admin/portfolio/status/${status}`,
+  ADMIN_APPROVE_PORTFOLIO: (portfolioId: string) =>
+    `/admin/portfolio/${portfolioId}/approve`,
+  ADMIN_REJECT_PORTFOLIO: (portfolioId: string) =>
+    `/admin/portfolio/${portfolioId}/reject`,
+  ADMIN_BULK_APPROVE_PORTFOLIOS: '/admin/portfolio/bulk-approve',
+  ADMIN_BULK_REJECT_PORTFOLIOS: '/admin/portfolio/bulk-reject',
+  ADMIN_PORTFOLIO_STATISTICS: '/admin/portfolio/statistics',
+  ADMIN_SEARCH_PORTFOLIOS: '/admin/portfolio/search',
+} as const;
+
+// ================================================
 // BLOG SYSTEM
 // ================================================
 
@@ -821,6 +854,7 @@ export function getAllEndpoints(): string[] {
   addEndpoints(SEARCH_ENDPOINTS);
   addEndpoints(DASHBOARD_ENDPOINTS);
   addEndpoints(ADMIN_ENDPOINTS);
+  addEndpoints(PORTFOLIO_ENDPOINTS);
   addEndpoints(BLOG_ENDPOINTS);
   addEndpoints(WEBHOOK_ENDPOINTS);
 
@@ -847,6 +881,7 @@ const API_ENDPOINTS = {
   SEARCH: SEARCH_ENDPOINTS,
   DASHBOARD: DASHBOARD_ENDPOINTS,
   ADMIN: ADMIN_ENDPOINTS,
+  PORTFOLIO: PORTFOLIO_ENDPOINTS,
   BLOG: BLOG_ENDPOINTS,
   WEBHOOK: WEBHOOK_ENDPOINTS,
 };

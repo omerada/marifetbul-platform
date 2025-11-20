@@ -9,6 +9,7 @@ export { JobDetail } from './JobDetail';
 export { JobProposalButton } from './JobProposalButton';
 export { JobCard } from './JobCard';
 export { JobFilters } from './JobFilters';
+export { FilterChips } from './FilterChips';
 export { JobCreateForm } from './JobCreateForm';
 
 // Job Management Components (Sprint 2)

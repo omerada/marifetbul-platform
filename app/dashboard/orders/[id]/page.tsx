@@ -519,11 +519,7 @@ export default function OrderDetailPage() {
       {/* Header */}
       <div className="mb-6">
         <Link
-          href={
-            userRole === 'seller'
-              ? '/dashboard/freelancer/orders'
-              : '/dashboard/employer/orders'
-          }
+          href="/dashboard/orders"
           className="text-primary-600 hover:text-primary-700 mb-4 inline-flex items-center text-sm"
         >
           <ChevronLeft className="mr-1 h-4 w-4" />
