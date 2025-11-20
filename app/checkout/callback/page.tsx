@@ -21,7 +21,13 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useIyzicoPayment } from '@/hooks/business/useIyzicoPayment';
-import { Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw } from 'lucide-react';
+import {
+  Loader2,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  RefreshCw,
+} from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
@@ -30,7 +36,7 @@ type CallbackStatus = 'processing' | 'success' | 'error' | 'timeout';
 function CheckoutCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { handleCallback, isProcessing } = useIyzicoPayment({ debug: true });
+  const { handleCallback, isProcessing } = useIyzicoPayment();
 
   const [status, setStatus] = useState<CallbackStatus>('processing');
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -43,7 +49,8 @@ function CheckoutCallbackContent() {
     const confirmPayment = async () => {
       try {
         // Get payment intent ID from URL
-        const paymentIntentId = searchParams.get('paymentIntentId') || searchParams.get('token');
+        const paymentIntentId =
+          searchParams.get('paymentIntentId') || searchParams.get('token');
         const orderId = searchParams.get('orderId');
 
         if (!paymentIntentId) {
@@ -60,7 +67,7 @@ function CheckoutCallbackContent() {
 
         if (result.success && result.paymentId) {
           setStatus('success');
-          
+
           logger.info('CheckoutCallback: Payment confirmed successfully', {
             paymentId: result.paymentId,
           });
@@ -68,32 +75,32 @@ function CheckoutCallbackContent() {
           // Countdown before redirect
           let counter = 3;
           setCountdown(counter);
-          
+
           const timer = setInterval(() => {
             counter--;
             setCountdown(counter);
-            
+
             if (counter === 0) {
               clearInterval(timer);
-              router.push(`/orders/${orderId || result.paymentId}?payment=success`);
+              router.push(
+                `/orders/${orderId || result.paymentId}?payment=success`
+              );
             }
           }, 1000);
 
           return () => clearInterval(timer);
         } else {
-          throw new Error(result.error?.message || 'Ödeme doğrulaması başarısız');
+          throw new Error(
+            result.error?.message || 'Ödeme doğrulaması başarısız'
+          );
         }
       } catch (error) {
-        logger.error(
-          'CheckoutCallback: Payment confirmation failed',
-          error,
-          {
-            paymentIntentId: searchParams.get('paymentIntentId'),
-            orderId: searchParams.get('orderId'),
-            retryCount,
-          }
-        );
-        
+        logger.error('CheckoutCallback: Payment confirmation failed', error, {
+          paymentIntentId: searchParams.get('paymentIntentId'),
+          orderId: searchParams.get('orderId'),
+          retryCount,
+        });
+
         setStatus('error');
         setErrorMessage(
           error instanceof Error
@@ -111,7 +118,7 @@ function CheckoutCallbackContent() {
   // Handle retry
   const handleRetry = () => {
     if (retryCount < maxRetries) {
-      setRetryCount(prev => prev + 1);
+      setRetryCount((prev) => prev + 1);
       setStatus('processing');
       setErrorMessage('');
     } else {
@@ -139,9 +146,11 @@ function CheckoutCallbackContent() {
                 Ödeme Doğrulanıyor
               </h1>
               <p className="mb-6 text-gray-600">
-                {retryCount > 0 ? 'Tekrar deneniyor...' : 'Ödemeniz işleniyor, lütfen bekleyin...'}
+                {retryCount > 0
+                  ? 'Tekrar deneniyor...'
+                  : 'Ödemeniz işleniyor, lütfen bekleyin...'}
               </p>
-              
+
               {/* Progress bar */}
               <div className="mb-4">
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
@@ -172,7 +181,7 @@ function CheckoutCallbackContent() {
               <p className="text-sm text-gray-500">
                 {countdown} saniye içinde yönlendiriliyorsunuz...
               </p>
-              
+
               {/* Success animation */}
               <div className="mt-6">
                 <div className="mx-auto h-1 w-32 overflow-hidden rounded-full bg-gray-200">
@@ -195,7 +204,7 @@ function CheckoutCallbackContent() {
                 Ödeme Başarısız
               </h1>
               <p className="mb-6 text-gray-600">{errorMessage}</p>
-              
+
               <div className="space-y-3">
                 {retryCount < maxRetries && (
                   <Button
@@ -208,7 +217,7 @@ function CheckoutCallbackContent() {
                     Tekrar Dene
                   </Button>
                 )}
-                
+
                 <Button
                   onClick={handleCancel}
                   variant="outline"
@@ -230,9 +239,10 @@ function CheckoutCallbackContent() {
                 İşlem Zaman Aşımına Uğradı
               </h1>
               <p className="mb-6 text-gray-600">
-                Ödeme doğrulanamadı. Lütfen sipariş durumunuzu kontrol edin veya destek ekibiyle iletişime geçin.
+                Ödeme doğrulanamadı. Lütfen sipariş durumunuzu kontrol edin veya
+                destek ekibiyle iletişime geçin.
               </p>
-              
+
               <Button
                 onClick={handleCancel}
                 variant="primary"
@@ -247,12 +257,22 @@ function CheckoutCallbackContent() {
           <div className="mt-8 rounded-lg border border-blue-200 bg-blue-50 p-4">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                <svg
+                  className="h-5 w-5 text-blue-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <div>
-                <p className="text-sm font-medium text-blue-900">Güvenli Ödeme</p>
+                <p className="text-sm font-medium text-blue-900">
+                  Güvenli Ödeme
+                </p>
                 <p className="mt-1 text-xs text-blue-700">
                   {status === 'processing'
                     ? 'Bu sayfayı kapatmayın veya yenilemeyin.'
@@ -261,22 +281,6 @@ function CheckoutCallbackContent() {
               </div>
             </div>
           </div>
-
-          {/* Debug Info (Development Only) */}
-          {process.env.NODE_ENV === 'development' && (
-            <details className="mt-4 rounded border border-gray-200 p-2">
-              <summary className="cursor-pointer text-xs text-gray-500">Debug Info</summary>
-              <pre className="mt-2 overflow-auto text-xs">
-                {JSON.stringify({
-                  status,
-                  paymentIntentId: searchParams.get('paymentIntentId'),
-                  orderId: searchParams.get('orderId'),
-                  retryCount,
-                  errorMessage,
-                }, null, 2)}
-              </pre>
-            </details>
-          )}
         </div>
       </div>
     </div>
@@ -296,4 +300,3 @@ export default function CheckoutCallbackPage() {
     </Suspense>
   );
 }
-

@@ -93,11 +93,6 @@ export const ROUTE_CONFIG = {
   moderator: ['/moderator'],
 
   /**
-   * Development/test routes (only accessible in development mode)
-   */
-  test: ['/test'],
-
-  /**
    * Authentication pages (redirect if already authenticated)
    */
   auth: ['/login', '/register', '/forgot-password', '/reset-password'],
@@ -196,10 +191,7 @@ export async function validateToken(
       username: data.user?.username,
     };
   } catch (error) {
-    logger.error(
-      'Token validation error',
-      error
-    );
+    logger.error('Token validation error', error);
     return null;
   }
 }
@@ -221,11 +213,9 @@ export async function getUserFromRequest(
 
     return await validateToken(token);
   } catch (error) {
-    logger.error(
-      'Failed to extract user from request',
-      error,
-      { url: request.url }
-    );
+    logger.error('Failed to extract user from request', error, {
+      url: request.url,
+    });
     return null;
   }
 }
@@ -438,16 +428,6 @@ export function isPublicRoute(pathname: string): boolean {
  */
 export function isProfileViewRoute(pathname: string): boolean {
   return pathname.startsWith('/profile/') && !pathname.includes('/edit');
-}
-
-/**
- * Check if pathname is a test/development route
- *
- * @param pathname - URL pathname
- * @returns True if pathname is a test route
- */
-export function isTestRoute(pathname: string): boolean {
-  return ROUTE_CONFIG.test.some((route) => pathname.startsWith(route));
 }
 
 // ================================================

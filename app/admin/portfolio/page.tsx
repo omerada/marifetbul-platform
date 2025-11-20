@@ -24,11 +24,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { usePortfolio } from '@/hooks/business/portfolio';
 import { PortfolioModal } from '@/components/domains/portfolio';
+import { PortfolioApprovalPanel } from '@/components/admin/portfolio/PortfolioApprovalPanel';
 import type { PortfolioResponse } from '@/lib/api/portfolio';
 
 export const dynamic = 'force-dynamic';
 
-type FilterStatus = 'ALL' | 'PUBLIC' | 'PRIVATE';
+type FilterStatus = 'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED';
 
 export default function AdminPortfolioPage() {
   const { portfolios, isLoading, refreshPortfolios } = usePortfolio();
@@ -45,10 +46,12 @@ export default function AdminPortfolioPage() {
     let filtered = portfolios;
 
     // Status filter
-    if (selectedStatus === 'PUBLIC') {
-      filtered = filtered.filter((p) => p.isPublic);
-    } else if (selectedStatus === 'PRIVATE') {
-      filtered = filtered.filter((p) => !p.isPublic);
+    if (selectedStatus === 'PENDING') {
+      filtered = filtered.filter((p) => p.status === 'PENDING');
+    } else if (selectedStatus === 'APPROVED') {
+      filtered = filtered.filter((p) => p.status === 'APPROVED');
+    } else if (selectedStatus === 'REJECTED') {
+      filtered = filtered.filter((p) => p.status === 'REJECTED');
     }
 
     // Search filter
@@ -67,8 +70,13 @@ export default function AdminPortfolioPage() {
 
   // Stats
   const totalItems = portfolios.length;
-  const publicItems = portfolios.filter((p) => p.isPublic).length;
-  const privateItems = totalItems - publicItems;
+  const pendingItems = portfolios.filter((p) => p.status === 'PENDING').length;
+  const approvedItems = portfolios.filter(
+    (p) => p.status === 'APPROVED'
+  ).length;
+  const rejectedItems = portfolios.filter(
+    (p) => p.status === 'REJECTED'
+  ).length;
   const totalViews = portfolios.reduce((sum, p) => sum + p.viewCount, 0);
 
   // Handlers
@@ -126,18 +134,34 @@ export default function AdminPortfolioPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">
-              Herkese Açık
+              Onay Bekliyor
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-yellow-600">
+              {pendingItems}
+            </div>
+            <p className="text-xs text-gray-500">
+              İncelenmesi gereken portfolyolar
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Onaylandı
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-600">
-              {publicItems}
+              {approvedItems}
             </div>
             <p className="text-xs text-gray-500">
               {totalItems > 0
-                ? Math.round((publicItems / totalItems) * 100)
+                ? Math.round((approvedItems / totalItems) * 100)
                 : 0}
-              % görünür
+              % onay oranı
             </p>
           </CardContent>
         </Card>
@@ -145,28 +169,14 @@ export default function AdminPortfolioPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">
-              Özel
+              Reddedildi
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-orange-600">
-              {privateItems}
+            <div className="text-3xl font-bold text-red-600">
+              {rejectedItems}
             </div>
-            <p className="text-xs text-gray-500">Gizli portfolyolar</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
-              Toplam Görüntülenme
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-blue-600">{totalViews}</div>
-            <p className="text-xs text-gray-500">
-              {totalItems > 0 ? Math.round(totalViews / totalItems) : 0} ort.
-            </p>
+            <p className="text-xs text-gray-500">Onaylanmayan portfolyolar</p>
           </CardContent>
         </Card>
       </div>
@@ -176,30 +186,36 @@ export default function AdminPortfolioPage() {
         <div className="space-y-4">
           {/* Status Filter Tabs */}
           <div className="flex flex-wrap gap-2">
-            {(['ALL', 'PUBLIC', 'PRIVATE'] as const).map((status) => (
-              <button
-                key={status}
-                onClick={() => setSelectedStatus(status)}
-                className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                  selectedStatus === status
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {status === 'ALL'
-                  ? 'Tümü'
-                  : status === 'PUBLIC'
-                    ? 'Herkese Açık'
-                    : 'Özel'}{' '}
-                (
-                {status === 'ALL'
-                  ? totalItems
-                  : status === 'PUBLIC'
-                    ? publicItems
-                    : privateItems}
-                )
-              </button>
-            ))}
+            {(['ALL', 'PENDING', 'APPROVED', 'REJECTED'] as const).map(
+              (status) => (
+                <button
+                  key={status}
+                  onClick={() => setSelectedStatus(status)}
+                  className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                    selectedStatus === status
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {status === 'ALL'
+                    ? 'Tümü'
+                    : status === 'PENDING'
+                      ? 'Onay Bekliyor'
+                      : status === 'APPROVED'
+                        ? 'Onaylandı'
+                        : 'Reddedildi'}{' '}
+                  (
+                  {status === 'ALL'
+                    ? totalItems
+                    : status === 'PENDING'
+                      ? pendingItems
+                      : status === 'APPROVED'
+                        ? approvedItems
+                        : rejectedItems}
+                  )
+                </button>
+              )
+            )}
           </div>
 
           {/* Search Bar */}
@@ -320,15 +336,20 @@ export default function AdminPortfolioPage() {
 
                     {/* Status */}
                     <td className="px-4 py-4">
-                      {portfolio.isPublic ? (
+                      {portfolio.status === 'APPROVED' ? (
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800">
                           <CheckCircle className="h-3 w-3" />
-                          Herkese Açık
+                          Onaylandı
+                        </span>
+                      ) : portfolio.status === 'REJECTED' ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-800">
+                          <XCircle className="h-3 w-3" />
+                          Reddedildi
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-100 px-2.5 py-1 text-xs font-medium text-orange-800">
-                          <XCircle className="h-3 w-3" />
-                          Özel
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-800">
+                          <RefreshCw className="h-3 w-3" />
+                          Onay Bekliyor
                         </span>
                       )}
                     </td>
@@ -368,22 +389,53 @@ export default function AdminPortfolioPage() {
         </div>
       </Card>
 
-      {/* Portfolio Detail Modal */}
+      {/* Portfolio Detail Modal with Approval Panel */}
       {showPortfolioModal && selectedPortfolio && (
-        <PortfolioModal
-          item={{
-            id: selectedPortfolio.id,
-            title: selectedPortfolio.title,
-            description: selectedPortfolio.description,
-            images: selectedPortfolio.images.map((img) => img.imageUrl),
-            skills: [],
-            url: selectedPortfolio.url,
-            completedAt: selectedPortfolio.completedAt,
-            viewCount: selectedPortfolio.viewCount,
-            createdAt: selectedPortfolio.createdAt,
-          }}
-          onClose={handleCloseModal}
-        />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white shadow-xl">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Portfolyo Detayı
+              </h2>
+              <button
+                onClick={handleCloseModal}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <XCircle className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="space-y-6 p-6">
+              <PortfolioModal
+                item={{
+                  id: selectedPortfolio.id,
+                  title: selectedPortfolio.title,
+                  description: selectedPortfolio.description,
+                  images: selectedPortfolio.images.map((img) => img.imageUrl),
+                  skills: [],
+                  url: selectedPortfolio.url,
+                  completedAt: selectedPortfolio.completedAt,
+                  viewCount: selectedPortfolio.viewCount,
+                  createdAt: selectedPortfolio.createdAt,
+                }}
+                onClose={handleCloseModal}
+              />
+
+              {/* Admin Approval Panel */}
+              <PortfolioApprovalPanel
+                portfolioId={selectedPortfolio.id}
+                onApproved={() => {
+                  refreshPortfolios();
+                  handleCloseModal();
+                }}
+                onRejected={() => {
+                  refreshPortfolios();
+                  handleCloseModal();
+                }}
+              />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

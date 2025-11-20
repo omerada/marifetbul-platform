@@ -259,18 +259,6 @@ const nextConfig = {
       },
     ];
 
-    // Development-only: Enable test routes
-    // PRODUCTION: Test routes are EXCLUDED from build
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[Next.js] 🧪 Test routes ENABLED (development mode)');
-      rewrites.push({
-        source: '/test/:path*',
-        destination: '/tests/manual/:path*',
-      });
-    } else {
-      console.log('[Next.js] 🔒 Test routes EXCLUDED (production mode)');
-    }
-
     return rewrites;
   },
 
@@ -400,7 +388,9 @@ const nextConfig = {
         });
       }
 
-      console.log('[Next.js] 🗜️  Production bundle optimization: Test files excluded');
+      console.log(
+        '[Next.js] 🗜️  Production bundle optimization: Test files excluded'
+      );
     }
 
     return config;

@@ -70,6 +70,13 @@ export interface PortfolioResponse {
   viewCount: number;
   createdAt: string;
   updatedAt: string;
+  // Sprint 1: Moderation fields
+  status?: 'PENDING' | 'APPROVED' | 'REJECTED';
+  approvedAt?: string;
+  approvedBy?: string;
+  rejectedAt?: string;
+  rejectedBy?: string;
+  rejectionReason?: string;
 }
 
 // ================================================
@@ -181,7 +188,11 @@ export async function getUserPortfolio(
       size: String(size),
     });
 
-    logger.debug('User portfolio fetched', { userId, countresponsecontentlength, totalresponsetotalElements,  });
+    logger.debug('User portfolio fetched', {
+      userId,
+      countresponsecontentlength,
+      totalresponsetotalElements,
+    });
 
     return response;
   } catch (error) {
@@ -242,7 +253,11 @@ export async function uploadPortfolioImage(
   isPrimary: boolean = false
 ): Promise<PortfolioImageResponse> {
   try {
-    logger.info('Uploading portfolio image', { portfolioId, fileNamefilename, isPrimary,  });
+    logger.info('Uploading portfolio image', {
+      portfolioId,
+      fileNamefilename,
+      isPrimary,
+    });
 
     const formData = new FormData();
     formData.append('file', file);
@@ -273,7 +288,9 @@ export async function uploadPortfolioImage(
     const result = await response.json();
     const imageData = result.data;
 
-    logger.info('Portfolio image uploaded successfully', { imageIdimageDataid,  });
+    logger.info('Portfolio image uploaded successfully', {
+      imageIdimageDataid,
+    });
     return imageData;
   } catch (error) {
     logger.error('Failed to upload portfolio image', error);

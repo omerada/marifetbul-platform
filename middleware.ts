@@ -8,7 +8,6 @@ import {
   isAuthRoute,
   isPublicRoute,
   isProfileViewRoute,
-  isTestRoute,
   getLoginRedirectUrl,
   AUTH_COOKIES,
 } from './lib/infrastructure/security/auth-utils';
@@ -114,27 +113,8 @@ export async function middleware(request: NextRequest) {
     return addSecurityHeaders(response);
   }
 
-  // Block test routes in production
-  if (isTestRoute(pathname)) {
-    if (process.env.NODE_ENV === 'production') {
-      logger.warn('[Middleware] Test route blocked in production', {
-        pathname,
-      });
-      return NextResponse.redirect(new URL('/', request.url));
-    }
-    // Allow in development
-    const response = NextResponse.next();
-    return addSecurityHeaders(response);
-  }
-
   // Admin route protection
   if (isAdminRoute(pathname)) {
-    logger.debug('[Middleware] Admin route check', {
-      pathname,
-      hasToken: !!token,
-      userRole,
-    });
-
     if (!token) {
       logger.info('[Middleware] No token found, redirecting to admin login');
       const loginUrl = new URL(
@@ -149,19 +129,12 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
-    logger.debug('[Middleware] Admin access granted');
     const response = NextResponse.next();
     return addSecurityHeaders(response);
   }
 
   // Moderator route protection (Admin also allowed - super role)
   if (isModeratorRoute(pathname)) {
-    logger.debug('[Middleware] Moderator route check', {
-      pathname,
-      hasToken: !!token,
-      userRole,
-    });
-
     if (!token) {
       logger.info('[Middleware] No token found, redirecting to login');
       const loginUrl = new URL(getLoginRedirectUrl(pathname), request.url);
@@ -178,9 +151,6 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
-    logger.debug('[Middleware] Moderator access granted', {
-      role: normalizedRole,
-    });
     const response = NextResponse.next();
     return addSecurityHeaders(response);
   }

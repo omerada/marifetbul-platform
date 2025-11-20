@@ -213,10 +213,7 @@ export const AdminFinancialReports: React.FC = () => {
 
       toast.success('Finansal veriler yüklendi');
     } catch (error) {
-      logger.error(
-        'Failed to load financial data:',
-        error
-      );
+      logger.error('Failed to load financial data:', error);
       toast.error('Finansal veriler yüklenemedi');
     } finally {
       setIsLoading(false);
@@ -229,12 +226,84 @@ export const AdminFinancialReports: React.FC = () => {
 
   // ==================== HANDLERS ====================
 
-  const handleExportCSV = () => {
-    toast.info('CSV export özelliği yakında eklenecek');
+  const handleExportCSV = async () => {
+    try {
+      const params = new URLSearchParams({
+        reportType: 'REVENUE',
+        startDate,
+        endDate,
+        groupBy: 'DAILY',
+      });
+
+      const response = await fetch(
+        `/api/v1/admin/reports/export/csv?${params}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('CSV oluşturma başarısız');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Finansal_Rapor_${startDate}_${endDate}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast.success('CSV raporu başarıyla indirildi');
+    } catch (error) {
+      logger.error('CSV export failed', error as Error);
+      toast.error('CSV raporu oluşturulurken bir hata oluştu');
+    }
   };
 
-  const handleExportPDF = () => {
-    toast.info('PDF export özelliği yakında eklenecek');
+  const handleExportPDF = async () => {
+    try {
+      const params = new URLSearchParams({
+        reportType: 'REVENUE',
+        startDate,
+        endDate,
+        groupBy: 'DAILY',
+      });
+
+      const response = await fetch(
+        `/api/v1/admin/reports/export/pdf?${params}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('PDF oluşturma başarısız');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Finansal_Rapor_${startDate}_${endDate}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast.success('PDF raporu başarıyla indirildi');
+    } catch (error) {
+      logger.error('PDF export failed', error as Error);
+      toast.error('PDF raporu oluşturulurken bir hata oluştu');
+    }
   };
 
   // ==================== RENDER ====================

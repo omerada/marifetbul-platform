@@ -45,6 +45,15 @@ export default function PortfolioManagementPage() {
   const privateItems = totalItems - publicItems;
   const totalViews = portfolios.reduce((sum, p) => sum + p.viewCount, 0);
 
+  // Sprint 1: Portfolio status stats
+  const pendingItems = portfolios.filter((p) => p.status === 'PENDING').length;
+  const approvedItems = portfolios.filter(
+    (p) => p.status === 'APPROVED'
+  ).length;
+  const rejectedItems = portfolios.filter(
+    (p) => p.status === 'REJECTED'
+  ).length;
+
   // Handlers
   const handleCreate = () => {
     setShowCreateModal(true);
@@ -123,7 +132,7 @@ export default function PortfolioManagementPage() {
           <CardContent>
             <div className="text-3xl font-bold text-gray-900">{totalItems}</div>
             <p className="text-xs text-gray-500">
-              {publicItems} herkese açık, {privateItems} özel
+              {approvedItems} onaylı, {pendingItems} beklemede
             </p>
           </CardContent>
         </Card>
@@ -131,33 +140,28 @@ export default function PortfolioManagementPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">
-              Herkese Açık
+              Onaylandı
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-600">
-              {publicItems}
+              {approvedItems}
             </div>
-            <p className="text-xs text-gray-500">
-              {totalItems > 0
-                ? Math.round((publicItems / totalItems) * 100)
-                : 0}
-              % portfolyonuz görünür
-            </p>
+            <p className="text-xs text-gray-500">Profilinizde görünüyor</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">
-              Özel
+              Onay Bekliyor
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-orange-600">
-              {privateItems}
+            <div className="text-3xl font-bold text-yellow-600">
+              {pendingItems}
             </div>
-            <p className="text-xs text-gray-500">Sadece sizin görebildiğiniz</p>
+            <p className="text-xs text-gray-500">İnceleme aşamasında</p>
           </CardContent>
         </Card>
 
@@ -257,11 +261,39 @@ export default function PortfolioManagementPage() {
                 <p className="mb-4 line-clamp-2 text-sm text-gray-600">
                   {portfolio.description}
                 </p>
-                <div className="flex items-center justify-between">
+                <div className="mb-2 flex items-center justify-between">
+                  <span
+                    className={`text-xs font-medium ${
+                      portfolio.status === 'APPROVED'
+                        ? 'text-green-600'
+                        : portfolio.status === 'REJECTED'
+                          ? 'text-red-600'
+                          : 'text-yellow-600'
+                    }`}
+                  >
+                    {portfolio.status === 'APPROVED'
+                      ? '✓ Onaylandı'
+                      : portfolio.status === 'REJECTED'
+                        ? '✗ Reddedildi'
+                        : '⏳ Onay Bekliyor'}
+                  </span>
                   <span
                     className={`text-xs font-medium ${portfolio.isPublic ? 'text-green-600' : 'text-orange-600'}`}
                   >
                     {portfolio.isPublic ? '🌍 Herkese Açık' : '🔒 Özel'}
+                  </span>
+                </div>
+                {portfolio.status === 'REJECTED' &&
+                  portfolio.rejectionReason && (
+                    <div className="mb-3 rounded-md bg-red-50 p-2">
+                      <p className="text-xs text-red-700">
+                        <strong>Red Nedeni:</strong> {portfolio.rejectionReason}
+                      </p>
+                    </div>
+                  )}
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-500">
+                    {portfolio.viewCount} görüntülenme
                   </span>
                   <div className="flex gap-2">
                     <Button

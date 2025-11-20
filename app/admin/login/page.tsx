@@ -36,35 +36,24 @@ export default function AdminLoginPage() {
       // LocalStorage'daki auth state'ini de temizle (eski session'ları temizlemek için)
       localStorage.removeItem('auth-storage');
 
-      logger.debug(
-        'Admin login: Cleared old cookies and localStorage to prevent redirect loop'
-      );
+      logger.info('Admin login page initialized');
     }
   }, []); // Sadece component mount olduğunda çalışır
 
   // Login sonrası yönlendirme kontrolü
   useEffect(() => {
     if (isAuthenticated && user) {
-      logger.debug('Admin login: User authenticated', { roleuserrole,  });
-
       if (user.role?.toUpperCase() === 'ADMIN') {
-        logger.debug('Admin login: Admin role confirmed, redirecting');
         // Loading state'ini kapat
         setIsLoading(false);
 
         // Set user role cookie for middleware
         if (typeof window !== 'undefined') {
           document.cookie = `marifetbul-user-role=${user.role}; path=/; SameSite=Lax; max-age=2592000`; // 30 days
-          logger.debug('Admin login: User role cookie set');
-
-          // Check if backend token cookie exists
-          const hasBackendToken = document.cookie.includes('marifetbul_token');
-          logger.debug('Admin login: Backend token cookie status', { hasBackendToken,  });
         }
 
         // Hard redirect için window.location kullan - middleware ve client-side routing sorunlarını çözer
         setTimeout(() => {
-          logger.debug('Admin login: Executing hard redirect to /admin');
           window.location.href = '/admin';
         }, 500); // Increased timeout to ensure cookies are set
       } else {
@@ -89,15 +78,11 @@ export default function AdminLoginPage() {
     setError('');
 
     try {
-      logger.debug('Admin login: Starting login process');
       await login({
         email: credentials.email,
         password: credentials.password,
       });
 
-      logger.debug(
-        'Admin login: Login successful, waiting for useEffect to handle redirect'
-      );
       // Login başarılı, state güncellendi
       // useEffect otomatik olarak isLoading'i kapatacak ve yönlendirme yapacak
       toast.success('Admin paneline başarıyla giriş yapıldı');

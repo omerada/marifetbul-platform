@@ -290,22 +290,6 @@ export default function OrderMilestonesPage() {
           />
         </Card>
       )}
-
-      {/* Sprint 1 Debug Info (remove in production) */}
-      {process.env.NODE_ENV === 'development' && (
-        <Card className="mt-6 border-blue-200 bg-blue-50 p-4">
-          <h3 className="mb-2 text-sm font-semibold text-blue-900">
-            Sprint 1 Debug Info
-          </h3>
-          <div className="space-y-1 text-xs text-blue-800">
-            <div>Order ID: {orderId}</div>
-            <div>User Role: {userRole}</div>
-            <div>Milestones Count: {milestones?.length || 0}</div>
-            <div>Loading: {isLoading ? 'Yes' : 'No'}</div>
-            <div>Error: {error ? error.message : 'None'}</div>
-          </div>
-        </Card>
-      )}
     </div>
   );
 }
