@@ -19,6 +19,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
@@ -61,9 +62,17 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { getDisputeByOrderId } from '@/lib/api/disputes';
 import type { DisputeResponse } from '@/types/dispute';
-import { DisputeCreationModal } from '@/components/domains/disputes';
 import { getRefundByOrderId } from '@/lib/api/refunds';
 import type { RefundDto } from '@/types/business/features/refund';
+
+// Lazy load dispute modal - Sprint 4 Performance Optimization
+const DisputeCreationModal = dynamic(
+  () =>
+    import('@/components/domains/disputes').then((mod) => ({
+      default: mod.DisputeCreationModal,
+    })),
+  { ssr: false }
+);
 
 // ================================================
 // COMPONENT

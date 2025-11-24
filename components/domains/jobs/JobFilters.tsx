@@ -17,6 +17,8 @@ import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { MultiSelect } from '@/components/ui/MultiSelect';
 import { Slider } from '@/components/ui/Slider';
+import { DateRangePicker } from '@/components/ui/DateRangePicker';
+import { useDebounce } from '@/hooks/shared/useDebounce';
 import {
   Search,
   X,
@@ -55,14 +57,29 @@ export function JobFilters({
   const [localFilters, setLocalFilters] = useState<JobFiltersType>(filters);
   const [searchQuery, setSearchQuery] = useState(filters.search || '');
 
+  // Debounce search query to reduce API calls - Sprint 5
+  const debouncedSearchQuery = useDebounce(searchQuery, 400);
+
   // Update local filters when props change
   useEffect(() => {
     setLocalFilters(filters);
     setSearchQuery(filters.search || '');
   }, [filters]);
 
+  // Trigger search when debounced value changes
+  useEffect(() => {
+    if (debouncedSearchQuery !== filters.search) {
+      onFilterChange({
+        ...localFilters,
+        search: debouncedSearchQuery,
+        page: 0,
+      });
+    }
+  }, [debouncedSearchQuery]);
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Immediate search on form submit (Enter key)
     onFilterChange({ ...localFilters, search: searchQuery, page: 0 });
   };
 
@@ -93,7 +110,9 @@ export function JobFilters({
       filters.isRemote !== undefined ||
       filters.location ||
       filters.skills?.length ||
-      filters.search
+      filters.search ||
+      filters.postedAfter ||
+      filters.deadlineBefore
     );
   };
 
@@ -107,6 +126,7 @@ export function JobFilters({
     if (filters.location) count++;
     if (filters.skills?.length) count++;
     if (filters.search) count++;
+    if (filters.postedAfter || filters.deadlineBefore) count++;
     return count;
   };
 
@@ -375,6 +395,40 @@ export function JobFilters({
               handleFilterChange('location', e.target.value || undefined)
             }
             disabled={isLoading}
+          />
+        </div>
+
+        {/* Date Range - NEW Sprint 5 */}
+        <div>
+          <DateRangePicker
+            startDate={
+              localFilters.postedAfter
+                ? new Date(localFilters.postedAfter)
+                : null
+            }
+            endDate={
+              localFilters.deadlineBefore
+                ? new Date(localFilters.deadlineBefore)
+                : null
+            }
+            onChange={(startDate, endDate) => {
+              const newFilters = { ...localFilters };
+              newFilters.postedAfter = startDate
+                ? startDate.toISOString()
+                : undefined;
+              newFilters.deadlineBefore = endDate
+                ? endDate.toISOString()
+                : undefined;
+              newFilters.page = 0;
+              setLocalFilters(newFilters);
+              onFilterChange(newFilters);
+            }}
+            startLabel="İlan Tarihi (Sonra)"
+            endLabel="Son Başvuru Tarihi (Önce)"
+            startPlaceholder="İlan tarihi seç"
+            endPlaceholder="Son başvuru tarihi seç"
+            disabled={isLoading}
+            showClear={true}
           />
         </div>
 

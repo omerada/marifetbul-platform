@@ -10,11 +10,10 @@ import {
   markAllAsRead,
 } from '@/lib/api/notifications';
 import { subscribeToNotifications } from '@/lib/infrastructure/websocket/notificationWebSocket';
+import { getUnifiedNotificationHandler } from '@/lib/infrastructure/notification/UnifiedNotificationHandler';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import { playNotificationAlert } from '@/lib/utils/notificationSound';
 import { useNotificationPreferences } from './useNotificationPreferences';
 import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
-import { showPriorityNotificationToast } from '@/lib/shared/notifications/toastNotificationHelper';
 import type { Notification } from '@/types/domains/notification';
 
 // Simple converter for notification API responses
@@ -91,6 +90,7 @@ export function useNotifications() {
   }, [count]);
 
   // WebSocket listener for real-time notifications
+  // Sprint 6 - Story 6.5: Using UnifiedNotificationHandler to prevent duplicates
   useEffect(() => {
     if (!user?.id) {
       logger.warn('Skipping WebSocket subscription - no user ID', {
@@ -99,65 +99,91 @@ export function useNotifications() {
       return;
     }
 
-    logger.info('Setting up WebSocket notification listener', {
-      userId: user.id,
+    logger.info(
+      'Setting up WebSocket notification listener with UnifiedHandler',
+      {
+        userId: user.id,
+      }
+    );
+
+    // Get unified notification handler
+    const unifiedHandler = getUnifiedNotificationHandler({
+      enableDeduplication: true,
+      deduplicationWindow: 5000, // 5 seconds
+      enableAlerts: true,
+      enableToasts: true,
+    });
+
+    // Register callbacks for processed notifications
+    unifiedHandler.setCallbacks({
+      onNotificationProcessed: (processedNotification) => {
+        logger.debug('Notification processed', {
+          id: processedNotification.id,
+          source: processedNotification.source,
+        });
+
+        // Update recent notifications list (add to beginning)
+        setRecentNotifications((prev) => [
+          processedNotification,
+          ...prev.slice(0, 4),
+        ]);
+
+        // Increment unread count
+        setUnreadCount((prev) => prev + 1);
+
+        // Revalidate data
+        mutate();
+        mutateCount();
+      },
+      onNotificationDeduplicated: (notificationId) => {
+        logger.info('Duplicate notification prevented', { notificationId });
+      },
+      // Sprint 6 - Story 6.1: Batch notification handler
+      onBatchProcessed: (batch) => {
+        logger.info('Batch notification processed', {
+          batchId: batch.id,
+          itemCount: batch.itemCount,
+        });
+
+        // Increment unread count by batch item count
+        setUnreadCount((prev) => prev + batch.itemCount);
+
+        // Revalidate data to fetch new notifications
+        mutate();
+        mutateCount();
+      },
+      onError: (error, notification) => {
+        logger.error('Notification processing error', error, {
+          notificationId: notification?.id,
+        });
+      },
     });
 
     try {
+      // Subscribe to WebSocket notifications
       const unsubscribe = subscribeToNotifications(user.id, {
         onNotification: (notification) => {
-          logger.debug('useNotifications', { notification });
-
-          // Update recent notifications list (add to beginning)
-          setRecentNotifications((prev) => [notification, ...prev.slice(0, 4)]);
-
-          // Increment unread count
-          setUnreadCount((prev) => prev + 1);
-
-          // Revalidate data
-          mutate();
-          mutateCount();
-
-          // Play sound and vibration if push notifications are enabled
-          // Check multiple push flags to ensure sound plays
-          const shouldPlayAlert =
-            preferences &&
-            (preferences.messagePush ||
-              preferences.jobPush ||
-              preferences.proposalPush ||
-              preferences.orderPush ||
-              preferences.paymentPush ||
-              preferences.reviewPush ||
-              preferences.systemPush ||
-              preferences.followPush);
-
-          if (shouldPlayAlert) {
-            const soundPlayer = () =>
-              playNotificationAlert({
-                sound: true,
-                vibration: true,
-                doNotDisturb: preferences.doNotDisturb,
-                dndStartTime: preferences.dndStartTime,
-                dndEndTime: preferences.dndEndTime,
-              });
-
-            // Show toast with priority-based styling and sound
-            showPriorityNotificationToast(notification, soundPlayer);
-          } else {
-            // Show toast without sound
-            showPriorityNotificationToast(notification, () => {
-              // No sound when push notifications are disabled
-            });
-          }
+          // Process notification through unified handler
+          unifiedHandler.processNotification(
+            notification,
+            'websocket',
+            preferences || undefined
+          );
+        },
+        // Sprint 6 - Story 6.1: Batch notification handler
+        onBatchNotification: (batch) => {
+          logger.info('Batch notification received from WebSocket', {
+            batchId: batch.id,
+            itemCount: batch.itemCount,
+          });
+          // Process batch through unified handler
+          unifiedHandler.processBatchNotification(
+            batch,
+            preferences || undefined
+          );
         },
         onError: (error) => {
-          logger.error(
-            'useNotifications: WebSocket notification error',
-            undefined,
-            {
-              error,
-            }
-          );
+          logger.error('useNotifications: WebSocket notification error', error);
         },
       });
 

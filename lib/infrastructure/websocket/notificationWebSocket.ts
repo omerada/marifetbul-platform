@@ -5,7 +5,8 @@
  * Handles WebSocket subscriptions for real-time notifications
  *
  * Sprint 1 - WebSocket Integration (Migrated to canonical types)
- * @version 2.0.0
+ * Sprint 6 - Story 6.1: Batch notification support
+ * @version 2.1.0
  */
 
 import { getWebSocketService } from './WebSocketService';
@@ -14,9 +15,11 @@ import type {
   Notification,
   WebSocketNotificationPayload,
 } from '@/types/domains/notification';
+import type { NotificationBatchData } from '@/components/domains/notifications/BatchedNotificationItem';
 
 export interface NotificationWebSocketCallbacks {
   onNotification: (notification: Notification) => void;
+  onBatchNotification?: (batch: NotificationBatchData) => void; // Sprint 6 - Story 6.1
   onError?: (error: Error) => void;
 }
 
@@ -45,11 +48,42 @@ export function subscribeToNotifications(
 
     const subscriptionId = ws.subscribe(topic, (message) => {
       try {
-        const payload = message as WebSocketNotificationPayload;
+        const payload = message as WebSocketNotificationPayload | any;
 
         logger.debug('NotificationWebSocket', { payload });
 
-        // Transform payload to Notification format
+        // Sprint 6 - Story 6.1: Check if this is a batch notification
+        if (payload.type === 'BATCH' && payload.batchType) {
+          // This is a batch notification from backend
+          const batch: NotificationBatchData = {
+            id: payload.id,
+            batchType: payload.batchType,
+            title: payload.title,
+            message: payload.message || payload.content,
+            itemCount: payload.itemCount || 0,
+            items: [], // Backend doesn't send full items via WebSocket
+            createdAt: payload.createdAt || new Date().toISOString(),
+            sentAt: payload.sentAt,
+          };
+
+          logger.info('NotificationWebSocket: Batch notification received', {
+            batchId: batch.id,
+            batchType: batch.batchType,
+            itemCount: batch.itemCount,
+          });
+
+          // Call batch callback if available
+          if (callbacks.onBatchNotification) {
+            callbacks.onBatchNotification(batch);
+          } else {
+            logger.warn(
+              'NotificationWebSocket: Batch received but no handler registered'
+            );
+          }
+          return;
+        }
+
+        // Regular notification processing
         const notification: Notification = {
           id: payload.notificationId,
           userId: userId,
@@ -79,9 +113,7 @@ export function subscribeToNotifications(
           'NotificationWebSocket: Error processing notification',
           error as Error
         );
-        callbacks.onError?.(
-          error
-        );
+        callbacks.onError?.(error as Error);
       }
     });
 
@@ -94,9 +126,7 @@ export function subscribeToNotifications(
     };
   } catch (error) {
     logger.error('NotificationWebSocket: Failed to subscribe', error as Error);
-    callbacks.onError?.(
-      error
-    );
+    callbacks.onError?.(error);
     throw error;
   }
 }
@@ -157,9 +187,7 @@ export function subscribeToBroadcastNotifications(
           'NotificationWebSocket: Error processing broadcast',
           error as Error
         );
-        callbacks.onError?.(
-          error
-        );
+        callbacks.onError?.(error);
       }
     });
 
@@ -176,9 +204,7 @@ export function subscribeToBroadcastNotifications(
       'NotificationWebSocket: Failed to subscribe to broadcast',
       error as Error
     );
-    callbacks.onError?.(
-      error
-    );
+    callbacks.onError?.(error);
     throw error;
   }
 }

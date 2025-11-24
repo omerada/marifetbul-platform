@@ -1,4 +1,4 @@
-export { JobFilters } from './JobFilters';
+// Sprint 4 - Package Filters
 export {
   PackageFiltersComponent,
   default as PackageFilters,

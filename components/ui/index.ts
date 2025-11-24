@@ -71,6 +71,8 @@ export {
   SelectTrigger,
   SelectValue,
 } from './Select';
+export { DateRangePicker } from './DateRangePicker';
+export type { DateRangePickerProps } from './DateRangePicker';
 
 // Layout Components
 export { Card, CardHeader, CardContent, CardFooter, CardTitle } from './Card';

@@ -181,6 +181,34 @@ export function maskString(
 }
 
 // ================================================
+// NUMBER FORMATTING
+// ================================================
+
+/**
+ * Format number as percentage
+ * @example formatPercentage(0.75) => "75%"
+ * @example formatPercentage(0.123, 1) => "12.3%"
+ */
+export function formatPercentage(value: number, decimals: number = 0): string {
+  return `${(value * 100).toFixed(decimals)}%`;
+}
+
+/**
+ * Format large numbers in compact form
+ * @example formatCompactNumber(1500) => "1.5K"
+ * @example formatCompactNumber(2500000) => "2.5M"
+ */
+export function formatCompactNumber(value: number): string {
+  if (value >= 1000000) {
+    return `${(value / 1000000).toFixed(1)}M`;
+  }
+  if (value >= 1000) {
+    return `${(value / 1000).toFixed(1)}K`;
+  }
+  return value.toString();
+}
+
+// ================================================
 // VALIDATION HELPERS
 // ================================================
 // Sprint 7: Moved to lib/shared/utils/validation.ts

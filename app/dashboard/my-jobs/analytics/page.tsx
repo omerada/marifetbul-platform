@@ -28,15 +28,29 @@ import {
   TrendingUp,
   Clock,
   BarChart3,
+  Download,
+  FileText,
 } from 'lucide-react';
+import {
+  exportJobAnalyticsToCSV,
+  exportJobAnalyticsToPDF,
+  prepareJobAnalyticsExportData,
+} from '@/lib/utils/export-job-analytics';
+import { useAuth } from '@/hooks';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui';
 import { useJobs } from '@/hooks/business/jobs/useJobs';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  EmptyAnalyticsState,
+  AnalyticsLoadingState,
+  AnalyticsErrorState,
+} from '@/components/domains/jobs/analytics/EmptyAnalyticsState';
 
 export default function JobAnalyticsPage() {
   const router = useRouter();
-  const { jobs, isLoading, fetchMyJobs } = useJobs();
+  const { jobs, isLoading, error, fetchMyJobs } = useJobs();
+  const [isExporting, setIsExporting] = useState(false);
   const [analytics, setAnalytics] = useState({
     totalJobs: 0,
     activeJobs: 0,
@@ -105,17 +119,68 @@ export default function JobAnalyticsPage() {
     }
   }, [jobs]);
 
+  // Export handlers
+  const handleExportCSV = () => {
+    if (!jobs || jobs.length === 0) return;
+
+    setIsExporting(true);
+    try {
+      const exportData = prepareJobAnalyticsExportData(
+        jobs,
+        analytics,
+        'İşveren' // User email would come from auth context
+      );
+      exportJobAnalyticsToCSV(exportData, {
+        filename: `is-ilani-analitigi-${new Date().toISOString().split('T')[0]}.csv`,
+        includeDetails: true,
+        locale: 'tr',
+      });
+    } catch (error) {
+      console.error('CSV export failed:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportPDF = async () => {
+    if (!jobs || jobs.length === 0) return;
+
+    setIsExporting(true);
+    try {
+      const exportData = prepareJobAnalyticsExportData(
+        jobs,
+        analytics,
+        'İşveren' // User email would come from auth context
+      );
+      await exportJobAnalyticsToPDF(exportData, {
+        filename: `is-ilani-analitigi-${new Date().toISOString().split('T')[0]}.pdf`,
+        includeDetails: true,
+        locale: 'tr',
+      });
+    } catch (error) {
+      console.error('PDF export failed:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   if (isLoading) {
+    return <AnalyticsLoadingState />;
+  }
+
+  // Error state
+  if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <Skeleton className="mb-6 h-8 w-64" />
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[...Array(6)].map((_, i) => (
-            <Skeleton key={i} className="h-32" />
-          ))}
-        </div>
-      </div>
+      <AnalyticsErrorState
+        error={error}
+        onRetry={() => fetchMyJobs({ page: 0, size: 100 })}
+      />
     );
+  }
+
+  // Empty state - no jobs created yet
+  if (!jobs || jobs.length === 0) {
+    return <EmptyAnalyticsState />;
   }
 
   return (
@@ -138,7 +203,27 @@ export default function JobAnalyticsPage() {
             İş ilanlarınızın performansını görüntüleyin
           </p>
         </div>
-        <BarChart3 className="h-12 w-12 text-blue-600" />
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            onClick={handleExportCSV}
+            disabled={isExporting || !jobs || jobs.length === 0}
+            className="flex items-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            CSV İndir
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleExportPDF}
+            disabled={isExporting || !jobs || jobs.length === 0}
+            className="flex items-center gap-2"
+          >
+            <FileText className="h-4 w-4" />
+            PDF İndir
+          </Button>
+          <BarChart3 className="h-12 w-12 text-blue-600" />
+        </div>
       </div>
 
       {/* Stats Grid */}

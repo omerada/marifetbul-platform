@@ -30,6 +30,7 @@ import {
   sendTestNotification as sendTestNotificationService,
   getDiagnostics,
 } from '@/lib/infrastructure/services/push-notification.service';
+import { getUnifiedNotificationHandler } from '@/lib/infrastructure/notification/UnifiedNotificationHandler';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { toast } from 'sonner';
 import type { MessagePayload } from 'firebase/messaging';
@@ -285,6 +286,7 @@ export function usePushNotifications(): UsePushNotificationsReturn {
 
   /**
    * Initialize on mount
+   * Sprint 6 - Story 6.5: Integrated with UnifiedNotificationHandler
    */
   useEffect(() => {
     if (!isSupported) {
@@ -297,10 +299,22 @@ export function usePushNotifications(): UsePushNotificationsReturn {
 
     // Setup foreground listener if subscribed
     if (isSubscribed && !unsubscribeRef.current) {
+      // Get unified notification handler
+      const unifiedHandler = getUnifiedNotificationHandler({
+        enableDeduplication: true,
+        deduplicationWindow: 5000,
+        enableAlerts: true,
+        enableToasts: true,
+      });
+
+      // Setup foreground listener with unified handler
       unsubscribeRef.current = setupForegroundMessageListener(
-        handleForegroundMessage
+        handleForegroundMessage,
+        unifiedHandler
       );
-      logger.info('Foreground message listener initialized');
+      logger.info(
+        'Foreground message listener initialized with UnifiedHandler'
+      );
     }
 
     // Cleanup on unmount

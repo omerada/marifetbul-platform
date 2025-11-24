@@ -141,6 +141,7 @@ export const JOB_ENDPOINTS = {
 
   // Job Search & Filter
   SEARCH: '/jobs/search',
+  ADVANCED_SEARCH: '/jobs/search/advanced',
   FILTER: '/jobs/filter',
   BY_CATEGORY: (categoryId: string) => `/jobs/category/${categoryId}`,
   BY_EMPLOYER: (employerId: string) => `/jobs/employer/${employerId}`,

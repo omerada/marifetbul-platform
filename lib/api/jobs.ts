@@ -70,6 +70,8 @@ export interface JobFilters {
   location?: string;
   search?: string;
   employerId?: string;
+  postedAfter?: string; // ISO date string - Sprint 5
+  deadlineBefore?: string; // ISO date string - Sprint 5
   sortBy?:
     | 'latest'
     | 'oldest'
@@ -77,6 +79,29 @@ export interface JobFilters {
     | 'budget_low'
     | 'deadline'
     | 'proposals';
+  page?: number;
+  size?: number;
+}
+
+/**
+ * Advanced job search request
+ * Sprint 3 - Story 3.2: Advanced Job Search & Filtering
+ */
+export interface AdvancedJobSearchRequest {
+  query?: string;
+  categoryId?: string;
+  subcategoryId?: string;
+  skills?: string[];
+  budgetMin?: number;
+  budgetMax?: number;
+  budgetType?: JobBudgetType;
+  experienceLevels?: JobExperienceLevel[];
+  isRemote?: boolean;
+  location?: string;
+  postedAfter?: string; // ISO date string
+  deadlineBefore?: string; // ISO date string
+  sortBy?: 'createdAt' | 'budgetAmount' | 'deadline' | 'title';
+  sortDirection?: 'ASC' | 'DESC';
   page?: number;
   size?: number;
 }
@@ -261,6 +286,20 @@ export async function searchJobs(
   filters?: Omit<JobFilters, 'search'>
 ): Promise<PageResponse<JobResponse>> {
   return getJobs({ ...filters, search: keyword });
+}
+
+/**
+ * Advanced job search with multiple filters
+ * Sprint 3 - Story 3.2: Advanced Job Search & Filtering
+ * @throws {ValidationError} Invalid search parameters
+ */
+export async function advancedJobSearch(
+  request: AdvancedJobSearchRequest
+): Promise<PageResponse<JobResponse>> {
+  return apiClient.post<PageResponse<JobResponse>>(
+    JOB_ENDPOINTS.ADVANCED_SEARCH,
+    request
+  );
 }
 
 /**

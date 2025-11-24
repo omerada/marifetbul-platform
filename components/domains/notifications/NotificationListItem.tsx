@@ -4,7 +4,14 @@ import React from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { Notification } from '@/types/domains/notification';
-import { Check, Archive, Trash2, Clock } from 'lucide-react';
+import {
+  Check,
+  Archive,
+  Trash2,
+  Clock,
+  Layers,
+  ChevronRight,
+} from 'lucide-react';
 import {
   getNotificationIcon,
   getNotificationBadge,
@@ -18,6 +25,7 @@ interface NotificationListItemProps {
   onMarkAsRead?: () => void;
   onArchive?: () => void;
   onDelete?: () => void;
+  onExpand?: () => void; // Sprint 6 - Story 6.6: Expand grouped notification
   showActions?: boolean;
   layout?: 'list' | 'card';
   className?: string;
@@ -29,10 +37,14 @@ export const NotificationListItem: React.FC<NotificationListItemProps> = ({
   onMarkAsRead,
   onArchive,
   onDelete,
+  onExpand, // Sprint 6 - Story 6.6
   showActions = true,
   layout = 'list',
   className = '',
 }) => {
+  // Check if notification is grouped (Sprint 6 - Story 6.6)
+  const isGrouped = notification.groupedCount && notification.groupedCount > 1;
+
   if (layout === 'card') {
     return (
       <div
@@ -58,6 +70,17 @@ export const NotificationListItem: React.FC<NotificationListItemProps> = ({
                   {!notification.isRead && (
                     <div className="h-2 w-2 rounded-full bg-blue-600"></div>
                   )}
+                  {/* Sprint 6 - Story 6.6: Grouped notification indicator */}
+                  {isGrouped && (
+                    <Badge
+                      variant="secondary"
+                      size="sm"
+                      className="flex items-center gap-1"
+                    >
+                      <Layers className="h-3 w-3" />
+                      {notification.groupedCount}
+                    </Badge>
+                  )}
                 </div>
                 <h4
                   className={`text-sm ${!notification.isRead ? 'font-semibold' : 'font-medium'}`}
@@ -75,6 +98,21 @@ export const NotificationListItem: React.FC<NotificationListItemProps> = ({
 
             {showActions && (
               <div className="flex items-center gap-2">
+                {/* Sprint 6 - Story 6.6: Expand grouped notification */}
+                {isGrouped && onExpand && (
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onExpand();
+                    }}
+                    size="sm"
+                    variant="outline"
+                    className="text-xs"
+                  >
+                    <ChevronRight className="mr-1 h-3 w-3" />
+                    {notification.groupedCount} Bildirimi Gör
+                  </Button>
+                )}
                 {!notification.isRead && onMarkAsRead && (
                   <Button
                     onClick={(e) => {
@@ -146,6 +184,17 @@ export const NotificationListItem: React.FC<NotificationListItemProps> = ({
               {!notification.isRead && (
                 <div className="h-2 w-2 rounded-full bg-blue-600"></div>
               )}
+              {/* Sprint 6 - Story 6.6: Grouped notification indicator */}
+              {isGrouped && (
+                <Badge
+                  variant="secondary"
+                  size="sm"
+                  className="flex items-center gap-1"
+                >
+                  <Layers className="h-3 w-3" />
+                  {notification.groupedCount}
+                </Badge>
+              )}
             </div>
             <h4
               className={`text-sm ${!notification.isRead ? 'font-semibold' : 'font-medium'}`}
@@ -163,6 +212,22 @@ export const NotificationListItem: React.FC<NotificationListItemProps> = ({
             </span>
             {showActions && (
               <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                {/* Sprint 6 - Story 6.6: Expand grouped notification */}
+                {isGrouped && onExpand && (
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onExpand();
+                    }}
+                    size="sm"
+                    variant="outline"
+                    className="h-6 px-2 text-xs"
+                    title={`${notification.groupedCount} bildirimi gör`}
+                  >
+                    <Layers className="mr-1 h-3 w-3" />
+                    {notification.groupedCount}
+                  </Button>
+                )}
                 {!notification.isRead && onMarkAsRead && (
                   <Button
                     onClick={(e) => {

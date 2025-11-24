@@ -69,6 +69,11 @@ const notificationResponseSchema = z.object({
   emailSent: z.boolean(),
   createdAt: z.string(),
   expiresAt: z.string().nullable(),
+  // Grouping & Threading (Sprint 6 - Story 6.6)
+  groupKey: z.string().nullable().optional(),
+  threadId: z.string().uuid().nullable().optional(),
+  parentNotificationId: z.string().uuid().nullable().optional(),
+  groupedCount: z.number().nullable().optional(),
 });
 
 /**
@@ -132,6 +137,12 @@ const notificationPreferencesResponseSchema = z.object({
   doNotDisturb: z.boolean(),
   dndStartTime: z.string().nullable(),
   dndEndTime: z.string().nullable(),
+  // Grouping & Batching (Sprint 6)
+  enableGrouping: z.boolean().optional(),
+  batchingIntervalMinutes: z.number().optional(),
+  emailDigestEnabled: z.boolean().optional(),
+  emailDigestFrequency: z.string().optional(),
+  digestDeliveryHour: z.number().optional(),
 });
 
 // ==================== TYPES ====================
@@ -171,6 +182,12 @@ export interface UpdateNotificationPreferencesRequest {
   doNotDisturb?: boolean;
   dndStartTime?: string | null;
   dndEndTime?: string | null;
+  // Grouping & Batching (Sprint 6)
+  enableGrouping?: boolean;
+  batchingIntervalMinutes?: number;
+  emailDigestEnabled?: boolean;
+  emailDigestFrequency?: string;
+  digestDeliveryHour?: number;
 }
 
 /**
@@ -514,6 +531,66 @@ export async function setDoNotDisturb(
 
   await apiClient.post(
     `/v1/notifications/preferences/dnd?${params.toString()}`
+  );
+}
+
+// ==================== GROUPING & THREADING (Sprint 6 - Story 6.6) ====================
+
+/**
+ * Get notification thread (all notifications in a group)
+ *
+ * @endpoint GET /api/v1/notifications/thread/:threadId
+ * @param threadId - Thread UUID
+ */
+export async function getNotificationThread(
+  threadId: string
+): Promise<NotificationResponse[]> {
+  logger.debug('notifications.api', `Getting notification thread: ${threadId}`);
+
+  const response = await apiClient.get<NotificationResponse[]>(
+    `/v1/notifications/thread/${threadId}`
+  );
+
+  return z.array(notificationResponseSchema).parse(response);
+}
+
+/**
+ * Expand grouped notification to see individual items
+ *
+ * @endpoint GET /api/v1/notifications/:notificationId/expand
+ * @param notificationId - Grouped notification UUID
+ */
+export async function expandGroupedNotification(
+  notificationId: string
+): Promise<NotificationResponse[]> {
+  logger.debug(
+    'notifications.api',
+    `Expanding grouped notification: ${notificationId}`
+  );
+
+  const response = await apiClient.get<NotificationResponse[]>(
+    `/v1/notifications/${notificationId}/expand`
+  );
+
+  return z.array(notificationResponseSchema).parse(response);
+}
+
+/**
+ * Manually trigger notification grouping
+ *
+ * @endpoint POST /api/v1/notifications/group
+ * @param lookbackMinutes - How far back to look for grouping (default: 60)
+ */
+export async function groupNotifications(
+  lookbackMinutes: number = 60
+): Promise<void> {
+  logger.info(
+    'notifications.api',
+    `Grouping notifications (${lookbackMinutes} min)`
+  );
+
+  await apiClient.post(
+    `/v1/notifications/group?lookbackMinutes=${lookbackMinutes}`
   );
 }
 

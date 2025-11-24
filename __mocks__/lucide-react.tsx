@@ -40,6 +40,8 @@ export const ChevronDown = createMockIcon('ChevronDown');
 export const ChevronUp = createMockIcon('ChevronUp');
 export const ArrowUpRight = createMockIcon('ArrowUpRight');
 export const ArrowDownRight = createMockIcon('ArrowDownRight');
+export const ArrowDown = createMockIcon('ArrowDown');
+export const ArrowUp = createMockIcon('ArrowUp');
 export const ExternalLink = createMockIcon('ExternalLink');
 
 // Wallet & Finance

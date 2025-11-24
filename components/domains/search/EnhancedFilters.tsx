@@ -1,15 +1,21 @@
 'use client';
 
+/**
+ * EnhancedFilters Component
+ * Sprint 4 Migration: Updated to use canonical JobFilters from domains/jobs
+ */
+
 import React from 'react';
 import { Filter, X, MapPin, DollarSign, Clock, Star, Zap } from 'lucide-react';
 import { Card, Button, Badge } from '@/components/ui';
-import { JobFilters as JobFiltersComponent } from '@/components/shared/filters';
+import { JobFilters as JobFiltersComponent } from '@/components/domains/jobs';
 import { PackageFiltersComponent } from '@/components/shared/filters';
-import { JobFilters, PackageFilters } from '@/types';
+import type { JobFilters as BackendJobFilters } from '@/lib/api/jobs';
+import { JobFilters as LegacyJobFilters, PackageFilters } from '@/types';
 
 interface JobFilterHook {
-  filters: JobFilters;
-  updateFilters: (filters: JobFilters) => void;
+  filters: LegacyJobFilters;
+  updateFilters: (filters: LegacyJobFilters) => void;
   clearFilters: () => void;
   hasActiveFilters: boolean;
 }
@@ -84,9 +90,10 @@ export function EnhancedFilters({
 
           {activeTab === 'jobs' ? (
             <JobFiltersComponent
-              filters={jobFilters.filters}
-              onFiltersChange={jobFilters.updateFilters}
-              onClearFilters={jobFilters.clearFilters}
+              filters={jobFilters.filters as unknown as BackendJobFilters}
+              onFilterChange={(filters) =>
+                jobFilters.updateFilters(filters as unknown as LegacyJobFilters)
+              }
             />
           ) : (
             <PackageFiltersComponent

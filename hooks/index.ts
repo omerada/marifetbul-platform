@@ -223,6 +223,24 @@ export { useSEO } from './infrastructure/integrations/useSEO';
 export { useUnifiedLocation } from './infrastructure/integrations/useUnifiedLocation';
 export { usePlatformSettings } from './infrastructure/integrations/usePlatformSettings';
 
+// NOTIFICATION ANALYTICS HOOKS - Sprint 6: Notification System
+export {
+  useSystemNotificationAnalytics,
+  useMyNotificationStats,
+  useUserNotificationStats,
+} from './infrastructure/useNotificationAnalytics';
+export type {
+  NotificationAnalyticsData,
+  UserNotificationStats,
+  EmailStats,
+  PushStats,
+  InAppStats,
+  TypeBreakdown,
+  PriorityBreakdown,
+  DailyTrend,
+  TypePerformance,
+} from './infrastructure/useNotificationAnalytics';
+
 // MESSAGING HOOKS - Basic messaging (chat support removed)
 export {
   useMessages,

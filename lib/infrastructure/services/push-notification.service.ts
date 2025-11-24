@@ -598,9 +598,13 @@ export async function getRegisteredDevices(): Promise<DeviceTokenResponse[]> {
 /**
  * Setup foreground message listener
  * Shows notifications when app is in focus
+ * Sprint 6 - Story 6.5: Integrated with UnifiedNotificationHandler
  */
 export function setupForegroundMessageListener(
-  onNotification?: (payload: MessagePayload) => void
+  onNotification?: (payload: MessagePayload) => void,
+  unifiedHandler?: ReturnType<
+    typeof import('@/lib/infrastructure/notification/UnifiedNotificationHandler').getUnifiedNotificationHandler
+  >
 ): (() => void) | null {
   const messagingInstance = getMessagingInstance();
   if (!messagingInstance) {
@@ -614,22 +618,42 @@ export function setupForegroundMessageListener(
       hasData: !!payload.data,
     });
 
-    // Show toast notification
-    if (payload.notification) {
-      toast(payload.notification.title || 'Yeni Bildirim', {
-        description: payload.notification.body,
-        duration: 5000,
-        action: payload.data?.url
-          ? {
-              label: 'Aç',
-              onClick: () => {
-                if (payload.data?.url) {
-                  window.location.href = payload.data.url as string;
-                }
-              },
-            }
-          : undefined,
-      });
+    // If unified handler is provided, use it for deduplication
+    if (unifiedHandler && payload.data?.notificationId) {
+      // Convert Firebase payload to Notification type
+      const notification = {
+        id: payload.data.notificationId as string,
+        userId: payload.data.userId as string,
+        type: (payload.data.type as string) || 'SYSTEM',
+        title: payload.notification?.title || 'Yeni Bildirim',
+        content: payload.notification?.body || '',
+        isRead: false,
+        createdAt: new Date().toISOString(),
+        priority: (payload.data.priority as any) || 'medium',
+        actionUrl: payload.data.url as string | undefined,
+        data: payload.data,
+      };
+
+      // Process through unified handler (will prevent duplicates)
+      unifiedHandler.processNotification(notification, 'push');
+    } else {
+      // Fallback: Show toast notification (legacy behavior)
+      if (payload.notification) {
+        toast(payload.notification.title || 'Yeni Bildirim', {
+          description: payload.notification.body,
+          duration: 5000,
+          action: payload.data?.url
+            ? {
+                label: 'Aç',
+                onClick: () => {
+                  if (payload.data?.url) {
+                    window.location.href = payload.data.url as string;
+                  }
+                },
+              }
+            : undefined,
+        });
+      }
     }
 
     // Call custom handler

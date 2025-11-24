@@ -19,17 +19,39 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { Plus, Briefcase, Loader2, Filter, AlertCircle } from 'lucide-react';
 import { MyJobCard } from '@/components/domains/jobs/MyJobCard';
-import {
-  JobCloseModal,
-  JobReopenModal,
-} from '@/components/domains/jobs/JobStatusModals';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { useJobs } from '@/hooks/business/jobs/useJobs';
 import type { JobStatus, JobResponse } from '@/types/backend-aligned';
+
+// Lazy load modals - Sprint 4 Performance Optimization
+const JobCloseModal = dynamic(
+  () =>
+    import('@/components/domains/jobs').then((mod) => ({
+      default: mod.JobCloseModal,
+    })),
+  { ssr: false }
+);
+
+const JobReopenModal = dynamic(
+  () =>
+    import('@/components/domains/jobs').then((mod) => ({
+      default: mod.JobReopenModal,
+    })),
+  { ssr: false }
+);
+
+const DeleteJobModal = dynamic(
+  () =>
+    import('@/components/domains/jobs').then((mod) => ({
+      default: mod.DeleteJobModal,
+    })),
+  { ssr: false }
+);
 
 export default function MyJobsPage() {
   const router = useRouter();
@@ -41,6 +63,7 @@ export default function MyJobsPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [closeModalOpen, setCloseModalOpen] = useState(false);
   const [reopenModalOpen, setReopenModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<JobResponse | null>(null);
 
   // Use Jobs Hook
@@ -80,41 +103,13 @@ export default function MyJobsPage() {
     setReopenModalOpen(true);
   };
 
-  // Handle delete job
-  const handleDeleteJob = async (jobId: string) => {
+  // Handle delete job - Open modal
+  const handleDeleteJob = (jobId: string) => {
     const job = jobs?.find((j) => j.id === jobId);
     if (!job) return;
 
-    // Check if job can be deleted
-    if (job.status === 'IN_PROGRESS') {
-      alert('Devam eden işler silinemez. Önce işi kapatın.');
-      return;
-    }
-
-    if (
-      !confirm(
-        'Bu işi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.'
-      )
-    )
-      return;
-
-    try {
-      const { deleteJob } = await import('@/lib/api/jobs');
-      await deleteJob(jobId);
-
-      // Refresh jobs list
-      fetchMyJobs({
-        page: currentPage,
-        size: 20,
-        status: selectedStatus === 'all' ? undefined : selectedStatus,
-      });
-    } catch (err) {
-      alert(
-        err instanceof Error
-          ? err.message
-          : 'İş silinirken bir hata oluştu. Lütfen tekrar deneyin.'
-      );
-    }
+    setSelectedJob(job);
+    setDeleteModalOpen(true);
   };
 
   // Handle modal success
@@ -382,6 +377,19 @@ export default function MyJobsPage() {
             job={selectedJob}
           />
         </>
+      )}
+
+      {/* Job Delete Modal - Sprint 3 Story 3.1 */}
+      {deleteModalOpen && selectedJob && (
+        <DeleteJobModal
+          isOpen={deleteModalOpen}
+          onClose={() => {
+            setDeleteModalOpen(false);
+            setSelectedJob(null);
+          }}
+          job={selectedJob}
+          onSuccess={handleModalSuccess}
+        />
       )}
     </div>
   );

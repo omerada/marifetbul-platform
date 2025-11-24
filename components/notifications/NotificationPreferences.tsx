@@ -23,6 +23,9 @@ import {
   Mail,
   Smartphone,
   Moon,
+  Layers,
+  Timer,
+  Inbox,
 } from 'lucide-react';
 import {
   NotificationPreferencesResponse,
@@ -113,6 +116,13 @@ export default function NotificationPreferences() {
   const [dndStartTime, setDndStartTime] = useState('22:00');
   const [dndEndTime, setDndEndTime] = useState('08:00');
 
+  // Grouping & Batching State (Sprint 6)
+  const [groupingEnabled, setGroupingEnabled] = useState(true);
+  const [batchingInterval, setBatchingInterval] = useState(0);
+  const [digestEnabled, setDigestEnabled] = useState(false);
+  const [digestFrequency, setDigestFrequency] = useState('DAILY');
+  const [digestHour, setDigestHour] = useState(9);
+
   // ==================== FETCH PREFERENCES ====================
 
   const fetchPreferences = async () => {
@@ -128,14 +138,25 @@ export default function NotificationPreferences() {
       if (data.dndStartTime) setDndStartTime(data.dndStartTime);
       if (data.dndEndTime) setDndEndTime(data.dndEndTime);
 
+      // Set grouping & batching state (Sprint 6)
+      setGroupingEnabled(data.enableGrouping ?? true);
+      setBatchingInterval(data.batchingIntervalMinutes ?? 0);
+      setDigestEnabled(data.emailDigestEnabled ?? false);
+      setDigestFrequency(data.emailDigestFrequency ?? 'DAILY');
+      setDigestHour(data.digestDeliveryHour ?? 9);
+
       logger.debug(
         'NotificationPreferences',
         'Preferences fetched successfully'
       );
     } catch (err) {
-      logger.error('NotificationPreferences: Failed to fetch preferences', undefined, {
-        err,
-      });
+      logger.error(
+        'NotificationPreferences: Failed to fetch preferences',
+        undefined,
+        {
+          err,
+        }
+      );
       setError('Bildirim tercihleri yüklenirken bir hata oluştu.');
     } finally {
       setLoading(false);
@@ -181,9 +202,13 @@ export default function NotificationPreferences() {
         'Preferences updated successfully'
       );
     } catch (err) {
-      logger.error('NotificationPreferences: Failed to update preferences', undefined, {
-        err,
-      });
+      logger.error(
+        'NotificationPreferences: Failed to update preferences',
+        undefined,
+        {
+          err,
+        }
+      );
       setError('Tercihler kaydedilirken bir hata oluştu.');
     } finally {
       setSaving(false);
@@ -210,14 +235,25 @@ export default function NotificationPreferences() {
       if (defaults.dndStartTime) setDndStartTime(defaults.dndStartTime);
       if (defaults.dndEndTime) setDndEndTime(defaults.dndEndTime);
 
+      // Reset grouping & batching state (Sprint 6)
+      setGroupingEnabled(defaults.enableGrouping ?? true);
+      setBatchingInterval(defaults.batchingIntervalMinutes ?? 0);
+      setDigestEnabled(defaults.emailDigestEnabled ?? false);
+      setDigestFrequency(defaults.emailDigestFrequency ?? 'DAILY');
+      setDigestHour(defaults.digestDeliveryHour ?? 9);
+
       setSuccessMessage('Tercihler varsayılan ayarlara sıfırlandı.');
       setTimeout(() => setSuccessMessage(null), 3000);
 
       logger.info('NotificationPreferences', 'Preferences reset to defaults');
     } catch (err) {
-      logger.error('NotificationPreferences: Failed to reset preferences', undefined, {
-        err,
-      });
+      logger.error(
+        'NotificationPreferences: Failed to reset preferences',
+        undefined,
+        {
+          err,
+        }
+      );
       setError('Tercihler sıfırlanırken bir hata oluştu.');
     } finally {
       setSaving(false);
@@ -251,7 +287,9 @@ export default function NotificationPreferences() {
         `DND ${newEnabled ? 'enabled' : 'disabled'}`
       );
     } catch (err) {
-      logger.error('NotificationPreferences: Failed to toggle DND', undefined, { err });
+      logger.error('NotificationPreferences: Failed to toggle DND', undefined, {
+        err,
+      });
       setError('Rahatsız Etme Modu ayarlanırken bir hata oluştu.');
     } finally {
       setSaving(false);
@@ -274,13 +312,46 @@ export default function NotificationPreferences() {
 
       logger.info('NotificationPreferences', 'DND times updated');
     } catch (err) {
-      logger.error('NotificationPreferences: Failed to update DND times', undefined, {
-        err,
-      });
+      logger.error(
+        'NotificationPreferences: Failed to update DND times',
+        undefined,
+        {
+          err,
+        }
+      );
       setError('Saatler güncellenirken bir hata oluştu.');
     } finally {
       setSaving(false);
     }
+  };
+
+  // ==================== GROUPING & BATCHING HANDLERS (Sprint 6) ====================
+
+  const handleGroupingToggle = async () => {
+    const newValue = !groupingEnabled;
+    setGroupingEnabled(newValue);
+    await savePreferences({ enableGrouping: newValue });
+  };
+
+  const handleBatchingChange = async (newInterval: number) => {
+    setBatchingInterval(newInterval);
+    await savePreferences({ batchingIntervalMinutes: newInterval });
+  };
+
+  const handleDigestToggle = async () => {
+    const newValue = !digestEnabled;
+    setDigestEnabled(newValue);
+    await savePreferences({ emailDigestEnabled: newValue });
+  };
+
+  const handleDigestFrequencyChange = async (newFrequency: string) => {
+    setDigestFrequency(newFrequency);
+    await savePreferences({ emailDigestFrequency: newFrequency });
+  };
+
+  const handleDigestHourChange = async (newHour: number) => {
+    setDigestHour(newHour);
+    await savePreferences({ digestDeliveryHour: newHour });
   };
 
   // ==================== RENDER ====================
@@ -421,6 +492,167 @@ export default function NotificationPreferences() {
               <Save className="h-4 w-4" />
               Kaydet
             </button>
+          </div>
+        )}
+      </div>
+
+      {/* Notification Grouping (Sprint 6) */}
+      <div className="rounded-lg border border-blue-200 bg-blue-50 p-6">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+              <Layers className="h-5 w-5 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900">Bildirim Gruplama</h3>
+              <p className="mt-0.5 text-sm text-gray-600">
+                Benzer bildirimleri grupla ve tek bildirim olarak göster
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={handleGroupingToggle}
+            disabled={saving}
+            className={`relative h-6 w-12 rounded-full transition-colors disabled:opacity-50 ${groupingEnabled ? 'bg-blue-600' : 'bg-gray-300'} `}
+          >
+            <span
+              className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${groupingEnabled ? 'translate-x-6' : 'translate-x-0.5'} `}
+            />
+          </button>
+        </div>
+      </div>
+
+      {/* Batching Interval (Sprint 6) */}
+      <div className="rounded-lg border border-orange-200 bg-orange-50 p-6">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100">
+            <Timer className="h-5 w-5 text-orange-600" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-gray-900">
+              Bildirim Toparlama Aralığı
+            </h3>
+            <p className="mt-0.5 text-sm text-gray-600">
+              Önemli olmayan bildirimleri bekletip toplu gönder
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-700">
+              Toparlama Süresi:{' '}
+              {batchingInterval === 0 ? 'Anında' : `${batchingInterval} dakika`}
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="3"
+              step="1"
+              value={[0, 15, 30, 60].indexOf(batchingInterval)}
+              onChange={(e) => {
+                const intervals = [0, 15, 30, 60];
+                handleBatchingChange(intervals[parseInt(e.target.value)]);
+              }}
+              className="w-full accent-orange-600"
+              disabled={saving}
+            />
+            <div className="mt-2 flex justify-between text-xs text-gray-600">
+              <span>Anında</span>
+              <span>15 dk</span>
+              <span>30 dk</span>
+              <span>60 dk</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Email Digest (Sprint 6) */}
+      <div className="rounded-lg border border-green-200 bg-green-50 p-6">
+        <div className="mb-4 flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
+              <Inbox className="h-5 w-5 text-green-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900">E-posta Özeti</h3>
+              <p className="mt-0.5 text-sm text-gray-600">
+                Tüm bildirimleri tek e-postada toplu olarak al
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={handleDigestToggle}
+            disabled={saving}
+            className={`relative h-6 w-12 rounded-full transition-colors disabled:opacity-50 ${digestEnabled ? 'bg-green-600' : 'bg-gray-300'} `}
+          >
+            <span
+              className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${digestEnabled ? 'translate-x-6' : 'translate-x-0.5'} `}
+            />
+          </button>
+        </div>
+
+        {digestEnabled && (
+          <div className="mt-4 space-y-4">
+            {/* Frequency */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Gönderim Sıklığı
+              </label>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => handleDigestFrequencyChange('DAILY')}
+                  disabled={saving}
+                  className={`flex-1 rounded-lg border-2 px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 ${
+                    digestFrequency === 'DAILY'
+                      ? 'border-green-600 bg-green-100 text-green-700'
+                      : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  Günlük
+                </button>
+                <button
+                  onClick={() => handleDigestFrequencyChange('WEEKLY')}
+                  disabled={saving}
+                  className={`flex-1 rounded-lg border-2 px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 ${
+                    digestFrequency === 'WEEKLY'
+                      ? 'border-green-600 bg-green-100 text-green-700'
+                      : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  Haftalık
+                </button>
+              </div>
+            </div>
+
+            {/* Delivery Hour */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                <Clock className="mr-1 inline h-4 w-4" />
+                Gönderim Saati: {digestHour.toString().padStart(2, '0')}:00
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="23"
+                step="1"
+                value={digestHour}
+                onChange={(e) =>
+                  handleDigestHourChange(parseInt(e.target.value))
+                }
+                className="w-full accent-green-600"
+                disabled={saving}
+              />
+              <div className="mt-2 flex justify-between text-xs text-gray-600">
+                <span>00:00</span>
+                <span>06:00</span>
+                <span>12:00</span>
+                <span>18:00</span>
+                <span>23:00</span>
+              </div>
+            </div>
           </div>
         )}
       </div>

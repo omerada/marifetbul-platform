@@ -12,6 +12,8 @@
 
 export { useJobs } from './useJobs';
 export type { JobFilters, UseJobsReturn } from './useJobs';
+export { useJobSearchParams } from './useJobSearchParams';
+export type { UseJobSearchParamsReturn } from './useJobSearchParams';
 
 // TODO: Add more hooks as we build them
 // export { useJobForm } from './useJobForm';
