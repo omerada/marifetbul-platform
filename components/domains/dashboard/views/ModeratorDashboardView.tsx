@@ -8,25 +8,15 @@
  * - Response time tracking
  * - Priority-based organization
  * - Quick moderation actions
+ * - ENHANCED: Bulk actions, filters, improved UI (Sprint 2 Story 2.4)
  *
  * @created 2025-11-02
  * @sprint Sprint 1 - Day 7
+ * @updated 2025-11-24 - Sprint 2 Story 2.4: Enhanced with new components
  */
 
-import { memo } from 'react';
-import {
-  Shield,
-  CheckCircle,
-  XCircle,
-  AlertTriangle,
-  Clock,
-  Flag,
-  MessageSquare,
-  Package,
-  User,
-  FileText,
-  Activity,
-} from 'lucide-react';
+import { memo, useState, useCallback } from 'react';
+import { Shield, CheckCircle, Clock, Flag, Activity } from 'lucide-react';
 
 // Hooks
 import { useDashboardPermissions } from '../hooks';
@@ -40,6 +30,14 @@ import {
   ActivityTimeline,
   QuickActions,
 } from '../widgets';
+
+// Sprint 2 Story 2.4: Enhanced Moderator Components
+import {
+  ModerationItemCard,
+  BulkModerationActions,
+  ModerationFiltersPanel,
+  type ModerationFilters,
+} from '@/components/domains/moderator';
 
 // Types
 import type {
@@ -149,48 +147,6 @@ function prepareQuickActions() {
   ];
 }
 
-/**
- * Get priority badge color
- */
-function getPriorityColor(priority: ModerationItem['priority']): string {
-  const colors = {
-    low: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
-    medium: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-    high: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300',
-    urgent: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-  };
-  return colors[priority];
-}
-
-/**
- * Get item type icon
- */
-function getItemTypeIcon(type: ModerationItem['type']) {
-  const icons = {
-    package: Package,
-    comment: MessageSquare,
-    dispute: AlertTriangle,
-    report: Flag,
-    user: User,
-  };
-  return icons[type] || FileText;
-}
-
-/**
- * Get status badge color
- */
-function getStatusColor(status: ModerationItem['status']): string {
-  const colors = {
-    pending:
-      'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
-    approved:
-      'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-    rejected: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-    spam: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
-  };
-  return colors[status];
-}
-
 // ============================================================================
 // COMPONENT
 // ============================================================================
@@ -213,6 +169,133 @@ function getStatusColor(status: ModerationItem['status']): string {
 export const ModeratorDashboardView = memo<ModeratorDashboardViewProps>(
   ({ data, isLoading = false, error, onModerate, className }) => {
     const { canViewCharts } = useDashboardPermissions();
+
+    // Sprint 2 Story 2.4: Enhanced state management
+    const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+    const [filters, setFilters] = useState<ModerationFilters>({
+      types: [],
+      priorities: [],
+      statuses: [],
+      escalatedOnly: false,
+      flaggedOnly: false,
+    });
+
+    /**
+     * Handle item selection for bulk actions
+     */
+    const handleSelectionChange = useCallback(
+      (itemId: string, selected: boolean) => {
+        setSelectedItems((prev) => {
+          const newSet = new Set(prev);
+          if (selected) {
+            newSet.add(itemId);
+          } else {
+            newSet.delete(itemId);
+          }
+          return newSet;
+        });
+      },
+      []
+    );
+
+    /**
+     * Select all pending items
+     */
+    const handleSelectAll = useCallback(() => {
+      if (!data) return;
+      const pendingIds = data.queue.items
+        .filter((item) => item.status === 'pending')
+        .map((item) => item.id);
+      setSelectedItems(new Set(pendingIds));
+    }, [data]);
+
+    /**
+     * Deselect all items
+     */
+    const handleDeselectAll = useCallback(() => {
+      setSelectedItems(new Set());
+    }, []);
+
+    /**
+     * Handle bulk approve
+     */
+    const handleBulkApprove = useCallback(async () => {
+      if (!onModerate) return;
+      const promises = Array.from(selectedItems).map((id) =>
+        Promise.resolve(onModerate(id, 'approve'))
+      );
+      await Promise.all(promises);
+      setSelectedItems(new Set());
+    }, [selectedItems, onModerate]);
+
+    /**
+     * Handle bulk reject
+     */
+    const handleBulkReject = useCallback(async () => {
+      if (!onModerate) return;
+      const promises = Array.from(selectedItems).map((id) =>
+        Promise.resolve(onModerate(id, 'reject'))
+      );
+      await Promise.all(promises);
+      setSelectedItems(new Set());
+    }, [selectedItems, onModerate]);
+
+    /**
+     * Handle bulk spam
+     */
+    const handleBulkMarkSpam = useCallback(async () => {
+      if (!onModerate) return;
+      const promises = Array.from(selectedItems).map((id) =>
+        Promise.resolve(onModerate(id, 'spam'))
+      );
+      await Promise.all(promises);
+      setSelectedItems(new Set());
+    }, [selectedItems, onModerate]);
+
+    /**
+     * Filter queue items based on active filters
+     */
+    const filteredQueueItems = useCallback(() => {
+      if (!data) return [];
+      let items = data.queue.items;
+
+      // Type filter
+      if (filters.types.length > 0) {
+        items = items.filter((item) =>
+          filters.types.includes(item.type as any)
+        );
+      }
+
+      // Priority filter
+      if (filters.priorities.length > 0) {
+        items = items.filter((item) =>
+          filters.priorities.includes(item.priority as any)
+        );
+      }
+
+      // Status filter
+      if (filters.statuses.length > 0) {
+        items = items.filter((item) =>
+          filters.statuses.includes(item.status as any)
+        );
+      }
+
+      // Escalated only
+      if (filters.escalatedOnly) {
+        items = items.filter((item) => item.flagsCount && item.flagsCount > 0);
+      }
+
+      // Flagged only
+      if (filters.flaggedOnly) {
+        items = items.filter((item) => item.flagsCount && item.flagsCount > 0);
+      }
+
+      return items;
+    }, [data, filters]);
+
+    const pendingCount = filteredQueueItems().filter(
+      (item) => item.status === 'pending'
+    ).length;
 
     // Loading state
     if (isLoading || !data) {
@@ -319,110 +402,69 @@ export const ModeratorDashboardView = memo<ModeratorDashboardViewProps>(
 
         {/* Moderation Queue */}
         <DashboardSection
-          title="Moderation Queue"
-          subtitle={`${data.queue.total} items pending review`}
+          title="Moderation Kuyruğu"
+          subtitle={`${pendingCount} öğe inceleme bekliyor`}
           icon={Shield}
         >
-          {data.queue.items.length === 0 ? (
+          {/* Sprint 2 Story 2.4: Filters Panel */}
+          <ModerationFiltersPanel
+            filters={filters}
+            onFiltersChange={setFilters}
+            defaultCollapsed={false}
+            className="mb-6"
+          />
+
+          {filteredQueueItems().length === 0 ? (
             <div className="text-muted-foreground py-12 text-center">
               <CheckCircle className="mx-auto mb-3 h-12 w-12 opacity-50" />
-              <p>No items in moderation queue</p>
-              <p className="mt-1 text-sm">Great job! Everything is reviewed.</p>
+              <p>Moderation kuyruğunda öğe yok</p>
+              <p className="mt-1 text-sm">
+                Harika iş! Her şey gözden geçirildi.
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
-              {data.queue.items.map((item) => {
-                const TypeIcon = getItemTypeIcon(item.type);
-
-                return (
-                  <div
-                    key={item.id}
-                    className="bg-card hover:border-primary/50 rounded-lg border p-4 transition-colors"
-                  >
-                    <div className="mb-3 flex items-start justify-between">
-                      <div className="flex flex-1 items-start gap-3">
-                        <div className="bg-muted rounded-lg p-2">
-                          <TypeIcon className="text-muted-foreground h-5 w-5" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="mb-1 flex items-center gap-2">
-                            <h4 className="font-medium">{item.title}</h4>
-                            <span
-                              className={`rounded-full px-2 py-0.5 text-xs font-medium ${getPriorityColor(
-                                item.priority
-                              )}`}
-                            >
-                              {item.priority}
-                            </span>
-                            {item.flagsCount && item.flagsCount > 0 && (
-                              <span className="flex items-center gap-1 text-xs text-red-600 dark:text-red-400">
-                                <Flag className="h-3 w-3" />
-                                {item.flagsCount}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-muted-foreground line-clamp-2 text-sm">
-                            {item.content}
-                          </p>
-                          <div className="text-muted-foreground mt-2 flex items-center gap-3 text-xs">
-                            <span className="capitalize">{item.type}</span>
-                            <span>•</span>
-                            <span>by {item.submittedBy.name}</span>
-                            <span>•</span>
-                            <span>
-                              {new Date(item.submittedAt).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <span
-                        className={`rounded-full px-2 py-1 text-xs font-medium capitalize ${getStatusColor(
-                          item.status
-                        )}`}
-                      >
-                        {item.status}
-                      </span>
-                    </div>
-
-                    {/* Moderation Actions */}
-                    {item.status === 'pending' && onModerate && (
-                      <div className="flex items-center gap-2 border-t pt-3">
-                        <button
-                          onClick={() => onModerate(item.id, 'approve')}
-                          className="flex items-center gap-1 rounded-md bg-green-50 px-3 py-1.5 text-sm text-green-700 transition-colors hover:bg-green-100 dark:bg-green-900/20 dark:text-green-300 dark:hover:bg-green-900/30"
-                        >
-                          <CheckCircle className="h-4 w-4" />
-                          Onayla
-                        </button>
-                        <button
-                          onClick={() => onModerate(item.id, 'reject')}
-                          className="flex items-center gap-1 rounded-md bg-red-50 px-3 py-1.5 text-sm text-red-700 transition-colors hover:bg-red-100 dark:bg-red-900/20 dark:text-red-300 dark:hover:bg-red-900/30"
-                        >
-                          <XCircle className="h-4 w-4" />
-                          Reddet
-                        </button>
-                        <button
-                          onClick={() => onModerate(item.id, 'spam')}
-                          className="flex items-center gap-1 rounded-md bg-yellow-50 px-3 py-1.5 text-sm text-yellow-700 transition-colors hover:bg-yellow-100 dark:bg-yellow-900/20 dark:text-yellow-300 dark:hover:bg-yellow-900/30"
-                        >
-                          <AlertTriangle className="h-4 w-4" />
-                          Spam
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+              {filteredQueueItems().map((item) => (
+                <ModerationItemCard
+                  key={item.id}
+                  item={item}
+                  isSelected={selectedItems.has(item.id)}
+                  onSelectionChange={handleSelectionChange}
+                  onApprove={(id) => onModerate?.(id, 'approve')}
+                  onReject={(id) => onModerate?.(id, 'reject')}
+                  onMarkSpam={(id) => onModerate?.(id, 'spam')}
+                  showSelection={item.status === 'pending'}
+                  showActions={item.status === 'pending'}
+                  userRole="MODERATOR"
+                />
+              ))}
             </div>
           )}
 
           {/* Pagination Info */}
           {data.queue.total > data.queue.pageSize && (
             <div className="text-muted-foreground mt-4 text-center text-sm">
-              Showing {data.queue.items.length} of {data.queue.total} items
+              {filteredQueueItems().length} / {data.queue.total} öğe
+              gösteriliyor
             </div>
           )}
         </DashboardSection>
+
+        {/* Sprint 2 Story 2.4: Bulk Actions Floating Bar */}
+        <BulkModerationActions
+          selectedCount={selectedItems.size}
+          totalCount={pendingCount}
+          isAllSelected={
+            selectedItems.size === pendingCount && pendingCount > 0
+          }
+          onSelectAll={handleSelectAll}
+          onDeselectAll={handleDeselectAll}
+          onBulkApprove={handleBulkApprove}
+          onBulkReject={handleBulkReject}
+          onBulkMarkSpam={handleBulkMarkSpam}
+          isLoading={isLoading}
+          userRole="MODERATOR"
+        />
 
         {/* Quick Actions */}
         <DashboardSection

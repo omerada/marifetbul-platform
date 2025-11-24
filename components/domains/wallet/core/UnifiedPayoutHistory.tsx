@@ -63,6 +63,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu';
+import PayoutExportButtons from './PayoutExportButtons';
 import { formatCurrency } from '@/lib/shared/formatters';
 import {
   PayoutStatus,
@@ -96,9 +97,6 @@ export interface UnifiedPayoutHistoryProps {
 
   /** Callback when cancel clicked */
   onCancelPayout?: (payoutId: string) => Promise<void>;
-
-  /** Callback when export clicked (advanced variant only) */
-  onExport?: (filters: PayoutFilters) => void;
 
   /** Enable filtering (default: true for advanced, false for simple) */
   enableFiltering?: boolean;
@@ -197,7 +195,6 @@ export function UnifiedPayoutHistory({
   error = null,
   onViewDetails,
   onCancelPayout,
-  onExport,
   enableFiltering,
   enableSorting,
   enablePagination,
@@ -304,13 +301,6 @@ export function UnifiedPayoutHistory({
     } else {
       setSortField(field);
       setSortDirection('desc');
-    }
-  };
-
-  // Handle export
-  const handleExport = () => {
-    if (features.export && onExport) {
-      onExport({ ...filters, search: searchQuery });
     }
   };
 
@@ -464,12 +454,20 @@ export function UnifiedPayoutHistory({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Export Button */}
-            {features.export && onExport && (
-              <Button variant="outline" size="sm" onClick={handleExport}>
-                <Download className="mr-2 h-4 w-4" />
-                Dışa Aktar
-              </Button>
+            {/* Export Buttons - Replaced old single button with PayoutExportButtons */}
+            {features.export && (
+              <PayoutExportButtons
+                payouts={filteredPayouts}
+                startDate={filters.startDate}
+                endDate={filters.endDate}
+                onDateRangeChange={(start, end) => {
+                  setFilters((prev) => ({
+                    ...prev,
+                    startDate: start,
+                    endDate: end,
+                  }));
+                }}
+              />
             )}
           </div>
         </div>

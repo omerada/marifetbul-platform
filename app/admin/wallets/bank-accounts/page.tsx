@@ -25,6 +25,8 @@ import {
   BankAccountStatistics,
   type BankAccountStats,
 } from '@/components/domains/admin/finance';
+import { BankAccountVerificationPanel } from '@/components/admin/wallet/BankAccountVerificationPanel';
+import { BulkVerificationModal } from '@/components/admin/wallet/BulkVerificationModal';
 import {
   getPendingBankAccounts,
   verifyBankAccount,
@@ -89,6 +91,8 @@ export default function AdminBankAccountVerificationPage() {
   const [selectedAccount, setSelectedAccount] = useState<BankAccount | null>(
     null
   );
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [bulkAccountIds, setBulkAccountIds] = useState<string[]>([]);
 
   // ==================== DATA FETCHING ====================
 
@@ -185,6 +189,17 @@ export default function AdminBankAccountVerificationPage() {
 
   const handlePageChange = (page: number) => {
     fetchPendingAccounts(page);
+  };
+
+  const handleBulkVerify = async (accountIds: string[]) => {
+    setBulkAccountIds(accountIds);
+    setShowBulkModal(true);
+  };
+
+  const handleBulkVerifyComplete = async () => {
+    await refreshData();
+    setShowBulkModal(false);
+    setBulkAccountIds([]);
   };
 
   // ==================== RENDER ====================
@@ -288,28 +303,23 @@ export default function AdminBankAccountVerificationPage() {
         <BankAccountStatistics stats={stats} isLoading={!stats} />
       </div>
 
-      {/* Pending Queue */}
+      {/* Enhanced Verification Panel */}
       <div className="mb-6">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              Bekleyen Hesaplar
-            </h2>
-            <p className="text-sm text-gray-500">
-              Onay bekleyen {totalElements} banka hesabı
-            </p>
-          </div>
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Bekleyen Hesaplar
+          </h2>
+          <p className="text-sm text-gray-500">
+            Onay bekleyen {totalElements} banka hesabı
+          </p>
         </div>
 
-        <BankAccountVerificationTable
+        <BankAccountVerificationPanel
           accounts={accounts}
           isLoading={isLoading}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalElements={totalElements}
-          onPageChange={handlePageChange}
           onVerify={handleVerify}
           onReject={handleReject}
+          onBulkVerify={handleBulkVerify}
           onViewDetails={handleViewDetails}
         />
       </div>
@@ -488,6 +498,19 @@ export default function AdminBankAccountVerificationPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Bulk Verification Modal */}
+      <BulkVerificationModal
+        isOpen={showBulkModal}
+        onClose={() => {
+          setShowBulkModal(false);
+          setBulkAccountIds([]);
+          handleBulkVerifyComplete();
+        }}
+        accountIds={bulkAccountIds}
+        onVerify={handleVerify}
+        accountNames={new Map(accounts.map((a) => [a.id, a.accountHolder]))}
+      />
     </div>
   );
 }

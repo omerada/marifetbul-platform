@@ -65,6 +65,24 @@ export interface UserFilters {
 }
 
 /**
+ * User Statistics DTO
+ * Comprehensive user activity and performance metrics
+ * @since Sprint 2 Story 2.1
+ */
+export interface UserStatsDTO {
+  totalOrders: number;
+  totalRevenue: number;
+  averageRating: number;
+  totalPackages: number;
+  completionRate: number;
+  activeClients: number;
+  totalReviews: number;
+  pendingOrders: number;
+  completedOrders: number;
+  cancelledOrders: number;
+}
+
+/**
  * Admin Users API Service
  */
 export const adminUsersApi = {
@@ -99,6 +117,17 @@ export const adminUsersApi = {
   async getUserById(userId: string): Promise<ApiResponse<AdminUserResponse>> {
     return apiClient.get<ApiResponse<AdminUserResponse>>(
       ADMIN_ENDPOINTS.GET_USER(userId)
+    );
+  },
+
+  /**
+   * Get user statistics (admin only)
+   * GET /api/v1/admin/users/:userId/stats
+   * @since Sprint 2 Story 2.1
+   */
+  async getUserStats(userId: string): Promise<ApiResponse<UserStatsDTO>> {
+    return apiClient.get<ApiResponse<UserStatsDTO>>(
+      `/api/v1/admin/users/${userId}/stats`
     );
   },
 

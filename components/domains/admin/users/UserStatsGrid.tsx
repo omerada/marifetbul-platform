@@ -6,12 +6,13 @@
  * Part of Story 4: User Management Completion
  *
  * @author MarifetBul Development Team
- * @version 1.0.0 - Sprint 1 Story 4.1
+ * @version 2.0.0 - Sprint 2 Story 2.1 - Real API Integration
  */
 
 'use client';
 
 import { Card } from '@/components/ui';
+import type { UserStatsDTO } from '@/lib/api/admin-users';
 import {
   ShoppingCart,
   DollarSign,
@@ -21,17 +22,8 @@ import {
   Users,
 } from 'lucide-react';
 
-interface UserStats {
-  totalOrders: number;
-  totalRevenue: number;
-  averageRating: number;
-  totalPackages: number;
-  completionRate: number;
-  activeClients: number;
-}
-
 interface UserStatsGridProps {
-  stats: UserStats;
+  stats: UserStatsDTO;
   className?: string;
 }
 

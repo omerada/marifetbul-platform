@@ -473,6 +473,10 @@ export default function AdminWalletTransactionsPage() {
             filters={filters}
             onFiltersChange={handleFiltersChange}
             onClear={handleClearFilters}
+            totalCount={pagination.totalElements}
+            filteredCount={transactions.length}
+            defaultExpanded={false}
+            syncWithUrl={true}
           />
         </div>
 

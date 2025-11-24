@@ -6,7 +6,7 @@
  * Part of Story 4: User Management Completion - Task 4.1
  *
  * @author MarifetBul Development Team
- * @version 1.0.0 - Sprint 1 Story 4.1
+ * @version 2.0.0 - Sprint 2 Story 2.1 - Real API Integration
  */
 
 'use client';
@@ -16,7 +16,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Activity } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { useToast } from '@/hooks';
-import { adminUsersApi } from '@/lib/api/admin-users';
+import { adminUsersApi, type UserStatsDTO } from '@/lib/api/admin-users';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import type { AdminUserResponse } from '@/lib/api/admin-users';
 import {
@@ -31,27 +31,6 @@ interface Props {
 }
 
 /**
- * Mock stats - TODO: Replace with real API when backend implements /users/:id/stats
- */
-interface UserStats {
-  totalOrders: number;
-  totalRevenue: number;
-  averageRating: number;
-  totalPackages: number;
-  completionRate: number;
-  activeClients: number;
-}
-
-const getMockStats = (): UserStats => ({
-  totalOrders: 0,
-  totalRevenue: 0,
-  averageRating: 0,
-  totalPackages: 0,
-  completionRate: 0,
-  activeClients: 0,
-});
-
-/**
  * Admin User Detail Page
  */
 export default function AdminUserDetailPage({ params }: Props) {
@@ -59,7 +38,7 @@ export default function AdminUserDetailPage({ params }: Props) {
   const { error: showError } = useToast();
   const [userId, setUserId] = useState<string>('');
   const [user, setUser] = useState<AdminUserResponse | null>(null);
-  const [stats, setStats] = useState<UserStats>(getMockStats());
+  const [stats, setStats] = useState<UserStatsDTO | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showActivityTimeline, setShowActivityTimeline] = useState(false);
@@ -77,22 +56,27 @@ export default function AdminUserDetailPage({ params }: Props) {
       setIsLoading(true);
       setError(null);
       try {
-        // Fetch user details
-        const response = await adminUsersApi.getUserById(userId);
+        // Fetch user details and stats in parallel
+        const [userResponse, statsResponse] = await Promise.all([
+          adminUsersApi.getUserById(userId),
+          adminUsersApi.getUserStats(userId),
+        ]);
 
-        if (!response.success || !response.data) {
-          throw new Error(response.message || 'Failed to fetch user');
+        if (!userResponse.success || !userResponse.data) {
+          throw new Error(userResponse.message || 'Failed to fetch user');
         }
 
-        setUser(response.data);
+        if (!statsResponse.success || !statsResponse.data) {
+          throw new Error(statsResponse.message || 'Failed to fetch stats');
+        }
 
-        // TODO: Fetch real stats when backend implements /users/:id/stats
-        // For now, using mock data
-        setStats(getMockStats());
+        setUser(userResponse.data);
+        setStats(statsResponse.data);
 
-        logger.info('User detail loaded successfully', {
+        logger.info('User detail and stats loaded successfully', {
           component: 'AdminUserDetailPage',
           userId,
+          stats: statsResponse.data,
         });
       } catch (err) {
         logger.error(
@@ -208,21 +192,7 @@ export default function AdminUserDetailPage({ params }: Props) {
         {/* Right Column - Stats */}
         <div className="lg:col-span-2">
           {/* Stats Grid */}
-          <UserStatsGrid stats={stats} />
-
-          {/* Info Notice for Mock Data */}
-          <div className="bg-muted/50 border-border mt-6 rounded-lg border p-4">
-            <p className="text-muted-foreground text-sm">
-              <strong>Not:</strong> İstatistikler backend tarafında henüz
-              implement edilmediği için şu an mock data gösterilmektedir.
-              Backend
-              <code className="bg-background mx-1 rounded px-1 py-0.5">
-                /api/v1/admin/users/{'{userId}'}/stats
-              </code>
-              endpoint&apos;i implement edildiğinde gerçek veriler
-              gösterilecektir.
-            </p>
-          </div>
+          {stats && <UserStatsGrid stats={stats} />}
         </div>
       </div>
 

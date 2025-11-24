@@ -61,6 +61,13 @@ export { default as TransactionExportButtons } from './TransactionExportButtons'
 export type { TransactionExportButtonsProps } from './TransactionExportButtons';
 
 // ================================================
+// PAYOUT EXPORT - Sprint 1 Story 1.5
+// ================================================
+
+export { default as PayoutExportButtons } from './PayoutExportButtons';
+export type { PayoutExportButtonsProps } from './PayoutExportButtons';
+
+// ================================================
 // UNIFIED COMPONENTS
 // ================================================
 

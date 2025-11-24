@@ -35,6 +35,13 @@ export type {
 export { useEscrowDetails } from './useEscrowDetails';
 export type { UseEscrowDetailsReturn } from './useEscrowDetails';
 
+// Sprint 1 - Story 1.4 - Upcoming Escrow Releases Hook
+export { useUpcomingEscrowReleases } from './useUpcomingEscrowReleases';
+export type {
+  UpcomingReleaseItem,
+  UseUpcomingEscrowReleasesReturn,
+} from './useUpcomingEscrowReleases';
+
 export { useWebSocketWallet } from './useWebSocketWallet';
 export type {
   UseWebSocketWalletReturn,

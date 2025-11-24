@@ -82,6 +82,15 @@ export default function MyJobsPage() {
 
   // Handle delete job
   const handleDeleteJob = async (jobId: string) => {
+    const job = jobs?.find((j) => j.id === jobId);
+    if (!job) return;
+
+    // Check if job can be deleted
+    if (job.status === 'IN_PROGRESS') {
+      alert('Devam eden işler silinemez. Önce işi kapatın.');
+      return;
+    }
+
     if (
       !confirm(
         'Bu işi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.'
@@ -89,8 +98,23 @@ export default function MyJobsPage() {
     )
       return;
 
-    // TODO: Implement delete job API call
-    console.log('Delete job:', jobId);
+    try {
+      const { deleteJob } = await import('@/lib/api/jobs');
+      await deleteJob(jobId);
+
+      // Refresh jobs list
+      fetchMyJobs({
+        page: currentPage,
+        size: 20,
+        status: selectedStatus === 'all' ? undefined : selectedStatus,
+      });
+    } catch (err) {
+      alert(
+        err instanceof Error
+          ? err.message
+          : 'İş silinirken bir hata oluştu. Lütfen tekrar deneyin.'
+      );
+    }
   };
 
   // Handle modal success

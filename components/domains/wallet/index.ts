@@ -124,6 +124,13 @@ export type {
   StatusDistribution,
 } from './EscrowTimelineChart';
 
+// Sprint 1 - Story 1.4: Upcoming Auto-Release Widget
+export { UpcomingAutoReleaseWidget } from './widgets/UpcomingAutoReleaseWidget';
+export type { UpcomingAutoReleaseWidgetProps } from './widgets/UpcomingAutoReleaseWidget';
+
+export { ObjectReleaseModal } from './ObjectReleaseModal';
+export type { ObjectReleaseModalProps } from './ObjectReleaseModal';
+
 // ================================================
 // SPRINT 2 CLEANUP - UNUSED ESCROW COMPONENTS ✅
 // ================================================

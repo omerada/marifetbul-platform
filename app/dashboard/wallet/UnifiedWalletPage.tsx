@@ -21,10 +21,16 @@ import { UnifiedPayoutHistory } from '@/components/domains/wallet';
 import { EscrowList, EscrowBalanceCard } from '@/components/domains/wallet';
 import { BankAccountList, BankAccountForm } from '@/components/domains/wallet';
 import { TransactionDisplay } from '@/components/domains/wallet/TransactionDisplay';
+import { UnifiedTransactionFilters } from '@/components/domains/wallet';
+import { UpcomingAutoReleaseWidget } from '@/components/domains/wallet/widgets/UpcomingAutoReleaseWidget';
+import { ObjectReleaseModal } from '@/components/domains/wallet/ObjectReleaseModal';
+import type { TransactionFilters } from '@/types/business/features/wallet';
 import { useWalletData } from '@/hooks/business/wallet/useWalletData';
 import { usePayouts } from '@/hooks/business/wallet/usePayouts';
 import { useBankAccounts } from '@/hooks/business/wallet/useBankAccounts';
 import { useEscrowDetails } from '@/hooks/business/wallet/useEscrowDetails';
+import { useUpcomingEscrowReleases } from '@/hooks/business/wallet/useUpcomingEscrowReleases';
+import type { UpcomingReleaseItem } from '@/hooks/business/wallet/useUpcomingEscrowReleases';
 import { useToast } from '@/hooks/core/useToast';
 import {
   Wallet,
@@ -90,6 +96,13 @@ export function UnifiedWalletPage() {
   const initialTab = (searchParams.get('tab') as WalletTab) || 'overview';
   const [activeTab, setActiveTab] = useState<WalletTab>(initialTab);
   const [showAddBankForm, setShowAddBankForm] = useState(false);
+  const [transactionFilters, setTransactionFilters] =
+    useState<TransactionFilters>({});
+
+  // Object Release Modal State
+  const [selectedReleaseItem, setSelectedReleaseItem] =
+    useState<UpcomingReleaseItem | null>(null);
+  const [showObjectReleaseModal, setShowObjectReleaseModal] = useState(false);
 
   // ========================================================================
   // DATA HOOKS
@@ -117,6 +130,14 @@ export function UnifiedWalletPage() {
     totalEscrow,
     isLoading: escrowLoading,
   } = useEscrowDetails();
+
+  // Upcoming auto-release escrows (Story 1.4)
+  const {
+    items: upcomingReleases,
+    isLoading: releasesLoading,
+    error: releasesError,
+    refresh: refreshReleases,
+  } = useUpcomingEscrowReleases(true);
 
   // ========================================================================
   // HANDLERS
@@ -152,6 +173,36 @@ export function UnifiedWalletPage() {
     setShowAddBankForm(false);
   }, []);
 
+  const handleTransactionFiltersChange = useCallback(
+    (newFilters: TransactionFilters) => {
+      setTransactionFilters(newFilters);
+    },
+    []
+  );
+
+  const handleTransactionFiltersClear = useCallback(() => {
+    setTransactionFilters({});
+  }, []);
+
+  // Object Release Handlers (Story 1.4)
+  const handleObjectRelease = useCallback((item: UpcomingReleaseItem) => {
+    setSelectedReleaseItem(item);
+    setShowObjectReleaseModal(true);
+  }, []);
+
+  const handleObjectReleaseClose = useCallback(() => {
+    setShowObjectReleaseModal(false);
+    setSelectedReleaseItem(null);
+  }, []);
+
+  const handleObjectReleaseSuccess = useCallback(() => {
+    logger.info('[UnifiedWallet] Object release successful, refreshing data');
+    refreshWallet();
+    refreshReleases();
+    setShowObjectReleaseModal(false);
+    setSelectedReleaseItem(null);
+  }, [refreshWallet, refreshReleases]);
+
   // ========================================================================
   // EFFECTS
   // ========================================================================
@@ -163,6 +214,49 @@ export function UnifiedWalletPage() {
       setActiveTab(urlTab);
     }
   }, [searchParams, activeTab]);
+
+  // ========================================================================
+  // FILTER LOGIC
+  // ========================================================================
+
+  // Filter transactions based on active filters
+  const filteredTransactions = useCallback(() => {
+    if (!transactions) return [];
+
+    let filtered = [...transactions];
+
+    // Type filter
+    if (transactionFilters.type) {
+      filtered = filtered.filter((t) => t.type === transactionFilters.type);
+    }
+
+    // Date range filter
+    if (transactionFilters.startDate) {
+      const startDate = new Date(transactionFilters.startDate);
+      filtered = filtered.filter((t) => new Date(t.createdAt) >= startDate);
+    }
+    if (transactionFilters.endDate) {
+      const endDate = new Date(transactionFilters.endDate);
+      endDate.setHours(23, 59, 59, 999); // End of day
+      filtered = filtered.filter((t) => new Date(t.createdAt) <= endDate);
+    }
+
+    // Amount filter
+    if (transactionFilters.minAmount !== undefined) {
+      filtered = filtered.filter(
+        (t) => Math.abs(t.amount) >= transactionFilters.minAmount!
+      );
+    }
+    if (transactionFilters.maxAmount !== undefined) {
+      filtered = filtered.filter(
+        (t) => Math.abs(t.amount) <= transactionFilters.maxAmount!
+      );
+    }
+
+    return filtered;
+  }, [transactions, transactionFilters]);
+
+  const displayTransactions = filteredTransactions();
 
   // ========================================================================
   // RENDER
@@ -243,13 +337,27 @@ export function UnifiedWalletPage() {
               </p>
             </div>
 
+            {/* Advanced Filters with URL Sync and Presets */}
+            <div className="mb-6">
+              <UnifiedTransactionFilters
+                variant="advanced"
+                filters={transactionFilters}
+                onFiltersChange={handleTransactionFiltersChange}
+                onClear={handleTransactionFiltersClear}
+                totalCount={transactions?.length || 0}
+                filteredCount={displayTransactions.length}
+                defaultExpanded={false}
+                syncWithUrl={true}
+              />
+            </div>
+
             {/* Transaction Display Component */}
             <TransactionDisplay
-              transactions={transactions || []}
+              transactions={displayTransactions}
               isLoading={walletLoading}
               viewMode="table"
               allowViewModeChange={true}
-              showFilters={true}
+              showFilters={false}
               showExport={true}
               showRefresh={true}
               showPagination={false}
@@ -408,6 +516,14 @@ export function UnifiedWalletPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Object Release Modal - Story 1.4 */}
+      <ObjectReleaseModal
+        item={selectedReleaseItem}
+        isOpen={showObjectReleaseModal}
+        onClose={handleObjectReleaseClose}
+        onSuccess={handleObjectReleaseSuccess}
+      />
     </div>
   );
 }

@@ -13,17 +13,19 @@
  * - Date range selection
  * - Amount range filtering
  * - Search by description/reference
- * - Quick filter presets
+ * - Quick filter presets (including This Month, Last Month, Last 3 Months)
  * - Active filter display
  * - Collapsible/expandable
+ * - URL query param synchronization
  *
  * @author MarifetBul Development Team
- * @version 2.0.0
+ * @version 2.1.0
  * @created November 14, 2025
- * @sprint Sprint 1 - Code Quality & Deduplication
+ * @updated Sprint 1 - Story 1.2 (Transaction Filtering Standardization)
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
@@ -56,6 +58,8 @@ export interface UnifiedTransactionFiltersProps {
   totalCount?: number;
   filteredCount?: number;
   defaultExpanded?: boolean;
+  /** Enable URL query param sync */
+  syncWithUrl?: boolean;
 }
 
 // ================================================
@@ -105,18 +109,37 @@ const QUICK_FILTERS: Array<{
     },
   },
   {
-    label: 'Son 30 Gün',
+    label: 'Bu Ay',
     filters: {
-      startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+      startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
         .toISOString()
         .split('T')[0],
       endDate: new Date().toISOString().split('T')[0],
     },
   },
   {
-    label: 'Bu Ay',
+    label: 'Geçen Ay',
     filters: {
-      startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      startDate: new Date(
+        new Date().getFullYear(),
+        new Date().getMonth() - 1,
+        1
+      )
+        .toISOString()
+        .split('T')[0],
+      endDate: new Date(new Date().getFullYear(), new Date().getMonth(), 0)
+        .toISOString()
+        .split('T')[0],
+    },
+  },
+  {
+    label: 'Son 3 Ay',
+    filters: {
+      startDate: new Date(
+        new Date().getFullYear(),
+        new Date().getMonth() - 3,
+        1
+      )
         .toISOString()
         .split('T')[0],
       endDate: new Date().toISOString().split('T')[0],
@@ -127,6 +150,49 @@ const QUICK_FILTERS: Array<{
 // ================================================
 // HELPER FUNCTIONS
 // ================================================
+
+/**
+ * Serialize filters to URL query params
+ */
+function filtersToQueryParams(filters: TransactionFilters): URLSearchParams {
+  const params = new URLSearchParams();
+
+  if (filters.type) params.set('type', filters.type);
+  if (filters.startDate) params.set('startDate', filters.startDate);
+  if (filters.endDate) params.set('endDate', filters.endDate);
+  if (filters.minAmount !== undefined)
+    params.set('minAmount', filters.minAmount.toString());
+  if (filters.maxAmount !== undefined)
+    params.set('maxAmount', filters.maxAmount.toString());
+
+  return params;
+}
+
+/**
+ * Deserialize URL query params to filters
+ */
+function queryParamsToFilters(
+  searchParams: URLSearchParams
+): TransactionFilters {
+  const filters: TransactionFilters = {};
+
+  const type = searchParams.get('type');
+  if (type) filters.type = type as TransactionType;
+
+  const startDate = searchParams.get('startDate');
+  if (startDate) filters.startDate = startDate;
+
+  const endDate = searchParams.get('endDate');
+  if (endDate) filters.endDate = endDate;
+
+  const minAmount = searchParams.get('minAmount');
+  if (minAmount) filters.minAmount = parseFloat(minAmount);
+
+  const maxAmount = searchParams.get('maxAmount');
+  if (maxAmount) filters.maxAmount = parseFloat(maxAmount);
+
+  return filters;
+}
 
 function countActiveFilters(filters: TransactionFilters): number {
   let count = 0;
@@ -157,10 +223,34 @@ export function UnifiedTransactionFilters({
   totalCount,
   filteredCount,
   defaultExpanded = false,
+  syncWithUrl = false,
 }: UnifiedTransactionFiltersProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const activeFilterCount = countActiveFilters(filters);
   const hasActiveFilters = activeFilterCount > 0;
+
+  // Initialize filters from URL on mount (if syncWithUrl enabled)
+  useEffect(() => {
+    if (syncWithUrl && searchParams) {
+      const urlFilters = queryParamsToFilters(searchParams);
+      if (Object.keys(urlFilters).length > 0) {
+        onFiltersChange(urlFilters);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only on mount
+
+  // Sync filters to URL when they change (if syncWithUrl enabled)
+  useEffect(() => {
+    if (syncWithUrl && router) {
+      const params = filtersToQueryParams(filters);
+      const url = new URL(window.location.href);
+      url.search = params.toString();
+      router.replace(url.pathname + url.search, { scroll: false });
+    }
+  }, [filters, syncWithUrl, router]);
 
   // Update a single filter field
   const updateFilter = <K extends keyof TransactionFilters>(

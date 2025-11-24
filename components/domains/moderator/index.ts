@@ -54,6 +54,23 @@ export { ModeratorPerformanceCharts } from './ModeratorPerformanceCharts';
 export type { ModeratorPerformanceChartsProps } from './ModeratorPerformanceCharts';
 
 // ============================================================================
+// SPRINT 2 - STORY 2.4: MODERATOR DASHBOARD ENHANCEMENT
+// ============================================================================
+
+export { ModerationItemCard } from './ModerationItemCard';
+export type { ModerationItemCardProps } from './ModerationItemCard';
+export { BulkModerationActions } from './BulkModerationActions';
+export type { BulkModerationActionsProps } from './BulkModerationActions';
+export { ModerationFiltersPanel } from './ModerationFiltersPanel';
+export type {
+  ModerationFiltersPanelProps,
+  ModerationFilters,
+  ContentType,
+  Priority as FilterPriority,
+  Status as FilterStatus,
+} from './ModerationFiltersPanel';
+
+// ============================================================================
 // TYPE RE-EXPORTS
 // ============================================================================
 
