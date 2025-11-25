@@ -51,6 +51,26 @@ export function useAvatarUpload() {
   };
 }
 
+/**
+ * @deprecated This hook uses client-side calculation which may differ from backend.
+ * Use `useProfileCompletion` from '@/hooks/business/profile/useProfileCompletion' instead.
+ *
+ * The new hook:
+ * - Syncs with backend calculations
+ * - Provides more accurate role-based validation
+ * - Includes auto-refresh and caching
+ * - Has better TypeScript support
+ *
+ * Migration:
+ * ```ts
+ * // Old way (deprecated)
+ * const { completeness, missingFields, isComplete } = useProfileValidation();
+ *
+ * // New way (recommended)
+ * import { useProfileCompletion } from '@/hooks/business/profile/useProfileCompletion';
+ * const { completion, isLoading, isComplete } = useProfileCompletion();
+ * ```
+ */
 export function useProfileValidation() {
   const { currentProfile } = useProfileStore();
 

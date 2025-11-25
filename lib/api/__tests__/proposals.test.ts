@@ -1,33 +1,29 @@
 /* eslint-disable */
-/**import {
+/**
+ * ================================================
+ * PROPOSALS API - UNIT TESTS
+ * ================================================
+ * Unit tests for standardized proposals API service
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0 - Sprint 5
+ */
 
- * ================================================  createProposal,
-
- * PROPOSALS API - UNIT TESTS  getProposalById,
-
- * ================================================  updateProposal,
-
- * Unit tests for standardized proposals API service  withdrawProposal,
-
- *  deleteProposal,
-
- * @author MarifetBul Development Team  acceptProposal,
-
- * @version 2.0.0 - Sprint 5  rejectProposal,
-
- */  getMyProposals,
-
+import {
+  createProposal,
+  getProposalById,
+  updateProposal,
+  withdrawProposal,
+  deleteProposal,
+  acceptProposal,
+  rejectProposal,
+  getMyProposals,
   getProposalsByJob,
-
-import {  canEditProposal,
-
-  createProposal,  canWithdrawProposal,
-
-  getProposalById,  getProposalStatusColor,
-
-  updateProposal,  getProposalStatusLabel,
-
-  withdrawProposal,} from '@/lib/api/proposals';
+  canEditProposal,
+  canWithdrawProposal,
+  getProposalStatusColor,
+  getProposalStatusLabel,
+} from '@/lib/api/proposals';
 
   deleteProposal,import type { ProposalResponse, ProposalStatus } from '@/types/backend-aligned';
 

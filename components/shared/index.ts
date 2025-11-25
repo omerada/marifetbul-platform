@@ -42,6 +42,20 @@ export type { PasswordStrength } from './PasswordStrengthIndicator';
 // Email Verification components (Sprint 1.4)
 export { EmailVerificationBanner } from './EmailVerificationBanner';
 
+// OTP Input (Sprint 1 - Story 1.3)
+export { OTPInput } from './OTPInput';
+export type { OTPInputProps } from './OTPInput';
+
+// Circular Progress (Sprint 1 - Story 1.5)
+export {
+  CircularProgress,
+  MultiColorCircularProgress,
+} from './CircularProgress';
+export type {
+  CircularProgressProps,
+  MultiColorCircularProgressProps,
+} from './CircularProgress';
+
 // Performance components
 export * from './performance';
 

@@ -12,6 +12,9 @@ import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import type { User, Freelancer, Employer } from '@/types';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
+// Import the new production-ready profile completion hook
+export { useProfileCompletion } from './useProfileCompletion';
+
 // ================================================
 // PROFILE TYPES
 // ================================================
@@ -108,7 +111,13 @@ export function useEmployerProfile(userId: string) {
 
 /**
  * Hook for calculating profile completeness
- * Responsibility: Analyze profile data and provide completeness metrics
+ *
+ * @deprecated Use `useProfileCompletion` from './useProfileCompletion' instead.
+ * This hook is kept for backward compatibility only.
+ *
+ * Migration guide:
+ * - Replace `useProfileCompleteness(userId)` with `useProfileCompletion(userId)`
+ * - The new hook provides the same data with improved performance and backend sync
  */
 export function useProfileCompleteness(userId?: string) {
   const profileData = useProfile(userId);
@@ -438,7 +447,19 @@ export function useProfileDisplay(userId?: string) {
 
 /**
  * Legacy profile validation hook
- * Responsibility: Provide validation utilities for profile forms
+ *
+ * @deprecated Use `useProfileCompletion` from './useProfileCompletion' instead.
+ * This hook is kept for backward compatibility only.
+ *
+ * Migration:
+ * ```ts
+ * // Old way
+ * const { completeness, missingFields, suggestions, isComplete, needsAttention } = useProfileValidation(userId);
+ *
+ * // New way
+ * const { completion, isLoading, needsAttention } = useProfileCompletion(userId);
+ * const { completionPercentage, missingFields, suggestions } = completion || {};
+ * ```
  */
 export function useProfileValidation(userId?: string) {
   const completeness = useProfileCompleteness(userId);

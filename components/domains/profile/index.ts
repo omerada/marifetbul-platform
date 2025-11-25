@@ -12,6 +12,35 @@ export { ProfileView } from './ProfileView';
 // Profile Management
 export { ProfileEditForm } from './ProfileEditForm';
 export { ProfileAvatarSection } from './ProfileAvatarSection';
+export { ProfileCompletionWidget } from './ProfileCompletionWidget';
+export { PrivacySettingsWidget } from './PrivacySettingsWidget';
+export type { PrivacySettingsWidgetProps } from './PrivacySettingsWidget';
+
+export {
+  EmailVerificationBadge,
+  InlineVerificationStatus,
+} from './EmailVerificationBadge';
+export type {
+  EmailVerificationBadgeProps,
+  InlineVerificationStatusProps,
+  VerificationStatus,
+} from './EmailVerificationBadge';
+
+// Phone Verification
+export { PhoneVerificationModal } from './PhoneVerificationModal';
+export type { PhoneVerificationModalProps } from './PhoneVerificationModal';
+
+export {
+  PhoneBadge,
+  InlinePhoneStatus,
+  PhoneSecurityBadge,
+} from './PhoneBadge';
+export type {
+  PhoneBadgeProps,
+  PhoneVerificationStatus,
+  InlinePhoneStatusProps,
+  PhoneSecurityBadgeProps,
+} from './PhoneBadge';
 
 // Avatar Components
 export { AvatarUpload } from './AvatarUpload';
