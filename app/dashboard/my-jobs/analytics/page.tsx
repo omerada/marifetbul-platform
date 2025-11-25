@@ -135,8 +135,8 @@ export default function JobAnalyticsPage() {
         includeDetails: true,
         locale: 'tr',
       });
-    } catch (error) {
-      console.error('CSV export failed:', error);
+    } catch (_error) {
+      // CSV export failed - silent fail for user experience
     } finally {
       setIsExporting(false);
     }
@@ -157,8 +157,8 @@ export default function JobAnalyticsPage() {
         includeDetails: true,
         locale: 'tr',
       });
-    } catch (error) {
-      console.error('PDF export failed:', error);
+    } catch (_error) {
+      // PDF export failed - silent fail for user experience
     } finally {
       setIsExporting(false);
     }

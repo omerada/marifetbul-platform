@@ -17,13 +17,14 @@ import { Pagination } from '@/components/ui/Pagination';
 import { AlertCircle, CheckCircle, Flag, XCircle } from 'lucide-react';
 import { useReportModeration } from '@/hooks/business/moderation/useReportModeration';
 import type { ReportAction } from '@/hooks/business/moderation/useReportModeration';
+import type { ReportFilters as ReportFiltersType } from '@/types/business/report';
 import { ReportCard } from './ReportCard';
 import { ReportFilters } from './ReportFilters';
 import { ReportDetailModal } from './ReportDetailModal';
 
 export function ReportModerationQueue() {
   const [page, setPage] = useState(0);
-  const [filters] = useState<'all' | 'pending' | 'assigned'>('all');
+  const [activeFilters, setActiveFilters] = useState<ReportFiltersType>({});
   const [detailReportId, setDetailReportId] = useState<string | null>(null);
 
   const {
@@ -38,14 +39,7 @@ export function ReportModerationQueue() {
     refresh,
   } = useReportModeration({
     autoFetch: true,
-    filters: {
-      status:
-        filters === 'all'
-          ? undefined
-          : filters === 'pending'
-            ? 'PENDING'
-            : 'INVESTIGATING',
-    },
+    filters: activeFilters,
     pageSize: 20,
   });
 
@@ -168,7 +162,12 @@ export function ReportModerationQueue() {
       )}
 
       {/* Filters */}
-      <ReportFilters onFilterChange={() => setPage(0)} />
+      <ReportFilters
+        onFilterChange={(filters) => {
+          setActiveFilters(filters);
+          setPage(0);
+        }}
+      />
 
       {/* Reports List */}
       {isLoading ? (

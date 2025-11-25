@@ -30,7 +30,7 @@ import {
   X,
   Filter,
 } from 'lucide-react';
-import { useNotifications } from '@/hooks/business/useNotifications';
+import { useNotifications } from '@/hooks/business/notifications';
 import { NotificationListItem } from './NotificationListItem';
 import {
   getNotificationIcon,
@@ -75,14 +75,24 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
 
     // ========== HOOKS ==========
 
+    const { state, actions } = useNotifications({
+      autoLoad: true,
+      pageSize: mode === 'dropdown' ? 5 : 20,
+      enableRealtime: true,
+      enableToast: true,
+      enableSound: true,
+    });
+
     const {
       notifications,
       unreadCount,
       isLoading,
-      markAsRead,
-      markAllAsRead,
-      refetch,
-    } = useNotifications();
+      error,
+      pagination,
+      hasMore,
+    } = state;
+
+    const { markAsRead, markAllAsRead, refresh: refetch, loadMore } = actions;
 
     // ========== COMPUTED VALUES ==========
 

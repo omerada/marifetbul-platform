@@ -18,13 +18,11 @@ import type { UserRole } from '@/types/backend-aligned';
 export function getDashboardRoute(userRole?: UserRole | string): string {
   const role = userRole?.toUpperCase();
   switch (role) {
-    case 'FREELANCER':
-      return '/dashboard/freelancer';
-    case 'EMPLOYER':
-      return '/dashboard/employer';
     case 'ADMIN':
     case 'MODERATOR':
       return '/admin';
+    case 'FREELANCER':
+    case 'EMPLOYER':
     default:
       return '/dashboard';
   }
@@ -59,28 +57,28 @@ export function getDashboardNavigation(role: 'freelancer' | 'employer') {
   const freelancerNav = [
     {
       label: 'Genel Bakış',
-      href: '/dashboard/freelancer',
+      href: '/dashboard',
       icon: 'LayoutDashboard',
-      matchPaths: ['/dashboard', '/dashboard/freelancer'],
+      matchPaths: ['/dashboard'],
     },
     {
       label: 'Paketlerim',
-      href: '/dashboard/freelancer/packages',
+      href: '/marketplace/packages',
       icon: 'Package',
     },
     {
       label: 'Siparişler',
-      href: '/dashboard/freelancer/orders',
+      href: '/dashboard/orders',
       icon: 'Briefcase',
     },
     {
-      label: 'Teklifler',
-      href: '/dashboard/freelancer/proposals',
+      label: 'Tekliflerim',
+      href: '/dashboard/my-proposals',
       icon: 'FileText',
     },
     {
       label: 'Değerlendirmeler',
-      href: '/dashboard/freelancer/reviews',
+      href: '/dashboard/reviews',
       icon: 'Star',
     },
     {
@@ -90,7 +88,7 @@ export function getDashboardNavigation(role: 'freelancer' | 'employer') {
     },
     {
       label: 'İstatistikler',
-      href: '/dashboard/freelancer/analytics',
+      href: '/dashboard/analytics',
       icon: 'TrendingUp',
     },
   ];
@@ -100,13 +98,13 @@ export function getDashboardNavigation(role: 'freelancer' | 'employer') {
       label: 'Genel Bakış',
       href: '/dashboard',
       icon: 'LayoutDashboard',
-      matchPaths: ['/dashboard', '/dashboard/employer'],
+      matchPaths: ['/dashboard'],
     },
     {
       label: 'İş İlanları',
       href: '/dashboard/my-jobs',
       icon: 'Briefcase',
-      matchPaths: ['/dashboard/my-jobs', '/dashboard/employer/jobs'],
+      matchPaths: ['/dashboard/my-jobs'],
     },
     {
       label: 'Siparişler',
@@ -118,25 +116,25 @@ export function getDashboardNavigation(role: 'freelancer' | 'employer') {
       label: 'Teklifler',
       href: '/dashboard/my-proposals',
       icon: 'FileText',
-      matchPaths: ['/dashboard/my-proposals', '/dashboard/employer/proposals'],
+      matchPaths: ['/dashboard/my-proposals'],
     },
     {
       label: 'Freelancerlar',
       href: '/search?type=freelancers',
       icon: 'Users',
-      matchPaths: ['/search', '/dashboard/employer/freelancers'],
+      matchPaths: ['/search'],
     },
     {
       label: 'Değerlendirmeler',
       href: '/dashboard/reviews',
       icon: 'Star',
-      matchPaths: ['/dashboard/reviews', '/dashboard/employer/reviews'],
+      matchPaths: ['/dashboard/reviews'],
     },
     {
       label: 'İstatistikler',
       href: '/dashboard/analytics',
       icon: 'TrendingUp',
-      matchPaths: ['/dashboard/analytics', '/dashboard/employer/analytics'],
+      matchPaths: ['/dashboard/analytics'],
     },
   ];
 

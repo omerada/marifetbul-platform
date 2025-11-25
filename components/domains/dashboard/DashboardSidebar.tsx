@@ -50,14 +50,14 @@ export function DashboardSidebar() {
     {
       label: 'Genel Bakış',
       icon: <LayoutDashboard className="h-5 w-5" />,
-      href: '/dashboard/freelancer',
-      matchPaths: ['/dashboard', '/dashboard/freelancer'],
+      href: '/dashboard',
+      matchPaths: ['/dashboard'],
     },
     {
       label: 'Paketlerim',
       icon: <Package className="h-5 w-5" />,
-      href: '/dashboard/freelancer/packages',
-      matchPaths: ['/dashboard/freelancer/packages'],
+      href: '/marketplace/packages',
+      matchPaths: ['/marketplace/packages'],
     },
     {
       label: 'Siparişler',
@@ -72,10 +72,10 @@ export function DashboardSidebar() {
       matchPaths: ['/dashboard/refunds'],
     },
     {
-      label: 'Teklifler',
+      label: 'Tekliflerim',
       icon: <FileText className="h-5 w-5" />,
-      href: '/dashboard/freelancer/proposals',
-      matchPaths: ['/dashboard/freelancer/proposals'],
+      href: '/dashboard/my-proposals',
+      matchPaths: ['/dashboard/my-proposals'],
     },
     {
       label: 'Mesajlar',
@@ -86,14 +86,14 @@ export function DashboardSidebar() {
     {
       label: 'Değerlendirmeler',
       icon: <Star className="h-5 w-5" />,
-      href: '/dashboard/freelancer/reviews',
-      matchPaths: ['/dashboard/freelancer/reviews'],
+      href: '/dashboard/reviews',
+      matchPaths: ['/dashboard/reviews'],
     },
     {
       label: 'İstatistikler',
       icon: <TrendingUp className="h-5 w-5" />,
-      href: '/dashboard/freelancer/analytics',
-      matchPaths: ['/dashboard/freelancer/analytics'],
+      href: '/dashboard/analytics',
+      matchPaths: ['/dashboard/analytics'],
     },
   ];
 
@@ -102,13 +102,13 @@ export function DashboardSidebar() {
       label: 'Genel Bakış',
       icon: <LayoutDashboard className="h-5 w-5" />,
       href: '/dashboard',
-      matchPaths: ['/dashboard', '/dashboard/employer'],
+      matchPaths: ['/dashboard'],
     },
     {
       label: 'İş İlanları',
       icon: <Briefcase className="h-5 w-5" />,
       href: '/dashboard/my-jobs',
-      matchPaths: ['/dashboard/my-jobs', '/dashboard/employer/jobs'],
+      matchPaths: ['/dashboard/my-jobs'],
     },
     {
       label: 'Siparişler',
@@ -126,7 +126,7 @@ export function DashboardSidebar() {
       label: 'Teklifler',
       icon: <FileText className="h-5 w-5" />,
       href: '/dashboard/my-proposals',
-      matchPaths: ['/dashboard/my-proposals', '/dashboard/employer/proposals'],
+      matchPaths: ['/dashboard/my-proposals'],
     },
     {
       label: 'Mesajlar',
@@ -138,7 +138,19 @@ export function DashboardSidebar() {
       label: "Freelancer'lar",
       icon: <Users className="h-5 w-5" />,
       href: '/search?type=freelancers',
-      matchPaths: ['/search', '/dashboard/employer/freelancers'],
+      matchPaths: ['/search'],
+    },
+    {
+      label: 'Değerlendirmeler',
+      icon: <Star className="h-5 w-5" />,
+      href: '/dashboard/reviews',
+      matchPaths: ['/dashboard/reviews'],
+    },
+    {
+      label: 'İstatistikler',
+      icon: <TrendingUp className="h-5 w-5" />,
+      href: '/dashboard/analytics',
+      matchPaths: ['/dashboard/analytics'],
     },
   ];
 

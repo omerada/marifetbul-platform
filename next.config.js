@@ -156,6 +156,67 @@ const nextConfig = {
         destination: '/dashboard/my-jobs/:jobId/proposals',
         permanent: true,
       },
+      // Package routes - redirect to marketplace
+      {
+        source: '/dashboard/freelancer/packages',
+        destination: '/marketplace/packages',
+        permanent: true,
+      },
+      {
+        source: '/dashboard/freelancer/packages/:path*',
+        destination: '/marketplace/packages/:path*',
+        permanent: true,
+      },
+      // Proposals routes - unified
+      {
+        source: '/dashboard/freelancer/proposals',
+        destination: '/dashboard/my-proposals',
+        permanent: true,
+      },
+      {
+        source: '/dashboard/employer/proposals',
+        destination: '/dashboard/my-proposals',
+        permanent: true,
+      },
+      // Reviews routes - unified
+      {
+        source: '/dashboard/freelancer/reviews',
+        destination: '/dashboard/reviews',
+        permanent: true,
+      },
+      {
+        source: '/dashboard/employer/reviews',
+        destination: '/dashboard/reviews',
+        permanent: true,
+      },
+      // Analytics routes - unified
+      {
+        source: '/dashboard/freelancer/analytics',
+        destination: '/dashboard/analytics',
+        permanent: true,
+      },
+      {
+        source: '/dashboard/employer/analytics',
+        destination: '/dashboard/analytics',
+        permanent: true,
+      },
+      // Jobs routes - unified
+      {
+        source: '/dashboard/employer/jobs',
+        destination: '/dashboard/my-jobs',
+        permanent: true,
+      },
+      {
+        source: '/dashboard/employer/jobs/:path*',
+        destination: '/dashboard/my-jobs/:path*',
+        permanent: true,
+      },
+      // Freelancers search
+      {
+        source: '/dashboard/employer/freelancers',
+        destination: '/search?type=freelancers',
+        permanent: true,
+      },
       // Moderation page redirects - Sprint 1: Route Consolidation (Nov 8, 2025)
       // Old route group format redirects to new canonical moderator routes
       {

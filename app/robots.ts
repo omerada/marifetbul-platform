@@ -11,8 +11,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: [
           '/api/',
           '/admin/',
-          '/dashboard/employer/*',
-          '/dashboard/freelancer/*',
+          '/dashboard/*',
           '/profile/edit',
           '/messages/*',
           '/support/tickets/*',
@@ -28,8 +27,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: [
           '/api/',
           '/admin/',
-          '/dashboard/employer/*',
-          '/dashboard/freelancer/*',
+          '/dashboard/*',
           '/profile/edit',
           '/messages/*',
           '/support/tickets/*',
@@ -42,8 +40,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: [
           '/api/',
           '/admin/',
-          '/dashboard/employer/*',
-          '/dashboard/freelancer/*',
+          '/dashboard/*',
           '/profile/edit',
           '/messages/*',
           '/support/tickets/*',

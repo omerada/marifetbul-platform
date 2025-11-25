@@ -31,8 +31,6 @@ export * from './forms';
 // Cross-domain reusable components
 
 export * from './shared';
-// Removed deprecated: ErrorAlert, ApiErrorBoundary
-// Use: UnifiedErrorBoundary from './ui'
 
 // ================================================
 // PROVIDER COMPONENTS
@@ -67,7 +65,6 @@ export {
   AnimatedInteractions,
   LocationPicker,
   MapView,
-  // ErrorState, // REMOVED - Use SimpleErrorDisplay from @/components/ui instead
 } from './shared';
 
 // ================================================
@@ -79,9 +76,6 @@ export {
 export { WalletDashboard } from './domains/wallet/WalletDashboard';
 export type { WalletDashboardProps } from './domains/wallet/WalletDashboard';
 
-// Other wallet components
-// WalletCard removed (unused - use BalanceCard instead)
-// EscrowViewer - DELETED (Sprint 2 Cleanup) - Unused component, use EscrowList instead
 export { CommissionBreakdown } from './domains/wallet/CommissionBreakdown';
 export { PayoutStatusTracker } from './domains/wallet/PayoutStatusTracker';
 export { TransactionDisplay } from './domains/wallet/TransactionDisplay';

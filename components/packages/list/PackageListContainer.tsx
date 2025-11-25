@@ -89,7 +89,10 @@ export function PackageListContainer() {
       });
     } catch (err) {
       setError('Paketler yüklenirken bir hata oluştu');
-      logger.error('Failed to fetch packages:', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Failed to fetch packages:',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
       setLoading(false);
     }
@@ -117,7 +120,10 @@ export function PackageListContainer() {
       fetchPackages();
     } catch (err) {
       alert('Durum değiştirilemedi');
-      logger.error('Failed to change status:', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Failed to change status:',
+        err instanceof Error ? err : new Error(String(err))
+      );
     }
   };
 
@@ -127,7 +133,10 @@ export function PackageListContainer() {
       fetchPackages();
     } catch (err) {
       alert('Paket silinemedi');
-      logger.error('Failed to delete package:', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Failed to delete package:',
+        err instanceof Error ? err : new Error(String(err))
+      );
     }
   };
 
@@ -147,7 +156,7 @@ export function PackageListContainer() {
           <h1 className="text-3xl font-bold text-gray-900">Paketlerim</h1>
           <p className="mt-1 text-gray-600">Hizmet paketlerinizi yönetin</p>
         </div>
-        <Link href="/dashboard/freelancer/packages/create">
+        <Link href="/marketplace/packages/create">
           <Button leftIcon={<Plus className="h-5 w-5" />}>
             Yeni Paket Oluştur
           </Button>

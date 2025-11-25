@@ -254,7 +254,7 @@ export function PackageCreationWizard({
       }
 
       // Redirect to packages list
-      router.push('/dashboard/freelancer/packages?success=true');
+      router.push('/marketplace/packages?success=true');
     } catch (error) {
       logger.error('Package creation error', { error, packageId });
       setSubmitError(
@@ -291,7 +291,7 @@ export function PackageCreationWizard({
       };
 
       await packageApi.createPackage(requestData);
-      router.push('/dashboard/freelancer/packages?draft=true');
+      router.push('/marketplace/packages?draft=true');
     } catch (error) {
       logger.error('Draft save error', { error });
       setSubmitError('Taslak kaydedilirken hata oluştu');

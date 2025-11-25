@@ -552,13 +552,13 @@ export const DASHBOARD_ENDPOINTS = {
 
   // ================================================
   // ACTIVITY TIMELINE
-  // Path: /api/v1/dashboard/freelancer|employer
-  // Authorization: role-specific
+  // Path: /api/v1/dashboard
+  // Authorization: role-based
+  // Note: Backend determines role from auth token
   // ================================================
 
-  // Activity Feeds
-  FREELANCER_ACTIVITIES: '/dashboard/freelancer/activities',
-  EMPLOYER_ACTIVITIES: '/dashboard/employer/activities',
+  // Activity Feeds (unified - role determined by backend)
+  ACTIVITIES: '/dashboard/activities',
 
   // ================================================
   // WALLET ANALYTICS (FREELANCER)

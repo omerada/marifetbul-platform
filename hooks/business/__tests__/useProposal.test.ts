@@ -290,7 +290,7 @@ describe('useProposal Hook', () => {
 
       await waitFor(
         () => {
-          expect(mockPush).toHaveBeenCalledWith('/dashboard/employer/orders');
+          expect(mockPush).toHaveBeenCalledWith('/dashboard/orders');
         },
         { timeout: 2000 }
       );

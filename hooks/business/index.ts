@@ -672,6 +672,18 @@ export { useUserPreferences } from './useUserPreferences';
 export type { UseUserPreferencesReturn } from './useUserPreferences';
 
 // ================================================
+// NOTIFICATIONS (Sprint 3 - Messaging & Notifications)
+// ================================================
+export * from './notifications';
+export { useNotifications } from './notifications';
+export type {
+  UseNotificationsOptions,
+  NotificationState,
+  NotificationActions,
+  UseNotificationsReturn,
+} from './notifications';
+
+// ================================================
 // DISPUTES (Sprint 4 - Story 4 & Story 5)
 // ================================================
 export { useDisputeEvidence } from './useDisputeEvidence';

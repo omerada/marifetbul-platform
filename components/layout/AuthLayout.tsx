@@ -260,8 +260,8 @@ export function ProtectedRoute({
 
         // Redirect based on user role
         const roleRedirects: Record<string, string> = {
-          freelancer: '/dashboard/freelancer',
-          client: '/dashboard/employer',
+          freelancer: '/dashboard',
+          client: '/dashboard',
           admin: '/admin',
         };
 
@@ -365,8 +365,8 @@ export function useAuthRedirect() {
     if (!user) return;
 
     const roleRedirects: Record<string, string> = {
-      freelancer: '/dashboard/freelancer',
-      client: '/dashboard/employer',
+      freelancer: '/dashboard',
+      client: '/dashboard',
       admin: '/admin',
     };
 

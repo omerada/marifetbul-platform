@@ -29,11 +29,9 @@ export function useAuthGuard(requiredRole?: 'employer' | 'freelancer') {
 
     // Check role-based access
     if (requiredRole && user?.userType !== requiredRole) {
-      // Redirect to unauthorized page or appropriate dashboard
-      if (user?.userType === 'employer') {
-        router.push('/dashboard/employer');
-      } else if (user?.userType === 'freelancer') {
-        router.push('/dashboard/freelancer');
+      // Redirect to unified dashboard or unauthorized page
+      if (user?.userType === 'employer' || user?.userType === 'freelancer') {
+        router.push('/dashboard');
       } else {
         router.push('/unauthorized');
       }

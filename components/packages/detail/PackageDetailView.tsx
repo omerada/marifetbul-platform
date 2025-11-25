@@ -91,7 +91,7 @@ export function PackageDetailView({
           <h1 className="text-3xl font-bold text-gray-900">{pkg.title}</h1>
           <p className="mt-2 text-gray-600">{pkg.description}</p>
         </div>
-        <Link href={`/dashboard/freelancer/packages/${pkg.id}/edit`}>
+        <Link href={`/marketplace/packages/${pkg.id}/edit`}>
           <Button leftIcon={<Edit className="h-5 w-5" />}>Düzenle</Button>
         </Link>
       </div>

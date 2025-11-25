@@ -39,7 +39,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       await login(page, 'buyer');
 
       // 2. Navigate to completed orders
-      await page.goto('/dashboard/employer/orders?status=COMPLETED');
+      await page.goto('/dashboard/orders?status=COMPLETED');
       await page.waitForLoadState('networkidle');
 
       // 3. Click first completed order to view details
@@ -48,13 +48,13 @@ test.describe('Review System - Complete E2E Tests', () => {
       await firstOrder.click();
 
       // 4. Wait for order details page
-      await page.waitForURL(/\/dashboard\/employer\/orders\/[^\/]+$/);
+      await page.waitForURL(/\/dashboard\/orders\/[^\/]+$/);
 
       // 5. Click "Değerlendirme Yaz" button
       await page.click('a[href*="/review"]:has-text("Değerlendirme Yaz")');
 
       // 6. Wait for review form page
-      await page.waitForURL(/\/dashboard\/employer\/orders\/[^\/]+\/review$/);
+      await page.waitForURL(/\/dashboard\/orders\/[^\/]+\/review$/);
       await page.waitForSelector('[data-testid="review-form"]');
 
       // 7. Fill 4 category ratings (Communication, Quality, Speed, Professionalism)
@@ -102,7 +102,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       await page.waitForURL(/\/dashboard\/employer\/orders/);
 
       // 14. Navigate to reviews list and verify review appears
-      await page.goto('/dashboard/employer/reviews');
+      await page.goto('/dashboard/reviews');
       await page.waitForLoadState('networkidle');
       await expect(
         page.locator(`text=${reviewText.substring(0, 50)}`)
@@ -167,7 +167,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       await login(page, 'buyer');
 
       // 2. Navigate to employer reviews page
-      await page.goto('/dashboard/employer/reviews');
+      await page.goto('/dashboard/reviews');
       await page.waitForLoadState('networkidle');
 
       // 3. Find a recent review (created within 30 days) with edit button
@@ -235,7 +235,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       await login(page, 'buyer');
 
       // 2. Navigate to reviews page
-      await page.goto('/dashboard/employer/reviews');
+      await page.goto('/dashboard/reviews');
       await page.waitForLoadState('networkidle');
 
       // 3. Find review older than 30 days (edit button should be disabled)
@@ -335,8 +335,8 @@ test.describe('Review System - Complete E2E Tests', () => {
       // 1. Login as freelancer
       await login(page, 'seller');
 
-      // 2. Navigate to /dashboard/freelancer/reviews
-      await page.goto('/dashboard/freelancer/reviews');
+      // 2. Navigate to /dashboard/reviews
+      await page.goto('/dashboard/reviews');
 
       // 3. Verify stats cards display
       await expect(page.locator('[data-testid="avg-rating"]')).toBeVisible();
@@ -358,7 +358,7 @@ test.describe('Review System - Complete E2E Tests', () => {
 
     test('should filter reviews by rating', async ({ page }) => {
       await login(page, 'seller');
-      await page.goto('/dashboard/freelancer/reviews');
+      await page.goto('/dashboard/reviews');
 
       // Apply 5-star filter
       await page.click('[data-filter="rating"] button:has-text("5 Yıldız")');
@@ -372,7 +372,7 @@ test.describe('Review System - Complete E2E Tests', () => {
 
     test('should sort reviews by different criteria', async ({ page }) => {
       await login(page, 'seller');
-      await page.goto('/dashboard/freelancer/reviews');
+      await page.goto('/dashboard/reviews');
 
       // Select "Highest Rating" sort
       await page.selectOption('select[name="sortBy"]', 'rating-desc');
@@ -408,7 +408,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       await login(page, 'seller');
 
       // 2. Navigate to freelancer reviews page
-      await page.goto('/dashboard/freelancer/reviews');
+      await page.goto('/dashboard/reviews');
       await page.waitForLoadState('networkidle');
 
       // 3. Find review without response
@@ -472,7 +472,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       await login(page, 'seller');
 
       // 2. Navigate to reviews page
-      await page.goto('/dashboard/freelancer/reviews');
+      await page.goto('/dashboard/reviews');
       await page.waitForLoadState('networkidle');
 
       // 3. Find review with existing response
@@ -532,7 +532,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       await login(page, 'seller');
 
       // 2. Navigate to reviews page
-      await page.goto('/dashboard/freelancer/reviews');
+      await page.goto('/dashboard/reviews');
       await page.waitForLoadState('networkidle');
 
       // 3. Find review with response
@@ -592,7 +592,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       await login(page, 'seller');
 
       // 2. Navigate to reviews page
-      await page.goto('/dashboard/freelancer/reviews');
+      await page.goto('/dashboard/reviews');
       await page.waitForLoadState('networkidle');
 
       // 3. Find review without response
@@ -685,8 +685,8 @@ test.describe('Review System - Complete E2E Tests', () => {
       await page.click('button[type="submit"]');
       await page.waitForURL(/\/dashboard/);
 
-      // 2. Navigate to /dashboard/employer/reviews
-      await page.goto('/dashboard/employer/reviews');
+      // 2. Navigate to /dashboard/reviews
+      await page.goto('/dashboard/reviews');
       await page.waitForLoadState('networkidle');
 
       // 3. Verify list of written reviews
@@ -724,7 +724,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       await page.waitForURL(/\/dashboard/);
 
       // 2. Navigate to reviews page
-      await page.goto('/dashboard/employer/reviews');
+      await page.goto('/dashboard/reviews');
       await page.waitForLoadState('networkidle');
 
       // 3. Find recent review (created within last 7 days)
@@ -759,7 +759,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       await page.waitForURL(/\/dashboard/);
 
       // 2. Navigate to reviews page
-      await page.goto('/dashboard/employer/reviews');
+      await page.goto('/dashboard/reviews');
       await page.waitForLoadState('networkidle');
 
       // Get initial review count
@@ -1452,7 +1452,7 @@ test.describe('Review System - Complete E2E Tests', () => {
       await login(page, 'buyer');
 
       // 2. Navigate to own reviews page
-      await page.goto('/dashboard/employer/reviews');
+      await page.goto('/dashboard/reviews');
       await page.waitForLoadState('networkidle');
 
       // 3. Find own review
@@ -1776,7 +1776,7 @@ test.describe('Review System - Complete E2E Tests', () => {
           );
 
           // 4. Verify review now visible
-          await page.goto('/dashboard/employer/reviews');
+          await page.goto('/dashboard/reviews');
           const approvedReview = page.locator(
             '[data-testid="review-status-badge"]:has-text("Onaylandı")'
           );

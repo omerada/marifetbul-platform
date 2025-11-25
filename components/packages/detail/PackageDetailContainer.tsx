@@ -54,7 +54,10 @@ export function PackageDetailContainer() {
       });
     } catch (err) {
       setError('Paket yüklenirken bir hata oluştu');
-      logger.error('Failed to fetch package:', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Failed to fetch package:',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
       setLoading(false);
     }
@@ -78,7 +81,7 @@ export function PackageDetailContainer() {
     return (
       <div className="rounded-lg border border-red-200 bg-red-50 p-6">
         <p className="text-red-800">{error || 'Paket bulunamadı'}</p>
-        <Link href="/dashboard/freelancer/packages">
+        <Link href="/marketplace/packages">
           <Button variant="outline" className="mt-4">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Paketlere Dön
@@ -91,7 +94,7 @@ export function PackageDetailContainer() {
   return (
     <div className="space-y-4">
       {/* Back Button */}
-      <Link href="/dashboard/freelancer/packages">
+      <Link href="/marketplace/packages">
         <Button
           variant="outline"
           size="sm"

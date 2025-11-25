@@ -25,7 +25,14 @@ import {
 } from '@/components/ui/table';
 import { TableSkeleton } from '@/components/ui/loading/TableSkeleton';
 import { Checkbox } from '@/components/ui/Checkbox';
-import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown, MoreVertical } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from '@/components/ui/DropdownMenu';
 import type { UnifiedDataTableProps, Column } from './types';
 import {
   useTableSort,
@@ -423,8 +430,76 @@ export function UnifiedDataTable<T>({
                       <TableCell
                         className={cn('text-right', compact && 'py-2')}
                       >
-                        {/* TODO: Add dropdown menu for row actions */}
-                        <span className="text-xs text-gray-400">...</span>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              className="border-input bg-background hover:bg-accent hover:text-accent-foreground focus:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md border focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none disabled:opacity-50"
+                              aria-label="Row actions"
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {rowActions
+                              ?.filter((action) => {
+                                // Check 'show' condition (if provided)
+                                if (action.show && !action.show(row)) {
+                                  return false;
+                                }
+                                // Check deprecated 'hidden' condition
+                                if (action.hidden && action.hidden(row)) {
+                                  return false;
+                                }
+                                return true;
+                              })
+                              .map((action, actionIndex) => {
+                                const isDisabled = action.disabled?.(row);
+                                const variant =
+                                  action.variant ||
+                                  (action.danger ? 'danger' : 'default');
+                                const Icon = action.icon;
+
+                                // Check if separator needed (before danger actions)
+                                const isDanger = variant === 'danger';
+                                const prevAction = rowActions[actionIndex - 1];
+                                const prevIsDanger =
+                                  prevAction?.variant === 'danger' ||
+                                  prevAction?.danger;
+                                const showSeparator =
+                                  isDanger && !prevIsDanger && actionIndex > 0;
+
+                                return (
+                                  <React.Fragment
+                                    key={action.id || action.label}
+                                  >
+                                    {showSeparator && <DropdownMenuSeparator />}
+                                    <DropdownMenuItem
+                                      onClick={() => {
+                                        if (!isDisabled) {
+                                          action.onClick(row);
+                                        }
+                                      }}
+                                      className={cn(
+                                        isDisabled &&
+                                          'cursor-not-allowed opacity-50',
+                                        variant === 'danger' &&
+                                          'text-red-600 focus:bg-red-50',
+                                        variant === 'warning' &&
+                                          'text-yellow-600 focus:bg-yellow-50',
+                                        variant === 'success' &&
+                                          'text-green-600 focus:bg-green-50'
+                                      )}
+                                    >
+                                      {Icon && (
+                                        <Icon className="mr-2 h-4 w-4" />
+                                      )}
+                                      {action.label}
+                                    </DropdownMenuItem>
+                                  </React.Fragment>
+                                );
+                              })}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     )}
                   </TableRow>

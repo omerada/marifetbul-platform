@@ -1,6 +1,6 @@
 /**
  * Dashboard API Integration Tests
- * Tests for /api/dashboard/freelancer and /api/dashboard/employer routes
+ * Tests for unified /api/v1/dashboard routes (role-determined by auth token)
  */
 
 import { describe, it, expect, beforeAll } from '@jest/globals';
@@ -41,7 +41,7 @@ describe('Dashboard API Integration', () => {
 
   describe('Freelancer Dashboard', () => {
     it('should fetch freelancer dashboard data', async () => {
-      const response = await fetch(`${API_BASE_URL}/api/dashboard/freelancer`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/dashboard`, {
         headers: {
           Authorization: `Bearer ${freelancerToken}`,
           'Content-Type': 'application/json',
@@ -62,15 +62,12 @@ describe('Dashboard API Integration', () => {
     });
 
     it('should support days query parameter', async () => {
-      const response = await fetch(
-        `${API_BASE_URL}/api/dashboard/freelancer?days=7`,
-        {
-          headers: {
-            Authorization: `Bearer ${freelancerToken}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/api/v1/dashboard?days=7`, {
+        headers: {
+          Authorization: `Bearer ${freelancerToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
       expect(response.status).toBe(200);
       const data = await response.json();
@@ -78,7 +75,7 @@ describe('Dashboard API Integration', () => {
     });
 
     it('should return 401 without auth token', async () => {
-      const response = await fetch(`${API_BASE_URL}/api/dashboard/freelancer`);
+      const response = await fetch(`${API_BASE_URL}/api/v1/dashboard`);
 
       expect(response.status).toBe(401);
       const data = await response.json();
@@ -88,7 +85,7 @@ describe('Dashboard API Integration', () => {
 
     it('should handle backend errors gracefully', async () => {
       // Use invalid token to trigger backend error
-      const response = await fetch(`${API_BASE_URL}/api/dashboard/freelancer`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/dashboard`, {
         headers: {
           Authorization: 'Bearer invalid-token',
           'Content-Type': 'application/json',
@@ -104,7 +101,7 @@ describe('Dashboard API Integration', () => {
 
   describe('Employer Dashboard', () => {
     it('should fetch employer dashboard data', async () => {
-      const response = await fetch(`${API_BASE_URL}/api/dashboard/employer`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/dashboard`, {
         headers: {
           Authorization: `Bearer ${employerToken}`,
           'Content-Type': 'application/json',
@@ -125,15 +122,12 @@ describe('Dashboard API Integration', () => {
     });
 
     it('should support days query parameter', async () => {
-      const response = await fetch(
-        `${API_BASE_URL}/api/dashboard/employer?days=30`,
-        {
-          headers: {
-            Authorization: `Bearer ${employerToken}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/api/v1/dashboard?days=30`, {
+        headers: {
+          Authorization: `Bearer ${employerToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
       expect(response.status).toBe(200);
       const data = await response.json();
@@ -141,7 +135,7 @@ describe('Dashboard API Integration', () => {
     });
 
     it('should return 401 without auth token', async () => {
-      const response = await fetch(`${API_BASE_URL}/api/dashboard/employer`);
+      const response = await fetch(`${API_BASE_URL}/api/v1/dashboard`);
 
       expect(response.status).toBe(401);
       const data = await response.json();
@@ -151,7 +145,7 @@ describe('Dashboard API Integration', () => {
 
   describe('Dashboard Refresh', () => {
     it('should refresh freelancer dashboard', async () => {
-      const response = await fetch(`${API_BASE_URL}/api/dashboard/freelancer`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/dashboard`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${freelancerToken}`,
@@ -165,7 +159,7 @@ describe('Dashboard API Integration', () => {
     });
 
     it('should refresh employer dashboard', async () => {
-      const response = await fetch(`${API_BASE_URL}/api/dashboard/employer`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/dashboard`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${employerToken}`,
@@ -181,7 +175,7 @@ describe('Dashboard API Integration', () => {
 
   describe('Data Transformation', () => {
     it('should transform backend DTO to frontend type', async () => {
-      const response = await fetch(`${API_BASE_URL}/api/dashboard/freelancer`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/dashboard`, {
         headers: {
           Authorization: `Bearer ${freelancerToken}`,
           'Content-Type': 'application/json',
@@ -205,7 +199,7 @@ describe('Dashboard API Integration', () => {
     });
 
     it('should handle missing optional fields', async () => {
-      const response = await fetch(`${API_BASE_URL}/api/dashboard/employer`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/dashboard`, {
         headers: {
           Authorization: `Bearer ${employerToken}`,
           'Content-Type': 'application/json',
@@ -228,7 +222,7 @@ describe('Dashboard API Integration', () => {
     it('should respond within acceptable time', async () => {
       const startTime = Date.now();
 
-      const response = await fetch(`${API_BASE_URL}/api/dashboard/freelancer`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/dashboard`, {
         headers: {
           Authorization: `Bearer ${freelancerToken}`,
           'Content-Type': 'application/json',

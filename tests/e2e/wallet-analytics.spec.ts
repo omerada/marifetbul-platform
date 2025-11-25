@@ -27,7 +27,7 @@ async function loginAsFreelancer(page: Page) {
 test.describe('Wallet Analytics Dashboard', () => {
   test.beforeEach(async ({ page }) => {
     await loginAsFreelancer(page);
-    await page.goto('/dashboard/freelancer/wallet/analytics');
+    await page.goto('/dashboard/wallet/analytics');
     await page.waitForLoadState('networkidle');
   });
 
@@ -58,7 +58,7 @@ test.describe('Wallet Analytics Dashboard', () => {
 
     test('should show loading state initially', async ({ page }) => {
       // Navigate fresh to see loading
-      await page.goto('/dashboard/freelancer/wallet/analytics');
+      await page.goto('/dashboard/wallet/analytics');
 
       // Should show loading spinner or skeleton
       const loading = page
@@ -341,7 +341,7 @@ test.describe('Wallet Analytics Dashboard', () => {
       });
 
       // Navigate to page
-      await page.goto('/dashboard/freelancer/wallet/analytics');
+      await page.goto('/dashboard/wallet/analytics');
       await page.waitForLoadState('networkidle');
 
       // All three endpoints should be called
@@ -363,7 +363,7 @@ test.describe('Wallet Analytics Dashboard', () => {
         });
       });
 
-      await page.goto('/dashboard/freelancer/wallet/analytics');
+      await page.goto('/dashboard/wallet/analytics');
       await page.waitForLoadState('networkidle');
 
       // Should show "no data" message
@@ -382,7 +382,7 @@ test.describe('Wallet Analytics Dashboard', () => {
         });
       });
 
-      await page.goto('/dashboard/freelancer/wallet/analytics');
+      await page.goto('/dashboard/wallet/analytics');
       await page.waitForLoadState('networkidle');
 
       // Should show error message
@@ -404,7 +404,7 @@ test.describe('Wallet Analytics Dashboard', () => {
       });
 
       // Initial load
-      await page.goto('/dashboard/freelancer/wallet/analytics');
+      await page.goto('/dashboard/wallet/analytics');
       await page.waitForLoadState('networkidle');
 
       const initialCount = requestCount;
@@ -424,7 +424,7 @@ test.describe('Wallet Analytics Dashboard', () => {
       // Set mobile viewport
       await page.setViewportSize({ width: 375, height: 667 });
 
-      await page.goto('/dashboard/freelancer/wallet/analytics');
+      await page.goto('/dashboard/wallet/analytics');
       await page.waitForLoadState('networkidle');
 
       // Charts should still be visible
@@ -445,7 +445,7 @@ test.describe('Wallet Analytics Dashboard', () => {
     test('should display correctly on tablet', async ({ page }) => {
       await page.setViewportSize({ width: 768, height: 1024 });
 
-      await page.goto('/dashboard/freelancer/wallet/analytics');
+      await page.goto('/dashboard/wallet/analytics');
       await page.waitForLoadState('networkidle');
 
       // All sections should be visible

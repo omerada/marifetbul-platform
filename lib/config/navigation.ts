@@ -105,12 +105,12 @@ export const marketplaceNavigation: NavigationItem[] = [
  */
 export const freelancerDashboardNavigation: NavigationItem[] = [
   {
-    href: '/dashboard/freelancer',
+    href: '/dashboard',
     label: 'Özet',
     icon: Home,
   },
   {
-    href: '/dashboard/freelancer/packages',
+    href: '/marketplace/packages',
     label: 'Paketlerim',
     icon: Package,
   },
@@ -120,12 +120,12 @@ export const freelancerDashboardNavigation: NavigationItem[] = [
     icon: Briefcase,
   },
   {
-    href: '/dashboard/freelancer/proposals',
+    href: '/dashboard/my-proposals',
     label: 'Teklifler',
     icon: FileText,
   },
   {
-    href: '/dashboard/freelancer/reviews',
+    href: '/dashboard/reviews',
     label: 'Değerlendirmeler',
     icon: Shield,
   },
@@ -135,7 +135,7 @@ export const freelancerDashboardNavigation: NavigationItem[] = [
     icon: Shield,
   },
   {
-    href: '/dashboard/freelancer/analytics',
+    href: '/dashboard/analytics',
     label: 'Analitik',
     icon: Grid,
   },

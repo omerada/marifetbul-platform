@@ -3,6 +3,7 @@
 // ================================================
 // All job-related components
 // Includes job listings, details, proposals, and job management
+// Sprint 1: Complete Job Posting Implementation ✨
 
 // Job Components
 export { JobDetail } from './JobDetail';
@@ -11,6 +12,38 @@ export { JobCard } from './JobCard';
 export { JobFilters } from './JobFilters';
 export { FilterChips } from './FilterChips';
 export { JobCreateForm } from './JobCreateForm';
+export { default as JobImageUploader } from './JobImageUploader'; // NEW ✨
+
+// Analytics & Dashboard Components - NEW ✨
+export { JobStatsCard, JobStatsGrid } from './JobStatsCard';
+export type { JobStatsCardProps, JobStatsGridProps } from './JobStatsCard';
+export { JobQuickActions, ActiveFiltersPills } from './JobQuickActions';
+export type {
+  JobQuickActionsProps,
+  FilterPill,
+  ActiveFiltersPillsProps,
+} from './JobQuickActions';
+export { AdvancedJobFilters } from './AdvancedJobFilters';
+export type {
+  AdvancedJobFiltersState,
+  AdvancedJobFiltersProps,
+} from './AdvancedJobFilters';
+export {
+  JobBulkActions,
+  JobSelectionCheckbox,
+  useBulkActionConfirmation,
+} from './JobBulkActions';
+export type {
+  BulkAction,
+  JobBulkActionsProps,
+  JobSelectionCheckboxProps,
+  BulkActionConfirmation,
+} from './JobBulkActions';
+export { JobAnalyticsCharts } from './JobAnalyticsCharts';
+export type {
+  JobAnalyticsData,
+  JobAnalyticsChartsProps,
+} from './JobAnalyticsCharts';
 
 // Job Management Components (Sprint 2)
 export { JobEditForm } from './JobEditForm';

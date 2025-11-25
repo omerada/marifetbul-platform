@@ -40,7 +40,7 @@ export function JobProposalButton({
     if (eligibility.hasExistingProposal && eligibility.existingProposalId) {
       // Navigate to freelancer proposals page
       router.push(
-        `/dashboard/freelancer/proposals?proposalId=${eligibility.existingProposalId}`
+        `/dashboard/my-proposals?proposalId=${eligibility.existingProposalId}`
       );
       logger.debug(
         '[JobProposalButton] Navigating to existing proposal:',

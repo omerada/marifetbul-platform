@@ -12,7 +12,10 @@ import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { UnifiedDataTable } from '@/lib/components/unified/UnifiedDataTable';
-import type { Column, RowAction } from '@/lib/components/unified/UnifiedDataTable';
+import type {
+  Column,
+  RowAction,
+} from '@/lib/components/unified/UnifiedDataTable';
 import type {
   PackageSummary,
   PackageStatus,
@@ -62,7 +65,7 @@ export function PackageListTable({
             />
             <div className="ml-4">
               <Link
-                href={`/dashboard/freelancer/packages/${pkg.id}`}
+                href={`/marketplace/packages/${pkg.id}`}
                 className="text-sm font-medium text-gray-900 hover:text-purple-600"
               >
                 {pkg.title}
@@ -162,7 +165,7 @@ export function PackageListTable({
         label: 'Görüntüle',
         icon: Eye,
         onClick: (pkg) => {
-          window.location.href = `/dashboard/freelancer/packages/${pkg.id}`;
+          window.location.href = `/marketplace/packages/${pkg.id}`;
         },
       },
       {
@@ -170,7 +173,7 @@ export function PackageListTable({
         label: 'Düzenle',
         icon: Edit,
         onClick: (pkg) => {
-          window.location.href = `/dashboard/freelancer/packages/${pkg.id}/edit`;
+          window.location.href = `/marketplace/packages/${pkg.id}/edit`;
         },
       },
       {

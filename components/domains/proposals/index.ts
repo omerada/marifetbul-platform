@@ -38,3 +38,10 @@ export {
   DashboardStatsSkeleton,
   FormSkeleton,
 } from './ProposalSkeletons';
+
+// NEW ✨ Sprint 1 - Enhanced Proposal Form
+export { ProposalFormV2 } from './ProposalFormV2';
+
+// NEW ✨ Sprint 1 - Proposal Comparison Modal
+export { ProposalComparisonModal } from './ProposalComparisonModal';
+export type { ProposalComparisonModalProps } from './ProposalComparisonModal';

@@ -93,12 +93,20 @@ export { OrderMessagingPanel } from './OrderMessagingPanel';
 export { OrderMessageBadge } from './OrderMessageBadge';
 export { OrderListFilters } from './OrderListFilters';
 export { DeliveryManager } from './DeliveryManager';
+export { DeliveryWorkflow } from './DeliveryWorkflow';
+export type {
+  DeliveryWorkflowProps,
+  DeliveryFile,
+  Delivery,
+} from './DeliveryWorkflow';
 
 // Sprint 2: Order Dashboard Components
 export { OrderStatsWidget } from './OrderStatsWidget';
 export { RecentOrdersList } from './RecentOrdersList';
 export { OrderQuickActions } from './OrderQuickActions';
 export { OrderActivityLog } from './OrderActivityLog';
+export { OrderProgressTracker } from './OrderProgressTracker';
+export type { OrderProgressTrackerProps } from './OrderProgressTracker';
 export { OrderAttachmentsViewer } from './OrderAttachmentsViewer';
 export { OrderExportButton } from './OrderExportButton';
 

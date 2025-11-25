@@ -480,27 +480,101 @@ describe('adaptAdminDashboard', () => {
     });
   });
 
-  describe('Placeholder Fields (Sprint 2 TODO)', () => {
-    it('should have populated recentActivities array', () => {
+  describe('Recent Activities Integration (Sprint 2)', () => {
+    it('should populate recentActivities array from metrics', () => {
       const result = adaptAdminDashboard(validAdminApiResponse);
       expect(result.recentActivities).toBeDefined();
       expect(Array.isArray(result.recentActivities)).toBe(true);
       expect(result.recentActivities.length).toBeGreaterThan(0);
-      // Should have synthetic activities from metrics
-      expect(result.recentActivities.some((a) => a.type === 'order')).toBe(
-        true
-      );
     });
 
-    it('should have populated quickActions array', () => {
+    it('should include order activities with correct status mapping', () => {
+      const result = adaptAdminDashboard(validAdminApiResponse);
+      const orderActivities = result.recentActivities.filter(
+        (a) => a.type === 'order'
+      );
+      expect(orderActivities.length).toBeGreaterThan(0);
+
+      orderActivities.forEach((activity) => {
+        expect(activity).toMatchObject({
+          id: expect.any(String),
+          type: 'order',
+          title: expect.any(String),
+          description: expect.any(String),
+          timestamp: expect.any(String),
+          status: expect.stringMatching(
+            /^(pending|completed|cancelled|failed|in_progress)$/
+          ),
+        });
+      });
+    });
+
+    it('should limit activities to max 10 items', () => {
+      const result = adaptAdminDashboard(validAdminApiResponse);
+      expect(result.recentActivities.length).toBeLessThanOrEqual(10);
+    });
+
+    it('should sort activities by timestamp descending', () => {
+      const result = adaptAdminDashboard(validAdminApiResponse);
+      for (let i = 1; i < result.recentActivities.length; i++) {
+        const prevTimestamp = new Date(
+          result.recentActivities[i - 1].timestamp
+        ).getTime();
+        const currTimestamp = new Date(
+          result.recentActivities[i].timestamp
+        ).getTime();
+        expect(prevTimestamp).toBeGreaterThanOrEqual(currTimestamp);
+      }
+    });
+  });
+
+  describe('Quick Actions Integration (Sprint 2)', () => {
+    it('should populate quickActions array for admin', () => {
       const result = adaptAdminDashboard(validAdminApiResponse);
       expect(result.quickActions).toBeDefined();
       expect(Array.isArray(result.quickActions)).toBe(true);
       expect(result.quickActions.length).toBe(5); // 5 admin actions
-      expect(result.quickActions[0].label).toBe('Kullanıcı Yönetimi');
     });
 
-    it('should have placeholder chart structures', () => {
+    it('should have correctly structured quick actions', () => {
+      const result = adaptAdminDashboard(validAdminApiResponse);
+
+      result.quickActions.forEach((action) => {
+        expect(action).toMatchObject({
+          id: expect.any(String),
+          label: expect.any(String),
+          description: expect.any(String),
+          icon: expect.any(Function), // Lucide icon component
+          href: expect.stringMatching(/^\//), // URL starting with /
+          variant: expect.stringMatching(/^(primary|default|secondary)$/),
+        });
+      });
+    });
+
+    it('should include user management as first action', () => {
+      const result = adaptAdminDashboard(validAdminApiResponse);
+      expect(result.quickActions[0].label).toBe('Kullanıcı Yönetimi');
+      expect(result.quickActions[0].href).toBe('/admin/users');
+      expect(result.quickActions[0].variant).toBe('primary');
+    });
+
+    it('should include badge for actions with counts', () => {
+      const result = adaptAdminDashboard(validAdminApiResponse);
+
+      const actionsWithBadges = result.quickActions.filter(
+        (action) => action.badge !== undefined
+      );
+      expect(actionsWithBadges.length).toBeGreaterThan(0);
+
+      actionsWithBadges.forEach((action) => {
+        expect(typeof action.badge).toBe('number');
+        expect(action.badge).toBeGreaterThanOrEqual(0);
+      });
+    });
+  });
+
+  describe('Chart Data Integration (Sprint 2)', () => {
+    it('should populate chart structures from backend data', () => {
       const result = adaptAdminDashboard(validAdminApiResponse);
 
       expect(result.charts).toBeDefined();
@@ -508,9 +582,48 @@ describe('adaptAdminDashboard', () => {
       expect(result.charts.revenue).toBeDefined();
       expect(result.charts.orders).toBeDefined();
       expect(result.charts.searchAnalytics).toBeDefined();
+    });
 
-      // Chart series populated from backend trends data
+    it('should have chart series with valid data arrays', () => {
+      const result = adaptAdminDashboard(validAdminApiResponse);
+
       expect(Array.isArray(result.charts.userGrowth.series)).toBe(true);
+      expect(Array.isArray(result.charts.revenue.series)).toBe(true);
+      expect(Array.isArray(result.charts.orders.series)).toBe(true);
+
+      result.charts.userGrowth.series.forEach((series) => {
+        expect(series).toMatchObject({
+          name: expect.any(String),
+          data: expect.any(Array),
+        });
+        expect(series.data.length).toBeGreaterThan(0);
+      });
+    });
+
+    it('should populate chart labels/categories', () => {
+      const result = adaptAdminDashboard(validAdminApiResponse);
+
+      if (result.charts.userGrowth.categories) {
+        expect(Array.isArray(result.charts.userGrowth.categories)).toBe(true);
+        expect(result.charts.userGrowth.categories.length).toBeGreaterThan(0);
+      }
+    });
+
+    it('should include chart metadata (type, title, etc)', () => {
+      const result = adaptAdminDashboard(validAdminApiResponse);
+
+      const charts = [
+        result.charts.userGrowth,
+        result.charts.revenue,
+        result.charts.orders,
+      ];
+
+      charts.forEach((chart) => {
+        expect(chart.type).toMatch(/^(line|bar|area|pie|donut)$/);
+        if (chart.title) {
+          expect(typeof chart.title).toBe('string');
+        }
+      });
     });
   });
 });
@@ -753,7 +866,6 @@ describe('adaptFreelancerDashboard (Seller)', () => {
 
   describe('Edge Cases', () => {
     it('should throw error for invalid API response', () => {
-       
       expect(() =>
         adaptFreelancerDashboard(invalidSellerResponse as any)
       ).toThrow(
@@ -767,30 +879,86 @@ describe('adaptFreelancerDashboard (Seller)', () => {
     });
   });
 
-  describe('Placeholder Fields (Sprint 2 TODO)', () => {
-    it('should have empty recentActivities array', () => {
+  describe('Recent Activities Integration (Sprint 2)', () => {
+    it('should populate recentActivities from order and review metrics', () => {
       const result = adaptFreelancerDashboard(validSellerApiResponse);
-      expect(result.recentActivities).toEqual([]);
+      expect(result.recentActivities).toBeDefined();
+      expect(Array.isArray(result.recentActivities)).toBe(true);
     });
 
-    it('should have populated quickActions array', () => {
+    it('should map recent orders to activity items', () => {
+      const result = adaptFreelancerDashboard(validSellerApiResponse);
+      const orderActivities = result.recentActivities.filter(
+        (a) => a.type === 'order'
+      );
+
+      orderActivities.forEach((activity) => {
+        expect(activity).toMatchObject({
+          id: expect.any(String),
+          type: 'order',
+          title: expect.stringContaining('order'),
+          timestamp: expect.any(String),
+          status: expect.stringMatching(
+            /^(pending|completed|cancelled|failed|in_progress)$/
+          ),
+        });
+      });
+    });
+
+    it('should limit activities to 10 most recent', () => {
+      const result = adaptFreelancerDashboard(validSellerApiResponse);
+      expect(result.recentActivities.length).toBeLessThanOrEqual(10);
+    });
+  });
+
+  describe('Quick Actions Integration (Sprint 2)', () => {
+    it('should have 4 freelancer-specific quick actions', () => {
       const result = adaptFreelancerDashboard(validSellerApiResponse);
       expect(result.quickActions).toBeDefined();
       expect(Array.isArray(result.quickActions)).toBe(true);
-      expect(result.quickActions.length).toBe(4); // 4 freelancer actions
-      expect(result.quickActions[0].label).toBe('Create New Package');
+      expect(result.quickActions.length).toBe(4);
     });
 
-    it('should have placeholder chart structures', () => {
+    it('should include create package as primary action', () => {
       const result = adaptFreelancerDashboard(validSellerApiResponse);
+      expect(result.quickActions[0]).toMatchObject({
+        id: 'create-package',
+        label: 'Create New Package',
+        href: '/dashboard/packages/new',
+        variant: 'primary',
+      });
+    });
 
-      expect(result.charts).toBeDefined();
+    it('should show order count badge on view orders action', () => {
+      const result = adaptFreelancerDashboard(validSellerApiResponse);
+      const viewOrdersAction = result.quickActions.find(
+        (a) => a.id === 'view-orders'
+      );
+      expect(viewOrdersAction).toBeDefined();
+      expect(viewOrdersAction!.badge).toBe(
+        validSellerApiResponse.orderMetrics.inProgressOrders
+      );
+    });
+  });
+
+  describe('Chart Data Integration (Sprint 2)', () => {
+    it('should populate earnings chart from revenue trends', () => {
+      const result = adaptFreelancerDashboard(validSellerApiResponse);
       expect(result.charts.earnings).toBeDefined();
-      expect(result.charts.orders).toBeDefined();
-      expect(result.charts.views).toBeDefined();
-
-      // Chart series validated as arrays
       expect(Array.isArray(result.charts.earnings.series)).toBe(true);
+      expect(result.charts.earnings.type).toMatch(/^(line|bar|area)$/);
+    });
+
+    it('should populate orders chart from order metrics', () => {
+      const result = adaptFreelancerDashboard(validSellerApiResponse);
+      expect(result.charts.orders).toBeDefined();
+      expect(Array.isArray(result.charts.orders.series)).toBe(true);
+    });
+
+    it('should populate views chart from package performance', () => {
+      const result = adaptFreelancerDashboard(validSellerApiResponse);
+      expect(result.charts.views).toBeDefined();
+      expect(Array.isArray(result.charts.views.series)).toBe(true);
     });
   });
 });
@@ -1034,32 +1202,84 @@ describe('adaptEmployerDashboard (Buyer)', () => {
     });
   });
 
-  describe('Placeholder Fields (Sprint 2 TODO)', () => {
-    it('should have populated recentActivities array', () => {
+  describe('Recent Activities Integration (Sprint 2)', () => {
+    it('should populate recentActivities from order history', () => {
       const result = adaptEmployerDashboard(validBuyerApiResponse);
       expect(result.recentActivities).toBeDefined();
       expect(Array.isArray(result.recentActivities)).toBe(true);
-      // Should have order activities mapped from backend
-      expect(result.recentActivities.length).toBeGreaterThanOrEqual(0);
     });
 
-    it('should have populated quickActions array', () => {
+    it('should map recent orders to activity items for employer', () => {
       const result = adaptEmployerDashboard(validBuyerApiResponse);
-      expect(result.quickActions).toBeDefined();
-      expect(Array.isArray(result.quickActions)).toBe(true);
-      expect(result.quickActions.length).toBe(5); // 5 employer actions
-      expect(result.quickActions[0].label).toBe('Paketlere Göz At');
+
+      result.recentActivities.forEach((activity) => {
+        expect(activity).toMatchObject({
+          id: expect.any(String),
+          type: expect.stringMatching(/^(order|message|notification)$/),
+          title: expect.any(String),
+          timestamp: expect.any(String),
+          status: expect.stringMatching(
+            /^(pending|completed|cancelled|failed|in_progress)$/
+          ),
+        });
+      });
     });
 
-    it('should have placeholder chart structures', () => {
+    it('should sort activities chronologically', () => {
       const result = adaptEmployerDashboard(validBuyerApiResponse);
+      for (let i = 1; i < result.recentActivities.length; i++) {
+        const prevTime = new Date(result.recentActivities[i - 1].timestamp);
+        const currTime = new Date(result.recentActivities[i].timestamp);
+        expect(prevTime.getTime()).toBeGreaterThanOrEqual(currTime.getTime());
+      }
+    });
+  });
 
-      expect(result.charts).toBeDefined();
+  describe('Quick Actions Integration (Sprint 2)', () => {
+    it('should have 5 employer-specific quick actions', () => {
+      const result = adaptEmployerDashboard(validBuyerApiResponse);
+      expect(result.quickActions.length).toBe(5);
+    });
+
+    it('should include browse packages as primary action', () => {
+      const result = adaptEmployerDashboard(validBuyerApiResponse);
+      expect(result.quickActions[0]).toMatchObject({
+        label: 'Paketlere Göz At',
+        variant: 'primary',
+      });
+    });
+
+    it('should show active orders count badge', () => {
+      const result = adaptEmployerDashboard(validBuyerApiResponse);
+      const ordersAction = result.quickActions.find((a) =>
+        a.label.includes('Sipariş')
+      );
+      expect(ordersAction?.badge).toBeDefined();
+      expect(ordersAction!.badge).toBe(
+        validBuyerApiResponse.orderMetrics.inProgressOrders
+      );
+    });
+  });
+
+  describe('Chart Data Integration (Sprint 2)', () => {
+    it('should populate spending chart from spending trends', () => {
+      const result = adaptEmployerDashboard(validBuyerApiResponse);
       expect(result.charts.spending).toBeDefined();
-      expect(result.charts.orders).toBeDefined();
-
-      // Chart series validated as arrays
       expect(Array.isArray(result.charts.spending.series)).toBe(true);
+      expect(result.charts.spending.type).toMatch(/^(line|bar|area)$/);
+    });
+
+    it('should populate orders chart from order metrics', () => {
+      const result = adaptEmployerDashboard(validBuyerApiResponse);
+      expect(result.charts.orders).toBeDefined();
+      expect(Array.isArray(result.charts.orders.series)).toBe(true);
+    });
+
+    it('should include chart categories for time series', () => {
+      const result = adaptEmployerDashboard(validBuyerApiResponse);
+      if (result.charts.spending.categories) {
+        expect(Array.isArray(result.charts.spending.categories)).toBe(true);
+      }
     });
   });
 });
@@ -1255,7 +1475,6 @@ describe('adaptModeratorDashboard (Moderator)', () => {
 
   describe('Edge Cases', () => {
     it('should throw error for invalid API response', () => {
-       
       expect(() =>
         adaptModeratorDashboard(invalidModeratorResponse as any)
       ).toThrow(
@@ -1311,25 +1530,65 @@ describe('adaptModeratorDashboard (Moderator)', () => {
     });
   });
 
-  describe('Placeholder Fields (Sprint 2 TODO)', () => {
-    it('should have populated quickActions array', () => {
+  describe('Quick Actions Integration (Sprint 2)', () => {
+    it('should have 5 moderator-specific quick actions', () => {
       const result = adaptModeratorDashboard(validModeratorApiResponse);
       expect(result.quickActions).toBeDefined();
       expect(Array.isArray(result.quickActions)).toBe(true);
-      expect(result.quickActions.length).toBe(5); // 5 moderator actions
-      expect(result.quickActions[0].label).toBe('Bekleyen İncelemeler');
+      expect(result.quickActions.length).toBe(5);
     });
 
-    it('should have placeholder chart structures', () => {
+    it('should include pending reviews as primary action', () => {
+      const result = adaptModeratorDashboard(validModeratorApiResponse);
+      expect(result.quickActions[0]).toMatchObject({
+        label: 'Bekleyen İncelemeler',
+        variant: 'primary',
+      });
+    });
+
+    it('should show pending items count on relevant actions', () => {
+      const result = adaptModeratorDashboard(validModeratorApiResponse);
+      const pendingAction = result.quickActions[0];
+      expect(pendingAction.badge).toBeDefined();
+      expect(typeof pendingAction.badge).toBe('number');
+    });
+
+    it('should include all moderator action types', () => {
+      const result = adaptModeratorDashboard(validModeratorApiResponse);
+      const actionLabels = result.quickActions.map((a) => a.label);
+
+      expect(actionLabels).toContain('Bekleyen İncelemeler');
+      expect(result.quickActions.every((a) => a.href)).toBe(true);
+      expect(result.quickActions.every((a) => a.icon)).toBe(true);
+    });
+  });
+
+  describe('Chart Data Integration (Sprint 2)', () => {
+    it('should populate moderation volume chart', () => {
+      const result = adaptModeratorDashboard(validModeratorApiResponse);
+      expect(result.charts.moderationVolume).toBeDefined();
+      expect(Array.isArray(result.charts.moderationVolume.series)).toBe(true);
+      expect(result.charts.moderationVolume.type).toMatch(/^(line|bar|area)$/);
+    });
+
+    it('should populate response time chart', () => {
+      const result = adaptModeratorDashboard(validModeratorApiResponse);
+      expect(result.charts.responseTime).toBeDefined();
+      expect(Array.isArray(result.charts.responseTime.series)).toBe(true);
+    });
+
+    it('should validate chart data structure for moderator metrics', () => {
       const result = adaptModeratorDashboard(validModeratorApiResponse);
 
-      expect(result.charts).toBeDefined();
-      expect(result.charts.moderationVolume).toBeDefined();
-      expect(result.charts.responseTime).toBeDefined();
-
-      // Chart series validated as arrays (populated when backend trends endpoint ready)
-      expect(Array.isArray(result.charts.moderationVolume.series)).toBe(true);
-      expect(Array.isArray(result.charts.responseTime.series)).toBe(true);
+      [result.charts.moderationVolume, result.charts.responseTime].forEach(
+        (chart) => {
+          expect(chart.type).toBeDefined();
+          chart.series.forEach((series) => {
+            expect(series.name).toBeDefined();
+            expect(Array.isArray(series.data)).toBe(true);
+          });
+        }
+      );
     });
   });
 });
