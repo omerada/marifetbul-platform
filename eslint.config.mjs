@@ -20,6 +20,10 @@ const eslintConfig = [
       'next-env.d.ts',
       'scripts/**',
       'public/**',
+      'tests/**', // E2E and manual tests - console.log allowed for debugging
+      '__tests__/**', // Unit tests - console mocking allowed
+      'sentry.*.config.ts', // Sentry configs - initialization logs allowed
+      'next.config.js', // Next.js config - build-time logs allowed
       'lib/api/__tests__/proposals.test.ts', // Bozuk dosya - clean-console script'i tarafından bozulmuş
     ],
   },

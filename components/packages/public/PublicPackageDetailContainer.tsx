@@ -3,6 +3,9 @@
 /**
  * Public Package Detail Container
  * Data fetching for customer-facing package page
+ *
+ * Note: View tracking is handled automatically by backend
+ * when packageApi.getPackageBySlug is called (no duplicate tracking needed)
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -41,7 +44,10 @@ export function PublicPackageDetailContainer() {
       }
     } catch (err) {
       setError('Paket bulunamadı.');
-      logger.error('Failed to fetch package:', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Failed to fetch package:',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
       setLoading(false);
     }

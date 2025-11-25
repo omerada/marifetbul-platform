@@ -1,6 +1,9 @@
 /**
  * Analytics API Service
  * Handles analytics dashboard data fetching
+ *
+ * Note: Package view tracking is handled server-side automatically
+ * by backend controllers to prevent duplicate tracking
  */
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
