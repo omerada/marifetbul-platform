@@ -4,6 +4,7 @@
  * @sprint Sprint 6 - Notification Analytics Dashboard
  */
 
+/** @deprecated Use NotificationCenter from components/domains/notifications instead */
 export { default as NotificationsList } from './NotificationsList';
 export { default as NotificationPreferences } from './NotificationPreferences';
 export { default as NotificationAnalyticsDashboard } from './NotificationAnalyticsDashboard';

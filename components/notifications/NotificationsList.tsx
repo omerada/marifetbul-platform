@@ -1,6 +1,15 @@
 'use client';
 
 /**
+ * ================================================
+ * DEPRECATED - USE NotificationCenter INSTEAD
+ * ================================================
+ * This component is deprecated and will be removed in a future version.
+ * Please use components/domains/notifications/NotificationCenter.tsx instead.
+ *
+ * @deprecated Since Sprint 2 - Use NotificationCenter from domains/notifications
+ * @see components/domains/notifications/NotificationCenter.tsx
+ *
  * Notifications List Component
  *
  * Displays paginated list of notifications with:
@@ -153,9 +162,13 @@ export default function NotificationsList({
       setTotalElements(response.totalElements);
       setPage(pageNumber);
     } catch (err) {
-      logger.error('NotificationsList: Failed to fetch notifications', undefined, {
-        err,
-      });
+      logger.error(
+        'NotificationsList: Failed to fetch notifications',
+        undefined,
+        {
+          err,
+        }
+      );
       setError('Bildirimler yüklenirken bir hata oluştu.');
     } finally {
       setLoading(false);
@@ -194,7 +207,9 @@ export default function NotificationsList({
         `Marked notification ${notificationId} as read`
       );
     } catch (err) {
-      logger.error('NotificationsList: Failed to mark as read', undefined, { err });
+      logger.error('NotificationsList: Failed to mark as read', undefined, {
+        err,
+      });
     }
   };
 
@@ -220,7 +235,9 @@ export default function NotificationsList({
         `Marked notification ${notificationId} as unread`
       );
     } catch (err) {
-      logger.error('NotificationsList: Failed to mark as unread', undefined, { err });
+      logger.error('NotificationsList: Failed to mark as unread', undefined, {
+        err,
+      });
     }
   };
 
@@ -247,9 +264,13 @@ export default function NotificationsList({
         `Deleted notification ${notificationId}`
       );
     } catch (err) {
-      logger.error('NotificationsList: Failed to delete notification', undefined, {
-        err,
-      });
+      logger.error(
+        'NotificationsList: Failed to delete notification',
+        undefined,
+        {
+          err,
+        }
+      );
     }
   };
 
@@ -257,7 +278,9 @@ export default function NotificationsList({
     // Mark as read automatically
     if (!notification.isRead) {
       markAsRead(notification.id).catch((err) =>
-        logger.error('NotificationsList: Auto mark as read failed', undefined, { err })
+        logger.error('NotificationsList: Auto mark as read failed', undefined, {
+          err,
+        })
       );
 
       // Update local state optimistically

@@ -7,17 +7,19 @@
  * Modernized notification center with SWR integration
  * Clean, maintainable, no duplicates
  *
- * Sprint 1: Notification & Real-time System
- * @version 2.0.0
+ * Sprint 2: Delete functionality added
+ * @version 2.1.0
  * @author MarifetBul Development Team
  */
 
 import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/core/useToast';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
 import {
   Bell,
   AlertCircle,
@@ -37,6 +39,7 @@ import {
   getNotificationBadge,
   getBadgeVariant,
 } from './notificationHelpers';
+import { deleteNotification } from '@/lib/api/notifications';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import type { Notification } from '@/types/domains/notification';
 
@@ -67,11 +70,16 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
     mode = 'full',
   }) => {
     const router = useRouter();
+    const { toast } = useToast();
     const [activeTab, setActiveTab] = useState<FilterTab>('all');
     const [selectedNotifications, setSelectedNotifications] = useState<
       string[]
     >([]);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [notificationToDelete, setNotificationToDelete] =
+      useState<Notification | null>(null);
+    const [bulkDeleteModalOpen, setBulkDeleteModalOpen] = useState(false);
 
     // ========== HOOKS ==========
 
@@ -157,16 +165,104 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
       );
     };
 
-    const handleBulkMarkAsRead = async () => {
-      for (const id of selectedNotifications) {
-        await markAsRead(id);
+    // ========== DELETE HANDLERS ==========
+
+    const handleDeleteClick = (notification: Notification) => {
+      setNotificationToDelete(notification);
+      setDeleteModalOpen(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+      if (!notificationToDelete) return;
+
+      const deletedId = notificationToDelete.id;
+
+      // Store original state for rollback
+      const originalNotifications = notifications;
+
+      try {
+        // Optimistic UI: Immediately refresh to remove from UI
+        // This provides instant feedback
+        await refetch();
+
+        // Call backend API
+        await deleteNotification(deletedId);
+
+        // Success toast
+        toast({
+          title: 'Bildirim silindi',
+          description: 'Bildirim başarıyla silindi.',
+          variant: 'success',
+        });
+
+        logger.info('NotificationCenter: Notification deleted', {
+          id: deletedId,
+        });
+      } catch (error) {
+        logger.error('NotificationCenter: Delete failed', { error });
+
+        // Rollback: Restore original state
+        await refetch();
+
+        toast({
+          title: 'Hata',
+          description:
+            'Bildirim silinirken bir hata oluştu. Lütfen tekrar deneyin.',
+          variant: 'destructive',
+        });
+        throw error; // Re-throw to keep modal open
+      } finally {
+        setNotificationToDelete(null);
       }
-      setSelectedNotifications([]);
-      refetch();
     };
 
     const handleBulkDelete = async () => {
-      // Mark as read for now (delete not implemented in backend)
+      if (selectedNotifications.length === 0) return;
+
+      try {
+        // Delete all selected notifications
+        await Promise.all(
+          selectedNotifications.map((id) => deleteNotification(id))
+        );
+
+        // Refresh data
+        await refetch();
+
+        // Success toast
+        toast({
+          title: 'Bildirimler silindi',
+          description: `${selectedNotifications.length} bildirim başarıyla silindi.`,
+          variant: 'success',
+        });
+
+        logger.info('NotificationCenter: Bulk delete completed', {
+          count: selectedNotifications.length,
+        });
+
+        setSelectedNotifications([]);
+      } catch (error) {
+        logger.error('NotificationCenter: Bulk delete failed', { error });
+
+        // Rollback
+        await refetch();
+
+        toast({
+          title: 'Hata',
+          description:
+            'Bildirimler silinirken bir hata oluştu. Lütfen tekrar deneyin.',
+          variant: 'destructive',
+        });
+      }
+    };
+
+    const handleBulkDeleteClick = () => {
+      if (selectedNotifications.length === 0) return;
+      setBulkDeleteModalOpen(true);
+    };
+
+    // ========== OTHER HANDLERS ==========
+
+    const handleBulkMarkAsRead = async () => {
       for (const id of selectedNotifications) {
         await markAsRead(id);
       }
@@ -310,6 +406,7 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
                           notification={notification}
                           onClick={() => handleNotificationClick(notification)}
                           onMarkAsRead={() => markAsRead(notification.id)}
+                          onDelete={() => handleDeleteClick(notification)}
                           showActions={false}
                           layout="list"
                           className="cursor-pointer hover:bg-gray-50"
@@ -394,7 +491,7 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
                     <Check className="h-3 w-3" />
                   </Button>
                   <Button
-                    onClick={handleBulkDelete}
+                    onClick={handleBulkDeleteClick}
                     size="sm"
                     variant="outline"
                     title="Seçilenleri sil"
@@ -494,6 +591,7 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
                     notification={notification}
                     onClick={() => handleNotificationClick(notification)}
                     onMarkAsRead={() => markAsRead(notification.id)}
+                    onDelete={() => handleDeleteClick(notification)}
                     showActions={true}
                     layout="card"
                     className={`cursor-pointer transition-all ${
@@ -507,6 +605,35 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
             )}
           </div>
         </CardContent>
+
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmationModal
+          isOpen={deleteModalOpen}
+          onClose={() => {
+            setDeleteModalOpen(false);
+            setNotificationToDelete(null);
+          }}
+          onConfirm={handleDeleteConfirm}
+          title="Bildirimi Sil"
+          message="Bu bildirimi silmek istediğinizden emin misiniz?"
+          itemName={notificationToDelete?.title}
+          confirmLabel="Sil"
+          cancelLabel="İptal"
+          severity="danger"
+        />
+
+        {/* Bulk Delete Confirmation Modal */}
+        <DeleteConfirmationModal
+          isOpen={bulkDeleteModalOpen}
+          onClose={() => setBulkDeleteModalOpen(false)}
+          onConfirm={handleBulkDelete}
+          title="Toplu Silme"
+          message="Seçili bildirimleri silmek istediğinizden emin misiniz?"
+          confirmLabel="Sil"
+          cancelLabel="İptal"
+          severity="danger"
+          itemCount={selectedNotifications.length}
+        />
       </Card>
     );
   }
