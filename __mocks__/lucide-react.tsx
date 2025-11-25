@@ -136,3 +136,6 @@ export const Inbox = createMockIcon('Inbox');
 // Additional Icons
 export const StickyNote = createMockIcon('StickyNote');
 export const CircleCheck = createMockIcon('CircleCheck');
+export const Building = createMockIcon('Building');
+export const Globe = createMockIcon('Globe');
+export const ImageIcon = createMockIcon('ImageIcon');

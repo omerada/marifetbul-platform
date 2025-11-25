@@ -50,6 +50,22 @@ jest.mock('next/image', () => ({
   },
 }));
 
+// Suppress JSDOM navigation warnings
+const originalConsoleError = console.error;
+const jsdomErrors = [
+  'Error: Not implemented: navigation',
+  'Error: Not implemented: HTMLFormElement.prototype.submit',
+  'Error: Not implemented: window.location',
+];
+
+global.console.error = function (...args) {
+  const msg = args[0]?.toString() || '';
+  if (jsdomErrors.some((err) => msg.includes(err))) {
+    return; // Suppress
+  }
+  originalConsoleError.apply(console, args);
+};
+
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
