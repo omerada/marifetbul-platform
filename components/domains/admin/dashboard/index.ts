@@ -1,25 +1,21 @@
 /**
  * ================================================
- * ADMIN DASHBOARD COMPONENTS - CANONICAL LOCATION
+ * ADMIN DASHBOARD COMPONENTS
  * ================================================
- * Central export hub for all admin dashboard components
- * This is the CANONICAL location - all imports should come from here
+ * Analytics and reporting widgets for admin panel
+ *
+ * For unified admin dashboard view, use:
+ * @see @/components/domains/dashboard/views/AdminDashboardView
  *
  * @module components/domains/admin/dashboard
- * @since Sprint 1
- * @updated Sprint 2.1 - Dashboard Consolidation
- * @updated Sprint 1.2 - Removed deprecated AdminDashboard
+ * @version 2.0.0
+ * @production-ready ✅
  */
-
-// Main Dashboard Components
-// ⚠️ REMOVED: AdminDashboard (deprecated since Sprint 2.1)
-// Use AdminDashboardView from @/components/domains/dashboard/views instead:
-// import { AdminDashboardView } from '@/components/domains/dashboard/views';
 
 export { AdminAnalytics } from './AdminAnalytics';
 export { AdminReports } from './AdminReports';
 export { SystemHealthWidget } from './SystemHealthWidget';
-export { default as SystemHealthWidgetCompat } from './SystemHealthWidget'; // Backward compatibility
+export { default as SystemHealthWidgetCompat } from './SystemHealthWidget';
 
 // Comment Moderation Components
 export * from './comments';
@@ -31,7 +27,6 @@ export { OrderAnalyticsWidget } from './OrderAnalyticsWidget';
 export { UserGrowthWidget } from './UserGrowthWidget';
 
 // Revenue Analytics Components
-// ⚠️ UPDATED Sprint 2.2: All revenue widgets consolidated to ./widgets/
 export {
   RevenueBreakdownWidget,
   RevenueBreakdownContainer,
@@ -45,7 +40,9 @@ export {
   type RevenueComparisonDto,
   type RevenueForecastWidgetProps,
   type RevenueForecastDto,
-} from './widgets'; // Category Analytics Components
+} from './widgets';
+
+// Category Analytics Components
 export { CategoryAnalyticsWidget } from './CategoryAnalyticsWidget';
 export { CategoryGrowthTrends } from './CategoryGrowthTrends';
 export { CategoryPerformanceSummary } from './CategoryPerformanceSummary';
@@ -53,18 +50,3 @@ export { CategoryPerformanceSummary } from './CategoryPerformanceSummary';
 // Package Analytics Components
 export { PackagePerformanceWidget } from './PackagePerformanceWidget';
 export { PackageTrendChart } from './PackageTrendChart';
-
-/**
- * ================================================
- * SPRINT 1 DAY 3 - CLEANUP COMPLETED
- * ================================================
- * REMOVED: ./admin-dashboard/components (duplicate, unused)
- * REMOVED: ./admin-dashboard/types/adminDashboardTypes (duplicate)
- *
- * Reason: These components were duplicate implementations that
- * were never used in production. Unified dashboard widgets are
- * now in @/components/domains/dashboard/widgets
- *
- * Migration: No migration needed - components were unused
- * @removed 2025-11-13
- */

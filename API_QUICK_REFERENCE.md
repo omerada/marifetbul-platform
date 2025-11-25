@@ -357,7 +357,6 @@ GET /api/v1/wallet/transactions/filtered?
 422 Unprocessable       → Payment failed, insufficient balance
 429 Too Many Requests   → Rate limit exceeded
 500 Internal Error      → Server error
-501 Not Implemented     → Feature not available (PDF export)
 ```
 
 ---
@@ -462,22 +461,23 @@ GET /api/v1/refunds/orders/{orderId}
 
 ---
 
-## 🎯 Important Notes
+## 🎯 System Features
 
-⚠️ **PDF Export:** Not implemented yet (use CSV)  
-✅ **Dual Payment:** Both Iyzico and IBAN supported  
-✅ **Auto-Release:** 14 days → 24h warning → auto-complete  
-✅ **2FA:** Supported but optional  
-✅ **WebSocket:** Real-time messaging on `/ws`
+✅ **Dual Payment Mode:** Iyzico (online) + IBAN (manual) supported  
+✅ **Auto-Release System:** 14 days → 24h warning → auto-complete  
+✅ **2FA Authentication:** Supported (optional)  
+✅ **Real-time Updates:** WebSocket on `/ws`  
+✅ **PDF Export:** Professional reports (iText 8.0.5)  
+✅ **Escrow Protection:** Full payment & dispute flow
 
 ---
 
-## 📞 Support
+## 📞 API Documentation
 
-- **Documentation:** `/swagger-ui.html`
+- **Swagger UI:** `/swagger-ui.html`
 - **Health Check:** `/actuator/health`
 - **Metrics:** `/actuator/metrics` (Admin only)
 
 ---
 
-**💡 Pro Tip:** Her zaman Swagger UI'ı kullanarak API'yi test edebilirsiniz: `/swagger-ui.html`
+**💡 Pro Tip:** Test all endpoints interactively using Swagger UI at `/swagger-ui.html`

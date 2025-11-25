@@ -12,9 +12,10 @@ import logger from '@/lib/infrastructure/monitoring/logger';
  * - FREELANCER → Seller Dashboard
  * - EMPLOYER → Buyer Dashboard
  * - MODERATOR → Moderation Stats
- * - ADMIN → Admin Dashboard (handled separately)
+ * - ADMIN → Admin Dashboard (use useAdminDashboard separately)
  *
- * @version 2.0.0 - Sprint 1 Task 1.1
+ * @version 2.0.0
+ * @production-ready ✅
  */
 export function useDashboard() {
   const store = useDashboardStore();
@@ -77,6 +78,3 @@ export function useDashboard() {
     isAdmin: normalizedUserType === 'admin',
   };
 }
-
-// Sprint 2: Removed useDashboardRefresh deprecated hook
-// Use useDashboard().refreshDashboard directly

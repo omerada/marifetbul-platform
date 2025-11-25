@@ -720,15 +720,18 @@ export type {
 } from '@/types/blog';
 
 /**
- * Get pending comments (admin only)
+ * ============================================================================
+ * PENDING COMMENTS - Use lib/api/moderation.ts instead
+ * ============================================================================
+ * DUPLICATE REMOVED: getPendingComments() moved to @/lib/api/moderation
+ *
+ * Reason: Wrong endpoint used:
+ * - /blog/admin/comments/pending ❌ DOES NOT EXIST in backend
+ * - /api/v1/moderation/comments/pending ✅ CORRECT (ModerationController)
+ *
+ * Use: import { getPendingComments } from '@/lib/api/moderation'
+ * ============================================================================
  */
-export async function getPendingComments(params?: {
-  page?: number;
-  size?: number;
-}): Promise<PageResponse<BlogComment>> {
-  const url = buildUrlWithParams(BLOG_ENDPOINTS.GET_PENDING_COMMENTS, params);
-  return apiClient.get(url);
-}
 
 /**
  * Get comments by status (admin only)
@@ -883,7 +886,7 @@ export const blogApi = {
   approveComment,
   rejectComment,
   markCommentAsSpam,
-  getPendingComments,
+  // getPendingComments: REMOVED - use getPendingComments from @/lib/api/moderation instead
   getCommentsByStatus,
   getUserComments,
   replyToComment,

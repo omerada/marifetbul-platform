@@ -1,15 +1,18 @@
 # 🚀 MarifetBul - Türkiye'nin Freelance Platformu
 
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![Next.js](https://img.shields.io/badge/Next.js-15.1.6-black.svg)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.0.0-black.svg)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.0.0-blue.svg)](https://reactjs.org/)
 [![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7.3-blue.svg)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org/)
 [![Redis](https://img.shields.io/badge/Redis-7-red.svg)](https://redis.io/)
+[![Production](https://img.shields.io/badge/Status-Production--Ready-success.svg)](PRODUCTION_STATUS.md)
 [![License](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 
-Modern, ölçeklenebilir ve güvenli freelance platformu. Spring Boot backend + Next.js frontend ile geliştirilmiş production-ready web uygulaması.
+Modern, ölçeklenebilir ve güvenli freelance platformu. Spring Boot backend + Next.js frontend ile geliştirilmiş **production-ready** web uygulaması.
+
+> 📊 **Production Status:** [PRODUCTION_STATUS.md](./PRODUCTION_STATUS.md) - Detaylı sistem durumu raporu
 
 ---
 

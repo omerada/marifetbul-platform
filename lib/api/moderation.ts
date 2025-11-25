@@ -306,41 +306,9 @@ export async function getFlaggedReviews(
 }
 
 // ============================================================================
-// NOTE: Review approve/reject moved to moderation-service.ts
-// Re-exported at the top of this file for backward compatibility
-// flagReview and resolveReviewFlag kept here (specific to moderation flow)
+// NOTE: Review flag operations moved to lib/api/review.ts
+// Use flagReview() and resolveFlaggedReview() from @/lib/api/review instead
 // ============================================================================
-
-/**
- * Flag a review for moderation
- * Backend: POST /api/v1/reviews/{id}/flag
- */
-export async function flagReview(
-  reviewId: string,
-  reason: string,
-  description?: string
-): Promise<ReviewDto> {
-  const response = await apiClient.post<ApiResponse<ReviewDto>>(
-    `/api/v1/reviews/${reviewId}/flag`,
-    { reason, description }
-  );
-  return response.data;
-}
-
-/**
- * Resolve a review flag
- * Backend: POST /api/v1/reviews/admin/{id}/resolve-flag
- */
-export async function resolveReviewFlag(
-  reviewId: string,
-  resolution: string
-): Promise<ReviewDto> {
-  const response = await apiClient.post<ApiResponse<ReviewDto>>(
-    `/api/v1/reviews/admin/${reviewId}/resolve-flag`,
-    { resolution }
-  );
-  return response.data;
-}
 
 // ============================================================================
 // USER MODERATION (WARNINGS & SUSPENSIONS)
@@ -652,8 +620,6 @@ export const moderationApi = {
   // Review Moderation (specific to moderation flow)
   getPendingReviews,
   getFlaggedReviews,
-  flagReview,
-  resolveReviewFlag,
 
   // User Moderation
   issueWarning,

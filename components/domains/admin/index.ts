@@ -1,8 +1,13 @@
-// ================================================
-// ADMIN DOMAIN COMPONENTS
-// ================================================
-// All components related to admin functionality
-// Organized by feature areas within admin domain
+/**
+ * ================================================
+ * ADMIN DOMAIN COMPONENTS
+ * ================================================
+ * Complete admin panel component library
+ *
+ * @module components/domains/admin
+ * @version 2.0.0
+ * @production-ready ✅
+ */
 
 // Layout Components
 export { default as AdminLayout } from './layout/AdminLayout';
@@ -10,17 +15,16 @@ export { default as AdminHeader } from './layout/AdminHeader';
 export { default as AdminFooter } from './layout/AdminFooter';
 export { default as AdminSidebar } from './layout/AdminSidebar';
 
-// ================================================
+// ============================================================================
 // DASHBOARD COMPONENTS
-// ================================================
-// NOTE: Use AdminDashboardView from @/components/domains/dashboard/views
-// for unified dashboard implementation
+// ============================================================================
+// For unified admin dashboard view:
+// @see @/components/domains/dashboard/views/AdminDashboardView
 
 export { default as AdminAnalytics } from './dashboard/AdminAnalytics';
 export { default as AdminReports } from './dashboard/AdminReports';
 export { default as SystemHealthWidget } from './dashboard/SystemHealthWidget';
 
-// Sprint 3.2: Enhanced Dashboard Components
 export { SystemHealthPanel } from './dashboard/SystemHealthPanel';
 export { BusinessMetricsGrid } from './dashboard/BusinessMetricsGrid';
 export { RecentActivitiesFeed } from './dashboard/RecentActivitiesFeed';
@@ -30,12 +34,16 @@ export { QuickAccessCards } from './dashboard/QuickAccessCards';
 export { default as UserTable } from './users/UserTable';
 export { default as BulkActions } from './users/BulkActions';
 
-// Moderation Components
+// ============================================================================
+// MODERATION COMPONENTS
+// ============================================================================
+// For moderator dashboard view:
+// @see @/components/domains/dashboard/views/ModeratorDashboardView
+
 export { default as AdminModeration } from './moderation/AdminModeration';
 export { default as ContentModerationQueue } from './moderation/ContentModerationQueue';
 export { ContentAppealSystem } from './moderation/ContentAppealSystem';
 export { default as ModerationAnalytics } from './moderation/ModerationAnalytics';
-// REMOVED: ModerationDashboard - Use ModeratorDashboardView from @/components/domains/dashboard/views
 
 // Review & Comment Moderation
 export * from './moderation/review-moderation-exports';
@@ -50,32 +58,32 @@ export { default as AdminLogs } from './system/AdminLogs';
 // Support Components
 export { default as AdminSupportTickets } from './support/AdminSupportTickets';
 
-// ================================================
-// FINANCE COMPONENTS (Sprint 1 - Consolidation)
-// ================================================
-// Consolidated from components/admin/ to single source of truth
+// ============================================================================
+// FINANCE COMPONENTS
+// ============================================================================
 export * from './finance';
 
-// ================================================
+// ============================================================================
 // ANALYTICS COMPONENTS
-// ================================================
+// ============================================================================
 export { ReportBuilder } from './analytics/ReportBuilder';
 
-// ================================================
+// ============================================================================
 // PORTFOLIO MANAGEMENT
-// ================================================
+// ============================================================================
 export { PortfolioApprovalPanel } from './portfolio/PortfolioApprovalPanel';
 
-// ================================================
+// ============================================================================
 // ORDER MANAGEMENT
-// ================================================
+// ============================================================================
 export { AdminOrdersTable } from './orders/AdminOrdersTable';
 export { AdminOrderStats } from './orders/AdminOrderStats';
 
-// Refund Management Components (Sprint 1)
+// ============================================================================
+// REFUND & DISPUTE MANAGEMENT
+// ============================================================================
 export * from './refunds';
 
-// Dispute Management Components (Sprint 1.1: Consolidated from components/admin/disputes)
 export { AdminDisputeDetailModal } from './disputes/AdminDisputeDetailModal';
 export { default as DisputeResolutionModal } from './disputes/DisputeResolutionModal';
 export { AdminDisputeTable } from './disputes/AdminDisputeTable';

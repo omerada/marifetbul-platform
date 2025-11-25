@@ -188,23 +188,18 @@ export function usePagination<T>(
 // ================================================
 
 /**
- * Debounced value hook
+ * ============================================================================
+ * DEBOUNCE VALUE - Use hooks/shared/useDebounce.ts instead
+ * ============================================================================
+ * DUPLICATE REMOVED: useDebounce() moved to dedicated file
+ *
+ * Reason: Two identical implementations existed:
+ * - hooks/shared/base/index.ts ❌ DUPLICATE (unused)
+ * - hooks/shared/useDebounce.ts ✅ ACTIVE (used by JobFilters)
+ *
+ * Use: import { useDebounce } from '@/hooks/shared/useDebounce'
+ * ============================================================================
  */
-export function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-}
 
 /**
  * Debounced callback hook

@@ -738,7 +738,7 @@ export const BLOG_ENDPOINTS = {
     `/blog/posts/${postId}/comments/count`,
 
   // Comment Moderation (Admin)
-  GET_PENDING_COMMENTS: '/blog/admin/comments/pending',
+  // GET_PENDING_COMMENTS: REMOVED - endpoint doesn't exist, use /api/v1/moderation/comments/pending
   GET_COMMENTS_BY_STATUS: '/blog/admin/comments',
   GET_USER_COMMENTS: (userId: string) => `/blog/users/${userId}/comments`,
   APPROVE_COMMENT: (commentId: string | number) =>

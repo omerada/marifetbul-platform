@@ -205,13 +205,7 @@ import {
   AsyncUtils,
 } from './async';
 
-import {
-  logger,
-  debug,
-  info,
-  warn,
-  error,
-} from '@/lib/infrastructure/monitoring/logger';
+import { Logger } from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
 // RE-EXPORT ALL UTILITIES
@@ -418,8 +412,8 @@ export {
   validateFiles,
 };
 
-// Logger utilities
-export { logger, debug, info, warn, error };
+// Logger utilities - Re-export Logger class
+export { Logger };
 
 // ================================================
 // COMMONLY USED UTILITIES (CONVENIENCE OBJECT)

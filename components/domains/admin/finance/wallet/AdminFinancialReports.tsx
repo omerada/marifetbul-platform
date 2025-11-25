@@ -1,27 +1,5 @@
 'use client';
 
-/**
- * ================================================
- * ADMIN FINANCIAL REPORTS COMPONENT
- * ================================================
- * Financial reporting and analytics for wallet/payout system
- *
- * Features:
- * - Payout summary reports
- * - Transaction volume charts
- * - Earning statistics
- * - Export functionality (CSV, PDF)
- * - Date range filtering
- * - Real-time updates
- *
- * @author MarifetBul Development Team
- * @version 1.0.0
- * @created October 30, 2025
- * @sprint Sprint 1 - Story 1.1 (2 story points)
- */
-
-'use client';
-
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/Card';
@@ -49,6 +27,7 @@ import {
   getOrderAnalytics,
   getRevenueBreakdown,
 } from '@/lib/api/admin-analytics';
+import { useAdminReportExport } from '@/hooks/business/useAdminReportExport';
 
 // ================================================
 // TYPES
@@ -98,6 +77,10 @@ export const AdminFinancialReports: React.FC = () => {
   const [endDate, setEndDate] = useState(() => {
     return new Date().toISOString().split('T')[0];
   });
+
+  // Use the custom hook for exports
+  const { exportPDF, exportCSV, isExporting, progress } =
+    useAdminReportExport();
 
   // ==================== DATA LOADING ====================
 
@@ -227,83 +210,11 @@ export const AdminFinancialReports: React.FC = () => {
   // ==================== HANDLERS ====================
 
   const handleExportCSV = async () => {
-    try {
-      const params = new URLSearchParams({
-        reportType: 'REVENUE',
-        startDate,
-        endDate,
-        groupBy: 'DAILY',
-      });
-
-      const response = await fetch(
-        `/api/v1/admin/reports/export/csv?${params}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('CSV oluşturma başarısız');
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Finansal_Rapor_${startDate}_${endDate}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-
-      toast.success('CSV raporu başarıyla indirildi');
-    } catch (error) {
-      logger.error('CSV export failed', error as Error);
-      toast.error('CSV raporu oluşturulurken bir hata oluştu');
-    }
+    await exportCSV('REVENUE', startDate, endDate, 'DAILY');
   };
 
   const handleExportPDF = async () => {
-    try {
-      const params = new URLSearchParams({
-        reportType: 'REVENUE',
-        startDate,
-        endDate,
-        groupBy: 'DAILY',
-      });
-
-      const response = await fetch(
-        `/api/v1/admin/reports/export/pdf?${params}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('PDF oluşturma başarısız');
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Finansal_Rapor_${startDate}_${endDate}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-
-      toast.success('PDF raporu başarıyla indirildi');
-    } catch (error) {
-      logger.error('PDF export failed', error as Error);
-      toast.error('PDF raporu oluşturulurken bir hata oluştu');
-    }
+    await exportPDF('REVENUE', startDate, endDate, 'DAILY');
   };
 
   // ==================== RENDER ====================
@@ -381,14 +292,28 @@ export const AdminFinancialReports: React.FC = () => {
               <RefreshCw className="h-4 w-4" />
             </Button>
 
-            <Button variant="outline" onClick={handleExportCSV}>
+            <Button
+              variant="outline"
+              onClick={handleExportCSV}
+              disabled={isExporting}
+            >
               <Download className="mr-2 h-4 w-4" />
               CSV
+              {isExporting && progress > 0 && progress < 100 && (
+                <span className="ml-2 text-xs">({progress}%)</span>
+              )}
             </Button>
 
-            <Button variant="outline" onClick={handleExportPDF}>
+            <Button
+              variant="outline"
+              onClick={handleExportPDF}
+              disabled={isExporting}
+            >
               <FileText className="mr-2 h-4 w-4" />
               PDF
+              {isExporting && progress > 0 && progress < 100 && (
+                <span className="ml-2 text-xs">({progress}%)</span>
+              )}
             </Button>
           </div>
         </div>

@@ -18,6 +18,10 @@ export type {
 export { AcceptOrderButton } from './AcceptOrderButton';
 export { RequestRevisionButton } from './RequestRevisionButton';
 
+// Order lifecycle components (Sprint 1.2)
+export { OrderAutoCompleteWarning } from './OrderAutoCompleteWarning';
+export type { OrderAutoCompleteWarningProps } from './OrderAutoCompleteWarning';
+
 // Order workflow modals
 export { ApproveDeliveryModal } from './ApproveDeliveryModal';
 export { RequestRevisionModal } from './RequestRevisionModal';
@@ -57,6 +61,10 @@ export { ManualPaymentConfirmationForm } from './ManualPaymentConfirmationForm';
 export { PaymentModeDisplay } from './PaymentModeDisplay';
 export type { ManualPaymentConfirmationFormProps } from './ManualPaymentConfirmationForm';
 export type { PaymentModeDisplayProps } from './PaymentModeDisplay';
+
+// Sprint 1 Epic 1.2 Story 1.2.2: Manual Payment Improvement (Buyer Side)
+export { PaymentProofUploadForm } from './PaymentProofUploadForm';
+export type { PaymentProofUploadFormProps } from './PaymentProofUploadForm';
 
 // Sprint 1 - Story 1.2: Milestone Components MOVED
 // @removed MilestoneListCard - Deprecated, use MilestoneList from @/components/domains/milestones

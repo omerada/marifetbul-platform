@@ -101,6 +101,10 @@ export type { EscrowCardProps, EscrowCardData } from './EscrowCard';
 export { EscrowBalanceCard } from './EscrowBalanceCard';
 export type { EscrowBalanceCardProps, EscrowDetail } from './EscrowBalanceCard';
 
+// Sprint 1 Epic 1.3 Story 1.3.1: Real-Time Escrow Status Widget
+export { EscrowStatusWidget } from './EscrowStatusWidget';
+export type { EscrowStatusWidgetProps } from './EscrowStatusWidget';
+
 // ================================================
 // MILESTONE INTEGRATION (Sprint 1 Story 1.6)
 // ================================================

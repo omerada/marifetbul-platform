@@ -32,10 +32,8 @@ import {
 } from '@/components/ui/Select';
 import { Label } from '@/components/ui/Label';
 import { Input } from '@/components/ui/Input';
-import { useToast } from '@/hooks/core/useToast';
-
-type ReportType = 'REVENUE' | 'ORDERS' | 'USERS' | 'REFUNDS';
-type GroupBy = 'DAILY' | 'WEEKLY' | 'MONTHLY';
+import { useAdminReportExport } from '@/hooks/business/useAdminReportExport';
+import type { ReportType, GroupBy } from '@/lib/api/admin-reports-export';
 
 interface ReportBuilderProps {
   className?: string;
@@ -45,7 +43,8 @@ interface ReportBuilderProps {
  * Report Builder Component
  */
 export function ReportBuilder({ className }: ReportBuilderProps) {
-  const { success, error: showError } = useToast();
+  const { exportPDF, exportCSV, isExporting, progress } =
+    useAdminReportExport();
 
   // Form state
   const [reportType, setReportType] = useState<ReportType>('REVENUE');
@@ -53,112 +52,18 @@ export function ReportBuilder({ className }: ReportBuilderProps) {
   const [endDate, setEndDate] = useState('');
   const [groupBy, setGroupBy] = useState<GroupBy>('DAILY');
 
-  // Loading states
-  const [pdfLoading, setPdfLoading] = useState(false);
-  const [csvLoading, setCsvLoading] = useState(false);
-
   /**
    * Handle PDF export
    */
   const handlePdfExport = async () => {
-    if (!startDate || !endDate) {
-      showError('Eksik Bilgi', 'Lütfen başlangıç ve bitiş tarihlerini seçin');
-      return;
-    }
-
-    setPdfLoading(true);
-
-    try {
-      const params = new URLSearchParams({
-        reportType,
-        startDate,
-        endDate,
-        groupBy,
-      });
-
-      const response = await fetch(
-        `/api/v1/admin/reports/export/pdf?${params}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('PDF oluşturma başarısız');
-      }
-
-      // Download PDF
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${reportType}_Raporu_${startDate}_${endDate}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-
-      success('PDF İndirildi', 'Rapor başarıyla PDF formatında indirildi');
-    } catch (_error) {
-      showError('Hata', 'PDF oluşturulurken bir hata oluştu');
-    } finally {
-      setPdfLoading(false);
-    }
+    await exportPDF(reportType, startDate, endDate, groupBy);
   };
 
   /**
    * Handle CSV export
    */
   const handleCsvExport = async () => {
-    if (!startDate || !endDate) {
-      showError('Eksik Bilgi', 'Lütfen başlangıç ve bitiş tarihlerini seçin');
-      return;
-    }
-
-    setCsvLoading(true);
-
-    try {
-      const params = new URLSearchParams({
-        reportType,
-        startDate,
-        endDate,
-        groupBy,
-      });
-
-      const response = await fetch(
-        `/api/v1/admin/reports/export/csv?${params}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('CSV oluşturma başarısız');
-      }
-
-      // Download CSV
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${reportType}_Raporu_${startDate}_${endDate}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-
-      success('CSV İndirildi', 'Rapor başarıyla CSV formatında indirildi');
-    } catch (_error) {
-      showError('Hata', 'CSV oluşturulurken bir hata oluştu');
-    } finally {
-      setCsvLoading(false);
-    }
+    await exportCSV(reportType, startDate, endDate, groupBy);
   };
 
   return (
@@ -230,29 +135,35 @@ export function ReportBuilder({ className }: ReportBuilderProps) {
         <div className="flex flex-wrap gap-3 pt-4">
           <Button
             onClick={handlePdfExport}
-            disabled={pdfLoading || csvLoading}
+            disabled={isExporting}
             className="gap-2"
           >
-            {pdfLoading ? (
+            {isExporting ? (
               <Download className="h-4 w-4 animate-spin" />
             ) : (
               <FileText className="h-4 w-4" />
             )}
             PDF Olarak İndir
+            {progress > 0 && progress < 100 && (
+              <span className="ml-2 text-xs">({progress}%)</span>
+            )}
           </Button>
 
           <Button
             onClick={handleCsvExport}
-            disabled={pdfLoading || csvLoading}
+            disabled={isExporting}
             variant="outline"
             className="gap-2"
           >
-            {csvLoading ? (
+            {isExporting ? (
               <Download className="h-4 w-4 animate-spin" />
             ) : (
               <Table className="h-4 w-4" />
             )}
             CSV Olarak İndir
+            {progress > 0 && progress < 100 && (
+              <span className="ml-2 text-xs">({progress}%)</span>
+            )}
           </Button>
         </div>
 

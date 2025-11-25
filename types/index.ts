@@ -1502,64 +1502,12 @@ export interface GeocodeResponse {
   error?: string;
 }
 
-// Location types moved to shared/location.ts (already imported)
-// Removed duplicate LocationSearchResult, LocationPrediction, etc.
-
-// Admin Types
-export interface AdminDashboardStore {
-  data: AdminDashboardData | null;
-  isLoading: boolean;
-  error: string | null;
-  lastUpdated: string | null;
-  fetchDashboard: () => Promise<void>;
-  refreshDashboard: () => Promise<void>;
-  markAlertAsRead: (alertId: string) => Promise<void>;
-  dismissAlert: (alertId: string) => Promise<void>;
-  clearAllAlerts: () => Promise<void>;
-  clearError: () => void;
-  // Computed
-  unreadAlerts: SecurityAlert[];
-  criticalAlerts: SecurityAlert[];
-  charts?: Record<string, unknown>; // Store compatibility
-}
-
-export interface SystemHealth {
-  status: 'healthy' | 'warning' | 'critical' | 'unknown';
-  uptime: number;
-  responseTime: number;
-  lastCheck: string;
-  issues?: string[];
-  metrics?: {
-    cpu: number;
-    memory: number;
-    disk: number;
-    network: number;
-  };
-}
-
-export interface AdminDashboardData {
-  stats: {
-    totalUsers: number;
-    activeUsers: number;
-    totalJobs: number;
-    activeJobs: number;
-    totalRevenue: number;
-    pendingPayouts: number;
-    // Additional stats for AdminDashboard component
-    newUsersToday?: number;
-    monthlyRevenue?: number;
-    revenueGrowth?: number;
-    pendingOrders?: number;
-    completedOrders?: number;
-    conversionRate?: number;
-    userRetentionRate?: number;
-  };
-  alerts?: SecurityAlert[];
-  recentActivity: SecurityAlert[];
-  systemHealth: SystemHealth;
-  charts?: Record<string, unknown>; // AdminDashboard component compatibility
-  lastUpdated?: string;
-}
+// ============================================================================
+// ADMIN & MODERATION TYPES
+// ============================================================================
+// Modern admin dashboard types are in types/core/dashboard.ts
+// Use AdminDashboard, ModeratorDashboard from there
+// Store types are in lib/core/store/admin-dashboard.ts
 
 export interface AdminModerationStore {
   items: ModerationItem[];

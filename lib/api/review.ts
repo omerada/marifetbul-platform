@@ -401,18 +401,18 @@ export async function rejectReview(
 }
 
 /**
- * Get flagged reviews (admin)
- * Backend: GET /api/v1/reviews/admin/flagged
+ * ============================================================================
+ * FLAGGED REVIEWS - Use lib/api/moderation.ts instead
+ * ============================================================================
+ * DUPLICATE REMOVED: getFlaggedReviews() moved to @/lib/api/moderation
+ *
+ * Reason: Two endpoints existed:
+ * - /api/v1/moderation/reviews/flagged (ModerationController) ✅ ACTIVE
+ * - /api/v1/reviews/admin/flagged (ReviewController) ❌ UNUSED
+ *
+ * Use: import { getFlaggedReviews } from '@/lib/api/moderation'
+ * ============================================================================
  */
-export async function getFlaggedReviews(
-  params?: ReviewQueryParams
-): Promise<ReviewsResponse> {
-  const response = await apiClient.get<ApiResponse<ReviewsResponse>>(
-    '/api/v1/reviews/admin/flagged',
-    params as Record<string, string>
-  );
-  return response.data;
-}
 
 /**
  * Resolve flagged review (admin)
@@ -493,7 +493,7 @@ export const reviewApi = {
   getForModeration: getReviewsForModeration,
   approve: approveReview,
   reject: rejectReview,
-  getFlagged: getFlaggedReviews,
+  // getFlagged: REMOVED - use getFlaggedReviews from @/lib/api/moderation instead
   resolveFlag: resolveFlaggedReview,
   adminDelete: adminDeleteReview,
   getPlatformStats,

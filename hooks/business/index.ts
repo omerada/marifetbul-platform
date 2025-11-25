@@ -537,21 +537,10 @@ export { type UseCommentActionsReturn } from './useCommentActions';
 // ================================================
 // MODERATION SYSTEM (Production-Ready - Sprint: Moderation System)
 // ================================================
-// Centralized moderation hooks - NO DUPLICATES
+// ============================================================================
+// MODERATION HOOKS
+// ============================================================================
 export * from './moderation';
-
-// ================================================
-// DEPRECATED MODERATION HOOKS - REMOVED
-// ================================================
-// ✅ CLEANUP COMPLETED (Sprint 1): Deprecated hooks silindi
-// Production-ready versions: @/hooks/business/moderation
-//
-// Migration yapıldı:
-// - useCommentModeration → hooks/business/moderation/useCommentModeration
-// - useReviewModeration → hooks/business/moderation/useReviewModeration
-//
-// @removed 2025-11-13
-// ================================================
 
 export { useOptimisticModeration } from './useOptimisticModeration';
 export {
@@ -570,9 +559,6 @@ export type {
   UseTicketModerationReturn,
 } from './moderation/useTicketModeration';
 
-// ================================================
-// REPORT MODERATION (Sprint 1 - Story 1.3)
-// ================================================
 export { useReportModeration } from './moderation/useReportModeration';
 export type {
   ReportStatus,
@@ -586,9 +572,6 @@ export type {
   UseReportModerationReturn,
 } from './moderation/useReportModeration';
 
-// ================================================
-// MODERATOR DASHBOARD (Sprint 2 - Story 2.1)
-// ================================================
 export { useModeratorDashboard } from './moderation/useModeratorDashboard';
 export type {
   ModerationStats,

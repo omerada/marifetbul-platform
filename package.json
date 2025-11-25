@@ -54,6 +54,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
     "@eslint/eslintrc": "^3.2.0",
     "@next/bundle-analyzer": "^15.1.6",
     "@playwright/test": "^1.56.1",

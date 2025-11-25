@@ -1,28 +1,43 @@
 /**
- * ================================================
- * ADMIN DISPUTES COMPONENTS - INDEX
- * ================================================
- * Central export point for all admin dispute components
+ * Admin Disputes Components - Index
  *
- * @author MarifetBul Development Team
- * @version 1.0.0 - Story 3: Admin Enhancement
- * @version 2.0.0 - Sprint 16 Story 3.1: Added AdminDisputeQueue
- * @version 3.0.0 - Sprint 1.1: Removed duplicate DisputeList components
- *                  Use UnifiedDisputeList from @/components/domains/disputes instead
+ * Central export point for all admin dispute components.
+ *
+ * @module components/domains/admin/disputes
+ * @version 1.0.0
+ * @production-ready ✅
  */
 
-export { AdminDisputeDetailModal } from './AdminDisputeDetailModal';
+// ============================================================================
+// DISPUTE RESOLUTION
+// ============================================================================
+
+export { AdminDisputeResolution } from './AdminDisputeResolution';
+export type { AdminDisputeResolutionProps } from './AdminDisputeResolution';
+
 export { default as DisputeResolutionModal } from './DisputeResolutionModal';
+
+// ============================================================================
+// DISPUTE MANAGEMENT
+// ============================================================================
+
+export { AdminDisputeDetailModal } from './AdminDisputeDetailModal';
 export { AdminDisputeTable } from './AdminDisputeTable';
 export { AdminDisputeQueue } from './AdminDisputeQueue';
 
-// ⚠️ MIGRATION NOTE: DisputeList and AdminDisputeList removed
+// ============================================================================
+// MIGRATION NOTE
+// ============================================================================
+//
+// DisputeList and AdminDisputeList components have been removed to avoid duplicates.
 // Use UnifiedDisputeList from '@/components/domains/disputes/core' instead:
 //
+// ```tsx
 // import { UnifiedDisputeList } from '@/components/domains/disputes/core';
 //
-// Old: <DisputeList disputes={data} />
-// New: <UnifiedDisputeList variant="card" disputes={data} />
+// // Card view (old DisputeList)
+// <UnifiedDisputeList variant="card" disputes={data} />
 //
-// Old: <AdminDisputeList />
-// New: <UnifiedDisputeList variant="table-advanced" disputes={data} />
+// // Table view (old AdminDisputeList)
+// <UnifiedDisputeList variant="table-advanced" disputes={data} />
+// ```
