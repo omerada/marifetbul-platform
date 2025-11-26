@@ -15,6 +15,9 @@ export { default as AdminHeader } from './layout/AdminHeader';
 export { default as AdminFooter } from './layout/AdminFooter';
 export { default as AdminSidebar } from './layout/AdminSidebar';
 
+// Security Components
+export { AdminTwoFactorEnforcement } from './AdminTwoFactorEnforcement';
+
 // ============================================================================
 // DASHBOARD COMPONENTS
 // ============================================================================

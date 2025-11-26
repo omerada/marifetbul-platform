@@ -2,10 +2,10 @@
  * Notifications Components Index
  * @sprint Sprint 4 - Notifications System
  * @sprint Sprint 6 - Notification Analytics Dashboard
+ *
+ * Note: NotificationsList removed (use NotificationCenter from components/domains/notifications)
  */
 
-/** @deprecated Use NotificationCenter from components/domains/notifications instead */
-export { default as NotificationsList } from './NotificationsList';
 export { default as NotificationPreferences } from './NotificationPreferences';
 export { default as NotificationAnalyticsDashboard } from './NotificationAnalyticsDashboard';
 export { PushNotificationToggle } from './PushNotificationToggle';

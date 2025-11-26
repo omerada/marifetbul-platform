@@ -47,13 +47,7 @@ interface AvatarUploadParams {
   };
 }
 
-interface ProfileCompleteness {
-  score: number;
-  maxScore: number;
-  percentage: number;
-  missingFields: string[];
-  suggestions: string[];
-}
+// ProfileCompleteness interface removed - use ProfileCompletionData from './useProfileCompletion' instead
 
 // ================================================
 // PROFILE DATA HOOKS - DATA FETCHING
@@ -109,110 +103,7 @@ export function useEmployerProfile(userId: string) {
   )();
 }
 
-/**
- * Hook for calculating profile completeness
- *
- * @deprecated Use `useProfileCompletion` from './useProfileCompletion' instead.
- * This hook is kept for backward compatibility only.
- *
- * Migration guide:
- * - Replace `useProfileCompleteness(userId)` with `useProfileCompletion(userId)`
- * - The new hook provides the same data with improved performance and backend sync
- */
-export function useProfileCompleteness(userId?: string) {
-  const profileData = useProfile(userId);
-
-  return useMemo((): ProfileCompleteness => {
-    const profile = profileData.data;
-    if (!profile) {
-      return {
-        score: 0,
-        maxScore: 100,
-        percentage: 0,
-        missingFields: [],
-        suggestions: [],
-      };
-    }
-
-    const requiredFields = [
-      { field: 'firstName', weight: 10, label: 'Ad' },
-      { field: 'lastName', weight: 10, label: 'Soyad' },
-      { field: 'email', weight: 15, label: 'E-posta' },
-      { field: 'phone', weight: 10, label: 'Telefon' },
-      { field: 'location', weight: 10, label: 'Konum' },
-      { field: 'bio', weight: 15, label: 'Biyografi' },
-      { field: 'avatar', weight: 10, label: 'Profil fotoğrafı' },
-    ];
-
-    const freelancerFields = [
-      { field: 'skills', weight: 15, label: 'Yetenekler' },
-      { field: 'hourlyRate', weight: 10, label: 'Saatlik ücret' },
-      { field: 'portfolio', weight: 5, label: 'Portföy' },
-    ];
-
-    const employerFields = [
-      { field: 'companyName', weight: 15, label: 'Şirket adı' },
-      { field: 'companyDescription', weight: 10, label: 'Şirket açıklaması' },
-    ];
-
-    let fieldsToCheck = [...requiredFields];
-    if (profile.userType === 'freelancer') {
-      fieldsToCheck = [...fieldsToCheck, ...freelancerFields];
-    } else if (profile.userType === 'employer') {
-      fieldsToCheck = [...fieldsToCheck, ...employerFields];
-    }
-
-    let score = 0;
-    const maxScore = fieldsToCheck.reduce(
-      (sum, field) => sum + field.weight,
-      0
-    );
-    const missingFields: string[] = [];
-    const suggestions: string[] = [];
-
-    fieldsToCheck.forEach(({ field, weight, label }) => {
-      const value = (profile as unknown as Record<string, unknown>)[field];
-
-      if (value !== undefined && value !== null && value !== '') {
-        if (Array.isArray(value) && value.length > 0) {
-          score += weight;
-        } else if (!Array.isArray(value)) {
-          score += weight;
-        } else {
-          missingFields.push(label);
-        }
-      } else {
-        missingFields.push(label);
-      }
-    });
-
-    // Generate suggestions based on missing fields
-    if (missingFields.includes('Profil fotoğrafı')) {
-      suggestions.push(
-        'Güvenilirliğinizi artırmak için profil fotoğrafı ekleyin'
-      );
-    }
-    if (missingFields.includes('Biyografi')) {
-      suggestions.push('Kendinizi tanıtmak için biyografi yazın');
-    }
-    if (
-      profile.userType === 'freelancer' &&
-      missingFields.includes('Yetenekler')
-    ) {
-      suggestions.push(
-        'Müşterilerin sizi bulması için yeteneklerinizi ekleyin'
-      );
-    }
-
-    return {
-      score,
-      maxScore,
-      percentage: Math.round((score / maxScore) * 100),
-      missingFields,
-      suggestions,
-    };
-  }, [profileData.data]);
-}
+// useProfileCompleteness removed - use useProfileCompletion from './useProfileCompletion' instead
 
 // ================================================
 // PROFILE ACTION HOOKS - MUTATIONS
@@ -442,38 +333,6 @@ export function useProfileDisplay(userId?: string) {
 }
 
 // ================================================
-// LEGACY COMPATIBILITY HOOKS
-// ================================================
-
-/**
- * Legacy profile validation hook
- *
- * @deprecated Use `useProfileCompletion` from './useProfileCompletion' instead.
- * This hook is kept for backward compatibility only.
- *
- * Migration:
- * ```ts
- * // Old way
- * const { completeness, missingFields, suggestions, isComplete, needsAttention } = useProfileValidation(userId);
- *
- * // New way
- * const { completion, isLoading, needsAttention } = useProfileCompletion(userId);
- * const { completionPercentage, missingFields, suggestions } = completion || {};
- * ```
- */
-export function useProfileValidation(userId?: string) {
-  const completeness = useProfileCompleteness(userId);
-
-  return {
-    completeness: completeness.percentage,
-    missingFields: completeness.missingFields,
-    suggestions: completeness.suggestions,
-    isComplete: completeness.percentage === 100,
-    needsAttention: completeness.percentage < 70,
-  };
-}
-
-// ================================================
 // HOOK EXPORTS WITH CLEAR RESPONSIBILITIES
 // ================================================
 
@@ -482,7 +341,6 @@ export const ProfileHooks = {
   useProfile,
   useFreelancerProfile,
   useEmployerProfile,
-  useProfileCompleteness,
 
   // Actions/Mutations
   useUpdateProfile,
@@ -494,9 +352,6 @@ export const ProfileHooks = {
   // Business logic
   useProfilePermissions,
   useProfileDisplay,
-
-  // Legacy compatibility
-  useProfileValidation,
 };
 
 export default ProfileHooks;

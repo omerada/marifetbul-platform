@@ -54,15 +54,3 @@ export interface ProfileFieldInfo {
   weight: number;
   isMandatory: boolean;
 }
-
-/**
- * Profile completeness metrics (legacy - kept for compatibility)
- * @deprecated Use ProfileCompletionData instead
- */
-export interface ProfileCompleteness {
-  score: number;
-  maxScore: number;
-  percentage: number;
-  missingFields: string[];
-  suggestions: string[];
-}

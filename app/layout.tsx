@@ -10,7 +10,9 @@ import { OrderNotificationProvider } from '@/components/providers/OrderNotificat
 import { NotificationProvider } from '@/components/providers/NotificationProvider';
 import { PushPermissionModal } from '@/components/notifications';
 import { NotificationBell } from '@/components/domains/notifications';
+import { SessionTimeoutWarning } from '@/components/domains/auth';
 import { ToastManager } from '@/components/shared/ToastManager';
+import { CookieConsentBanner } from '@/components/shared/CookieConsentBanner';
 import { SEOHead } from '@/components/shared/seo/SEOHead';
 import { SkipToContent } from '@/components/shared/accessibility';
 import './globals.css';
@@ -106,6 +108,11 @@ export default function RootLayout({
                   <NotificationProvider
                     verbose={process.env.NODE_ENV === 'development'}
                   >
+                    <SessionTimeoutWarning
+                      timeoutMs={30 * 60 * 1000}
+                      warningMs={5 * 60 * 1000}
+                    />
+                    <CookieConsentBanner policyUrl="/legal/cookie-policy" />
                     <OrderNotificationProvider />
                     <PushPermissionModal />
                     <ToastManager />

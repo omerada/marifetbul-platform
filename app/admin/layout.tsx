@@ -20,6 +20,7 @@ import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
+import { AdminTwoFactorEnforcement } from '@/components/domains/admin/AdminTwoFactorEnforcement';
 import {
   BarChart3,
   Users,
@@ -111,7 +112,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   // Render admin panel (middleware already protected the route)
   return (
-    <div className="min-h-screen bg-gray-50">
+    <AdminTwoFactorEnforcement>
+      <div className="min-h-screen bg-gray-50">
       <div className="flex h-screen overflow-hidden">
         {/* Mobile sidebar overlay */}
         {sidebarOpen && (
@@ -263,6 +265,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </main>
         </div>
       </div>
-    </div>
+    </AdminTwoFactorEnforcement>
   );
 }
