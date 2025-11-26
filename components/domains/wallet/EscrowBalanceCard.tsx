@@ -39,8 +39,8 @@ import Link from 'next/link';
 // ============================================================================
 
 export interface EscrowDetail {
-  /** Order ID */
-  orderId: number;
+  /** Order ID (UUID) */
+  orderId: string;
   /** Order title */
   orderTitle: string;
   /** Total escrow amount for this order */
@@ -51,7 +51,7 @@ export interface EscrowDetail {
   milestoneCount: number;
   /** Milestone breakdown (optional) */
   milestones?: Array<{
-    id: number;
+    id: string; // UUID
     title: string;
     amount: number;
     status: string;

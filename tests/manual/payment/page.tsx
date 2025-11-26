@@ -12,15 +12,38 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-// UPDATED: Use UnifiedCheckout instead of deprecated PaymentModal
 import { UnifiedCheckout } from '@/components/checkout/UnifiedCheckout';
 import { CreditCard, AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { useRouter } from 'next/navigation';
+import type { OrderResponse } from '@/types/backend-aligned';
 
 export default function PaymentTestPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
+
+  // Mock order data for testing
+  const mockOrder: OrderResponse = {
+    id: 'test-order-12345',
+    packageId: 'test-package-id',
+    packageTitle: 'Logo Tasarımı - Test Siparişi',
+    sellerId: 'test-seller-id',
+    sellerName: 'Test Satıcı',
+    buyerId: 'test-buyer-id',
+    buyerName: 'Test Alıcı',
+    status: 'PENDING',
+    paymentStatus: 'PENDING',
+    paymentMode: 'ONLINE',
+    totalAmount: 500,
+    netAmount: 450,
+    platformFee: 50,
+    currency: 'TRY',
+    deliveryDays: 7,
+    requirements: 'Logo tasarımı için gerekli bilgiler',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
 
   // Redirect to home in production
   useEffect(() => {
@@ -108,20 +131,22 @@ export default function PaymentTestPage() {
         </div>
       </div>
 
-      {/* Payment Modal */}
-      <PaymentModal
+      {/* Unified Checkout Modal */}
+      <UnifiedCheckout
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        orderId="test-order-12345"
-        amount={500}
-        description="Logo Tasarımı - Test Siparişi"
-        onSuccess={(paymentId) => {
-          logger.info('Test payment successful', { paymentId });
-          alert(`Payment successful! ID: ${paymentId}`);
+        order={mockOrder}
+        availableMethods={['IYZICO', 'MANUAL_IBAN']}
+        onSuccess={(orderId, paymentId) => {
+          logger.info('Test payment successful', { orderId, paymentId });
+          setIsModalOpen(false);
+          toast.success(
+            `Payment successful! Order: ${orderId}${paymentId ? `, Payment: ${paymentId}` : ''}`
+          );
         }}
         onError={(error) => {
           logger.error('Test payment error', { error });
-          alert(`Payment error: ${error}`);
+          toast.error(`Payment error: ${error}`);
         }}
       />
     </div>

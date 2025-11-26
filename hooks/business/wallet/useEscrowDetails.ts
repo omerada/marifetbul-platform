@@ -28,13 +28,13 @@ interface EscrowDetailsResponse {
   currency: string;
   /** List of escrow holds per order */
   escrowDetails: Array<{
-    orderId: number;
+    orderId: string; // UUID from backend
     orderTitle: string;
     totalAmount: number;
     currency: string;
     milestoneCount: number;
     milestones: Array<{
-      id: number;
+      id: string; // UUID from backend
       title: string;
       amount: number;
       status: string;
