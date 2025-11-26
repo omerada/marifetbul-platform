@@ -11,6 +11,7 @@ import {
   CheckCircle,
   AlertCircle,
   RotateCcw,
+  Trash2,
 } from 'lucide-react';
 import {
   fetchPrivacySettings,
@@ -20,6 +21,7 @@ import {
   type PrivacySettings,
   type UpdatePrivacySettingsRequest,
 } from '@/lib/api/privacy-settings';
+import { AccountDeletionModal } from '@/components/settings/AccountDeletionModal';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 export default function PrivacySettingsPage() {
@@ -28,6 +30,7 @@ export default function PrivacySettingsPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [showDeletionModal, setShowDeletionModal] = useState(false);
 
   useEffect(() => {
     loadSettings();
@@ -355,6 +358,35 @@ export default function PrivacySettingsPage() {
           {saving ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet'}
         </button>
       </div>
+
+      {/* Account Deletion Section */}
+      <div className="mt-8 rounded-lg border border-red-200 bg-red-50 p-6">
+        <div className="mb-4 flex items-start gap-3">
+          <div className="rounded-lg bg-red-100 p-2 text-red-600">
+            <Trash2 className="h-5 w-5" />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-lg font-semibold text-gray-900">Hesabı Sil</h2>
+            <p className="text-sm text-gray-700">
+              Hesabınızı kalıcı olarak silmek istiyorsanız, bu işlemi
+              gerçekleştirebilirsiniz. Bu işlem geri alınamaz.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => setShowDeletionModal(true)}
+          className="inline-flex items-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-red-700 transition-colors hover:bg-red-50"
+        >
+          <Trash2 className="h-4 w-4" />
+          Hesabımı Sil
+        </button>
+      </div>
+
+      {/* Account Deletion Modal */}
+      <AccountDeletionModal
+        isOpen={showDeletionModal}
+        onClose={() => setShowDeletionModal(false)}
+      />
     </div>
   );
 }
