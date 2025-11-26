@@ -1,20 +1,36 @@
 /**
  * ================================================
- * NO RESULTS STATE COMPONENT
+ * NO RESULTS STATE COMPONENT (DEPRECATED)
  * ================================================
- * Sprint 2: Search & Discovery - Story 4
+ * @deprecated Use ZeroResultsState instead (Sprint 15 - Story 1.3)
  *
- * Intelligent empty state with:
- * - Alternative search suggestions
- * - Popular categories
- * - Spelling corrections
- * - Filter recommendations
- * - Related searches
- * - Call-to-action buttons
+ * This component has been superseded by ZeroResultsState which offers:
+ * - Real API integration for popular searches
+ * - Smarter typo correction
+ * - Better category recommendations
+ * - Enhanced UX with loading states
+ *
+ * Migration guide:
+ * ```tsx
+ * // Old:
+ * <NoResultsState query={query} onNewSearch={handleSearch} />
+ *
+ * // New:
+ * <ZeroResultsState
+ *   query={query}
+ *   onSearch={handleSearch}
+ *   activeFilterCount={filterCount}
+ *   onClearFilters={clearFilters}
+ * />
+ * ```
+ *
+ * Sprint 2: Search & Discovery - Story 4
+ * Replaced by: Sprint 15 - Story 1.3
  *
  * @author MarifetBul Development Team
- * @version 1.0.0
+ * @version 1.0.0 (Legacy)
  * @since 2025-11-26
+ * @deprecated Since 2025-11-26 - Use ZeroResultsState
  */
 
 'use client';

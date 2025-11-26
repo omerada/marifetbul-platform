@@ -1,28 +1,36 @@
+/**
+ * ================================================
+ * INTEGRATED SEARCH PAGE WITH ADVANCED FILTERS
+ * ================================================
+ * Sprint 2: Search & Discovery - Story 1 Integration
+ *
+ * Complete search experience with:
+ * - Advanced filters integration
+ * - Backend API connection
+ * - Real-time search results
+ * - Responsive filter sidebar
+ *
+ * @author MarifetBul Development Team
+ * @version 2.0.0
+ * @since 2025-11-26
+ */
+
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AppLayout } from '@/components/layout';
 import { UniversalSearch } from '@/components/domains/search';
-import { SearchSearchResults } from '@/components/domains/search';
-import { Card, Button, Loading } from '@/components/ui';
-import { useResponsive, useFilterState, useFacets } from '@/hooks';
 import {
-  AdvancedFilterPanel,
-  FilterChips,
-  FacetedNavigation,
-  SortOptions,
-  DEFAULT_FACET_GROUPS,
-  DEFAULT_SORT,
-} from '@/components/shared/filters';
-import type {
-  FilterState,
-  SortOption,
-  ViewMode,
-} from '@/components/shared/filters';
+  AdvancedSearchFilters,
+  type SearchFilters,
+} from '@/components/domains/search';
+import { SearchSearchResults } from '@/components/domains/search';
+import { ZeroResultsState } from '@/components/domains/search/ZeroResultsState';
+import { Card, Button, Loading } from '@/components/ui';
+import { useResponsive } from '@/hooks';
 import {
   Search,
-  Filter,
   SlidersHorizontal,
   Briefcase,
   Package,
@@ -31,11 +39,42 @@ import {
   Clock,
   Star,
   X,
+  Grid3x3,
+  List,
 } from 'lucide-react';
 import { trackSearch } from '@/lib/api/search-analytics';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 type SearchTab = 'all' | 'services' | 'jobs' | 'freelancers';
+type ViewMode = 'grid' | 'list';
+
+interface SearchResult {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  rating: number;
+  deliveryDays: number;
+  seller: {
+    id: string;
+    name: string;
+    verified: boolean;
+  };
+  featured: boolean;
+  categoryId: string;
+}
+
+interface SearchResponse {
+  content: SearchResult[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
 
 function SearchContent() {
   const router = useRouter();
@@ -47,71 +86,119 @@ function SearchContent() {
 
   const [activeTab, setActiveTab] = useState<SearchTab>(type || 'all');
   const [searchQuery, setSearchQuery] = useState(query);
-  const [showFilters, setShowFilters] = useState(false);
-  const [sortBy, setSortBy] = useState<SortOption>(DEFAULT_SORT);
+  const [showFilters, setShowFilters] = useState(!isMobile);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
-  // Sprint 4: Advanced filter state management
-  const {
-    filters,
-    updateFilters,
-    clearFilters,
-    hasActiveFilters,
-    activeFilterCount,
-  } = useFilterState({
-    defaultFilters: {
-      priceRange: [100, 10000],
-      minRating: null,
-      deliveryTime: null,
-      sellerLevels: [],
-      location: null,
-    },
-    syncWithUrl: true,
-  });
+  // Sprint 2: Advanced search filters state
+  const [filters, setFilters] = useState<SearchFilters>({});
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [totalResults, setTotalResults] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
 
-  // Sprint 4 Day 2: Faceted navigation
-  const {
-    facetGroups,
-    selectedFacets,
-    toggleFacet,
-    isLoading: facetsLoading,
-  } = useFacets({
-    facetGroups: DEFAULT_FACET_GROUPS,
-    fetchOnMount: true,
-    currentFilters: filters as unknown as Record<string, unknown>,
-  });
+  /**
+   * Perform advanced search with filters
+   */
+  const performAdvancedSearch = useCallback(async () => {
+    if (!searchQuery.trim()) return;
 
-  // Handle filter chip removal
-  const handleRemoveFilter = (
-    filterKey: keyof FilterState,
-    value?: string | number
-  ) => {
-    const newFilters = { ...filters };
+    setIsLoading(true);
+    try {
+      const requestBody = {
+        keyword: searchQuery,
+        ...filters,
+        page: currentPage,
+        size: 20,
+        sortBy: 'relevance',
+        sortDir: 'desc',
+      };
 
-    switch (filterKey) {
-      case 'priceRange':
-        newFilters.priceRange = [100, 10000];
-        break;
-      case 'minRating':
-        newFilters.minRating = null;
-        break;
-      case 'deliveryTime':
-        newFilters.deliveryTime = null;
-        break;
-      case 'sellerLevels':
-        if (value) {
-          newFilters.sellerLevels = newFilters.sellerLevels.filter(
-            (l) => l !== value
-          );
-        }
-        break;
-      case 'location':
-        newFilters.location = null;
-        break;
+      logger.info('Advanced search request', { requestBody });
+
+      const response = await fetch('/api/v1/search/packages/advanced', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Search failed: ${response.status}`);
+      }
+
+      const data: SearchResponse = await response.json();
+
+      setSearchResults(data.content || []);
+      setTotalResults(data.totalElements || 0);
+
+      // Track search analytics
+      trackSearch({
+        query: searchQuery,
+        resultCount: data.totalElements || 0,
+        filters: {
+          type: activeTab,
+          ...filters,
+        },
+      }).catch((err) => {
+        logger.debug('Failed to track search', err);
+      });
+
+      logger.info('Search completed', {
+        query: searchQuery,
+        results: data.totalElements,
+        filters,
+      });
+    } catch (error) {
+      logger.error(
+        'Search error',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      setSearchResults([]);
+      setTotalResults(0);
+    } finally {
+      setIsLoading(false);
     }
+  }, [searchQuery, filters, currentPage, activeTab]);
 
-    updateFilters(newFilters);
-  };
+  /**
+   * Handle search query submission
+   */
+  const handleSearch = useCallback((newQuery: string) => {
+    setSearchQuery(newQuery);
+    setCurrentPage(0);
+  }, []);
+
+  /**
+   * Handle filter changes
+   */
+  const handleFilterChange = useCallback((newFilters: SearchFilters) => {
+    setFilters(newFilters);
+    setCurrentPage(0);
+  }, []);
+
+  /**
+   * Clear all filters
+   */
+  const clearAllFilters = useCallback(() => {
+    setFilters({});
+    setCurrentPage(0);
+  }, []);
+
+  /**
+   * Count active filters
+   */
+  const activeFilterCount = Object.values(filters).filter(
+    (v) => v !== undefined && v !== null
+  ).length;
+
+  // Perform search when query or filters change
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      performAdvancedSearch();
+    }
+  }, [searchQuery, filters, currentPage, performAdvancedSearch]);
 
   // Update URL when tab or query changes
   useEffect(() => {
@@ -123,111 +210,36 @@ function SearchContent() {
     router.replace(newUrl, { scroll: false });
   }, [searchQuery, activeTab, router]);
 
-  const handleSearch = (newQuery: string, searchType?: string) => {
-    setSearchQuery(newQuery);
-    if (searchType && searchType !== 'all') {
-      setActiveTab(searchType as SearchTab);
-    }
-
-    // Track search analytics
-    if (newQuery.trim()) {
-      trackSearch({
-        query: newQuery,
-        resultCount:
-          searchResults[activeTab as keyof typeof searchResults] || 0,
-        filters: {
-          type: searchType || activeTab,
-          sortBy,
-        },
-      }).catch((err) => {
-        logger.debug('Failed to track search', err);
-      });
-    }
-  };
-
   const handleTabChange = (tab: SearchTab) => {
     setActiveTab(tab);
   };
-
-  // Fetch search results counts from backend
-  const [searchResults, setSearchResults] = useState({
-    all: 0,
-    services: 0,
-    jobs: 0,
-    freelancers: 0,
-  });
-
-  useEffect(() => {
-    const fetchSearchCounts = async () => {
-      if (!searchParams?.get('query')) {
-        setSearchResults({ all: 0, services: 0, jobs: 0, freelancers: 0 });
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          `/api/v1/search/counts?query=${encodeURIComponent(searchParams.get('query') || '')}`,
-          {
-            method: 'GET',
-            credentials: 'include',
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          setSearchResults(
-            data.data || { all: 0, services: 0, jobs: 0, freelancers: 0 }
-          );
-          logger.info('Search counts fetched', {
-            query: searchParams.get('query'),
-            results: data.data,
-          });
-        } else {
-          logger.warn('Search counts fetch failed', {
-            status: response.status,
-          });
-          setSearchResults({ all: 0, services: 0, jobs: 0, freelancers: 0 });
-        }
-      } catch (err) {
-        logger.error(
-          'Search counts fetch error',
-          err instanceof Error ? err : new Error(String(err))
-        );
-        setSearchResults({ all: 0, services: 0, jobs: 0, freelancers: 0 });
-      }
-    };
-
-    fetchSearchCounts();
-  }, [searchParams]);
 
   const tabs = [
     {
       key: 'all' as SearchTab,
       label: 'Tümü',
       icon: Search,
-      count: searchResults.all,
+      count: totalResults,
     },
     {
       key: 'services' as SearchTab,
       label: 'Hizmetler',
       icon: Package,
-      count: searchResults.services,
+      count: 0, // Would be populated from separate API
     },
     {
       key: 'jobs' as SearchTab,
       label: 'İş İlanları',
       icon: Briefcase,
-      count: searchResults.jobs,
+      count: 0,
     },
     {
       key: 'freelancers' as SearchTab,
       label: 'Freelancerlar',
       icon: Users,
-      count: searchResults.freelancers,
+      count: 0,
     },
   ];
-
-  // Removed sortOptions array - using SortOptions component now
 
   const quickFilters = [
     { label: 'Uzaktan', icon: MapPin, active: false },
@@ -253,26 +265,12 @@ function SearchContent() {
                 <div className="flex items-center justify-between text-sm text-gray-600">
                   <span>
                     <strong>&quot;{searchQuery}&quot;</strong> için{' '}
-                    <strong>{searchResults[activeTab].toLocaleString()}</strong>{' '}
-                    sonuç bulundu
+                    <strong>{totalResults.toLocaleString()}</strong> sonuç
+                    bulundu
                   </span>
                 </div>
               )}
             </div>
-          </div>
-        </section>
-
-        {/* Sprint 4 Day 2: Sort Options Bar */}
-        <section className="border-b bg-gray-50 py-4">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <SortOptions
-              sortBy={sortBy}
-              onSortChange={setSortBy}
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-              resultCount={searchResults[activeTab]}
-              showViewToggle={!isMobile}
-            />
           </div>
         </section>
 
@@ -304,8 +302,27 @@ function SearchContent() {
                 ))}
               </div>
 
-              {/* Sort and Filter - Sprint 4 Day 2 */}
+              {/* Filter and View Controls */}
               <div className="flex items-center space-x-3">
+                {/* View Mode Toggle */}
+                {!isMobile && (
+                  <div className="flex rounded-lg border border-gray-300">
+                    <button
+                      onClick={() => setViewMode('grid')}
+                      className={`p-2 ${viewMode === 'grid' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                    >
+                      <Grid3x3 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => setViewMode('list')}
+                      className={`p-2 ${viewMode === 'list' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                    >
+                      <List className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+
+                {/* Filter Toggle Button */}
                 <Button
                   variant="outline"
                   size="sm"
@@ -314,7 +331,7 @@ function SearchContent() {
                 >
                   <SlidersHorizontal className="h-4 w-4" />
                   {!isMobile && 'Filtreler'}
-                  {hasActiveFilters && (
+                  {activeFilterCount > 0 && (
                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">
                       {activeFilterCount}
                     </span>
@@ -349,82 +366,75 @@ function SearchContent() {
         <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
           {searchQuery ? (
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
-              {/* Advanced Filters Sidebar - Desktop */}
-              {!isMobile && showFilters && (
+              {/* Advanced Filters Sidebar - Sprint 2 Integration */}
+              {showFilters && (
                 <div className="lg:col-span-1">
-                  <div className="sticky top-24 space-y-4">
-                    {/* Sprint 4: Advanced Filter Panel */}
-                    <AdvancedFilterPanel
-                      initialFilters={filters}
-                      onFiltersChange={(newFilters) => {
-                        updateFilters(newFilters);
-                      }}
-                      onClose={() => setShowFilters(false)}
-                      className="shadow-sm ring-1 ring-gray-200/60"
-                    />
-
-                    {/* Sprint 4 Day 2: Faceted Navigation */}
-                    <Card
-                      className="overflow-hidden shadow-sm ring-1 ring-gray-200/60"
-                      padding="sm"
-                    >
-                      <FacetedNavigation
-                        facetGroups={facetGroups}
-                        selectedFacets={selectedFacets}
-                        onFacetToggle={toggleFacet}
-                        isLoading={facetsLoading}
-                        initialShowCount={5}
-                      />
-                    </Card>
-                  </div>
+                  <AdvancedSearchFilters
+                    filters={filters}
+                    onChange={handleFilterChange}
+                    variant="sidebar"
+                    className="shadow-sm"
+                  />
                 </div>
               )}
 
               {/* Results Content */}
-              <div
-                className={
-                  showFilters && !isMobile ? 'lg:col-span-3' : 'lg:col-span-4'
-                }
-              >
-                {/* Sprint 4: Filter Chips - Active filters display */}
-                {hasActiveFilters && (
+              <div className={showFilters ? 'lg:col-span-3' : 'lg:col-span-4'}>
+                {/* Active Filters Display */}
+                {activeFilterCount > 0 && (
                   <div className="mb-6">
-                    <Card className="bg-blue-50/50 ring-1 ring-blue-200/60">
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="mb-2 flex items-center gap-2">
-                            <Filter className="h-4 w-4 text-blue-600" />
-                            <span className="text-sm font-medium text-blue-900">
-                              Aktif Filtreler ({activeFilterCount})
-                            </span>
-                          </div>
-                          <FilterChips
-                            filters={filters}
-                            onRemoveFilter={handleRemoveFilter}
-                            onClearAll={clearFilters}
-                          />
-                        </div>
+                    <Card className="bg-blue-50/50">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-blue-900">
+                          Aktif Filtreler ({activeFilterCount})
+                        </span>
                         <button
-                          onClick={clearFilters}
-                          className="rounded-lg p-2 text-red-600 transition-colors hover:bg-red-50"
-                          title="Tüm filtreleri temizle"
+                          onClick={clearAllFilters}
+                          className="flex items-center gap-1 text-sm text-red-600 hover:text-red-700"
                         >
-                          <X className="h-5 w-5" />
+                          <X className="h-4 w-4" />
+                          Temizle
                         </button>
                       </div>
                     </Card>
                   </div>
                 )}
 
-                <SearchSearchResults
-                  query={searchQuery}
-                  activeTab={activeTab}
-                  sortBy={sortBy}
-                />
+                {/* Loading State */}
+                {isLoading && (
+                  <div className="flex justify-center py-12">
+                    <Loading size="lg" text="Aranıyor..." />
+                  </div>
+                )}
+
+                {/* Results */}
+                {!isLoading && searchResults.length > 0 && (
+                  <SearchSearchResults
+                    query={searchQuery}
+                    activeTab={activeTab}
+                    sortBy="relevance"
+                  />
+                )}
+
+                {/* No Results - Enhanced */}
+                {!isLoading && searchResults.length === 0 && searchQuery && (
+                  <ZeroResultsState
+                    query={searchQuery}
+                    activeFilterCount={activeFilterCount}
+                    onClearFilters={clearAllFilters}
+                    onSearch={(newQuery) => {
+                      setSearchQuery(newQuery);
+                      handleSearch(newQuery);
+                    }}
+                    showSuggestions={true}
+                    showPopular={true}
+                    showCategories={true}
+                  />
+                )}
               </div>
             </div>
           ) : (
-            /* No Search Query - Show trending/popular */
+            // No Search Query - Show trending/popular
             <div className="mx-auto max-w-4xl text-center">
               <div className="mb-8">
                 <h2 className="mb-4 text-2xl font-bold text-gray-900">

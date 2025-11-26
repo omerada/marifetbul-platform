@@ -13,6 +13,8 @@ export { EnhancedSearchResults } from './EnhancedSearchResults';
 export type { EnhancedSearchResultsProps } from './EnhancedSearchResults';
 export { NoResultsState } from './NoResultsState';
 export type { NoResultsStateProps } from './NoResultsState';
+export { ZeroResultsState } from './ZeroResultsState';
+export type { ZeroResultsStateProps } from './ZeroResultsState';
 
 // Filters
 export { EnhancedFilters } from './EnhancedFilters';
