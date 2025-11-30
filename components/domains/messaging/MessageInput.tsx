@@ -137,7 +137,7 @@ export function MessageInput({
       if (selectedFiles.length > 0) {
         try {
           attachments = await uploadFiles(selectedFiles);
-          logger.info('MessageInput', { countattachmentslength,  });
+          logger.info('MessageInput', { count: attachments.length,  });
         } catch (error) {
           toast.error('Dosyalar yüklenemedi');
           logger.error('MessageInput: File upload failed', undefined, { error });
@@ -161,7 +161,7 @@ export function MessageInput({
       // Send message with attachments
       await onSend(content, attachments);
 
-      logger.info('MessageInput', { hasAttachmentsattachments,  });
+      logger.info('MessageInput', { hasAttachments: attachments && attachments.length > 0,  });
     } catch (error) {
       logger.error('MessageInput: Failed to send message', undefined, { error });
       toast.error('Mesaj gönderilemedi');

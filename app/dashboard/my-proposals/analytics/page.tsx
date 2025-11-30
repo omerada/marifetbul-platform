@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -30,7 +30,7 @@ import {
   DollarSign,
   BarChart3,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { useProposals } from '@/hooks/business/proposals';
 import { Skeleton } from '@/components/ui/skeleton';

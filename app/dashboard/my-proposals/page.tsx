@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * MY PROPOSALS PAGE
  * ================================================
@@ -18,7 +18,7 @@ import { FileText, Filter, Loader2, Plus } from 'lucide-react';
 import { FreelancerProposalCardV2 } from '@/components/domains/proposals/FreelancerProposalCardV2';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { useProposals } from '@/hooks/business/proposals';
 import type { ProposalStatus } from '@/lib/core/validations/proposals';
 

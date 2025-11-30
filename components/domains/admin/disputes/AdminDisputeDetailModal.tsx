@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -32,7 +32,7 @@ import {
 } from '@/components/ui/Dialog';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import {
   AlertCircle,
   Package,

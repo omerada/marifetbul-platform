@@ -1,8 +1,8 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/UnifiedSkeleton';

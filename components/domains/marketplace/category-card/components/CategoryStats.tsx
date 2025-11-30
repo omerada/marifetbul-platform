@@ -4,9 +4,10 @@
  * Statistics display for category (service count, price, rating, response time)
  */
 
-import { Clock } from 'lucide-react';
-import { formatNumber, formatPrice } from '../utils/categoryCardHelpers';
+import { Clock } from 'lucide-react'; 
 import type { CategoryStatsProps } from '../types/categoryCardTypes';
+import { formatPrice } from '@/lib/shared/utils/payment';
+import { formatNumber } from '@/lib/utils';
 
 export function CategoryStats({
   category,

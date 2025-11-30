@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, AlertCircle } from 'lucide-react';
@@ -14,7 +14,7 @@ import {
   DialogTitle,
 } from '@/components/ui/Dialog';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 interface AcceptProposalModalProps {

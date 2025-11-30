@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * REVENUE FORECAST WIDGET - PRODUCTION READY
  * ================================================
@@ -30,7 +30,7 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import {
   TrendingUp,

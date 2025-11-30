@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { PortfolioItem } from '@/types';
 import { Eye, TrendingUp, Award, Calendar } from 'lucide-react';
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * TWO-FACTOR AUTHENTICATION SETUP COMPONENT
  * ================================================
@@ -21,10 +21,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import {
   CheckCircle,
   Copy,

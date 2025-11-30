@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Appeal Stats Cards Component
  *
  * Displays key statistics about content appeals in card format.
  */
 
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui';
 import { FileText, Clock, Eye, CheckCircle } from 'lucide-react';
 import type { AppealStats } from '../types/appeal';
 

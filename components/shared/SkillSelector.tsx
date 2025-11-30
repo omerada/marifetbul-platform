@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -16,7 +16,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Search } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
 import { cn } from '@/lib/utils';

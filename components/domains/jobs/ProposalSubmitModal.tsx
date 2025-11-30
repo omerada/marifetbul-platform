@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * PROPOSAL SUBMIT MODAL
  * ================================================
@@ -24,7 +24,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { X, Send, Loader2, Paperclip } from 'lucide-react';
 import { Button } from '@/components/ui';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/shared/formatters';
 import { useProposals } from '@/hooks/business/proposals/useProposals';

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -11,7 +11,7 @@
  * @version 1.0.0
  */
 
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import { Flag, Eye, User } from 'lucide-react';

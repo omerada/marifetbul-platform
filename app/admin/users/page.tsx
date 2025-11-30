@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ADMIN USER MANAGEMENT PAGE
  * ================================================
@@ -35,7 +35,7 @@ import {
 import { UnifiedErrorBoundary } from '@/components/ui/UnifiedErrorBoundary';
 import { LoadingPageSkeleton } from '@/components/ui/UnifiedLoadingSystem';
 import { UserTable } from '@/components/domains/admin';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { useUserManagement } from '@/hooks';
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ENHANCED SEARCH RESULTS COMPONENT
  * ================================================
@@ -30,7 +30,7 @@ import {
   Loader2,
   RefreshCcw,
 } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/lib/utils';

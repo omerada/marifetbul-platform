@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -22,7 +22,7 @@ import type {
   RowAction,
 } from '@/lib/components/unified/UnifiedDataTable';
 import { useUserManagement } from '@/hooks';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader } from '@/components/ui';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,7 +32,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/AlertDialog';
+} from '@/components/uiDialog';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import { SimpleErrorDisplay } from '@/components/ui/SimpleErrorDisplay';

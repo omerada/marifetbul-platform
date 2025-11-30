@@ -1,8 +1,8 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { AppLayout } from '@/components/layout';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Loading, StatCard } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';

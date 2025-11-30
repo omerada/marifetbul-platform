@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Portfolio Analytics Dashboard
@@ -20,7 +20,7 @@ import {
   Download,
 } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { usePortfolioAnalytics } from '@/hooks/business/portfolio/usePortfolioAnalytics';
 import {
   ViewCountChart,

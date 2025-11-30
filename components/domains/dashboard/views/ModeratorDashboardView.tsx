@@ -16,7 +16,15 @@
  */
 
 import { memo, useState, useCallback } from 'react';
-import { Shield, CheckCircle, Clock, Flag, Activity } from 'lucide-react';
+import {
+  Shield,
+  CheckCircle,
+  Clock,
+  Flag,
+  Activity,
+  XCircle,
+  AlertTriangle,
+} from 'lucide-react';
 
 // Hooks
 import { useDashboardPermissions } from '../hooks';

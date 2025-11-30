@@ -28,10 +28,9 @@ import { Eye, Check, ArrowUpCircle } from 'lucide-react';
 import { UnifiedButton, Pagination, Loading } from '@/components/ui';
 import { UnifiedReviewModerationCard } from './UnifiedReviewModerationCard';
 import { useReviewModeration } from '@/hooks/business/moderation/useReviewModeration';
-import { adminModerationApi } from '@/lib/api/admin/moderation';
-import type { ReviewResponse } from '@/lib/api/admin/moderation';
-import type { UserRole } from './UnifiedReviewModerationCard';
+import * as adminModerationApi from '@/lib/api/moderation';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import { ReviewResponse, UserRole } from '@/types/backend-aligned';
 
 // ============================================================================
 // TYPES
@@ -50,7 +49,7 @@ interface UnifiedReviewQueueProps {
 // ============================================================================
 
 export function UnifiedReviewQueue({
-  role = 'moderator',
+  role = 'MODERATOR',
   initialStatus = 'pending',
   showStats = true,
   enableBulkActions = true,
@@ -161,7 +160,7 @@ export function UnifiedReviewQueue({
   };
 
   const handleDelete = async (reviewId: string): Promise<boolean> => {
-    if (role !== 'admin') return false;
+    if (role !== 'ADMIN') return false;
 
     try {
       await adminModerationApi.deleteReview(reviewId);
@@ -177,7 +176,7 @@ export function UnifiedReviewQueue({
   };
 
   const handleResolveFlag = async (reviewId: string): Promise<boolean> => {
-    if (role !== 'admin') return false;
+    if (role !== 'ADMIN') return false;
 
     try {
       await adminModerationApi.resolveFlag(reviewId, 'Flag resolved by admin');
@@ -287,7 +286,7 @@ export function UnifiedReviewQueue({
               <Check className="mr-1 h-4 w-4" />
               Tümünü Onayla
             </UnifiedButton>
-            {role === 'moderator' && (
+            {role === 'MODERATOR' && (
               <UnifiedButton
                 variant="warning"
                 size="sm"
@@ -350,9 +349,9 @@ export function UnifiedReviewQueue({
               onSelect={toggleSelection}
               onApprove={handleApprove}
               onReject={handleReject}
-              onEscalate={role === 'moderator' ? handleEscalate : undefined}
-              onDelete={role === 'admin' ? handleDelete : undefined}
-              onResolveFlag={role === 'admin' ? handleResolveFlag : undefined}
+              onEscalate={role === 'MODERATOR' ? handleEscalate : undefined}
+              onDelete={role === 'ADMIN' ? handleDelete : undefined}
+              onResolveFlag={role === 'ADMIN' ? handleResolveFlag : undefined}
               onViewDetails={(r) => setViewingReview(r as any)}
               onUpdated={refetch}
             />
@@ -380,9 +379,9 @@ export function UnifiedReviewQueue({
               showFullDetails
               onApprove={handleApprove}
               onReject={handleReject}
-              onEscalate={role === 'moderator' ? handleEscalate : undefined}
-              onDelete={role === 'admin' ? handleDelete : undefined}
-              onResolveFlag={role === 'admin' ? handleResolveFlag : undefined}
+              onEscalate={role === 'MODERATOR' ? handleEscalate : undefined}
+              onDelete={role === 'ADMIN' ? handleDelete : undefined}
+              onResolveFlag={role === 'ADMIN' ? handleResolveFlag : undefined}
               onUpdated={() => {
                 setViewingReview(null);
                 refetch();

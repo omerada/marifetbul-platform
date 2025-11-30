@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -22,7 +22,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { SkeletonCard } from '@/components/ui/loading';
 import type {
   Transaction,

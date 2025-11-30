@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ModerationFilters Component
  *
  * Search and filter controls for moderation items
@@ -6,7 +6,7 @@
 
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui';
 import {
   MODERATION_TYPE_OPTIONS,
   SEVERITY_OPTIONS,

@@ -208,7 +208,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
         setPreviewUrl(null);
         setShowPreviewModal(false);
 
-        logger.info('Avatar uploaded successfully', { userId, urlavatarUrl });
+        logger.info('Avatar uploaded successfully', { userId, url: avatarUrl });
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Yükleme başarısız';

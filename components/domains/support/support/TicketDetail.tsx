@@ -1,11 +1,11 @@
-'use client';
+﻿'use client';
 
 import { useEffect } from 'react';
 import { useSupport } from '@/hooks';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
-import { Card } from '@/components/ui/Card';
-import { Alert } from '@/components/ui/Alert';
+import { Card } from '@/components/ui';
+import { Alert } from '@/components/ui';
 import { formatDate } from '@/lib/shared/utils/date';
 import { TicketChat } from './TicketChat';
 import logger from '@/lib/infrastructure/monitoring/logger';

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * @fileoverview ActivityTimeline Widget - Activity Feed Component
@@ -18,7 +18,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';

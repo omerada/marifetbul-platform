@@ -1,11 +1,11 @@
-/**
+﻿/**
  * JobCard Component
  * Displays a job listing in card format
  */
 
 'use client';
 
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import {
   Briefcase,

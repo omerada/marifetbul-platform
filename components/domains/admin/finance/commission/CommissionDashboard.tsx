@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -23,7 +23,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useCommissions } from '@/hooks/business/useCommissions';
 import { formatCurrency, formatDate } from '@/lib/shared/formatters';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/UnifiedSkeleton';

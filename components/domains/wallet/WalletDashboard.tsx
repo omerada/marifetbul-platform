@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -45,9 +45,9 @@ import { useWebSocketWallet } from '@/hooks/business/wallet/useWebSocketWallet';
 import { useWalletConfig } from '@/hooks/business/wallet/useWalletConfig';
 import { useBankAccounts } from '@/hooks/business/wallet/useBankAccounts';
 import { usePayout } from '@/hooks/business/wallet/usePayout';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import { Button } from '@/components/ui';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 import { toast } from 'sonner';
 import { exportTransactions } from '@/lib/api/wallet';

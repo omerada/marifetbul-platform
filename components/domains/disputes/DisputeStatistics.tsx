@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * DisputeStatistics Component
@@ -27,7 +27,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import {
   AlertCircle,
   Clock,

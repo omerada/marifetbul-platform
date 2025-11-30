@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
@@ -14,7 +14,7 @@ import {
   MessageCircle,
   ThumbsDown,
 } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { cn } from '@/lib/utils';
 import type { HelpArticle } from '@/types';

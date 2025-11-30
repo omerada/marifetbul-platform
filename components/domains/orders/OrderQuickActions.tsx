@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ORDER DASHBOARD WIDGET
  * ================================================
@@ -18,7 +18,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { Plus, List, Filter, Search } from 'lucide-react';
 

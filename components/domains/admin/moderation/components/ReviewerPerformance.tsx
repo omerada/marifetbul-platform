@@ -1,11 +1,11 @@
-/**
+﻿/**
  * Reviewer Performance Component
  *
  * Displays performance metrics for appeal reviewers including
  * review count, average time, and success rate.
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Users, Clock, TrendingUp } from 'lucide-react';
 import type { AppealStats } from '../types/appeal';
 import { formatDuration, getSuccessRateColor } from '../utils/appealHelpers';

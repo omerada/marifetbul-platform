@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ESCROW STATUS WIDGET (Real-Time)
  * ================================================
@@ -20,7 +20,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import {
   Shield,

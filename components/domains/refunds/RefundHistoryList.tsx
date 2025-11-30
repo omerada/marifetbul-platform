@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -8,9 +8,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from '@/components/ui/Table';
 import { Badge } from '@/components/ui/Badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import {
   Select,
   SelectContent,
@@ -21,7 +21,7 @@ import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import UnifiedButton from '@/components/ui/UnifiedButton';
 import { Loader2, Search, RefreshCw, Eye, AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import { formatDistance } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import logger from '@/lib/infrastructure/monitoring/logger';

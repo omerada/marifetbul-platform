@@ -1,6 +1,6 @@
-'use client';
+﻿'use client';
 
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 
 /**
  * Skeleton loading state for conversation list

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Portfolio Search and Filter Bar
@@ -12,7 +12,7 @@
 import { useState } from 'react';
 import { Search, X, Filter, ChevronDown } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import type { PortfolioFilters } from '@/hooks/business/portfolio/usePortfolioFilters';
 
 // ============================================================================

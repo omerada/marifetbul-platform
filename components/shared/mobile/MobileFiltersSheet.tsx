@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useCallback } from 'react';
 import {
@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { formatNumber } from '@/lib/shared/formatters';
 

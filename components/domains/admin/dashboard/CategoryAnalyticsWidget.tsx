@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import React, { useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {

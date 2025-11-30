@@ -1,11 +1,11 @@
-/**
+﻿/**
  * ModerationItemsList Component
  *
  * List of moderation items with empty state
  */
 
 import { Shield, Filter } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { ModerationItemCard } from './ModerationItemCard';
 import type { ModerationItemsListProps } from '../types/moderationDashboardTypes';

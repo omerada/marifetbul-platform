@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -32,7 +32,7 @@ import {
   Textarea,
   Label,
 } from '@/components/ui';
-import { CardTitle } from '@/components/ui/Card';
+import { CardTitle } from '@/components/ui';
 import {
   Upload,
   File,

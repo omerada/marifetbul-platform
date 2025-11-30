@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * SESSION TIMEOUT WARNING COMPONENT
  * ================================================
@@ -29,7 +29,7 @@ import {
   DialogTitle,
 } from '@/components/ui/Dialog';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { Clock, AlertTriangle, Activity } from 'lucide-react';
 import logger from '@/lib/infrastructure/monitoring/logger';

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Admin Settings Component
@@ -15,7 +15,7 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import {

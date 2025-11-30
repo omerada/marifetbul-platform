@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import {
@@ -14,7 +14,7 @@ import {
 import { useReputation } from '@/hooks';
 import type { SecurityAlert as SecurityAlertType } from '@/types';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import logger from '@/lib/infrastructure/monitoring/logger';
 

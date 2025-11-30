@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * COMMISSION SETTINGS FORM
  * ================================================
@@ -29,8 +29,8 @@ import { Input } from '@/components/ui/Input';
 import { Slider } from '@/components/ui/Slider';
 import { Switch } from '@/components/ui/Switch';
 import { Textarea } from '@/components/ui/Textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Alert, AlertDescription } from '@/components/ui';
 import { useCommissionSettings } from '@/hooks';
 import type { CommissionSettings } from '@/lib/api/admin/types';
 

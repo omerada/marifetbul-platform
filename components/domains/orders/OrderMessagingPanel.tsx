@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -23,7 +23,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Send, Paperclip, X, FileText } from 'lucide-react';
 import { Button, Textarea, Loading } from '@/components/ui';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { useToast } from '@/hooks';
 import type { OrderResponse as Order } from '@/types/backend-aligned';
 import { useWebSocket } from '@/hooks';

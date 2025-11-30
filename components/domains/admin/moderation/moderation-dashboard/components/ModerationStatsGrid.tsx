@@ -1,11 +1,11 @@
-/**
+﻿/**
  * ModerationStatsGrid Component
  *
  * Grid displaying moderation statistics
  */
 
 import { Flag, Clock, CheckCircle, Shield } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui';
 import { STAT_ICON_COLORS } from '../utils/moderationConstants';
 import type { ModerationStatsGridProps } from '../types/moderationDashboardTypes';
 

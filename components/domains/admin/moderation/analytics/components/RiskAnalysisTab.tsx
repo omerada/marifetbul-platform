@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Risk Analysis Tab Component
  *
  * Display risk distribution and high-risk summaries.
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import type { RiskAnalysis } from '../types/moderationAnalytics';
 import { getRiskColor } from '../utils/analyticsHelpers';
 

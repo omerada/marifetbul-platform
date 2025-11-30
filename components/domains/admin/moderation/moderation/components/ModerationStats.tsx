@@ -1,11 +1,11 @@
-/**
+﻿/**
  * ModerationStats Component
  *
  * Statistics cards for moderation metrics
  */
 
 import { Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui';
 import type { ModerationStatsProps } from '../types/moderationTypes';
 
 export function ModerationStats({ stats, isLoading }: ModerationStatsProps) {

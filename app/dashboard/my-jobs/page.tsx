@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * MY JOBS DASHBOARD PAGE
  * ================================================
@@ -24,7 +24,7 @@ import { Plus, Briefcase, Loader2, Filter, AlertCircle } from 'lucide-react';
 import { MyJobCard } from '@/components/domains/jobs/MyJobCard';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { useJobs } from '@/hooks/business/jobs/useJobs';
 import type { JobStatus, JobResponse } from '@/types/backend-aligned';
 

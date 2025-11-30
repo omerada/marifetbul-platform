@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * RECENT ORDERS LIST
  * ================================================
@@ -21,7 +21,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Button } from '@/components/ui';
 import {
   Package,

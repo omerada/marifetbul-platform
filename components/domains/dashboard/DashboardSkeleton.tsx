@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Dashboard Loading Skeleton
  * Provides smooth loading states for dashboard components
  * Sprint 1 - Epic 1.3: Loading States & Skeletons
@@ -7,7 +7,7 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 
 // Simple skeleton component
 function SkeletonBox({ className = '' }: { className?: string }) {

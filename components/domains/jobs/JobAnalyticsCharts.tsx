@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -25,7 +25,7 @@ import {
   TrendingUp,
   Activity,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/lib/utils';
 import type { JobStatus } from '@/types/backend-aligned';

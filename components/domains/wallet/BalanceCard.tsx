@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * BALANCE CARD COMPONENT
  * ================================================
@@ -29,7 +29,7 @@ import {
   ArrowDownLeft,
   DollarSign,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { formatCurrency } from '@/lib/shared/formatters';
 

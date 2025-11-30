@@ -106,8 +106,8 @@ export function MessageSearch({
         onSearchResults?.(searchResults);
 
         logger.info('Search completed', {
-          querysearchQuery,
-          resultCountsearchResultslength,
+          query: searchQuery,
+          resultCount: searchResults.length,
           hasFilters,
         });
       } catch (error) {

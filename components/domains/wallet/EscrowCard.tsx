@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ESCROW CARD COMPONENT
  * ================================================
@@ -30,7 +30,7 @@ import {
   Calendar,
   TrendingUp,
 } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import {
   DropdownMenu,

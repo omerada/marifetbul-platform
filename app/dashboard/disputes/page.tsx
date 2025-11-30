@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * USER DISPUTE DASHBOARD
  * ================================================
@@ -34,7 +34,7 @@ import {
   RefreshCcw,
   Shield,
 } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Button, Loading } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { getMyDisputes } from '@/lib/api/disputes';

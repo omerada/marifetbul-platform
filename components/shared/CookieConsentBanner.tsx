@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * COOKIE CONSENT BANNER
  * ================================================
@@ -21,7 +21,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Switch } from '@/components/ui/Switch';
 import {

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * UNIFIED DATA TABLE - MAIN COMPONENT
  * ================================================
@@ -22,7 +22,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from '@/components/ui/Table';
 import { TableSkeleton } from '@/components/ui/loading/TableSkeleton';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { ArrowUpDown, ArrowUp, ArrowDown, MoreVertical } from 'lucide-react';

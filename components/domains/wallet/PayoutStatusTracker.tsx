@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -25,7 +25,7 @@ import {
   FileText,
   CreditCard,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { formatCurrency, formatRelativeTime } from '@/lib/shared/formatters';
 import type { Payout } from '@/lib/api/validators';

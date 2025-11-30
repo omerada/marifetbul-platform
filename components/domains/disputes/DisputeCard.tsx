@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * DISPUTE CARD COMPONENT
  * ================================================
@@ -19,7 +19,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import type { DisputeResponse } from '@/types/dispute';
 import {

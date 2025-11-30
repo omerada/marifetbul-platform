@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * UPCOMING AUTO-RELEASE WIDGET
  * ================================================
@@ -20,7 +20,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Clock, AlertTriangle, Shield, RefreshCw } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { formatCurrency } from '@/lib/shared/formatters';

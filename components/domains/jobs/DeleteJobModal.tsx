@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -23,7 +23,7 @@ import {
   DialogFooter,
 } from '@/components/ui/Dialog';
 import { Button } from '@/components/ui';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import type { JobResponse } from '@/types/backend-aligned';
 import { deleteJob } from '@/lib/api/jobs';

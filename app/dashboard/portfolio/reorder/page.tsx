@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Portfolio Reorder Page
  * Sprint 17: Portfolio Management System
  *
@@ -10,7 +10,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Save } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { usePortfolio } from '@/hooks/business/portfolio';
 import { PortfolioReorderList } from '@/components/domains/portfolio';

@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { Progress } from '@/components/ui/Progress';
 import {
@@ -10,6 +10,7 @@ import {
   MessageSquare,
   Star,
   BarChart3,
+  TrendingUp,
 } from 'lucide-react';
 import { StatsCard } from '@/components/domains/dashboard/widgets/StatsCard';
 import type { SupportAnalytics } from '@/types';

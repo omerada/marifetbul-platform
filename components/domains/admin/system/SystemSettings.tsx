@@ -1,10 +1,10 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { usePlatformSettings } from '@/hooks';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Checkbox } from '@/components/ui/Checkbox';
 import {
   AlertDialog,
@@ -15,7 +15,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/AlertDialog';
+} from '@/components/uiDialog';
 import { PlatformSettings } from '@/types';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import {

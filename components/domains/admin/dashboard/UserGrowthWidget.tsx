@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * User Growth Analytics Widget
@@ -11,7 +11,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import {
   getDailyNewUserTrend,
   getMonthlyNewUserTrend,

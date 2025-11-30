@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Location Search Component
@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { LocationPicker } from '@/components/shared/utilities';
 import { Coordinates, LocationSearchParams, LocationData } from '@/types';
 import { useUnifiedLocation } from '@/hooks';

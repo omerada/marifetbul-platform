@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import { SupportLayout } from '@/components/domains/support';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { useRouter } from 'next/navigation';
 import {

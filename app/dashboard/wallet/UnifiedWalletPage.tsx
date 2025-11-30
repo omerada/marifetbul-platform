@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * UNIFIED WALLET PAGE - TAB-BASED NAVIGATION
  * ================================================
@@ -41,7 +41,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { Button } from '@/components/ui';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================

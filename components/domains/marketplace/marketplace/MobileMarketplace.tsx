@@ -1,9 +1,9 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { useMarketplace } from '@/hooks';
 import { Loading } from '@/components/ui';

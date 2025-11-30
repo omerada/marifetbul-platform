@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ADMIN REFUND ANALYTICS PAGE
  * ================================================
@@ -22,7 +22,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { RefreshCw, Download, Receipt } from 'lucide-react';
 import {
   useRefundAnalytics,

@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Automation Tab Component
  *
  * Display automation metrics and performance.
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import type { AutomationMetrics } from '../types/moderationAnalytics';
 import { formatCurrency } from '@/lib/shared/formatters';
 import { formatDuration } from '../utils/analyticsHelpers';

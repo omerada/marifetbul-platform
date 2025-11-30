@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ESCROW TIMELINE COMPONENT
  * ================================================
@@ -32,7 +32,7 @@ import {
   Snowflake,
   Zap,
 } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 

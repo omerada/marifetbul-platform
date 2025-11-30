@@ -44,8 +44,10 @@ export type {
 
 // Avatar Components
 export { AvatarUpload } from './AvatarUpload';
-export { AvatarGallery } from './AvatarGallery';
-export { AvatarModal } from './AvatarModal';
+// TODO: Create AvatarGallery component - temporarily commented out for build
+// export { AvatarGallery } from './AvatarGallery';
+// TODO: Create AvatarModal component - temporarily commented out for build
+// export { AvatarModal } from './AvatarModal';
 
 // Portfolio Components
 export { PortfolioGallery } from './PortfolioGallery';

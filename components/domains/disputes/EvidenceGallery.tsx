@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============================================================================
  * EVIDENCE GALLERY - Enhanced Evidence Viewer with Lightbox
  * ============================================================================
@@ -33,7 +33,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { Button } from '@/components/ui';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 

@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+﻿/* eslint-disable no-console */
 /**
  * Production Documentation System
  *
@@ -539,7 +539,7 @@ export const componentDocumentationExamples = {
       },
     ],
     usage: `
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui';
 
 export function MyComponent() {
   return (

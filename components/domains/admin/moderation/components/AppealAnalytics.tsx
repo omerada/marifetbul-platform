@@ -1,11 +1,11 @@
-/**
+﻿/**
  * Appeal Analytics Component
  *
  * Displays analytics charts for appeal system including status distribution,
  * reason breakdown, and resolution trends.
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { BarChart, TrendingUp, AlertCircle } from 'lucide-react';
 import type { AppealStats, AppealReason, AppealStatus } from '../types/appeal';
 import {

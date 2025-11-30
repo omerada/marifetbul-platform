@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ANALYTICS CHART WIDGET
  * ================================================
@@ -13,7 +13,7 @@
 'use client';
 
 import { memo, useState, useEffect } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Loading } from '@/components/ui/loading';
 import { SimpleErrorDisplay } from '@/components/ui/SimpleErrorDisplay';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';

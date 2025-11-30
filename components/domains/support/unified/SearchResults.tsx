@@ -1,11 +1,11 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, X, Filter, SortAsc, SortDesc } from 'lucide-react';
 import { useHelpCenter } from '@/hooks';
 import { ArticleCard } from '@/components/shared/ArticleCard';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';

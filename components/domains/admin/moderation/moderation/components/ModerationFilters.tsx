@@ -1,11 +1,11 @@
-/**
+﻿/**
  * ModerationFilters Component
  *
  * Filter controls for search, status, priority, and type
  */
 
 import { Search, Filter, AlertTriangle } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui';
 import {

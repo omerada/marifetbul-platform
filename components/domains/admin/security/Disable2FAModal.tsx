@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * DISABLE 2FA MODAL
  * ================================================
@@ -18,10 +18,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import { AlertCircle, ShieldAlert, X } from 'lucide-react';
 import { useTwoFactor } from '@/hooks/business/useTwoFactor';
 import logger from '@/lib/infrastructure/monitoring/logger';

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useCallback } from 'react';
 import { useRecommendations } from '@/hooks';
@@ -10,7 +10,7 @@ import {
   ServicePackage,
 } from '@/types';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import {

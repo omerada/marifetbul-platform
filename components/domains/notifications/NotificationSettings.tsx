@@ -1,8 +1,8 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Input } from '@/components/ui/Input';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { NotificationSettings } from '@/types';

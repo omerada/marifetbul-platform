@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -24,7 +24,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';

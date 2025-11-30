@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Map View Component
@@ -17,7 +17,7 @@ import {
   Layers,
 } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Coordinates, MapBounds } from '@/types';
 import { useUnifiedLocation } from '@/hooks';
 import { MapUtils, MapLocation } from '@/lib/shared/utils/map-utils';

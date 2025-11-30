@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ADMIN TWO-FACTOR ENFORCEMENT COMPONENT
  * ================================================
@@ -23,7 +23,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent } from '@/components/ui/Dialog';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import { TwoFactorSetup } from '@/components/domains/auth/TwoFactorSetup';
 import { useTwoFactor } from '@/hooks/business/useTwoFactor';
 import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';

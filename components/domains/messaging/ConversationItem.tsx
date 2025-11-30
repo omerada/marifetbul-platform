@@ -1,8 +1,8 @@
-'use client';
+﻿'use client';
 
 import { memo, useMemo } from 'react';
 import Image from 'next/image';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import {
   MessageSquare,
   ShoppingCart,

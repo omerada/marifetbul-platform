@@ -1,11 +1,11 @@
-/**
+﻿/**
  * ModerationItemCard Component
  *
  * Individual moderation item card with action buttons
  */
 
 import { CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {

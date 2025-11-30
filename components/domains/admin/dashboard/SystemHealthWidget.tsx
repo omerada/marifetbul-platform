@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * SYSTEM HEALTH WIDGET v4.0.0
@@ -9,7 +9,7 @@
 'use client';
 
 import React, { useMemo, memo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Progress } from '@/components/ui/Progress';

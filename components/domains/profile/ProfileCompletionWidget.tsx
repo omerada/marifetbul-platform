@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Profile Completion Widget
@@ -32,7 +32,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useProfileCompletion } from '@/hooks/business/profile/useProfileCompletion';
 import { ProfileStrength } from '@/types/profile-completion';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui';
 import { Progress } from '@/components/ui/Progress';

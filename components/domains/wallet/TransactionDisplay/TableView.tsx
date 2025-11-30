@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * TABLE VIEW - Desktop Transaction Display
  * ================================================
@@ -9,7 +9,7 @@
 'use client';
 
 import { memo } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 import type { Transaction } from '@/types/business/features/wallet';

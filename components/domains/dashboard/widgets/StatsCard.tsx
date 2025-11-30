@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @fileoverview StatsCard Widget - Enhanced Statistics Card Component
  * @module components/domains/dashboard/widgets/StatsCard
  *
@@ -13,7 +13,7 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import type { StatsCardProps } from '../types/dashboard.types';

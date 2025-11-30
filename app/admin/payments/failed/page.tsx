@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ADMIN FAILED PAYMENTS DASHBOARD
  * ================================================
@@ -21,7 +21,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
@@ -32,7 +32,7 @@ import {
   TableRow,
   TableHead,
   TableCell,
-} from '@/components/ui/table';
+} from '@/components/ui/Table';
 import {
   AlertCircle,
   CheckCircle2,

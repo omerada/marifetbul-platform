@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Dashboard Error Boundary
  * Catches and handles errors in dashboard components
  * Sprint 1 - Epic 1.3: Error Boundaries
@@ -7,8 +7,8 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Card } from '@/components/ui/Card';
-import { Alert } from '@/components/ui/Alert';
+import { Card } from '@/components/ui';
+import { Alert } from '@/components/ui';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import { AlertCircle, RefreshCw, Home } from 'lucide-react';
 import logger from '@/lib/infrastructure/monitoring/logger';

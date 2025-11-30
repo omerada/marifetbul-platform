@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ORDER STATS WIDGET
  * ================================================
@@ -20,7 +20,7 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { StatsCard } from '@/components/domains/dashboard/widgets/StatsCard';
 import { formatCurrency } from '@/lib/shared/formatters';
 import { Package, CheckCircle, AlertCircle, Clock } from 'lucide-react';

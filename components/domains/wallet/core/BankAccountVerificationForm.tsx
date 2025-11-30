@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -24,7 +24,7 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Label } from '@/components/ui/Label';
 import { Input } from '@/components/ui/Input';

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -24,7 +24,7 @@ import {
   DialogFooter,
 } from '@/components/ui/Dialog';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import {
   Briefcase,

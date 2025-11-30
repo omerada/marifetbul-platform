@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, memo } from 'react';
 import Link from 'next/link';
@@ -21,7 +21,7 @@ import { useJobDetail } from '@/hooks';
 import { formatJobBudget, getBudgetType } from '@/lib/utils';
 import { PaymentMode } from '@/types/business/features/order';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { SocialShare } from '@/components/shared/social/SocialShare';

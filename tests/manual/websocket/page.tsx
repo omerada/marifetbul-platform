@@ -1,4 +1,4 @@
-/**
+﻿/**
  * WebSocket Service Test & Example Usage
  *
  * Demonstrates how to use the new STOMP-based WebSocket service
@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import { useStompWebSocket } from '@/hooks/infrastructure/websocket';
 import { WebSocketState } from '@/lib/infrastructure/websocket/WebSocketService';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import logger from '@/lib/infrastructure/monitoring/logger';
 

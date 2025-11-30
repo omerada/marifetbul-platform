@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * SECURITY RECOMMENDATIONS
  * ================================================
@@ -17,7 +17,7 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import {
   CheckCircle2,
   AlertTriangle,

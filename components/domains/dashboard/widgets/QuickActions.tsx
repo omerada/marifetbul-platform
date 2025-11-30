@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @fileoverview QuickActions Widget - Action Buttons Grid
  * @module components/domains/dashboard/widgets/QuickActions
  *
@@ -16,7 +16,7 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import type { QuickActionsProps, QuickAction } from '../types/dashboard.types';
 

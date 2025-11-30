@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -26,7 +26,7 @@ import { getSellerPaymentStatus } from '@/lib/api/users';
 import { PaymentModeSelector } from '@/components/domains/payments/PaymentModeSelector';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { FileText, Calendar, DollarSign, Send, X } from 'lucide-react';
 import logger from '@/lib/infrastructure/monitoring/logger';
 

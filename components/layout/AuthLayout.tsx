@@ -3,7 +3,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Loader2, AlertTriangle, RefreshCw, ShieldX } from 'lucide-react';
 

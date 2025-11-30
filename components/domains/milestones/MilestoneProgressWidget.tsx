@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * MILESTONE PROGRESS WIDGET - Sprint 1 Story 1.7
  * ================================================
@@ -13,7 +13,7 @@
 'use client';
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import { Badge } from '@/components/ui';
 import {
   CheckCircle2,

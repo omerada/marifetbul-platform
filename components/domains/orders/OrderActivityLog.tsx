@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -23,7 +23,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import {
   Clock,
   CheckCircle,

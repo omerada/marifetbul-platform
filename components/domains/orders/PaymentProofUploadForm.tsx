@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * PAYMENT PROOF UPLOAD FORM (BUYER SIDE)
  * ================================================
@@ -22,7 +22,7 @@
 
 import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';

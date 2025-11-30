@@ -1,10 +1,10 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { Star, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Textarea } from '@/components/ui/Textarea';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import logger from '@/lib/infrastructure/monitoring/logger';
 

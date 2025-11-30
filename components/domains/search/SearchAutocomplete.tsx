@@ -1,11 +1,11 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Search, X, Clock, TrendingUp } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useUnifiedSearch } from '@/hooks';
 import type { SearchSuggestion } from '@/types/shared/search';

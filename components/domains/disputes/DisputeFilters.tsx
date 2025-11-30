@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * DisputeFilters Component
@@ -30,7 +30,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Button } from '@/components/ui';
 import {
   Filter,

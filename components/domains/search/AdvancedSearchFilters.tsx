@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ADVANCED SEARCH FILTERS COMPONENT
  * ================================================
@@ -20,7 +20,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';

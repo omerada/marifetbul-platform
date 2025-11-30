@@ -1,8 +1,8 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { useMessageTemplates } from '@/hooks/business/messaging/useMessageTemplates';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import {

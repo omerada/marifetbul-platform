@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -37,7 +37,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { TrendingUp, BarChart3, Download } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { formatCurrency } from '@/lib/shared/formatters';
 import { cn } from '@/lib/utils';

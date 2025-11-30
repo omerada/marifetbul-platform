@@ -103,7 +103,7 @@ export function useAutoMarkAsRead(
     const messageIds = Array.from(pendingMarksRef.current);
     pendingMarksRef.current.clear();
 
-    logger.debug('useAutoMarkAsRead', { countmessageIdslength, messageIds,  });
+    logger.debug('useAutoMarkAsRead', { count: messageIds.length, messageIds,  });
 
     // Execute marks in parallel
     await Promise.allSettled(

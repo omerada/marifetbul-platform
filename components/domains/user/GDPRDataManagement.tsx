@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * GDPR DATA MANAGEMENT PANEL
  * ================================================
@@ -17,10 +17,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import {
   Download,
   Trash2,

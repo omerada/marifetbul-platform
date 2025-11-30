@@ -14,7 +14,6 @@ export type {
   ModeratorDashboard,
   UnifiedDashboardData,
   DashboardPeriod,
-  ModerationItem,
   ActivityItem,
   QuickAction,
   ChartWidgetData,
@@ -58,8 +57,6 @@ export * from './business/features/wallet';
 export * from './business/features/search';
 export * from './business/features/refund'; // Added November 5, 2025
 
-// Moderation (Sprint 2)
-export * from './business/moderation';
 // Export report types except conflicting ReportStatus (use moderation's version)
 export type {
   ReportReason,
@@ -78,9 +75,6 @@ export * from './business/admin-dashboard';
 
 // Job System (Sprint 1)
 export * from './business/job';
-
-// Disputes (Sprint 4.1)
-export * from './business/dispute';
 
 // Message types (Sprint 5)
 export * from './message';
@@ -244,12 +238,10 @@ export interface Order {
   updatedAt: string;
   timeline?: OrderTimeline[];
   milestones?: OrderTimeline[];
-  communications?: Message[]; // Added for MSW compatibility
-  // MSW handler compatibility
   title?: string;
-  description?: string; // Added for dashboard compatibility
+  description?: string; 
   amount?: number;
-  deliveryDate?: string; // Added for dashboard compatibility
+  deliveryDate?: string; 
   userId?: string;
   user?: User;
   subtotal?: number;
@@ -359,8 +351,6 @@ export type {
 
 // Message search result interface
 export interface MessageSearchResult {
-  message: Message;
-  conversation: Conversation;
   highlights: string[];
 }
 

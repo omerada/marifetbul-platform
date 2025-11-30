@@ -1,8 +1,8 @@
-import { Metadata } from 'next';
+﻿import { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { AppLayout } from '@/components/layout';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedErrorBoundary as BlogErrorBoundary } from '@/components/ui';
 import { blogApi, type BlogPostSummary } from '@/lib/api/blog';
 

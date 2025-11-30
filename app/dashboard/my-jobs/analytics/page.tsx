@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -37,7 +37,7 @@ import {
   prepareJobAnalyticsExportData,
 } from '@/lib/utils/export-job-analytics';
 import { useAuth } from '@/hooks';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { useJobs } from '@/hooks/business/jobs/useJobs';
 import { Skeleton } from '@/components/ui/skeleton';

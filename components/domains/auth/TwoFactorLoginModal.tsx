@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * TWO-FACTOR LOGIN VERIFICATION MODAL
  * ================================================
@@ -18,10 +18,10 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import { Shield, AlertCircle, Key, X } from 'lucide-react';
 import logger from '@/lib/infrastructure/monitoring/logger';
 

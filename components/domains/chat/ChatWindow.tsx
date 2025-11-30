@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ChatWindow Component
  *
  * Modern chat UI with real-time messaging, typing indicators,
@@ -26,7 +26,7 @@ import Image from 'next/image';
 import { Send, Paperclip, X, Loader2, Image as ImageIcon } from 'lucide-react';
 import { useConversation } from '@/hooks/business/conversations';
 import type { Message } from '@/types/message';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Textarea } from '@/components/ui/Textarea';
 import { Avatar } from '@/components/ui/Avatar';

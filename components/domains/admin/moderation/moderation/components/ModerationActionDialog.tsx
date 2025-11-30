@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ModerationActionDialog Component
  *
  * Dialog for confirming moderation actions
@@ -13,7 +13,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/AlertDialog';
+} from '@/components/uiDialog';
 import type { ModerationActionDialogProps } from '../types/moderationTypes';
 
 export function ModerationActionDialog({

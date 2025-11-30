@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -37,7 +37,7 @@ import {
   Clock,
   Download,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { useProposals } from '@/hooks/business/proposals';

@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Reports Tab Component
  *
  * Display reporting metrics.
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import type { ReportingData } from '../types/moderationAnalytics';
 
 interface ReportsTabProps {

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * BASE ORDER MODAL COMPONENT
  * ================================================
@@ -27,7 +27,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/Dialog';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import type { Order } from '@/types/business/features/orders';
 
 // Import order normalization utilities

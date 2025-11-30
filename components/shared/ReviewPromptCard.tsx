@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -19,7 +19,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Star, MessageSquare, X, Clock, CheckCircle } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 export interface ReviewPromptCardProps {

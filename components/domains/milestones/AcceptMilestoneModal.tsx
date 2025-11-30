@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ACCEPT MILESTONE MODAL
  * ================================================
@@ -20,9 +20,9 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import {
   CheckCircle2,
   AlertCircle,

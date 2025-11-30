@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * AdminModerationNew Component
@@ -12,7 +12,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import { AlertTriangle, FileText, UserX } from 'lucide-react';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import {

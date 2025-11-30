@@ -1,4 +1,4 @@
-// ================================================
+﻿// ================================================
 // UNIFIED SKELETON SYSTEM
 // ================================================
 // Consolidated skeleton/loading components eliminating duplicates
@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader } from '@/components/ui';
 
 // ================================================
 // BASE SKELETON COMPONENT

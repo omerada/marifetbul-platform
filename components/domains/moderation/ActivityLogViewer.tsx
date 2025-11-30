@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -30,7 +30,7 @@ import { ActionType } from '@/types/business/moderation';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // Components
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import {

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * DisputeResolutionModal Component
@@ -38,7 +38,7 @@ import {
   DialogTitle,
 } from '@/components/ui/Dialog';
 import { AlertCircle, DollarSign } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // Validation schema

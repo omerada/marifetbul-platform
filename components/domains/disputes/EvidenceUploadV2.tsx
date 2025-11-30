@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============================================================================
  * EVIDENCE UPLOAD V2 - Modern Evidence Upload with API Integration
  * ============================================================================
@@ -24,7 +24,7 @@ import { Upload, X, FileText, AlertCircle } from 'lucide-react';
 import { useDisputeEvidence } from '@/hooks/business/useDisputeEvidence';
 import { disputeEvidenceApi } from '@/lib/api/dispute-evidence';
 import { Button } from '@/components/ui';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui';
 import { Progress } from '@/components/ui/Progress';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ADMIN ANALYTICS OVERVIEW PAGE
  * ================================================
@@ -21,7 +21,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import {
   BarChart3,
   TrendingUp,

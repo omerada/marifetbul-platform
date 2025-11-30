@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import { Control } from 'react-hook-form';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import { InfoIcon } from 'lucide-react';
 import type { PlatformConfig } from '../page';
 

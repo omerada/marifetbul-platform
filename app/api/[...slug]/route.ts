@@ -19,7 +19,11 @@ async function proxyToBackend(request: Request, method: string) {
 
     // Debug logging for development
     if (process.env.NODE_ENV === 'development') {
-      logger.debug('[API Proxy]', { originalurlpathname, backendbackendUrl, method,  });
+      logger.debug('[API Proxy]', { 
+        originalUrl: url.pathname, 
+        backend: backendUrl, 
+        method 
+      });
     }
 
     const headers: HeadersInit = {

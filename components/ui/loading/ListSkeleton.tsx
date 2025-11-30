@@ -1,4 +1,4 @@
-/**
+﻿/**
  * LIST SKELETON COMPONENT
  * ================================================
  * Reusable loading skeleton for list layouts
@@ -15,7 +15,7 @@
 
 import React from 'react';
 import { Skeleton } from '@/components/ui/UnifiedSkeleton';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 export type ListVariant = 'card' | 'simple' | 'feed' | 'compact';

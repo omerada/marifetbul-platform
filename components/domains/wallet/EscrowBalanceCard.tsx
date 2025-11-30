@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ESCROW BALANCE CARD
  * ================================================
@@ -20,7 +20,7 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import {
   Shield,
@@ -31,7 +31,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/shared/formatters/currency';
-import { Skeleton } from '@/components/ui/Skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 
 // ============================================================================

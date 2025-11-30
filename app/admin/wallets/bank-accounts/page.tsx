@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ADMIN BANK ACCOUNT VERIFICATION PAGE
  * ================================================
@@ -50,7 +50,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/Dialog';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import logger from '@/lib/infrastructure/monitoring/logger';
 

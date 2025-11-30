@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * MODERATOR LEADERBOARD COMPONENT
  * ================================================
@@ -13,7 +13,7 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Trophy, Medal, Award, User, TrendingUp } from 'lucide-react';
 
 // ==================== TYPES ====================

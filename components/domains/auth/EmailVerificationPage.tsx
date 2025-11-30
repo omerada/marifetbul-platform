@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Email Verification Page Component
@@ -22,7 +22,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { unifiedAuthService } from '@/lib/core/auth/unifiedAuthService';
 import logger from '@/lib/infrastructure/monitoring/logger';

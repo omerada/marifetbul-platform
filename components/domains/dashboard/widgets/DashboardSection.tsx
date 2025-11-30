@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 'use client';
 
@@ -17,7 +17,7 @@
  */
 
 import React, { useState } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Loading } from '@/components/ui';

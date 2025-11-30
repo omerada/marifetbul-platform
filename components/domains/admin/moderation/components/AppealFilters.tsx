@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Appeal Filters Component
  *
  * Filter controls for appeal list (search, status, priority, reason).
  */
 
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui';
 import { Input } from '@/components/ui/Input';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Search, Filter } from 'lucide-react';

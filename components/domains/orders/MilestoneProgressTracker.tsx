@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * MILESTONE PROGRESS TRACKER
  * ================================================
@@ -18,7 +18,7 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import {
   CheckCircle,

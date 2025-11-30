@@ -12,28 +12,27 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui';
+import { Button, TableCell, TableRow } from '@/components/ui';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/DropdownMenu';
-import { TableRow, TableCell } from '@/components/ui/table';
+} from '@/components/ui/DropdownMenu'; 
 import {
   getStatusColor,
   getPriorityColor,
-  getTypeIconComponent,
-  formatDate,
+  getTypeIconComponent, 
   formatStatusLabel,
   formatPriorityLabel,
   getReporterFullName,
-  formatReason,
-  truncateText,
+  formatReason, 
   hasAutomatedFlags,
   getAutomatedFlagsCount,
 } from '../utils/moderationHelpers';
 import type { ModerationRowProps } from '../types/moderationTypes';
+import { truncateText } from '@/lib/utils';
+import { formatDate } from 'date-fns';
 
 export function ModerationRow({
   item,

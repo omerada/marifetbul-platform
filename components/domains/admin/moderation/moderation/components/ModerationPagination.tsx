@@ -1,10 +1,10 @@
-/**
+﻿/**
  * ModerationPagination Component
  *
  * Pagination controls for moderation queue
  */
 
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui';
 import { Button } from '@/components/ui';
 import type { ModerationPaginationProps } from '../types/moderationTypes';
 

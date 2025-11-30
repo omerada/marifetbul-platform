@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Admin Portfolio Moderation Page
  * Sprint 17: Portfolio Management System
  *
@@ -20,7 +20,7 @@ import {
   Filter,
   Image as ImageIcon,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { usePortfolio } from '@/hooks/business/portfolio';
 import { PortfolioModal } from '@/components/domains/portfolio';

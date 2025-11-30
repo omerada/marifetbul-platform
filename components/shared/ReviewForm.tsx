@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -24,7 +24,7 @@ import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { transformReviewResponse } from '@/lib/transformers/review.transformer';
 import { Label } from '@/components/ui/Label';
 import { Textarea } from '@/components/ui/Textarea';
-import { Alert } from '@/components/ui/Alert';
+import { Alert } from '@/components/ui';
 import { RatingCategory } from './RatingStars';
 import { reviewApi } from '@/lib/api/review';
 import logger from '@/lib/infrastructure/monitoring/logger';

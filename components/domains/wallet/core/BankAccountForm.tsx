@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -29,9 +29,9 @@ import { toast } from 'sonner';
 import { Label } from '@/components/ui/Label';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Switch } from '@/components/ui/Switch';
-import { Alert } from '@/components/ui/Alert';
+import { Alert } from '@/components/ui';
 import { IBANInput } from './IBANInput';
 import { BankSelector } from './BankSelector';
 import {

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * USER DASHBOARD - REVIEWS PAGE
  * ================================================
@@ -21,7 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/Dialog';
-import { Alert } from '@/components/ui/Alert';
+import { Alert } from '@/components/ui';
 import { ReviewList } from '@/components/shared/ReviewList';
 import { ReviewForm } from '@/components/shared/ReviewForm';
 import type { Review, ReviewType } from '@/types/business/review';

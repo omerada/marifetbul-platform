@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -28,7 +28,7 @@ import {
   CardTitle,
   CardContent,
   CardFooter,
-} from '@/components/ui/Card';
+} from '@/components/ui';
 import { Button, Textarea, Label, Input } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import {

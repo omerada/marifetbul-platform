@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * DELETE CONFIRMATION MODAL - REUSABLE COMPONENT
  * ================================================
@@ -28,7 +28,7 @@ import {
   DialogTitle,
 } from '@/components/ui/Dialog';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import { AlertTriangle, Trash2, Loader2 } from 'lucide-react';
 
 // ============================================================================

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -19,10 +19,9 @@
 
 import { useState } from 'react';
 import { Check, X, Flag, Eye, Download, AlertTriangle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/Label';
 import { Textarea } from '@/components/ui/Textarea';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { formatDate } from '@/lib/shared/formatters';
 import {
@@ -36,6 +35,7 @@ import {
 import { orderService } from '@/lib/infrastructure/services/api/orderService';
 import { toast } from 'sonner';
 import type { ManualPaymentProofResponse } from '@/types/backend-aligned';
+import { Button } from '@/components/ui';
 
 interface PaymentProofConfirmationProps {
   orderId: string;

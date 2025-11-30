@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * BACKUP CODES CARD
  * ================================================
@@ -19,9 +19,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import {
   Key,
   Download,

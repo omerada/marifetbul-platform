@@ -3,8 +3,8 @@
 import type { Job, ServicePackage } from '@/types';
 import type { ViewPreferences } from '@/lib/core/validations/marketplace';
 import { JobCard } from '@/components/domains/jobs';
-import { PackageCard } from '@/components/domains/packages';
-import { EmptyState } from '@/components/shared';
+import { PackageCard } from '@/components/packages/public/PackageCard';
+// TODO: Create EmptyState component or import from ui library
 
 interface MarketplaceListProps {
   mode: 'jobs' | 'packages';
@@ -51,19 +51,24 @@ export function MarketplaceList({
 
   if (!data || data.length === 0) {
     return (
-      <EmptyState
-        mode={mode}
-        title={
-          mode === 'jobs' ? 'İş ilanı bulunamadı' : 'Hizmet paketi bulunamadı'
-        }
-        description={
-          mode === 'jobs'
+      <div className="flex flex-col items-center justify-center py-12 text-center">
+        <h3 className="text-lg font-semibold text-slate-900">
+          {mode === 'jobs' ? 'İş ilanı bulunamadı' : 'Hizmet paketi bulunamadı'}
+        </h3>
+        <p className="mt-2 text-sm text-slate-600">
+          {mode === 'jobs'
             ? 'Arama kriterlerinizi değiştirerek tekrar deneyin veya yeni iş ilanları için daha sonra kontrol edin.'
-            : 'Arama kriterlerinizi değiştirerek tekrar deneyin veya yeni hizmet paketleri için daha sonra kontrol edin.'
-        }
-        onClearFilters={onClearFilters}
-        onShowAll={onShowAll}
-      />
+            : 'Arama kriterlerinizi değiştirerek tekrar deneyin veya yeni hizmet paketleri için daha sonra kontrol edin.'}
+        </p>
+        {onClearFilters && (
+          <button
+            onClick={onClearFilters}
+            className="bg-primary-600 hover:bg-primary-700 mt-4 rounded-lg px-4 py-2 text-sm font-medium text-white"
+          >
+            Filtreleri Temizle
+          </button>
+        )}
+      </div>
     );
   }
 

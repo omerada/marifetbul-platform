@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -22,7 +22,7 @@ import {
 import { usePackageDetail } from '@/hooks';
 import type { ServicePackage, PackageDetail, Freelancer } from '@/types';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';

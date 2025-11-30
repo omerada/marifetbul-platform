@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * MANUAL PAYMENT CONFIRMATION FORM
  * ================================================
@@ -19,7 +19,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';

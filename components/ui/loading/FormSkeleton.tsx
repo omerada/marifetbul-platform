@@ -1,4 +1,4 @@
-/**
+﻿/**
  * FORM SKELETON COMPONENT
  * ================================================
  * Reusable loading skeleton for form layouts
@@ -15,7 +15,7 @@
 
 import React from 'react';
 import { Skeleton } from '@/components/ui/UnifiedSkeleton';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 export type FormFieldType =

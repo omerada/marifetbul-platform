@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
@@ -22,7 +22,7 @@ import { MarketplaceList } from './MarketplaceList';
 import { Pagination } from '@/components/ui/Pagination';
 import { MobileMarketplace } from './MobileMarketplace';
 import { SimpleErrorDisplay } from '@/components/ui/SimpleErrorDisplay';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import {
   RefreshCcw,

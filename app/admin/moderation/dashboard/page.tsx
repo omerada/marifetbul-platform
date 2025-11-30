@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * BLOG COMMENT MODERATION DASHBOARD
  * ================================================
@@ -26,7 +26,7 @@ import {
   XCircle,
   AlertTriangle,
 } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton } from '@/components/ui';
 import { UnifiedErrorBoundary } from '@/components/ui/UnifiedErrorBoundary';
 import {

@@ -1,6 +1,6 @@
-'use client';
+﻿'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import {
   useRevenueAnalytics,
   type TimePeriod,

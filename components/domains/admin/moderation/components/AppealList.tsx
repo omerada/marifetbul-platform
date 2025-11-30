@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Appeal List Component
  *
  * Displays list of content appeals as interactive cards.
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { FileText, Eye, User, Calendar, UserCheck } from 'lucide-react';

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * User Portfolio Management Page
  * Sprint 17: Portfolio Management System
  *
@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Plus, Grid3x3, List, ArrowUpDown, Edit, Trash2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { usePortfolio } from '@/hooks/business/portfolio';
 import {

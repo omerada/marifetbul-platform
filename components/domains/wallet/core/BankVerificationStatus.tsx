@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -23,10 +23,10 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui';
-import { Alert } from '@/components/ui/Alert';
+import { Alert } from '@/components/ui';
 import {
   CheckCircle2,
   Clock,

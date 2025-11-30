@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import { useState, useCallback, useMemo } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';

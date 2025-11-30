@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Moderation Analytics Component
@@ -10,7 +10,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui';
 import { RefreshCw, BarChart3, AlertCircle } from 'lucide-react';
 import { useModerationAnalytics } from './analytics/hooks/useModerationAnalytics';
 import {

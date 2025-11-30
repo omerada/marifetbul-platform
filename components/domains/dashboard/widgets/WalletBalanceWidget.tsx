@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -39,10 +39,10 @@ import {
 import { useSellerSnapshot, useBuyerSnapshot } from '@/hooks/business';
 import { useAuthState } from '@/hooks/business';
 import { useWebSocketWallet } from '@/hooks/business/wallet';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { Skeleton } from '@/components/ui/UnifiedSkeleton';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { useRouter } from 'next/navigation';
 import { formatCurrency } from '@/lib/shared/formatters';

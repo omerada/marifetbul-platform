@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
@@ -15,7 +15,7 @@ import {
   Building,
   Rocket,
 } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import type { HelpCategory } from '@/types';
 
 interface CategoryGridProps {

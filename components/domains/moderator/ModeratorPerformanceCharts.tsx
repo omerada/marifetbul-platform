@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -43,7 +43,7 @@
 import { useState, useMemo, useCallback, memo } from 'react';
 import { useModeratorPerformance } from '@/hooks/business/moderation/useModeratorPerformance';
 import type { DailyMetric } from '@/hooks/business/moderation/useModeratorPerformance';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import {
   AlertCircle,

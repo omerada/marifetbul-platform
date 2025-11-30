@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -9,7 +9,7 @@ import { User, Freelancer, Employer } from '@/types';
 import { useProfile, useProfileEdit } from '@/hooks';
 import { useToast } from '@/hooks';
 import { AvatarUpload } from './AvatarUpload';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';

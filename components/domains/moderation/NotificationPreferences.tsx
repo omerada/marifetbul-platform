@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -15,7 +15,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Bell, BellOff, Volume2, VolumeX, Monitor } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton } from '@/components/ui';
 import { useBrowserNotifications } from '@/hooks/shared/useBrowserNotifications';
 import logger from '@/lib/infrastructure/monitoring/logger';

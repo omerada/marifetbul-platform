@@ -40,20 +40,6 @@ export {
 } from './DashboardErrorBoundary';
 
 // ============================================================================
-// DASHBOARD FEATURES
-// ============================================================================
-// TODO: Create missing components
-// export { DashboardStats } from './DashboardStats';
-// export { DashboardCharts } from './DashboardCharts';
-// export { QuickActions } from './QuickActions';
-// export { ActivityTimeline } from './ActivityTimeline';
-
-// ============================================================================
-// ADVANCED ANALYTICS
-// ============================================================================
-export { Sprint8AnalyticsDashboard as AdvancedAnalyticsDashboard } from '../analytics';
-
-// ============================================================================
 // ROLE-SPECIFIC VIEWS
 // ============================================================================
 export {
@@ -71,23 +57,15 @@ export type {
 } from './views';
 export * from './widgets';
 
-// Hooks (Day 5) ✅ COMPLETE
-// TODO: Create useDashboard hook
-// export { useDashboard } from './hooks/useDashboard';
 // ============================================================================
 // DASHBOARD WIDGETS
 // ============================================================================
 export * from './widgets';
 
-// ============================================================================
-// HOOKS
-// ============================================================================
-// TODO: Create missing hooks
 // export { useDashboard } from './hooks/useDashboard';
 export { useDashboardPermissions } from './hooks/useDashboardPermissions';
 
 // ============================================================================
 // UTILITIES
 // ============================================================================
-export * from './utils/dashboardHelpers';
 export * from './utils/dashboardAdapters';

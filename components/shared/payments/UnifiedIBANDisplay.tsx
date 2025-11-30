@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * UNIFIED IBAN DISPLAY COMPONENT
  * ================================================
@@ -28,7 +28,7 @@ import {
   Info,
   CheckCircle2,
 } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { useClipboard } from '@/hooks/shared/ui/useClipboard';

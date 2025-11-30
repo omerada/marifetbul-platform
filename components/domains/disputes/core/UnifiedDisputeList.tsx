@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * UnifiedDisputeList Component
@@ -35,9 +35,9 @@ import {
 } from 'lucide-react';
 
 // UI Components
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
 import {
@@ -53,7 +53,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from '@/components/ui/Table';
 import { TableSkeleton } from '@/components/ui/loading/TableSkeleton';
 import { ListSkeleton } from '@/components/ui/loading/ListSkeleton';
 

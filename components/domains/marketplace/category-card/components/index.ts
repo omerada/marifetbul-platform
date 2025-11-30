@@ -10,7 +10,8 @@ export { CategoryStats } from './CategoryStats';
 export { CategoryBadgeList } from './CategoryBadgeList';
 export { CategorySubcategoryList } from './CategorySubcategoryList';
 export { CategoryServiceList } from './CategoryServiceList';
-export { CategoryActions } from './CategoryActions';
+// TODO: Create CategoryActions component - temporarily commented out for build
+// export { CategoryActions } from './CategoryActions';
 export { CategoryExpandedContent } from './CategoryExpandedContent';
 
 // Variant components

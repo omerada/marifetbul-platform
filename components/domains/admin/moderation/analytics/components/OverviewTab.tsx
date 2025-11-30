@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Overview Tab Component
  *
  * Display action breakdown, category stats, content types, and time series.
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import {
   CheckCircle,

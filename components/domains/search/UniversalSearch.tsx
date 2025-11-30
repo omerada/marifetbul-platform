@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
 import {
@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { trackSearch } from '@/lib/api/search-analytics';
 

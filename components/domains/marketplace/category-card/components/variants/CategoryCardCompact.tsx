@@ -8,9 +8,9 @@ import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui';
 import { CategoryHeader } from '../CategoryHeader';
-import { CARD_VARIANTS } from '../../utils/categoryCardConstants';
-import { formatNumber } from '../../utils/categoryCardHelpers';
+import { CARD_VARIANTS } from '../../utils/categoryCardConstants'; 
 import type { CategoryCardProps } from '../../types/categoryCardTypes';
+import { formatNumber } from '@/lib/utils';
 
 export function CategoryCardCompact({
   category,

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * JobFilters Component
@@ -11,7 +11,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';

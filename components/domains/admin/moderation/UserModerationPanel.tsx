@@ -24,7 +24,7 @@ import { useState, useCallback } from 'react';
 import { Search, AlertTriangle, Ban, History, UserX } from 'lucide-react';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { useUserModeration } from '@/hooks/business/useUserModeration';
 import { UserWarningModal } from './UserWarningModal';
@@ -79,7 +79,7 @@ export function UserModerationPanel() {
     const suspension = await checkSuspensionStatus(searchUserId);
     setActiveSuspension(suspension);
 
-    logger.info('User moderation data loaded', { userIdsearchUserId, warningsCountwarningslength, isSuspendedsuspension,  });
+    logger.info('User moderation data loaded', { userIdsearchUserId, warningsCount: warnings.length, isSuspended: !!suspension,  });
   }, [searchUserId, fetchActiveWarnings, checkSuspensionStatus]);
 
   /**
@@ -116,7 +116,7 @@ export function UserModerationPanel() {
   const handleUnsuspend = useCallback(async () => {
     if (!activeSuspension) return;
 
-    const reason = prompt('AskÄ±yÄ± kaldÄ±rma nedeni:');
+    const reason = prompt('Askýyý kaldýrma nedeni:');
     if (!reason) return;
 
     const success = await unsuspendUser(activeSuspension.id, reason);
@@ -132,7 +132,7 @@ export function UserModerationPanel() {
    */
   const handleRevokeWarning = useCallback(
     async (warningId: string) => {
-      const reason = prompt('UyarÄ±yÄ± iptal etme nedeni:');
+      const reason = prompt('Uyarýyý iptal etme nedeni:');
       if (!reason) return;
 
       const success = await revokeUserWarning(warningId, reason);
@@ -186,9 +186,9 @@ export function UserModerationPanel() {
     return (
       <Badge className={`${colors[type]} border`} variant="outline">
         {type === 'PERMANENT'
-          ? 'KalÄ±cÄ±'
+          ? 'Kalýcý'
           : type === 'TEMPORARY'
-            ? 'GeÃ§ici'
+            ? 'Geçici'
             : type}
       </Badge>
     );
@@ -205,16 +205,16 @@ export function UserModerationPanel() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Search className="h-5 w-5" />
-            KullanÄ±cÄ± Ara
+            Kullanýcý Ara
           </CardTitle>
           <p className="mt-2 text-sm text-gray-600">
-            Moderasyon iÅŸlemi yapmak iÃ§in kullanÄ±cÄ± ID&apos;si girin
+            Moderasyon iþlemi yapmak için kullanýcý ID&apos;si girin
           </p>
         </CardHeader>
         <CardContent>
           <div className="flex gap-2">
             <Input
-              placeholder="KullanÄ±cÄ± ID (UUID)"
+              placeholder="Kullanýcý ID (UUID)"
               value={searchUserId}
               onChange={(e) => setSearchUserId(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearchUser()}
@@ -240,12 +240,12 @@ export function UserModerationPanel() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-red-800">
                   <Ban className="h-5 w-5" />
-                  Aktif AskÄ±ya Alma
+                  Aktif Askýya Alma
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="mb-4 text-sm text-red-700">
-                  Bu kullanÄ±cÄ± ÅŸu anda askÄ±ya alÄ±nmÄ±ÅŸ durumda
+                  Bu kullanýcý þu anda askýya alýnmýþ durumda
                 </p>
                 <div className="flex items-center justify-between">
                   <div className="space-y-2">
@@ -265,7 +265,7 @@ export function UserModerationPanel() {
                     </div>
                     {activeSuspension.expiresAt && (
                       <div>
-                        <span className="font-semibold">BitiÅŸ:</span>{' '}
+                        <span className="font-semibold">Bitiþ:</span>{' '}
                         {new Date(activeSuspension.expiresAt).toLocaleString(
                           'tr-TR'
                         )}
@@ -277,7 +277,7 @@ export function UserModerationPanel() {
                     onClick={handleUnsuspend}
                     disabled={isLoading}
                   >
-                    AskÄ±yÄ± KaldÄ±r
+                    Askýyý Kaldýr
                   </UnifiedButton>
                 </div>
               </CardContent>
@@ -290,12 +290,12 @@ export function UserModerationPanel() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-yellow-600" />
-                  Aktif UyarÄ±lar ({activeWarnings.length})
+                  Aktif Uyarýlar ({activeWarnings.length})
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="mb-3 text-sm text-gray-600">
-                  SÃ¼resiz olmayan veya iptal edilmemiÅŸ uyarÄ±lar
+                  Süresiz olmayan veya iptal edilmemiþ uyarýlar
                 </p>
                 {activeWarnings.map((warning) => (
                   <div
@@ -319,7 +319,7 @@ export function UserModerationPanel() {
                       </div>
                       {warning.expiresAt && (
                         <div className="text-xs text-gray-500">
-                          SÃ¼re sonu:{' '}
+                          Süre sonu:{' '}
                           {new Date(warning.expiresAt).toLocaleDateString(
                             'tr-TR'
                           )}
@@ -332,7 +332,7 @@ export function UserModerationPanel() {
                       onClick={() => handleRevokeWarning(warning.id)}
                       disabled={isLoading}
                     >
-                      Ä°ptal Et
+                      Ýptal Et
                     </UnifiedButton>
                   </div>
                 ))}
@@ -345,7 +345,7 @@ export function UserModerationPanel() {
             <Card className="border-green-300 bg-green-50">
               <CardContent className="py-6 text-center">
                 <p className="text-green-800">
-                  âœ“ Bu kullanÄ±cÄ±nÄ±n aktif uyarÄ±sÄ± veya askÄ±ya alÄ±nmasÄ±
+                  ? Bu kullanýcýnýn aktif uyarýsý veya askýya alýnmasý
                   bulunmuyor
                 </p>
               </CardContent>
@@ -361,7 +361,7 @@ export function UserModerationPanel() {
               variant="outline"
             >
               <AlertTriangle className="mr-2 h-4 w-4" />
-              UyarÄ± Ver
+              Uyarý Ver
             </UnifiedButton>
             <UnifiedButton
               onClick={() => setShowSuspensionModal(true)}
@@ -370,7 +370,7 @@ export function UserModerationPanel() {
               variant="destructive"
             >
               <Ban className="mr-2 h-4 w-4" />
-              AskÄ±ya Al
+              Askýya Al
             </UnifiedButton>
             <UnifiedButton
               onClick={() => setShowHistory(true)}
@@ -379,7 +379,7 @@ export function UserModerationPanel() {
               variant="secondary"
             >
               <History className="mr-2 h-4 w-4" />
-              GeÃ§miÅŸ
+              Geçmiþ
             </UnifiedButton>
           </div>
         </>
@@ -391,7 +391,7 @@ export function UserModerationPanel() {
           <CardContent className="py-12 text-center">
             <UserX className="mx-auto h-12 w-12 text-gray-400" />
             <p className="mt-4 text-gray-600">
-              Moderasyon iÅŸlemi yapmak iÃ§in yukarÄ±dan kullanÄ±cÄ± arayÄ±n
+              Moderasyon iþlemi yapmak için yukarýdan kullanýcý arayýn
             </p>
           </CardContent>
         </Card>

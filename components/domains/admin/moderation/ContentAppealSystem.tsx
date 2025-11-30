@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Content Appeal System Component
@@ -10,7 +10,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { RefreshCw, Download, AlertCircle } from 'lucide-react';
 import { useContentAppeals } from './hooks/useContentAppeals';

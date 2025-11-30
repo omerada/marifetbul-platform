@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * TRANSACTION DETAILS MODAL
  * ================================================
@@ -31,7 +31,7 @@ import {
   Hash,
   Info,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { formatCurrency } from '@/lib/shared/formatters';
 import type {

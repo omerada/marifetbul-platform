@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * MILESTONE STATS WIDGET
  * ================================================
@@ -22,7 +22,7 @@
 import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { Package, Clock, CheckCircle, AlertCircle } from 'lucide-react';
-import { Card, CardHeader, CardContent } from '@/components/ui/Card';
+import { Card, CardHeader, CardContent } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { useOrderMilestones } from '@/hooks/business/useMilestones';
 import type { OrderMilestone } from '@/types/business/features/milestone';

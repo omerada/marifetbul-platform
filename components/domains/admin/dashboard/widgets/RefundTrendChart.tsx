@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * REFUND TREND CHART WIDGET
  * ================================================
@@ -12,7 +12,7 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RefundStatisticsDto } from '@/types/business/features/refund';

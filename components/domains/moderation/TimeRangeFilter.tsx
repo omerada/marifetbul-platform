@@ -80,7 +80,7 @@ export default function TimeRangeFilter({
       setIsOpen(false);
       setShowCustomDates(false);
     }
-    logger.debug('TimeRangeFilter', { rangeoptionvalue,  });
+    logger.debug('TimeRangeFilter', { range: option.value,  });
   };
 
   const handleCustomDateApply = () => {

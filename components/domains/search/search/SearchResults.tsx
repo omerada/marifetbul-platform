@@ -1,10 +1,10 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { useMarketplace } from '@/hooks';
 import { MarketplaceList } from '../../marketplace/marketplace/MarketplaceList';
 import { ZeroResultsState } from '@/components/shared/search';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Package, Briefcase, Users, RefreshCcw } from 'lucide-react';
 

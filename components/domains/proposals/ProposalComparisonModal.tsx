@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 import { formatCurrency } from '@/lib/shared/formatters';
 import type { ProposalResponse } from '@/types/backend-aligned';

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ADMIN QUALITY DASHBOARD
  * ================================================
@@ -23,7 +23,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import {
   Star,
   TrendingUp,

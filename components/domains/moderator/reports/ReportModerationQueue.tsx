@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -12,7 +12,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Pagination } from '@/components/ui/Pagination';
 import { AlertCircle, CheckCircle, Flag, XCircle } from 'lucide-react';
 import { useReportModeration } from '@/hooks/business/moderation/useReportModeration';

@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { MessageSquare, Archive, Inbox, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { Conversation } from '@/types/business/features/messaging';

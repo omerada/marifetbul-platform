@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -36,7 +36,7 @@ import {
 import { Button } from '@/components/ui';
 import { Input } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import type { JobStatus } from '@/types/backend-aligned';
 

@@ -1,11 +1,11 @@
-/**
+﻿/**
  * MyJobCard Component
  * Displays employer's own job with management actions
  */
 
 'use client';
 
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui';
 import { useToast } from '@/hooks';

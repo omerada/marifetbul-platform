@@ -1,11 +1,11 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { useFavorites } from '@/hooks';
 import { FavoriteItem, Freelancer, Job, ServicePackage } from '@/types';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import {} from '@/components/ui/DropdownMenu';
 import logger from '@/lib/infrastructure/monitoring/logger';

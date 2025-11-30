@@ -1,10 +1,10 @@
-/**
+﻿/**
  * RecentActivity Component
  *
  * Card displaying recent moderation activities
  */
 
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import {
   ACTIVITY_DOT_COLORS,
   DEFAULT_ACTIVITIES,

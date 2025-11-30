@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -22,7 +22,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useCommissions } from '@/hooks/business/useCommissions';
 import { formatCurrency, formatDate } from '@/lib/shared/formatters';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Skeleton } from '@/components/ui/UnifiedSkeleton';
 import {

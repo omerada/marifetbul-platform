@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * MILESTONE PAYMENT CARD - Sprint 1 Story 1.6
  * ================================================
@@ -13,7 +13,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import { Badge } from '@/components/ui';
 import {
   DollarSign,

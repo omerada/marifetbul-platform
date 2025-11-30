@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * PAYMENT RETRY BUTTON COMPONENT
  * ================================================
@@ -26,7 +26,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import {
   RefreshCw,

@@ -1,11 +1,11 @@
-/**
+﻿/**
  * CategoryBreakdown Component
  *
  * Card displaying category breakdown with progress bars
  */
 
 import { BarChart3 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import { Progress } from '@/components/ui/Progress';
 import type { CategoryBreakdownProps } from '../types/moderationDashboardTypes';
 

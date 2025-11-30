@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * COMMISSION SUMMARY CARD
  * ================================================
@@ -30,7 +30,7 @@ import {
   Download,
   Info,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import {
   Button,
   Tooltip,

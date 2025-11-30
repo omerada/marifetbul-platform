@@ -1,8 +1,8 @@
-'use client';
+﻿'use client';
 
 import { memo, useState } from 'react';
 import { Filter, X, Check } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import type { ContextType } from '@/types/business/features/messaging';
 
 export interface ConversationFiltersState {

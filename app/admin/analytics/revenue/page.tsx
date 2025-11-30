@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * ADMIN REVENUE ANALYTICS PAGE
  * ================================================
@@ -23,7 +23,7 @@
 
 import { useState } from 'react';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { Calendar, Download, RefreshCw } from 'lucide-react';
 import { useRevenueAnalytics } from '@/hooks';
 import type { PeriodType } from '@/hooks/business/admin/useRevenueAnalytics';

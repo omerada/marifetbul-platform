@@ -1,4 +1,4 @@
-/**
+﻿/**
  * NetworkStatusIndicator Component
  *
  * Visual indicator for network connectivity status.
@@ -11,7 +11,7 @@
 
 import { useNetworkStatus } from '@/lib/shared/utils/networkStatus';
 import { WifiOff, Wifi, WifiLow } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Alert, AlertDescription } from '@/components/ui';
 
 export interface NetworkStatusIndicatorProps {
   /** Show as compact badge instead of full alert */

@@ -1,18 +1,18 @@
-/**
+﻿/**
  * Analytics Cards Component
  *
  * Display 4 key overview metrics with trend indicators.
  */
 
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui';
 import { Activity, Clock, Target, AlertTriangle } from 'lucide-react';
 import type { AnalyticsOverview } from '../types/moderationAnalytics';
 import {
   getTrendIcon,
-  getTrendColor,
-  formatNumber,
+  getTrendColor, 
   formatDuration,
 } from '../utils/analyticsHelpers';
+import { formatNumber } from '@/lib/utils';
 
 interface AnalyticsCardsProps {
   overview: AnalyticsOverview;

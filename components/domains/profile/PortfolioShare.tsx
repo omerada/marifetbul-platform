@@ -27,7 +27,7 @@ export function PortfolioShare({ portfolio, userId }: PortfolioShareProps) {
     try {
       await navigator.clipboard.writeText(portfolioUrl);
       setCopied(true);
-      logger.info('Portfolio link copied to clipboard', { portfolioIdportfolioid,  });
+      logger.info('Portfolio link copied to clipboard', { portfolioId: portfolio.id,  });
 
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
@@ -64,7 +64,7 @@ export function PortfolioShare({ portfolio, userId }: PortfolioShareProps) {
           text: portfolio.description,
           url: portfolioUrl,
         });
-        logger.info('Portfolio shared via native API', { portfolioIdportfolioid,  });
+        logger.info('Portfolio shared via native API', { portfolioId: portfolio.id,  });
       } catch (error) {
         // User cancelled or error occurred
         if ((error as Error).name !== 'AbortError') {

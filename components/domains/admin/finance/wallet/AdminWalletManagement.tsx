@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -35,7 +35,7 @@ import {
   type PageResponse,
 } from '@/lib/api/admin/wallet-admin-api';
 import { formatCurrency, formatDate } from '@/lib/shared/formatters'; // Sprint 2: Use canonical formatters
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/UnifiedSkeleton';

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Location Picker Component
@@ -9,7 +9,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Search, MapPin, X, Target, Map } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Input } from '@/components/ui/Input';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { useUnifiedLocation } from '@/hooks';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import type { Coordinates } from '@/types';

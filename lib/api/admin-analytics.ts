@@ -15,7 +15,7 @@
  * @since Sprint 3 - Analytics & Reporting
  */
 
-import { apiRequest, handleApiError } from './client';
+import { apiClient } from '@/lib/infrastructure/api/client';
 import { Logger } from '@/lib/infrastructure/monitoring/logger';
 import logger from '@/lib/infrastructure/monitoring/logger';
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Cloudinary Test Page
  * Test image upload functionality
  */
@@ -6,7 +6,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { toast } from 'sonner';
 import {
