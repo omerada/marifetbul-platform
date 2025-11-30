@@ -188,7 +188,7 @@ export interface FreelancerDashboard {
         name: string;
         orders: number;
         totalSpent: number;
-      };
+      }>;
     };
   };
   orders?: {
