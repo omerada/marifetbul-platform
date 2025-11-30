@@ -111,8 +111,8 @@ export function useMessageTemplates(
     } catch (err) {
       const error =
         err instanceof Error ? err : new Error('Failed to fetch templates');
-      setError(error);
-      logger.error('Failed to fetch templates:', error);
+      setError(error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to fetch templates:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsLoading(false);
     }
@@ -159,7 +159,7 @@ export function useMessageTemplates(
       } catch (err) {
         const error =
           err instanceof Error ? err : new Error('Failed to create template');
-        setError(error);
+        setError(error instanceof Error ? error : new Error(String(error)));
         throw error;
       } finally {
         setIsLoading(false);
@@ -193,7 +193,7 @@ export function useMessageTemplates(
       } catch (err) {
         const error =
           err instanceof Error ? err : new Error('Failed to update template');
-        setError(error);
+        setError(error instanceof Error ? error : new Error(String(error)));
         throw error;
       } finally {
         setIsLoading(false);
@@ -216,7 +216,7 @@ export function useMessageTemplates(
     } catch (err) {
       const error =
         err instanceof Error ? err : new Error('Failed to delete template');
-      setError(error);
+      setError(error instanceof Error ? error : new Error(String(error)));
       throw error;
     } finally {
       setIsLoading(false);
@@ -248,7 +248,7 @@ export function useMessageTemplates(
       } catch (err) {
         const error =
           err instanceof Error ? err : new Error('Failed to render template');
-        setError(error);
+        setError(error instanceof Error ? error : new Error(String(error)));
         throw error;
       }
     },
@@ -278,7 +278,7 @@ export function useMessageTemplates(
       } catch (err) {
         const error =
           err instanceof Error ? err : new Error('Failed to search templates');
-        setError(error);
+        setError(error instanceof Error ? error : new Error(String(error)));
         throw error;
       } finally {
         setIsLoading(false);

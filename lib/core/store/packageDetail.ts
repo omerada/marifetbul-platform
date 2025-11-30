@@ -97,9 +97,7 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
           }
         } catch (error) {
           logger.error(
-            'Package detail fetch error',
-            error
-          );
+            'Package detail fetch error', error instanceof Error ? error : new Error(String(error)));
           set(
             { error: 'Paket detayları yüklenemedi', isLoading: false },
             false,
@@ -129,9 +127,7 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
           }
         } catch (error) {
           logger.error(
-            'Reviews fetch error',
-            error
-          );
+            'Reviews fetch error', error instanceof Error ? error : new Error(String(error)));
         }
       },
 
@@ -176,9 +172,7 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
           }
         } catch (error) {
           logger.error(
-            'Order creation error',
-            error
-          );
+            'Order creation error', error instanceof Error ? error : new Error(String(error)));
           set(
             { error: 'Sipariş oluşturulamadı', isOrdering: false },
             false,

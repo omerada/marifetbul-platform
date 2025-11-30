@@ -77,7 +77,7 @@ export default function ConversationPage() {
   } = useStompWebSocket({
     autoConnect: true,
     onConnect: () => {
-      logger.info('ConversationPage', 'WebSocket connected');
+      logger.info('WebSocket connected', { component: 'ConversationPage' });
     },
   });
 
@@ -85,10 +85,11 @@ export default function ConversationPage() {
   const { markAsRead: _markAsRead, markAllAsRead } = useReadReceipts({
     conversationId: conversationId || '',
     onMessageRead: (event) => {
-      logger.debug('ConversationPage', {
-        messageIdeventmessageId,
-        readByeventreadByName,
-        readAteventreadAt,
+      logger.debug('Message read event received', {
+        component: 'ConversationPage',
+        messageId: event.messageId,
+        readBy: event.readByName,
+        readAt: event.readAt,
       });
     },
   });
@@ -114,7 +115,7 @@ export default function ConversationPage() {
 
         logger.info('ConversationPage', {
           conversationId,
-          messageCountmessagesDatacontentlength,
+          messageCount: messagesData.content.length,
         });
       } catch (error) {
         logger.error('ConversationPage: Failed to load data', undefined, {
@@ -132,7 +133,7 @@ export default function ConversationPage() {
   useEffect(() => {
     if (!isConnected || !conversationId || !user) return;
 
-    logger.info('ConversationPage', { conversationId, userIduserid });
+    logger.info('ConversationPage', { conversationId, userId: user.id });
 
     // Subscribe to new messages for this user
     const messageDestination = subscribe(
@@ -295,7 +296,7 @@ export default function ConversationPage() {
       // Replace optimistic message with real one
       setMessages((prev) => prev.map((m) => (m.id === tempId ? message : m)));
 
-      logger.info('ConversationPage', { messageIdmessageid });
+      logger.info('ConversationPage', { messageId: message.id });
     } catch (error) {
       logger.error('ConversationPage: Failed to send message', undefined, {
         error,

@@ -123,7 +123,10 @@ export function useOrderUpdates(
         const msg = message as { body: string };
         const update = JSON.parse(msg.body) as OrderWebSocketUpdate;
 
-        logger.info('useOrderUpdates', { orderIdupdateorderId, typeupdatetype,  });
+        logger.info('useOrderUpdates', {
+          orderId: update.orderId,
+          type: update.type,
+        });
 
         // Show toast notification if enabled
         if (enableToast) {
@@ -141,35 +144,51 @@ export function useOrderUpdates(
         switch (update.type) {
           case 'ORDER_STATUS_CHANGED': {
             const data = update.data as OrderStatusChangedData;
-            logger.info('useOrderUpdates', { orderIdupdateorderId, previousStatusdatapreviousStatus, newStatusdatanewStatus,  });
+            logger.info('useOrderUpdates', {
+              orderId: update.orderId,
+              previousStatus: data.previousStatus,
+              newStatus: data.newStatus,
+            });
             onStatusChange?.(data.order);
             break;
           }
 
           case 'ORDER_DELIVERED': {
             const data = update.data as OrderDeliveredData;
-            logger.info('useOrderUpdates', { orderIdupdateorderId, deliveredBydatadeliveredByname, attachmentCountdataattachmentslength,  });
+            logger.info('useOrderUpdates', {
+              orderId: update.orderId,
+              deliveredBy: data.deliveredBy?.name,
+              attachmentCount: data.attachments?.length || 0,
+            });
             onDelivered?.(data);
             break;
           }
 
           case 'ORDER_ACCEPTED': {
             const data = update.data as OrderAcceptedData;
-            logger.info('useOrderUpdates', { orderIdupdateorderId, acceptedBydataacceptedByname, paymentReleaseddatapaymentReleased,  });
+            logger.info('useOrderUpdates', {
+              orderId: update.orderId,
+              acceptedBy: data.acceptedBy?.name,
+              paymentReleased: data.paymentReleased,
+            });
             onAccepted?.(data);
             break;
           }
 
           case 'ORDER_REVISION_REQUESTED': {
             const data = update.data as RevisionRequestedData;
-            logger.info('useOrderUpdates', { orderIdupdateorderId, requestedBydatarequestedByname, revisionCountdatarevisionCount,  });
+            logger.info('useOrderUpdates', {
+              orderId: update.orderId,
+              requestedBy: data.requestedBy?.name,
+              revisionCount: data.revisionCount,
+            });
             onRevisionRequested?.(data);
             break;
           }
 
           case 'ORDER_COMPLETED': {
             const data = update.data as { order: Order };
-            logger.info('useOrderUpdates', { orderIdupdateorderId,  });
+            logger.info('useOrderUpdates', { orderId: update.orderId });
             onCompleted?.(data.order);
             onStatusChange?.(data.order);
             break;
@@ -177,26 +196,30 @@ export function useOrderUpdates(
 
           case 'ORDER_UPDATED': {
             const data = update.data as { order: Order };
-            logger.info('useOrderUpdates', { orderIdupdateorderId,  });
+            logger.info('useOrderUpdates', { orderId: update.orderId });
             onOrderUpdated?.(data.order);
             break;
           }
 
           case 'ORDER_CANCELED': {
             const data = update.data as { order: Order };
-            logger.info('useOrderUpdates', { orderIdupdateorderId,  });
+            logger.info('useOrderUpdates', { orderId: update.orderId });
             onStatusChange?.(data.order);
             break;
           }
 
           default:
-            logger.warn('useOrderUpdates', { typeupdatetype,  });
+            logger.warn('useOrderUpdates', { type: update.type });
         }
       } catch (error) {
-        logger.error('useOrderUpdates: Failed to handle order update', undefined, {
-          error,
-          message,
-        });
+        logger.error(
+          'useOrderUpdates: Failed to handle order update',
+          undefined,
+          {
+            error,
+            message,
+          }
+        );
       }
     },
     [
@@ -218,7 +241,7 @@ export function useOrderUpdates(
       return;
     }
 
-    logger.info('useOrderUpdates', { orderId,  });
+    logger.info('useOrderUpdates', { orderId });
 
     // Subscribe to order-specific topic
     const orderTopic = `/topic/orders/${orderId}`;
@@ -228,11 +251,15 @@ export function useOrderUpdates(
     const userQueueTopic = `/user/queue/orders/${orderId}`;
     subscribe(userQueueTopic, handleOrderUpdate);
 
-    logger.info('useOrderUpdates', { orderId, topicsorderTopic, userQueueTopic,  });
+    logger.info('useOrderUpdates', {
+      orderId,
+      topicsorderTopic,
+      userQueueTopic,
+    });
 
     // Cleanup subscriptions on unmount or when orderId changes
     return () => {
-      logger.info('useOrderUpdates', { orderId,  });
+      logger.info('useOrderUpdates', { orderId });
       unsubscribe(orderTopic);
       unsubscribe(userQueueTopic);
     };

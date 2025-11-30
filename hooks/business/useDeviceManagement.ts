@@ -108,8 +108,8 @@ export function useDeviceManagement(): UseDeviceManagementReturn {
     } catch (err) {
       const error =
         err instanceof Error ? err : new Error('Failed to fetch devices');
-      setError(error);
-      logger.error('Failed to fetch devices', error);
+      setError(error instanceof Error ? error : new Error(String(error)));
+      logger.error('Failed to fetch devices', error instanceof Error ? error : new Error(String(error)));
       toast.error('Cihazlar yüklenirken hata oluştu');
     } finally {
       setIsLoading(false);
@@ -151,7 +151,7 @@ export function useDeviceManagement(): UseDeviceManagementReturn {
       } catch (err) {
         const error =
           err instanceof Error ? err : new Error('Failed to remove device');
-        logger.error('Failed to remove device', error);
+        logger.error('Failed to remove device', error instanceof Error ? error : new Error(String(error)));
         toast.error('Cihaz kaldırılırken hata oluştu');
         return false;
       }
@@ -183,7 +183,7 @@ export function useDeviceManagement(): UseDeviceManagementReturn {
     } catch (err) {
       const error =
         err instanceof Error ? err : new Error('Failed to remove all devices');
-      logger.error('Failed to remove all devices', error);
+      logger.error('Failed to remove all devices', error instanceof Error ? error : new Error(String(error)));
       toast.error('Cihazlar kaldırılırken hata oluştu');
       return false;
     }

@@ -47,7 +47,7 @@ export function MarketplaceFilters({
         const data = await categoryApi.getAllCategories();
         setCategories(transformCategories(data));
       } catch (error) {
-        logger.error('Failed to fetch categories:', error);
+        logger.error('Failed to fetch categories:', error instanceof Error ? error : new Error(String(error)));
         // Fallback to empty array
         setCategories([]);
       } finally {

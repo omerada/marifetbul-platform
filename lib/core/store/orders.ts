@@ -694,9 +694,7 @@ export const useOrderStore = create<OrderStore>()(
           });
         } catch (error) {
           logger.error(
-            'Error updating milestone',
-            error
-          );
+            'Error updating milestone', error instanceof Error ? error : new Error(String(error)));
           throw error;
         }
       },

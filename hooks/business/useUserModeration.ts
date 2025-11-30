@@ -129,7 +129,10 @@ export function useUserModeration(): UseUserModerationResult {
           `${warning.warningLevel} seviyesinde uyarı başarıyla verildi`
         );
 
-        logger.info('Warning issued successfully', { warningIdwarningid, levelwarningwarningLevel,  });
+        logger.info('Warning issued successfully', {
+          warningId: warning.id,
+          level: warning.warningLevel,
+        });
 
         return warning;
       } catch (err) {
@@ -245,7 +248,10 @@ export function useUserModeration(): UseUserModerationResult {
           `${suspension.suspensionTypeDescription} uygulandı`
         );
 
-        logger.info('User suspended successfully', { suspensionIdsuspensionid, typesuspensionsuspensionType,  });
+        logger.info('User suspended successfully', {
+          suspensionId: suspension.id,
+          type: suspension.suspensionType,
+        });
 
         return suspension;
       } catch (err) {

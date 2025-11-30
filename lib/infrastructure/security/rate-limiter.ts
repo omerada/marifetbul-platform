@@ -225,7 +225,13 @@ export class RateLimiter {
 
     // Log rate limit check
     if (!allowed) {
-      logger.warn('Rate limit exceeded', { identifier, countcount1, limitthisconfigmax, windowthisconfigwindow, resetAfter,  });
+      logger.warn('Rate limit exceeded', {
+        identifier,
+        count: count + 1,
+        limit: this.config.max,
+        window: this.config.window,
+        resetAfter,
+      });
     }
 
     return {
@@ -300,7 +306,10 @@ export class RateLimiter {
     }
 
     if (cleaned > 0) {
-      logger.debug('Rate limiter cleanup', { cleaned, remainingthisrecordssize,  });
+      logger.debug('Rate limiter cleanup', {
+        cleaned,
+        remaining: this.records.size,
+      });
     }
   }
 

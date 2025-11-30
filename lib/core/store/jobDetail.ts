@@ -117,7 +117,7 @@ export const useJobDetailStore = create<JobDetailStore>()(
             throw new Error(data.error || 'İş ilanı yüklenemedi');
           }
         } catch (error) {
-          logger.error('Job detail fetch error', error);
+          logger.error('Job detail fetch error', error instanceof Error ? error : new Error(String(error)));
           set((state) => {
             state.error =
               error instanceof Error ? error.message : 'İş ilanı yüklenemedi';
@@ -147,7 +147,7 @@ export const useJobDetailStore = create<JobDetailStore>()(
             throw new Error(data.error || 'Teklifler yüklenemedi');
           }
         } catch (error) {
-          logger.error('Proposals fetch error', error);
+          logger.error('Proposals fetch error', error instanceof Error ? error : new Error(String(error)));
           set((state) => {
             state.error =
               error instanceof Error ? error.message : 'Teklifler yüklenemedi';
@@ -198,7 +198,7 @@ export const useJobDetailStore = create<JobDetailStore>()(
             throw new Error(data.error || 'Teklif gönderilemedi');
           }
         } catch (error) {
-          logger.error('Proposal submission error', error);
+          logger.error('Proposal submission error', error instanceof Error ? error : new Error(String(error)));
           set((state) => {
             state.error =
               error instanceof Error ? error.message : 'Teklif gönderilemedi';
@@ -248,7 +248,7 @@ export const useJobDetailStore = create<JobDetailStore>()(
             throw new Error(data.error || 'Teklif durumu güncellenemedi');
           }
         } catch (error) {
-          logger.error('Proposal status update error', error);
+          logger.error('Proposal status update error', error instanceof Error ? error : new Error(String(error)));
           set((state) => {
             state.error =
               error instanceof Error

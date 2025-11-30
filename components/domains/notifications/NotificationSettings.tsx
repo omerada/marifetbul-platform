@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
@@ -101,9 +101,7 @@ export function NotificationSettingsPanel({
       setTimeout(() => setIsSaved(false), 3000);
     } catch (error) {
       logger.error(
-        'Ayarlar kaydedilemedi:',
-        error
-      );
+        'Ayarlar kaydedilemedi:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsLoading(false);
     }
@@ -168,7 +166,7 @@ export function NotificationSettingsPanel({
 
       <div className={`space-y-2 ${!mainEnabled ? 'opacity-50' : ''}`}>
         <NotificationToggle
-          label="Teklifler ve baÅŸvurular"
+          label="Teklifler ve baþvurular"
           checked={Boolean(channelSettings.proposals)}
           onChange={(checked) => handleToggle(channel, 'proposals', checked)}
           disabled={!mainEnabled}
@@ -180,19 +178,19 @@ export function NotificationSettingsPanel({
           disabled={!mainEnabled}
         />
         <NotificationToggle
-          label="Ã–demeler"
+          label="Ödemeler"
           checked={Boolean(channelSettings.payments)}
           onChange={(checked) => handleToggle(channel, 'payments', checked)}
           disabled={!mainEnabled}
         />
         <NotificationToggle
-          label="SipariÅŸ gÃ¼ncellemeleri"
+          label="Sipariþ güncellemeleri"
           checked={Boolean(channelSettings.orders)}
           onChange={(checked) => handleToggle(channel, 'orders', checked)}
           disabled={!mainEnabled}
         />
         <NotificationToggle
-          label="Sistem duyurularÄ±"
+          label="Sistem duyurularý"
           checked={Boolean(channelSettings.system)}
           onChange={(checked) => handleToggle(channel, 'system', checked)}
           disabled={!mainEnabled}
@@ -205,11 +203,11 @@ export function NotificationSettingsPanel({
     <div className="mx-auto max-w-2xl p-6">
       <div className="mb-6">
         <h2 className="mb-2 text-2xl font-bold text-gray-900">
-          Bildirim AyarlarÄ±
+          Bildirim Ayarlarý
         </h2>
         <p className="text-gray-600">
-          Hangi bildirimleri almak istediÄŸinizi ve nasÄ±l bilgilendirilmek
-          istediÄŸinizi seÃ§in.
+          Hangi bildirimleri almak istediðinizi ve nasýl bilgilendirilmek
+          istediðinizi seçin.
         </p>
       </div>
 
@@ -217,7 +215,7 @@ export function NotificationSettingsPanel({
         {/* Browser Notifications */}
         <Card className="p-6">
           <ChannelSection
-            title="ðŸ”” TarayÄ±cÄ± Bildirimleri"
+            title="?? Tarayýcý Bildirimleri"
             channel="browser"
             channelSettings={settings.browser}
             mainEnabled={settings.browser.enabled}
@@ -227,7 +225,7 @@ export function NotificationSettingsPanel({
         {/* Email Notifications */}
         <Card className="p-6">
           <ChannelSection
-            title="ðŸ“§ E-posta Bildirimleri"
+            title="?? E-posta Bildirimleri"
             channel="email"
             channelSettings={{ enabled: settings.email }}
             mainEnabled={settings.email}
@@ -237,7 +235,7 @@ export function NotificationSettingsPanel({
         {/* SMS Notifications */}
         <Card className="p-6">
           <ChannelSection
-            title="ðŸ“± SMS Bildirimleri"
+            title="?? SMS Bildirimleri"
             channel="sms"
             channelSettings={{ enabled: settings.sms }}
             mainEnabled={settings.sms}
@@ -248,7 +246,7 @@ export function NotificationSettingsPanel({
         <Card className="p-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b pb-2">
-              <h4 className="font-medium text-gray-900">ðŸŒ™ Sessiz Saatler</h4>
+              <h4 className="font-medium text-gray-900">?? Sessiz Saatler</h4>
               <NotificationToggle
                 label=""
                 checked={settings.quietHours.enabled}
@@ -259,12 +257,12 @@ export function NotificationSettingsPanel({
             {settings.quietHours.enabled && (
               <div className="space-y-3">
                 <p className="text-sm text-gray-600">
-                  Bu saatler arasÄ±nda bildirimler sessize alÄ±nÄ±r.
+                  Bu saatler arasýnda bildirimler sessize alýnýr.
                 </p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="mb-1 block text-sm font-medium text-gray-700">
-                      BaÅŸlangÄ±Ã§
+                      Baþlangýç
                     </label>
                     <Input
                       type="time"
@@ -277,7 +275,7 @@ export function NotificationSettingsPanel({
                   </div>
                   <div>
                     <label className="mb-1 block text-sm font-medium text-gray-700">
-                      BitiÅŸ
+                      Bitiþ
                     </label>
                     <Input
                       type="time"
@@ -318,7 +316,7 @@ export function NotificationSettingsPanel({
             disabled={isLoading}
             className="px-6 py-2"
           >
-            {isLoading ? 'Kaydediliyor...' : 'AyarlarÄ± Kaydet'}
+            {isLoading ? 'Kaydediliyor...' : 'Ayarlarý Kaydet'}
           </Button>
         </div>
       </div>

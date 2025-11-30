@@ -128,7 +128,7 @@ export function UnifiedCommentQueue({
       logger.info('Bulk comments approved', { count });
     } catch (error) {
       toast.error('Toplu onaylama başarısız oldu');
-      logger.error('Bulk approve comments failed', error);
+      logger.error('Bulk approve comments failed', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -150,7 +150,7 @@ export function UnifiedCommentQueue({
       logger.info('Bulk comments rejected', { count });
     } catch (error) {
       toast.error('Toplu reddetme başarısız oldu');
-      logger.error('Bulk reject comments failed', error);
+      logger.error('Bulk reject comments failed', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -172,7 +172,7 @@ export function UnifiedCommentQueue({
       logger.info('Bulk comments marked as spam', { count });
     } catch (error) {
       toast.error('Toplu spam işaretleme başarısız oldu');
-      logger.error('Bulk mark spam failed', error);
+      logger.error('Bulk mark spam failed', error instanceof Error ? error : new Error(String(error)));
     }
   };
 

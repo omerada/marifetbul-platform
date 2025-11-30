@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -17,14 +17,14 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 const orderSchema = z.object({
   requirements: z
     .string()
-    .min(20, 'Gereksinimler en az 20 karakter olmalÄ±dÄ±r')
+    .min(20, 'Gereksinimler en az 20 karakter olmalýdýr')
     .max(1000, 'Gereksinimler en fazla 1000 karakter olabilir'),
   deadline: z.string().optional(),
   additionalServices: z.array(z.string()).optional(),
   contactInfo: z
     .string()
-    .min(5, 'Ä°letiÅŸim bilgisi gereklidir')
-    .max(100, 'Ä°letiÅŸim bilgisi Ã§ok uzun'),
+    .min(5, 'Ýletiþim bilgisi gereklidir')
+    .max(100, 'Ýletiþim bilgisi çok uzun'),
   paymentMode: z.nativeEnum(PaymentMode),
 });
 
@@ -40,7 +40,7 @@ const additionalServiceOptions = [
   { id: 'express', name: 'Ekspres Teslimat (24 saat)', price: 200 },
   { id: 'extra-revision', name: 'Ekstra Revizyon (+3 kez)', price: 150 },
   { id: 'source-files', name: 'Kaynak Dosyalar', price: 100 },
-  { id: 'commercial-license', name: 'Ticari KullanÄ±m LisansÄ±', price: 300 },
+  { id: 'commercial-license', name: 'Ticari Kullaným Lisansý', price: 300 },
 ];
 
 export function OrderForm({
@@ -65,9 +65,7 @@ export function OrderForm({
         logger.debug('Seller payment status fetched:', status);
       } catch (error) {
         logger.error(
-          'Failed to fetch seller payment status:',
-          error
-        );
+          'Failed to fetch seller payment status:', error instanceof Error ? error : new Error(String(error)));
         // Default to false if fetch fails
         setSellerHasIban(false);
       } finally {
@@ -130,9 +128,7 @@ export function OrderForm({
       onSubmit(data);
     } catch (error) {
       logger.error(
-        'Error submitting order:',
-        error
-      );
+        'Error submitting order:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsSubmitting(false);
     }
@@ -159,7 +155,7 @@ export function OrderForm({
           {...register('requirements')}
           rows={5}
           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          placeholder="Projeniz hakkÄ±nda detaylÄ± bilgi verin, beklentilerinizi aÃ§Ä±klayÄ±n..."
+          placeholder="Projeniz hakkýnda detaylý bilgi verin, beklentilerinizi açýklayýn..."
         />
         <div className="mt-1 flex justify-between text-sm">
           {errors.requirements && (
@@ -174,7 +170,7 @@ export function OrderForm({
       {/* Deadline */}
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-700">
-          Ã–zel Teslim Tarihi
+          Özel Teslim Tarihi
         </label>
         <div className="relative">
           <Calendar className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
@@ -192,14 +188,14 @@ export function OrderForm({
           />
         </div>
         <p className="mt-1 text-xs text-gray-500">
-          Normal teslimat sÃ¼resi: {servicePackage.deliveryTime} gÃ¼n
+          Normal teslimat süresi: {servicePackage.deliveryTime} gün
         </p>
       </div>
 
       {/* Contact Info */}
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-700">
-          Ä°letiÅŸim Bilgisi *
+          Ýletiþim Bilgisi *
         </label>
         <Input
           {...register('contactInfo')}
@@ -207,7 +203,7 @@ export function OrderForm({
           error={errors.contactInfo?.message}
         />
         <p className="mt-1 text-xs text-gray-500">
-          Freelancer&apos;Ä±n sizinle iletiÅŸim kurmasÄ± iÃ§in
+          Freelancer&apos;ýn sizinle iletiþim kurmasý için
         </p>
       </div>
 
@@ -242,7 +238,7 @@ export function OrderForm({
                   </div>
                 </div>
                 <div className="text-lg font-semibold text-gray-900">
-                  +â‚º{service.price.toLocaleString('tr-TR')}
+                  +?{service.price.toLocaleString('tr-TR')}
                 </div>
               </div>
             </div>
@@ -252,12 +248,12 @@ export function OrderForm({
 
       {/* Order Summary */}
       <Card className="border-gray-200 bg-gray-50 p-4">
-        <h4 className="mb-3 font-medium text-gray-900">SipariÅŸ Ã–zeti</h4>
+        <h4 className="mb-3 font-medium text-gray-900">Sipariþ Özeti</h4>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-gray-600">Hizmet Bedeli:</span>
             <span className="font-medium">
-              â‚º{servicePackage.price.toLocaleString('tr-TR')}
+              ?{servicePackage.price.toLocaleString('tr-TR')}
             </span>
           </div>
 
@@ -271,7 +267,7 @@ export function OrderForm({
                 className="flex justify-between text-blue-600"
               >
                 <span>{service.name}:</span>
-                <span>+â‚º{service.price.toLocaleString('tr-TR')}</span>
+                <span>+?{service.price.toLocaleString('tr-TR')}</span>
               </div>
             ) : null;
           })}
@@ -280,19 +276,19 @@ export function OrderForm({
             <div className="flex justify-between">
               <span className="text-gray-600">Ara Toplam:</span>
               <span className="font-medium">
-                â‚º{calculateTotal().toLocaleString('tr-TR')}
+                ?{calculateTotal().toLocaleString('tr-TR')}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Platform Komisyonu (%5):</span>
               <span className="font-medium">
-                â‚º{platformFee.toLocaleString('tr-TR')}
+                ?{platformFee.toLocaleString('tr-TR')}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Hizmet Bedeli:</span>
               <span className="font-medium">
-                â‚º{serviceFee.toLocaleString('tr-TR')}
+                ?{serviceFee.toLocaleString('tr-TR')}
               </span>
             </div>
           </div>
@@ -300,7 +296,7 @@ export function OrderForm({
           <div className="flex justify-between border-t border-gray-200 pt-2 text-lg font-semibold">
             <span>Toplam:</span>
             <span className="text-blue-600">
-              â‚º{grandTotal.toLocaleString('tr-TR')}
+              ?{grandTotal.toLocaleString('tr-TR')}
             </span>
           </div>
         </div>
@@ -323,14 +319,14 @@ export function OrderForm({
       {/* Terms */}
       <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
         <div className="text-sm text-blue-800">
-          <p className="mb-2 font-medium">Ã–nemli Bilgiler:</p>
+          <p className="mb-2 font-medium">Önemli Bilgiler:</p>
           <ul className="space-y-1 text-xs">
             <li>
-              â€¢ Ã–deme, proje tamamlandÄ±ktan sonra freelancer&apos;a aktarÄ±lÄ±r
+              • Ödeme, proje tamamlandýktan sonra freelancer&apos;a aktarýlýr
             </li>
-            <li>â€¢ 7 gÃ¼n para iade garantisi mevcuttur</li>
-            <li>â€¢ TÃ¼m iletiÅŸim platform Ã¼zerinden yapÄ±lmalÄ±dÄ±r</li>
-            <li>â€¢ Proje iptal edilirse Ã¼cret iade edilir</li>
+            <li>• 7 gün para iade garantisi mevcuttur</li>
+            <li>• Tüm iletiþim platform üzerinden yapýlmalýdýr</li>
+            <li>• Proje iptal edilirse ücret iade edilir</li>
           </ul>
         </div>
       </div>
@@ -341,12 +337,12 @@ export function OrderForm({
           {isSubmitting ? (
             <>
               <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-              Ä°ÅŸleniyor...
+              Ýþleniyor...
             </>
           ) : (
             <>
               <ShoppingCart className="mr-2 h-4 w-4" />
-              Ã–demeye GeÃ§ (â‚º{grandTotal.toLocaleString('tr-TR')})
+              Ödemeye Geç (?{grandTotal.toLocaleString('tr-TR')})
             </>
           )}
         </Button>
@@ -356,7 +352,7 @@ export function OrderForm({
           onClick={onCancel}
           disabled={isSubmitting}
         >
-          Ä°ptal
+          Ýptal
         </Button>
       </div>
     </form>

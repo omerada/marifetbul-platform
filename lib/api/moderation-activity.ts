@@ -57,7 +57,11 @@ export async function logModerationActivity(
       }
     );
 
-    logger.info('Moderation activity logged', { activityIdresponseactivityId, actionTypeactivityactionType, targetTypeactivitytargetType,  });
+    logger.info('Moderation activity logged', {
+      activityId: response.activityId,
+      actionType: activity.actionType,
+      targetType: activity.targetType,
+    });
 
     return response;
   } catch (error) {

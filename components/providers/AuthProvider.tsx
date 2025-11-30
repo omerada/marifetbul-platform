@@ -37,7 +37,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         '[AuthProvider] Checking auth status for authenticated user'
       );
       checkAuthStatus().catch((error) => {
-        logger.error('[AuthProvider] Auth status check failed:', error);
+        logger.error('[AuthProvider] Auth status check failed:', error instanceof Error ? error : new Error(String(error)));
         // Don't logout on auth pages - let them try to login
       });
     } else {

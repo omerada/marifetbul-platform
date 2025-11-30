@@ -83,9 +83,7 @@ export function useAdminDashboard() {
       await refreshDashboard();
     } catch (error) {
       logger.error(
-        'Dashboard refresh failed',
-        error
-      );
+        'Dashboard refresh failed', error instanceof Error ? error : new Error(String(error)));
     }
   }, [refreshDashboard]);
 
@@ -99,9 +97,7 @@ export function useAdminDashboard() {
       return success;
     } catch (error) {
       logger.error(
-        'Backend cache refresh failed',
-        error
-      );
+        'Backend cache refresh failed', error instanceof Error ? error : new Error(String(error)));
       return false;
     }
   }, [refreshAllDashboards]);

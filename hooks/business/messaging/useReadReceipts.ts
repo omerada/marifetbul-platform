@@ -106,7 +106,12 @@ export function useReadReceipts(
       try {
         const event = message as ReadReceiptEvent;
 
-        logger.debug('useReadReceipts', { conversationIdeventconversationId, messageIdeventmessageId, readByeventreadBy, readAteventreadAt,  });
+        logger.debug('useReadReceipts', {
+          conversationId: event.conversationId,
+          messageId: event.messageId,
+          readBy: event.readBy,
+          readAt: event.readAt,
+        });
 
         // Update message in store
         messagingStore.updateMessage(event.messageId, {
@@ -117,10 +122,14 @@ export function useReadReceipts(
         // Callback
         onMessageRead?.(event);
       } catch (err) {
-        logger.error('useReadReceipts: Error handling read receipt', undefined, {
-          error: err,
-          message,
-        });
+        logger.error(
+          'useReadReceipts: Error handling read receipt',
+          undefined,
+          {
+            error: err,
+            message,
+          }
+        );
       }
     },
     [messagingStore, onMessageRead]
@@ -143,13 +152,13 @@ export function useReadReceipts(
     // Subscribe to read receipt topic
     const destination = `/topic/conversation/${conversationId}/read-receipt`;
 
-    logger.debug('useReadReceipts', { destination, conversationId,  });
+    logger.debug('useReadReceipts', { destination, conversationId });
 
     try {
       const subId = subscribe(destination, handleReadReceipt);
       subscriptionIdRef.current = subId;
 
-      logger.info('useReadReceipts', { subscriptionIdsubId, conversationId,  });
+      logger.info('useReadReceipts', { subscriptionId: subId, conversationId });
     } catch (err) {
       logger.error('useReadReceipts: Subscription failed', undefined, {
         error: err,
@@ -160,7 +169,10 @@ export function useReadReceipts(
     // Cleanup on unmount or conversation change
     return () => {
       if (subscriptionIdRef.current) {
-        logger.debug('useReadReceipts', { subscriptionIdsubscriptionIdRefcurrent, conversationId,  });
+        logger.debug('useReadReceipts', {
+          subscriptionId: subscriptionIdRef.current,
+          conversationId,
+        });
         unsubscribe(subscriptionIdRef.current);
         subscriptionIdRef.current = null;
       }
@@ -189,17 +201,21 @@ export function useReadReceipts(
       isMarkingRef.current = true;
 
       try {
-        logger.debug('useReadReceipts', { messageId, conversationId,  });
+        logger.debug('useReadReceipts', { messageId, conversationId });
 
         // Call API (backend will broadcast WebSocket event)
         await markMessageAsRead(messageId);
 
-        logger.info('useReadReceipts', { messageId,  });
+        logger.info('useReadReceipts', { messageId });
       } catch (err) {
-        logger.error('useReadReceipts: Failed to mark message as read', undefined, {
-          error: err,
-          messageId,
-        });
+        logger.error(
+          'useReadReceipts: Failed to mark message as read',
+          undefined,
+          {
+            error: err,
+            messageId,
+          }
+        );
         throw err;
       } finally {
         isMarkingRef.current = false;
@@ -220,17 +236,24 @@ export function useReadReceipts(
     isMarkingRef.current = true;
 
     try {
-      logger.debug('useReadReceipts', { conversationId,  });
+      logger.debug('useReadReceipts', { conversationId });
 
       // Call API (backend will broadcast WebSocket events for each message)
       const result = await markConversationAsRead(conversationId);
 
-      logger.info('useReadReceipts', { conversationId, countresultcount0,  });
-    } catch (err) {
-      logger.error('useReadReceipts: Failed to mark all messages as read', undefined, {
-        error: err,
+      logger.info('useReadReceipts', {
         conversationId,
+        count: result.count || 0,
       });
+    } catch (err) {
+      logger.error(
+        'useReadReceipts: Failed to mark all messages as read',
+        undefined,
+        {
+          error: err,
+          conversationId,
+        }
+      );
       throw err;
     } finally {
       isMarkingRef.current = false;

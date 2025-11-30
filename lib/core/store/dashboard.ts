@@ -136,7 +136,7 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
       const errorMessage =
         error instanceof Error ? error.message : 'Bilinmeyen bir hata oluştu';
 
-      logger.error('[Dashboard Store] Dashboard fetch error', error);
+      logger.error('[Dashboard Store] Dashboard fetch error', error instanceof Error ? error : new Error(String(error)));
 
       set({
         error: {
@@ -282,7 +282,7 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
       const updatedData = updater(dashboardData);
       set({ dashboardData: updatedData });
     } catch (error) {
-      logger.error('[Dashboard Store] Optimistic update failed', error);
+      logger.error('[Dashboard Store] Optimistic update failed', error instanceof Error ? error : new Error(String(error)));
     }
   },
 }));

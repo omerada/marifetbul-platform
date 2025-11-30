@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 /**
  * ================================================
@@ -229,12 +229,12 @@ function prepareTimeSeriesData(transactions: Transaction[]): TimeSeriesData[] {
 function preparePieData(data: CommissionData): PieData[] {
   return [
     {
-      name: 'Net KazanÃ§',
+      name: 'Net Kazanç',
       value: data.netEarnings,
       color: '#10b981',
     },
     {
-      name: 'Platform Ãœcreti',
+      name: 'Platform Ücreti',
       value: data.platformFees,
       color: '#ef4444',
     },
@@ -253,11 +253,11 @@ function exportToCSV(
     // Prepare CSV content
     const headers = [
       'Tarih',
-      'Ä°ÅŸlem Tipi',
+      'Ýþlem Tipi',
       'Tutar',
       'Komisyon',
       'Net Tutar',
-      'AÃ§Ä±klama',
+      'Açýklama',
     ];
 
     const rows = transactions.map((t) => {
@@ -278,9 +278,9 @@ function exportToCSV(
 
     // Add summary row
     rows.push([]);
-    rows.push(['Ã–ZET', '', '', '', '', '']);
+    rows.push(['ÖZET', '', '', '', '', '']);
     rows.push([
-      'Toplam KazanÃ§',
+      'Toplam Kazanç',
       '',
       commissionData.totalEarnings.toFixed(2),
       '',
@@ -288,7 +288,7 @@ function exportToCSV(
       '',
     ]);
     rows.push([
-      'Platform Ãœcreti',
+      'Platform Ücreti',
       '',
       commissionData.platformFees.toFixed(2),
       '',
@@ -296,7 +296,7 @@ function exportToCSV(
       '',
     ]);
     rows.push([
-      'Net KazanÃ§',
+      'Net Kazanç',
       '',
       commissionData.netEarnings.toFixed(2),
       '',
@@ -304,7 +304,7 @@ function exportToCSV(
       '',
     ]);
     rows.push([
-      'Komisyon OranÄ±',
+      'Komisyon Oraný',
       '',
       `${commissionData.commissionRate.toFixed(2)}%`,
       '',
@@ -336,8 +336,8 @@ function exportToCSV(
 
     logger.info('CSV export successful', { period, filename });
   } catch (error) {
-    logger.error('CSV export failed', error);
-    alert('CSV export baÅŸarÄ±sÄ±z oldu. LÃ¼tfen tekrar deneyin.');
+    logger.error('CSV export failed', error instanceof Error ? error : new Error(String(error)));
+    alert('CSV export baþarýsýz oldu. Lütfen tekrar deneyin.');
   }
 }
 
@@ -386,10 +386,10 @@ export function CommissionBreakdown({
   };
 
   const periodLabels = {
-    week: 'Son 7 GÃ¼n',
-    month: 'Son 30 GÃ¼n',
-    year: 'Son 1 YÄ±l',
-    all: 'TÃ¼m Zamanlar',
+    week: 'Son 7 Gün',
+    month: 'Son 30 Gün',
+    year: 'Son 1 Yýl',
+    all: 'Tüm Zamanlar',
   };
 
   // Loading state
@@ -428,13 +428,13 @@ export function CommissionBreakdown({
                 className="gap-2"
               >
                 <Download className="h-4 w-4" />
-                CSV Ä°ndir
+                CSV Ýndir
               </Button>
             )}
           </div>
         </div>
         <p className="mt-1 text-sm text-gray-600">
-          Platform komisyonlarÄ± ve net kazanÃ§larÄ±nÄ±z
+          Platform komisyonlarý ve net kazançlarýnýz
         </p>
       </CardHeader>
 
@@ -442,21 +442,21 @@ export function CommissionBreakdown({
         {/* Key Stats */}
         <div className="mb-6 grid grid-cols-2 gap-3">
           <StatCard
-            label="Toplam KazanÃ§"
+            label="Toplam Kazanç"
             value={formatCurrency(commissionData.totalEarnings, 'TRY')}
             icon={<DollarSign className="h-4 w-4" />}
             trend="up"
             variant="compact"
           />
           <StatCard
-            label="Platform Ãœcreti"
+            label="Platform Ücreti"
             value={formatCurrency(commissionData.platformFees, 'TRY')}
             icon={<Percent className="h-4 w-4" />}
             trend="down"
             variant="compact"
           />
           <StatCard
-            label="Net KazanÃ§"
+            label="Net Kazanç"
             value={formatCurrency(commissionData.netEarnings, 'TRY')}
             icon={<TrendingUp className="h-4 w-4" />}
             trend="up"
@@ -470,7 +470,7 @@ export function CommissionBreakdown({
           <div className="mb-2 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700">
-                Komisyon OranÄ±
+                Komisyon Oraný
               </span>
               <TooltipProvider>
                 <Tooltip>
@@ -479,7 +479,7 @@ export function CommissionBreakdown({
                   </TooltipTrigger>
                   <TooltipContent>
                     <p className="max-w-xs text-sm">
-                      Toplam kazancÄ±nÄ±zdan alÄ±nan platform komisyonu yÃ¼zdesi
+                      Toplam kazancýnýzdan alýnan platform komisyonu yüzdesi
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -554,7 +554,7 @@ export function CommissionBreakdown({
                       type="monotone"
                       dataKey="earnings"
                       stroke="#3b82f6"
-                      name="KazanÃ§"
+                      name="Kazanç"
                       strokeWidth={2}
                     />
                     <Line
@@ -611,7 +611,7 @@ export function CommissionBreakdown({
         {/* Breakdown Details */}
         <div className="space-y-3">
           <div className="flex items-center justify-between border-b border-gray-100 py-2">
-            <span className="text-sm text-gray-600">Ä°ÅŸlem SayÄ±sÄ±</span>
+            <span className="text-sm text-gray-600">Ýþlem Sayýsý</span>
             <span className="text-sm font-semibold text-gray-900">
               {commissionData.transactionCount}
             </span>
@@ -623,7 +623,7 @@ export function CommissionBreakdown({
             </span>
           </div>
           <div className="flex items-center justify-between py-2">
-            <span className="text-sm text-gray-600">Net KazanÃ§ OranÄ±</span>
+            <span className="text-sm text-gray-600">Net Kazanç Oraný</span>
             <span className="text-sm font-semibold text-green-600">
               {formatPercentage(1 - commissionData.commissionRate / 100)}
             </span>
@@ -637,8 +637,8 @@ export function CommissionBreakdown({
             <div className="text-sm text-blue-900">
               <p className="mb-1 font-medium">Komisyon Sistemi</p>
               <p className="text-blue-700">
-                Platform komisyonu her iÅŸlemden otomatik olarak kesilir. Daha
-                fazla iÅŸlem yaptÄ±kÃ§a Ã¶zel indirim oranlarÄ±ndan
+                Platform komisyonu her iþlemden otomatik olarak kesilir. Daha
+                fazla iþlem yaptýkça özel indirim oranlarýndan
                 yararlanabilirsiniz.
               </p>
             </div>

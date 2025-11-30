@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 /**
  * ================================================
@@ -131,8 +131,8 @@ export function OrderMessagingPanel({
   // Other user info
   const otherUser =
     userRole === 'buyer'
-      ? { id: order.sellerId, name: order.sellerName || 'SatÄ±cÄ±' }
-      : { id: order.buyerId, name: order.buyerName || 'AlÄ±cÄ±' };
+      ? { id: order.sellerId, name: order.sellerName || 'Satýcý' }
+      : { id: order.buyerId, name: order.buyerName || 'Alýcý' };
 
   // ================================================
   // AUTO-SCROLL
@@ -163,8 +163,8 @@ export function OrderMessagingPanel({
         const mappedMessages = response.content.map(mapApiMessage);
         setMessages(mappedMessages);
       } catch (error) {
-        logger.error('Failed to load messages:', error);
-        showErrorToast('Mesajlar yÃ¼klenemedi');
+        logger.error('Failed to load messages:', error instanceof Error ? error : new Error(String(error)));
+        showErrorToast('Mesajlar yüklenemedi');
       } finally {
         setIsLoading(false);
       }
@@ -237,7 +237,7 @@ export function OrderMessagingPanel({
             }
           }
         } catch (error) {
-          logger.error('Failed to parse message:', error);
+          logger.error('Failed to parse message:', error instanceof Error ? error : new Error(String(error)));
         }
       }
     );
@@ -265,10 +265,10 @@ export function OrderMessagingPanel({
           activeConversationId = conversation.id;
           setConversationId(conversation.id);
         } catch (error) {
-          logger.error('Failed to create conversation:', error);
+          logger.error('Failed to create conversation:', error instanceof Error ? error : new Error(String(error)));
           showErrorToast(
-            'KonuÅŸma baÅŸlatÄ±lamadÄ±',
-            'LÃ¼tfen tekrar deneyin veya sayfayÄ± yenileyin.'
+            'Konuþma baþlatýlamadý',
+            'Lütfen tekrar deneyin veya sayfayý yenileyin.'
           );
           return;
         }
@@ -303,7 +303,7 @@ export function OrderMessagingPanel({
             size: result.fileSize,
           }));
         } catch (error) {
-          logger.error('File upload failed:', error);
+          logger.error('File upload failed:', error instanceof Error ? error : new Error(String(error)));
           // Continue sending message without attachments
         } finally {
           setIsUploadingFiles(false);
@@ -342,7 +342,7 @@ export function OrderMessagingPanel({
       setMessage('');
       setAttachments([]);
     } catch (error) {
-      logger.error('Failed to send message:', error);
+      logger.error('Failed to send message:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsSending(false);
     }
@@ -400,13 +400,13 @@ export function OrderMessagingPanel({
       <div className="border-b p-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-semibold">{otherUser.name} ile MesajlaÅŸma</h3>
+            <h3 className="font-semibold">{otherUser.name} ile Mesajlaþma</h3>
             <p className="text-muted-foreground text-sm">
-              SipariÅŸ #{order.orderNumber}
+              Sipariþ #{order.orderNumber}
             </p>
           </div>
           <div className="text-muted-foreground text-xs">
-            {order.packageTitle || order.jobTitle || 'Ã–zel SipariÅŸ'}
+            {order.packageTitle || order.jobTitle || 'Özel Sipariþ'}
           </div>
         </div>
       </div>
@@ -420,9 +420,9 @@ export function OrderMessagingPanel({
         ) : messages.length === 0 ? (
           <div className="flex h-full items-center justify-center text-center">
             <div>
-              <p className="text-muted-foreground mb-2">HenÃ¼z mesaj yok</p>
+              <p className="text-muted-foreground mb-2">Henüz mesaj yok</p>
               <p className="text-muted-foreground text-sm">
-                Ä°lk mesajÄ± gÃ¶ndererek sohbeti baÅŸlatÄ±n
+                Ýlk mesajý göndererek sohbeti baþlatýn
               </p>
             </div>
           </div>
@@ -487,7 +487,7 @@ export function OrderMessagingPanel({
           <div className="flex justify-start">
             <div className="bg-muted rounded-lg px-4 py-2">
               <p className="text-muted-foreground text-sm">
-                {otherUser.name} yazÄ±yor...
+                {otherUser.name} yazýyor...
               </p>
             </div>
           </div>
@@ -553,7 +553,7 @@ export function OrderMessagingPanel({
                   sendMessage();
                 }
               }}
-              placeholder="MesajÄ±nÄ±zÄ± yazÄ±n..."
+              placeholder="Mesajýnýzý yazýn..."
               className="min-h-[60px] resize-none"
               disabled={isSending}
             />
@@ -580,7 +580,7 @@ export function OrderMessagingPanel({
         {/* Upload Status */}
         {isUploadingFiles && (
           <div className="text-muted-foreground py-1 text-center text-xs">
-            Dosyalar yÃ¼kleniyor...
+            Dosyalar yükleniyor...
           </div>
         )}
       </div>

@@ -77,7 +77,7 @@ export function usePortfolioAnalytics(): UsePortfolioAnalyticsReturn {
     if (!portfolios || portfolios.length === 0) return null;
 
     logger.debug('[usePortfolioAnalytics] Calculating analytics', {
-      countportfolioslength,
+      count: portfolios.length,
     });
 
     // Basic metrics

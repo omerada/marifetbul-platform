@@ -1,8 +1,8 @@
-ï»¿'use client';
+'use client';
 
 /**
  * Location Picker Component
- * Konum seÃ§me bileÅŸeni
+ * Konum seçme bileþeni
  */
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
@@ -36,7 +36,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
   value,
   onLocationSelect,
   onClose,
-  placeholder = 'Konum ara veya haritadan seÃ§...',
+  placeholder = 'Konum ara veya haritadan seç...',
   enableCurrentLocation = true,
   showMap = true,
   className = '',
@@ -88,7 +88,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
         setSearchResults(results);
         setShowResults(true);
       } catch (error) {
-        logger.error('Geocoding search error:', error);
+        logger.error('Geocoding search error:', error instanceof Error ? error : new Error(String(error)));
         setSearchResults([]);
         setShowResults(false);
       }
@@ -135,7 +135,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
       setSearchQuery(address);
       setShowResults(false);
     } catch (error) {
-      logger.error('Current location error:', error);
+      logger.error('Current location error:', error instanceof Error ? error : new Error(String(error)));
     }
   }, [getCurrentPosition, unifiedLocation.currentPosition, onLocationSelect]);
 
@@ -173,7 +173,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
       <div className="mb-4 flex items-center justify-between">
         <h3 className="flex items-center gap-2 text-lg font-semibold">
           <MapPin className="h-5 w-5" />
-          Konum SeÃ§
+          Konum Seç
         </h3>
         {onClose && (
           <Button variant="ghost" size="sm" onClick={onClose}>
@@ -261,7 +261,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
             <div className="mb-3 flex items-center gap-2">
               <Map className="h-4 w-4 text-gray-600" />
               <span className="text-sm font-medium text-gray-700">
-                SeÃ§ilen Konum
+                Seçilen Konum
               </span>
             </div>
 
@@ -275,7 +275,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
                     {selectedLocation.lng.toFixed(4)}
                   </p>
                   <p className="mt-1 text-xs text-gray-500">
-                    {searchQuery || 'SeÃ§ilen konum'}
+                    {searchQuery || 'Seçilen konum'}
                   </p>
                 </div>
               </div>
@@ -293,9 +293,9 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
             <div className="p-4 text-center text-gray-500">
               <MapPin className="mx-auto mb-2 h-8 w-8 opacity-50" />
               <p className="text-sm">
-                &ldquo;{searchQuery}&rdquo; iÃ§in sonuÃ§ bulunamadÄ±
+                &ldquo;{searchQuery}&rdquo; için sonuç bulunamadý
               </p>
-              <p className="mt-1 text-xs">FarklÄ± bir arama terimÄ± deneyin</p>
+              <p className="mt-1 text-xs">Farklý bir arama terimý deneyin</p>
             </div>
           </Card>
         )}
@@ -313,7 +313,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
         )}
         {onClose && (
           <Button variant="outline" onClick={onClose} className="flex-1">
-            Ä°ptal
+            Ýptal
           </Button>
         )}
       </div>

@@ -148,7 +148,7 @@ export function useModeratorPerformance(
   // ============================================================================
 
   if (error) {
-    logger.error('Performance metrics error:', error);
+    logger.error('Performance metrics error:', error instanceof Error ? error : new Error(String(error)));
   }
 
   // ============================================================================

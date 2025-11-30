@@ -31,7 +31,7 @@ export function PortfolioShare({ portfolio, userId }: PortfolioShareProps) {
 
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      logger.error('Failed to copy portfolio link', error);
+      logger.error('Failed to copy portfolio link', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -68,7 +68,7 @@ export function PortfolioShare({ portfolio, userId }: PortfolioShareProps) {
       } catch (error) {
         // User cancelled or error occurred
         if ((error as Error).name !== 'AbortError') {
-          logger.error('Native share failed', error);
+          logger.error('Native share failed', error instanceof Error ? error : new Error(String(error)));
         }
       }
     } else {

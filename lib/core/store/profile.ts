@@ -69,7 +69,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
         });
       }
     } catch (error) {
-      logger.error('Profile fetch error', error);
+      logger.error('Profile fetch error', error instanceof Error ? error : new Error(String(error)));
       set({
         error: 'Profil yüklenirken bir hata oluştu',
         isLoading: false,
@@ -128,7 +128,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
         throw new Error(data.error);
       }
     } catch (error) {
-      logger.error('Profile update error', error);
+      logger.error('Profile update error', error instanceof Error ? error : new Error(String(error)));
       set({
         error: 'Profil güncellenirken bir hata oluştu',
         isUpdating: false,
@@ -202,7 +202,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
         throw new Error(data.error);
       }
     } catch (error) {
-      logger.error('Avatar upload error', error);
+      logger.error('Avatar upload error', error instanceof Error ? error : new Error(String(error)));
       set({
         error: 'Avatar yüklenirken bir hata oluştu',
         uploadProgress: 0,
@@ -253,7 +253,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
 
       return newItem;
     } catch (error) {
-      logger.error('Portfolio add error', error);
+      logger.error('Portfolio add error', error instanceof Error ? error : new Error(String(error)));
       set({
         error: 'Portfolio eklenirken bir hata oluştu',
         isUpdating: false,
@@ -306,7 +306,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
 
       return updatedItem;
     } catch (error) {
-      logger.error('Portfolio update error', error);
+      logger.error('Portfolio update error', error instanceof Error ? error : new Error(String(error)));
       set({
         error: 'Portfolio güncellenirken bir hata oluştu',
         isUpdating: false,
@@ -345,7 +345,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
         lastSaved: new Date(),
       });
     } catch (error) {
-      logger.error('Portfolio remove error', error);
+      logger.error('Portfolio remove error', error instanceof Error ? error : new Error(String(error)));
       set({
         error: 'Portfolio silinirken bir hata oluştu',
         isUpdating: false,
@@ -370,7 +370,7 @@ const useProfileStore = create<ProfileStore>((set, get) => ({
         lastSaved: new Date(),
       });
     } catch (error) {
-      logger.error('Auto-save error', error);
+      logger.error('Auto-save error', error instanceof Error ? error : new Error(String(error)));
       // Don't show error for auto-save failures
     }
   },

@@ -145,12 +145,15 @@ export function useWalletData(
         balance,
       }));
 
-      logger.debug('✅ Wallet data fetched successfully', { walletIdwalletid, balancebalanceavailableBalance,  });
+      logger.debug('✅ Wallet data fetched successfully', {
+        walletId: wallet.id,
+        balance: balance.availableBalance,
+      });
     } catch (err) {
       const error =
         err instanceof Error ? err : new Error('Failed to fetch wallet data');
-      setError(error);
-      logger.error('❌ Failed to fetch wallet data:', error);
+      setError(error instanceof Error ? error : new Error(String(error)));
+      logger.error('❌ Failed to fetch wallet data:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -176,13 +179,15 @@ export function useWalletData(
             page === 0 ? transactions : [...prev.transactions, ...transactions],
         }));
 
-        logger.debug('✅ Transactions fetched successfully', { counttransactionslength,  });
+        logger.debug('✅ Transactions fetched successfully', {
+          count: transactions.length,
+        });
       } catch (err) {
         const error =
           err instanceof Error
             ? err
             : new Error('Failed to fetch transactions');
-        logger.error('❌ Failed to fetch transactions:', error);
+        logger.error('❌ Failed to fetch transactions:', error instanceof Error ? error : new Error(String(error)));
         throw error;
       } finally {
         setIsLoadingTransactions(false);

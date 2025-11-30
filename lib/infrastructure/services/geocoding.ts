@@ -91,9 +91,7 @@ export class GeocodingService {
       }));
     } catch (error) {
       logger.error(
-        'Geocoding error',
-        error
-      );
+        'Geocoding error', error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }
@@ -137,9 +135,7 @@ export class GeocodingService {
       }));
     } catch (error) {
       logger.error(
-        'Reverse geocoding error',
-        error
-      );
+        'Reverse geocoding error', error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }

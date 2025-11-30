@@ -149,11 +149,19 @@ export function useMessagePagination(
     setError(null);
 
     try {
-      logger.debug('useMessagePagination', { conversationId, sizeinitialSize,  });
+      logger.debug('useMessagePagination', {
+        conversationId,
+        size: initialSize,
+      });
 
       const response = await getMessages(conversationId, 0, initialSize);
 
-      logger.info('useMessagePagination', { conversationId, countresponsecontentlength, totalElementsresponsetotalElements, totalPagesresponsetotalPages,  });
+      logger.info('useMessagePagination', {
+        conversationId,
+        count: response.content.length,
+        totalElements: response.totalElements,
+        totalPages: response.totalPages,
+      });
 
       // Sort messages by createdAt (oldest first for display)
       const sortedMessages = [...response.content].sort(
@@ -211,7 +219,11 @@ export function useMessagePagination(
     try {
       const nextPage = pagination.page + 1;
 
-      logger.debug('useMessagePagination', { conversationId, pagenextPage, sizepaginationsize,  });
+      logger.debug('useMessagePagination', {
+        conversationId,
+        page: nextPage,
+        size: pagination.size,
+      });
 
       const response = await getMessages(
         conversationId,
@@ -219,7 +231,12 @@ export function useMessagePagination(
         pagination.size
       );
 
-      logger.info('useMessagePagination', { conversationId, pagenextPage, countresponsecontentlength, totalElementsresponsetotalElements,  });
+      logger.info('useMessagePagination', {
+        conversationId,
+        page: nextPage,
+        count: response.content.length,
+        totalElements: response.totalElements,
+      });
 
       // Sort new messages (oldest first)
       const sortedNewMessages = [...response.content].sort(
@@ -243,11 +260,15 @@ export function useMessagePagination(
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to load more messages';
-      logger.error('useMessagePagination: Failed to load more messages', undefined, {
-        error: err,
-        conversationId,
-        page: pagination.page + 1,
-      });
+      logger.error(
+        'useMessagePagination: Failed to load more messages',
+        undefined,
+        {
+          error: err,
+          conversationId,
+          page: pagination.page + 1,
+        }
+      );
       setError(errorMessage);
     } finally {
       setIsLoadingMore(false);
@@ -261,7 +282,7 @@ export function useMessagePagination(
    * Refresh messages (reset to page 0)
    */
   const refresh = useCallback(async () => {
-    logger.debug('useMessagePagination', { conversationId,  });
+    logger.debug('useMessagePagination', { conversationId });
 
     isInitializedRef.current = false;
     await load();
@@ -286,7 +307,7 @@ export function useMessagePagination(
       totalElements: prev.totalElements + 1,
     }));
 
-    logger.debug('useMessagePagination', { messageIdmessageid,  });
+    logger.debug('useMessagePagination', { messageId: message.id });
   }, []);
 
   /**
@@ -298,7 +319,7 @@ export function useMessagePagination(
         prev.map((m) => (m.id === messageId ? { ...m, ...updates } : m))
       );
 
-      logger.debug('useMessagePagination', { messageId, updates,  });
+      logger.debug('useMessagePagination', { messageId, updates });
     },
     []
   );

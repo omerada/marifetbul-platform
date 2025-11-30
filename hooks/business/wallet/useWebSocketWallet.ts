@@ -257,7 +257,7 @@ export function useWebSocketWallet(
         }
 
         logger.info('Wallet updated via WebSocket', {
-          walletIdupdateDatawalletid,
+          walletId: updateData.wallet.id,
         });
       } catch (err) {
         logger.error(
@@ -288,7 +288,7 @@ export function useWebSocketWallet(
         }
 
         logger.info('Balance updated via WebSocket', {
-          balanceupdateDatabalanceavailableBalance,
+          balance: updateData.balance.availableBalance,
         });
       } catch (err) {
         logger.error(
@@ -319,8 +319,8 @@ export function useWebSocketWallet(
         }
 
         logger.info('Transaction update via WebSocket', {
-          transactionIdupdateDatatransactionid,
-          isNewupdateDataisNew,
+          transactionId: updateData.transaction.id,
+          isNew: updateData.isNew,
         });
       } catch (err) {
         logger.error(
@@ -338,7 +338,7 @@ export function useWebSocketWallet(
   const connect = useCallback(async () => {
     if (!userId) {
       const error = new Error('User ID is required for WebSocket connection');
-      setError(error);
+      setError(error instanceof Error ? error : new Error(String(error)));
       logger.warn('WebSocket connection skipped: no user ID');
       return;
     }
@@ -375,7 +375,7 @@ export function useWebSocketWallet(
     } catch (err) {
       const error =
         err instanceof Error ? err : new Error('WebSocket connection failed');
-      setError(error);
+      setError(error instanceof Error ? error : new Error(String(error)));
       setIsConnected(false);
       setIsConnecting(false);
 
@@ -383,10 +383,7 @@ export function useWebSocketWallet(
         onConnectionChange(false);
       }
 
-      logger.error(
-        'WebSocket connection failed',
-        error
-      );
+      logger.error('WebSocket connection failed', error instanceof Error ? error : new Error(String(error)));
     }
   }, [
     userId,

@@ -458,7 +458,7 @@ export function useOrderCreate({
 
       setError(errorMessage);
 
-      logger.error('[useOrderCreate] Order creation failed', error);
+      logger.error('[useOrderCreate] Order creation failed', error instanceof Error ? error : new Error(String(error)));
 
       toast.error('Sipariş Oluşturulamadı', errorMessage);
 

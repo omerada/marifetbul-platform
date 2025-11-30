@@ -250,7 +250,7 @@ export function useMilestoneWorkflow({
         setError(errorMessage);
         toast.error('İşlem Başarısız', errorMessage);
 
-        logger.error('[useMilestoneWorkflow] Operation failed', error);
+        logger.error('[useMilestoneWorkflow] Operation failed', error instanceof Error ? error : new Error(String(error)));
 
         // Rollback optimistic update
         if (optimistic && optimisticUpdate) {

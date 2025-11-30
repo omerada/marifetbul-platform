@@ -196,9 +196,7 @@ export async function getUserFromRequest(
     };
   } catch (error) {
     logger.error(
-      'Error getting user from request',
-      error
-    );
+      'Error getting user from request', error instanceof Error ? error : new Error(String(error)));
     return null;
   }
 }

@@ -103,14 +103,14 @@ export function useAutoMarkAsRead(
     const messageIds = Array.from(pendingMarksRef.current);
     pendingMarksRef.current.clear();
 
-    logger.debug('useAutoMarkAsRead', { count: messageIds.length, messageIds,  });
+    logger.debug('useAutoMarkAsRead', { count: messageIds.length, messageIds });
 
     // Execute marks in parallel
     await Promise.allSettled(
       messageIds.map(async (messageId) => {
         try {
           await onMarkAsRead(messageId);
-          logger.debug('useAutoMarkAsRead', { messageId,  });
+          logger.debug('useAutoMarkAsRead', { messageId });
         } catch (err) {
           logger.error('useAutoMarkAsRead: Failed to mark as read', undefined, {
             error: err,
@@ -165,7 +165,10 @@ export function useAutoMarkAsRead(
               entry.target.getAttribute('data-is-own-message') === 'true';
 
             if (messageId && !isRead && !isOwnMessage) {
-              logger.debug('useAutoMarkAsRead', { messageId, intersectionRatioentryintersectionRatio,  });
+              logger.debug('useAutoMarkAsRead', {
+                messageId,
+                intersectionRatio: entry.intersectionRatio,
+              });
 
               scheduleMarkAsRead(messageId);
             }

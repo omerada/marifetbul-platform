@@ -52,9 +52,7 @@ export const getCurrentUserId = async (): Promise<string | null> => {
     return data.data?.id || null;
   } catch (error) {
     logger.error(
-      'Error getting current user ID',
-      error
-    );
+      'Error getting current user ID', error instanceof Error ? error : new Error(String(error)));
     return null;
   }
 };
@@ -78,9 +76,7 @@ export const isAuthenticated = async (): Promise<boolean> => {
     return response.ok;
   } catch (error) {
     logger.error(
-      'Error checking authentication',
-      error
-    );
+      'Error checking authentication', error instanceof Error ? error : new Error(String(error)));
     return false;
   }
 };

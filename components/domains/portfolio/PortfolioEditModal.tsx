@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 /**
  * Portfolio Edit Modal
@@ -31,10 +31,10 @@ import type {
 // ============================================================================
 
 const portfolioSchema = z.object({
-  title: z.string().min(3, 'BaÅŸlÄ±k en az 3 karakter olmalÄ±dÄ±r').max(100),
-  description: z.string().min(10, 'AÃ§Ä±klama en az 10 karakter olmalÄ±dÄ±r'),
-  url: z.string().url('GeÃ§erli bir URL giriniz').optional().or(z.literal('')),
-  completedAt: z.string().min(1, 'Tarih seÃ§iniz'),
+  title: z.string().min(3, 'Baþlýk en az 3 karakter olmalýdýr').max(100),
+  description: z.string().min(10, 'Açýklama en az 10 karakter olmalýdýr'),
+  url: z.string().url('Geçerli bir URL giriniz').optional().or(z.literal('')),
+  completedAt: z.string().min(1, 'Tarih seçiniz'),
   category: z.string().optional(),
   client: z.string().optional(),
   skills: z.array(z.string()).default([]),
@@ -104,12 +104,12 @@ export function PortfolioEditModal({
   // Handle form submission
   const onSubmit = async (data: PortfolioFormData) => {
     if (!portfolio?.id) {
-      toast.error('Portfolio bulunamadÄ±');
+      toast.error('Portfolio bulunamadý');
       return;
     }
 
     if (images.length === 0 && newImageUrls.length === 0) {
-      toast.error('En az bir gÃ¶rsel yÃ¼klemelisiniz');
+      toast.error('En az bir görsel yüklemelisiniz');
       return;
     }
 
@@ -142,38 +142,38 @@ export function PortfolioEditModal({
 
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        toast.error('Sadece gÃ¶rsel dosyalarÄ± yÃ¼kleyebilirsiniz');
+        toast.error('Sadece görsel dosyalarý yükleyebilirsiniz');
         return;
       }
 
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        toast.error("GÃ¶rsel boyutu 5MB'dan kÃ¼Ã§Ã¼k olmalÄ±dÄ±r");
+        toast.error("Görsel boyutu 5MB'dan küçük olmalýdýr");
         return;
       }
 
       // Check Cloudinary configuration
       if (!isCloudinaryConfigured()) {
-        toast.error('Cloudinary yapÄ±landÄ±rmasÄ± eksik');
+        toast.error('Cloudinary yapýlandýrmasý eksik');
         logger.error('Cloudinary is not configured');
         return;
       }
 
       // Upload to Cloudinary
-      toast.loading('GÃ¶rsel yÃ¼kleniyor...', { id: 'upload' });
+      toast.loading('Görsel yükleniyor...', { id: 'upload' });
       const result = await uploadImage(file);
 
       if (result.success && result.url) {
         setNewImageUrls((prev) => [...prev, result.url!]);
-        toast.success('GÃ¶rsel baÅŸarÄ±yla yÃ¼klendi!', { id: 'upload' });
+        toast.success('Görsel baþarýyla yüklendi!', { id: 'upload' });
       } else {
-        toast.error(result.error || 'GÃ¶rsel yÃ¼klenirken hata oluÅŸtu', {
+        toast.error(result.error || 'Görsel yüklenirken hata oluþtu', {
           id: 'upload',
         });
       }
     } catch (error) {
-      toast.error('GÃ¶rsel yÃ¼klenirken hata oluÅŸtu', { id: 'upload' });
-      logger.error('Image upload error:', error);
+      toast.error('Görsel yüklenirken hata oluþtu', { id: 'upload' });
+      logger.error('Image upload error:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setUploadingImage(false);
     }
@@ -253,13 +253,13 @@ export function PortfolioEditModal({
         {/* Header */}
         <div className="flex items-center justify-between border-b p-4">
           <h2 id="edit-modal-title" className="text-xl font-semibold">
-            Portfolio DÃ¼zenle
+            Portfolio Düzenle
           </h2>
           <button
             onClick={handleClose}
             disabled={isUpdating}
             className="rounded-full p-1 hover:bg-gray-100"
-            aria-label="ModalÄ± kapat"
+            aria-label="Modalý kapat"
           >
             <X className="h-5 w-5" />
           </button>
@@ -270,13 +270,13 @@ export function PortfolioEditModal({
           {/* Title */}
           <div>
             <label className="mb-1 block text-sm font-medium">
-              BaÅŸlÄ±k <span className="text-red-500">*</span>
+              Baþlýk <span className="text-red-500">*</span>
             </label>
             <input
               {...register('title')}
               type="text"
               className="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              placeholder="Proje baÅŸlÄ±ÄŸÄ±"
+              placeholder="Proje baþlýðý"
             />
             {errors.title && (
               <p className="mt-1 text-sm text-red-500">
@@ -288,13 +288,13 @@ export function PortfolioEditModal({
           {/* Description */}
           <div>
             <label className="mb-1 block text-sm font-medium">
-              AÃ§Ä±klama <span className="text-red-500">*</span>
+              Açýklama <span className="text-red-500">*</span>
             </label>
             <textarea
               {...register('description')}
               rows={4}
               className="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              placeholder="Proje hakkÄ±nda detaylÄ± bilgi"
+              placeholder="Proje hakkýnda detaylý bilgi"
             />
             {errors.description && (
               <p className="mt-1 text-sm text-red-500">
@@ -306,7 +306,7 @@ export function PortfolioEditModal({
           {/* Images */}
           <div>
             <label className="mb-1 block text-sm font-medium">
-              GÃ¶rseller <span className="text-red-500">*</span>
+              Görseller <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-3 gap-2">
               {/* Existing images */}
@@ -363,7 +363,7 @@ export function PortfolioEditModal({
                 ) : (
                   <>
                     <Upload className="mb-1 h-8 w-8 text-gray-400" />
-                    <span className="text-xs text-gray-500">GÃ¶rsel Ekle</span>
+                    <span className="text-xs text-gray-500">Görsel Ekle</span>
                   </>
                 )}
               </label>
@@ -419,13 +419,13 @@ export function PortfolioEditModal({
           {/* Client */}
           <div>
             <label className="mb-1 block text-sm font-medium">
-              MÃ¼ÅŸteri (opsiyonel)
+              Müþteri (opsiyonel)
             </label>
             <input
               {...register('client')}
               type="text"
               className="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              placeholder="Åžirket AdÄ±"
+              placeholder="Þirket Adý"
             />
           </div>
 
@@ -475,7 +475,7 @@ export function PortfolioEditModal({
               className="rounded"
             />
             <label htmlFor="isPublic" className="text-sm">
-              Herkese aÃ§Ä±k olarak gÃ¶ster
+              Herkese açýk olarak göster
             </label>
           </div>
 
@@ -487,7 +487,7 @@ export function PortfolioEditModal({
               onClick={handleClose}
               disabled={isUpdating}
             >
-              Ä°ptal
+              Ýptal
             </Button>
             <Button
               type="submit"
@@ -495,7 +495,7 @@ export function PortfolioEditModal({
                 isUpdating || (images.length === 0 && newImageUrls.length === 0)
               }
             >
-              {isUpdating ? 'GÃ¼ncelleniyor...' : 'GÃ¼ncelle'}
+              {isUpdating ? 'Güncelleniyor...' : 'Güncelle'}
             </Button>
           </div>
         </form>

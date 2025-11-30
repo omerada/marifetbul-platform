@@ -537,7 +537,7 @@ export function useJobCreate({
       }
     } catch (err) {
       const error = err as Error;
-      logger.error('[useJobCreate] Job creation failed', error);
+      logger.error('[useJobCreate] Job creation failed', error instanceof Error ? error : new Error(String(error)));
 
       setError(error.message || 'İş ilanı oluşturulurken bir hata oluştu');
 

@@ -127,9 +127,7 @@ export function useForm(config: FormConfig) {
         await config.onSubmit(state.values);
       } catch (error) {
         logger.error(
-          'Form submission error',
-          error
-        );
+          'Form submission error', error instanceof Error ? error : new Error(String(error)));
       } finally {
         setState((prev) => ({ ...prev, isSubmitting: false }));
       }

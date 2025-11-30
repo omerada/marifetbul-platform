@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import { usePlatformSettings } from '@/hooks';
@@ -119,7 +119,7 @@ export function SystemSettings({ className }: SystemSettingsProps) {
     try {
       await updateSettings(formData as Partial<PlatformSettings>);
     } catch (error) {
-      logger.error('Failed to save settings:', error);
+      logger.error('Failed to save settings:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -128,7 +128,7 @@ export function SystemSettings({ className }: SystemSettingsProps) {
       await resetSettings();
       setShowResetDialog(false);
     } catch (error) {
-      logger.error('Failed to reset settings:', error);
+      logger.error('Failed to reset settings:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -226,7 +226,7 @@ export function SystemSettings({ className }: SystemSettingsProps) {
       case 'minimumPayout':
         return (
           <div key={field} className="space-y-2">
-            <label className="text-sm font-medium">Minimum Payout (₺)</label>
+            <label className="text-sm font-medium">Minimum Payout (?)</label>
             <Input
               type="number"
               min="0"
@@ -247,9 +247,9 @@ export function SystemSettings({ className }: SystemSettingsProps) {
               value={value || 'TRY'}
               onChange={(e) => handleInputChange(field, e.target.value)}
             >
-              <option value="TRY">Turkish Lira (₺)</option>
+              <option value="TRY">Turkish Lira (?)</option>
               <option value="USD">US Dollar ($)</option>
-              <option value="EUR">Euro (€)</option>
+              <option value="EUR">Euro (�)</option>
             </select>
           </div>
         );

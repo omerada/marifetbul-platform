@@ -202,7 +202,7 @@ export function ZeroResultsState({
     fetchPopularSearches(6, 7)
       .then(setPopularSearches)
       .catch((err) => {
-        logger.error('[ZeroResultsState] Failed to load popular searches', err);
+        logger.error('[ZeroResultsState] Failed to load popular searches', err instanceof Error ? err : new Error(String(err)));
         setPopularSearches([]);
       })
       .finally(() => setIsLoadingPopular(false));

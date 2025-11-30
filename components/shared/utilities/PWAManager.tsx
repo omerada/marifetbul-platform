@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui';
@@ -109,7 +109,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
         setCacheSize(`${(totalSize / (1024 * 1024)).toFixed(1)} MB`);
       }
     } catch (error) {
-      logger.error('Cache size calculation failed:', error);
+      logger.error('Cache size calculation failed:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -127,13 +127,13 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
 
       setInstallPrompt(null);
     } catch (error) {
-      logger.error('Installation failed:', error);
+      logger.error('Installation failed:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
   const handleNotificationPermission = async () => {
     if (!('Notification' in window)) {
-      alert('Bu tarayÄ±cÄ± bildirim Ã¶zelliÄŸini desteklemiyor.');
+      alert('Bu tarayýcý bildirim özelliðini desteklemiyor.');
       return;
     }
 
@@ -143,12 +143,12 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
 
       if (permission === 'granted') {
         new Notification('Marifet', {
-          body: 'Bildirimler baÅŸarÄ±yla etkinleÅŸtirildi!',
+          body: 'Bildirimler baþarýyla etkinleþtirildi!',
           icon: '/icon-192x192.png',
         });
       }
     } catch (error) {
-      logger.error('Notification permission failed:', error);
+      logger.error('Notification permission failed:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -160,10 +160,10 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
           cacheNames.map((cacheName) => caches.delete(cacheName))
         );
         setCacheSize('0 MB');
-        alert('Ã–nbellek temizlendi!');
+        alert('Önbellek temizlendi!');
       }
     } catch (error) {
-      logger.error('Cache clearing failed:', error);
+      logger.error('Cache clearing failed:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -175,7 +175,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
         });
       });
       setLastUpdate(new Date());
-      alert('Uygulama gÃ¼ncelleme kontrolÃ¼ yapÄ±ldÄ±!');
+      alert('Uygulama güncelleme kontrolü yapýldý!');
     }
   };
 
@@ -189,11 +189,11 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
               <Smartphone className="h-6 w-6 text-blue-600" />
               <div>
                 <h3 className="font-semibold text-blue-900">
-                  UygulamayÄ± YÃ¼kle
+                  Uygulamayý Yükle
                 </h3>
                 <p className="text-sm text-blue-700">
-                  Marifet&apos;i ana ekranÄ±nÄ±za ekleyin ve daha hÄ±zlÄ± eriÅŸim
-                  saÄŸlayÄ±n.
+                  Marifet&apos;i ana ekranýnýza ekleyin ve daha hýzlý eriþim
+                  saðlayýn.
                 </p>
               </div>
             </div>
@@ -205,7 +205,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
                 className="bg-blue-600 hover:bg-blue-700"
               >
                 <Download className="mr-1 h-4 w-4" />
-                YÃ¼kle
+                Yükle
               </Button>
               <Button
                 size="sm"
@@ -230,12 +230,12 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
             )}
             <div>
               <h3 className="font-semibold">
-                {isOnline ? 'Ã‡evrimiÃ§i' : 'Ã‡evrimdÄ±ÅŸÄ±'}
+                {isOnline ? 'Çevrimiçi' : 'Çevrimdýþý'}
               </h3>
               <p className="text-sm text-gray-600">
                 {isOnline
-                  ? 'Ä°nternet baÄŸlantÄ±sÄ± aktif'
-                  : 'Ã‡evrimdÄ±ÅŸÄ± modda Ã§alÄ±ÅŸÄ±yorsunuz'}
+                  ? 'Ýnternet baðlantýsý aktif'
+                  : 'Çevrimdýþý modda çalýþýyorsunuz'}
               </p>
             </div>
           </div>
@@ -256,17 +256,17 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm">YÃ¼kleme Durumu</span>
+              <span className="text-sm">Yükleme Durumu</span>
               <div className="flex items-center gap-2">
                 {isInstalled ? (
                   <>
                     <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm text-green-600">YÃ¼klÃ¼</span>
+                    <span className="text-sm text-green-600">Yüklü</span>
                   </>
                 ) : (
                   <>
                     <AlertCircle className="h-4 w-4 text-orange-500" />
-                    <span className="text-sm text-orange-600">YÃ¼klÃ¼ DeÄŸil</span>
+                    <span className="text-sm text-orange-600">Yüklü Deðil</span>
                   </>
                 )}
               </div>
@@ -280,7 +280,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
                 className="w-full"
               >
                 <Download className="mr-2 h-4 w-4" />
-                UygulamayÄ± YÃ¼kle
+                Uygulamayý Yükle
               </Button>
             )}
           </div>
@@ -295,7 +295,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm">Bildirim Ä°zni</span>
+              <span className="text-sm">Bildirim Ýzni</span>
               <div className="flex items-center gap-2">
                 {notificationsPermission === 'granted' ? (
                   <>
@@ -324,7 +324,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
                 className="w-full"
               >
                 <Bell className="mr-2 h-4 w-4" />
-                Bildirimleri EtkinleÅŸtir
+                Bildirimleri Etkinleþtir
               </Button>
             )}
           </div>
@@ -335,31 +335,31 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
       <Card className="p-4">
         <div className="mb-4 flex items-center gap-3">
           <Settings className="h-5 w-5" />
-          <h3 className="font-semibold">Ã–nbellek YÃ¶netimi</h3>
+          <h3 className="font-semibold">Önbellek Yönetimi</h3>
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="text-center">
             <p className="text-2xl font-bold text-blue-600">{cacheSize}</p>
-            <p className="text-sm text-gray-600">Ã–nbellek Boyutu</p>
+            <p className="text-sm text-gray-600">Önbellek Boyutu</p>
           </div>
 
           <div className="text-center">
             <p className="text-2xl font-bold text-green-600">
               {lastUpdate.toLocaleDateString('tr-TR')}
             </p>
-            <p className="text-sm text-gray-600">Son GÃ¼ncelleme</p>
+            <p className="text-sm text-gray-600">Son Güncelleme</p>
           </div>
 
           <div className="flex flex-col gap-2">
             <Button size="sm" variant="outline" onClick={handleForceUpdate}>
               <RefreshCw className="mr-2 h-4 w-4" />
-              GÃ¼ncellemeyi Kontrol Et
+              Güncellemeyi Kontrol Et
             </Button>
 
             <Button size="sm" variant="outline" onClick={handleClearCache}>
               <X className="mr-2 h-4 w-4" />
-              Ã–nbelleÄŸi Temizle
+              Önbelleði Temizle
             </Button>
           </div>
         </div>
@@ -367,17 +367,17 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
 
       {/* PWA Features Info */}
       <Card className="p-4">
-        <h3 className="mb-3 font-semibold">PWA Ã–zellikleri</h3>
+        <h3 className="mb-3 font-semibold">PWA Özellikleri</h3>
 
         <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Ã‡evrimdÄ±ÅŸÄ± Ã‡alÄ±ÅŸma</span>
+              <span>Çevrimdýþý Çalýþma</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>HÄ±zlÄ± YÃ¼kleme</span>
+              <span>Hýzlý Yükleme</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-500" />
@@ -392,7 +392,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Otomatik GÃ¼ncelleme</span>
+              <span>Otomatik Güncelleme</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-500" />

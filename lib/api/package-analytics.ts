@@ -70,7 +70,10 @@ export async function fetchPackageAnalytics(
       { days: String(days) }
     );
 
-    logger.info('Package analytics fetched successfully', { totalPackagesresponsemetricstotalPackages, totalRevenueresponsemetricstotalRevenue,  });
+    logger.info('Package analytics fetched successfully', {
+      totalPackages: response.metrics.totalPackages,
+      totalRevenue: response.metrics.totalRevenue,
+    });
 
     return response;
   } catch (error) {
@@ -91,7 +94,10 @@ export async function fetchPackageAnalyticsByDateRange(
   endDate: string
 ): Promise<PackageAnalyticsData> {
   try {
-    logger.info('Fetching package analytics by date range', { startDate, endDate,  });
+    logger.info('Fetching package analytics by date range', {
+      startDate,
+      endDate,
+    });
 
     const response = await apiClient.get<PackageAnalyticsData>(
       '/seller/packages/analytics',

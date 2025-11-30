@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 /**
  * ================================================
@@ -92,47 +92,47 @@ const _DEFAULT_FILTERS: FilterState = {
 };
 
 const PRICE_PRESETS = [
-  { label: 'â‚º0 - â‚º500', min: 0, max: 500 },
-  { label: 'â‚º500 - â‚º2,000', min: 500, max: 2000 },
-  { label: 'â‚º2,000 - â‚º5,000', min: 2000, max: 5000 },
-  { label: 'â‚º5,000+', min: 5000, max: 100000 },
+  { label: '?0 - ?500', min: 0, max: 500 },
+  { label: '?500 - ?2,000', min: 500, max: 2000 },
+  { label: '?2,000 - ?5,000', min: 2000, max: 5000 },
+  { label: '?5,000+', min: 5000, max: 100000 },
 ];
 
 const RATING_OPTIONS = [
-  { label: '5 YÄ±ldÄ±z', value: 5 },
-  { label: '4+ YÄ±ldÄ±z', value: 4 },
-  { label: '3+ YÄ±ldÄ±z', value: 3 },
-  { label: '2+ YÄ±ldÄ±z', value: 2 },
+  { label: '5 Yıldız', value: 5 },
+  { label: '4+ Yıldız', value: 4 },
+  { label: '3+ Yıldız', value: 3 },
+  { label: '2+ Yıldız', value: 2 },
 ];
 
 const DELIVERY_PRESETS = [
   { label: '24 Saat', value: 1 },
-  { label: '3 GÃ¼n', value: 3 },
-  { label: '7 GÃ¼n', value: 7 },
-  { label: '14 GÃ¼n', value: 14 },
-  { label: '30 GÃ¼n', value: 30 },
+  { label: '3 Gün', value: 3 },
+  { label: '7 Gün', value: 7 },
+  { label: '14 Gün', value: 14 },
+  { label: '30 Gün', value: 30 },
 ];
 
 const EXPERIENCE_LEVELS = [
-  { id: 'entry', label: 'BaÅŸlangÄ±Ã§' },
+  { id: 'entry', label: 'Başlangıç' },
   { id: 'intermediate', label: 'Orta' },
   { id: 'expert', label: 'Uzman' },
-  { id: 'senior', label: 'KÄ±demli' },
+  { id: 'senior', label: 'Kıdemli' },
 ];
 
 const LANGUAGES = [
-  { id: 'tr', label: 'TÃ¼rkÃ§e' },
-  { id: 'en', label: 'Ä°ngilizce' },
+  { id: 'tr', label: 'Türkçe' },
+  { id: 'en', label: 'İngilizce' },
   { id: 'de', label: 'Almanca' },
-  { id: 'fr', label: 'FransÄ±zca' },
-  { id: 'ar', label: 'ArapÃ§a' },
-  { id: 'ru', label: 'RusÃ§a' },
+  { id: 'fr', label: 'Fransızca' },
+  { id: 'ar', label: 'Arapça' },
+  { id: 'ru', label: 'Rusça' },
 ];
 
 const TOP_CITIES = [
-  'Ä°stanbul',
+  'İstanbul',
   'Ankara',
-  'Ä°zmir',
+  'İzmir',
   'Antalya',
   'Bursa',
   'Adana',
@@ -164,9 +164,7 @@ export function AdvancedSearchFiltersSidebar({
       }
     } catch (error) {
       logger.error(
-        'Failed to load filter presets',
-        error
-      );
+        'Failed to load filter presets', error instanceof Error ? error : new Error(String(error)));
     }
   }, []);
 
@@ -212,7 +210,7 @@ export function AdvancedSearchFiltersSidebar({
 
   const savePreset = () => {
     if (!presetName.trim()) {
-      alert('LÃ¼tfen bir preset adÄ± girin');
+      alert('Lütfen bir preset adı girin');
       return;
     }
 
@@ -268,7 +266,7 @@ export function AdvancedSearchFiltersSidebar({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="text-primary h-5 w-5" />
-            <h3 className="font-semibold">GeliÅŸmiÅŸ Filtreler</h3>
+            <h3 className="font-semibold">Gelişmiş Filtreler</h3>
             {activeFilterCount > 0 && (
               <Badge variant="secondary">{activeFilterCount}</Badge>
             )}
@@ -288,7 +286,7 @@ export function AdvancedSearchFiltersSidebar({
         <div className="space-y-2">
           <div className="flex gap-2">
             <Input
-              placeholder="Preset adÄ±..."
+              placeholder="Preset adı..."
               value={presetName}
               onChange={(e) => setPresetName(e.target.value)}
               className="flex-1"
@@ -308,7 +306,7 @@ export function AdvancedSearchFiltersSidebar({
             <div className="space-y-2">
               <Label className="text-muted-foreground flex items-center gap-1 text-xs">
                 <FolderOpen className="h-3 w-3" />
-                KaydedilmiÅŸ Presetler
+                Kaydedilmiş Presetler
               </Label>
               <div className="flex flex-wrap gap-2">
                 {Object.keys(savedPresets).map((name) => (
@@ -337,7 +335,7 @@ export function AdvancedSearchFiltersSidebar({
 
         {/* Quick Toggles */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium">HÄ±zlÄ± Filtreler</Label>
+          <Label className="text-sm font-medium">Hızlı Filtreler</Label>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => updateFilter('verified', !filters.verified)}
@@ -347,7 +345,7 @@ export function AdvancedSearchFiltersSidebar({
                   : 'bg-muted hover:bg-muted/80'
               }`}
             >
-              âœ“ DoÄŸrulanmÄ±ÅŸ
+              ? Doğrulanmış
             </button>
             <button
               onClick={() => updateFilter('featured', !filters.featured)}
@@ -357,7 +355,7 @@ export function AdvancedSearchFiltersSidebar({
                   : 'bg-muted hover:bg-muted/80'
               }`}
             >
-              â­ Ã–ne Ã‡Ä±kanlar
+              ? Öne Çıkanlar
             </button>
           </div>
         </div>
@@ -414,7 +412,7 @@ export function AdvancedSearchFiltersSidebar({
           >
             <Label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
               <DollarSign className="h-4 w-4" />
-              Fiyat AralÄ±ÄŸÄ±
+              Fiyat Aralığı
             </Label>
             {isSectionExpanded('price') ? (
               <ChevronUp className="h-4 w-4" />
@@ -512,7 +510,7 @@ export function AdvancedSearchFiltersSidebar({
           >
             <Label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
               <Star className="h-4 w-4" />
-              DeÄŸerlendirme
+              Değerlendirme
             </Label>
             {isSectionExpanded('rating') ? (
               <ChevronUp className="h-4 w-4" />
@@ -551,7 +549,7 @@ export function AdvancedSearchFiltersSidebar({
           >
             <Label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
               <Clock className="h-4 w-4" />
-              Teslimat SÃ¼resi
+              Teslimat Süresi
             </Label>
             {isSectionExpanded('delivery') ? (
               <ChevronUp className="h-4 w-4" />
@@ -568,7 +566,7 @@ export function AdvancedSearchFiltersSidebar({
                   updateFilter('maxDeliveryDays', Number(value))
                 }
               >
-                <SelectTrigger placeholder="Maksimum sÃ¼re" />
+                <SelectTrigger placeholder="Maksimum süre" />
                 <SelectContent>
                   {DELIVERY_PRESETS.map((preset) => (
                     <SelectItem
@@ -578,7 +576,7 @@ export function AdvancedSearchFiltersSidebar({
                       {preset.label}
                     </SelectItem>
                   ))}
-                  <SelectItem value="365">TÃ¼mÃ¼</SelectItem>
+                  <SelectItem value="365">Tümü</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -191,7 +191,7 @@ export async function validateToken(
       username: data.user?.username,
     };
   } catch (error) {
-    logger.error('Token validation error', error);
+    logger.error('Token validation error', error instanceof Error ? error : new Error(String(error)));
     return null;
   }
 }

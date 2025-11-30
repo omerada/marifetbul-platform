@@ -41,7 +41,7 @@ export function usePlatformSettings() {
       try {
         await updateSettings(settings);
       } catch (error) {
-        logger.error('Settings update failed:', error);
+        logger.error('Settings update failed:', error instanceof Error ? error : new Error(String(error)));
       } finally {
         setIsSaving(false);
       }
@@ -74,7 +74,7 @@ export function usePlatformSettings() {
     try {
       await resetSettings();
     } catch (error) {
-      logger.error('Settings reset failed:', error);
+      logger.error('Settings reset failed:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsResetting(false);
     }
@@ -85,7 +85,7 @@ export function usePlatformSettings() {
     try {
       await exportSettings();
     } catch (error) {
-      logger.error('Settings export failed:', error);
+      logger.error('Settings export failed:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsExporting(false);
     }
@@ -97,7 +97,7 @@ export function usePlatformSettings() {
       try {
         await importSettings(settings);
       } catch (error) {
-        logger.error('Settings import failed:', error);
+        logger.error('Settings import failed:', error instanceof Error ? error : new Error(String(error)));
       } finally {
         setIsSaving(false);
       }

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * ================================================
@@ -153,7 +153,7 @@ export function useWebSocket(
         const wsMessage = message as WebSocketMessage;
         const messageType = wsMessage.type;
 
-        logger.debug('useWebSocket', { typemessageType, payloadwsMessage });
+        logger.debug('useWebSocket', { type: messageType, payload: wsMessage });
 
         switch (messageType) {
           case 'MESSAGE':
@@ -186,8 +186,8 @@ export function useWebSocket(
               };
               messagingStore.addMessage(businessMsg);
               logger.info('useWebSocket', {
-                messageIdbusinessMsgid,
-                conversationIdbusinessMsgconversationId,
+                messageId: businessMsg.id,
+                conversationId: businessMsg.conversationId,
               });
             }
             break;
@@ -285,8 +285,8 @@ export function useWebSocket(
                 enhancedNotification
               );
               logger.info('useWebSocket', {
-                idnotificationid,
-                typenotificationtype,
+                id: notification.id,
+                type: notification.type,
               });
             }
             break;
@@ -306,15 +306,15 @@ export function useWebSocket(
                   orderData.status
                 );
                 logger.debug('useWebSocket', {
-                  orderIdorderDataorderId,
-                  statusorderDatastatus,
+                  orderId: orderData.orderId,
+                  status: orderData.status,
                 });
               }
 
               // If full order object is provided, update the order
               if (orderData.order) {
                 orderStore.handleOrderUpdate(orderData.order);
-                logger.debug('useWebSocket', { orderIdorderDataorderid });
+                logger.debug('useWebSocket', { orderId: orderData.order.id });
               }
 
               // Add timeline entry if provided
@@ -323,7 +323,7 @@ export function useWebSocket(
                   orderData.orderId,
                   orderData.timeline
                 );
-                logger.debug('useWebSocket', { orderIdorderDataorderId });
+                logger.debug('useWebSocket', { orderId: orderData.orderId });
               }
             }
             break;
@@ -346,12 +346,15 @@ export function useWebSocket(
                   readAt: readData.readAt || new Date().toISOString(),
                 });
               });
-              logger.debug('useWebSocket', { countmessageIdslength });
+              logger.debug('useWebSocket', { count: messageIds.length });
             }
             break;
 
           default:
-            logger.warn('useWebSocket', { typemessageType, messagewsMessage });
+            logger.warn('useWebSocket', {
+              type: messageType,
+              message: wsMessage,
+            });
         }
       } catch (err) {
         logger.error('useWebSocket: Error handling message', undefined, {
@@ -371,7 +374,7 @@ export function useWebSocket(
       typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
 
     if (!token) {
-      logger.warn('useWebSocket', { cannotconnect });
+      logger.warn('useWebSocket', 'Cannot connect: no token');
       return;
     }
 
@@ -390,7 +393,7 @@ export function useWebSocket(
           ...config,
         };
 
-        logger.info('useWebSocket', { urlwsConfigurl, userIduserid });
+        logger.info('useWebSocket', { url: wsConfig.url, userId: user.id });
 
         serviceRef.current = initWebSocketService(wsConfig);
 
@@ -461,7 +464,7 @@ export function useWebSocket(
             logger.error('useWebSocket: WebSocket error', undefined, {
               error: err,
             });
-            setError(err);
+            setError(err instanceof Error ? err : new Error(String(err)));
             onError?.(err);
           },
           onReconnecting: (attempt) => {
@@ -479,7 +482,7 @@ export function useWebSocket(
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to connect');
       logger.error('useWebSocket: Connection failed', undefined, { error });
-      setError(error);
+      setError(error instanceof Error ? error : new Error(String(error)));
       setState(WebSocketState.ERROR);
     }
   }, [

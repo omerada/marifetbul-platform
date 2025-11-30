@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
@@ -54,7 +54,7 @@ export function SocialShare({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      logger.error('Failed to copy link:', error);
+      logger.error('Failed to copy link:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -122,7 +122,7 @@ export function SocialShare({
               <Copy className="h-4 w-4" />
             )}
             <span className="hidden sm:inline">
-              {copied ? 'KopyalandÄ±' : 'Linki Kopyala'}
+              {copied ? 'Kopyalandý' : 'Linki Kopyala'}
             </span>
           </Button>
         )}
@@ -136,7 +136,7 @@ export function SocialShare({
         {/* This would need a proper dropdown component */}
         <Button variant="outline" size={size}>
           <Share2 className="mr-2 h-4 w-4" />
-          PaylaÅŸ
+          Paylaþ
         </Button>
       </div>
     );
@@ -161,7 +161,7 @@ export function SocialStats({ url, className }: SocialStatsProps) {
     return (
       <div className={cn('flex items-center gap-2', className)}>
         <div className="border-primary h-4 w-4 animate-spin rounded-full border-b-2"></div>
-        <span className="text-muted-foreground text-sm">YÃ¼kleniyor...</span>
+        <span className="text-muted-foreground text-sm">Yükleniyor...</span>
       </div>
     );
   }
@@ -175,7 +175,7 @@ export function SocialStats({ url, className }: SocialStatsProps) {
       <div className="flex items-center gap-2">
         <Share2 className="text-muted-foreground h-4 w-4" />
         <span className="text-sm font-medium">{shareStats.total}</span>
-        <span className="text-muted-foreground text-xs">paylaÅŸÄ±m</span>
+        <span className="text-muted-foreground text-xs">paylaþým</span>
       </div>
 
       <div className="flex items-center gap-2">
@@ -302,7 +302,7 @@ export function SocialProof({ type, data, className }: SocialProofProps) {
       return (
         <Card className={className}>
           <CardHeader>
-            <CardTitle className="text-lg">KullanÄ±cÄ± YorumlarÄ±</CardTitle>
+            <CardTitle className="text-lg">Kullanýcý Yorumlarý</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {content.testimonials?.map((testimonial) => (
@@ -325,13 +325,13 @@ export function SocialProof({ type, data, className }: SocialProofProps) {
                 <div className="mt-2 flex gap-1">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <span key={i} className="text-sm text-yellow-400">
-                      â˜…
+                      ?
                     </span>
                   ))}
                 </div>
               </div>
             )) || (
-              <p className="text-muted-foreground text-sm">HenÃ¼z yorum yok.</p>
+              <p className="text-muted-foreground text-sm">Henüz yorum yok.</p>
             )}
           </CardContent>
         </Card>
@@ -343,7 +343,7 @@ export function SocialProof({ type, data, className }: SocialProofProps) {
           <div className="text-primary text-3xl font-bold">
             {content.userCount?.toLocaleString('tr-TR') || '0'}
           </div>
-          <div className="text-muted-foreground text-sm">aktif kullanÄ±cÄ±</div>
+          <div className="text-muted-foreground text-sm">aktif kullanýcý</div>
         </div>
       );
 
@@ -368,7 +368,7 @@ export function SocialProof({ type, data, className }: SocialProofProps) {
               </div>
             )) || (
               <p className="text-muted-foreground text-sm">
-                HenÃ¼z aktivite yok.
+                Henüz aktivite yok.
               </p>
             )}
           </CardContent>

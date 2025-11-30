@@ -1,8 +1,8 @@
-ï»¿'use client';
+'use client';
 
 /**
  * Map View Component
- * Harita gÃ¶rÃ¼nÃ¼mÃ¼ bileÅŸeni
+ * Harita görünümü bileþeni
  */
 
 'use client';
@@ -186,7 +186,7 @@ export const MapView: React.FC<MapViewProps> = ({
         setMapZoom(15);
       }
     } catch (error) {
-      logger.error('Failed to get current location:', error);
+      logger.error('Failed to get current location:', error instanceof Error ? error : new Error(String(error)));
     }
   }, [getCurrentPosition, unifiedLocation.currentPosition]);
 
@@ -272,7 +272,7 @@ export const MapView: React.FC<MapViewProps> = ({
               const x = e.clientX - rect.left;
               const y = e.clientY - rect.top;
 
-              // Approximate coordinates conversion â€” real map library will handle projection accurately.
+              // Approximate coordinates conversion — real map library will handle projection accurately.
               const lat =
                 mapCenter.lat +
                 (0.5 - y / rect.height) * 0.01 * Math.pow(2, 15 - mapZoom);
@@ -374,7 +374,7 @@ export const MapView: React.FC<MapViewProps> = ({
                 setMapLayer(mapLayer === 'roadmap' ? 'satellite' : 'roadmap')
               }
               className="h-10 w-10 p-0"
-              title="Katman deÄŸiÅŸtir"
+              title="Katman deðiþtir"
             >
               <Layers className="h-4 w-4" />
             </Button>
@@ -406,7 +406,7 @@ export const MapView: React.FC<MapViewProps> = ({
             size="sm"
             onClick={handleResetView}
             className="h-10 w-10 p-0"
-            title="GÃ¶rÃ¼nÃ¼mÃ¼ sÄ±fÄ±rla"
+            title="Görünümü sýfýrla"
           >
             <RotateCcw className="h-4 w-4" />
           </Button>
@@ -450,7 +450,7 @@ export const MapView: React.FC<MapViewProps> = ({
                 onClick={() => setSelectedMarker(null)}
                 className="h-6 w-6 flex-shrink-0 p-0"
               >
-                Ã—
+                ×
               </Button>
             </div>
           </Card>

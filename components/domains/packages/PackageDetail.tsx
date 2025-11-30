@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -53,13 +53,13 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
   const [isSaved, setIsSaved] = useState(false);
 
   if (isLoading) {
-    return <Loading variant="skeleton" text="Paket detaylarÄ± yÃ¼kleniyor..." />;
+    return <Loading variant="skeleton" text="Paket detaylarý yükleniyor..." />;
   }
 
   if (error || !currentPackage) {
     return (
       <SimpleErrorDisplay
-        error={error || 'Paket bulunamadÄ±'}
+        error={error || 'Paket bulunamadý'}
         onRetry={refreshPackageDetail}
       />
     );
@@ -75,7 +75,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
   if (!isPackageDetail(currentPackage)) {
     return (
       <SimpleErrorDisplay
-        message="Bu paket iÃ§in detay gÃ¶rÃ¼nÃ¼mÃ¼ mevcut deÄŸil"
+        message="Bu paket için detay görünümü mevcut deðil"
         onRetry={refreshPackageDetail}
       />
     );
@@ -133,7 +133,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
       });
       // Navigate to order confirmation or payment
     } catch (error) {
-      logger.error('Order creation error:', error);
+      logger.error('Order creation error:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -166,11 +166,11 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
               <span className="flex items-center">
                 <MapPin className="mr-1 h-4 w-4" />
                 {(currentPackage.freelancer as Freelancer)?.location ||
-                  'BelirtilmemiÅŸ'}
+                  'Belirtilmemiþ'}
               </span>
               <span className="flex items-center">
                 <Users className="mr-1 h-4 w-4" />
-                {currentPackage.orders} sipariÅŸ
+                {currentPackage.orders} sipariþ
               </span>
             </div>
 
@@ -186,7 +186,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
 
           <div className="text-right">
             <div className="mb-1 text-2xl font-bold text-green-600">
-              â‚º{currentTierData?.price?.toLocaleString('tr-TR') || '0'}
+              ?{currentTierData?.price?.toLocaleString('tr-TR') || '0'}
               {selectedAddOnDetails.length > 0 && (
                 <span className="text-lg">
                   +{' '}
@@ -200,7 +200,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
               {getTierName(selectedTier)} Paket
             </div>
             <div className="text-sm font-medium text-gray-700">
-              {currentTierData?.deliveryTime || 0} gÃ¼n
+              {currentTierData?.deliveryTime || 0} gün
             </div>
           </div>
         </div>
@@ -220,12 +220,12 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
 
           <Button variant="outline" size="lg">
             <Share2 className="mr-2 h-4 w-4" />
-            PaylaÅŸ
+            Paylaþ
           </Button>
 
           <Button variant="outline" size="lg">
             <Flag className="mr-2 h-4 w-4" />
-            Åžikayet Et
+            Þikayet Et
           </Button>
         </div>
       </div>
@@ -237,7 +237,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
           {/* Package Tiers */}
           <Card>
             <CardHeader>
-              <CardTitle>Paket SeÃ§enekleri</CardTitle>
+              <CardTitle>Paket Seçenekleri</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -262,12 +262,12 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                       </div>
 
                       <div className="mb-2 text-2xl font-bold text-green-600">
-                        â‚º{tier.price.toLocaleString('tr-TR')}
+                        ?{tier.price.toLocaleString('tr-TR')}
                       </div>
 
                       <div className="mb-4 text-sm text-gray-600">
                         <Clock className="mr-1 inline h-4 w-4" />
-                        {tier.deliveryTime} gÃ¼n
+                        {tier.deliveryTime} gün
                       </div>
 
                       <div className="mb-4 text-sm text-gray-700">
@@ -286,7 +286,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                       <div className="mt-3 border-t pt-3 text-sm text-gray-600">
                         <Award className="mr-1 inline h-4 w-4" />
                         {tier.revisions === -1
-                          ? 'SÄ±nÄ±rsÄ±z revizyon'
+                          ? 'Sýnýrsýz revizyon'
                           : `${tier.revisions} revizyon`}
                       </div>
                     </div>
@@ -320,17 +320,17 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                           <div>
                             <h4 className="font-medium">{addon.title}</h4>
                             <p className="text-sm text-gray-600">
-                              Ek hizmet aÃ§Ä±klamasÄ±
+                              Ek hizmet açýklamasý
                             </p>
                           </div>
                         </div>
                       </div>
                       <div className="ml-4 text-right">
                         <div className="font-semibold text-green-600">
-                          +â‚º{addon.price.toLocaleString('tr-TR')}
+                          +?{addon.price.toLocaleString('tr-TR')}
                         </div>
                         <div className="text-sm text-gray-500">
-                          +{addon.deliveryTime} gÃ¼n
+                          +{addon.deliveryTime} gün
                         </div>
                       </div>
                     </div>
@@ -344,9 +344,9 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
           <Card>
             <Tabs defaultValue="description" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="description">AÃ§Ä±klama</TabsTrigger>
+                <TabsTrigger value="description">Açýklama</TabsTrigger>
                 <TabsTrigger value="faq">S.S.S.</TabsTrigger>
-                <TabsTrigger value="reviews">DeÄŸerlendirmeler</TabsTrigger>
+                <TabsTrigger value="reviews">Deðerlendirmeler</TabsTrigger>
               </TabsList>
 
               <TabsContent value="description" className="p-6">
@@ -358,7 +358,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                   {currentPackage.overview && (
                     <div className="mt-6">
                       <h3 className="mb-3 text-lg font-semibold">
-                        Genel BakÄ±ÅŸ
+                        Genel Bakýþ
                       </h3>
                       <div className="whitespace-pre-wrap text-gray-700">
                         {currentPackage.overview}
@@ -398,13 +398,13 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                       </h4>
                       <p className="text-gray-700">{item.answer}</p>
                     </div>
-                  )) || <p className="text-gray-500">HenÃ¼z SSS eklenmemiÅŸ.</p>}
+                  )) || <p className="text-gray-500">Henüz SSS eklenmemiþ.</p>}
                 </div>
               </TabsContent>
 
               <TabsContent value="reviews" className="p-6">
                 <div className="text-center text-gray-600">
-                  DeÄŸerlendirmeler yÃ¼kleniyor...
+                  Deðerlendirmeler yükleniyor...
                 </div>
               </TabsContent>
             </Tabs>
@@ -416,28 +416,28 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
           {/* Order Summary */}
           <Card>
             <CardHeader>
-              <CardTitle>SipariÅŸ Ã–zeti</CardTitle>
+              <CardTitle>Sipariþ Özeti</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span>{currentTierData?.title || 'Paket'}</span>
                   <span>
-                    â‚º{currentTierData?.price?.toLocaleString('tr-TR') || '0'}
+                    ?{currentTierData?.price?.toLocaleString('tr-TR') || '0'}
                   </span>
                 </div>
 
                 {selectedAddOnDetails.map((addon) => (
                   <div key={addon.id} className="flex justify-between text-sm">
                     <span>{addon.title}</span>
-                    <span>â‚º{addon.price.toLocaleString('tr-TR')}</span>
+                    <span>?{addon.price.toLocaleString('tr-TR')}</span>
                   </div>
                 ))}
 
                 <div className="flex justify-between border-t pt-3 text-lg font-semibold">
                   <span>Toplam</span>
                   <span className="text-green-600">
-                    â‚º{totalPrice.toLocaleString('tr-TR')}
+                    ?{totalPrice.toLocaleString('tr-TR')}
                   </span>
                 </div>
               </div>
@@ -448,7 +448,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                 disabled={!canOrder || isOrdering}
                 onClick={handleOrder}
               >
-                {isOrdering ? 'SipariÅŸ Veriliyor...' : 'SipariÅŸ Ver'}
+                {isOrdering ? 'Sipariþ Veriliyor...' : 'Sipariþ Ver'}
               </Button>
 
               <div className="mt-3 text-center">
@@ -460,7 +460,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
 
               <div className="mt-4 text-center text-xs text-gray-500">
                 <Shield className="mr-1 inline h-4 w-4" />
-                GÃ¼venli Ã¶deme sistemi
+                Güvenli ödeme sistemi
               </div>
             </CardContent>
           </Card>
@@ -468,7 +468,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
           {/* Provider Card */}
           <Card>
             <CardHeader>
-              <CardTitle>Hizmet SaÄŸlayÄ±cÄ±</CardTitle>
+              <CardTitle>Hizmet Saðlayýcý</CardTitle>
             </CardHeader>
             <CardContent>
               {currentPackage.freelancer ? (
@@ -492,16 +492,16 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                       <div className="flex items-center text-sm text-gray-600">
                         <Star className="mr-1 h-4 w-4 text-yellow-400" />
                         <span>{currentPackage.freelancer.rating}</span>
-                        <span className="mx-1">â€¢</span>
+                        <span className="mx-1">•</span>
                         <span>
-                          {currentPackage.freelancer.reviewCount} deÄŸerlendirme
+                          {currentPackage.freelancer.reviewCount} deðerlendirme
                         </span>
                       </div>
                     </div>
                   </div>
                 </>
               ) : (
-                <p className="text-gray-500">SaÄŸlayÄ±cÄ± bilgisi mevcut deÄŸil</p>
+                <p className="text-gray-500">Saðlayýcý bilgisi mevcut deðil</p>
               )}
 
               <div className="mb-4 space-y-2 text-sm">
@@ -513,18 +513,18 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>BaÅŸarÄ± OranÄ±:</span>
+                  <span>Baþarý Oraný:</span>
                   <span>95%</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>YanÄ±t SÃ¼resi:</span>
+                  <span>Yanýt Süresi:</span>
                   <span>~2 saat</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Konum:</span>
                   <span>
                     {(currentPackage.freelancer as Freelancer)?.location ||
-                      'BelirtilmemiÅŸ'}
+                      'Belirtilmemiþ'}
                   </span>
                 </div>
               </div>
@@ -533,7 +533,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                 <Link href={`/profile/${currentPackage.freelancer.id}`}>
                   <Button className="w-full" variant="outline">
                     <User className="mr-2 h-4 w-4" />
-                    Profili GÃ¶rÃ¼ntÃ¼le
+                    Profili Görüntüle
                   </Button>
                 </Link>
               )}
@@ -548,7 +548,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
             <CardContent>
               <div className="space-y-3">
                 <div className="text-sm text-gray-600">
-                  Benzer paketler yÃ¼kleniyor...
+                  Benzer paketler yükleniyor...
                 </div>
               </div>
             </CardContent>

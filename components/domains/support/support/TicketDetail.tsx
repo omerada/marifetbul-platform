@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 import { useEffect } from 'react';
 import { useSupport } from '@/hooks';
@@ -35,9 +35,7 @@ export function TicketDetail({ ticketId }: TicketDetailProps) {
       await closeTicket(ticketId);
     } catch (error) {
       logger.error(
-        'Ticket kapatÄ±lÄ±rken hata',
-        error
-      );
+        'Ticket kapatýlýrken hata', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -60,7 +58,7 @@ export function TicketDetail({ ticketId }: TicketDetailProps) {
   if (!ticket) {
     return (
       <Alert>
-        <p>Destek talebi bulunamadÄ±.</p>
+        <p>Destek talebi bulunamadý.</p>
       </Alert>
     );
   }
@@ -101,14 +99,14 @@ export function TicketDetail({ ticketId }: TicketDetailProps) {
                 {ticket.subject}
               </h1>
               <Badge className={getStatusColor(ticket.status)}>
-                {ticket.status === 'open' && 'AÃ§Ä±k'}
-                {ticket.status === 'in_progress' && 'Ä°ÅŸlemde'}
-                {ticket.status === 'closed' && 'KapalÄ±'}
+                {ticket.status === 'open' && 'Açýk'}
+                {ticket.status === 'in_progress' && 'Ýþlemde'}
+                {ticket.status === 'closed' && 'Kapalý'}
               </Badge>
               <Badge className={getPriorityColor(ticket.priority)}>
-                {ticket.priority === 'high' && 'YÃ¼ksek'}
+                {ticket.priority === 'high' && 'Yüksek'}
                 {ticket.priority === 'medium' && 'Orta'}
-                {ticket.priority === 'low' && 'DÃ¼ÅŸÃ¼k'}
+                {ticket.priority === 'low' && 'Düþük'}
               </Badge>
             </div>
 
@@ -120,7 +118,7 @@ export function TicketDetail({ ticketId }: TicketDetailProps) {
                 <span className="font-medium">Kategori:</span> {ticket.category}
               </div>
               <div>
-                <span className="font-medium">OluÅŸturulma:</span>{' '}
+                <span className="font-medium">Oluþturulma:</span>{' '}
                 {formatDate(ticket.createdAt)}
               </div>
             </div>
@@ -139,7 +137,7 @@ export function TicketDetail({ ticketId }: TicketDetailProps) {
       </Card>
 
       <Card className="p-6">
-        <h2 className="mb-4 text-lg font-semibold">Talep DetayÄ±</h2>
+        <h2 className="mb-4 text-lg font-semibold">Talep Detayý</h2>
         <div className="prose max-w-none">
           <p className="whitespace-pre-wrap text-gray-700">
             {ticket.description}

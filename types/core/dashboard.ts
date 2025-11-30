@@ -94,6 +94,9 @@ export interface QuickAction {
  * Chart widget data
  */
 export interface ChartWidgetData {
+  id: string;
+  title: string;
+  subtitle?: string;
   labels: string[];
   datasets: Array<{
     label: string;
@@ -101,6 +104,21 @@ export interface ChartWidgetData {
     backgroundColor?: string;
     borderColor?: string;
   }>;
+  series?: Array<{
+    name: string;
+    data: Array<{ label: string; value: number }>;
+    color?: string;
+  }>;
+  config?: {
+    type?: 'line' | 'bar' | 'pie' | 'doughnut' | 'radar' | 'area';
+    title?: string;
+    xAxisLabel?: string;
+    yAxisLabel?: string;
+    showLegend?: boolean;
+    showGrid?: boolean;
+    height?: number;
+    responsive?: boolean;
+  };
 }
 
 // ============================================================================
@@ -194,10 +212,31 @@ export interface EmployerDashboard {
   };
   activeJobs: Job[];
   recentJobs: Job[];
-  spending: Record<string, number>;
+  spending: Record<string, number> & {
+    trend?: number;
+    currency?: string;
+  };
   analytics: EmployerAnalytics;
   recommendations: Recommendation[];
   notifications: EnhancedNotification[];
+  orders?: {
+    active: number;
+    completed: number;
+    cancelled: number;
+    totalSpent: number;
+  };
+  favorites?: {
+    packages: number;
+    sellers: number;
+  };
+  messages?: {
+    unread: number;
+    activeConversations: number;
+  };
+  pendingActions?: {
+    ordersToApprove: number;
+    reviewsToGive: number;
+  };
   /** Sprint 1 - Story 1.4: Milestone data for dashboard widget */
   milestones?: {
     pendingAcceptance: Array<
@@ -217,6 +256,11 @@ export interface EmployerDashboard {
       freelancerRetention: number;
       satisfaction: number;
     };
+  };
+  charts?: {
+    spendingChart?: ChartWidgetData;
+    hiringChart?: ChartWidgetData;
+    activityChart?: ChartWidgetData;
   };
 }
 

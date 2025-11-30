@@ -43,9 +43,7 @@ export async function getMyProfileCompletion(): Promise<ProfileCompletionData> {
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
     logger.error(
-      '[ProfileCompletionAPI] Failed to fetch profile completion',
-      err
-    );
+      '[ProfileCompletionAPI] Failed to fetch profile completion', err instanceof Error ? err : new Error(String(err)));
     throw err;
   }
 }
@@ -75,9 +73,7 @@ export async function getUserProfileCompletion(
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
     logger.error(
-      '[ProfileCompletionAPI] Failed to fetch user profile completion',
-      err
-    );
+      '[ProfileCompletionAPI] Failed to fetch user profile completion', err instanceof Error ? err : new Error(String(err)));
     throw err;
   }
 }

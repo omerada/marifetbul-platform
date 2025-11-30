@@ -20,6 +20,7 @@ import type {
   JobStatus,
 } from '@/types/backend-aligned';
 import * as jobsAPI from '@/lib/api/jobs';
+import type { JobFilters as ApiJobFilters } from '@/lib/api/jobs';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { toast } from 'sonner';
 
@@ -27,18 +28,13 @@ import { toast } from 'sonner';
 // TYPES
 // ================================================
 
-export interface JobFilters {
-  status?: JobStatus;
-  search?: string;
-  category?: string;
-  sortBy?: 'newest' | 'budget' | 'deadline' | 'proposals';
-  page?: number;
-  limit?: number;
-}
+// Re-export API JobFilters type for consistency
+export type JobFilters = ApiJobFilters;
 
 export interface UseJobsReturn {
   // Data
   jobs: JobResponse[];
+  currentJob: JobResponse | null;
   pagination: {
     page: number;
     totalPages: number;
@@ -73,6 +69,9 @@ export interface UseJobsReturn {
   deleteJob: (id: string) => Promise<boolean>;
   publishJob: (id: string) => Promise<JobResponse | null>;
   closeJob: (id: string) => Promise<JobResponse | null>;
+  fetchJobById: (id: string) => Promise<JobResponse | null>;
+  fetchMyJobs: (filters?: JobFilters) => Promise<void>;
+  fetchJobs: (filters?: JobFilters) => Promise<void>;
   refresh: () => Promise<void>;
   setFilters: (filters: JobFilters) => void;
 }
@@ -89,6 +88,7 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
     ...initialFilters,
   });
 
+  const [currentJob, setCurrentJob] = useState<JobResponse | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -154,7 +154,10 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
         return newJob;
       } catch (error) {
         const err = error;
-        logger.error('Failed to create job', err);
+        logger.error(
+          'Failed to create job',
+          err instanceof Error ? err : new Error(String(err))
+        );
         toast.error('İlan oluşturulamadı', {
           description: err.message || 'Lütfen tekrar deneyin',
         });
@@ -189,7 +192,10 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
         return updatedJob;
       } catch (error) {
         const err = error;
-        logger.error('Failed to update job', err);
+        logger.error(
+          'Failed to update job',
+          err instanceof Error ? err : new Error(String(err))
+        );
         toast.error('İlan güncellenemedi', {
           description: err.message || 'Lütfen tekrar deneyin',
         });
@@ -221,7 +227,10 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
         return true;
       } catch (error) {
         const err = error;
-        logger.error('Failed to delete job', err);
+        logger.error(
+          'Failed to delete job',
+          err instanceof Error ? err : new Error(String(err))
+        );
         toast.error('İlan silinemedi', {
           description: err.message || 'Lütfen tekrar deneyin',
         });
@@ -255,7 +264,10 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
         return publishedJob;
       } catch (error) {
         const err = error;
-        logger.error('Failed to publish job', err);
+        logger.error(
+          'Failed to publish job',
+          err instanceof Error ? err : new Error(String(err))
+        );
         toast.error('İlan yayınlanamadı', {
           description: err.message || 'Lütfen tekrar deneyin',
         });
@@ -289,7 +301,10 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
         return closedJob;
       } catch (error) {
         const err = error;
-        logger.error('Failed to close job', err);
+        logger.error(
+          'Failed to close job',
+          err instanceof Error ? err : new Error(String(err))
+        );
         toast.error('İlan kapatılamadı', {
           description: err.message || 'Lütfen tekrar deneyin',
         });
@@ -308,11 +323,62 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
     await mutate();
   }, [mutate]);
 
+  /**
+   * Fetch job by ID
+   */
+  const fetchJobById = useCallback(
+    async (id: string): Promise<JobResponse | null> => {
+      try {
+        logger.info('Fetching job by ID', { jobId: id });
+        const job = await jobsAPI.getJobById(id);
+        setCurrentJob(job);
+        return job;
+      } catch (error) {
+        const err = error;
+        logger.error(
+          'Failed to fetch job',
+          err instanceof Error ? err : new Error(String(err))
+        );
+        return null;
+      }
+    },
+    []
+  );
+
+  /**
+   * Fetch user's jobs with filters
+   */
+  const fetchMyJobs = useCallback(
+    async (newFilters?: JobFilters): Promise<void> => {
+      if (newFilters) {
+        setFilters((prev) => ({ ...prev, ...newFilters }));
+      }
+      await mutate();
+    },
+    [mutate]
+  );
+
+  /**
+   * Fetch all jobs (public listings)
+   */
+  const fetchJobs = useCallback(
+    async (newFilters?: JobFilters): Promise<void> => {
+      if (newFilters) {
+        setFilters((prev) => ({ ...prev, ...newFilters }));
+      }
+      await mutate();
+    },
+    [mutate]
+  );
+
   // ==================== LOG ERRORS ====================
 
   useEffect(() => {
     if (error) {
-      logger.error('Jobs fetch error', error);
+      logger.error(
+        'Jobs fetch error',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }, [error]);
 
@@ -321,6 +387,7 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
   return {
     // Data
     jobs: jobsData?.content || [],
+    currentJob,
     pagination: jobsData
       ? {
           page: jobsData.pageNumber,
@@ -349,6 +416,9 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
     deleteJob,
     publishJob,
     closeJob,
+    fetchJobById,
+    fetchMyJobs,
+    fetchJobs,
     refresh,
     setFilters,
   };

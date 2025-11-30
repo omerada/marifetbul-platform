@@ -110,7 +110,7 @@ export function useContextMessage(): UseContextMessageReturn {
       } catch (err) {
         const error =
           err instanceof Error ? err : new Error('Failed to send message');
-        setError(error);
+        setError(error instanceof Error ? error : new Error(String(error)));
         throw error;
       } finally {
         setIsLoading(false);
@@ -159,7 +159,7 @@ export function useContextMessage(): UseContextMessageReturn {
           err instanceof Error
             ? err
             : new Error('Failed to create conversation');
-        setError(error);
+        setError(error instanceof Error ? error : new Error(String(error)));
         throw error;
       } finally {
         setIsLoading(false);

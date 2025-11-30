@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 import React, { useEffect } from 'react';
 import { Card } from '@/components/ui';
@@ -46,11 +46,11 @@ export function PortfolioGallery({
   useEffect(() => {
     if (isOwnProfile) {
       fetchMyPortfolios().catch((error) =>
-        logger.error('Failed to fetch my portfolios', error)
+        logger.error('Failed to fetch my portfolios', error instanceof Error ? error : new Error(String(error)))
       );
     } else if (userId) {
       fetchUserPortfolios(userId).catch((error) =>
-        logger.error('Failed to fetch user portfolios', error)
+        logger.error('Failed to fetch user portfolios', error instanceof Error ? error : new Error(String(error)))
       );
     }
   }, [isOwnProfile, userId, fetchMyPortfolios, fetchUserPortfolios]);
@@ -61,7 +61,7 @@ export function PortfolioGallery({
     return (
       <Card className="p-8 text-center">
         <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-blue-600" />
-        <p className="text-gray-600">Portfï¿½y yï¿½kleniyor...</p>
+        <p className="text-gray-600">Portf?y y?kleniyor...</p>
       </Card>
     );
   }
@@ -90,10 +90,10 @@ export function PortfolioGallery({
       <Card className="p-8 text-center">
         <ImageIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
         <h3 className="mb-2 text-lg font-medium text-gray-900">
-          HenÃ¼z Portfolyo Yok
+          Henüz Portfolyo Yok
         </h3>
         <p className="text-gray-600">
-          Bu freelancer henÃ¼z portfolyo Ã¶ÄŸesi eklememiÅŸ.
+          Bu freelancer henüz portfolyo öðesi eklememiþ.
         </p>
       </Card>
     );
@@ -118,9 +118,7 @@ export function PortfolioGallery({
         await deletePortfolio(ui.portfolioToDelete);
       } catch (error) {
         logger.error(
-          'Portfolio deletion failed',
-          error
-        );
+          'Portfolio deletion failed', error instanceof Error ? error : new Error(String(error)));
       }
     }
   };
@@ -159,7 +157,7 @@ export function PortfolioGallery({
       await reorderPortfolios(newOrderIds);
       setDraggedItemId(targetItemId); // Update dragged position
     } catch (error) {
-      logger.error('Portfolio reorder failed', error);
+      logger.error('Portfolio reorder failed', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -173,7 +171,7 @@ export function PortfolioGallery({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Portfolyo</h2>
-          <p className="text-gray-600">Ã‡alÄ±ÅŸmalarÄ±mÄ±n Ã¶rnekleri</p>
+          <p className="text-gray-600">Çalýþmalarýmýn örnekleri</p>
         </div>
         {isOwnProfile && (
           <Button
@@ -196,14 +194,14 @@ export function PortfolioGallery({
         <Card className="p-8 text-center">
           <ImageIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
           <h3 className="mb-2 text-lg font-medium text-gray-900">
-            Portfolyo BoÅŸ
+            Portfolyo Boþ
           </h3>
           <p className="mb-4 text-gray-600">
-            Yeteneklerinizi sergilemek iÃ§in projelerinizi ekleyin.
+            Yeteneklerinizi sergilemek için projelerinizi ekleyin.
           </p>
           {isOwnProfile && (
             <Button onClick={handleAddItem} variant="outline">
-              Ä°lk Projenizi Ekleyin
+              Ýlk Projenizi Ekleyin
             </Button>
           )}
         </Card>
@@ -243,11 +241,11 @@ export function PortfolioGallery({
         <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
           <Card className="mx-4 w-full max-w-md p-6">
             <h3 className="mb-4 text-lg font-semibold text-gray-900">
-              PortfÃ¶y Ã–ÄŸesini Sil
+              Portföy Öðesini Sil
             </h3>
             <p className="mb-6 text-gray-600">
-              Bu portfÃ¶y Ã¶ÄŸesini silmek istediÄŸinizden emin misiniz? Bu iÅŸlem
-              geri alÄ±namaz.
+              Bu portföy öðesini silmek istediðinizden emin misiniz? Bu iþlem
+              geri alýnamaz.
             </p>
             <div className="flex justify-end space-x-3">
               <Button
@@ -255,7 +253,7 @@ export function PortfolioGallery({
                 onClick={() => setDeleteConfirmOpen(false, null)}
                 disabled={ui.isSubmitting}
               >
-                Ä°ptal
+                Ýptal
               </Button>
               <Button
                 variant="destructive"
@@ -322,7 +320,7 @@ function PortfolioCard({
       {/* Drag Indicator */}
       {isDraggable && !isDragging && (
         <div className="absolute top-2 left-2 z-10 rounded-lg bg-gray-800/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
-          â‹®â‹® SÃ¼rÃ¼kle
+          ?? Sürükle
         </div>
       )}
 

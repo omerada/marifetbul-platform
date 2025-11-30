@@ -115,7 +115,7 @@ export const twoFactorApi = {
 
       return response;
     } catch (error) {
-      logger.error('[2FA API] Failed to get 2FA status', error);
+      logger.error('[2FA API] Failed to get 2FA status', error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   },
@@ -136,7 +136,7 @@ export const twoFactorApi = {
 
       return response;
     } catch (error) {
-      logger.error('[2FA API] Failed to setup authenticator', error);
+      logger.error('[2FA API] Failed to setup authenticator', error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   },
@@ -161,7 +161,7 @@ export const twoFactorApi = {
 
       return response;
     } catch (error) {
-      logger.error('[2FA API] Failed to enable 2FA', error);
+      logger.error('[2FA API] Failed to enable 2FA', error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   },
@@ -186,7 +186,7 @@ export const twoFactorApi = {
 
       return response;
     } catch (error) {
-      logger.error('[2FA API] Failed to verify 2FA code', error);
+      logger.error('[2FA API] Failed to verify 2FA code', error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   },
@@ -242,7 +242,7 @@ export const twoFactorApi = {
 
       return response;
     } catch (error) {
-      logger.error('[2FA API] Failed to disable 2FA', error);
+      logger.error('[2FA API] Failed to disable 2FA', error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   },
@@ -265,7 +265,7 @@ export const twoFactorApi = {
 
       return response;
     } catch (error) {
-      logger.error('[2FA API] Failed to generate recovery codes', error);
+      logger.error('[2FA API] Failed to generate recovery codes', error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   },
@@ -285,7 +285,7 @@ export const twoFactorApi = {
 
       return response;
     } catch (error) {
-      logger.error('[2FA API] Failed to get recovery codes', error);
+      logger.error('[2FA API] Failed to get recovery codes', error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   },
@@ -308,7 +308,7 @@ export const twoFactorApi = {
 
       return response;
     } catch (error) {
-      logger.error('[2FA API] Failed to setup SMS 2FA', error);
+      logger.error('[2FA API] Failed to setup SMS 2FA', error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   },

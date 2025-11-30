@@ -125,6 +125,7 @@ const toastManager = new ToastManager();
 
 export interface UseToastReturn {
   toasts: Toast[];
+  toast: typeof toastManager;
   addToast: (toast: Omit<Toast, 'id'>) => string;
   removeToast: (id: string) => void;
   clearToasts: () => void;
@@ -195,6 +196,7 @@ export function useToast(): UseToastReturn {
   return useMemo(
     () => ({
       toasts,
+      toast: toastManager,
       addToast,
       removeToast,
       clearToasts,

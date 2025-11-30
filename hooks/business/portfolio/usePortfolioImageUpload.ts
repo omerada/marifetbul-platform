@@ -114,7 +114,7 @@ export function usePortfolioImageUpload(): UsePortfolioImageUploadReturn {
       try {
         logger.info('[usePortfolioImageUpload] Uploading image', {
           portfolioId,
-          fileNamefilename,
+          fileName: file.name,
           isPrimary,
         });
 
@@ -131,7 +131,7 @@ export function usePortfolioImageUpload(): UsePortfolioImageUploadReturn {
         await mutate(`/portfolios/user/${user.id}`);
 
         logger.info('[usePortfolioImageUpload] Image uploaded', {
-          imageIduploadedImageid,
+          imageId: uploadedImage.id,
         });
 
         return uploadedImage;
@@ -182,7 +182,7 @@ export function usePortfolioImageUpload(): UsePortfolioImageUploadReturn {
       try {
         logger.info('[usePortfolioImageUpload] Uploading multiple images', {
           portfolioId,
-          countfileslength,
+          count: files.length,
         });
 
         // Upload files sequentially (to avoid overwhelming the server)

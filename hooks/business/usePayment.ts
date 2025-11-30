@@ -108,9 +108,7 @@ export const usePayment = (): UsePaymentReturn => {
   const handleError = useCallback(
     (error: Error | unknown, defaultMessage: string) => {
       logger.error(
-        'Payment operation error',
-        error
-      );
+        'Payment operation error', error instanceof Error ? error : new Error(String(error)));
       const message = error instanceof Error ? error.message : defaultMessage;
       setError(message);
       toastError('Hata', message);

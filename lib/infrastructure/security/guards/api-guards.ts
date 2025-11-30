@@ -129,7 +129,7 @@ export function requireAuth(
       const user = await getUserFromRequest(nextRequest);
 
       if (!user) {
-        logger.warn('Unauthorized API access attempt', { urlrequesturl,  });
+        logger.warn('Unauthorized API access attempt', { url: request.url });
         return unauthorizedResponse(
           options.errorMessage || 'Authentication required'
         );
@@ -145,7 +145,12 @@ export function requireAuth(
           : options.requiredPermissions.some((p) => hasPermission(user, p));
 
         if (!hasRequiredPermissions) {
-          logger.warn('Insufficient permissions', { urlrequesturl, userIduserid, roleuserrole, requiredPermissionsoptionsrequiredPermissions,  });
+          logger.warn('Insufficient permissions', {
+            url: request.url,
+            userId: user.id,
+            role: user.role,
+            requiredPermissions: options.requiredPermissions,
+          });
           return forbiddenResponse(
             options.errorMessage || 'Insufficient permissions'
           );
@@ -155,7 +160,9 @@ export function requireAuth(
       return handler(request, user, context);
     } catch (error) {
       logger.error(
-        'Auth guard error', error instanceof Error ? error : new Error(String(error)), { url: request.url }
+        'Auth guard error',
+        error instanceof Error ? error : new Error(String(error)),
+        { url: request.url }
       );
       return NextResponse.json(
         {
@@ -185,7 +192,11 @@ export function requireAdmin(
 ): NextRouteHandler {
   return requireAuth(async (request, user, context) => {
     if (!canAccessAdmin(user)) {
-      logger.warn('Non-admin user attempted to access admin endpoint', { urlrequesturl, userIduserid, roleuserrole,  });
+      logger.warn('Non-admin user attempted to access admin endpoint', {
+        url: request.url,
+        userId: user.id,
+        role: user.role,
+      });
       return forbiddenResponse(options.errorMessage || 'Admin access required');
     }
 
@@ -209,7 +220,11 @@ export function requireModerator(
 ): NextRouteHandler {
   return requireAuth(async (request, user, context) => {
     if (!canAccessModerator(user)) {
-      logger.warn('Non-moderator user attempted to access moderator endpoint', { urlrequesturl, userIduserid, roleuserrole,  });
+      logger.warn('Non-moderator user attempted to access moderator endpoint', {
+        url: request.url,
+        userId: user.id,
+        role: user.role,
+      });
       return forbiddenResponse(
         options.errorMessage || 'Moderator access required'
       );
@@ -240,7 +255,12 @@ export function requirePermission(
   return requireAuth(
     async (request, user, context) => {
       if (!hasPermission(user, permission)) {
-        logger.warn('User lacks required permission', { urlrequesturl, userIduserid, roleuserrole, requiredPermissionpermission,  });
+        logger.warn('User lacks required permission', {
+          url: request.url,
+          userId: user.id,
+          role: user.role,
+          requiredPermission: permission,
+        });
         return forbiddenResponse(
           options.errorMessage ||
             `Permission required: ${permission.replace('.', ' ')}`
@@ -274,7 +294,12 @@ export function requireAnyPermission(
   return requireAuth(
     async (request, user, context) => {
       if (!hasAnyPermission(user, permissions)) {
-        logger.warn('User lacks any of the required permissions', { urlrequesturl, userIduserid, roleuserrole, requiredPermissionspermissions,  });
+        logger.warn('User lacks any of the required permissions', {
+          url: request.url,
+          userId: user.id,
+          role: user.role,
+          requiredPermissions: permissions,
+        });
         return forbiddenResponse(
           options.errorMessage || 'Insufficient permissions'
         );
@@ -315,7 +340,12 @@ export function requireAllPermissions(
       );
 
       if (missingPermissions.length > 0) {
-        logger.warn('User lacks required permissions', { urlrequesturl, userIduserid, roleuserrole, missingPermissions,  });
+        logger.warn('User lacks required permissions', {
+          url: request.url,
+          userId: user.id,
+          role: user.role,
+          missingPermissions,
+        });
         return forbiddenResponse(
           options.errorMessage || 'Insufficient permissions'
         );

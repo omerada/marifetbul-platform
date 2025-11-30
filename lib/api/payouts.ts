@@ -30,6 +30,12 @@ export interface PayoutResponse {
   method: PayoutMethod;
   bankAccountId?: string; // Bank account ID
   bankAccountDetails?: string; // Formatted bank account info
+  paymentMethodDetails?: {
+    accountHolderName?: string;
+    iban?: string;
+    bankName?: string;
+    last4?: string;
+  };
   iyzicoPayoutId?: string;
   description?: string;
   failureReason?: string;

@@ -183,7 +183,7 @@ export function useNotifications() {
           );
         },
         onError: (error) => {
-          logger.error('useNotifications: WebSocket notification error', error);
+          logger.error('useNotifications: WebSocket notification error', error instanceof Error ? error : new Error(String(error)));
         },
       });
 
@@ -195,7 +195,7 @@ export function useNotifications() {
         unsubscribe();
       };
     } catch (error) {
-      logger.error('Failed to setup WebSocket subscription', error);
+      logger.error('Failed to setup WebSocket subscription', error instanceof Error ? error : new Error(String(error)));
     }
   }, [user, preferences, mutate, mutateCount]);
 
@@ -219,7 +219,7 @@ export function useNotifications() {
         mutate();
         mutateCount();
       } catch (error) {
-        logger.error('Failed to mark notification as read:', error);
+        logger.error('Failed to mark notification as read:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Bildirim okundu olarak işaretlenemedi');
       }
     },
@@ -243,7 +243,7 @@ export function useNotifications() {
 
       toast.success(`${updatedCount} bildirim okundu olarak işaretlendi`);
     } catch (error) {
-      logger.error('Failed to mark all as read:', error);
+      logger.error('Failed to mark all as read:', error instanceof Error ? error : new Error(String(error)));
       toast.error('Bildirimler işaretlenemedi');
     }
   }, [mutate, mutateCount]);

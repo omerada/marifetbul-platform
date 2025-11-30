@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 import React from 'react';
 import { Star, ThumbsUp, ThumbsDown } from 'lucide-react';
@@ -56,9 +56,7 @@ export function ArticleRating({
       setShowFeedback(false);
     } catch (error) {
       logger.error(
-        'Rating submission failed',
-        error
-      );
+        'Rating submission failed', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsSubmitting(false);
     }
@@ -114,8 +112,8 @@ export function ArticleRating({
             ))}
           </div>
           <p className="text-sm text-gray-600">
-            Bu makaleyi {selectedRating} yÄ±ldÄ±z ile deÄŸerlendirdiniz.
-            TeÅŸekkÃ¼rler!
+            Bu makaleyi {selectedRating} yıldız ile değerlendirdiniz.
+            Teşekkürler!
           </p>
         </div>
       </Card>
@@ -126,11 +124,11 @@ export function ArticleRating({
     <Card className={cn('p-6', className)}>
       <div className="text-center">
         <h3 className="mb-2 text-lg font-semibold text-gray-900">
-          Bu makale yararlÄ± oldu mu?
+          Bu makale yararlı oldu mu?
         </h3>
 
         <p className="mb-4 text-sm text-gray-600">
-          Deneyiminizi paylaÅŸarak diÄŸer kullanÄ±cÄ±lara yardÄ±mcÄ± olun
+          Deneyiminizi paylaşarak diğer kullanıcılara yardımcı olun
         </p>
 
         {/* Current Article Rating Display */}
@@ -154,7 +152,7 @@ export function ArticleRating({
                 {averageRating.toFixed(1)}
               </span>
               <span className="text-gray-500">
-                ({ratingCount} deÄŸerlendirme)
+                ({ratingCount} değerlendirme)
               </span>
             </div>
           </div>
@@ -170,7 +168,7 @@ export function ArticleRating({
               className="flex items-center gap-2"
             >
               <ThumbsUp className="h-4 w-4" />
-              Evet, yararlÄ±
+              Evet, yararlı
             </Button>
 
             <Button
@@ -180,7 +178,7 @@ export function ArticleRating({
               className="flex items-center gap-2"
             >
               <ThumbsDown className="h-4 w-4" />
-              HayÄ±r, yararlÄ± deÄŸil
+              Hayır, yararlı değil
             </Button>
           </div>
         </div>
@@ -188,7 +186,7 @@ export function ArticleRating({
         {/* Detailed Rating */}
         <div className="border-t pt-4">
           <p className="mb-3 text-sm text-gray-600">
-            Daha detaylÄ± deÄŸerlendirme yapmak isterseniz:
+            Daha detaylı değerlendirme yapmak isterseniz:
           </p>
 
           <div className="mb-4 flex justify-center gap-1">{renderStars()}</div>
@@ -197,12 +195,12 @@ export function ArticleRating({
             <div className="mt-4 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Geri bildiriminiz (isteÄŸe baÄŸlÄ±)
+                  Geri bildiriminiz (isteğe bağlı)
                 </label>
                 <Textarea
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
-                  placeholder="Bu makaleyi nasÄ±l geliÅŸtirebiliriz?"
+                  placeholder="Bu makaleyi nasıl geliştirebiliriz?"
                   rows={3}
                   className="mt-1"
                 />
@@ -214,7 +212,7 @@ export function ArticleRating({
                   disabled={isSubmitting || selectedRating === 0}
                   className="flex-1"
                 >
-                  {isSubmitting ? 'GÃ¶nderiliyor...' : 'DeÄŸerlendirmeyi GÃ¶nder'}
+                  {isSubmitting ? 'Gönderiliyor...' : 'Değerlendirmeyi Gönder'}
                 </Button>
 
                 <Button
@@ -225,7 +223,7 @@ export function ArticleRating({
                   }}
                   variant="outline"
                 >
-                  Ä°ptal
+                  İptal
                 </Button>
               </div>
             </div>
@@ -238,7 +236,7 @@ export function ArticleRating({
                 disabled={isSubmitting}
                 className="w-full"
               >
-                {isSubmitting ? 'GÃ¶nderiliyor...' : 'DeÄŸerlendirmeyi GÃ¶nder'}
+                {isSubmitting ? 'Gönderiliyor...' : 'Değerlendirmeyi Gönder'}
               </Button>
             </div>
           )}

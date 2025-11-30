@@ -79,7 +79,7 @@ export function UserModerationPanel() {
     const suspension = await checkSuspensionStatus(searchUserId);
     setActiveSuspension(suspension);
 
-    logger.info('User moderation data loaded', { userIdsearchUserId, warningsCount: warnings.length, isSuspended: !!suspension,  });
+    logger.info('User moderation data loaded', { userId: searchUserId, warningsCount: warnings.length, isSuspended: !!suspension,  });
   }, [searchUserId, fetchActiveWarnings, checkSuspensionStatus]);
 
   /**

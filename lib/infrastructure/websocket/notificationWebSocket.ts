@@ -38,7 +38,7 @@ export function subscribeToNotifications(
 
     if (!ws) {
       const error = new Error('WebSocket service not initialized');
-      logger.error('NotificationWebSocket', error);
+      logger.error('NotificationWebSocket', error instanceof Error ? error : new Error(String(error)));
       callbacks.onError?.(error);
       throw error;
     }
@@ -145,7 +145,7 @@ export function subscribeToBroadcastNotifications(
 
     if (!ws) {
       const error = new Error('WebSocket service not initialized');
-      logger.error('NotificationWebSocket', error);
+      logger.error('NotificationWebSocket', error instanceof Error ? error : new Error(String(error)));
       callbacks.onError?.(error);
       throw error;
     }

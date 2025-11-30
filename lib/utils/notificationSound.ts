@@ -38,7 +38,7 @@ export function playNotificationSound(volume: number = 0.5): void {
         });
     }
   } catch (error) {
-    logger.error('Error playing notification sound:', error);
+    logger.error('Error playing notification sound:', error instanceof Error ? error : new Error(String(error)));
   }
 }
 
@@ -61,7 +61,7 @@ export function vibrateDevice(pattern: number | number[] = 200): void {
       logger.debug('Device vibrated successfully');
     }
   } catch (error) {
-    logger.error('Error vibrating device:', error);
+    logger.error('Error vibrating device:', error instanceof Error ? error : new Error(String(error)));
   }
 }
 
@@ -103,7 +103,7 @@ export function isDoNotDisturb(
     // Normal DND period (e.g., 13:00 - 14:00)
     return currentTime >= start && currentTime < end;
   } catch (error) {
-    logger.error('Error checking DND status:', error);
+    logger.error('Error checking DND status:', error instanceof Error ? error : new Error(String(error)));
     return false;
   }
 }

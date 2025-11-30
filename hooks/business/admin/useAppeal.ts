@@ -114,7 +114,7 @@ export function useCreateAppeal() {
       logger.info('Appeal created successfully', { appealId: data.id });
     },
     onError: (error: Error) => {
-      logger.error('Failed to create appeal', error);
+      logger.error('Failed to create appeal', error instanceof Error ? error : new Error(String(error)));
     },
   });
 }
@@ -139,7 +139,7 @@ export function useResolveAppeal() {
       logger.info('Appeal resolved successfully', { appealId: data.id, decision: data.decision });
     },
     onError: (error: Error) => {
-      logger.error('Failed to resolve appeal', error);
+      logger.error('Failed to resolve appeal', error instanceof Error ? error : new Error(String(error)));
     },
   });
 }
@@ -164,7 +164,7 @@ export function useEscalateAppeal() {
       logger.info('Appeal escalated successfully', { appealId: data.id, escalated: data.escalated });
     },
     onError: (error: Error) => {
-      logger.error('Failed to escalate appeal', error);
+      logger.error('Failed to escalate appeal', error instanceof Error ? error : new Error(String(error)));
     },
   });
 }

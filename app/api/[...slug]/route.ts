@@ -19,10 +19,10 @@ async function proxyToBackend(request: Request, method: string) {
 
     // Debug logging for development
     if (process.env.NODE_ENV === 'development') {
-      logger.debug('[API Proxy]', { 
-        originalUrl: url.pathname, 
-        backend: backendUrl, 
-        method 
+      logger.debug('[API Proxy]', {
+        originalUrl: url.pathname,
+        backend: backendUrl,
+        method,
       });
     }
 
@@ -70,18 +70,19 @@ async function proxyToBackend(request: Request, method: string) {
 
     if (process.env.NODE_ENV === 'development') {
       const hasCookies = response.headers.has('set-cookie');
-      logger.debug('[API Proxy] Response status:', response.status);
-      logger.debug('[API Proxy] Has Set-Cookie header:', hasCookies);
+      logger.debug('[API Proxy] Response details', {
+        status: response.status,
+        hasCookies,
+      });
 
       if (hasCookies) {
         // Log cookie details
         const cookies = response.headers.get('set-cookie');
-        logger.debug('[API Proxy] Set-Cookie value:', cookies);
+        logger.debug('[API Proxy] Cookie details', { cookies });
       } else {
-        logger.debug(
-          '[API Proxy] All headers:',
-          Array.from(response.headers.entries())
-        );
+        logger.debug('[API Proxy] Response headers', {
+          headers: Array.from(response.headers.entries()),
+        });
       }
     }
 
@@ -90,7 +91,10 @@ async function proxyToBackend(request: Request, method: string) {
       headers: responseHeaders,
     });
   } catch (error) {
-    logger.error('[API Proxy] Error:', error instanceof Error ? error : new Error(String(error)));
+    logger.error(
+      '[API Proxy] Error:',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return new Response(
       JSON.stringify({
         success: false,

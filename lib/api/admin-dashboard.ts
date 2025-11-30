@@ -18,6 +18,49 @@ export interface AdminDashboardBackendDto {
   periodStart: string;
   periodEnd: string;
   periodDays: number;
+  period?: {
+    days: number;
+    start: string;
+    end: string;
+  };
+
+  stats?: {
+    totalUsers: number;
+    activeUsers: number;
+    newUsers: number;
+    totalPackages: number;
+    activePackages: number;
+    newPackages: number;
+    totalRevenue: number;
+    netRevenue: number;
+    totalOrders: number;
+    completedOrders: number;
+    pendingOrders: number;
+    userGrowthRate: number;
+    revenueGrowthRate: number;
+    conversionRate: number;
+    repeatPurchaseRate: number;
+    avgOrderCompletionTime: number;
+    avgResponseTime: number;
+    customerSatisfaction: number;
+  };
+
+  charts?: {
+    revenueChart?: any;
+    ordersChart?: any;
+    usersChart?: any;
+  };
+
+  topPackages?: Array<{
+    packageId: string;
+    title: string;
+    sellerName: string;
+    views: number;
+    orders: number;
+    revenue: number;
+  }>;
+
+  recentActivities?: Array<any>;
 
   userMetrics: {
     totalUsers: number;
@@ -94,6 +137,9 @@ export interface AdminDashboardBackendDto {
     searchToOrderConversionRate: number;
     conversionRate?: number; // Added Sprint 1 - backend enhancement
     averageResultCount?: number; // Added Sprint 1 - backend enhancement
+    avgResultsPerSearch?: number; // Alias for averageResultCount
+    noResultsCount?: number; // Alias for zeroResultSearches
+    topSearchTerms?: string[]; // Alias for topKeywords
     topKeywords: string[];
     zeroResultKeywords: string[];
     searchesByCategory: Record<string, number>;

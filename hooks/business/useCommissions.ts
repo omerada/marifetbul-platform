@@ -179,7 +179,7 @@ export function useCommissions(
       refreshInterval,
       revalidateOnFocus: true,
       onError: (error) => {
-        logger.error('Failed to fetch commission transactions', error);
+        logger.error('Failed to fetch commission transactions', error instanceof Error ? error : new Error(String(error)));
       },
     }
   );
@@ -194,7 +194,7 @@ export function useCommissions(
     refreshInterval,
     revalidateOnFocus: true,
     onError: (error) => {
-      logger.error('Failed to fetch commission rules', error);
+      logger.error('Failed to fetch commission rules', error instanceof Error ? error : new Error(String(error)));
     },
   });
 
@@ -227,7 +227,7 @@ export function useCommissions(
         : null,
     {
       onError: (error) => {
-        logger.error('Failed to fetch commission stats', error);
+        logger.error('Failed to fetch commission stats', error instanceof Error ? error : new Error(String(error)));
       },
     }
   );

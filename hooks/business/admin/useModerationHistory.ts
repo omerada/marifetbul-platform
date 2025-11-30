@@ -222,7 +222,7 @@ export function useRecordModerationAction() {
       });
     },
     onError: (error: Error) => {
-      logger.error('Failed to record moderation action', error);
+      logger.error('Failed to record moderation action', error instanceof Error ? error : new Error(String(error)));
     },
   });
 }
@@ -259,7 +259,7 @@ export function useReverseAction() {
       });
     },
     onError: (error: Error) => {
-      logger.error('Failed to reverse moderation action', error);
+      logger.error('Failed to reverse moderation action', error instanceof Error ? error : new Error(String(error)));
     },
   });
 }
@@ -297,7 +297,7 @@ export function useLinkToAppeal() {
       });
     },
     onError: (error: Error) => {
-      logger.error('Failed to link history to appeal', error);
+      logger.error('Failed to link history to appeal', error instanceof Error ? error : new Error(String(error)));
     },
   });
 }

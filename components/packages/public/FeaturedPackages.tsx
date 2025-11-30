@@ -40,7 +40,7 @@ export function FeaturedPackages({
         );
         setPackages(transformed);
       } catch (error) {
-        logger.error('Failed to fetch featured packages:', error);
+        logger.error('Failed to fetch featured packages:', error instanceof Error ? error : new Error(String(error)));
         setPackages([]);
       } finally {
         setLoading(false);

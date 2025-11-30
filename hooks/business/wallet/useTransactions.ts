@@ -157,7 +157,7 @@ export const useTransactions = (
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
       } catch (error) {
-        logger.error('Failed to export transactions:', error);
+        logger.error('Failed to export transactions:', error instanceof Error ? error : new Error(String(error)));
         throw error;
       }
     },

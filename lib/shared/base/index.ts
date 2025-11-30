@@ -30,9 +30,7 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
       return initialValue;
     } catch (error) {
       logger.error(
-        'Error reading localStorage',
-        error
-      );
+        'Error reading localStorage', error instanceof Error ? error : new Error(String(error)));
       return initialValue;
     }
   });
@@ -48,9 +46,7 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
         }
       } catch (error) {
         logger.error(
-          'Error setting localStorage',
-          error
-        );
+          'Error setting localStorage', error instanceof Error ? error : new Error(String(error)));
       }
     },
     [key, storedValue]
@@ -146,7 +142,7 @@ export const useMutation = <TData, TVariables = unknown>(
         return result;
       } catch (err) {
         const error = err instanceof Error ? err : new Error('Mutation failed');
-        setError(error);
+        setError(error instanceof Error ? error : new Error(String(error)));
         options?.onError?.(error);
         throw error;
       } finally {
@@ -313,9 +309,7 @@ export abstract class BaseService {
       return await fn();
     } catch (error) {
       logger.error(
-        `${operation} failed`,
-        error
-      );
+        `${operation} failed`, error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }

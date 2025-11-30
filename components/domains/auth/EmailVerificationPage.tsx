@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 /**
  * Email Verification Page Component
@@ -71,20 +71,20 @@ export function EmailVerificationPage({
       await unifiedAuthService.verifyEmail({ token: verificationToken });
 
       setState('success');
-      toast.success('E-posta baÅŸarÄ±yla doÄŸrulandÄ±!', {
-        description: 'ArtÄ±k tÃ¼m Ã¶zelliklere eriÅŸebilirsiniz.',
+      toast.success('E-posta başarıyla doğrulandı!', {
+        description: 'Artık tüm özelliklere erişebilirsiniz.',
       });
 
       logger.info('[EmailVerificationPage] Email verified successfully');
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
 
-      logger.error('[EmailVerificationPage] Email verification failed', error);
+      logger.error('[EmailVerificationPage] Email verification failed', error instanceof Error ? error : new Error(String(error)));
 
       // Determine error type
       if (
         error.message.includes('expired') ||
-        error.message.includes('sÃ¼resi doldu')
+        error.message.includes('süresi doldu')
       ) {
         setState('expired');
       } else if (
@@ -96,8 +96,8 @@ export function EmailVerificationPage({
         setState('error');
       }
 
-      toast.error('E-posta doÄŸrulanamadÄ±', {
-        description: error.message || 'Bir hata oluÅŸtu. LÃ¼tfen tekrar deneyin.',
+      toast.error('E-posta doğrulanamadı', {
+        description: error.message || 'Bir hata oluştu. Lütfen tekrar deneyin.',
       });
     }
   };
@@ -112,15 +112,15 @@ export function EmailVerificationPage({
       // Resend verification email (will use current user's email from backend)
       await unifiedAuthService.resendVerificationEmail({ email: '' });
 
-      toast.success('Yeni doÄŸrulama e-postasÄ± gÃ¶nderildi', {
-        description: 'LÃ¼tfen gelen kutunuzu kontrol edin.',
+      toast.success('Yeni doğrulama e-postası gönderildi', {
+        description: 'Lütfen gelen kutunuzu kontrol edin.',
       });
 
       setState('verifying');
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
-      toast.error('E-posta gÃ¶nderilemedi', {
-        description: error.message || 'LÃ¼tfen daha sonra tekrar deneyin.',
+      toast.error('E-posta gönderilemedi', {
+        description: error.message || 'Lütfen daha sonra tekrar deneyin.',
       });
     } finally {
       setIsResending(false);
@@ -133,7 +133,7 @@ export function EmailVerificationPage({
   useEffect(() => {
     if (!token) {
       setState('error');
-      toast.error("DoÄŸrulama token'Ä± bulunamadÄ±");
+      toast.error("Doğrulama token'ı bulunamadı");
       return;
     }
 
@@ -176,10 +176,10 @@ export function EmailVerificationPage({
               <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
             </div>
             <h1 className="mb-2 text-2xl font-bold text-gray-900">
-              E-posta DoÄŸrulanÄ±yor
+              E-posta Doğrulanıyor
             </h1>
             <p className="text-gray-600">
-              LÃ¼tfen bekleyin, e-posta adresiniz doÄŸrulanÄ±yor...
+              Lütfen bekleyin, e-posta adresiniz doğrulanıyor...
             </p>
           </motion.div>
         );
@@ -195,16 +195,16 @@ export function EmailVerificationPage({
               <CheckCircle2 className="h-10 w-10 text-green-600" />
             </div>
             <h1 className="mb-2 text-2xl font-bold text-gray-900">
-              E-posta DoÄŸrulandÄ±! ğŸ‰
+              E-posta Doğrulandı! ??
             </h1>
             <p className="mb-6 text-gray-600">
-              E-posta adresiniz baÅŸarÄ±yla doÄŸrulandÄ±. ArtÄ±k tÃ¼m Ã¶zelliklere
-              eriÅŸebilirsiniz.
+              E-posta adresiniz başarıyla doğrulandı. Artık tüm özelliklere
+              erişebilirsiniz.
             </p>
 
             {showCountdown && countdown > 0 && (
               <p className="mb-4 text-sm text-gray-500">
-                {countdown} saniye iÃ§inde yÃ¶nlendirileceksiniz...
+                {countdown} saniye içinde yönlendirileceksiniz...
               </p>
             )}
 
@@ -230,10 +230,10 @@ export function EmailVerificationPage({
               <CheckCircle2 className="h-10 w-10 text-blue-600" />
             </div>
             <h1 className="mb-2 text-2xl font-bold text-gray-900">
-              Zaten DoÄŸrulanmÄ±ÅŸ
+              Zaten Doğrulanmış
             </h1>
             <p className="mb-6 text-gray-600">
-              E-posta adresiniz zaten doÄŸrulanmÄ±ÅŸ durumda.
+              E-posta adresiniz zaten doğrulanmış durumda.
             </p>
 
             <Button
@@ -259,11 +259,11 @@ export function EmailVerificationPage({
               <Mail className="h-10 w-10 text-yellow-600" />
             </div>
             <h1 className="mb-2 text-2xl font-bold text-gray-900">
-              Token SÃ¼resi Doldu
+              Token Süresi Doldu
             </h1>
             <p className="mb-6 text-gray-600">
-              DoÄŸrulama baÄŸlantÄ±sÄ±nÄ±n sÃ¼resi dolmuÅŸ. Yeni bir doÄŸrulama
-              e-postasÄ± gÃ¶ndermek iÃ§in aÅŸaÄŸÄ±daki butona tÄ±klayÄ±n.
+              Doğrulama bağlantısının süresi dolmuş. Yeni bir doğrulama
+              e-postası göndermek için aşağıdaki butona tıklayın.
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -274,7 +274,7 @@ export function EmailVerificationPage({
                 className="min-w-[200px]"
               >
                 <RefreshCw className="mr-2 h-4 w-4" />
-                Yeni E-posta GÃ¶nder
+                Yeni E-posta Gönder
               </Button>
 
               <Button
@@ -283,7 +283,7 @@ export function EmailVerificationPage({
                 variant="outline"
                 className="min-w-[200px]"
               >
-                Dashboard&apos;a DÃ¶n
+                Dashboard&apos;a Dön
               </Button>
             </div>
           </motion.div>
@@ -301,11 +301,11 @@ export function EmailVerificationPage({
               <XCircle className="h-10 w-10 text-red-600" />
             </div>
             <h1 className="mb-2 text-2xl font-bold text-gray-900">
-              DoÄŸrulama BaÅŸarÄ±sÄ±z
+              Doğrulama Başarısız
             </h1>
             <p className="mb-6 text-gray-600">
-              E-posta doÄŸrulamasÄ± sÄ±rasÄ±nda bir hata oluÅŸtu. LÃ¼tfen tekrar
-              deneyin veya yeni bir doÄŸrulama e-postasÄ± isteyin.
+              E-posta doğrulaması sırasında bir hata oluştu. Lütfen tekrar
+              deneyin veya yeni bir doğrulama e-postası isteyin.
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -317,7 +317,7 @@ export function EmailVerificationPage({
                 className="min-w-[200px]"
               >
                 <RefreshCw className="mr-2 h-4 w-4" />
-                Tekrar GÃ¶nder
+                Tekrar Gönder
               </Button>
 
               <Button

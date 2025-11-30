@@ -87,9 +87,7 @@ export class AuthService {
       return response.data;
     } catch (error) {
       logger.error(
-        'Failed to get current user',
-        error
-      );
+        'Failed to get current user', error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -113,9 +111,7 @@ export class AuthService {
       return response.data;
     } catch (error) {
       logger.error(
-        'Failed to update profile',
-        error
-      );
+        'Failed to update profile', error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -139,9 +135,7 @@ export class AuthService {
       return response.success;
     } catch (error) {
       logger.error(
-        'Failed to change password',
-        error
-      );
+        'Failed to change password', error instanceof Error ? error : new Error(String(error)));
       return false;
     }
   }
@@ -161,9 +155,7 @@ export class AuthService {
       return response.success;
     } catch (error) {
       logger.error(
-        'Failed to request password reset',
-        error
-      );
+        'Failed to request password reset', error instanceof Error ? error : new Error(String(error)));
       return false;
     }
   }
@@ -187,9 +179,7 @@ export class AuthService {
       return response.success;
     } catch (error) {
       logger.error(
-        'Failed to reset password',
-        error
-      );
+        'Failed to reset password', error instanceof Error ? error : new Error(String(error)));
       return false;
     }
   }
@@ -209,9 +199,7 @@ export class AuthService {
       return response.success;
     } catch (error) {
       logger.error(
-        'Failed to verify email',
-        error
-      );
+        'Failed to verify email', error instanceof Error ? error : new Error(String(error)));
       return false;
     }
   }
@@ -228,9 +216,7 @@ export class AuthService {
       return response.success;
     } catch (error) {
       logger.error(
-        'Failed to resend verification',
-        error
-      );
+        'Failed to resend verification', error instanceof Error ? error : new Error(String(error)));
       return false;
     }
   }
@@ -251,9 +237,7 @@ export class UserService {
       return response.data;
     } catch (error) {
       logger.error(
-        'Failed to fetch user',
-        error
-      );
+        'Failed to fetch user', error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -304,9 +288,7 @@ export class UserService {
       return response.data;
     } catch (error) {
       logger.error(
-        'Failed to fetch public profile',
-        error
-      );
+        'Failed to fetch public profile', error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -323,9 +305,7 @@ export class UserService {
       return response.success && response.data?.following === true;
     } catch (error) {
       logger.error(
-        'Failed to toggle follow',
-        error
-      );
+        'Failed to toggle follow', error instanceof Error ? error : new Error(String(error)));
       return false;
     }
   }

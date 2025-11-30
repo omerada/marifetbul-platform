@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, memo } from 'react';
 import Link from 'next/link';
@@ -60,13 +60,13 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
   } | null>(null);
 
   if (isLoading) {
-    return <Loading variant="skeleton" text="İş detayları yükleniyor..." />;
+    return <Loading variant="skeleton" text="�� detaylar� y�kleniyor..." />;
   }
 
   if (error || !currentJob) {
     return (
       <SimpleErrorDisplay
-        error={error || 'İş ilanı bulunamadı'}
+        error={error || '�� ilan� bulunamad�'}
         onRetry={refreshJobDetail}
       />
     );
@@ -77,10 +77,10 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
   };
 
   const getExperienceLevelText = (level?: string) => {
-    if (!level) return 'Belirtilmemiş';
+    if (!level) return 'Belirtilmemi�';
     switch (level) {
       case 'beginner':
-        return 'Başlangıç';
+        return 'Ba�lang��';
       case 'intermediate':
         return 'Orta';
       case 'expert':
@@ -112,7 +112,10 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
       try {
         await updateProposalStatus(proposalId, action);
       } catch (error) {
-        logger.error('Proposal action error:', error);
+        logger.error(
+          'Proposal action error:',
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
     }
     // For 'accepted', we'll use the modal
@@ -154,17 +157,20 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
       const data = await response.json();
 
       if (data.success) {
-        logger.info(
-          'Proposal accepted successfully with payment mode:',
-          paymentMode
-        );
+        logger.info('Proposal accepted successfully', {
+          paymentMode,
+          component: 'JobDetail',
+        });
         // Refresh job detail to get updated proposals
         await refreshJobDetail();
       } else {
         throw new Error(data.error || 'Teklif kabul edilemedi');
       }
     } catch (error) {
-      logger.error('Failed to accept proposal:', error);
+      logger.error(
+        'Failed to accept proposal:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       throw error;
     }
   };
@@ -217,7 +223,7 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
                   {formatDistanceToNow(new Date(currentJob.expiresAt), {
                     locale: tr,
                   })}{' '}
-                  kaldı
+                  kald�
                 </span>
               )}
             </div>
@@ -271,16 +277,16 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
           <SocialShare
             data={{
               url: typeof window !== 'undefined' ? window.location.href : '',
-              title: currentJob?.title || 'İş İlanı',
+              title: currentJob?.title || '�� �lan�',
               description:
-                currentJob?.description || "MarifetBul'da iş fırsatı",
+                currentJob?.description || "MarifetBul'da i� f�rsat�",
               image: currentJob?.employer?.avatar || '/images/og-default.jpg',
             }}
           />
 
           <Button variant="outline" size="lg">
             <Flag className="mr-2 h-4 w-4" />
-            Şikayet Et
+            �ikayet Et
           </Button>
         </div>
       </div>
@@ -292,7 +298,7 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
           {/* Description */}
           <Card className="p-4 sm:p-6">
             <CardHeader>
-              <CardTitle>İş Açıklaması</CardTitle>
+              <CardTitle>�� A��klamas�</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="prose max-w-none">
@@ -334,7 +340,7 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
                     </Badge>
                   ))
                 ) : (
-                  <span className="text-gray-500">Beceri belirtilmemiş</span>
+                  <span className="text-gray-500">Beceri belirtilmemi�</span>
                 )}
               </div>
             </CardContent>
@@ -362,7 +368,7 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
                       </div>
                       <a href={attachment.url} download>
                         <Button variant="outline" size="sm">
-                          İndir
+                          �ndir
                         </Button>
                       </a>
                     </div>
@@ -401,7 +407,7 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
           {/* Employer Card */}
           <Card>
             <CardHeader>
-              <CardTitle>İşveren Bilgileri</CardTitle>
+              <CardTitle>��veren Bilgileri</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="mb-4 flex items-center">
@@ -431,14 +437,14 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
 
               <div className="mb-4 space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span>Değerlendirme:</span>
+                  <span>De�erlendirme:</span>
                   <div className="flex items-center">
                     <Star className="mr-1 h-4 w-4 text-yellow-400" />
                     <span>{currentJob.employer.rating}</span>
                   </div>
                 </div>
                 <div className="flex justify-between">
-                  <span>Toplam İş:</span>
+                  <span>Toplam ��:</span>
                   <span>{currentJob.employer.totalJobs}</span>
                 </div>
                 <div className="flex justify-between">
@@ -446,7 +452,7 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
                   <span>{currentJob.employer.location}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Üyelik:</span>
+                  <span>�yelik:</span>
                   <span>
                     {formatDistanceToNow(
                       new Date(currentJob.employer.createdAt || Date.now()),
@@ -461,13 +467,13 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
               <Link href={`/profile/${currentJob.employer.id}`}>
                 <Button className="w-full" variant="outline">
                   <User className="mr-2 h-4 w-4" />
-                  Profili Görüntüle
+                  Profili G�r�nt�le
                 </Button>
               </Link>
 
               <Button className="mt-2 w-full" variant="outline">
                 <MessageCircle className="mr-2 h-4 w-4" />
-                Mesaj Gönder
+                Mesaj G�nder
               </Button>
             </CardContent>
           </Card>
@@ -475,7 +481,7 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
           {/* Project Info */}
           <Card>
             <CardHeader>
-              <CardTitle>Proje Detayları</CardTitle>
+              <CardTitle>Proje Detaylar�</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3 text-sm">
@@ -488,11 +494,11 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
                   <span>{currentJob.subcategory}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Süre:</span>
+                  <span className="text-gray-600">S�re:</span>
                   <span>{currentJob.timeline}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Çalışma Türü:</span>
+                  <span className="text-gray-600">�al��ma T�r�:</span>
                   <span>{currentJob.isRemote ? 'Uzaktan' : 'Yerinde'}</span>
                 </div>
                 {currentJob.deadline && (
@@ -512,12 +518,12 @@ export const JobDetail = memo<JobDetailProps>(function JobDetail({
           {/* Similar Jobs */}
           <Card>
             <CardHeader>
-              <CardTitle>Benzer İş İlanları</CardTitle>
+              <CardTitle>Benzer �� �lanlar�</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 <div className="text-sm text-gray-600">
-                  Benzer iş ilanları yükleniyor...
+                  Benzer i� ilanlar� y�kleniyor...
                 </div>
               </div>
             </CardContent>

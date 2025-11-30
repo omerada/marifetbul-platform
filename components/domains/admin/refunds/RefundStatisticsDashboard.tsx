@@ -44,7 +44,7 @@ export function RefundStatisticsDashboard() {
       const data = await refundAdminApi.getRefundStatistics();
       setStats(data);
     } catch (error) {
-      logger.error('Failed to fetch statistics:', error);
+      logger.error('Failed to fetch statistics:', error instanceof Error ? error : new Error(String(error)));
       toast.error('İstatistikler yüklenemedi');
     } finally {
       setIsLoading(false);

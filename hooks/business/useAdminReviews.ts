@@ -123,7 +123,7 @@ export function useAdminReviews(
           pageSize: data.size,
         });
 
-        logger.debug('Pending reviews fetched', { countdatacontentlength0, page,  });
+        logger.debug('Pending reviews fetched', { count: data?.content?.length || 0, page,  });
       } catch (err) {
         handleError(err, 'Bekleyen değerlendirmeler yüklenemedi');
       } finally {
@@ -162,7 +162,7 @@ export function useAdminReviews(
           pageSize: data.size,
         });
 
-        logger.debug('Flagged reviews fetched', { countdatacontentlength0, page,  });
+        logger.debug('Flagged reviews fetched', { count: data?.content?.length || 0, page,  });
       } catch (err) {
         handleError(err, 'Şikayetli değerlendirmeler yüklenemedi');
       } finally {
@@ -224,7 +224,7 @@ export function useAdminReviews(
           pageSize: data.size,
         });
 
-        logger.debug('All reviews fetched', { countdatacontentlength0, page, filters,  });
+        logger.debug('All reviews fetched', { count: data?.content?.length || 0, page, filters,  });
       } catch (err) {
         handleError(err, 'Değerlendirmeler yüklenemedi');
       } finally {

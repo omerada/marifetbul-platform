@@ -120,9 +120,7 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
           }
         } catch (error) {
           logger.error(
-            'Failed to fetch categories',
-            error
-          );
+            'Failed to fetch categories', error instanceof Error ? error : new Error(String(error)));
           set({
             categoriesError: 'Ağ hatası: Kategoriler yüklenemedi',
             categoriesLoading: false,
@@ -165,9 +163,7 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
           }
         } catch (error) {
           logger.error(
-            'Failed to fetch articles',
-            error
-          );
+            'Failed to fetch articles', error instanceof Error ? error : new Error(String(error)));
           set({
             articlesError: 'Ağ hatası: Makaleler yüklenemedi',
             articlesLoading: false,
@@ -194,9 +190,7 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
           }
         } catch (error) {
           logger.error(
-            'Failed to fetch featured articles',
-            error
-          );
+            'Failed to fetch featured articles', error instanceof Error ? error : new Error(String(error)));
           set({ featuredLoading: false });
         }
       },
@@ -224,9 +218,7 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
           }
         } catch (error) {
           logger.error(
-            'Failed to fetch article by ID',
-            error
-          );
+            'Failed to fetch article by ID', error instanceof Error ? error : new Error(String(error)));
           set({
             currentArticleError: 'Ağ hatası: Makale yüklenemedi',
             currentArticleLoading: false,
@@ -271,9 +263,7 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
           }
         } catch (error) {
           logger.error(
-            'Failed to search articles',
-            error
-          );
+            'Failed to search articles', error instanceof Error ? error : new Error(String(error)));
           set({
             searchError: 'Ağ hatası: Arama yapılamadı',
             searchLoading: false,
@@ -310,9 +300,7 @@ export const useHelpCenterStore = create<HelpCenterStore>()(
           }
         } catch (error) {
           logger.error(
-            'Rating submission failed',
-            error
-          );
+            'Rating submission failed', error instanceof Error ? error : new Error(String(error)));
         }
       },
 

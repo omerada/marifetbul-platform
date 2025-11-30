@@ -638,11 +638,11 @@ export default function OrderDetailPage() {
               />
 
               {/* Payment Retry UI - Sprint 1.3: Show retry button for failed payments */}
-              {order.payment?.id &&
+              {order.paymentId &&
                 order.paymentStatus === 'FAILED' &&
                 userRole === 'buyer' && (
                   <PaymentRetryButton
-                    paymentId={order.payment.id}
+                    paymentId={order.paymentId}
                     onRetrySuccess={() => {
                       logger.info('Payment retry succeeded', {
                         orderId: order.id,

@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 /**
  * ================================================
@@ -64,13 +64,13 @@ export function RefundRequestForm({
 
     const amountNum = parseFloat(amount);
     if (!amount || isNaN(amountNum) || amountNum <= 0) {
-      newErrors.amount = 'GeÃ§erli bir tutar girin';
+      newErrors.amount = 'Geçerli bir tutar girin';
     } else if (amountNum > maxRefundAmount) {
-      newErrors.amount = `Maksimum iade tutarÄ±: â‚º${maxRefundAmount.toLocaleString('tr-TR')}`;
+      newErrors.amount = `Maksimum iade tutarý: ?${maxRefundAmount.toLocaleString('tr-TR')}`;
     }
 
     if (!description.trim() || description.trim().length < 10) {
-      newErrors.description = 'LÃ¼tfen en az 10 karakter aÃ§Ä±klama girin';
+      newErrors.description = 'Lütfen en az 10 karakter açýklama girin';
     }
 
     setErrors(newErrors);
@@ -83,7 +83,7 @@ export function RefundRequestForm({
     e.preventDefault();
 
     if (!validate()) {
-      toast.error('LÃ¼tfen form hatalarÄ±nÄ± dÃ¼zeltin');
+      toast.error('Lütfen form hatalarýný düzeltin');
       return;
     }
 
@@ -98,14 +98,14 @@ export function RefundRequestForm({
       };
 
       await createRefund(request);
-      toast.success('Ä°ade talebi oluÅŸturuldu');
+      toast.success('Ýade talebi oluþturuldu');
 
       if (onSuccess) {
         onSuccess();
       }
     } catch (error) {
-      logger.error('Failed to create refund:', error);
-      toast.error('Ä°ade talebi oluÅŸturulamadÄ±. LÃ¼tfen tekrar deneyin.');
+      logger.error('Failed to create refund:', error instanceof Error ? error : new Error(String(error)));
+      toast.error('Ýade talebi oluþturulamadý. Lütfen tekrar deneyin.');
     } finally {
       setIsSubmitting(false);
     }
@@ -128,10 +128,10 @@ export function RefundRequestForm({
       <div className="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4">
         <AlertCircle className="h-5 w-5 flex-shrink-0 text-blue-600" />
         <div className="text-sm text-blue-900">
-          <p className="font-medium">Ä°ade Talebi HakkÄ±nda</p>
+          <p className="font-medium">Ýade Talebi Hakkýnda</p>
           <p className="mt-1 text-blue-700">
-            Ä°ade talebiniz yÃ¶netici onayÄ±na gÃ¶nderilecektir. OnaylandÄ±ktan sonra
-            Ã¶deme yÃ¶nteminize iade edilecektir.
+            Ýade talebiniz yönetici onayýna gönderilecektir. Onaylandýktan sonra
+            ödeme yönteminize iade edilecektir.
           </p>
         </div>
       </div>
@@ -139,9 +139,9 @@ export function RefundRequestForm({
       {/* Refund Amount */}
       <div>
         <Label htmlFor="amount">
-          Ä°ade TutarÄ± *
+          Ýade Tutarý *
           <span className="text-muted-foreground ml-2 text-sm font-normal">
-            (Maksimum: â‚º{maxRefundAmount.toLocaleString('tr-TR')})
+            (Maksimum: ?{maxRefundAmount.toLocaleString('tr-TR')})
           </span>
         </Label>
         <div className="relative mt-2">
@@ -156,7 +156,7 @@ export function RefundRequestForm({
             disabled={isSubmitting}
           />
           <span className="text-muted-foreground absolute top-1/2 right-3 -translate-y-1/2">
-            â‚º
+            ?
           </span>
         </div>
         {errors.amount && (
@@ -190,14 +190,14 @@ export function RefundRequestForm({
             onClick={() => setAmount(maxRefundAmount.toFixed(2))}
             disabled={isSubmitting}
           >
-            TÃ¼mÃ¼
+            Tümü
           </Button>
         </div>
       </div>
 
       {/* Reason Category */}
       <div>
-        <Label htmlFor="reasonCategory">Ä°ade Nedeni *</Label>
+        <Label htmlFor="reasonCategory">Ýade Nedeni *</Label>
         <select
           id="reasonCategory"
           value={reasonCategory}
@@ -218,7 +218,7 @@ export function RefundRequestForm({
       {/* Description */}
       <div>
         <Label htmlFor="description">
-          AÃ§Ä±klama *
+          Açýklama *
           <span className="text-muted-foreground ml-2 text-sm font-normal">
             (Minimum 10 karakter)
           </span>
@@ -232,7 +232,7 @@ export function RefundRequestForm({
               setErrors({ ...errors, description: '' });
             }
           }}
-          placeholder="Ä°ade talebinizin nedenini detaylÄ± olarak aÃ§Ä±klayÄ±n..."
+          placeholder="Ýade talebinizin nedenini detaylý olarak açýklayýn..."
           rows={5}
           className={`mt-2 ${errors.description ? 'border-red-500' : ''}`}
           disabled={isSubmitting}
@@ -251,10 +251,10 @@ export function RefundRequestForm({
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              GÃ¶nderiliyor...
+              Gönderiliyor...
             </>
           ) : (
-            'Ä°ade Talebi OluÅŸtur'
+            'Ýade Talebi Oluþtur'
           )}
         </Button>
         {onCancel && (
@@ -264,7 +264,7 @@ export function RefundRequestForm({
             onClick={onCancel}
             disabled={isSubmitting}
           >
-            Ä°ptal
+            Ýptal
           </Button>
         )}
       </div>

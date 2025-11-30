@@ -87,9 +87,7 @@ export function usePackageOrder(packageId: string) {
       router.push(`/orders/${orderId}/payment`);
     } catch (error) {
       logger.error(
-        'Order creation error',
-        error
-      );
+        'Order creation error', error instanceof Error ? error : new Error(String(error)));
     }
   };
 

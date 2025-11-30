@@ -238,7 +238,7 @@ export async function getUnreadNotifications(
   page: number = 0,
   size: number = 20
 ): Promise<PaginatedNotifications> {
-  logger.debug('notifications.api', { sizesize });
+  logger.debug('notifications.api', { size });
 
   const response = await apiClient.get<PaginatedNotifications>(
     `/v1/notifications/unread?page=${page}&size=${size}`
@@ -277,7 +277,6 @@ export async function getRecentNotifications(
 export async function getNotificationById(
   notificationId: string
 ): Promise<NotificationResponse> {
-
   const response = await apiClient.get<NotificationResponse>(
     `/v1/notifications/${notificationId}`
   );
@@ -298,7 +297,7 @@ export async function getNotificationsByType(
   page: number = 0,
   size: number = 20
 ): Promise<PaginatedNotifications> {
-  logger.debug('notifications.api', { pagepage });
+  logger.debug('notifications.api', { page });
 
   const response = await apiClient.get<PaginatedNotifications>(
     `/v1/notifications/type/${type}?page=${page}&size=${size}`
@@ -427,7 +426,6 @@ export async function markAllAsReadByType(
 export async function deleteNotification(
   notificationId: string
 ): Promise<void> {
-
   await apiClient.delete(`/v1/notifications/${notificationId}`);
 }
 
@@ -520,7 +518,6 @@ export async function setDoNotDisturb(
   startTime?: string,
   endTime?: string
 ): Promise<void> {
-
   const params = new URLSearchParams();
   params.append('enabled', String(enabled));
   if (startTime) params.append('startTime', startTime);
@@ -542,7 +539,6 @@ export async function setDoNotDisturb(
 export async function getNotificationThread(
   threadId: string
 ): Promise<NotificationResponse[]> {
-
   const response = await apiClient.get<NotificationResponse[]>(
     `/v1/notifications/thread/${threadId}`
   );

@@ -237,7 +237,7 @@ export function useMessaging() {
         throw new Error('Failed to send message');
       }
     } catch (error) {
-      logger.error('Error sending message:', error);
+      logger.error('Error sending message:', error instanceof Error ? error : new Error(String(error)));
       throw error;
     } finally {
       setIsLoading(false);
@@ -253,7 +253,7 @@ export function useMessaging() {
         credentials: 'include',
       });
     } catch (error) {
-      logger.error('Error marking as read:', error);
+      logger.error('Error marking as read:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -270,7 +270,7 @@ export function useMessaging() {
         return await response.json();
       }
     } catch (error) {
-      logger.error('Error creating conversation:', error);
+      logger.error('Error creating conversation:', error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   };
@@ -282,7 +282,7 @@ export function useMessaging() {
         credentials: 'include',
       });
     } catch (error) {
-      logger.error('Error deleting message:', error);
+      logger.error('Error deleting message:', error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   };

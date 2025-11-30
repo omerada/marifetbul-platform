@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
 import {
@@ -38,7 +38,7 @@ interface UniversalSearchProps {
 
 export function UniversalSearch({
   onSearch,
-  placeholder = 'Ne arÄ±yorsun?',
+  placeholder = 'Ne arýyorsun?',
   className,
 }: UniversalSearchProps) {
   const [query, setQuery] = useState('');
@@ -54,11 +54,11 @@ export function UniversalSearch({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const trendingSearches = [
-    'Web tasarÄ±m',
-    'Logo yapÄ±mÄ±',
+    'Web tasarým',
+    'Logo yapýmý',
     'SEO',
     'Mobil uygulama',
-    'Ä°Ã§erik yazÄ±mÄ±',
+    'Ýçerik yazýmý',
     'Sosyal medya',
   ];
 
@@ -121,9 +121,7 @@ export function UniversalSearch({
       });
     } catch (error) {
       logger.error(
-        'Search error',
-        error
-      );
+        'Search error', error instanceof Error ? error : new Error(String(error)));
       // Fallback to empty results
       setSuggestions([]);
       setSearchResults({ services: [], jobs: [], freelancers: [] });
@@ -254,7 +252,7 @@ export function UniversalSearch({
             {isLoading && (
               <div className="p-4 text-center">
                 <div className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
-                <p className="mt-2 text-sm text-gray-500">AranÄ±yor...</p>
+                <p className="mt-2 text-sm text-gray-500">Aranýyor...</p>
               </div>
             )}
 
@@ -308,7 +306,7 @@ export function UniversalSearch({
                 {/* Quick Suggestions */}
                 <div className="mb-4">
                   <h4 className="mb-2 text-sm font-medium text-gray-900">
-                    Ã–neriler
+                    Öneriler
                   </h4>
                   <div className="space-y-1">
                     {suggestions.slice(0, 5).map((suggestion) => (
@@ -371,7 +369,7 @@ export function UniversalSearch({
                               className="w-full"
                               onClick={() => handleSearch(query, 'services')}
                             >
-                              TÃ¼m hizmetleri gÃ¶r (
+                              Tüm hizmetleri gör (
                               {searchResults.services.length})
                             </Button>
                           )}
@@ -383,7 +381,7 @@ export function UniversalSearch({
                       <div>
                         <h4 className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-900">
                           <Briefcase className="h-4 w-4 text-blue-500" />
-                          Ä°ÅŸ Ä°lanlarÄ± ({searchResults.jobs.length})
+                          Ýþ Ýlanlarý ({searchResults.jobs.length})
                         </h4>
                         <div className="space-y-1">
                           {searchResults.jobs.slice(0, 3).map((job) => (
@@ -409,7 +407,7 @@ export function UniversalSearch({
                               className="w-full"
                               onClick={() => handleSearch(query, 'jobs')}
                             >
-                              TÃ¼m iÅŸ ilanlarÄ±nÄ± gÃ¶r ({searchResults.jobs.length}
+                              Tüm iþ ilanlarýný gör ({searchResults.jobs.length}
                               )
                             </Button>
                           )}
@@ -457,10 +455,10 @@ export function UniversalSearch({
               <div className="p-4 text-center">
                 <Search className="mx-auto h-8 w-8 text-gray-400" />
                 <p className="mt-2 text-sm text-gray-500">
-                  <strong>&quot;{query}&quot;</strong> iÃ§in sonuÃ§ bulunamadÄ±
+                  <strong>&quot;{query}&quot;</strong> için sonuç bulunamadý
                 </p>
                 <p className="text-xs text-gray-400">
-                  FarklÄ± kelimeler deneyin veya yazÄ±m hatasÄ± kontrol edin
+                  Farklý kelimeler deneyin veya yazým hatasý kontrol edin
                 </p>
               </div>
             )}

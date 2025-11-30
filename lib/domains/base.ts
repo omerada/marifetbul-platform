@@ -1,4 +1,4 @@
-﻿import logger from '@/lib/infrastructure/monitoring/logger';
+import logger from '@/lib/infrastructure/monitoring/logger';
 // Sprint 2: Removed isEmail import - no longer needed after removing deprecated isValidEmail
 
 export interface BaseServiceConfig {
@@ -165,9 +165,7 @@ export abstract class BaseService {
 
   protected logError(operation: string, error: unknown): void {
     logger.error(
-      `[${this.constructor.name}] ${operation} failed`,
-      error
-    );
+      `[${this.constructor.name}] ${operation} failed`, error instanceof Error ? error : new Error(String(error)));
   }
 
   protected logInfo(operation: string, message: string): void {

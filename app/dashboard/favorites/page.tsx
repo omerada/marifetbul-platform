@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import { AppLayout } from '@/components/layout';
@@ -116,7 +116,7 @@ export default function FavoritesPage() {
       setShowCreateFolder(false);
       logger.info('Folder created successfully');
     } catch (error) {
-      logger.error('Failed to create folder', error);
+      logger.error('Failed to create folder', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -143,7 +143,7 @@ export default function FavoritesPage() {
                   Favorilerim
                 </h1>
                 <p className="mt-1 text-sm text-gray-600">
-                  {stats.totalFavorites} kayÄ±tlÄ± favori
+                  {stats.totalFavorites} kayýtlý favori
                 </p>
               </div>
 
@@ -180,7 +180,7 @@ export default function FavoritesPage() {
                 }
               />
               <StatCard
-                label="Ä°ÅŸler"
+                label="Ýþler"
                 value={stats.jobsCount}
                 icon={<MapPin className="h-5 w-5 text-green-500" />}
                 active={filterType === 'jobs'}
@@ -198,7 +198,7 @@ export default function FavoritesPage() {
                 }
               />
               <StatCard
-                label="KlasÃ¶rler"
+                label="Klasörler"
                 value={stats.foldersCount}
                 icon={<Folder className="h-5 w-5 text-purple-500" />}
                 active={false}
@@ -240,9 +240,9 @@ export default function FavoritesPage() {
                   }
                   className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 >
-                  <option value="all">TÃ¼m Favoriler</option>
+                  <option value="all">Tüm Favoriler</option>
                   <option value="freelancers">Freelancerlar</option>
-                  <option value="jobs">Ä°ÅŸler</option>
+                  <option value="jobs">Ýþler</option>
                   <option value="packages">Paketler</option>
                 </select>
 
@@ -252,7 +252,7 @@ export default function FavoritesPage() {
                   onClick={() => setShowCreateFolder(true)}
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  KlasÃ¶r OluÅŸtur
+                  Klasör Oluþtur
                 </Button>
               </div>
             </div>
@@ -272,7 +272,7 @@ export default function FavoritesPage() {
             <div className="mb-8">
               <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
                 <FolderOpen className="h-5 w-5" />
-                KlasÃ¶rler
+                Klasörler
               </h2>
               <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6">
                 {favoriteFolders.map((folder) => (
@@ -293,12 +293,12 @@ export default function FavoritesPage() {
             <Card className="p-12 text-center">
               <Heart className="mx-auto mb-4 h-16 w-16 text-gray-300" />
               <h3 className="mb-2 text-xl font-semibold text-gray-900">
-                {searchQuery ? 'SonuÃ§ bulunamadÄ±' : 'HenÃ¼z favori eklenmemiÅŸ'}
+                {searchQuery ? 'Sonuç bulunamadý' : 'Henüz favori eklenmemiþ'}
               </h3>
               <p className="text-gray-600">
                 {searchQuery
-                  ? 'Arama kriterlerinizi deÄŸiÅŸtirmeyi deneyin'
-                  : 'BeÄŸendiÄŸiniz freelancer, iÅŸ veya paketleri favorilere ekleyin'}
+                  ? 'Arama kriterlerinizi deðiþtirmeyi deneyin'
+                  : 'Beðendiðiniz freelancer, iþ veya paketleri favorilere ekleyin'}
               </p>
             </Card>
           ) : (
@@ -334,7 +334,7 @@ export default function FavoritesPage() {
               {filteredJobs.length > 0 && (
                 <section>
                   <h2 className="mb-4 text-lg font-semibold text-gray-900">
-                    Ä°ÅŸler ({filteredJobs.length})
+                    Ýþler ({filteredJobs.length})
                   </h2>
                   <div
                     className={
@@ -394,11 +394,11 @@ export default function FavoritesPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <h3 className="mb-4 text-lg font-semibold text-gray-900">
-                Yeni KlasÃ¶r OluÅŸtur
+                Yeni Klasör Oluþtur
               </h3>
               <input
                 type="text"
-                placeholder="KlasÃ¶r adÄ±"
+                placeholder="Klasör adý"
                 value={newFolderName}
                 onChange={(e) => setNewFolderName(e.target.value)}
                 className="mb-4 w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
@@ -409,13 +409,13 @@ export default function FavoritesPage() {
                   variant="outline"
                   onClick={() => setShowCreateFolder(false)}
                 >
-                  Ä°ptal
+                  Ýptal
                 </Button>
                 <Button
                   onClick={handleCreateFolder}
                   disabled={!newFolderName.trim()}
                 >
-                  OluÅŸtur
+                  Oluþtur
                 </Button>
               </div>
             </Card>
@@ -458,7 +458,7 @@ function FolderCard({
           style={{ color: folder.color || '#3B82F6' }}
         />
         <p className="text-sm font-medium text-gray-900">{folder.name}</p>
-        <p className="text-xs text-gray-500">{folder.itemCount || 0} Ã¶ÄŸe</p>
+        <p className="text-xs text-gray-500">{folder.itemCount || 0} öðe</p>
       </div>
 
       <button
@@ -540,7 +540,7 @@ function FreelancerCard({
           {freelancer.hourlyRate && (
             <span className="flex items-center gap-1">
               <DollarSign className="h-3 w-3" />
-              {freelancer.hourlyRate}â‚º/saat
+              {freelancer.hourlyRate}?/saat
             </span>
           )}
         </div>
@@ -582,8 +582,8 @@ function JobCard({ job, viewMode: _viewMode, onToggleFavorite }: JobCardProps) {
           'amount' in job.budget && (
             <span className="flex items-center gap-1">
               <DollarSign className="h-3 w-3" />
-              {job.budget.amount}â‚º
-              {job.budget.maxAmount && ` - ${job.budget.maxAmount}â‚º`}
+              {job.budget.amount}?
+              {job.budget.maxAmount && ` - ${job.budget.maxAmount}?`}
             </span>
           )}
         {job.duration && (
@@ -676,7 +676,7 @@ function PackageCard({
           )}
           {pkg.price && (
             <span className="font-semibold text-blue-600">
-              {pkg.price}â‚º&apos;den baÅŸlayan
+              {pkg.price}?&apos;den baþlayan
             </span>
           )}
         </div>

@@ -64,9 +64,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
       setUserRating(rating);
     } catch (error) {
       logger.error(
-        'Rating failed',
-        error
-      );
+        'Rating failed', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -76,9 +74,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
       setIsHelpful(helpful);
     } catch (error) {
       logger.error(
-        'Helpful vote failed',
-        error
-      );
+        'Helpful vote failed', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -94,9 +90,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
           setTimeout(() => setCopiedToClipboard(false), 2000);
         } catch (error) {
           logger.error(
-            'Copy failed',
-            error
-          );
+            'Copy failed', error instanceof Error ? error : new Error(String(error)));
         }
         break;
       case 'facebook':

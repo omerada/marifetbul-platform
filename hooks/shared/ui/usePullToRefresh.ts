@@ -68,7 +68,7 @@ export function usePullToRefresh({
       try {
         await onRefresh();
       } catch (error) {
-        logger.error('Refresh failed:', error);
+        logger.error('Refresh failed:', error instanceof Error ? error : new Error(String(error)));
       } finally {
         setIsRefreshing(false);
       }

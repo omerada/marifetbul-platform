@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, AlertCircle } from 'lucide-react';
@@ -81,7 +81,7 @@ export function AcceptProposalModal({
       } catch (error) {
         logger.error(
           'Failed to fetch seller payment status in modal:',
-          error
+          error instanceof Error ? error : new Error(String(error))
         );
         setSellerHasIban(false);
       } finally {
@@ -100,7 +100,7 @@ export function AcceptProposalModal({
     } catch (error) {
       logger.error(
         'Failed to accept proposal:',
-        error
+        error instanceof Error ? error : new Error(String(error))
       );
     } finally {
       setIsSubmitting(false);
@@ -122,23 +122,23 @@ export function AcceptProposalModal({
             Teklifi Kabul Et
           </DialogTitle>
           <DialogDescription>
-            {proposal.freelancerName} adlÄ± freelancer&apos;Ä±n teklifini kabul
-            etmek iÃ§in Ã¶deme yÃ¶ntemini seÃ§in.
+            {proposal.freelancerName} adlý freelancer&apos;ýn teklifini kabul
+            etmek için ödeme yöntemini seçin.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Proposal Summary */}
           <div className="rounded-lg border bg-gray-50 p-4">
-            <h3 className="mb-2 font-medium text-gray-900">Teklif Ã–zeti</h3>
+            <h3 className="mb-2 font-medium text-gray-900">Teklif Özeti</h3>
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Freelancer:</span>
               <span className="font-semibold">{proposal.freelancerName}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-600">Teklif TutarÄ±:</span>
+              <span className="text-gray-600">Teklif Tutarý:</span>
               <span className="text-lg font-bold text-green-600">
-                â‚º{proposal.proposedBudget.toLocaleString('tr-TR')}
+                ?{proposal.proposedBudget.toLocaleString('tr-TR')}
               </span>
             </div>
           </div>
@@ -146,7 +146,7 @@ export function AcceptProposalModal({
           {/* Payment Mode Selection */}
           <div>
             <h3 className="mb-3 font-medium text-gray-900">
-              Ã–deme YÃ¶ntemi SeÃ§in
+              Ödeme Yöntemi Seçin
             </h3>
             <PaymentModeSelector
               value={paymentMode}
@@ -163,9 +163,9 @@ export function AcceptProposalModal({
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              <strong>Ã–nemli:</strong> Teklifi kabul ettikten sonra sipariÅŸ
-              oluÅŸturulacak ve seÃ§tiÄŸiniz Ã¶deme yÃ¶ntemine gÃ¶re iÅŸlem
-              baÅŸlatÄ±lacaktÄ±r. Ã–deme yÃ¶ntemi daha sonra deÄŸiÅŸtirilemez.
+              <strong>Önemli:</strong> Teklifi kabul ettikten sonra sipariþ
+              oluþturulacak ve seçtiðiniz ödeme yöntemine göre iþlem
+              baþlatýlacaktýr. Ödeme yöntemi daha sonra deðiþtirilemez.
             </AlertDescription>
           </Alert>
         </div>
@@ -176,7 +176,7 @@ export function AcceptProposalModal({
             onClick={handleClose}
             disabled={isSubmitting}
           >
-            Ä°ptal
+            Ýptal
           </Button>
           <Button
             onClick={handleAccept}

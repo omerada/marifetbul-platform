@@ -488,7 +488,7 @@ export function useDisputeMessages(
       .getUnreadCount(disputeId)
       .then(setUnreadCount)
       .catch((err) => {
-        logger.error('useDisputeMessages: Failed to load unread count', err);
+        logger.error('useDisputeMessages: Failed to load unread count', err instanceof Error ? err : new Error(String(err)));
       });
   }, [disputeId, loadMessages]);
 

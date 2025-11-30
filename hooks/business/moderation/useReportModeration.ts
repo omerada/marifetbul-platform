@@ -265,7 +265,7 @@ export function useReportModeration(
 
       throw new Error('Invalid stats');
     } catch (error) {
-      logger.error('Failed to fetch report stats:', error);
+      logger.error('Failed to fetch report stats:', error instanceof Error ? error : new Error(String(error)));
       return {
         total: 0,
         pending: 0,
@@ -324,7 +324,7 @@ export function useReportModeration(
         logger.info('Report assigned', { reportId });
         return true;
       } catch (error) {
-        logger.error('Assign failed:', error);
+        logger.error('Assign failed:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Atama başarısız');
         return false;
       } finally {
@@ -352,7 +352,7 @@ export function useReportModeration(
         logger.info('Investigation started', { reportId });
         return true;
       } catch (error) {
-        logger.error('Investigation failed:', error);
+        logger.error('Investigation failed:', error instanceof Error ? error : new Error(String(error)));
         toast.error('İnceleme başlatma başarısız');
         return false;
       } finally {
@@ -392,7 +392,7 @@ export function useReportModeration(
         logger.info('Report resolved', { reportId, action });
         return true;
       } catch (error) {
-        logger.error('Resolve failed:', error);
+        logger.error('Resolve failed:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Çözme başarısız');
         return false;
       } finally {
@@ -423,7 +423,7 @@ export function useReportModeration(
         logger.info('Report dismissed', { reportId });
         return true;
       } catch (error) {
-        logger.error('Dismiss failed:', error);
+        logger.error('Dismiss failed:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Reddetme başarısız');
         return false;
       } finally {
@@ -454,7 +454,7 @@ export function useReportModeration(
         logger.info('Report escalated', { reportId });
         return true;
       } catch (error) {
-        logger.error('Escalate failed:', error);
+        logger.error('Escalate failed:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Yükseltme başarısız');
         return false;
       } finally {
@@ -491,7 +491,7 @@ export function useReportModeration(
         logger.info('Report escalated to admin', { reportId });
         return true;
       } catch (error) {
-        logger.error('Escalate to admin failed:', error);
+        logger.error('Escalate to admin failed:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Admin yükseltme başarısız');
         return false;
       } finally {
@@ -543,7 +543,7 @@ export function useReportModeration(
           return false;
         }
       } catch (error) {
-        logger.error('Bulk dismiss failed:', error);
+        logger.error('Bulk dismiss failed:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Toplu reddetme başarısız');
         return false;
       } finally {
@@ -576,7 +576,7 @@ export function useReportModeration(
         logger.info('Bulk escalate success', { count: reportIds.length });
         return true;
       } catch (error) {
-        logger.error('Bulk escalate failed:', error);
+        logger.error('Bulk escalate failed:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Toplu yükseltme başarısız');
         return false;
       } finally {
@@ -620,10 +620,10 @@ export function useReportModeration(
         toast.success(
           `${reportIds.length} rapor admin incelemesine yükseltildi`
         );
-        logger.info('Bulk escalate to admin success', { countreportIdslength,  });
+        logger.info('Bulk escalate to admin success', { count: reportIds.length,  });
         return true;
       } catch (error) {
-        logger.error('Bulk escalate to admin failed:', error);
+        logger.error('Bulk escalate to admin failed:', error instanceof Error ? error : new Error(String(error)));
         toast.error('Toplu admin yükseltme başarısız');
         return false;
       } finally {

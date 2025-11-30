@@ -159,7 +159,7 @@ export async function getCommissions(
 
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commissions', error);
+    logger.error('Failed to fetch commissions', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -181,7 +181,7 @@ export async function getCommissionById(
     logger.info('Commission fetched successfully', { commissionId });
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commission', error);
+    logger.error('Failed to fetch commission', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -203,7 +203,7 @@ export async function getCommissionByPaymentId(
     logger.info('Commission fetched by payment ID', { paymentId });
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commission by payment ID', error);
+    logger.error('Failed to fetch commission by payment ID', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -238,7 +238,7 @@ export async function getCommissionsBySeller(
 
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch seller commissions', error);
+    logger.error('Failed to fetch seller commissions', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -267,7 +267,7 @@ export async function getCommissionStats(
     logger.info('Commission stats fetched', { startDate, endDate });
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commission stats', error);
+    logger.error('Failed to fetch commission stats', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -296,7 +296,7 @@ export async function getCommissionAnalytics(
     logger.info('Commission analytics fetched', { startDate, endDate });
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commission analytics', error);
+    logger.error('Failed to fetch commission analytics', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -357,7 +357,7 @@ export async function createCommissionRule(
 
     return response.data;
   } catch (error) {
-    logger.error('Failed to create commission rule', error);
+    logger.error('Failed to create commission rule', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -379,7 +379,7 @@ export async function getAllCommissionRules(): Promise<CommissionRule[]> {
 
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commission rules', error);
+    logger.error('Failed to fetch commission rules', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -401,7 +401,7 @@ export async function getActiveCommissionRules(): Promise<CommissionRule[]> {
 
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch active commission rules', error);
+    logger.error('Failed to fetch active commission rules', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -422,7 +422,7 @@ export async function getCommissionRuleById(
     logger.info('Commission rule fetched', { ruleId });
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch commission rule', error);
+    logger.error('Failed to fetch commission rule', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -445,7 +445,7 @@ export async function updateCommissionRule(
     logger.info('Commission rule updated', { ruleId });
     return response.data;
   } catch (error) {
-    logger.error('Failed to update commission rule', error);
+    logger.error('Failed to update commission rule', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -461,7 +461,7 @@ export async function deleteCommissionRule(ruleId: string): Promise<void> {
 
     logger.info('Commission rule deleted', { ruleId });
   } catch (error) {
-    logger.error('Failed to delete commission rule', error);
+    logger.error('Failed to delete commission rule', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -482,7 +482,7 @@ export async function activateCommissionRule(
     logger.info('Commission rule activated', { ruleId });
     return response.data;
   } catch (error) {
-    logger.error('Failed to activate commission rule', error);
+    logger.error('Failed to activate commission rule', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -503,7 +503,7 @@ export async function deactivateCommissionRule(
     logger.info('Commission rule deactivated', { ruleId });
     return response.data;
   } catch (error) {
-    logger.error('Failed to deactivate commission rule', error);
+    logger.error('Failed to deactivate commission rule', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -525,7 +525,7 @@ export async function getExpiringCommissionRules(): Promise<CommissionRule[]> {
 
     return response.data;
   } catch (error) {
-    logger.error('Failed to fetch expiring commission rules', error);
+    logger.error('Failed to fetch expiring commission rules', error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }

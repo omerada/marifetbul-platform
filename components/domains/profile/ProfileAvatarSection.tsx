@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 import { useState } from 'react';
 import { AvatarUpload } from './AvatarUpload';
@@ -45,13 +45,13 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
       });
 
       if (!response.ok) {
-        throw new Error('GÃ¼ncelleme baÅŸarÄ±sÄ±z');
+        throw new Error('Güncelleme başarısız');
       }
 
       onUserUpdate(formData);
       setIsEditingBasic(false);
     } catch (error) {
-      logger.error('Error updating user:', error);
+      logger.error('Error updating user:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -107,7 +107,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
               {user.bio && (
                 <div>
                   <h3 className="mb-1 text-sm font-medium text-gray-700">
-                    HakkÄ±nda
+                    Hakkında
                   </h3>
                   <p className="text-gray-600">{user.bio}</p>
                 </div>
@@ -116,26 +116,26 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
               <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
                 {user.location && (
                   <div className="flex items-center space-x-2">
-                    <span className="text-gray-400">ğŸ“</span>
+                    <span className="text-gray-400">??</span>
                     <span className="text-gray-600">{user.location}</span>
                   </div>
                 )}
 
                 {user.phone && (
                   <div className="flex items-center space-x-2">
-                    <span className="text-gray-400">ğŸ“</span>
+                    <span className="text-gray-400">??</span>
                     <span className="text-gray-600">{user.phone}</span>
                   </div>
                 )}
 
                 <div className="flex items-center space-x-2">
-                  <span className="text-gray-400">âœ‰ï¸</span>
+                  <span className="text-gray-400">??</span>
                   <span className="text-gray-600">{user.email}</span>
                 </div>
 
                 {user.website && (
                   <div className="flex items-center space-x-2">
-                    <span className="text-gray-400">ğŸŒ</span>
+                    <span className="text-gray-400">??</span>
                     <a
                       href={
                         user.website.startsWith('http')
@@ -159,7 +159,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
                     variant="outline"
                     size="sm"
                   >
-                    Bilgileri DÃ¼zenle
+                    Bilgileri Düzenle
                   </Button>
                 </div>
               )}
@@ -192,7 +192,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
 
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
-                  HakkÄ±nda
+                  Hakkında
                 </label>
                 <textarea
                   value={formData.bio}
@@ -201,7 +201,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
                   }
                   rows={3}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  placeholder="Kendiniz hakkÄ±nda kÄ±sa bir aÃ§Ä±klama yazÄ±n..."
+                  placeholder="Kendiniz hakkında kısa bir açıklama yazın..."
                 />
               </div>
 
@@ -215,7 +215,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
                       location: e.target.value,
                     }))
                   }
-                  placeholder="Ä°stanbul, TÃ¼rkiye"
+                  placeholder="İstanbul, Türkiye"
                 />
                 <Input
                   label="Telefon"
@@ -244,7 +244,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
                   Kaydet
                 </Button>
                 <Button onClick={handleCancel} variant="outline">
-                  Ä°ptal
+                  İptal
                 </Button>
               </div>
             </div>
@@ -260,13 +260,13 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
               <div className="text-2xl font-bold text-blue-600">
                 {(user as Freelancer).rating.toFixed(1)}
               </div>
-              <div className="text-sm text-gray-500">DeÄŸerlendirme</div>
+              <div className="text-sm text-gray-500">Değerlendirme</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-green-600">
                 {(user as Freelancer).completedJobs}
               </div>
-              <div className="text-sm text-gray-500">Tamamlanan Ä°ÅŸ</div>
+              <div className="text-sm text-gray-500">Tamamlanan İş</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-purple-600">
@@ -278,7 +278,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
               <div className="text-2xl font-bold text-orange-600">
                 {(user as Freelancer).responseTime}
               </div>
-              <div className="text-sm text-gray-500">YanÄ±t SÃ¼resi</div>
+              <div className="text-sm text-gray-500">Yanıt Süresi</div>
             </div>
           </div>
         </div>
@@ -291,23 +291,23 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
               <div className="text-2xl font-bold text-blue-600">
                 {(user as Employer).rating.toFixed(1)}
               </div>
-              <div className="text-sm text-gray-500">DeÄŸerlendirme</div>
+              <div className="text-sm text-gray-500">Değerlendirme</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-green-600">
                 {(user as Employer).completedJobs}
               </div>
-              <div className="text-sm text-gray-500">Tamamlanan Ä°ÅŸ</div>
+              <div className="text-sm text-gray-500">Tamamlanan İş</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-purple-600">
                 {(user as Employer).activeJobs}
               </div>
-              <div className="text-sm text-gray-500">Aktif Ä°ÅŸ</div>
+              <div className="text-sm text-gray-500">Aktif İş</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-orange-600">
-                â‚º{(user as Employer).totalSpent.toLocaleString()}
+                ?{(user as Employer).totalSpent.toLocaleString()}
               </div>
               <div className="text-sm text-gray-500">Toplam Harcama</div>
             </div>

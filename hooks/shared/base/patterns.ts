@@ -329,7 +329,7 @@ export function withErrorBoundary<TReturn>(
     try {
       return hook();
     } catch (error) {
-      logger.error('Hook error caught:', error);
+      logger.error('Hook error caught:', error instanceof Error ? error : new Error(String(error)));
       return fallbackValue;
     }
   };

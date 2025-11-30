@@ -434,6 +434,7 @@ export interface ProposalResponse {
   // Relations
   jobId: string; // UUID
   jobTitle: string;
+  jobCategory?: string; // Category of the job
   freelancerId: string; // UUID
   freelancerName: string;
   freelancerAvatar?: string;

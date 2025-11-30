@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Search, X, Clock, TrendingUp } from 'lucide-react';
@@ -147,9 +147,7 @@ export function SearchAutocomplete({
         }
       } catch (error) {
         logger.error(
-          'Failed to fetch search data',
-          error
-        );
+          'Failed to fetch search data', error instanceof Error ? error : new Error(String(error)));
       }
     };
 
@@ -193,7 +191,7 @@ export function SearchAutocomplete({
             {/* Loading state */}
             {isLoadingSuggestions && (
               <div className="py-4 text-center text-sm text-gray-500">
-                AranÄ±yor...
+                Aranýyor...
               </div>
             )}
 
@@ -201,7 +199,7 @@ export function SearchAutocomplete({
             {suggestions.length > 0 && (
               <div className="space-y-1">
                 <div className="px-2 py-1 text-xs font-medium tracking-wide text-gray-500 uppercase">
-                  Ã–neriler
+                  Öneriler
                 </div>
                 {suggestions.slice(0, 5).map((suggestion, index) => (
                   <button
@@ -264,7 +262,7 @@ export function SearchAutocomplete({
               suggestions.length === 0 &&
               localQuery.length >= 2 && (
                 <div className="py-4 text-center text-sm text-gray-500">
-                  Ã–neri bulunamadÄ±
+                  Öneri bulunamadý
                 </div>
               )}
           </div>

@@ -250,7 +250,7 @@ export const BulkPayoutActions: React.FC<BulkPayoutActionsProps> = ({
       );
     } catch (error) {
       toast.error('Dosya oluşturulurken bir hata oluştu');
-      logger.error('Export failed:', error);
+      logger.error('Export failed:', error instanceof Error ? error : new Error(String(error)));
     }
   };
 

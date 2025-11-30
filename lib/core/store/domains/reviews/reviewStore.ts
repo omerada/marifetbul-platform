@@ -245,9 +245,7 @@ export const useReviewStore = create<ReviewStore>()(
           }
         } catch (error) {
           logger.error(
-            'Helpful mark error',
-            error
-          );
+            'Helpful mark error', error instanceof Error ? error : new Error(String(error)));
         }
       },
 

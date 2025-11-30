@@ -39,9 +39,7 @@ export async function initializeProductionApp() {
     return deploymentResult;
   } catch (error) {
     logger.error(
-      'Failed to initialize production optimizations',
-      error
-    );
+      'Failed to initialize production optimizations', error instanceof Error ? error : new Error(String(error)));
     return null;
   }
 }

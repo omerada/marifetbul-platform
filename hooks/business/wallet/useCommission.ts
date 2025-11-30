@@ -127,7 +127,7 @@ export function useCommission(
         setIsLoading(true);
         setError(null);
 
-        logger.debug('Loading commissions', { userIduserid, page, size });
+        logger.debug('Loading commissions', { userId: user.id, page, size });
 
         const response = await getCommissionsBySeller(user.id, page, size);
 
@@ -137,11 +137,17 @@ export function useCommission(
         setTotalElements(response.totalElements);
         setHasNext(response.hasNext);
 
-        logger.info('Commissions loaded successfully', { countresponsecontentlength, totalresponsetotalElements,  });
+        logger.info('Commissions loaded successfully', {
+          count: response.content.length,
+          total: response.totalElements,
+        });
       } catch (err) {
         const errorMessage = 'Komisyon bilgileri yüklenemedi';
         setError(errorMessage);
-        logger.error('Failed to load commissions', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Failed to load commissions',
+          err instanceof Error ? err : new Error(String(err))
+        );
         toast.error(errorMessage);
       } finally {
         setIsLoading(false);
@@ -167,7 +173,10 @@ export function useCommission(
     } catch (err) {
       const errorMessage = 'Komisyon istatistikleri yüklenemedi';
       setError(errorMessage);
-      logger.error('Failed to load commission stats', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Failed to load commission stats',
+        err instanceof Error ? err : new Error(String(err))
+      );
       // Don't show toast for stats - it's supplementary data
     } finally {
       setIsLoadingStats(false);
@@ -192,7 +201,10 @@ export function useCommission(
       } catch (err) {
         const errorMessage = 'Komisyon analizleri yüklenemedi';
         setError(errorMessage);
-        logger.error('Failed to load commission analytics', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Failed to load commission analytics',
+          err instanceof Error ? err : new Error(String(err))
+        );
         // Don't show toast for analytics - it's supplementary data
       } finally {
         setIsLoadingAnalytics(false);

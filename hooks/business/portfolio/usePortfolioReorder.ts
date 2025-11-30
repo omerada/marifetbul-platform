@@ -78,7 +78,7 @@ export function usePortfolioReorder(
     setIsSaving(true);
     try {
       logger.info('[usePortfolioReorder] Saving new order', {
-        itemCountorderedItemslength,
+        itemCount: orderedItems.length,
       });
 
       // Extract IDs in the new order

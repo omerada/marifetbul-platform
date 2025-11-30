@@ -215,7 +215,7 @@ export function useReviewModeration(
 
         return true;
       } catch (error) {
-        logger.error('Failed to approve review', error);
+        logger.error('Failed to approve review', error instanceof Error ? error : new Error(String(error)));
         toast.error('İnceleme onaylanamadı');
         return false;
       } finally {
@@ -257,7 +257,7 @@ export function useReviewModeration(
 
         return true;
       } catch (error) {
-        logger.error('Failed to reject review', error);
+        logger.error('Failed to reject review', error instanceof Error ? error : new Error(String(error)));
         toast.error('İnceleme reddedilemedi');
         return false;
       } finally {
@@ -303,7 +303,7 @@ export function useReviewModeration(
 
         return true;
       } catch (error) {
-        logger.error('Failed to bulk approve reviews', error);
+        logger.error('Failed to bulk approve reviews', error instanceof Error ? error : new Error(String(error)));
         toast.error('Toplu onaylama başarısız');
         return false;
       } finally {
@@ -354,7 +354,7 @@ export function useReviewModeration(
 
         return true;
       } catch (error) {
-        logger.error('Failed to bulk reject reviews', error);
+        logger.error('Failed to bulk reject reviews', error instanceof Error ? error : new Error(String(error)));
         toast.error('Toplu reddetme başarısız');
         return false;
       } finally {
@@ -403,7 +403,7 @@ export function useReviewModeration(
 
         return true;
       } catch (error) {
-        logger.error('Failed to escalate review', error);
+        logger.error('Failed to escalate review', error instanceof Error ? error : new Error(String(error)));
         toast.error('İnceleme yükseltilemedi');
         return false;
       } finally {
@@ -458,11 +458,11 @@ export function useReviewModeration(
         setSelectedReviews([]);
 
         toast.success(`${reviewIds.length} inceleme yöneticiye yükseltildi`);
-        logger.info('Bulk escalate completed', { countreviewIdslength, priority,  });
+        logger.info('Bulk escalate completed', { count: reviewIds.length, priority,  });
 
         return true;
       } catch (error) {
-        logger.error('Failed to bulk escalate reviews', error);
+        logger.error('Failed to bulk escalate reviews', error instanceof Error ? error : new Error(String(error)));
         toast.error('Toplu yükseltme başarısız');
         return false;
       } finally {

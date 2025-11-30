@@ -27,7 +27,7 @@ export function useDisputeResolution() {
 
     try {
       const result = await resolveDispute(disputeId, resolution);
-      logger.info('Dispute resolved', { disputeId, resolutionTyperesolutionresolutionType,  });
+      logger.info('Dispute resolved', { disputeId, resolutionType: resolution.resolutionType,  });
       toast.success('İtiraz başarıyla çözümlendi');
       return result;
     } catch (err) {

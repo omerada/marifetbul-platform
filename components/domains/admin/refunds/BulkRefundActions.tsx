@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 /**
  * ================================================
@@ -51,18 +51,18 @@ export function BulkRefundActions({
 
       // Show detailed success/failure toast
       if (response.failedCount === 0) {
-        toast.success('Toplu Onay BaÅŸarÄ±lÄ±', {
-          description: `${response.approvedCount} iade talebi onaylandÄ±. Toplam: â‚º${response.totalAmountApproved?.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}`,
+        toast.success('Toplu Onay Baþarýlý', {
+          description: `${response.approvedCount} iade talebi onaylandý. Toplam: ?${response.totalAmountApproved?.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}`,
           duration: 5000,
         });
       } else if (response.approvedCount > 0) {
-        toast.warning('KÄ±smi BaÅŸarÄ±', {
-          description: `${response.approvedCount} onaylandÄ±, ${response.failedCount} baÅŸarÄ±sÄ±z oldu.`,
+        toast.warning('Kýsmi Baþarý', {
+          description: `${response.approvedCount} onaylandý, ${response.failedCount} baþarýsýz oldu.`,
           duration: 7000,
         });
       } else {
-        toast.error('Toplu Onay BaÅŸarÄ±sÄ±z', {
-          description: `${response.failedCount} iade talebi onaylanamadÄ±.`,
+        toast.error('Toplu Onay Baþarýsýz', {
+          description: `${response.failedCount} iade talebi onaylanamadý.`,
           duration: 7000,
         });
       }
@@ -78,10 +78,10 @@ export function BulkRefundActions({
       setNotes('');
       setShowNotesInput(false);
     } catch (error) {
-      logger.error('[BulkRefundActions] Bulk approve failed:', error);
+      logger.error('[BulkRefundActions] Bulk approve failed:', error instanceof Error ? error : new Error(String(error)));
       toast.error('Hata', {
         description:
-          'Toplu onaylama sÄ±rasÄ±nda bir hata oluÅŸtu. LÃ¼tfen tekrar deneyin.',
+          'Toplu onaylama sýrasýnda bir hata oluþtu. Lütfen tekrar deneyin.',
       });
     } finally {
       setIsProcessing(false);
@@ -95,12 +95,12 @@ export function BulkRefundActions({
           <div className="flex items-center gap-2">
             <CheckCircle className="text-primary h-5 w-5" />
             <span className="font-medium">
-              {selectedCount} iade talebi seÃ§ildi
+              {selectedCount} iade talebi seçildi
             </span>
           </div>
           <Button variant="ghost" size="sm" onClick={onClearSelection}>
             <X className="mr-2 h-4 w-4" />
-            SeÃ§imi Temizle
+            Seçimi Temizle
           </Button>
         </div>
 
@@ -111,7 +111,7 @@ export function BulkRefundActions({
               id="bulkNotes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Toplu onay iÃ§in bir not ekleyin..."
+              placeholder="Toplu onay için bir not ekleyin..."
               rows={3}
             />
           </div>
@@ -125,7 +125,7 @@ export function BulkRefundActions({
                 disabled={isProcessing}
               >
                 <CheckCircle className="mr-2 h-4 w-4" />
-                SeÃ§ilenleri Onayla
+                Seçilenleri Onayla
               </Button>
               <Button
                 variant="outline"
@@ -139,7 +139,7 @@ export function BulkRefundActions({
             <>
               <Button onClick={handleBulkApprove} disabled={isProcessing}>
                 <CheckCircle className="mr-2 h-4 w-4" />
-                OnayÄ± Tamamla
+                Onayý Tamamla
               </Button>
               <Button
                 variant="outline"
@@ -149,7 +149,7 @@ export function BulkRefundActions({
                 }}
                 disabled={isProcessing}
               >
-                Ä°ptal
+                Ýptal
               </Button>
             </>
           )}

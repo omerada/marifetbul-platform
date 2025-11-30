@@ -1,4 +1,4 @@
-ï»¿/**
+/**
  * ================================================
  * ADMIN LOGIN FORM COMPONENT
  * ================================================
@@ -146,7 +146,7 @@ export function AdminLoginForm({
         });
         setIsLoading(false);
         setError(
-          'Admin yetkisine sahip deÄŸilsiniz. LÃ¼tfen admin hesabÄ± ile giriÅŸ yapÄ±n.'
+          'Admin yetkisine sahip değilsiniz. Lütfen admin hesabı ile giriş yapın.'
         );
       }
     }
@@ -190,11 +190,11 @@ export function AdminLoginForm({
       }
 
       // If no 2FA required, login is complete
-      toast.success('Admin paneline baÅŸarÄ±yla giriÅŸ yapÄ±ldÄ±');
+      toast.success('Admin paneline başarıyla giriş yapıldı');
     } catch (err) {
       logger.error('[AdminLogin] Login failed', { error: err });
       const errorMessage =
-        err instanceof Error ? err.message : 'GiriÅŸ yapÄ±lÄ±rken bir hata oluÅŸtu';
+        err instanceof Error ? err.message : 'Giriş yapılırken bir hata oluştu';
       setError(errorMessage);
       toast.error(errorMessage);
       setIsLoading(false);
@@ -225,7 +225,7 @@ export function AdminLoginForm({
         }
 
         setShow2FAModal(false);
-        toast.success('2FA doÄŸrulandÄ±, yÃ¶nlendiriliyorsunuz...');
+        toast.success('2FA doğrulandı, yönlendiriliyorsunuz...');
 
         // Call success callback if provided
         if (onSuccess) {
@@ -237,10 +237,10 @@ export function AdminLoginForm({
           window.location.href = '/admin';
         }, 500);
       } else {
-        throw new Error('2FA doÄŸrulama baÅŸarÄ±sÄ±z');
+        throw new Error('2FA doğrulama başarısız');
       }
     } catch (err) {
-      logger.error('[AdminLogin] 2FA verification failed', err);
+      logger.error('[AdminLogin] 2FA verification failed', err instanceof Error ? err : new Error(String(err)));
       setIsLoading(false);
       throw err; // Re-throw to show error in modal
     }
@@ -262,7 +262,7 @@ export function AdminLoginForm({
         </div>
         <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
         <p className="mt-2 text-sm text-gray-600">
-          MarifetBul yÃ¶netim paneline eriÅŸim
+          MarifetBul yönetim paneline erişim
         </p>
       </div>
 
@@ -270,7 +270,7 @@ export function AdminLoginForm({
       <Card className="border-0 shadow-xl">
         <CardHeader className="space-y-1 pb-4">
           <CardTitle className="text-center text-xl font-semibold">
-            YÃ¶netici GiriÅŸi
+            Yönetici Girişi
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -304,7 +304,7 @@ export function AdminLoginForm({
             {/* Password Input */}
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm font-medium">
-                Åifre
+                Şifre
               </Label>
               <div className="relative">
                 <Input
@@ -313,7 +313,7 @@ export function AdminLoginForm({
                   type={showPassword ? 'text' : 'password'}
                   value={credentials.password}
                   onChange={handleInputChange}
-                  placeholder="YÃ¶netici ÅŸifrenizi girin"
+                  placeholder="Yönetici şifrenizi girin"
                   required
                   className="h-11 pr-10"
                   disabled={isLoading}
@@ -342,7 +342,7 @@ export function AdminLoginForm({
               }
               loading={isLoading}
             >
-              {isLoading ? 'GiriÅŸ yapÄ±lÄ±yor...' : 'Admin Paneline GiriÅŸ'}
+              {isLoading ? 'Giriş yapılıyor...' : 'Admin Paneline Giriş'}
             </Button>
           </form>
 
@@ -356,11 +356,11 @@ export function AdminLoginForm({
                 </h4>
               </div>
               <p className="text-xs text-amber-700">
-                Bu yardÄ±mcÄ± bilgiler yalnÄ±zca development ortamÄ±nda gÃ¶rÃ¼nÃ¼r.
-                Production ortamÄ±nda otomatik olarak gizlenir.
+                Bu yardımcı bilgiler yalnızca development ortamında görünür.
+                Production ortamında otomatik olarak gizlenir.
               </p>
               <div className="mt-3 space-y-2 text-xs text-amber-700">
-                <p className="font-medium">Test Admin HesabÄ±:</p>
+                <p className="font-medium">Test Admin Hesabı:</p>
                 <p>
                   E-posta:{' '}
                   <code className="rounded bg-amber-100 px-1 py-0.5">
@@ -368,7 +368,7 @@ export function AdminLoginForm({
                   </code>
                 </p>
                 <p>
-                  Åifre:{' '}
+                  Şifre:{' '}
                   <code className="rounded bg-amber-100 px-1 py-0.5">
                     Admin123!
                   </code>
@@ -391,18 +391,18 @@ export function AdminLoginForm({
             <p className="text-xs text-gray-500">
               {strictMode && (
                 <>
-                  ğŸ”’ GÃ¼venlik: Bu panel ekstra gÃ¼venlik Ã¶nlemleri ile
-                  korunmaktadÄ±r.
+                  ?? Güvenlik: Bu panel ekstra güvenlik önlemleri ile
+                  korunmaktadır.
                   <br />
                 </>
               )}
               {require2FA && (
                 <>
-                  ğŸ” Ä°ki faktÃ¶rlÃ¼ doÄŸrulama (2FA) gereklidir.
+                  ?? İki faktörlü doğrulama (2FA) gereklidir.
                   <br />
                 </>
               )}
-              Kimlik bilgilerinizi kimseyle paylaÅŸmayÄ±n.
+              Kimlik bilgilerinizi kimseyle paylaşmayın.
             </p>
           </div>
         </CardContent>
@@ -416,7 +416,7 @@ export function AdminLoginForm({
           onClick={() => router.push('/')}
           className="text-gray-600 hover:text-gray-900"
         >
-          â† Ana siteye dÃ¶n
+          ‹ Ana siteye dön
         </Button>
       </div>
 

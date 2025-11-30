@@ -66,9 +66,7 @@ export class WebSocketManager {
             this.handleMessage(message);
           } catch (error) {
             logger.error(
-              'Failed to parse WebSocket message',
-              error
-            );
+              'Failed to parse WebSocket message', error instanceof Error ? error : new Error(String(error)));
           }
         };
 
@@ -175,9 +173,7 @@ export class WebSocketManager {
           handler(message.data);
         } catch (error) {
           logger.error(
-            'Error in WebSocket event handler',
-            error
-          );
+            'Error in WebSocket event handler', error instanceof Error ? error : new Error(String(error)));
         }
       });
     }
@@ -197,9 +193,7 @@ export class WebSocketManager {
 
       this.connect().catch((error) => {
         logger.error(
-          'Reconnection failed',
-          error
-        );
+          'Reconnection failed', error instanceof Error ? error : new Error(String(error)));
       });
     }, this.config.reconnectInterval);
   }
@@ -215,9 +209,7 @@ export class WebSocketManager {
           this.send('ping', { timestamp: Date.now() });
         } catch (error) {
           logger.error(
-            'Failed to send ping',
-            error
-          );
+            'Failed to send ping', error instanceof Error ? error : new Error(String(error)));
         }
       }
     }, this.config.pingInterval);

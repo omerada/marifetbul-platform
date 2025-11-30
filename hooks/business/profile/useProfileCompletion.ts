@@ -90,7 +90,7 @@ export function useProfileCompletion(
       }
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('[useProfileCompletion] Fetch failed', err);
+      logger.error('[useProfileCompletion] Fetch failed', err instanceof Error ? err : new Error(String(err)));
       throw err;
     }
   };
@@ -109,7 +109,7 @@ export function useProfileCompletion(
 
       // Error handling
       onError: (err) => {
-        logger.error('[useProfileCompletion] SWR error', err);
+        logger.error('[useProfileCompletion] SWR error', err instanceof Error ? err : new Error(String(err)));
         toast.error('Profil tamamlanma durumu yüklenemedi');
       },
     }
@@ -123,7 +123,7 @@ export function useProfileCompletion(
       toast.success('Profil durumu güncellendi');
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
-      logger.error('[useProfileCompletion] Refresh failed', error);
+      logger.error('[useProfileCompletion] Refresh failed', error instanceof Error ? error : new Error(String(error)));
       toast.error('Yenileme başarısız oldu');
     }
   };

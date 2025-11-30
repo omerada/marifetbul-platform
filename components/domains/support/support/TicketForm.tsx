@@ -224,9 +224,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
       }
     } catch (error) {
       logger.error(
-        'Ticket creation failed',
-        error
-      );
+        'Ticket creation failed', error instanceof Error ? error : new Error(String(error)));
       setSubmitError(
         'Destek talebi oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.'
       );

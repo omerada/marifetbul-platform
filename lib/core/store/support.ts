@@ -114,9 +114,7 @@ export const useSupportStore = create<SupportState>()(
           }
         } catch (error) {
           logger.error(
-            'Failed to fetch tickets',
-            error
-          );
+            'Failed to fetch tickets', error instanceof Error ? error : new Error(String(error)));
           set({
             ticketsError: 'Ağ hatası: Destek talepleri yüklenemedi',
             ticketsLoading: false,
@@ -144,9 +142,7 @@ export const useSupportStore = create<SupportState>()(
           }
         } catch (error) {
           logger.error(
-            'Failed to fetch ticket by ID',
-            error
-          );
+            'Failed to fetch ticket by ID', error instanceof Error ? error : new Error(String(error)));
           set({
             currentTicketError: 'Ağ hatası: Destek talebi yüklenemedi',
             currentTicketLoading: false,
@@ -206,9 +202,7 @@ export const useSupportStore = create<SupportState>()(
           }
         } catch (error) {
           logger.error(
-            'Failed to create ticket',
-            error
-          );
+            'Failed to create ticket', error instanceof Error ? error : new Error(String(error)));
           set({
             createTicketError: 'Ağ hatası: Destek talebi oluşturulamadı',
             createTicketLoading: false,
@@ -269,9 +263,7 @@ export const useSupportStore = create<SupportState>()(
           }
         } catch (error) {
           logger.error(
-            'Failed to add ticket response',
-            error
-          );
+            'Failed to add ticket response', error instanceof Error ? error : new Error(String(error)));
           set({
             responseSubmissionError: 'Ağ hatası: Yanıt gönderilemedi',
             responseSubmissionLoading: false,
@@ -306,9 +298,7 @@ export const useSupportStore = create<SupportState>()(
           }
         } catch (error) {
           logger.error(
-            'Failed to close ticket',
-            error
-          );
+            'Failed to close ticket', error instanceof Error ? error : new Error(String(error)));
         }
       },
 

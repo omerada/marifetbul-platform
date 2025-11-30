@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 /**
  * ================================================
@@ -33,25 +33,25 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 const customOrderSchema = z.object({
   title: z
     .string()
-    .min(5, 'BaÅŸlÄ±k en az 5 karakter olmalÄ±dÄ±r')
-    .max(200, 'BaÅŸlÄ±k en fazla 200 karakter olabilir'),
+    .min(5, 'Baþlýk en az 5 karakter olmalýdýr')
+    .max(200, 'Baþlýk en fazla 200 karakter olabilir'),
   description: z
     .string()
-    .min(20, 'AÃ§Ä±klama en az 20 karakter olmalÄ±dÄ±r')
-    .max(5000, 'AÃ§Ä±klama en fazla 5000 karakter olabilir'),
+    .min(20, 'Açýklama en az 20 karakter olmalýdýr')
+    .max(5000, 'Açýklama en fazla 5000 karakter olabilir'),
   requirements: z
     .string()
-    .min(10, 'Gereksinimler en az 10 karakter olmalÄ±dÄ±r')
+    .min(10, 'Gereksinimler en az 10 karakter olmalýdýr')
     .max(5000, 'Gereksinimler en fazla 5000 karakter olabilir'),
   amount: z
     .number()
-    .min(100, 'Tutar en az 100 TRY olmalÄ±dÄ±r')
+    .min(100, 'Tutar en az 100 TRY olmalýdýr')
     .max(1000000, 'Tutar en fazla 1,000,000 TRY olabilir'),
   deadline: z.string().min(1, 'Teslim tarihi gereklidir'),
   contactInfo: z
     .string()
-    .min(5, 'Ä°letiÅŸim bilgisi gereklidir')
-    .max(100, 'Ä°letiÅŸim bilgisi Ã§ok uzun'),
+    .min(5, 'Ýletiþim bilgisi gereklidir')
+    .max(100, 'Ýletiþim bilgisi çok uzun'),
   paymentMode: z.nativeEnum(PaymentMode),
 });
 
@@ -127,7 +127,7 @@ export function CustomOrderForm({
         setSellerHasIban(status.hasValidIban);
         logger.debug('Seller payment status fetched for custom order:', status);
       } catch (error) {
-        logger.error('Failed to fetch seller payment status:', error);
+        logger.error('Failed to fetch seller payment status:', error instanceof Error ? error : new Error(String(error)));
         setSellerHasIban(false);
       } finally {
         setIsLoadingPaymentStatus(false);
@@ -158,7 +158,7 @@ export function CustomOrderForm({
           )}
           <div>
             <h3 className="font-semibold text-gray-900">
-              SipariÅŸ OluÅŸturuyorsunuz
+              Sipariþ Oluþturuyorsunuz
             </h3>
             <p className="text-sm text-gray-600">
               Freelancer: <span className="font-medium">{seller.name}</span>
@@ -170,13 +170,13 @@ export function CustomOrderForm({
       {/* Order Title */}
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-700">
-          SipariÅŸ BaÅŸlÄ±ÄŸÄ±
+          Sipariþ Baþlýðý
           <span className="text-red-500">*</span>
         </label>
         <Input
           {...register('title')}
           type="text"
-          placeholder="Ã–rn: Modern Logo TasarÄ±mÄ±"
+          placeholder="Örn: Modern Logo Tasarýmý"
           className="w-full"
           disabled={isSubmitting}
         />
@@ -193,7 +193,7 @@ export function CustomOrderForm({
       {/* Order Description */}
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-700">
-          AÃ§Ä±klama
+          Açýklama
           <span className="text-red-500">*</span>
         </label>
         <textarea
@@ -201,7 +201,7 @@ export function CustomOrderForm({
           rows={5}
           disabled={isSubmitting}
           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          placeholder="Projenizi detaylÄ± olarak aÃ§Ä±klayÄ±n..."
+          placeholder="Projenizi detaylý olarak açýklayýn..."
         />
         <div className="mt-1 flex justify-between text-sm">
           {errors.description && (
@@ -224,7 +224,7 @@ export function CustomOrderForm({
           rows={4}
           disabled={isSubmitting}
           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          placeholder="Teknik gereksinimler, dosya formatlarÄ±, teslim edilecekler vb."
+          placeholder="Teknik gereksinimler, dosya formatlarý, teslim edilecekler vb."
         />
         <div className="mt-1 flex justify-between text-sm">
           {errors.requirements && (
@@ -241,7 +241,7 @@ export function CustomOrderForm({
         {/* Amount */}
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-700">
-            SipariÅŸ TutarÄ± (TRY)
+            Sipariþ Tutarý (TRY)
             <span className="text-red-500">*</span>
           </label>
           <div className="relative">
@@ -289,13 +289,13 @@ export function CustomOrderForm({
       {/* Contact Info */}
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-700">
-          Ä°letiÅŸim Bilgisi
+          Ýletiþim Bilgisi
           <span className="text-red-500">*</span>
         </label>
         <Input
           {...register('contactInfo')}
           type="text"
-          placeholder="Telefon numarasÄ± veya e-posta"
+          placeholder="Telefon numarasý veya e-posta"
           className="w-full"
           disabled={isSubmitting}
         />
@@ -309,7 +309,7 @@ export function CustomOrderForm({
       {/* Payment Mode Selection */}
       <div>
         <label className="mb-3 block text-sm font-medium text-gray-700">
-          Ã–deme YÃ¶ntemi
+          Ödeme Yöntemi
           <span className="text-red-500">*</span>
         </label>
         <PaymentModeSelector
@@ -329,26 +329,26 @@ export function CustomOrderForm({
       {/* Order Summary */}
       {amount > 0 && (
         <Card className="border-blue-200 bg-blue-50 p-4">
-          <h4 className="mb-3 font-medium text-blue-900">SipariÅŸ Ã–zeti</h4>
+          <h4 className="mb-3 font-medium text-blue-900">Sipariþ Özeti</h4>
           <div className="space-y-2 text-sm text-blue-800">
             <div className="flex justify-between">
-              <span>SipariÅŸ TutarÄ±:</span>
+              <span>Sipariþ Tutarý:</span>
               <span className="font-medium">
-                â‚º{amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
+                ?{amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
               </span>
             </div>
             <div className="flex justify-between">
               <span>Platform Komisyonu (5%):</span>
               <span className="font-medium">
-                â‚º{platformFee.toLocaleString('tr-TR', {
+                ?{platformFee.toLocaleString('tr-TR', {
                   minimumFractionDigits: 2,
                 })}
               </span>
             </div>
             <div className="flex justify-between border-t border-blue-200 pt-2 font-semibold">
-              <span>Freelancer AlacaÄŸÄ±:</span>
+              <span>Freelancer Alacaðý:</span>
               <span className="text-green-700">
-                â‚º{sellerAmount.toLocaleString('tr-TR', {
+                ?{sellerAmount.toLocaleString('tr-TR', {
                   minimumFractionDigits: 2,
                 })}
               </span>
@@ -366,18 +366,18 @@ export function CustomOrderForm({
           disabled={isSubmitting}
         >
           <X className="mr-2 h-4 w-4" />
-          Ä°ptal
+          Ýptal
         </Button>
         <Button type="submit" disabled={isSubmitting || isLoadingPaymentStatus}>
           {isSubmitting ? (
             <>
               <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              OluÅŸturuluyor...
+              Oluþturuluyor...
             </>
           ) : (
             <>
               <Send className="mr-2 h-4 w-4" />
-              SipariÅŸ OluÅŸtur
+              Sipariþ Oluþtur
             </>
           )}
         </Button>
@@ -387,22 +387,22 @@ export function CustomOrderForm({
       <Card className="border-yellow-200 bg-yellow-50 p-4">
         <h4 className="mb-2 flex items-center font-medium text-yellow-900">
           <FileText className="mr-2 h-5 w-5" />
-          Ã–nemli Bilgiler
+          Önemli Bilgiler
         </h4>
         <ul className="space-y-1 text-sm text-yellow-800">
-          <li>â€¢ SipariÅŸ oluÅŸturduktan sonra Ã¶deme yapmanÄ±z gerekecektir</li>
+          <li>• Sipariþ oluþturduktan sonra ödeme yapmanýz gerekecektir</li>
           <li>
-            â€¢ Escrow korumalÄ± Ã¶demede paranÄ±z gÃ¼vende tutulur, freelancer iÅŸi
-            tamamladÄ±ktan sonra Ã¶deme yapÄ±lÄ±r
+            • Escrow korumalý ödemede paranýz güvende tutulur, freelancer iþi
+            tamamladýktan sonra ödeme yapýlýr
           </li>
           <li>
-            â€¢ Manuel IBAN Ã¶demesinde doÄŸrudan freelancer'Ä±n hesabÄ±na Ã¶deme
-            yaparsÄ±nÄ±z
+            • Manuel IBAN ödemesinde doðrudan freelancer'ýn hesabýna ödeme
+            yaparsýnýz
           </li>
           <li>
-            â€¢ TÃ¼m detaylarÄ± net bir ÅŸekilde belirttiÄŸinizden emin olun
+            • Tüm detaylarý net bir þekilde belirttiðinizden emin olun
           </li>
-          <li>â€¢ Platform komisyonu otomatik olarak hesaplanÄ±r (%5)</li>
+          <li>• Platform komisyonu otomatik olarak hesaplanýr (%5)</li>
         </ul>
       </Card>
     </form>

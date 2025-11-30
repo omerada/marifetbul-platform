@@ -1,4 +1,4 @@
-ï»¿'use client';
+'use client';
 
 /**
  * ================================================
@@ -234,12 +234,12 @@ export const RefundStatsWidget: React.FC<RefundStatsWidgetProps> = ({
     return [
       {
         id: 'total',
-        label: 'Toplam Ä°ade',
+        label: 'Toplam Ýade',
         value: totalCount,
         icon: RotateCcw,
         color: 'text-blue-600 dark:text-blue-400',
         bgColor: 'bg-blue-100 dark:bg-blue-900/20',
-        trendLabel: 'TÃ¼m zamanlar',
+        trendLabel: 'Tüm zamanlar',
       },
       {
         id: 'pending',
@@ -248,7 +248,7 @@ export const RefundStatsWidget: React.FC<RefundStatsWidgetProps> = ({
         icon: Clock,
         color: 'text-orange-600 dark:text-orange-400',
         bgColor: 'bg-orange-100 dark:bg-orange-900/20',
-        trendLabel: 'Ä°nceleme aÅŸamasÄ±nda',
+        trendLabel: 'Ýnceleme aþamasýnda',
       },
       {
         id: 'approved',
@@ -257,7 +257,7 @@ export const RefundStatsWidget: React.FC<RefundStatsWidgetProps> = ({
         icon: CheckCircle,
         color: 'text-green-600 dark:text-green-400',
         bgColor: 'bg-green-100 dark:bg-green-900/20',
-        trendLabel: 'BaÅŸarÄ±lÄ± iadeler',
+        trendLabel: 'Baþarýlý iadeler',
       },
       {
         id: 'amount',
@@ -271,7 +271,7 @@ export const RefundStatsWidget: React.FC<RefundStatsWidgetProps> = ({
         icon: DollarSign,
         color: 'text-purple-600 dark:text-purple-400',
         bgColor: 'bg-purple-100 dark:bg-purple-900/20',
-        trendLabel: 'Ä°ade edilen tutar',
+        trendLabel: 'Ýade edilen tutar',
       },
     ];
   }, [refunds]);
@@ -288,13 +288,13 @@ export const RefundStatsWidget: React.FC<RefundStatsWidgetProps> = ({
 
   // Error state
   if (error) {
-    logger.error('RefundStatsWidget: Error loading stats', error);
+    logger.error('RefundStatsWidget: Error loading stats', error instanceof Error ? error : new Error(String(error)));
     return (
       <div className={className}>
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Ä°statistikler yÃ¼klenirken bir hata oluÅŸtu. LÃ¼tfen sayfayÄ± yenileyin.
+            Ýstatistikler yüklenirken bir hata oluþtu. Lütfen sayfayý yenileyin.
           </AlertDescription>
         </Alert>
       </div>
@@ -309,7 +309,7 @@ export const RefundStatsWidget: React.FC<RefundStatsWidgetProps> = ({
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {[
             {
-              label: 'Toplam Ä°ade',
+              label: 'Toplam Ýade',
               value: 0,
               icon: RotateCcw,
               color: 'text-blue-600',
@@ -331,7 +331,7 @@ export const RefundStatsWidget: React.FC<RefundStatsWidgetProps> = ({
             },
             {
               label: 'Toplam Tutar',
-              value: 'â‚º0',
+              value: '?0',
               icon: DollarSign,
               color: 'text-purple-600',
               bgColor: 'bg-purple-100',
@@ -362,7 +362,7 @@ export const RefundStatsWidget: React.FC<RefundStatsWidgetProps> = ({
                     {stat.label}
                   </p>
                   <p className="mt-1 text-xs text-gray-500">
-                    HenÃ¼z iade talebiniz yok
+                    Henüz iade talebiniz yok
                   </p>
                 </div>
               </div>

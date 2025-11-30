@@ -187,7 +187,7 @@ export function useModerationNotifications(
   const playSound = useCallback(() => {
     if (soundRef.current && enableSound) {
       soundRef.current.play().catch((err) => {
-        logger.debug('useModerationNotifications', { errorerr,  });
+        logger.debug('useModerationNotifications', { error: err,  });
       });
     }
   }, [enableSound]);
@@ -197,7 +197,7 @@ export function useModerationNotifications(
    */
   const handleNewComment = useCallback(
     (payload: CommentEventPayload) => {
-      logger.info('useModerationNotifications', { commentIdpayloadcommentId, postTitlepayloadpostTitle,  });
+      logger.info('useModerationNotifications', { commentId: payload.commentId, postTitle: payload.postTitle,  });
 
       // Custom handler
       handlers.onNewComment?.(payload);
@@ -234,7 +234,7 @@ export function useModerationNotifications(
    */
   const handleCommentApproved = useCallback(
     (payload: CommentEventPayload) => {
-      logger.info('useModerationNotifications', { commentIdpayloadcommentId, moderatorpayloadmoderatorName,  });
+      logger.info('useModerationNotifications', { commentId: payload.commentId, moderator: payload.moderatorName,  });
 
       // Custom handler
       handlers.onCommentApproved?.(payload);
@@ -258,7 +258,7 @@ export function useModerationNotifications(
    */
   const handleCommentRejected = useCallback(
     (payload: CommentEventPayload) => {
-      logger.info('useModerationNotifications', { commentIdpayloadcommentId, moderatorpayloadmoderatorName, reasonpayloadreason,  });
+      logger.info('useModerationNotifications', { commentId: payload.commentId, moderator: payload.moderatorName, reason: payload.reason,  });
 
       // Custom handler
       handlers.onCommentRejected?.(payload);
@@ -282,7 +282,7 @@ export function useModerationNotifications(
    */
   const handleCommentFlagged = useCallback(
     (payload: CommentEventPayload) => {
-      logger.info('useModerationNotifications', { commentIdpayloadcommentId,  });
+      logger.info('useModerationNotifications', { commentId: payload.commentId,  });
 
       // Custom handler
       handlers.onCommentFlagged?.(payload);
@@ -312,7 +312,7 @@ export function useModerationNotifications(
    */
   const handleCommentSpam = useCallback(
     (payload: CommentEventPayload) => {
-      logger.info('useModerationNotifications', { commentIdpayloadcommentId, moderatorpayloadmoderatorName,  });
+      logger.info('useModerationNotifications', { commentId: payload.commentId, moderator: payload.moderatorName,  });
 
       // Custom handler
       handlers.onCommentSpam?.(payload);
@@ -336,7 +336,7 @@ export function useModerationNotifications(
    */
   const handleBulkModeration = useCallback(
     (payload: BulkModerationEventPayload) => {
-      logger.info('useModerationNotifications', { countpayloadcount, actionpayloadaction, moderatorpayloadmoderatorName,  });
+      logger.info('useModerationNotifications', { countpayloadcount, actionpayloadaction, moderator: payload.moderatorName,  });
 
       // Custom handler
       handlers.onBulkModeration?.(payload);

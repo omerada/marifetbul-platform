@@ -69,7 +69,7 @@ export function useJobPublish(): UseJobPublishReturn {
         return result;
       } catch (err) {
         const error = err as Error;
-        setError(error);
+        setError(error instanceof Error ? error : new Error(String(error)));
 
         toast.error('İş ilanı yayınlanamadı', {
           description: error.message,
@@ -102,7 +102,7 @@ export function useJobPublish(): UseJobPublishReturn {
         return result;
       } catch (err) {
         const error = err as Error;
-        setError(error);
+        setError(error instanceof Error ? error : new Error(String(error)));
 
         toast.error('İş ilanı kapatılamadı', {
           description: error.message,

@@ -102,9 +102,7 @@ export const useReputationStore = create<ReputationStore>()(
           }
         } catch (error) {
           logger.error(
-            'Security alerts fetch error',
-            error
-          );
+            'Security alerts fetch error', error instanceof Error ? error : new Error(String(error)));
         }
       },
 

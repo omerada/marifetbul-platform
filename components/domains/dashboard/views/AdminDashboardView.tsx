@@ -239,13 +239,13 @@ function prepareQuickActions() {
 export const AdminDashboardView = memo<AdminDashboardViewProps>(
   ({ className }) => {
     const router = useRouter();
-    const { user, loading: authLoading } = useAuthStore();
+    const { user, isLoading: authLoading } = useAuthStore();
     const { canViewFinancials, canViewCharts, canViewSystemHealth } =
       useDashboardPermissions();
 
     // Fetch dashboard data
     const {
-      data: backendData,
+      backendData,
       isLoading: dashboardLoading,
       error,
       refresh,

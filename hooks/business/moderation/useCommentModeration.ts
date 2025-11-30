@@ -42,9 +42,15 @@ export interface CommentModerationFilters {
   priority?: 'high' | 'medium' | 'low';
   escalatedOnly?: boolean;
   flaggedOnly?: boolean;
+  hasReports?: boolean;
   dateFrom?: string;
   dateTo?: string;
+  startDate?: string;
+  endDate?: string;
   searchQuery?: string;
+  search?: string;
+  postId?: string;
+  userId?: string;
 }
 
 export interface CommentModerationStats {

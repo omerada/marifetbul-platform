@@ -42,16 +42,17 @@ export function JobProposalButton({
       router.push(
         `/dashboard/my-proposals?proposalId=${eligibility.existingProposalId}`
       );
-      logger.debug(
-        '[JobProposalButton] Navigating to existing proposal:',
-        eligibility.existingProposalId
-      );
+      logger.debug('Navigating to existing proposal', {
+        component: 'JobProposalButton',
+        proposalId: eligibility.existingProposalId,
+      });
     } else if (eligibility.canPropose) {
       // Navigate to proposal submission page
       router.push(`/marketplace/jobs/${jobId}/proposal`);
-      logger.debug(
-        '[JobProposalButton] Navigating to proposal submission page'
-      );
+      logger.debug('Navigating to proposal submission page', {
+        component: 'JobProposalButton',
+        jobId,
+      });
     }
   };
 

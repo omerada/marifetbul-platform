@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Admin Dashboard Store - Refactored for Backend Integration
  *
  * Production-ready admin dashboard state management with:
@@ -282,7 +282,7 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
         });
 
         try {
-          logger.debug(`📊 Fetching admin dashboard for last ${days} days`);
+          logger.debug(`?? Fetching admin dashboard for last ${days} days`);
 
           const backendData =
             await adminDashboardApi.getAdminDashboardByDays(days);
@@ -296,17 +296,15 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
           });
 
           logger.info(
-            `✅ Admin dashboard loaded successfully (${days} days, from cache: ${backendData.fromCache})`
+            `? Admin dashboard loaded successfully (${days} days, from cache: ${backendData.fromCache})`
           );
         } catch (error) {
           const errorMessage =
             error instanceof Error
               ? error.message
-              : 'Dashboard verisi alınamadı';
+              : 'Dashboard verisi al�namad�';
           logger.error(
-            '❌ Admin dashboard fetch failed',
-            error
-          );
+            '? Admin dashboard fetch failed', error instanceof Error ? error : new Error(String(error)));
 
           set((state) => {
             state.isLoading = false;
@@ -325,7 +323,7 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
         });
 
         try {
-          logger.debug('📊 Fetching real-time admin dashboard');
+          logger.debug('?? Fetching real-time admin dashboard');
 
           const backendData =
             await adminDashboardApi.getAdminDashboardRealtime();
@@ -338,16 +336,14 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
             state.error = null;
           });
 
-          logger.info('✅ Real-time admin dashboard loaded successfully');
+          logger.info('? Real-time admin dashboard loaded successfully');
         } catch (error) {
           const errorMessage =
             error instanceof Error
               ? error.message
-              : 'Dashboard verisi alınamadı';
+              : 'Dashboard verisi al�namad�';
           logger.error(
-            '❌ Real-time dashboard fetch failed',
-            error
-          );
+            '? Real-time dashboard fetch failed', error instanceof Error ? error : new Error(String(error)));
 
           set((state) => {
             state.isLoading = false;
@@ -367,11 +363,11 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
       // Refresh all dashboard caches on backend
       refreshAllDashboards: async () => {
         try {
-          logger.debug('🔄 Requesting backend dashboard cache refresh');
+          logger.debug('?? Requesting backend dashboard cache refresh');
           const success = await adminDashboardApi.refreshAllDashboards();
 
           if (success) {
-            logger.info('✅ Backend dashboard caches refreshed successfully');
+            logger.info('? Backend dashboard caches refreshed successfully');
             // Re-fetch current dashboard
             await get().refreshDashboard();
           }
@@ -379,9 +375,7 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
           return success;
         } catch (error) {
           logger.error(
-            '❌ Dashboard cache refresh failed',
-            error
-          );
+            '? Dashboard cache refresh failed', error instanceof Error ? error : new Error(String(error)));
           return false;
         }
       },
@@ -413,14 +407,14 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
 
           if (status === 'offline') {
             // Pause auto-refresh when offline
-            logger.warn('⏸️ Pausing auto-refresh - network offline');
+            logger.warn('?? Pausing auto-refresh - network offline');
             if (autoRefreshInterval) {
               clearInterval(autoRefreshInterval);
               autoRefreshInterval = null;
             }
           } else if (status === 'online' && !autoRefreshInterval) {
             // Resume auto-refresh when back online
-            logger.info('▶️ Resuming auto-refresh - network online');
+            logger.info('?? Resuming auto-refresh - network online');
             autoRefreshInterval = setInterval(() => {
               const currentStatus = networkStatus.getStatus();
               if (currentStatus !== 'offline') {
@@ -436,14 +430,14 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
           if (currentStatus !== 'offline') {
             get().fetchDashboard(get().periodDays);
           } else {
-            logger.debug('⏭️ Skipping auto-refresh - network offline');
+            logger.debug('?? Skipping auto-refresh - network offline');
           }
         }, intervalMs);
       },
 
       // Stop auto-refresh
       stopAutoRefresh: () => {
-        logger.info('🛑 Stopping auto-refresh');
+        logger.info('?? Stopping auto-refresh');
 
         if (autoRefreshInterval) {
           clearInterval(autoRefreshInterval);

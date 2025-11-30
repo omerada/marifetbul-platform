@@ -44,7 +44,7 @@ export interface UseApiErrorReturn extends ApiErrorState {
  * try {
  *   await createOrder(data);
  * } catch (err) {
- *   setError(err); // Automatically handles auth redirect
+ *   setError(err instanceof Error ? err : new Error(String(err))); // Automatically handles auth redirect
  * }
  *
  * {message && <ErrorAlert message={message} />}

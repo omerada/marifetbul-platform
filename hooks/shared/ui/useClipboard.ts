@@ -118,7 +118,7 @@ export function useClipboard(
         throw new Error('execCommand copy failed');
       } catch (error) {
         const err = error instanceof Error ? error : new Error('Copy failed');
-        logger.error('Clipboard copy failed', err);
+        logger.error('Clipboard copy failed', err instanceof Error ? err : new Error(String(err)));
         onError?.(err);
         return false;
       }
