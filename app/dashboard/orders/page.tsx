@@ -196,15 +196,15 @@ export default function UnifiedOrderManagementPage() {
   const handleStatClick = useCallback(
     (statType: string) => {
       // Switch to list view with appropriate filter
-      const filterMap: Record<string, string> = {
+      const filterMap: Record<string, OrderStatus | 'all'> = {
         totalOrders: 'all',
-        completedOrders: 'COMPLETED',
-        cancelledOrders: 'CANCELLED',
-        disputedOrders: 'DISPUTED',
+        completedOrders: 'COMPLETED' as OrderStatus,
+        cancelledOrders: 'CANCELLED' as OrderStatus,
+        disputedOrders: 'DISPUTED' as OrderStatus,
       };
 
       const status = filterMap[statType];
-      if (status && status !== 'all') {
+      if (status) {
         actions.setSelectedStatus(status);
       }
       setActiveView('list');

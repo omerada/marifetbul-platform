@@ -188,8 +188,25 @@ export interface FreelancerDashboard {
         name: string;
         orders: number;
         totalSpent: number;
-      }>;
+      };
     };
+  };
+  orders?: {
+    active: number;
+    completed: number;
+    pending: number;
+    totalRevenue: number;
+  };
+  packages?: {
+    active: number;
+    total: number;
+    views: number;
+    orders: number;
+  };
+  charts?: {
+    earningsChart?: ChartWidgetData;
+    ordersChart?: ChartWidgetData;
+    performanceChart?: ChartWidgetData;
   };
 }
 
@@ -261,6 +278,23 @@ export interface EmployerDashboard {
     spendingChart?: ChartWidgetData;
     hiringChart?: ChartWidgetData;
     activityChart?: ChartWidgetData;
+    spending?: ChartWidgetData; // Alias for spendingChart
+    orders?: ChartWidgetData; // Order trends chart
+  };
+  recentActivities?: Array<{
+    id: string;
+    type: string;
+    description: string;
+    timestamp: string;
+    metadata?: Record<string, unknown>;
+  }>;
+  recentOrder?: {
+    id: string;
+    title: string;
+    seller: string;
+    amount: number;
+    status: string;
+    createdAt: string;
   };
 }
 

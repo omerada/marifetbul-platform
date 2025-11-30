@@ -87,7 +87,7 @@ export function MessageInput({
     if (!isTypingRef.current && onTypingStart) {
       isTypingRef.current = true;
       onTypingStart();
-      logger.debug('MessageInput', 'Typing started');
+      logger.debug('Typing started', { component: 'MessageInput' });
     }
 
     // Clear existing timeout
@@ -100,7 +100,7 @@ export function MessageInput({
       if (isTypingRef.current && onTypingStop) {
         isTypingRef.current = false;
         onTypingStop();
-        logger.debug('MessageInput', 'Typing stopped (timeout)');
+        logger.debug('Typing stopped (timeout)', { component: 'MessageInput' });
       }
     }, 2000);
   }, [onTypingStart, onTypingStop]);
@@ -137,10 +137,12 @@ export function MessageInput({
       if (selectedFiles.length > 0) {
         try {
           attachments = await uploadFiles(selectedFiles);
-          logger.info('MessageInput', { count: attachments.length,  });
+          logger.info('MessageInput', { count: attachments.length });
         } catch (error) {
           toast.error('Dosyalar yüklenemedi');
-          logger.error('MessageInput: File upload failed', undefined, { error });
+          logger.error('MessageInput: File upload failed', undefined, {
+            error,
+          });
           return; // Don't send message if files fail to upload
         }
       }
@@ -161,9 +163,13 @@ export function MessageInput({
       // Send message with attachments
       await onSend(content, attachments);
 
-      logger.info('MessageInput', { hasAttachments: attachments && attachments.length > 0,  });
+      logger.info('MessageInput', {
+        hasAttachments: attachments && attachments.length > 0,
+      });
     } catch (error) {
-      logger.error('MessageInput: Failed to send message', undefined, { error });
+      logger.error('MessageInput: Failed to send message', undefined, {
+        error,
+      });
       toast.error('Mesaj gönderilemedi');
       // Restore text on error (but not files - they're already uploaded)
       setText(content);

@@ -195,6 +195,8 @@ export interface Payout {
   processedAt?: string;
   completedAt?: string;
   cancelledAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
   estimatedArrival?: string;
   metadata?: Record<string, unknown>;
 }
@@ -623,6 +625,12 @@ export const TRANSACTION_TYPE_INFO: Record<
     icon: '✅',
     color: 'green',
     description: 'Tutulan ödeme serbest bırakıldı',
+  },
+  [TransactionType.MILESTONE_PAYMENT]: {
+    label: 'Aşama Ödemesi',
+    icon: '🎯',
+    color: 'blue',
+    description: 'Proje aşama ödemesi',
   },
   [TransactionType.PAYOUT]: {
     label: 'Para Çekme',

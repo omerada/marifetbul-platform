@@ -45,7 +45,10 @@ export class DashboardErrorBoundary extends Component<Props, State> {
 
   override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error to error reporting service
-    logger.error('Dashboard Error:', error, errorInfo);
+    logger.error('Dashboard Error', error, {
+      componentStack: errorInfo.componentStack,
+      component: 'DashboardErrorBoundary',
+    });
 
     this.setState({
       error,

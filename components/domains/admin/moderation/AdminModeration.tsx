@@ -80,7 +80,10 @@ export default function AdminModerationNew() {
 
   const handleViewDetails = (item: ModerationItem) => {
     // View moderation item details
-    logger.debug('Viewing moderation item details:', item.id);
+    logger.debug('Viewing moderation item details', {
+      itemId: item.id,
+      component: 'AdminModeration',
+    });
     // Implementation options:
     // 1. Navigate to detail page: router.push(`/admin/moderation/${item.id}`)
     // 2. Open modal: setSelectedItem(item); setShowDetailsModal(true);

@@ -65,9 +65,10 @@ export interface ModerationStats {
 }
 
 export interface ModerationFilters {
-  type: string;
-  severity: string;
-  status: string;
+  type: string | string[];
+  severity: string | string[];
+  status: string | string[];
+  priority?: string | string[];
   search: string;
 }
 

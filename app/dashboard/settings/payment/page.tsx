@@ -28,7 +28,11 @@ import {
   type PaymentMethod,
   type AddPaymentMethodRequest,
 } from '@/lib/api/payment-method';
-import { isValidCreditCard } from '@/lib/shared/utils/validation';
+import {
+  isValidCreditCard,
+  isValidIBAN,
+  getCreditCardType,
+} from '@/lib/shared/utils/validation';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ============================================================================
@@ -67,7 +71,10 @@ export default function PaymentMethodsPage() {
       logger.info('Payment methods loaded', { count: data.length });
     } catch (err) {
       setError('Ödeme yöntemleri yüklenemedi');
-      logger.error('Failed to load payment methods', { error: err });
+      logger.error(
+        'Failed to load payment methods',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
       setLoading(false);
     }
@@ -79,7 +86,11 @@ export default function PaymentMethodsPage() {
       await loadPaymentMethods();
       logger.info('Default payment method set', { id });
     } catch (err) {
-      logger.error('Failed to set default payment method', { id, error: err });
+      logger.error(
+        'Failed to set default payment method',
+        err instanceof Error ? err : new Error(String(err)),
+        { id }
+      );
       setError('Varsayılan ödeme yöntemi ayarlanamadı');
     }
   };
@@ -93,7 +104,11 @@ export default function PaymentMethodsPage() {
       await loadPaymentMethods();
       logger.info('Payment method deleted', { id });
     } catch (err) {
-      logger.error('Failed to delete payment method', { id, error: err });
+      logger.error(
+        'Failed to delete payment method',
+        err instanceof Error ? err : new Error(String(err)),
+        { id }
+      );
       setError('Ödeme yöntemi silinemedi');
     }
   };
@@ -348,8 +363,7 @@ function AddPaymentMethodModal({
         }
 
         request.cardLastFour = cleanNumber.slice(-4);
-        request.cardBrand =
-          paymentMethodApi.detectCardBrand(cleanNumber) || undefined;
+        request.cardBrand = getCreditCardType(cleanNumber) || undefined;
         request.cardExpiryMonth = parseInt(
           formData.get('expiryMonth') as string
         );
@@ -371,7 +385,7 @@ function AddPaymentMethodModal({
           .toUpperCase();
 
         // Validate IBAN
-        if (!paymentMethodApi.validateIBAN(iban)) {
+        if (!isValidIBAN(iban)) {
           throw new Error('Geçersiz IBAN');
         }
 

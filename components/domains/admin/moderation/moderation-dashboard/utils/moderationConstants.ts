@@ -98,9 +98,10 @@ export const STATUS_LABELS = {
 // ============================================================================
 
 export const DEFAULT_FILTERS = {
-  type: 'all',
-  severity: 'all',
-  status: 'pending',
+  type: [] as string[],
+  severity: [] as string[],
+  status: [] as string[],
+  priority: [] as string[],
   search: '',
 };
 

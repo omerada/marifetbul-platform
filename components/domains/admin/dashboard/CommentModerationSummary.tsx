@@ -243,9 +243,7 @@ export function CommentModerationSummary({
                       <p className="font-medium text-gray-900">
                         {typeof comment.author === 'string'
                           ? comment.author
-                          : comment.author.name ||
-                            comment.author.fullName ||
-                            'Anonim'}
+                          : comment.author.fullName || 'Anonim'}
                       </p>
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs font-medium ${
