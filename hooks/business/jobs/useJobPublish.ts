@@ -75,7 +75,7 @@ export function useJobPublish(): UseJobPublishReturn {
           description: error.message,
         });
 
-        logger.error('Job publish failed', error, { jobId });
+        logger.error('Job publish failed', error instanceof Error ? error : new Error(String(error)), { jobId });
         return null;
       } finally {
         setIsPublishing(false);
@@ -108,7 +108,7 @@ export function useJobPublish(): UseJobPublishReturn {
           description: error.message,
         });
 
-        logger.error('Job close failed', error, { jobId });
+        logger.error('Job close failed', error instanceof Error ? error : new Error(String(error)), { jobId });
         return null;
       } finally {
         setIsClosing(false);

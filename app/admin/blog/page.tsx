@@ -120,10 +120,14 @@ export default function AdminBlogPage() {
       );
       setStatistics(stats);
     } catch (error) {
-      logger.error('Failed to fetch blog statistics', error, {
-        component: 'AdminBlogPage',
-        action: 'fetchStatistics',
-      });
+      logger.error(
+        'Failed to fetch blog statistics',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'AdminBlogPage',
+          action: 'fetchStatistics',
+        }
+      );
     }
   }, []);
 
@@ -148,12 +152,16 @@ export default function AdminBlogPage() {
       setPosts(response.content || []);
       setTotalPages(response.totalPages || 0);
     } catch (error) {
-      logger.error('Failed to fetch blog posts', error, {
-        component: 'AdminBlogPage',
-        action: 'fetchPosts',
-        statusFilter,
-        searchQuery,
-      });
+      logger.error(
+        'Failed to fetch blog posts',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'AdminBlogPage',
+          action: 'fetchPosts',
+          statusFilter,
+          searchQuery,
+        }
+      );
       toast.error('Blog yazıları yüklenemedi');
     } finally {
       setIsLoading(false);
@@ -178,11 +186,15 @@ export default function AdminBlogPage() {
       fetchPosts();
       fetchStatistics();
     } catch (error) {
-      logger.error('Failed to delete blog post', error, {
-        component: 'AdminBlogPage',
-        action: 'handleDelete',
-        postId,
-      });
+      logger.error(
+        'Failed to delete blog post',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'AdminBlogPage',
+          action: 'handleDelete',
+          postId,
+        }
+      );
       toast.error('Silme işlemi başarısız');
     }
   };
@@ -200,12 +212,16 @@ export default function AdminBlogPage() {
       fetchPosts();
       fetchStatistics();
     } catch (error) {
-      logger.error('Failed to toggle publish status', error, {
-        component: 'AdminBlogPage',
-        action: 'handleTogglePublish',
-        postId: post.id,
-        currentStatus: post.status,
-      });
+      logger.error(
+        'Failed to toggle publish status',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'AdminBlogPage',
+          action: 'handleTogglePublish',
+          postId: post.id,
+          currentStatus: post.status,
+        }
+      );
       toast.error('İşlem başarısız');
     }
   };

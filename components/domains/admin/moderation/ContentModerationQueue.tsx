@@ -92,7 +92,7 @@ export function ContentModerationQueue({
       setShowActionDialog(false);
       setModerationReason('');
     } catch (error) {
-      logger.error('Error performing moderation action:', error);
+      logger.error('Error performing moderation action:', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setActionItem(null);
       setActionType('');

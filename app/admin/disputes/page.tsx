@@ -17,6 +17,7 @@ import type {
   DisputeStatistics,
   DisputeStatisticsExtended,
   DisputeFilters as DisputeFiltersType,
+  DisputeReason,
 } from '@/types/dispute';
 import DisputeResolutionModal from '@/components/domains/admin/disputes/DisputeResolutionModal';
 import { AdminDisputeDetailModal } from '@/components/domains/admin/disputes/AdminDisputeDetailModal';
@@ -85,7 +86,7 @@ export default function AdminDisputesPage() {
           .sort(([, a], [, b]) => b - a)
           .slice(0, 5)
           .map(([reason, count]) => ({
-            reason,
+            reason: reason as DisputeReason,
             count,
             percentage: (count / totalDisputesForPercentage) * 100,
           }));
@@ -151,12 +152,16 @@ export default function AdminDisputesPage() {
         });
       }
     } catch (error) {
-      logger.error('Failed to fetch admin disputes data', error, {
-        component: 'AdminDisputesPage',
-        action: 'fetchData',
-        currentPage,
-        filters: activeFilters,
-      });
+      logger.error(
+        'Failed to fetch admin disputes data',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'AdminDisputesPage',
+          action: 'fetchData',
+          currentPage,
+          filters: activeFilters,
+        }
+      );
       toast.error('Veri Yüklenemedi', {
         description: 'İtirazlar yüklenirken bir hata oluştu.',
       });
@@ -262,7 +267,7 @@ export default function AdminDisputesPage() {
       } catch (error) {
         logger.error(
           'Failed to fetch order details for dispute resolution',
-          error,
+          error instanceof Error ? error : new Error(String(error)),
           {
             component: 'AdminDisputesPage',
             action: 'handleResolveDispute',

@@ -96,7 +96,7 @@ export function AdminAnalytics() {
     } catch (error) {
       logger.error(
         'Export failed:',
-        error
+        error instanceof Error ? error : new Error(String(error))
       );
       alert('Export failed. Please try again.');
     }

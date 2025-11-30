@@ -59,7 +59,7 @@ export default function UserRefundsPage() {
       const data = await getMyRefunds();
       setRefunds(data);
     } catch (error) {
-      logger.error('Failed to fetch user refunds', error, {
+      logger.error('Failed to fetch user refunds', error instanceof Error ? error : new Error(String(error)), {
         component: 'UserRefundsPage',
         action: 'fetch-refunds',
       });
@@ -86,7 +86,7 @@ export default function UserRefundsPage() {
       toast.success('İade talebi iptal edildi');
       fetchRefunds();
     } catch (error) {
-      logger.error('Failed to cancel refund request', error, {
+      logger.error('Failed to cancel refund request', error instanceof Error ? error : new Error(String(error)), {
         refundId,
         component: 'UserRefundsPage',
         action: 'cancel-refund',

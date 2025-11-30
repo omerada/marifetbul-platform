@@ -19,12 +19,12 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useToast, useAuth } from '@/hooks';
+import { useToast } from '@/hooks';
 import {
   BankAccountVerificationTable,
   BankAccountStatistics,
-  type BankAccountStats,
 } from '@/components/domains/admin/finance';
+import type { BankAccountStats } from '@/components/domains/admin/finance/wallet/BankAccountStatistics';
 import { BankAccountVerificationPanel } from '@/components/admin/wallet/BankAccountVerificationPanel';
 import { BulkVerificationModal } from '@/components/admin/wallet/BulkVerificationModal';
 import {
@@ -78,7 +78,6 @@ interface BankAccount {
 
 export default function AdminBankAccountVerificationPage() {
   const { success, error: showError } = useToast();
-  const { user } = useAuth();
 
   // State
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
@@ -113,7 +112,7 @@ export default function AdminBankAccountVerificationPage() {
         setTotalElements(response.totalElements);
         setCurrentPage(response.number);
       } catch (error) {
-        logger.error('Failed to fetch pending bank accounts', error, {
+        logger.error('Failed to fetch pending bank accounts', error instanceof Error ? error : new Error(String(error)), {
           component: 'AdminBankAccountVerificationPage',
           action: 'fetchPendingAccounts',
           page,
@@ -131,7 +130,7 @@ export default function AdminBankAccountVerificationPage() {
       const response = await getBankAccountStatistics();
       setStats(response);
     } catch (error) {
-      logger.error('Failed to fetch bank account statistics', error, {
+      logger.error('Failed to fetch bank account statistics', error instanceof Error ? error : new Error(String(error)), {
         component: 'AdminBankAccountVerificationPage',
         action: 'fetchStatistics',
       });
@@ -158,7 +157,7 @@ export default function AdminBankAccountVerificationPage() {
       success('Başarılı', 'Banka hesabı onaylandı');
       await refreshData();
     } catch (error) {
-      logger.error('Failed to verify bank account', error, {
+      logger.error('Failed to verify bank account', error instanceof Error ? error : new Error(String(error)), {
         component: 'AdminBankAccountVerificationPage',
         action: 'handleVerify',
         accountId,
@@ -173,7 +172,7 @@ export default function AdminBankAccountVerificationPage() {
       success('Başarılı', 'Banka hesabı reddedildi');
       await refreshData();
     } catch (error) {
-      logger.error('Failed to reject bank account', error, {
+      logger.error('Failed to reject bank account', error instanceof Error ? error : new Error(String(error)), {
         component: 'AdminBankAccountVerificationPage',
         action: 'handleReject',
         accountId,

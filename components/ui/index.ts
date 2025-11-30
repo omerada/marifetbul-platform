@@ -77,6 +77,7 @@ export type { DateRangePickerProps } from './DateRangePicker';
 // Layout Components
 export { Card, CardHeader, CardContent, CardFooter, CardTitle } from './Card';
 export { Badge } from './Badge';
+export { Alert, AlertTitle, AlertDescription } from './Alert';
 export { Pagination, MobilePagination } from './Pagination';
 export { ScrollArea } from './ScrollArea';
 export { Slider } from './Slider';

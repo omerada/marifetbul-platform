@@ -76,5 +76,35 @@ export function exportToCSV<T extends Record<string, unknown>>(
   downloadCSV(csv, filename);
 }
 
-// REMOVED: Deprecated formatDateForExport and formatCurrencyForExport
-// Use formatDate and formatCurrency from @/lib/shared/formatters instead
+/**
+ * Format date for export (CSV/Excel compatible)
+ */
+export function formatDateForExport(
+  date: Date | string | null | undefined
+): string {
+  if (!date) return '';
+
+  try {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(dateObj.getTime())) return '';
+
+    // Use ISO date format for universal compatibility
+    return dateObj.toISOString().split('T')[0];
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Format currency for export (numeric value without symbols)
+ */
+export function formatCurrencyForExport(
+  amount: number | null | undefined
+): string {
+  if (amount === null || amount === undefined || isNaN(amount)) {
+    return '0';
+  }
+
+  // Return as plain number with 2 decimal places
+  return amount.toFixed(2);
+}

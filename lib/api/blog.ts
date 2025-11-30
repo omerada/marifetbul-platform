@@ -371,6 +371,9 @@ export async function deletePost(postId: number): Promise<void> {
   return apiClient.delete(BLOG_ENDPOINTS.DELETE_POST(postId));
 }
 
+// Alias for backward compatibility
+export { deletePost as deleteBlogPost };
+
 /**
  * Publish a post immediately
  * @throws {NotFoundError} Post not found

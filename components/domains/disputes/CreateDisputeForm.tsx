@@ -143,7 +143,7 @@ export function CreateDisputeForm({
 
       toast.success(`${newUrls.length} dosya yüklendi`);
     } catch (error) {
-      logger.error('File upload failed', error, {
+      logger.error('File upload failed', error instanceof Error ? error : new Error(String(error)), {
         component: 'CreateDisputeForm',
         action: 'handleFileUpload',
       });
@@ -200,7 +200,7 @@ export function CreateDisputeForm({
 
       onSuccess?.(response.id);
     } catch (error) {
-      logger.error('Failed to create dispute', error, {
+      logger.error('Failed to create dispute', error instanceof Error ? error : new Error(String(error)), {
         component: 'CreateDisputeForm',
         action: 'onSubmit',
         orderId: data.orderId,

@@ -52,6 +52,7 @@ import { formatCurrency, formatPercentage } from '@/lib/shared/formatters';
 // TYPES
 // ================================================
 
+// Local DTO for widget (presentation layer)
 export interface RevenueComparisonDto {
   currentPeriod: {
     label: string;

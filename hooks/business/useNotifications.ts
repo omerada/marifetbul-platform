@@ -153,7 +153,7 @@ export function useNotifications() {
         mutateCount();
       },
       onError: (error, notification) => {
-        logger.error('Notification processing error', error, {
+        logger.error('Notification processing error', error instanceof Error ? error : new Error(String(error)), {
           notificationId: notification?.id,
         });
       },

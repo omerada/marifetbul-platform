@@ -155,9 +155,7 @@ export function requireAuth(
       return handler(request, user, context);
     } catch (error) {
       logger.error(
-        'Auth guard error',
-        error,
-        { url: request.url }
+        'Auth guard error', error instanceof Error ? error : new Error(String(error)), { url: request.url }
       );
       return NextResponse.json(
         {

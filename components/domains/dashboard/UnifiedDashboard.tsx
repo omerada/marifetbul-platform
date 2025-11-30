@@ -89,9 +89,7 @@ export function UnifiedDashboard({
         toast.success(`��erik ba�ar�yla ${actionLabels[action]}`);
       } catch (error) {
         logger.error(
-          '[UnifiedDashboard] Moderation action failed',
-          error,
-          { itemId, action }
+          '[UnifiedDashboard] Moderation action failed', error instanceof Error ? error : new Error(String(error)), { itemId, action }
         );
 
         // Show error toast notification

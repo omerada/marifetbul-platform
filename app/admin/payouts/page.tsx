@@ -74,7 +74,7 @@ export default function AdminPayoutsPage() {
       setPayouts(response.content);
       setTotalPages(response.totalPages);
     } catch (error) {
-      logger.error('Failed to fetch admin payouts', error, {
+      logger.error('Failed to fetch admin payouts', error instanceof Error ? error : new Error(String(error)), {
         component: 'AdminPayoutsPage',
         action: 'fetchPayouts',
         filters,
@@ -90,7 +90,7 @@ export default function AdminPayoutsPage() {
       const data = await payoutAdminApi.getPayoutStats();
       setStats(data);
     } catch (error) {
-      logger.error('Failed to fetch payout statistics', error, {
+      logger.error('Failed to fetch payout statistics', error instanceof Error ? error : new Error(String(error)), {
         component: 'AdminPayoutsPage',
         action: 'fetchStats',
       });
@@ -118,7 +118,7 @@ export default function AdminPayoutsPage() {
       fetchStats();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error('Failed to process payout', error, {
+      logger.error('Failed to process payout', error instanceof Error ? error : new Error(String(error)), {
         component: 'AdminPayoutsPage',
         action: 'handleProcess',
         payoutId,
@@ -135,7 +135,7 @@ export default function AdminPayoutsPage() {
       fetchStats();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error('Failed to complete payout', error, {
+      logger.error('Failed to complete payout', error instanceof Error ? error : new Error(String(error)), {
         component: 'AdminPayoutsPage',
         action: 'handleComplete',
         payoutId,
@@ -152,7 +152,7 @@ export default function AdminPayoutsPage() {
       fetchStats();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error('Failed to mark payout as failed', error, {
+      logger.error('Failed to mark payout as failed', error instanceof Error ? error : new Error(String(error)), {
         component: 'AdminPayoutsPage',
         action: 'handleFail',
         payoutId,
@@ -170,7 +170,7 @@ export default function AdminPayoutsPage() {
       fetchStats();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error('Failed to cancel payout', error, {
+      logger.error('Failed to cancel payout', error instanceof Error ? error : new Error(String(error)), {
         component: 'AdminPayoutsPage',
         action: 'handleCancel',
         payoutId,
@@ -414,3 +414,4 @@ export default function AdminPayoutsPage() {
     </div>
   );
 }
+

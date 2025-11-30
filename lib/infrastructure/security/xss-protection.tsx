@@ -194,7 +194,7 @@ export function sanitizeHtml(
 
     return clean;
   } catch (error) {
-    logger.error('HTML sanitization error', error, {
+    logger.error('HTML sanitization error', error instanceof Error ? error : new Error(String(error)), {
       htmlLength: html?.length,
     });
 
@@ -220,7 +220,7 @@ export function sanitizeToText(html: string): string {
 
     return text.trim();
   } catch (error) {
-    logger.error('Text sanitization error', error, {
+    logger.error('Text sanitization error', error instanceof Error ? error : new Error(String(error)), {
       htmlLength: html?.length,
     });
 
@@ -270,7 +270,7 @@ export function sanitizeUrl(url: string): string {
 
     return trimmed;
   } catch (error) {
-    logger.error('URL sanitization error', error, {
+    logger.error('URL sanitization error', error instanceof Error ? error : new Error(String(error)), {
       url: url?.substring(0, 50),
     });
 

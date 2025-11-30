@@ -123,9 +123,7 @@ export default function AdminQualityDashboard() {
       );
     } catch (error) {
       logger.error(
-        'Failed to fetch quality dashboard data',
-        error,
-        { component: 'AdminQualityDashboard', action: 'fetchDashboardData' }
+        'Failed to fetch quality dashboard data', error instanceof Error ? error : new Error(String(error)), { component: 'AdminQualityDashboard', action: 'fetchDashboardData' }
       );
       toast.error('Veri Yüklenemedi', {
         description: 'Kalite verileri yüklenirken bir hata oluştu.',

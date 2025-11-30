@@ -78,7 +78,7 @@ export default function AdminRefundsPage() {
       setRefunds(response.content);
       setTotalPages(response.totalPages);
     } catch (error) {
-      logger.error('Failed to fetch admin refunds list', error, {
+      logger.error('Failed to fetch admin refunds list', error instanceof Error ? error : new Error(String(error)), {
         component: 'AdminRefundsPage',
         action: 'fetch-refunds',
         filters,
@@ -100,7 +100,7 @@ export default function AdminRefundsPage() {
         totalAmountPending: statistics.pendingAmount,
       });
     } catch (error) {
-      logger.error('Failed to fetch refund statistics', error, {
+      logger.error('Failed to fetch refund statistics', error instanceof Error ? error : new Error(String(error)), {
         component: 'AdminRefundsPage',
         action: 'fetch-statistics',
       });
@@ -128,7 +128,7 @@ export default function AdminRefundsPage() {
       fetchStatistics();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error('Failed to approve refund', error, {
+      logger.error('Failed to approve refund', error instanceof Error ? error : new Error(String(error)), {
         refundId,
         notes,
         component: 'AdminRefundsPage',
@@ -153,7 +153,7 @@ export default function AdminRefundsPage() {
       fetchStatistics();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error('Failed to reject refund', error, {
+      logger.error('Failed to reject refund', error instanceof Error ? error : new Error(String(error)), {
         refundId,
         reason,
         notes,
@@ -184,7 +184,7 @@ export default function AdminRefundsPage() {
       // Return response for BulkRefundActions component to handle
       return response;
     } catch (error) {
-      logger.error('Failed to bulk approve refunds', error, {
+      logger.error('Failed to bulk approve refunds', error instanceof Error ? error : new Error(String(error)), {
         selectedCount: selectedRefundIds.size,
         notes,
         component: 'AdminRefundsPage',
@@ -202,7 +202,7 @@ export default function AdminRefundsPage() {
       fetchStatistics();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error('Failed to process refund', error, {
+      logger.error('Failed to process refund', error instanceof Error ? error : new Error(String(error)), {
         refundId,
         component: 'AdminRefundsPage',
         action: 'process-refund',

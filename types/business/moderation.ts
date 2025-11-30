@@ -26,6 +26,10 @@ export interface ModerationStats {
   pendingReports: number;
   flaggedItems: number;
 
+  // Daily Action Counts
+  commentsApprovedToday: number;
+  commentsRejectedToday: number;
+
   // Resolution Metrics
   resolvedToday: number;
   resolvedThisWeek: number;

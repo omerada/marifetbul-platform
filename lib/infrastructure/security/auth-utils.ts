@@ -213,7 +213,7 @@ export async function getUserFromRequest(
 
     return await validateToken(token);
   } catch (error) {
-    logger.error('Failed to extract user from request', error, {
+    logger.error('Failed to extract user from request', error instanceof Error ? error : new Error(String(error)), {
       url: request.url,
     });
     return null;

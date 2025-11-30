@@ -38,7 +38,18 @@ export interface DashboardPeriod {
 /**
  * Trend indicator for metrics
  */
-export type TrendIndicator = 'up' | 'down' | 'stable';
+// Trend direction values
+export type TrendDirection = 'up' | 'down' | 'neutral' | 'stable';
+
+// Legacy: Simple trend indicator (backward compatibility)
+export type TrendIndicatorSimple = 'up' | 'down' | 'stable';
+
+// Modern: Trend indicator with details
+export interface TrendIndicator {
+  percentage: number;
+  direction: TrendDirection;
+  isPositive: boolean;
+}
 
 /**
  * Cache metadata

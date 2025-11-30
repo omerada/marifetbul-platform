@@ -166,7 +166,7 @@ export default function BlogModerationDashboard() {
 
       setPerformanceData({
         approvalRate,
-        averageResponseTime: stats?.averageResponseTimeMinutes || 0,
+        averageResponseTime: stats?.averageResolutionTimeMinutes || 0,
         totalActions: activityData.totalActions,
         actionsByType: activityData.actionsByType,
         trend:
@@ -191,7 +191,7 @@ export default function BlogModerationDashboard() {
     timeRange,
     customStartDate,
     customEndDate,
-    stats?.averageResponseTimeMinutes,
+    stats?.averageResolutionTimeMinutes,
   ]);
 
   // Load stats on mount
