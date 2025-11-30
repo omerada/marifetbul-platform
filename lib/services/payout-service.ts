@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * PAYOUT SERVICE
  * ================================================
@@ -368,7 +368,6 @@ export class PayoutService {
    * Log payout action for audit
    */
   logPayoutAction(action: string, data: Record<string, unknown>): void {
-    logger.info(`Payout action: ${action}`, data);
   }
 }
 

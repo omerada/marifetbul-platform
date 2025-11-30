@@ -126,7 +126,10 @@ export default function DisputeResolutionModal({
       reset();
       onClose();
     } catch (error) {
-      logger.error('Failed to resolve dispute:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to resolve dispute:',
+        error instanceof Error ? error : new Error(String(error))
+      );
 
       toast.error('İtiraz Çözümlenemedi', {
         description: 'Bir hata oluştu. Lütfen tekrar deneyin.',

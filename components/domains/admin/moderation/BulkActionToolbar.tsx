@@ -82,7 +82,10 @@ export function BulkActionToolbar({
       onActionComplete();
       onClearSelection();
     } catch (error) {
-      logger.error('Bulk escalate error:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Bulk escalate error:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       toast.error('Yükseltme sırasında hata oluştu');
     } finally {
       setLoading(false);
@@ -117,7 +120,10 @@ export function BulkActionToolbar({
       onActionComplete();
       onClearSelection();
     } catch (error) {
-      logger.error('Bulk approve error:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Bulk approve error:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       toast.error('Toplu onaylama sırasında hata oluştu');
     } finally {
       setLoading(false);
@@ -153,7 +159,10 @@ export function BulkActionToolbar({
       onActionComplete();
       onClearSelection();
     } catch (error) {
-      logger.error('Bulk reject error:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Bulk reject error:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       toast.error('Toplu reddetme sırasında hata oluştu');
     } finally {
       setLoading(false);
@@ -197,7 +206,10 @@ export function BulkActionToolbar({
       onActionComplete();
       onClearSelection();
     } catch (error) {
-      logger.error('Bulk spam error:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Bulk spam error:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       toast.error('Spam işaretleme sırasında hata oluştu');
     } finally {
       setLoading(false);

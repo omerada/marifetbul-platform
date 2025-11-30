@@ -78,7 +78,10 @@ export function SystemHealthWidget({
 
   useMemo(() => {
     if (systemHealth) {
-      logger.debug('SystemHealthWidget: Data from store', { statussystemHealthstatus, uptimesystemHealthuptime,  });
+      logger.debug('SystemHealthWidget: Data from store', {
+        status: systemHealth.status,
+        uptime: systemHealth.uptime,
+      });
     }
   }, [systemHealth]);
 

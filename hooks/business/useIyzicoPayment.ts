@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -185,7 +185,6 @@ export function useIyzicoPayment(
   const log = useCallback(
     (message: string, data?: unknown) => {
       if (debug) {
-        logger.debug(`[useIyzicoPayment] ${message}`, { data });
       }
     },
     [debug]

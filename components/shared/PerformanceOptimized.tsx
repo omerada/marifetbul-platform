@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { memo, useMemo, useCallback } from 'react';
 import Image from 'next/image';
@@ -225,7 +225,6 @@ export const PerformanceTracker = memo<PerformanceTrackerProps>(
 
       // Track render performance
       if (process.env.NODE_ENV === 'development') {
-        logger.debug(`${componentName} render time: ${renderTime.toFixed(2)}ms`);
 
         if (renderTime > 16) {
           logger.warn(

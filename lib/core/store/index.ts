@@ -13,7 +13,8 @@ export {
 } from './domains/auth/unifiedAuthStore';
 
 // Notification store - optimized notifications
-export { useNotificationStore } from './notification';
+// TODO: Create notification store module
+// export { useNotificationStore } from './notification';
 
 // === FEATURE STORES ===
 // Feature-specific state management

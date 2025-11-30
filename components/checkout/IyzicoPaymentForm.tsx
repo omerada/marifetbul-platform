@@ -3,7 +3,7 @@
  * IYZICO PAYMENT FORM COMPONENT
  * ================================================
  * Secure, production-ready credit card payment form for Iyzico
- * 
+ *
  * Features:
  * - Real-time card validation (Luhn algorithm)
  * - Card type auto-detection (Visa, Mastercard, Amex, Troy)
@@ -13,7 +13,7 @@
  * - Save card option
  * - Accessible (WCAG 2.1 AA)
  * - Responsive design
- * 
+ *
  * @author MarifetBul Development Team
  * @version 1.0.0
  * @since Sprint 1 - Payment System
@@ -84,7 +84,9 @@ const CardBrandIcon: React.FC<CardBrandIconProps> = ({ type }) => {
   };
 
   return (
-    <div className={`flex items-center gap-1 text-xs font-medium ${getCardColor()}`}>
+    <div
+      className={`flex items-center gap-1 text-xs font-medium ${getCardColor()}`}
+    >
       <CreditCard className="h-4 w-4" />
       <span>{type !== 'UNKNOWN' ? type : ''}</span>
     </div>
@@ -218,15 +220,23 @@ export function IyzicoPaymentForm({
         logger.info('IyzicoPaymentForm: Redirecting to 3D Secure');
       } else {
         const errorMessage = result.error?.message || 'Ödeme işlemi başarısız';
-        logger.error('IyzicoPaymentForm: Payment failed', new Error(errorMessage));
+        logger.error(
+          'IyzicoPaymentForm: Payment failed',
+          new Error(errorMessage)
+        );
         toast.error(errorMessage);
         onError(errorMessage);
       }
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Ödeme işlemi sırasında bir hata oluştu';
+        error instanceof Error
+          ? error.message
+          : 'Ödeme işlemi sırasında bir hata oluştu';
 
-      logger.error('IyzicoPaymentForm: Payment error', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'IyzicoPaymentForm: Payment error',
+        error instanceof Error ? error : new Error(String(error))
+      );
       toast.error(errorMessage);
       onError(errorMessage);
     }
@@ -274,7 +284,9 @@ export function IyzicoPaymentForm({
       {/* Payment Amount */}
       <div className="rounded-lg bg-gray-50 p-4">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-700">Ödenecek Tutar</span>
+          <span className="text-sm font-medium text-gray-700">
+            Ödenecek Tutar
+          </span>
           <span className="text-2xl font-bold text-gray-900">
             {amount.toLocaleString('tr-TR', {
               style: 'currency',
@@ -326,7 +338,7 @@ export function IyzicoPaymentForm({
               maxLength={19}
               autoComplete="cc-number"
             />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <div className="absolute top-1/2 right-3 -translate-y-1/2">
               <CardBrandIcon type={cardType} />
             </div>
           </div>
@@ -410,8 +422,8 @@ export function IyzicoPaymentForm({
         <div className="flex items-start gap-2 rounded-lg bg-blue-50 p-3 text-sm text-blue-800">
           <Lock className="mt-0.5 h-4 w-4 flex-shrink-0" />
           <p>
-            Ödemeniz 256-bit SSL şifreleme ile korunmaktadır. Kart bilgileriniz hiçbir
-            zaman sunucularımızda saklanmaz.
+            Ödemeniz 256-bit SSL şifreleme ile korunmaktadır. Kart bilgileriniz
+            hiçbir zaman sunucularımızda saklanmaz.
           </p>
         </div>
 
@@ -426,7 +438,9 @@ export function IyzicoPaymentForm({
         >
           {processing ? (
             <>
-              <span className="animate-pulse">İşleminiz gerçekleştiriliyor...</span>
+              <span className="animate-pulse">
+                İşleminiz gerçekleştiriliyor...
+              </span>
             </>
           ) : (
             <>

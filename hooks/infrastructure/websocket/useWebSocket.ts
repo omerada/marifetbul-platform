@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * ================================================
@@ -465,7 +465,6 @@ export function useWebSocket(
             onError?.(err);
           },
           onReconnecting: (attempt) => {
-            logger.info('useWebSocket', `Reconnecting (attempt ${attempt})`);
             setState(WebSocketState.RECONNECTING);
           },
           onStateChange: (newState) => {

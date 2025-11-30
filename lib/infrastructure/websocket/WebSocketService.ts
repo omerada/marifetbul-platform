@@ -1,4 +1,4 @@
-/**
+﻿/**
  * WebSocket Client Infrastructure
  *
  * Provides real-time communication using STOMP over WebSocket.
@@ -199,7 +199,6 @@ export class WebSocketService {
       return destination;
     }
 
-    logger.info('WebSocketService', `Subscribing to ${destination}`);
 
     const subscription = this.client.subscribe(
       destination,
@@ -229,7 +228,6 @@ export class WebSocketService {
     const subscription = this.subscriptions.get(destination);
 
     if (subscription) {
-      logger.info('WebSocketService', `Unsubscribing from ${destination}`);
       subscription.unsubscribe();
       this.subscriptions.delete(destination);
     }

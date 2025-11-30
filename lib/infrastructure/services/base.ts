@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Base Service Class
  * Provides common functionality for all domain services
  * Handles error management, logging, and validation
@@ -38,9 +38,7 @@ export abstract class BaseService {
     fn: () => Promise<T>
   ): Promise<T> {
     try {
-      logger.debug(`[${this.serviceName}] Starting ${operation}`);
       const result = await fn();
-      logger.debug(`[${this.serviceName}] Completed ${operation}`);
       return result;
     } catch (error) {
       this.handleError(operation, error);

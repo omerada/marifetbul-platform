@@ -53,7 +53,10 @@ export function useModeration() {
       setStats(statsData.data);
       setItems(itemsData.data || []);
     } catch (error) {
-      logger.error('Error fetching moderation data:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Error fetching moderation data:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       setStats(EMPTY_STATS);
       setItems([]);
     } finally {
@@ -110,7 +113,10 @@ export function useModeration() {
           body: JSON.stringify({ action }),
         });
       } catch (error) {
-        logger.error(`Failed to ${action} item:`, error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          `Failed to ${action} item:`,
+          error instanceof Error ? error : new Error(String(error))
+        );
         // Revert on error
         fetchData();
       }

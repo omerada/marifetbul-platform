@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import logger from '@/lib/infrastructure/monitoring/logger';
@@ -140,7 +140,6 @@ export interface UseJobProposalsReturn {
  * // Check if job has proposals
  * if (hasProposals('job-1')) {
  *   const summary = getProposalSummary('job-1');
- *   logger.debug(`${summary.unreadCount} new proposals`);
  * }
  *
  * // Get total unread across all jobs

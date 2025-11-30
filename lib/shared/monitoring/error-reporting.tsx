@@ -1,4 +1,4 @@
-// Production-ready error reporting and monitoring system
+﻿// Production-ready error reporting and monitoring system
 'use client';
 
 import React, { useCallback } from 'react';
@@ -160,7 +160,7 @@ class ErrorReportingService {
         errorObj
       );
     } else {
-      logger.info(`[${report.level.toUpperCase()}] ${report.message}`, {
+      logger.info('Error report', {
         id: report.id,
         timestamp: new Date(report.timestamp).toISOString(),
         context: report.context,

@@ -1,10 +1,10 @@
 'use client';
 
-import { JobCard } from './JobCard';
-import { PackageCard } from './PackageCard';
-import { EmptyState } from './EmptyState';
 import type { Job, ServicePackage } from '@/types';
 import type { ViewPreferences } from '@/lib/core/validations/marketplace';
+import { JobCard } from '@/components/domains/jobs';
+import { PackageCard } from '@/components/domains/packages';
+import { EmptyState } from '@/components/shared';
 
 interface MarketplaceListProps {
   mode: 'jobs' | 'packages';

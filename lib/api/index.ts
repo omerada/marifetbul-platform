@@ -108,10 +108,12 @@ export * from './jobs';
 export * from './proposals';
 
 // Export Blog Moderation API
-export * from './blog-moderation';
+// TODO: Create blog-moderation module
+// export * from './blog-moderation';
 
 // Export Review Moderation API
-export * from './review-moderation';
+// TODO: Create review-moderation module
+// export * from './review-moderation';
 
 // Export Moderation Activity API
 export { default as moderationActivityAPI } from './moderation-activity';

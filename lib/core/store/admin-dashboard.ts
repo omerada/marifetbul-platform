@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Admin Dashboard Store - Refactored for Backend Integration
  *
  * Production-ready admin dashboard state management with:
@@ -361,7 +361,6 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
       // Refresh current dashboard
       refreshDashboard: async () => {
         const { periodDays, fetchDashboard } = get();
-        logger.debug(`🔄 Refreshing admin dashboard (${periodDays} days)`);
         await fetchDashboard(periodDays);
       },
 
@@ -408,11 +407,9 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
           clearInterval(autoRefreshInterval);
         }
 
-        logger.info(`🔄 Starting auto-refresh (interval: ${intervalMs}ms)`);
 
         // Set up network status monitoring
         networkStatusUnsubscribe = networkStatus.subscribe((status) => {
-          logger.debug(`📡 Network status changed: ${status}`);
 
           if (status === 'offline') {
             // Pause auto-refresh when offline

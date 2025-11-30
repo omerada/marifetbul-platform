@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Notifications API Client
  *
  * Comprehensive client for notification management system.
@@ -277,7 +277,6 @@ export async function getRecentNotifications(
 export async function getNotificationById(
   notificationId: string
 ): Promise<NotificationResponse> {
-  logger.debug('notifications.api', `Fetching notification: ${notificationId}`);
 
   const response = await apiClient.get<NotificationResponse>(
     `/v1/notifications/${notificationId}`
@@ -428,7 +427,6 @@ export async function markAllAsReadByType(
 export async function deleteNotification(
   notificationId: string
 ): Promise<void> {
-  logger.info('notifications.api', `Deleting notification: ${notificationId}`);
 
   await apiClient.delete(`/v1/notifications/${notificationId}`);
 }
@@ -522,7 +520,6 @@ export async function setDoNotDisturb(
   startTime?: string,
   endTime?: string
 ): Promise<void> {
-  logger.info('notifications.api', `Setting Do Not Disturb: ${enabled}`);
 
   const params = new URLSearchParams();
   params.append('enabled', String(enabled));
@@ -545,7 +542,6 @@ export async function setDoNotDisturb(
 export async function getNotificationThread(
   threadId: string
 ): Promise<NotificationResponse[]> {
-  logger.debug('notifications.api', `Getting notification thread: ${threadId}`);
 
   const response = await apiClient.get<NotificationResponse[]>(
     `/v1/notifications/thread/${threadId}`

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Moderation Analytics Hook
  *
  * Custom hook for managing moderation analytics state and data fetching.
@@ -114,7 +114,6 @@ export function useModerationAnalytics(): UseModerationAnalyticsReturn {
         a.click();
         window.URL.revokeObjectURL(url);
 
-        logger.info(`Analytics exported as ${format}`);
       } catch (err) {
         const message =
           err instanceof Error ? err.message : 'Dışa aktarma başarısız';

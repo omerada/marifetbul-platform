@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Rate Limiting Middleware
  *
  * Provides rate limiting for API routes to prevent brute force attacks and API abuse.
@@ -300,7 +300,7 @@ export function withRateLimit(
       return includeHeaders ? addRateLimitHeaders(response, result) : response;
     } catch (error) {
       const err = error;
-      logger.error('Rate limit middleware error', err, {
+      logger.error('Rate limit middleware error', err instanceof Error ? err : new Error(String(err)), {
         url: request.url,
         method: request.method,
       });

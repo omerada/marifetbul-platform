@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * BACKEND API PROXY UTILITY
  * ================================================
@@ -191,7 +191,7 @@ export async function createBackendProxy(
 
     // Debug logging
     if (enableDebugLogging || process.env.NODE_ENV === 'development') {
-      logger.debug(`[${logContext}] ${method} request`, {
+      logger.debug('Backend proxy request', {
         url: backendUrl,
         hasBody: !!body,
       });
@@ -231,7 +231,7 @@ export async function createBackendProxy(
 
     // Debug logging
     if (enableDebugLogging || process.env.NODE_ENV === 'development') {
-      logger.debug(`[${logContext}] ${method} response`, {
+      logger.debug('Backend response', {
         status: response.status,
         ok: response.ok,
       });
@@ -248,8 +248,7 @@ export async function createBackendProxy(
       });
 
       if (enableDebugLogging) {
-        const hasCookies = response.headers.has('set-cookie');
-        logger.debug(`[${logContext}] Preserving all headers`, {
+        logger.debug('Preserving headers', {
           hasSetCookie: hasCookies,
           headerCount: Array.from(response.headers.keys()).length,
         });

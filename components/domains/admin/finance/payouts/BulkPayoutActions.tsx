@@ -128,7 +128,10 @@ export const BulkPayoutActions: React.FC<BulkPayoutActionsProps> = ({
       onClearSelection();
     } catch (error) {
       toast.error('Toplu işleme sırasında bir hata oluştu');
-      logger.error('Bulk process failed:', error instanceof Error ? error : new Error(String(error)));nstanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Bulk process failed:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -164,7 +167,10 @@ export const BulkPayoutActions: React.FC<BulkPayoutActionsProps> = ({
       onClearSelection();
     } catch (error) {
       toast.error('Toplu reddetme sırasında bir hata oluştu');
-      logger.error('Bulk reject failed:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Bulk reject failed:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     } finally {
       setIsProcessing(false);
     }

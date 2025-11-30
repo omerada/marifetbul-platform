@@ -119,8 +119,8 @@ export function SearchAnalyticsWidget({
   useMemo(() => {
     if (searchMetrics) {
       logger.debug('SearchAnalyticsWidget: Data from store', {
-        totalSearchessearchMetricstotalSearches,
-        hasKeywordssearchMetricstopKeywordslength0,
+        totalSearches: searchMetrics.totalSearches,
+        hasKeywords: searchMetrics.topKeywords.length > 0,
       });
     }
   }, [searchMetrics]);

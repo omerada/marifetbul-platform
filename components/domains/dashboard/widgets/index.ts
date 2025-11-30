@@ -48,10 +48,11 @@ export { DashboardSection } from './DashboardSection';
 export { EmptyState } from './EmptyState';
 // Error Handling - REMOVED (Use SimpleErrorDisplay from @/components/ui instead)
 // Deprecated: ErrorState removed - use SimpleErrorDisplay or UnifiedErrorBoundary
-export {
-  LoadingState as DashboardLoadingState,
-  CardLoadingSkeleton,
-} from './LoadingState';
+// TODO: Create LoadingState component
+// export {
+//   LoadingState as DashboardLoadingState,
+//   CardLoadingSkeleton,
+// } from './LoadingState';
 
 // ============================================================================
 // STATUS: 9/9 widgets complete (100% - Day 4 DONE!)

@@ -73,7 +73,7 @@ import {
   CheckCircle,
   Ban,
 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks';
 import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import {

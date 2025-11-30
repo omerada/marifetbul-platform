@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CSRF Protection Middleware
  *
  * Provides CSRF token validation for API routes using double-submit cookie pattern.
@@ -99,7 +99,7 @@ export function validateCsrfFromRequest(
     };
   } catch (error) {
     const err = error;
-    logger.error('CSRF validation error', err, {
+    logger.error('CSRF validation error', err instanceof Error ? err : new Error(String(err)), {
       method: request.method,
       url: request.url,
     });

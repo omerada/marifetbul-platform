@@ -394,3 +394,4 @@ export class BankInfoService {
 
 const bankInfoService = new BankInfoService();
 export default bankInfoService;
+export { bankInfoService }; // Named export for compatibility
