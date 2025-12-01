@@ -2,13 +2,13 @@
  * ================================================
  * COMPONENT GUARDS (HOCs)
  * ================================================
- * 
+ *
  * Client-side guards for protecting React components.
  * Uses role-based access control for page-level protection.
- * 
+ *
  * ⚠️ NOTE: These perform client-side checks only.
  * For server-side protection, use API guards or middleware.
- * 
+ *
  * @module guards/component-guards
  * @author MarifetBul Development Team
  * @version 2.0.0 - Sprint Day 2
@@ -17,7 +17,7 @@
 'use client';
 
 import { redirect } from 'next/navigation';
-import type { UserRole } from '../auth-utils';
+import type { UserRole } from '@/types/backend-aligned';
 
 // ================================================
 // TYPES
@@ -136,7 +136,7 @@ export function withRole<P extends object>(
 
       // Check role
       const userRole = getUserRoleFromCookie();
-      
+
       if (!userRole) {
         const currentPath = window.location.pathname;
         redirect(`${redirectTo}?redirect=${encodeURIComponent(currentPath)}`);
@@ -170,7 +170,7 @@ export function withAdminRole<P extends object>(
   Component: React.ComponentType<P>,
   options: ComponentAuthGuardOptions = {}
 ): React.ComponentType<P> {
-  return withRole(Component, 'ADMIN', {
+  return withRole(Component, 'ADMIN' as UserRole, {
     redirectTo: '/admin/login',
     unauthorizedRedirect: '/dashboard',
     ...options,
@@ -189,7 +189,7 @@ export function withModeratorRole<P extends object>(
   Component: React.ComponentType<P>,
   options: ComponentAuthGuardOptions = {}
 ): React.ComponentType<P> {
-  return withRole(Component, ['MODERATOR', 'ADMIN'], {
+  return withRole(Component, ['MODERATOR', 'ADMIN'] as UserRole[], {
     redirectTo: '/login',
     unauthorizedRedirect: '/dashboard',
     ...options,
@@ -208,7 +208,7 @@ export function withEmployerRole<P extends object>(
   Component: React.ComponentType<P>,
   options: ComponentAuthGuardOptions = {}
 ): React.ComponentType<P> {
-  return withRole(Component, ['EMPLOYER', 'ADMIN'], options);
+  return withRole(Component, ['EMPLOYER', 'ADMIN'] as UserRole[], options);
 }
 
 /**
@@ -223,5 +223,5 @@ export function withFreelancerRole<P extends object>(
   Component: React.ComponentType<P>,
   options: ComponentAuthGuardOptions = {}
 ): React.ComponentType<P> {
-  return withRole(Component, ['FREELANCER', 'ADMIN'], options);
+  return withRole(Component, ['FREELANCER', 'ADMIN'] as UserRole[], options);
 }

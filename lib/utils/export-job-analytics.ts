@@ -15,7 +15,19 @@
  * @since 2025-11-24
  */
 
-import { formatCurrency, formatDate } from '@/lib/shared/utils/format';
+import { formatCurrency } from '@/lib/domains/payment/utils';
+import { format } from 'date-fns';
+import { tr } from 'date-fns/locale';
+
+// Helper to format date
+const formatDate = (date: string | Date): string => {
+  try {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return format(dateObj, 'dd.MM.yyyy HH:mm', { locale: tr });
+  } catch {
+    return 'Geçersiz Tarih';
+  }
+};
 
 /**
  * Job analytics data structure for export

@@ -18,7 +18,10 @@ import {
   formatTimeAgo,
 } from './notificationHelpers';
 import { NotificationListItem } from './NotificationListItem';
-import type { NotificationResponse as Notification } from '@/lib/api/notifications';
+import type {
+  NotificationResponse as Notification,
+  NotificationType,
+} from '@/lib/api/notifications';
 
 /**
  * ================================================
@@ -355,16 +358,16 @@ const mapNotificationTypeToBatchType = (
     case 'ORDER':
       return 'ORDER';
     case 'PAYMENT':
-    case 'PAYMENT_DISPUTE':
+    case 'PAYMENT_DISPUTE' as NotificationType:
       return 'PAYMENT';
     case 'REVIEW':
       return 'REVIEW';
     case 'JOB':
     case 'FOLLOW':
-    case 'PAYOUT_REQUESTED':
-    case 'PAYOUT_PROCESSING':
-    case 'PAYOUT_COMPLETED':
-    case 'PAYOUT_REJECTED':
+    case 'PAYOUT_REQUESTED' as NotificationType:
+    case 'PAYOUT_PROCESSING' as NotificationType:
+    case 'PAYOUT_COMPLETED' as NotificationType:
+    case 'PAYOUT_REJECTED' as NotificationType:
     case 'SYSTEM':
       return 'SYSTEM';
     default:
@@ -408,9 +411,7 @@ export const generateBatchMessage = (
     case 'MESSAGE': {
       // Extract unique conversation IDs from metadata
       const conversationIds = new Set(
-        items
-          .map((item) => item.metadata?.conversationId || item.relatedEntityId)
-          .filter(Boolean)
+        items.map((item) => item.relatedEntityId).filter(Boolean)
       );
       const conversationCount = conversationIds.size;
 

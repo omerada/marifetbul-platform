@@ -40,10 +40,8 @@ import {
 import { IBANInput } from './IBANInput';
 import { BankSelector } from './BankSelector';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import type {
-  BankInfo,
-  IBANValidationResult,
-} from '@/lib/utils/iban-validator';
+import type { BankInfo } from '@/lib/services/bank-info-service';
+import type { IBANValidationResult } from '@/lib/utils/iban-validator';
 
 // ================================================
 // TYPES
@@ -97,12 +95,13 @@ export const BankAccountVerificationForm: React.FC<
 
   const handleIBANValidation = (result: IBANValidationResult) => {
     if (result.isValid && result.bankInfo) {
-      setSelectedBank(result.bankInfo);
+      setSelectedBank(result.bankInfo as any);
     }
   };
 
   const handleBankChange = (bank: BankInfo | null) => {
-    setSelectedBank(bank);
+    const newValue = bank ?? null;
+    setSelectedBank(newValue as any);
     if (errors.bank) {
       setErrors((prev) => ({ ...prev, bank: '' }));
     }
@@ -121,19 +120,19 @@ export const BankAccountVerificationForm: React.FC<
     const newErrors: Record<string, string> = {};
 
     if (!iban) {
-      newErrors.iban = 'IBAN numarasý gerekli';
+      newErrors.iban = 'IBAN numarasï¿½ gerekli';
     } else if (!ibanValid) {
-      newErrors.iban = 'Geçerli bir IBAN numarasý girin';
+      newErrors.iban = 'Geï¿½erli bir IBAN numarasï¿½ girin';
     }
 
     if (!selectedBank) {
-      newErrors.bank = 'Banka seçimi gerekli';
+      newErrors.bank = 'Banka seï¿½imi gerekli';
     }
 
     if (!accountHolderName.trim()) {
-      newErrors.accountHolderName = 'Hesap sahibi adý gerekli';
+      newErrors.accountHolderName = 'Hesap sahibi adï¿½ gerekli';
     } else if (accountHolderName.trim().length < 3) {
-      newErrors.accountHolderName = 'Hesap sahibi adý en az 3 karakter olmalý';
+      newErrors.accountHolderName = 'Hesap sahibi adï¿½ en az 3 karakter olmalï¿½';
     }
 
     setErrors(newErrors);
@@ -142,12 +141,12 @@ export const BankAccountVerificationForm: React.FC<
 
   const handleVerify = async () => {
     if (!validateForm()) {
-      toast.error('Lütfen tüm alanlarý doðru þekilde doldurun');
+      toast.error('Lï¿½tfen tï¿½m alanlarï¿½ doï¿½ru ï¿½ekilde doldurun');
       return;
     }
 
     if (!onVerify) {
-      toast.info('Doðrulama özelliði henüz aktif deðil');
+      toast.info('Doï¿½rulama ï¿½zelliï¿½i henï¿½z aktif deï¿½il');
       return;
     }
 
@@ -165,13 +164,16 @@ export const BankAccountVerificationForm: React.FC<
       setIsVerified(verified);
 
       if (verified) {
-        toast.success('Banka hesabý doðrulandý!');
+        toast.success('Banka hesabï¿½ doï¿½rulandï¿½!');
       } else {
-        toast.error('Hesap doðrulanamadý. Lütfen bilgilerinizi kontrol edin.');
+        toast.error('Hesap doï¿½rulanamadï¿½. Lï¿½tfen bilgilerinizi kontrol edin.');
       }
     } catch (error) {
-      logger.error('Verification failed:', error instanceof Error ? error : new Error(String(error)));
-      toast.error('Doðrulama sýrasýnda bir hata oluþtu');
+      logger.error(
+        'Verification failed:',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      toast.error('Doï¿½rulama sï¿½rasï¿½nda bir hata oluï¿½tu');
     } finally {
       setIsVerifying(false);
     }
@@ -179,7 +181,7 @@ export const BankAccountVerificationForm: React.FC<
 
   const handleSave = async () => {
     if (!validateForm()) {
-      toast.error('Lütfen tüm alanlarý doðru þekilde doldurun');
+      toast.error('Lï¿½tfen tï¿½m alanlarï¿½ doï¿½ru ï¿½ekilde doldurun');
       return;
     }
 
@@ -197,8 +199,11 @@ export const BankAccountVerificationForm: React.FC<
       await onSave(accountData);
       toast.success('Banka hesap bilgileri kaydedildi');
     } catch (error) {
-      logger.error('Save failed:', error instanceof Error ? error : new Error(String(error)));
-      toast.error('Kaydetme sýrasýnda bir hata oluþtu');
+      logger.error(
+        'Save failed:',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      toast.error('Kaydetme sï¿½rasï¿½nda bir hata oluï¿½tu');
     } finally {
       setIsSaving(false);
     }
@@ -219,13 +224,13 @@ export const BankAccountVerificationForm: React.FC<
               Banka Hesap Bilgileri
             </h3>
             <p className="mt-1 text-sm text-gray-600">
-              Para çekme iþlemleri için banka hesabýnýzý ekleyin
+              Para ï¿½ekme iï¿½lemleri iï¿½in banka hesabï¿½nï¿½zï¿½ ekleyin
             </p>
           </div>
           {isVerified && (
             <Badge variant="success" className="gap-1">
               <ShieldCheck className="h-4 w-4" />
-              Doðrulanmýþ
+              Doï¿½rulanmï¿½ï¿½
             </Badge>
           )}
         </div>
@@ -235,7 +240,7 @@ export const BankAccountVerificationForm: React.FC<
           value={iban}
           onChange={handleIBANChange}
           onValidation={handleIBANValidation}
-          label="IBAN Numarasý"
+          label="IBAN Numarasï¿½"
           required
           showBankInfo={true}
           validateOnChange={true}
@@ -254,7 +259,7 @@ export const BankAccountVerificationForm: React.FC<
         {/* Account Holder Name */}
         <div className="space-y-2">
           <Label htmlFor="accountHolderName">
-            Hesap Sahibi Adý
+            Hesap Sahibi Adï¿½
             <span className="text-red-600">*</span>
           </Label>
           <Input
@@ -262,14 +267,14 @@ export const BankAccountVerificationForm: React.FC<
             type="text"
             value={accountHolderName}
             onChange={handleAccountHolderNameChange}
-            placeholder="Adýnýz Soyadýnýz"
+            placeholder="Adï¿½nï¿½z Soyadï¿½nï¿½z"
             className={errors.accountHolderName ? 'border-red-500' : ''}
           />
           {errors.accountHolderName ? (
             <p className="text-sm text-red-600">{errors.accountHolderName}</p>
           ) : (
             <p className="text-xs text-gray-600">
-              IBAN&apos;a kayýtlý isim ile ayný olmalýdýr
+              IBAN&apos;a kayï¿½tlï¿½ isim ile aynï¿½ olmalï¿½dï¿½r
             </p>
           )}
         </div>
@@ -281,12 +286,12 @@ export const BankAccountVerificationForm: React.FC<
               <AlertCircle className="h-5 w-5 text-yellow-600" />
               <div className="flex-1">
                 <p className="font-semibold text-yellow-900">
-                  Hesap Doðrulamasý
+                  Hesap Doï¿½rulamasï¿½
                 </p>
                 <p className="mt-1 text-sm text-yellow-800">
-                  Banka hesabýnýzý doðrulayarak para çekme iþlemlerini
-                  hýzlandýrabilirsiniz. Doðrulama iþlemi birkaç dakika
-                  sürebilir.
+                  Banka hesabï¿½nï¿½zï¿½ doï¿½rulayarak para ï¿½ekme iï¿½lemlerini
+                  hï¿½zlandï¿½rabilirsiniz. Doï¿½rulama iï¿½lemi birkaï¿½ dakika
+                  sï¿½rebilir.
                 </p>
               </div>
             </div>
@@ -299,10 +304,10 @@ export const BankAccountVerificationForm: React.FC<
             <div className="flex items-start gap-3">
               <CheckCircle2 className="h-5 w-5 text-green-600" />
               <div className="flex-1">
-                <p className="font-semibold text-green-900">Hesap Doðrulandý</p>
+                <p className="font-semibold text-green-900">Hesap Doï¿½rulandï¿½</p>
                 <p className="mt-1 text-sm text-green-800">
-                  Banka hesabýnýz baþarýyla doðrulandý. Para çekme iþlemleri
-                  daha hýzlý iþleme alýnacaktýr.
+                  Banka hesabï¿½nï¿½z baï¿½arï¿½yla doï¿½rulandï¿½. Para ï¿½ekme iï¿½lemleri
+                  daha hï¿½zlï¿½ iï¿½leme alï¿½nacaktï¿½r.
                 </p>
               </div>
             </div>
@@ -321,12 +326,12 @@ export const BankAccountVerificationForm: React.FC<
               {isVerifying ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Doðrulanýyor...
+                  Doï¿½rulanï¿½yor...
                 </>
               ) : (
                 <>
                   <ShieldCheck className="mr-2 h-4 w-4" />
-                  Hesabý Doðrula
+                  Hesabï¿½ Doï¿½rula
                 </>
               )}
             </Button>
@@ -355,11 +360,11 @@ export const BankAccountVerificationForm: React.FC<
           <div className="flex items-start gap-3">
             <Building2 className="h-5 w-5 text-gray-600" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">Güvenlik Notu</p>
+              <p className="text-sm font-medium text-gray-900">Gï¿½venlik Notu</p>
               <p className="mt-1 text-xs text-gray-700">
-                Banka hesap bilgileriniz güvenli bir þekilde saklanýr ve
-                yalnýzca ödeme iþlemlerinde kullanýlýr. Bilgileriniz üçüncü
-                taraflarla paylaþýlmaz.
+                Banka hesap bilgileriniz gï¿½venli bir ï¿½ekilde saklanï¿½r ve
+                yalnï¿½zca ï¿½deme iï¿½lemlerinde kullanï¿½lï¿½r. Bilgileriniz ï¿½ï¿½ï¿½ncï¿½
+                taraflarla paylaï¿½ï¿½lmaz.
               </p>
             </div>
           </div>

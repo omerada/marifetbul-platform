@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
@@ -43,19 +43,19 @@ export function AdminLogs() {
   const [_error, setError] = useState<string | null>(null);
 
   const logLevels = [
-    { id: 'all', name: 'Tüm Seviyeler', color: 'gray' },
+    { id: 'all', name: 'Tï¿½m Seviyeler', color: 'gray' },
     { id: 'error', name: 'Hata', color: 'red', icon: XCircle },
-    { id: 'warning', name: 'Uyarý', color: 'yellow', icon: AlertTriangle },
+    { id: 'warning', name: 'Uyarï¿½', color: 'yellow', icon: AlertTriangle },
     { id: 'info', name: 'Bilgi', color: 'blue', icon: Info },
-    { id: 'success', name: 'Baþarýlý', color: 'green', icon: CheckCircle },
+    { id: 'success', name: 'Baï¿½arï¿½lï¿½', color: 'green', icon: CheckCircle },
   ];
 
   const logSources = [
-    { id: 'all', name: 'Tüm Kaynaklar' },
-    { id: 'auth', name: 'Kimlik Doðrulama', icon: Shield },
-    { id: 'api', name: 'API Ýstekleri', icon: Globe },
-    { id: 'database', name: 'Veritabaný', icon: Database },
-    { id: 'user', name: 'Kullanýcý Ýþlemleri', icon: User },
+    { id: 'all', name: 'Tï¿½m Kaynaklar' },
+    { id: 'auth', name: 'Kimlik Doï¿½rulama', icon: Shield },
+    { id: 'api', name: 'API ï¿½stekleri', icon: Globe },
+    { id: 'database', name: 'Veritabanï¿½', icon: Database },
+    { id: 'user', name: 'Kullanï¿½cï¿½ ï¿½ï¿½lemleri', icon: User },
     { id: 'system', name: 'Sistem', icon: Activity },
   ];
 
@@ -88,7 +88,7 @@ export function AdminLogs() {
       });
 
       if (!response.ok) {
-        throw new Error('Loglar alýnamadý');
+        throw new Error('Loglar alï¿½namadï¿½');
       }
 
       const data = await response.json();
@@ -114,14 +114,14 @@ export function AdminLogs() {
     {
       name: 'Toplam Log',
       value: '12,847',
-      change: '+234 bugün',
+      change: '+234 bugï¿½n',
       icon: Activity,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
       borderColor: 'border-blue-200',
     },
     {
-      name: 'Hata Loglarý',
+      name: 'Hata Loglarï¿½',
       value: '23',
       change: '-5 bu hafta',
       icon: XCircle,
@@ -130,9 +130,9 @@ export function AdminLogs() {
       borderColor: 'border-red-200',
     },
     {
-      name: 'Uyarýlar',
+      name: 'Uyarï¿½lar',
       value: '156',
-      change: '+12 bugün',
+      change: '+12 bugï¿½n',
       icon: AlertTriangle,
       color: 'text-yellow-600',
       bgColor: 'bg-yellow-50',
@@ -179,9 +179,9 @@ export function AdminLogs() {
   const getLogLevelBadge = (level: string) => {
     const config = {
       error: { variant: 'destructive' as const, text: 'Hata' },
-      warning: { variant: 'warning' as const, text: 'Uyarý' },
+      warning: { variant: 'warning' as const, text: 'Uyarï¿½' },
       info: { variant: 'default' as const, text: 'Bilgi' },
-      success: { variant: 'success' as const, text: 'Baþarýlý' },
+      success: { variant: 'success' as const, text: 'Baï¿½arï¿½lï¿½' },
     };
 
     const levelConfig = config[level as keyof typeof config] || {
@@ -219,9 +219,9 @@ export function AdminLogs() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Sistem Loglarý</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Sistem Loglarï¿½</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Sistem olaylarý ve hata takibi
+            Sistem olaylarï¿½ ve hata takibi
           </p>
         </div>
         <div className="mt-4 flex space-x-3 sm:mt-0">
@@ -238,7 +238,7 @@ export function AdminLogs() {
           </Button>
           <Button variant="outline" size="sm" onClick={exportLogs}>
             <Download className="mr-2 h-4 w-4" />
-            Dýþa Aktar
+            Dï¿½ï¿½a Aktar
           </Button>
         </div>
       </div>
@@ -285,7 +285,7 @@ export function AdminLogs() {
               <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
               <input
                 type="text"
-                placeholder="Log mesajlarýnda ara..."
+                placeholder="Log mesajlarï¿½nda ara..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="focus:ring-primary-500 focus:border-primary-500 w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 text-sm focus:ring-2 focus:outline-none"
@@ -339,9 +339,9 @@ export function AdminLogs() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>Log Kayýtlarý</span>
+            <span>Log Kayï¿½tlarï¿½</span>
             <Badge variant="outline" className="text-gray-600">
-              {filteredLogs.length} kayýt
+              {filteredLogs.length} kayï¿½t
             </Badge>
           </CardTitle>
         </CardHeader>
@@ -351,7 +351,7 @@ export function AdminLogs() {
               <div className="py-8 text-center">
                 <Activity className="mx-auto mb-2 h-8 w-8 text-gray-400" />
                 <p className="text-sm text-gray-500">
-                  Filtrelere uygun log kaydý bulunamadý
+                  Filtrelere uygun log kaydï¿½ bulunamadï¿½
                 </p>
               </div>
             ) : (

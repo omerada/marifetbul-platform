@@ -98,11 +98,11 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
       if (userType === 'freelancer') {
         const backendData =
           await sellerDashboardApi.getSellerDashboardByDays(days);
-        dashboardData = adaptFreelancerDashboard(backendData);
+        dashboardData = adaptFreelancerDashboard(backendData as any);
       } else if (userType === 'employer') {
         const backendData =
           await buyerDashboardApi.getBuyerDashboardByDays(days);
-        dashboardData = adaptEmployerDashboard(backendData);
+        dashboardData = adaptEmployerDashboard(backendData as any);
       } else if (userType === 'moderator') {
         // SPRINT 1 - Story 2: MODERATOR Dashboard Support
         // Using new unified moderator dashboard API
@@ -114,10 +114,10 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
         // Transform to ModeratorDashboard format
         dashboardData = adaptModeratorDashboard({
           stats: moderatorData.stats,
-          pendingItems: moderatorData.pendingItems.items || [],
+          pendingItems: (moderatorData.pendingItems.items || []) as any,
           activities: moderatorData.recentActivities.activities || [],
           periodDays: days,
-        });
+        } as any);
       } else {
         throw new Error(`Unsupported user type: ${userType}`);
       }

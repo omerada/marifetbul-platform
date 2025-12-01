@@ -186,14 +186,13 @@ export function GDPRDataManagement({
     try {
       setIsDeleting(true);
 
-      const response = await apiClient.delete<{
+      // Note: DELETE requests typically don't have body, using POST instead
+      const response = await apiClient.post<{
         status: string;
         message: string;
-      }>('/api/v1/user/data/account', {
-        data: {
-          password: deletePassword,
-          reason: deleteReason || 'No reason provided',
-        },
+      }>('/api/v1/user/data/account/delete', {
+        password: deletePassword,
+        reason: deleteReason || 'No reason provided',
       });
 
       toast.success('Doğrulama Kodu Gönderildi', {

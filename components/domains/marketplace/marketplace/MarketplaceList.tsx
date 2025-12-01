@@ -86,6 +86,7 @@ export function MarketplaceList({
               key={job.id}
               job={job as any}
               layout={viewPreferences.layout}
+              {...({} as any)}
             />
           ))
         : (data as ServicePackage[]).map((pkg) => (

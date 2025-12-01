@@ -3,6 +3,7 @@ import { getBackendApiUrl } from '@/lib/config/api';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { getUserPermissions as getRolePermissions } from '@/lib/infrastructure/security/permissions';
 import type { UserContext } from '@/lib/infrastructure/security/auth-utils';
+import type { UserRole } from '@/types/backend-aligned';
 
 interface AdminUser {
   id: string;
@@ -154,7 +155,7 @@ export function getUserPermissions(role: string): string[] {
   const userContext: UserContext = {
     id: '',
     email: '',
-    role: role as 'ADMIN' | 'MODERATOR' | 'EMPLOYER' | 'FREELANCER',
+    role: role as UserRole,
   };
 
   return getRolePermissions(userContext);
@@ -196,7 +197,9 @@ export async function getUserFromRequest(
     };
   } catch (error) {
     logger.error(
-      'Error getting user from request', error instanceof Error ? error : new Error(String(error)));
+      'Error getting user from request',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return null;
   }
 }

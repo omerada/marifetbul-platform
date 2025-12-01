@@ -48,10 +48,7 @@ import {
   type AddBankAccountRequest,
   type BankAccountResponse,
 } from '@/lib/api/bank-accounts';
-import {
-  getBankFromIBAN,
-  type BankInfo,
-} from '@/lib/services/bank-info-service';
+import { getBankFromIBAN, type BankInfo } from '@/lib/services';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
@@ -108,15 +105,25 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
   // Detect bank from IBAN
   useEffect(() => {
     if (iban && ibanValid) {
-      const bank = getBankFromIBAN(iban);
-      setDetectedBank(bank);
+      getBankFromIBAN(iban)
+        .then((bank) => {
+          setDetectedBank(bank);
 
-      if (bank) {
-        setSelectedBank(bank);
-        setShowBankSelector(false);
-      } else {
-        setShowBankSelector(true);
-      }
+          if (bank) {
+            setSelectedBank(bank);
+            setShowBankSelector(false);
+          } else {
+            setShowBankSelector(true);
+          }
+        })
+        .catch((err) => {
+          logger.error(
+            'Failed to get bank from IBAN:',
+            err instanceof Error ? err : new Error(String(err))
+          );
+          setDetectedBank(null);
+          setShowBankSelector(true);
+        });
     } else {
       setDetectedBank(null);
       setSelectedBank(null);

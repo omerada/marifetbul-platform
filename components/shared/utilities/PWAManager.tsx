@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui';
@@ -133,7 +133,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
 
   const handleNotificationPermission = async () => {
     if (!('Notification' in window)) {
-      alert('Bu tarayýcý bildirim özelliðini desteklemiyor.');
+      alert('Bu tarayï¿½cï¿½ bildirim ï¿½zelliï¿½ini desteklemiyor.');
       return;
     }
 
@@ -143,7 +143,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
 
       if (permission === 'granted') {
         new Notification('Marifet', {
-          body: 'Bildirimler baþarýyla etkinleþtirildi!',
+          body: 'Bildirimler baï¿½arï¿½yla etkinleï¿½tirildi!',
           icon: '/icon-192x192.png',
         });
       }
@@ -160,7 +160,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
           cacheNames.map((cacheName) => caches.delete(cacheName))
         );
         setCacheSize('0 MB');
-        alert('Önbellek temizlendi!');
+        alert('ï¿½nbellek temizlendi!');
       }
     } catch (error) {
       logger.error('Cache clearing failed:', error instanceof Error ? error : new Error(String(error)));
@@ -175,7 +175,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
         });
       });
       setLastUpdate(new Date());
-      alert('Uygulama güncelleme kontrolü yapýldý!');
+      alert('Uygulama gï¿½ncelleme kontrolï¿½ yapï¿½ldï¿½!');
     }
   };
 
@@ -189,11 +189,11 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
               <Smartphone className="h-6 w-6 text-blue-600" />
               <div>
                 <h3 className="font-semibold text-blue-900">
-                  Uygulamayý Yükle
+                  Uygulamayï¿½ Yï¿½kle
                 </h3>
                 <p className="text-sm text-blue-700">
-                  Marifet&apos;i ana ekranýnýza ekleyin ve daha hýzlý eriþim
-                  saðlayýn.
+                  Marifet&apos;i ana ekranï¿½nï¿½za ekleyin ve daha hï¿½zlï¿½ eriï¿½im
+                  saï¿½layï¿½n.
                 </p>
               </div>
             </div>
@@ -205,7 +205,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
                 className="bg-blue-600 hover:bg-blue-700"
               >
                 <Download className="mr-1 h-4 w-4" />
-                Yükle
+                Yï¿½kle
               </Button>
               <Button
                 size="sm"
@@ -230,12 +230,12 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
             )}
             <div>
               <h3 className="font-semibold">
-                {isOnline ? 'Çevrimiçi' : 'Çevrimdýþý'}
+                {isOnline ? 'ï¿½evrimiï¿½i' : 'ï¿½evrimdï¿½ï¿½ï¿½'}
               </h3>
               <p className="text-sm text-gray-600">
                 {isOnline
-                  ? 'Ýnternet baðlantýsý aktif'
-                  : 'Çevrimdýþý modda çalýþýyorsunuz'}
+                  ? 'ï¿½nternet baï¿½lantï¿½sï¿½ aktif'
+                  : 'ï¿½evrimdï¿½ï¿½ï¿½ modda ï¿½alï¿½ï¿½ï¿½yorsunuz'}
               </p>
             </div>
           </div>
@@ -256,17 +256,17 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm">Yükleme Durumu</span>
+              <span className="text-sm">Yï¿½kleme Durumu</span>
               <div className="flex items-center gap-2">
                 {isInstalled ? (
                   <>
                     <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm text-green-600">Yüklü</span>
+                    <span className="text-sm text-green-600">Yï¿½klï¿½</span>
                   </>
                 ) : (
                   <>
                     <AlertCircle className="h-4 w-4 text-orange-500" />
-                    <span className="text-sm text-orange-600">Yüklü Deðil</span>
+                    <span className="text-sm text-orange-600">Yï¿½klï¿½ Deï¿½il</span>
                   </>
                 )}
               </div>
@@ -280,7 +280,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
                 className="w-full"
               >
                 <Download className="mr-2 h-4 w-4" />
-                Uygulamayý Yükle
+                Uygulamayï¿½ Yï¿½kle
               </Button>
             )}
           </div>
@@ -295,7 +295,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm">Bildirim Ýzni</span>
+              <span className="text-sm">Bildirim ï¿½zni</span>
               <div className="flex items-center gap-2">
                 {notificationsPermission === 'granted' ? (
                   <>
@@ -324,7 +324,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
                 className="w-full"
               >
                 <Bell className="mr-2 h-4 w-4" />
-                Bildirimleri Etkinleþtir
+                Bildirimleri Etkinleï¿½tir
               </Button>
             )}
           </div>
@@ -335,31 +335,31 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
       <Card className="p-4">
         <div className="mb-4 flex items-center gap-3">
           <Settings className="h-5 w-5" />
-          <h3 className="font-semibold">Önbellek Yönetimi</h3>
+          <h3 className="font-semibold">ï¿½nbellek Yï¿½netimi</h3>
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="text-center">
             <p className="text-2xl font-bold text-blue-600">{cacheSize}</p>
-            <p className="text-sm text-gray-600">Önbellek Boyutu</p>
+            <p className="text-sm text-gray-600">ï¿½nbellek Boyutu</p>
           </div>
 
           <div className="text-center">
             <p className="text-2xl font-bold text-green-600">
               {lastUpdate.toLocaleDateString('tr-TR')}
             </p>
-            <p className="text-sm text-gray-600">Son Güncelleme</p>
+            <p className="text-sm text-gray-600">Son Gï¿½ncelleme</p>
           </div>
 
           <div className="flex flex-col gap-2">
             <Button size="sm" variant="outline" onClick={handleForceUpdate}>
               <RefreshCw className="mr-2 h-4 w-4" />
-              Güncellemeyi Kontrol Et
+              Gï¿½ncellemeyi Kontrol Et
             </Button>
 
             <Button size="sm" variant="outline" onClick={handleClearCache}>
               <X className="mr-2 h-4 w-4" />
-              Önbelleði Temizle
+              ï¿½nbelleï¿½i Temizle
             </Button>
           </div>
         </div>
@@ -367,17 +367,17 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
 
       {/* PWA Features Info */}
       <Card className="p-4">
-        <h3 className="mb-3 font-semibold">PWA Özellikleri</h3>
+        <h3 className="mb-3 font-semibold">PWA ï¿½zellikleri</h3>
 
         <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Çevrimdýþý Çalýþma</span>
+              <span>ï¿½evrimdï¿½ï¿½ï¿½ ï¿½alï¿½ï¿½ma</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Hýzlý Yükleme</span>
+              <span>Hï¿½zlï¿½ Yï¿½kleme</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-500" />
@@ -392,7 +392,7 @@ export function PWAManager({ className = '' }: PWAManagerProps) {
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Otomatik Güncelleme</span>
+              <span>Otomatik Gï¿½ncelleme</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-500" />

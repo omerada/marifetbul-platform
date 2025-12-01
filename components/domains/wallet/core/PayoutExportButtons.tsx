@@ -27,7 +27,10 @@ import { FileText, FileSpreadsheet, Calendar, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { Input } from '@/components/ui/Input';
 import { useToast } from '@/hooks/core/useToast';
-import { generatePayoutCSV, generatePayoutPDF } from '@/lib/utils';
+import {
+  exportPayoutsToCSV,
+  exportPayoutsToPDF,
+} from '@/lib/utils/payout-export';
 import { format } from 'date-fns';
 import type { Payout } from '@/types/business/features/wallet';
 
@@ -107,7 +110,7 @@ export default function PayoutExportButtons({
 
     try {
       const filename = generateFilename('csv');
-      await generatePayoutCSV(payouts, filename);
+      exportPayoutsToCSV(payouts, filename);
 
       success('Başarılı', `${payouts.length} ödeme CSV olarak indirildi.`);
     } catch (err) {
@@ -131,10 +134,7 @@ export default function PayoutExportButtons({
 
     try {
       const filename = generateFilename('pdf');
-      await generatePayoutPDF(payouts, filename, {
-        startDate,
-        endDate,
-      });
+      exportPayoutsToPDF(payouts, filename);
 
       success('Başarılı', `${payouts.length} ödeme PDF olarak indirildi.`);
     } catch (err) {

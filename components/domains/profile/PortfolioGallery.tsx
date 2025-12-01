@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 import React, { useEffect } from 'react';
 import { Card } from '@/components/ui';
@@ -90,10 +90,10 @@ export function PortfolioGallery({
       <Card className="p-8 text-center">
         <ImageIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
         <h3 className="mb-2 text-lg font-medium text-gray-900">
-          Henüz Portfolyo Yok
+          Henï¿½z Portfolyo Yok
         </h3>
         <p className="text-gray-600">
-          Bu freelancer henüz portfolyo öðesi eklememiþ.
+          Bu freelancer henï¿½z portfolyo ï¿½ï¿½esi eklememiï¿½.
         </p>
       </Card>
     );
@@ -171,7 +171,7 @@ export function PortfolioGallery({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Portfolyo</h2>
-          <p className="text-gray-600">Çalýþmalarýmýn örnekleri</p>
+          <p className="text-gray-600">ï¿½alï¿½ï¿½malarï¿½mï¿½n ï¿½rnekleri</p>
         </div>
         {isOwnProfile && (
           <Button
@@ -194,14 +194,14 @@ export function PortfolioGallery({
         <Card className="p-8 text-center">
           <ImageIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
           <h3 className="mb-2 text-lg font-medium text-gray-900">
-            Portfolyo Boþ
+            Portfolyo Boï¿½
           </h3>
           <p className="mb-4 text-gray-600">
-            Yeteneklerinizi sergilemek için projelerinizi ekleyin.
+            Yeteneklerinizi sergilemek iï¿½in projelerinizi ekleyin.
           </p>
           {isOwnProfile && (
             <Button onClick={handleAddItem} variant="outline">
-              Ýlk Projenizi Ekleyin
+              ï¿½lk Projenizi Ekleyin
             </Button>
           )}
         </Card>
@@ -241,11 +241,11 @@ export function PortfolioGallery({
         <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
           <Card className="mx-4 w-full max-w-md p-6">
             <h3 className="mb-4 text-lg font-semibold text-gray-900">
-              Portföy Öðesini Sil
+              Portfï¿½y ï¿½ï¿½esini Sil
             </h3>
             <p className="mb-6 text-gray-600">
-              Bu portföy öðesini silmek istediðinizden emin misiniz? Bu iþlem
-              geri alýnamaz.
+              Bu portfï¿½y ï¿½ï¿½esini silmek istediï¿½inizden emin misiniz? Bu iï¿½lem
+              geri alï¿½namaz.
             </p>
             <div className="flex justify-end space-x-3">
               <Button
@@ -253,7 +253,7 @@ export function PortfolioGallery({
                 onClick={() => setDeleteConfirmOpen(false, null)}
                 disabled={ui.isSubmitting}
               >
-                Ýptal
+                ï¿½ptal
               </Button>
               <Button
                 variant="destructive"
@@ -320,7 +320,7 @@ function PortfolioCard({
       {/* Drag Indicator */}
       {isDraggable && !isDragging && (
         <div className="absolute top-2 left-2 z-10 rounded-lg bg-gray-800/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
-          ?? Sürükle
+          ?? Sï¿½rï¿½kle
         </div>
       )}
 

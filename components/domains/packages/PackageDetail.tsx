@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -53,13 +53,13 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
   const [isSaved, setIsSaved] = useState(false);
 
   if (isLoading) {
-    return <Loading variant="skeleton" text="Paket detaylarý yükleniyor..." />;
+    return <Loading variant="skeleton" text="Paket detaylarï¿½ yï¿½kleniyor..." />;
   }
 
   if (error || !currentPackage) {
     return (
       <SimpleErrorDisplay
-        error={error || 'Paket bulunamadý'}
+        error={error || 'Paket bulunamadï¿½'}
         onRetry={refreshPackageDetail}
       />
     );
@@ -75,7 +75,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
   if (!isPackageDetail(currentPackage)) {
     return (
       <SimpleErrorDisplay
-        message="Bu paket için detay görünümü mevcut deðil"
+        message="Bu paket iï¿½in detay gï¿½rï¿½nï¿½mï¿½ mevcut deï¿½il"
         onRetry={refreshPackageDetail}
       />
     );
@@ -166,11 +166,11 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
               <span className="flex items-center">
                 <MapPin className="mr-1 h-4 w-4" />
                 {(currentPackage.freelancer as Freelancer)?.location ||
-                  'Belirtilmemiþ'}
+                  'Belirtilmemiï¿½'}
               </span>
               <span className="flex items-center">
                 <Users className="mr-1 h-4 w-4" />
-                {currentPackage.orders} sipariþ
+                {currentPackage.orders} sipariï¿½
               </span>
             </div>
 
@@ -200,7 +200,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
               {getTierName(selectedTier)} Paket
             </div>
             <div className="text-sm font-medium text-gray-700">
-              {currentTierData?.deliveryTime || 0} gün
+              {currentTierData?.deliveryTime || 0} gï¿½n
             </div>
           </div>
         </div>
@@ -220,12 +220,12 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
 
           <Button variant="outline" size="lg">
             <Share2 className="mr-2 h-4 w-4" />
-            Paylaþ
+            Paylaï¿½
           </Button>
 
           <Button variant="outline" size="lg">
             <Flag className="mr-2 h-4 w-4" />
-            Þikayet Et
+            ï¿½ikayet Et
           </Button>
         </div>
       </div>
@@ -237,7 +237,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
           {/* Package Tiers */}
           <Card>
             <CardHeader>
-              <CardTitle>Paket Seçenekleri</CardTitle>
+              <CardTitle>Paket Seï¿½enekleri</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -267,7 +267,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
 
                       <div className="mb-4 text-sm text-gray-600">
                         <Clock className="mr-1 inline h-4 w-4" />
-                        {tier.deliveryTime} gün
+                        {tier.deliveryTime} gï¿½n
                       </div>
 
                       <div className="mb-4 text-sm text-gray-700">
@@ -286,7 +286,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                       <div className="mt-3 border-t pt-3 text-sm text-gray-600">
                         <Award className="mr-1 inline h-4 w-4" />
                         {tier.revisions === -1
-                          ? 'Sýnýrsýz revizyon'
+                          ? 'Sï¿½nï¿½rsï¿½z revizyon'
                           : `${tier.revisions} revizyon`}
                       </div>
                     </div>
@@ -320,7 +320,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                           <div>
                             <h4 className="font-medium">{addon.title}</h4>
                             <p className="text-sm text-gray-600">
-                              Ek hizmet açýklamasý
+                              Ek hizmet aï¿½ï¿½klamasï¿½
                             </p>
                           </div>
                         </div>
@@ -330,7 +330,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                           +?{addon.price.toLocaleString('tr-TR')}
                         </div>
                         <div className="text-sm text-gray-500">
-                          +{addon.deliveryTime} gün
+                          +{addon.deliveryTime} gï¿½n
                         </div>
                       </div>
                     </div>
@@ -344,9 +344,9 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
           <Card>
             <Tabs defaultValue="description" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="description">Açýklama</TabsTrigger>
+                <TabsTrigger value="description">Aï¿½ï¿½klama</TabsTrigger>
                 <TabsTrigger value="faq">S.S.S.</TabsTrigger>
-                <TabsTrigger value="reviews">Deðerlendirmeler</TabsTrigger>
+                <TabsTrigger value="reviews">Deï¿½erlendirmeler</TabsTrigger>
               </TabsList>
 
               <TabsContent value="description" className="p-6">
@@ -358,7 +358,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                   {currentPackage.overview && (
                     <div className="mt-6">
                       <h3 className="mb-3 text-lg font-semibold">
-                        Genel Bakýþ
+                        Genel Bakï¿½ï¿½
                       </h3>
                       <div className="whitespace-pre-wrap text-gray-700">
                         {currentPackage.overview}
@@ -398,13 +398,13 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                       </h4>
                       <p className="text-gray-700">{item.answer}</p>
                     </div>
-                  )) || <p className="text-gray-500">Henüz SSS eklenmemiþ.</p>}
+                  )) || <p className="text-gray-500">Henï¿½z SSS eklenmemiï¿½.</p>}
                 </div>
               </TabsContent>
 
               <TabsContent value="reviews" className="p-6">
                 <div className="text-center text-gray-600">
-                  Deðerlendirmeler yükleniyor...
+                  Deï¿½erlendirmeler yï¿½kleniyor...
                 </div>
               </TabsContent>
             </Tabs>
@@ -416,7 +416,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
           {/* Order Summary */}
           <Card>
             <CardHeader>
-              <CardTitle>Sipariþ Özeti</CardTitle>
+              <CardTitle>Sipariï¿½ ï¿½zeti</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -448,7 +448,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                 disabled={!canOrder || isOrdering}
                 onClick={handleOrder}
               >
-                {isOrdering ? 'Sipariþ Veriliyor...' : 'Sipariþ Ver'}
+                {isOrdering ? 'Sipariï¿½ Veriliyor...' : 'Sipariï¿½ Ver'}
               </Button>
 
               <div className="mt-3 text-center">
@@ -460,7 +460,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
 
               <div className="mt-4 text-center text-xs text-gray-500">
                 <Shield className="mr-1 inline h-4 w-4" />
-                Güvenli ödeme sistemi
+                Gï¿½venli ï¿½deme sistemi
               </div>
             </CardContent>
           </Card>
@@ -468,7 +468,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
           {/* Provider Card */}
           <Card>
             <CardHeader>
-              <CardTitle>Hizmet Saðlayýcý</CardTitle>
+              <CardTitle>Hizmet Saï¿½layï¿½cï¿½</CardTitle>
             </CardHeader>
             <CardContent>
               {currentPackage.freelancer ? (
@@ -492,16 +492,16 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                       <div className="flex items-center text-sm text-gray-600">
                         <Star className="mr-1 h-4 w-4 text-yellow-400" />
                         <span>{currentPackage.freelancer.rating}</span>
-                        <span className="mx-1">•</span>
+                        <span className="mx-1">ï¿½</span>
                         <span>
-                          {currentPackage.freelancer.reviewCount} deðerlendirme
+                          {currentPackage.freelancer.reviewCount} deï¿½erlendirme
                         </span>
                       </div>
                     </div>
                   </div>
                 </>
               ) : (
-                <p className="text-gray-500">Saðlayýcý bilgisi mevcut deðil</p>
+                <p className="text-gray-500">Saï¿½layï¿½cï¿½ bilgisi mevcut deï¿½il</p>
               )}
 
               <div className="mb-4 space-y-2 text-sm">
@@ -513,18 +513,18 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Baþarý Oraný:</span>
+                  <span>Baï¿½arï¿½ Oranï¿½:</span>
                   <span>95%</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Yanýt Süresi:</span>
+                  <span>Yanï¿½t Sï¿½resi:</span>
                   <span>~2 saat</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Konum:</span>
                   <span>
                     {(currentPackage.freelancer as Freelancer)?.location ||
-                      'Belirtilmemiþ'}
+                      'Belirtilmemiï¿½'}
                   </span>
                 </div>
               </div>
@@ -533,7 +533,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
                 <Link href={`/profile/${currentPackage.freelancer.id}`}>
                   <Button className="w-full" variant="outline">
                     <User className="mr-2 h-4 w-4" />
-                    Profili Görüntüle
+                    Profili Gï¿½rï¿½ntï¿½le
                   </Button>
                 </Link>
               )}
@@ -548,7 +548,7 @@ export function PackageDetail({ packageId, className }: PackageDetailProps) {
             <CardContent>
               <div className="space-y-3">
                 <div className="text-sm text-gray-600">
-                  Benzer paketler yükleniyor...
+                  Benzer paketler yï¿½kleniyor...
                 </div>
               </div>
             </CardContent>

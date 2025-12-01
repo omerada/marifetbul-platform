@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * @fileoverview Moderator Dashboard View Component
  * @module components/domains/dashboard/views

@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * Admin Dashboard Store - Refactored for Backend Integration
  *
  * Production-ready admin dashboard state management with:
@@ -302,7 +302,7 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
           const errorMessage =
             error instanceof Error
               ? error.message
-              : 'Dashboard verisi alýnamadý';
+              : 'Dashboard verisi alï¿½namadï¿½';
           logger.error(
             '? Admin dashboard fetch failed', error instanceof Error ? error : new Error(String(error)));
 
@@ -341,7 +341,7 @@ export const useAdminDashboardStore = create<AdminDashboardStore>()(
           const errorMessage =
             error instanceof Error
               ? error.message
-              : 'Dashboard verisi alýnamadý';
+              : 'Dashboard verisi alï¿½namadï¿½';
           logger.error(
             '? Real-time dashboard fetch failed', error instanceof Error ? error : new Error(String(error)));
 

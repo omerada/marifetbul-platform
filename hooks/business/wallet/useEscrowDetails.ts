@@ -86,12 +86,13 @@ export function useEscrowDetails(
     enabled ? '/api/v1/wallet/escrow-details' : null,
     async () => {
       try {
-        const response =
-          await walletApiClient.get<EscrowDetailsResponse>('/escrow-details');
+        const response: any = await (walletApiClient as any).get(
+          '/escrow-details'
+        );
 
         logger.info('[useEscrowDetails] Fetched escrow details', {
-          totalEscrow: response.data.totalEscrow,
-          orderCount: response.data.escrowDetails.length,
+          totalEscrow: response.data?.totalEscrow,
+          orderCount: response.data?.escrowDetails?.length,
         });
 
         return response.data;

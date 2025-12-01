@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 import React from 'react';
 import { Star, ThumbsUp, ThumbsDown } from 'lucide-react';
@@ -112,8 +112,8 @@ export function ArticleRating({
             ))}
           </div>
           <p className="text-sm text-gray-600">
-            Bu makaleyi {selectedRating} yýldýz ile deðerlendirdiniz.
-            Teþekkürler!
+            Bu makaleyi {selectedRating} yï¿½ldï¿½z ile deï¿½erlendirdiniz.
+            Teï¿½ekkï¿½rler!
           </p>
         </div>
       </Card>
@@ -124,11 +124,11 @@ export function ArticleRating({
     <Card className={cn('p-6', className)}>
       <div className="text-center">
         <h3 className="mb-2 text-lg font-semibold text-gray-900">
-          Bu makale yararlý oldu mu?
+          Bu makale yararlï¿½ oldu mu?
         </h3>
 
         <p className="mb-4 text-sm text-gray-600">
-          Deneyiminizi paylaþarak diðer kullanýcýlara yardýmcý olun
+          Deneyiminizi paylaï¿½arak diï¿½er kullanï¿½cï¿½lara yardï¿½mcï¿½ olun
         </p>
 
         {/* Current Article Rating Display */}
@@ -152,7 +152,7 @@ export function ArticleRating({
                 {averageRating.toFixed(1)}
               </span>
               <span className="text-gray-500">
-                ({ratingCount} deðerlendirme)
+                ({ratingCount} deï¿½erlendirme)
               </span>
             </div>
           </div>
@@ -168,7 +168,7 @@ export function ArticleRating({
               className="flex items-center gap-2"
             >
               <ThumbsUp className="h-4 w-4" />
-              Evet, yararlý
+              Evet, yararlï¿½
             </Button>
 
             <Button
@@ -178,7 +178,7 @@ export function ArticleRating({
               className="flex items-center gap-2"
             >
               <ThumbsDown className="h-4 w-4" />
-              Hayýr, yararlý deðil
+              Hayï¿½r, yararlï¿½ deï¿½il
             </Button>
           </div>
         </div>
@@ -186,7 +186,7 @@ export function ArticleRating({
         {/* Detailed Rating */}
         <div className="border-t pt-4">
           <p className="mb-3 text-sm text-gray-600">
-            Daha detaylý deðerlendirme yapmak isterseniz:
+            Daha detaylï¿½ deï¿½erlendirme yapmak isterseniz:
           </p>
 
           <div className="mb-4 flex justify-center gap-1">{renderStars()}</div>
@@ -195,12 +195,12 @@ export function ArticleRating({
             <div className="mt-4 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Geri bildiriminiz (isteðe baðlý)
+                  Geri bildiriminiz (isteï¿½e baï¿½lï¿½)
                 </label>
                 <Textarea
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
-                  placeholder="Bu makaleyi nasýl geliþtirebiliriz?"
+                  placeholder="Bu makaleyi nasï¿½l geliï¿½tirebiliriz?"
                   rows={3}
                   className="mt-1"
                 />
@@ -212,7 +212,7 @@ export function ArticleRating({
                   disabled={isSubmitting || selectedRating === 0}
                   className="flex-1"
                 >
-                  {isSubmitting ? 'Gönderiliyor...' : 'Deðerlendirmeyi Gönder'}
+                  {isSubmitting ? 'Gï¿½nderiliyor...' : 'Deï¿½erlendirmeyi Gï¿½nder'}
                 </Button>
 
                 <Button
@@ -223,7 +223,7 @@ export function ArticleRating({
                   }}
                   variant="outline"
                 >
-                  Ýptal
+                  ï¿½ptal
                 </Button>
               </div>
             </div>
@@ -236,7 +236,7 @@ export function ArticleRating({
                 disabled={isSubmitting}
                 className="w-full"
               >
-                {isSubmitting ? 'Gönderiliyor...' : 'Deðerlendirmeyi Gönder'}
+                {isSubmitting ? 'Gï¿½nderiliyor...' : 'Deï¿½erlendirmeyi Gï¿½nder'}
               </Button>
             </div>
           )}

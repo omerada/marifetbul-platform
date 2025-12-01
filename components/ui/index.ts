@@ -224,7 +224,7 @@ export {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
+  // AlertDialogTrigger - Not exported from AlertDialog.tsx
 } from './AlertDialog';
 
 // BottomSheet component
@@ -232,7 +232,7 @@ export { BottomSheet } from './BottomSheet';
 
 // MultiSelect component
 export { MultiSelect } from './MultiSelect';
-export type { MultiSelectProps, SelectOption } from './MultiSelect';
+export type { MultiSelectProps, MultiSelectOption } from './MultiSelect';
 
 // DeleteConfirmationModal
 export { DeleteConfirmationModal } from './DeleteConfirmationModal';

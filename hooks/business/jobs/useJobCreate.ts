@@ -32,7 +32,7 @@ import {
   type JobDraftFormData,
 } from '@/lib/core/validations/jobs';
 import { createJob, type CreateJobRequest } from '@/lib/api/jobs';
-import { uploadToCloudinary } from '@/lib/services/file-upload.service';
+import { fileUploadService } from '@/lib/services/file-upload.service';
 import { useToast } from '@/hooks/core/useToast';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
@@ -249,24 +249,19 @@ export function useJobCreate({
           // Create preview
           const preview = URL.createObjectURL(file);
 
-          // Upload to Cloudinary
-          const uploadResult = await uploadToCloudinary(file, {
+          // Upload file using file upload service
+          const uploadResult = await fileUploadService.uploadFile(file, {
             folder: 'marifetbul_jobs',
-            transformation: {
-              width: 1200,
-              height: 800,
-              crop: 'limit',
-              quality: 'auto',
-            },
+            backend: 'cloudinary',
           });
 
           newImages.push({
             file,
-            url: uploadResult.secure_url,
+            url: uploadResult.fileUrl,
             name: file.name,
             size: file.size,
             type: file.type,
-            cloudinaryId: uploadResult.public_id,
+            cloudinaryId: uploadResult.id,
           });
 
           // Cleanup preview

@@ -290,7 +290,7 @@ export function useJobsSearch(
         hasNext: page < Math.ceil(response.total / limit),
         hasPrevious: page > 1,
       },
-    };
+    } as any;
   }, pageSize);
 }
 
@@ -382,7 +382,7 @@ export function usePackagesSearch(
         hasNext: page < Math.ceil(response.total / limit),
         hasPrevious: page > 1,
       },
-    };
+    } as any;
   }, pageSize);
 }
 
@@ -483,7 +483,7 @@ export function useConversationMessages(
         hasNext: page < Math.ceil(response.total / limit),
         hasPrevious: page > 1,
       },
-    };
+    } as any;
   }, pageSize);
 }
 
@@ -629,9 +629,6 @@ const ApiHooks = {
 
   // File Upload
   useFileUpload,
-
-  // Analytics
-  useAnalytics,
 
   // Admin
   useAdminStats,

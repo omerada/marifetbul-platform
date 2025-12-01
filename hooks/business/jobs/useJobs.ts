@@ -83,8 +83,7 @@ export interface UseJobsReturn {
 export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
   const [filters, setFilters] = useState<JobFilters>({
     page: 1,
-    limit: 10,
-    sortBy: 'newest',
+    sortBy: 'latest' as any, // Backend uses 'latest' instead of 'newest'
     ...initialFilters,
   });
 
@@ -145,7 +144,7 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
 
         toast.success('İş ilanı oluşturuldu', {
           description:
-            data.status === 'DRAFT'
+            newJob.status === 'DRAFT'
               ? 'Taslak olarak kaydedildi'
               : 'İlan yayınlandı',
         });
@@ -390,11 +389,11 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
     currentJob,
     pagination: jobsData
       ? {
-          page: jobsData.pageNumber,
+          page: jobsData.page,
           totalPages: jobsData.totalPages,
           totalElements: jobsData.totalElements,
-          hasNext: jobsData.hasNext,
-          hasPrevious: jobsData.hasPrevious,
+          hasNext: !jobsData.last,
+          hasPrevious: !jobsData.first,
         }
       : null,
     stats,

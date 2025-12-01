@@ -8,12 +8,14 @@ import type { PaginatedResponse } from '@/types/infrastructure/api';
 // All custom hooks consolidated in @/hooks/shared/base
 // Import from there for the most up-to-date implementations
 export {
-  useDebounce,
   useDebouncedCallback,
   useMediaQuery,
   usePrevious,
   useIntersectionObserver,
 } from '@/hooks/shared/base';
+
+// Re-export useDebounce
+export { useDebounce } from '@/hooks/shared/useDebounce';
 
 // ================================================
 // LOCAL UTILITY HOOKS

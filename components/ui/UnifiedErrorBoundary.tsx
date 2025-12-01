@@ -102,8 +102,11 @@ export class UnifiedErrorBoundary extends Component<
         'Error:',
         error instanceof Error ? error : new Error(String(error))
       );
-      logger.error('Error Info:', errorInfo);
-      logger.error('Event ID:', eventId);
+      logger.error(
+        'Error Info:',
+        new Error(errorInfo.componentStack || 'No stack')
+      );
+      logger.error('Event ID:', new Error(`Event ID: ${eventId || 'none'}`));
       console.groupEnd();
     }
 

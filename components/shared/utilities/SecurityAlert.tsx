@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 import { useState } from 'react';
 import {
@@ -129,11 +129,11 @@ export function SecurityAlert({
                 <CardTitle className="text-base">{alert.title}</CardTitle>
                 <Badge variant={badgeVariant} className="text-xs">
                   {alert.severity === 'high'
-                    ? 'Yüksek'
+                    ? 'Yï¿½ksek'
                     : alert.severity === 'medium'
                       ? 'Orta'
                       : alert.severity === 'low'
-                        ? 'Düþük'
+                        ? 'Dï¿½ï¿½ï¿½k'
                         : alert.severity === 'critical'
                           ? 'Kritik'
                           : 'Bilgi'}
@@ -149,8 +149,8 @@ export function SecurityAlert({
 
                 {alert.expiresAt && (
                   <>
-                    <span>•</span>
-                    <span>Bitiþ: {formatDate(alert.expiresAt)}</span>
+                    <span>ï¿½</span>
+                    <span>Bitiï¿½: {formatDate(alert.expiresAt)}</span>
                   </>
                 )}
               </div>
@@ -177,11 +177,11 @@ export function SecurityAlert({
             <div className="flex items-start gap-2">
               <Info className="text-muted-foreground mt-0.5 h-4 w-4 flex-shrink-0" />
               <div className="space-y-1">
-                <p className="mb-1 text-xs font-medium">Öneriler:</p>
+                <p className="mb-1 text-xs font-medium">ï¿½neriler:</p>
                 <ul className="space-y-1">
                   {alert.recommendations.map((rec, index) => (
                     <li key={index} className="text-muted-foreground text-xs">
-                      • {rec}
+                      ï¿½ {rec}
                     </li>
                   ))}
                 </ul>
@@ -202,7 +202,7 @@ export function SecurityAlert({
               className="gap-1"
             >
               <ExternalLink className="h-3 w-3" />
-              {alert.actionText || 'Ýþlem Yap'}
+              {alert.actionText || 'ï¿½ï¿½lem Yap'}
             </Button>
           </div>
         </CardContent>
@@ -254,7 +254,7 @@ export function SecurityAlertsList({
         <CardContent className="py-6 text-center">
           <Shield className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
           <p className="text-muted-foreground mb-3 text-sm">
-            Güvenlik uyarýlarý yüklenemedi
+            Gï¿½venlik uyarï¿½larï¿½ yï¿½klenemedi
           </p>
           <Button
             size="sm"
@@ -273,9 +273,9 @@ export function SecurityAlertsList({
       <Card className={className}>
         <CardContent className="py-8 text-center">
           <Shield className="mx-auto mb-4 h-12 w-12 text-green-600" />
-          <h3 className="mb-2 text-lg font-medium">Güvenlik Durumu Ýyi</h3>
+          <h3 className="mb-2 text-lg font-medium">Gï¿½venlik Durumu ï¿½yi</h3>
           <p className="text-muted-foreground">
-            Þu anda herhangi bir güvenlik uyarýsý bulunmuyor.
+            ï¿½u anda herhangi bir gï¿½venlik uyarï¿½sï¿½ bulunmuyor.
           </p>
         </CardContent>
       </Card>
@@ -285,9 +285,9 @@ export function SecurityAlertsList({
   return (
     <div className={`space-y-4 ${className}`}>
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-medium">Güvenlik Uyarýlarý</h3>
+        <h3 className="text-lg font-medium">Gï¿½venlik Uyarï¿½larï¿½</h3>
         {filteredAlerts.length > 0 && (
-          <Badge variant="outline">{filteredAlerts.length} uyarý</Badge>
+          <Badge variant="outline">{filteredAlerts.length} uyarï¿½</Badge>
         )}
       </div>
 
@@ -306,7 +306,7 @@ export function SecurityAlertsList({
       {securityAlerts && securityAlerts.length > maxAlerts && (
         <div className="text-center">
           <Button variant="outline" size="sm">
-            Tüm Uyarýlarý Görüntüle ({securityAlerts.length - maxAlerts} daha)
+            Tï¿½m Uyarï¿½larï¿½ Gï¿½rï¿½ntï¿½le ({securityAlerts.length - maxAlerts} daha)
           </Button>
         </div>
       )}

@@ -27,11 +27,7 @@ import { Label } from '@/components/ui/Label';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { Building2, Search, Check, ChevronDown, X } from 'lucide-react';
-import {
-  searchBanks,
-  getAllBanks,
-  type BankInfo,
-} from '@/lib/services/bank-info-service';
+import { searchBanks, getAllBanks, type BankInfo } from '@/lib/services';
 
 // ================================================
 // TYPES
@@ -64,9 +60,7 @@ export const BankSelector: React.FC<BankSelectorProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredBanks, setFilteredBanks] = useState<BankInfo[]>(
-    getAllBanks({ activeOnly: true, sortBy: 'name' })
-  );
+  const [filteredBanks, setFilteredBanks] = useState<BankInfo[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -75,15 +69,23 @@ export const BankSelector: React.FC<BankSelectorProps> = ({
 
   // ==================== EFFECTS ====================
 
+  // Load initial banks
+  useEffect(() => {
+    getAllBanks({ activeOnly: true, sortBy: 'name' }).then(setFilteredBanks);
+  }, []);
+
   // Filter banks when search query changes
   useEffect(() => {
     if (searchQuery) {
-      const results = searchBanks(searchQuery, { activeOnly: true });
-      setFilteredBanks(results);
-      setSelectedIndex(0);
+      searchBanks(searchQuery, { activeOnly: true }).then((results) => {
+        setFilteredBanks(results);
+        setSelectedIndex(0);
+      });
     } else {
-      setFilteredBanks(getAllBanks({ activeOnly: true, sortBy: 'name' }));
-      setSelectedIndex(0);
+      getAllBanks({ activeOnly: true, sortBy: 'name' }).then((banks) => {
+        setFilteredBanks(banks);
+        setSelectedIndex(0);
+      });
     }
   }, [searchQuery]);
 

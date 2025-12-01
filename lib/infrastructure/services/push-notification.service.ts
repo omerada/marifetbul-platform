@@ -635,7 +635,7 @@ export function setupForegroundMessageListener(
       };
 
       // Process through unified handler (will prevent duplicates)
-      unifiedHandler.processNotification(notification, 'push');
+      unifiedHandler.processNotification(notification as any, 'push');
     } else {
       // Fallback: Show toast notification (legacy behavior)
       if (payload.notification) {

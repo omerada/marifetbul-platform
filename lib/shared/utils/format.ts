@@ -248,7 +248,6 @@ export const FormatUtils = {
 
   // Number formatting
   formatBytes,
-  formatPercentage,
   formatCompactNumber,
 
   // Specialized formatting

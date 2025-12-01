@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 import { useState } from 'react';
 import { AvatarUpload } from './AvatarUpload';
@@ -45,7 +45,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
       });
 
       if (!response.ok) {
-        throw new Error('Güncelleme baþarýsýz');
+        throw new Error('Gï¿½ncelleme baï¿½arï¿½sï¿½z');
       }
 
       onUserUpdate(formData);
@@ -107,7 +107,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
               {user.bio && (
                 <div>
                   <h3 className="mb-1 text-sm font-medium text-gray-700">
-                    Hakkýnda
+                    Hakkï¿½nda
                   </h3>
                   <p className="text-gray-600">{user.bio}</p>
                 </div>
@@ -159,7 +159,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
                     variant="outline"
                     size="sm"
                   >
-                    Bilgileri Düzenle
+                    Bilgileri Dï¿½zenle
                   </Button>
                 </div>
               )}
@@ -192,7 +192,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
 
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
-                  Hakkýnda
+                  Hakkï¿½nda
                 </label>
                 <textarea
                   value={formData.bio}
@@ -201,7 +201,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
                   }
                   rows={3}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  placeholder="Kendiniz hakkýnda kýsa bir açýklama yazýn..."
+                  placeholder="Kendiniz hakkï¿½nda kï¿½sa bir aï¿½ï¿½klama yazï¿½n..."
                 />
               </div>
 
@@ -215,7 +215,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
                       location: e.target.value,
                     }))
                   }
-                  placeholder="Ýstanbul, Türkiye"
+                  placeholder="ï¿½stanbul, Tï¿½rkiye"
                 />
                 <Input
                   label="Telefon"
@@ -244,7 +244,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
                   Kaydet
                 </Button>
                 <Button onClick={handleCancel} variant="outline">
-                  Ýptal
+                  ï¿½ptal
                 </Button>
               </div>
             </div>
@@ -260,13 +260,13 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
               <div className="text-2xl font-bold text-blue-600">
                 {(user as Freelancer).rating.toFixed(1)}
               </div>
-              <div className="text-sm text-gray-500">Deðerlendirme</div>
+              <div className="text-sm text-gray-500">Deï¿½erlendirme</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-green-600">
                 {(user as Freelancer).completedJobs}
               </div>
-              <div className="text-sm text-gray-500">Tamamlanan Ýþ</div>
+              <div className="text-sm text-gray-500">Tamamlanan ï¿½ï¿½</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-purple-600">
@@ -278,7 +278,7 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
               <div className="text-2xl font-bold text-orange-600">
                 {(user as Freelancer).responseTime}
               </div>
-              <div className="text-sm text-gray-500">Yanýt Süresi</div>
+              <div className="text-sm text-gray-500">Yanï¿½t Sï¿½resi</div>
             </div>
           </div>
         </div>
@@ -291,19 +291,19 @@ export const ProfileAvatarSection: React.FC<ProfileAvatarSectionProps> = ({
               <div className="text-2xl font-bold text-blue-600">
                 {(user as Employer).rating.toFixed(1)}
               </div>
-              <div className="text-sm text-gray-500">Deðerlendirme</div>
+              <div className="text-sm text-gray-500">Deï¿½erlendirme</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-green-600">
                 {(user as Employer).completedJobs}
               </div>
-              <div className="text-sm text-gray-500">Tamamlanan Ýþ</div>
+              <div className="text-sm text-gray-500">Tamamlanan ï¿½ï¿½</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-purple-600">
                 {(user as Employer).activeJobs}
               </div>
-              <div className="text-sm text-gray-500">Aktif Ýþ</div>
+              <div className="text-sm text-gray-500">Aktif ï¿½ï¿½</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-orange-600">

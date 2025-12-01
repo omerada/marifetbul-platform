@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * BULK MODERATION ACTIONS COMPONENT

@@ -96,23 +96,23 @@ export interface UseIyzicoPaymentReturn {
 
 const IYZICO_ERROR_MESSAGES: Record<string, string> = {
   // Card errors
-  '10051': 'Kart numarasý geçersiz',
-  '10005': 'Kartýn son kullanma tarihi geçersiz',
-  '10012': 'Güvenlik kodu (CVV) geçersiz',
+  '10051': 'Kart numarasï¿½ geï¿½ersiz',
+  '10005': 'Kartï¿½n son kullanma tarihi geï¿½ersiz',
+  '10012': 'Gï¿½venlik kodu (CVV) geï¿½ersiz',
   '10041': 'Kart limitiniz yetersiz',
-  '10042': 'Kart limiti aþýldý',
-  '10053': 'Kartýnýz çevrimiçi iþlemlere kapalý',
+  '10042': 'Kart limiti aï¿½ï¿½ldï¿½',
+  '10053': 'Kartï¿½nï¿½z ï¿½evrimiï¿½i iï¿½lemlere kapalï¿½',
 
   // 3D Secure errors
-  '10047': 'Ýþleminiz 3D Secure doðrulamasý gerektirmektedir',
-  '10048': '3D Secure doðrulama baþarýsýz',
+  '10047': 'ï¿½ï¿½leminiz 3D Secure doï¿½rulamasï¿½ gerektirmektedir',
+  '10048': '3D Secure doï¿½rulama baï¿½arï¿½sï¿½z',
 
   // Bank errors
-  '10084': 'Ýþleminiz banka tarafýndan reddedildi',
-  '10093': 'Ýþlem tekrar edilemez',
+  '10084': 'ï¿½ï¿½leminiz banka tarafï¿½ndan reddedildi',
+  '10093': 'ï¿½ï¿½lem tekrar edilemez',
 
   // General errors
-  '10000': 'Genel bir hata oluþtu',
+  '10000': 'Genel bir hata oluï¿½tu',
   '10001': 'Zorunlu alanlar eksik',
 };
 
@@ -122,7 +122,7 @@ const IYZICO_ERROR_MESSAGES: Record<string, string> = {
 
 function getErrorMessage(
   error: unknown,
-  fallback = 'Ödeme iþlemi baþarýsýz oldu'
+  fallback = 'ï¿½deme iï¿½lemi baï¿½arï¿½sï¿½z oldu'
 ): string {
   if (typeof error === 'object' && error !== null) {
     const err = error as {
@@ -202,7 +202,7 @@ export function useIyzicoPayment(
           success: false,
           error: createPaymentError(
             'validation_error',
-            new Error('Ödeme iþlemi devam ediyor')
+            new Error('ï¿½deme iï¿½lemi devam ediyor')
           ),
         };
       }
@@ -228,7 +228,7 @@ export function useIyzicoPayment(
         );
 
         if (!response) {
-          throw new Error('Ödeme oluþturulamadý');
+          throw new Error('ï¿½deme oluï¿½turulamadï¿½');
         }
 
         log('Payment intent created', response);
@@ -291,7 +291,7 @@ export function useIyzicoPayment(
           success: false,
           error: createPaymentError(
             'validation_error',
-            new Error('Ödeme onayý devam ediyor')
+            new Error('ï¿½deme onayï¿½ devam ediyor')
           ),
         };
       }
@@ -309,7 +309,7 @@ export function useIyzicoPayment(
         );
 
         if (!response) {
-          throw new Error('Ödeme onaylanamadý');
+          throw new Error('ï¿½deme onaylanamadï¿½');
         }
 
         log('Payment confirmed', response);
@@ -330,7 +330,7 @@ export function useIyzicoPayment(
           status: response.status,
           error: createPaymentError(
             'api_error',
-            new Error('Ödeme baþarýsýz oldu')
+            new Error('ï¿½deme baï¿½arï¿½sï¿½z oldu')
           ),
         };
       } catch (err) {
@@ -362,9 +362,9 @@ export function useIyzicoPayment(
       if (!paymentIntentId) {
         const error = createPaymentError(
           'validation_error',
-          new Error('Ödeme ID bulunamadý')
+          new Error('Ã–deme ID bulunamadÄ±')
         );
-        setError(error instanceof Error ? error : new Error(String(error)));
+        setError(error as any);
         return { success: false, error };
       }
 
@@ -393,7 +393,7 @@ export function useIyzicoPayment(
         );
 
         if (!response) {
-          throw new Error('Ödeme bilgisi alýnamadý');
+          throw new Error('ï¿½deme bilgisi alï¿½namadï¿½');
         }
 
         log('Payment status retrieved', response);

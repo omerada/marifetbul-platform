@@ -14,6 +14,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { toast } from 'sonner';
 import { reviewApi } from '@/lib/api/review';
+import { moderationApi } from '@/lib/api/moderation';
 import { getErrorMessage, logError } from '@/lib/shared/errors';
 import {
   transformReviewResponse,
@@ -610,7 +611,14 @@ export const useReviewStore = create<ReviewState>()(
       moderateReview: async (reviewId, data) => {
         set({ loading: true, error: null });
         try {
-          const updatedReview = await reviewApi.moderate(reviewId, data);
+          // data.action APPROVE veya REJECT olabilir
+          const updatedReview =
+            data.action === 'APPROVE'
+              ? await reviewApi.approve(reviewId)
+              : await reviewApi.reject(
+                  reviewId,
+                  data.reason ?? 'No reason provided'
+                );
           set((state) => ({
             reviews: state.reviews.map((r) =>
               r.id === reviewId ? updatedReview : r
@@ -636,10 +644,20 @@ export const useReviewStore = create<ReviewState>()(
       fetchFlaggedReviews: async (params) => {
         set({ loading: true, error: null });
         try {
-          const response = await reviewApi.getFlagged(params);
+          const response = await moderationApi.getFlaggedReviews(
+            params?.page ?? 0,
+            params?.pageSize ?? 20
+          );
           set({
-            reviews: response.reviews,
-            pagination: response.pagination,
+            reviews: (response.content as any).map(transformReviewResponse),
+            pagination: {
+              page: response.page,
+              pageSize: response.size,
+              totalElements: response.totalElements,
+              totalPages: response.totalPages,
+              hasNext: !response.last,
+              hasPrevious: !response.first,
+            },
             loading: false,
           });
         } catch (error) {

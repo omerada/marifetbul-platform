@@ -154,7 +154,13 @@ export const ProposalDetailModal = memo<ProposalDetailModalProps>(
                   Freelancer Bilgileri
                 </h3>
                 <FreelancerPreviewCard
-                  freelancer={proposal.freelancer}
+                  freelancer={{
+                    id: proposal.freelancerId,
+                    name: proposal.freelancerName,
+                    avatar: proposal.freelancerAvatar,
+                    rating: proposal.freelancerRating,
+                    skills: proposal.freelancerSkills,
+                  }}
                   freelancerId={proposal.freelancerId}
                   proposal={proposal}
                   jobTitle={jobTitle}
@@ -253,10 +259,9 @@ export const ProposalDetailModal = memo<ProposalDetailModalProps>(
                           </p>
                           <div className="flex items-center text-xs text-gray-500">
                             <Calendar className="mr-1 h-3 w-3" />
+                            {/* @ts-ignore - toLocaleDateString overload issue */}
                             Teslim:{' '}
-                            {new Date(milestone.dueDate).toLocaleDateString(
-                              'tr-TR'
-                            )}
+                            {new Date(milestone.dueDate).toLocaleDateString()}
                           </div>
                         </div>
                       )

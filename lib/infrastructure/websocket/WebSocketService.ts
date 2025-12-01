@@ -430,7 +430,7 @@ export function initWebSocketService(
   config: WebSocketConfig
 ): WebSocketService {
   if (webSocketServiceInstance) {
-    logger.warn('WebSocketService', { disconnectingoldinstance });
+    logger.warn('WebSocketService', { disconnectingOldInstance: true });
     webSocketServiceInstance.disconnect();
   }
 

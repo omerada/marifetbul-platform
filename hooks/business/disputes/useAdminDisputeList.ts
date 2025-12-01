@@ -49,8 +49,8 @@ export function useAdminDisputeList(options: UseAdminDisputeListOptions = {}) {
   const pagination =
     !Array.isArray(data) && data
       ? {
-          pageNumber: data.pageNumber,
-          pageSize: data.pageSize,
+          pageNumber: data.page,
+          pageSize: data.size,
           totalElements: data.totalElements,
           totalPages: data.totalPages,
           first: data.first,

@@ -93,12 +93,6 @@ export const LazyPerformanceMonitor = lazy(() =>
   }))
 );
 
-export const LazyAnalyticsDashboard = lazy(() =>
-  import('@/components/domains/analytics').then((module) => ({
-    default: module.AnalyticsDashboard,
-  }))
-);
-
 export const LazyPortfolioGallery = lazy(() =>
   import('@/components/domains/profile').then((module) => ({
     default: module.PortfolioGallery,
@@ -123,10 +117,11 @@ export const PerformanceMonitorWithLoading = withSuspense(
   <UnifiedLoading variant="skeleton" size="lg" />
 );
 
-export const AnalyticsDashboardWithLoading = withSuspense(
-  LazyAnalyticsDashboard,
-  <UnifiedLoading variant="dots" size="lg" />
-);
+// Removed: AnalyticsDashboard component no longer exists
+// export const AnalyticsDashboardWithLoading = withSuspense(
+//   LazyAnalyticsDashboard,
+//   <UnifiedLoading variant="dots" size="lg" />
+// );
 
 export const PortfolioGalleryWithLoading = withSuspense(
   LazyPortfolioGallery,
@@ -170,7 +165,10 @@ export function useComponentPreloader() {
           logger.warn(`Unknown component: ${componentName}`);
       }
     } catch (error) {
-      logger.error(`Failed to preload component ${componentName}:`, error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        `Failed to preload component ${componentName}:`,
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }, []);
 
@@ -203,7 +201,10 @@ export function useCriticalComponentsPreloader() {
           import('@/components/ui/UnifiedImage').catch(() => {}),
         ]);
       } catch (error) {
-        logger.error('Failed to preload critical components:', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'Failed to preload critical components:',
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
     };
 
@@ -342,14 +343,13 @@ const LazyComponentsUtils = {
 
   // Pre-configured components
   LazyPerformanceMonitor,
-  LazyAnalyticsDashboard,
   LazyPortfolioGallery,
   LazyNotificationCenter,
   LazyMapView,
 
   // With loading states
   PerformanceMonitorWithLoading,
-  AnalyticsDashboardWithLoading,
+  // AnalyticsDashboardWithLoading - REMOVED (deprecated)
   PortfolioGalleryWithLoading,
   NotificationCenterWithLoading,
   MapViewWithLoading,

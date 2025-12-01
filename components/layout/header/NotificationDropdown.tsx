@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Bell, CheckCheck, ExternalLink } from 'lucide-react';
 import { useNotifications } from '@/hooks';
-import type { Notification } from '@/types/core/notification';
+import { NotificationType } from '@/lib/api/notifications';
+import type { NotificationResponse as Notification } from '@/lib/api/notifications';
 
 export function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -41,24 +42,24 @@ export function NotificationDropdown() {
     await markAllAsRead();
   };
 
-  const getNotificationIcon = (type: Notification['type']) => {
+  const getNotificationIcon = (type: NotificationType) => {
     switch (type) {
-      case 'job_application':
-      case 'job_accepted':
-      case 'job_completed':
-        return '�';
-      case 'payment_received':
+      case NotificationType.JOB:
+        return '📋';
+      case NotificationType.PAYMENT:
         return '💰';
-      case 'review_received':
+      case NotificationType.REVIEW:
         return '⭐';
-      case 'message_received':
+      case NotificationType.MESSAGE:
         return '💬';
-      case 'system_update':
+      case NotificationType.SYSTEM:
         return '⚙️';
-      case 'promotion':
-        return '🎁';
-      case 'reminder':
-        return '⏰';
+      case NotificationType.PROPOSAL:
+        return '📝';
+      case NotificationType.ORDER:
+        return '📦';
+      case NotificationType.FOLLOW:
+        return '👥';
       default:
         return '🔔';
     }
@@ -143,7 +144,7 @@ export function NotificationDropdown() {
                           )}
                         </div>
                         <p className="mt-1 line-clamp-2 text-sm text-gray-600">
-                          {notification.message}
+                          {notification.content}
                         </p>
                         <div className="mt-2 flex items-center justify-between">
                           <span className="text-xs text-gray-500">

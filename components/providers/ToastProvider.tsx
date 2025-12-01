@@ -102,7 +102,7 @@ export function ToastProvider({
             id={toast.id}
             title={toast.title}
             description={toast.description}
-            variant={toast.variant}
+            variant={toast.variant as any}
             duration={toast.duration}
             closable={toast.closable}
             action={toast.action}

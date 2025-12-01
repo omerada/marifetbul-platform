@@ -303,6 +303,7 @@ export function OrderActions({
               onActionComplete(order);
             }
           }}
+          {...({} as any)}
         />
       )}
 

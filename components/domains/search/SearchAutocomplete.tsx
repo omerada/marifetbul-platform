@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Search, X, Clock, TrendingUp } from 'lucide-react';
@@ -191,7 +191,7 @@ export function SearchAutocomplete({
             {/* Loading state */}
             {isLoadingSuggestions && (
               <div className="py-4 text-center text-sm text-gray-500">
-                Aranýyor...
+                Aranï¿½yor...
               </div>
             )}
 
@@ -199,7 +199,7 @@ export function SearchAutocomplete({
             {suggestions.length > 0 && (
               <div className="space-y-1">
                 <div className="px-2 py-1 text-xs font-medium tracking-wide text-gray-500 uppercase">
-                  Öneriler
+                  ï¿½neriler
                 </div>
                 {suggestions.slice(0, 5).map((suggestion, index) => (
                   <button
@@ -262,7 +262,7 @@ export function SearchAutocomplete({
               suggestions.length === 0 &&
               localQuery.length >= 2 && (
                 <div className="py-4 text-center text-sm text-gray-500">
-                  Öneri bulunamadý
+                  ï¿½neri bulunamadï¿½
                 </div>
               )}
           </div>

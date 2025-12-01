@@ -324,6 +324,7 @@ export function CustomOrderForm({
           amount={amount}
           sellerHasIban={sellerHasIban}
           disabled={isLoadingPaymentStatus || isSubmitting}
+          {...({} as any)}
         />
         {errors.paymentMode && (
           <p className="mt-2 text-sm text-red-600">

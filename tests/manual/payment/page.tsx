@@ -32,18 +32,15 @@ export default function PaymentTestPage() {
     sellerName: 'Test Satıcı',
     buyerId: 'test-buyer-id',
     buyerName: 'Test Alıcı',
-    status: 'PENDING',
-    paymentStatus: 'PENDING',
-    paymentMode: 'ONLINE',
+    status: 'PENDING' as any,
     totalAmount: 500,
     netAmount: 450,
     platformFee: 50,
     currency: 'TRY',
-    deliveryDays: 7,
     requirements: 'Logo tasarımı için gerekli bilgiler',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-  };
+  } as any;
 
   // Redirect to home in production
   useEffect(() => {
@@ -144,8 +141,9 @@ export default function PaymentTestPage() {
             `Payment successful! Order: ${orderId}${paymentId ? `, Payment: ${paymentId}` : ''}`
           );
         }}
-        onError={(error) => {
-          logger.error('Test payment error', error as Error, {
+        onError={(error: any) => {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('Test payment error', err, {
             component: 'ManualPaymentTest',
           });
           toast.error(`Payment error: ${error}`);

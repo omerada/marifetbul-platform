@@ -79,7 +79,9 @@ export function useModeratorActivity(
     async () => {
       try {
         const data = await moderationApi.getRecentActivities(page, pageSize);
-        logger.debug('Moderator activities fetched:', data.content.length);
+        logger.debug('Moderator activities fetched:', {
+          count: data.content.length,
+        });
         return data;
       } catch (err) {
         logger.error(

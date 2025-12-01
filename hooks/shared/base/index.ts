@@ -442,7 +442,6 @@ export function useMediaQuery(query: string): boolean {
 const BaseHooks = {
   // Base utilities (defined in this file)
   usePagination,
-  useDebounce,
   useDebouncedCallback,
   useThrottledCallback,
   useLocalStorage,

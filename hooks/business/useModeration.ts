@@ -119,8 +119,8 @@ export function useRecentActivities(
   return {
     activities: data?.content ?? [],
     total: data?.totalElements ?? 0,
-    page: data?.page ?? data?.pageNumber ?? 0,
-    size: data?.size ?? data?.pageSize ?? size,
+    page: data?.page ?? 0,
+    size: data?.size ?? size,
     totalPages: data?.totalPages ?? 0,
     isLoading,
     error,

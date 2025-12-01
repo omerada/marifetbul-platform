@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 /**
  * ================================================
@@ -99,40 +99,40 @@ const PRICE_PRESETS = [
 ];
 
 const RATING_OPTIONS = [
-  { label: '5 Yýldýz', value: 5 },
-  { label: '4+ Yýldýz', value: 4 },
-  { label: '3+ Yýldýz', value: 3 },
-  { label: '2+ Yýldýz', value: 2 },
+  { label: '5 Yï¿½ldï¿½z', value: 5 },
+  { label: '4+ Yï¿½ldï¿½z', value: 4 },
+  { label: '3+ Yï¿½ldï¿½z', value: 3 },
+  { label: '2+ Yï¿½ldï¿½z', value: 2 },
 ];
 
 const DELIVERY_PRESETS = [
   { label: '24 Saat', value: 1 },
-  { label: '3 Gün', value: 3 },
-  { label: '7 Gün', value: 7 },
-  { label: '14 Gün', value: 14 },
-  { label: '30 Gün', value: 30 },
+  { label: '3 Gï¿½n', value: 3 },
+  { label: '7 Gï¿½n', value: 7 },
+  { label: '14 Gï¿½n', value: 14 },
+  { label: '30 Gï¿½n', value: 30 },
 ];
 
 const EXPERIENCE_LEVELS = [
-  { id: 'entry', label: 'Baþlangýç' },
+  { id: 'entry', label: 'Baï¿½langï¿½ï¿½' },
   { id: 'intermediate', label: 'Orta' },
   { id: 'expert', label: 'Uzman' },
-  { id: 'senior', label: 'Kýdemli' },
+  { id: 'senior', label: 'Kï¿½demli' },
 ];
 
 const LANGUAGES = [
-  { id: 'tr', label: 'Türkçe' },
-  { id: 'en', label: 'Ýngilizce' },
+  { id: 'tr', label: 'Tï¿½rkï¿½e' },
+  { id: 'en', label: 'ï¿½ngilizce' },
   { id: 'de', label: 'Almanca' },
-  { id: 'fr', label: 'Fransýzca' },
-  { id: 'ar', label: 'Arapça' },
-  { id: 'ru', label: 'Rusça' },
+  { id: 'fr', label: 'Fransï¿½zca' },
+  { id: 'ar', label: 'Arapï¿½a' },
+  { id: 'ru', label: 'Rusï¿½a' },
 ];
 
 const TOP_CITIES = [
-  'Ýstanbul',
+  'ï¿½stanbul',
   'Ankara',
-  'Ýzmir',
+  'ï¿½zmir',
   'Antalya',
   'Bursa',
   'Adana',
@@ -210,7 +210,7 @@ export function AdvancedSearchFiltersSidebar({
 
   const savePreset = () => {
     if (!presetName.trim()) {
-      alert('Lütfen bir preset adý girin');
+      alert('Lï¿½tfen bir preset adï¿½ girin');
       return;
     }
 
@@ -266,7 +266,7 @@ export function AdvancedSearchFiltersSidebar({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="text-primary h-5 w-5" />
-            <h3 className="font-semibold">Geliþmiþ Filtreler</h3>
+            <h3 className="font-semibold">Geliï¿½miï¿½ Filtreler</h3>
             {activeFilterCount > 0 && (
               <Badge variant="secondary">{activeFilterCount}</Badge>
             )}
@@ -286,7 +286,7 @@ export function AdvancedSearchFiltersSidebar({
         <div className="space-y-2">
           <div className="flex gap-2">
             <Input
-              placeholder="Preset adý..."
+              placeholder="Preset adï¿½..."
               value={presetName}
               onChange={(e) => setPresetName(e.target.value)}
               className="flex-1"
@@ -306,7 +306,7 @@ export function AdvancedSearchFiltersSidebar({
             <div className="space-y-2">
               <Label className="text-muted-foreground flex items-center gap-1 text-xs">
                 <FolderOpen className="h-3 w-3" />
-                Kaydedilmiþ Presetler
+                Kaydedilmiï¿½ Presetler
               </Label>
               <div className="flex flex-wrap gap-2">
                 {Object.keys(savedPresets).map((name) => (
@@ -335,7 +335,7 @@ export function AdvancedSearchFiltersSidebar({
 
         {/* Quick Toggles */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Hýzlý Filtreler</Label>
+          <Label className="text-sm font-medium">Hï¿½zlï¿½ Filtreler</Label>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => updateFilter('verified', !filters.verified)}
@@ -345,7 +345,7 @@ export function AdvancedSearchFiltersSidebar({
                   : 'bg-muted hover:bg-muted/80'
               }`}
             >
-              ? Doðrulanmýþ
+              ? Doï¿½rulanmï¿½ï¿½
             </button>
             <button
               onClick={() => updateFilter('featured', !filters.featured)}
@@ -355,7 +355,7 @@ export function AdvancedSearchFiltersSidebar({
                   : 'bg-muted hover:bg-muted/80'
               }`}
             >
-              ? Öne Çýkanlar
+              ? ï¿½ne ï¿½ï¿½kanlar
             </button>
           </div>
         </div>
@@ -412,7 +412,7 @@ export function AdvancedSearchFiltersSidebar({
           >
             <Label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
               <DollarSign className="h-4 w-4" />
-              Fiyat Aralýðý
+              Fiyat Aralï¿½ï¿½ï¿½
             </Label>
             {isSectionExpanded('price') ? (
               <ChevronUp className="h-4 w-4" />
@@ -510,7 +510,7 @@ export function AdvancedSearchFiltersSidebar({
           >
             <Label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
               <Star className="h-4 w-4" />
-              Deðerlendirme
+              Deï¿½erlendirme
             </Label>
             {isSectionExpanded('rating') ? (
               <ChevronUp className="h-4 w-4" />
@@ -549,7 +549,7 @@ export function AdvancedSearchFiltersSidebar({
           >
             <Label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
               <Clock className="h-4 w-4" />
-              Teslimat Süresi
+              Teslimat Sï¿½resi
             </Label>
             {isSectionExpanded('delivery') ? (
               <ChevronUp className="h-4 w-4" />
@@ -566,7 +566,7 @@ export function AdvancedSearchFiltersSidebar({
                   updateFilter('maxDeliveryDays', Number(value))
                 }
               >
-                <SelectTrigger placeholder="Maksimum süre" />
+                <SelectTrigger placeholder="Maksimum sï¿½re" />
                 <SelectContent>
                   {DELIVERY_PRESETS.map((preset) => (
                     <SelectItem
@@ -576,7 +576,7 @@ export function AdvancedSearchFiltersSidebar({
                       {preset.label}
                     </SelectItem>
                   ))}
-                  <SelectItem value="365">Tümü</SelectItem>
+                  <SelectItem value="365">Tï¿½mï¿½</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -19,7 +19,6 @@
 
 import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import useSWR from 'swr';
-import type { NotificationFilters } from '@/lib/api/notifications';
 import { getWebSocketService } from '@/lib/infrastructure/websocket/WebSocketService';
 import {
   getNotifications,
@@ -29,6 +28,7 @@ import {
   updateNotificationPreferences,
   getUnreadCount,
   NotificationPriority,
+  NotificationType,
   type NotificationResponse as Notification,
   type NotificationPreferencesResponse,
   type PaginatedNotifications,
@@ -38,6 +38,12 @@ import { useToast } from '@/hooks/core/useToast';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ==================== TYPES ====================
+
+export interface NotificationFilters {
+  type?: NotificationType;
+  unreadOnly?: boolean;
+  priority?: NotificationPriority;
+}
 
 export interface UseNotificationsOptions {
   /** Auto-fetch on mount */

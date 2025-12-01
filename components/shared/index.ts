@@ -93,14 +93,14 @@ export {
 
   // Pre-configured components
   LazyPerformanceMonitor,
-  LazyAnalyticsDashboard,
+  // LazyAnalyticsDashboard - REMOVED (deprecated component)
   LazyPortfolioGallery,
   LazyNotificationCenter,
   LazyMapView,
 
   // With loading states
   PerformanceMonitorWithLoading,
-  AnalyticsDashboardWithLoading,
+  // AnalyticsDashboardWithLoading - REMOVED (deprecated component)
   PortfolioGalleryWithLoading,
   NotificationCenterWithLoading,
   MapViewWithLoading,

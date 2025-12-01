@@ -6,6 +6,7 @@
  */
 
 import type { User } from '@/types/core/base';
+import type { UserRole } from '@/types/backend-aligned';
 
 // Backend user can have various shapes, so we use Record
 type BackendUser = Record<string, unknown>;
@@ -42,7 +43,7 @@ export function transformUserResponse(backendUser: BackendUser): User {
     userType, // Frontend uses userType
     role: mapAccountTypeToRole(
       (backendUser.accountType || backendUser.role) as string | undefined
-    ),
+    ) as UserRole,
     phone:
       (backendUser.phoneNumber as string | undefined) ||
       (backendUser.phone as string | undefined),

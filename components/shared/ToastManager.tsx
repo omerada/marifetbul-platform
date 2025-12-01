@@ -58,10 +58,12 @@ export function ToastManager() {
             id={toast.id}
             title={toast.title}
             description={toast.message}
-            variant={toast.type}
+            variant={toast.type as 'success' | 'error' | 'warning' | 'info'}
             duration={toast.duration}
             onClose={() => removeToast(toast.id)}
-            icon={getToastIcon(toast.type)}
+            icon={getToastIcon(
+              toast.type as 'success' | 'error' | 'warning' | 'info'
+            )}
             action={toast.action}
           />
         </div>

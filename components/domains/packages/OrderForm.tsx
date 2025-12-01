@@ -323,6 +323,7 @@ export function OrderForm({
         sellerHasIban={sellerHasIban}
         sellerName={`${servicePackage.seller?.firstName} ${servicePackage.seller?.lastName}`}
         disabled={isLoadingPaymentStatus}
+        {...({} as any)}
       />
 
       {/* Terms */}

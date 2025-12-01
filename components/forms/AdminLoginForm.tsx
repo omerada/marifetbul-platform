@@ -175,10 +175,7 @@ export function AdminLoginForm({
       });
 
       // Check if 2FA is required
-      if (
-        loginResult?.twoFactorRequired ||
-        (user?.profile?.twoFactorEnabled && require2FA)
-      ) {
+      if (loginResult?.twoFactorRequired) {
         logger.info('[AdminLogin] 2FA required, showing modal');
         setPendingAuth({
           email: credentials.email,

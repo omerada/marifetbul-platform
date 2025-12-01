@@ -71,8 +71,8 @@ export function useModerationDashboard(
       ]);
 
       setStats(statsData);
-      setPendingItems(pendingData.items);
-      setRecentActivities(activitiesData.activities);
+      setPendingItems(pendingData.content as any);
+      setRecentActivities(activitiesData.content);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Veri yüklenirken hata oluştu';

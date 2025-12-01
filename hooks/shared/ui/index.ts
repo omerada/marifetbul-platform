@@ -433,7 +433,6 @@ export { useClipboard } from './useClipboard';
 // ================================================
 
 export function useVisibility(threshold = 0.1) {
-  // @ts-expect-error TypeScript inference issue with intersection observer
   const result = useIntersectionObserver({ threshold });
   const [elementRef, isVisible] = result;
 
@@ -500,7 +499,6 @@ const UIHooks = {
   useSidebar,
   useScrollPosition,
   useScrollDirection,
-  useClipboard,
   useVisibility,
   useKeyboardShortcut,
 };

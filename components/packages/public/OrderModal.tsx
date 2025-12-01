@@ -14,6 +14,7 @@ import { Button } from '@/components/ui';
 import { orderApi } from '@/lib/api/orders';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import type { Package } from '@/types/business/features/package';
+import { PaymentMode } from '@/types/business/features/order';
 
 interface OrderModalProps {
   package: Package;
@@ -62,7 +63,7 @@ export function OrderModal({
       // Create order via API
       const response = await orderApi.createPackageOrder({
         packageId: pkg.id,
-        paymentMode: 'ESCROW_PROTECTED',
+        paymentMode: PaymentMode.ESCROW_PROTECTED,
         amount: currentTier.price,
         tier: selectedTier,
         requirements: requirements || undefined,

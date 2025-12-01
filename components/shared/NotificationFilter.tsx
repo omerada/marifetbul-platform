@@ -1,4 +1,4 @@
-import type { NotificationType } from '@/types/core/notification';
+import type { NotificationType } from '@/types/backend-aligned';
 
 type FilterType = 'ALL' | NotificationType;
 
@@ -10,15 +10,14 @@ interface NotificationFilterProps {
 
 const filterOptions: { value: FilterType; label: string; icon: string }[] = [
   { value: 'ALL', label: 'Tümü', icon: '📋' },
-  { value: 'job_application', label: 'İş Başvuruları', icon: '�' },
-  { value: 'job_accepted', label: 'Kabul Edilen İşler', icon: '✅' },
-  { value: 'job_completed', label: 'Tamamlanan İşler', icon: '🎉' },
-  { value: 'payment_received', label: 'Ödemeler', icon: '�' },
-  { value: 'message_received', label: 'Mesajlar', icon: '💬' },
-  { value: 'review_received', label: 'Değerlendirmeler', icon: '⭐' },
-  { value: 'system_update', label: 'Sistem', icon: '⚙️' },
-  { value: 'promotion', label: 'Promosyonlar', icon: '🎁' },
-  { value: 'reminder', label: 'Hatırlatmalar', icon: '⏰' },
+  { value: 'ORDER_CREATED', label: 'Yeni Siparişler', icon: '🛒' },
+  { value: 'ORDER_ACCEPTED', label: 'Kabul Edilen İşler', icon: '✅' },
+  { value: 'ORDER_COMPLETED', label: 'Tamamlanan İşler', icon: '🎉' },
+  { value: 'PAYMENT_RECEIVED', label: 'Ödemeler', icon: '💰' },
+  { value: 'MESSAGE_RECEIVED', label: 'Mesajlar', icon: '💬' },
+  { value: 'REVIEW_RECEIVED', label: 'Değerlendirmeler', icon: '⭐' },
+  { value: 'SYSTEM_ANNOUNCEMENT', label: 'Sistem', icon: '⚙️' },
+  { value: 'PROPOSAL_RECEIVED', label: 'Teklifler', icon: '📝' },
 ];
 
 export function NotificationFilter({

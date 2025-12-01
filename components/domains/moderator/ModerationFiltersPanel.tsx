@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * ================================================
  * MODERATION FILTERS PANEL COMPONENT

@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 import { useEffect, useState } from 'react';
 import { AppLayout } from '@/components/layout';
@@ -143,7 +143,7 @@ export default function FavoritesPage() {
                   Favorilerim
                 </h1>
                 <p className="mt-1 text-sm text-gray-600">
-                  {stats.totalFavorites} kayýtlý favori
+                  {stats.totalFavorites} kayï¿½tlï¿½ favori
                 </p>
               </div>
 
@@ -180,7 +180,7 @@ export default function FavoritesPage() {
                 }
               />
               <StatCard
-                label="Ýþler"
+                label="ï¿½ï¿½ler"
                 value={stats.jobsCount}
                 icon={<MapPin className="h-5 w-5 text-green-500" />}
                 active={filterType === 'jobs'}
@@ -198,7 +198,7 @@ export default function FavoritesPage() {
                 }
               />
               <StatCard
-                label="Klasörler"
+                label="Klasï¿½rler"
                 value={stats.foldersCount}
                 icon={<Folder className="h-5 w-5 text-purple-500" />}
                 active={false}
@@ -240,9 +240,9 @@ export default function FavoritesPage() {
                   }
                   className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 >
-                  <option value="all">Tüm Favoriler</option>
+                  <option value="all">Tï¿½m Favoriler</option>
                   <option value="freelancers">Freelancerlar</option>
-                  <option value="jobs">Ýþler</option>
+                  <option value="jobs">ï¿½ï¿½ler</option>
                   <option value="packages">Paketler</option>
                 </select>
 
@@ -252,7 +252,7 @@ export default function FavoritesPage() {
                   onClick={() => setShowCreateFolder(true)}
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  Klasör Oluþtur
+                  Klasï¿½r Oluï¿½tur
                 </Button>
               </div>
             </div>
@@ -272,7 +272,7 @@ export default function FavoritesPage() {
             <div className="mb-8">
               <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
                 <FolderOpen className="h-5 w-5" />
-                Klasörler
+                Klasï¿½rler
               </h2>
               <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6">
                 {favoriteFolders.map((folder) => (
@@ -293,12 +293,12 @@ export default function FavoritesPage() {
             <Card className="p-12 text-center">
               <Heart className="mx-auto mb-4 h-16 w-16 text-gray-300" />
               <h3 className="mb-2 text-xl font-semibold text-gray-900">
-                {searchQuery ? 'Sonuç bulunamadý' : 'Henüz favori eklenmemiþ'}
+                {searchQuery ? 'Sonuï¿½ bulunamadï¿½' : 'Henï¿½z favori eklenmemiï¿½'}
               </h3>
               <p className="text-gray-600">
                 {searchQuery
-                  ? 'Arama kriterlerinizi deðiþtirmeyi deneyin'
-                  : 'Beðendiðiniz freelancer, iþ veya paketleri favorilere ekleyin'}
+                  ? 'Arama kriterlerinizi deï¿½iï¿½tirmeyi deneyin'
+                  : 'Beï¿½endiï¿½iniz freelancer, iï¿½ veya paketleri favorilere ekleyin'}
               </p>
             </Card>
           ) : (
@@ -334,7 +334,7 @@ export default function FavoritesPage() {
               {filteredJobs.length > 0 && (
                 <section>
                   <h2 className="mb-4 text-lg font-semibold text-gray-900">
-                    Ýþler ({filteredJobs.length})
+                    ï¿½ï¿½ler ({filteredJobs.length})
                   </h2>
                   <div
                     className={
@@ -394,11 +394,11 @@ export default function FavoritesPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <h3 className="mb-4 text-lg font-semibold text-gray-900">
-                Yeni Klasör Oluþtur
+                Yeni Klasï¿½r Oluï¿½tur
               </h3>
               <input
                 type="text"
-                placeholder="Klasör adý"
+                placeholder="Klasï¿½r adï¿½"
                 value={newFolderName}
                 onChange={(e) => setNewFolderName(e.target.value)}
                 className="mb-4 w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
@@ -409,13 +409,13 @@ export default function FavoritesPage() {
                   variant="outline"
                   onClick={() => setShowCreateFolder(false)}
                 >
-                  Ýptal
+                  ï¿½ptal
                 </Button>
                 <Button
                   onClick={handleCreateFolder}
                   disabled={!newFolderName.trim()}
                 >
-                  Oluþtur
+                  Oluï¿½tur
                 </Button>
               </div>
             </Card>
@@ -458,7 +458,7 @@ function FolderCard({
           style={{ color: folder.color || '#3B82F6' }}
         />
         <p className="text-sm font-medium text-gray-900">{folder.name}</p>
-        <p className="text-xs text-gray-500">{folder.itemCount || 0} öðe</p>
+        <p className="text-xs text-gray-500">{folder.itemCount || 0} ï¿½ï¿½e</p>
       </div>
 
       <button
@@ -676,7 +676,7 @@ function PackageCard({
           )}
           {pkg.price && (
             <span className="font-semibold text-blue-600">
-              {pkg.price}?&apos;den baþlayan
+              {pkg.price}?&apos;den baï¿½layan
             </span>
           )}
         </div>

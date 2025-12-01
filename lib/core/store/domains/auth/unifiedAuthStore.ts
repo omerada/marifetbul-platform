@@ -22,7 +22,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { devtools } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { User } from '@/types';
-import type { UserResponse } from '@/types/backend-aligned';
+import type { UserResponse, UserRole } from '@/types/backend-aligned';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { unifiedAuthService } from '@/lib/core/auth/unifiedAuthService';
 import { sessionManager } from '@/lib/core/auth/sessionManager';
@@ -58,11 +58,7 @@ function convertUserResponseToUser(userResponse: UserResponse): User {
     avatar: userResponse.avatarUrl,
     avatarUrl: userResponse.avatarUrl,
     userType,
-    role: userResponse.role as
-      | 'FREELANCER'
-      | 'EMPLOYER'
-      | 'ADMIN'
-      | 'MODERATOR',
+    role: userResponse.role as UserRole,
     createdAt: userResponse.createdAt,
     updatedAt: userResponse.createdAt,
     verificationStatus: userResponse.emailVerified ? 'verified' : 'unverified',

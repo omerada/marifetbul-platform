@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 /**
  * ================================================
@@ -131,8 +131,8 @@ export function OrderMessagingPanel({
   // Other user info
   const otherUser =
     userRole === 'buyer'
-      ? { id: order.sellerId, name: order.sellerName || 'Satýcý' }
-      : { id: order.buyerId, name: order.buyerName || 'Alýcý' };
+      ? { id: order.sellerId, name: order.sellerName || 'Satï¿½cï¿½' }
+      : { id: order.buyerId, name: order.buyerName || 'Alï¿½cï¿½' };
 
   // ================================================
   // AUTO-SCROLL
@@ -164,7 +164,7 @@ export function OrderMessagingPanel({
         setMessages(mappedMessages);
       } catch (error) {
         logger.error('Failed to load messages:', error instanceof Error ? error : new Error(String(error)));
-        showErrorToast('Mesajlar yüklenemedi');
+        showErrorToast('Mesajlar yï¿½klenemedi');
       } finally {
         setIsLoading(false);
       }
@@ -267,8 +267,8 @@ export function OrderMessagingPanel({
         } catch (error) {
           logger.error('Failed to create conversation:', error instanceof Error ? error : new Error(String(error)));
           showErrorToast(
-            'Konuþma baþlatýlamadý',
-            'Lütfen tekrar deneyin veya sayfayý yenileyin.'
+            'Konuï¿½ma baï¿½latï¿½lamadï¿½',
+            'Lï¿½tfen tekrar deneyin veya sayfayï¿½ yenileyin.'
           );
           return;
         }
@@ -400,13 +400,13 @@ export function OrderMessagingPanel({
       <div className="border-b p-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-semibold">{otherUser.name} ile Mesajlaþma</h3>
+            <h3 className="font-semibold">{otherUser.name} ile Mesajlaï¿½ma</h3>
             <p className="text-muted-foreground text-sm">
-              Sipariþ #{order.orderNumber}
+              Sipariï¿½ #{order.orderNumber}
             </p>
           </div>
           <div className="text-muted-foreground text-xs">
-            {order.packageTitle || order.jobTitle || 'Özel Sipariþ'}
+            {order.packageTitle || order.jobTitle || 'ï¿½zel Sipariï¿½'}
           </div>
         </div>
       </div>
@@ -420,9 +420,9 @@ export function OrderMessagingPanel({
         ) : messages.length === 0 ? (
           <div className="flex h-full items-center justify-center text-center">
             <div>
-              <p className="text-muted-foreground mb-2">Henüz mesaj yok</p>
+              <p className="text-muted-foreground mb-2">Henï¿½z mesaj yok</p>
               <p className="text-muted-foreground text-sm">
-                Ýlk mesajý göndererek sohbeti baþlatýn
+                ï¿½lk mesajï¿½ gï¿½ndererek sohbeti baï¿½latï¿½n
               </p>
             </div>
           </div>
@@ -487,7 +487,7 @@ export function OrderMessagingPanel({
           <div className="flex justify-start">
             <div className="bg-muted rounded-lg px-4 py-2">
               <p className="text-muted-foreground text-sm">
-                {otherUser.name} yazýyor...
+                {otherUser.name} yazï¿½yor...
               </p>
             </div>
           </div>
@@ -553,7 +553,7 @@ export function OrderMessagingPanel({
                   sendMessage();
                 }
               }}
-              placeholder="Mesajýnýzý yazýn..."
+              placeholder="Mesajï¿½nï¿½zï¿½ yazï¿½n..."
               className="min-h-[60px] resize-none"
               disabled={isSending}
             />
@@ -580,7 +580,7 @@ export function OrderMessagingPanel({
         {/* Upload Status */}
         {isUploadingFiles && (
           <div className="text-muted-foreground py-1 text-center text-xs">
-            Dosyalar yükleniyor...
+            Dosyalar yï¿½kleniyor...
           </div>
         )}
       </div>

@@ -37,16 +37,12 @@ export const getBankByCode = (code: string) =>
   bankInfoService.getBankByCode(code);
 export const getBankFromIBAN = (iban: string) =>
   bankInfoService.getBankFromIBAN(iban);
-export const getAllBanks = () => bankInfoService.getAllBanks();
-export const searchBanks = (options?: BankSearchOptions) =>
-  bankInfoService.searchBanks(options);
+export const getAllBanks = (options?: BankSearchOptions) =>
+  bankInfoService.getAllBanks(options);
+export const searchBanks = (query: string, options?: BankSearchOptions) =>
+  bankInfoService.searchBanks(query, options);
 export const validateIBANWithBank = (iban: string) =>
-  bankInfoService.validateWithBank(iban);
-export const formatIBANForDisplay = (iban: string) =>
-  bankInfoService.formatForDisplay(iban);
-export const maskIBAN = (iban: string) => bankInfoService.maskIBAN(iban);
+  bankInfoService.validateIBANWithBank(iban);
+// REMOVED: formatForDisplay, maskIBAN, getStatistics, generateSampleIBAN - use utils/iban-validator instead
 export const isBankCodeValid = (code: string) =>
   bankInfoService.hasBankCode(code);
-export const getBankStatistics = () => bankInfoService.getStatistics();
-export const generateSampleIBAN = (bankCode: string) =>
-  bankInfoService.generateSampleIBAN(bankCode);

@@ -106,7 +106,8 @@ export const orderApi = {
   // ==================== ORDER ACTIONS ====================
   acceptOrder: orderServiceInstance.acceptOrder.bind(orderServiceInstance),
   startOrder: orderServiceInstance.startOrder.bind(orderServiceInstance),
-  confirmManualPayment: orderServiceInstance.confirmManualPayment.bind(orderServiceInstance),
+  confirmManualPayment:
+    orderServiceInstance.confirmManualPayment.bind(orderServiceInstance),
   submitDelivery:
     orderServiceInstance.submitDelivery.bind(orderServiceInstance),
   approveDelivery:
@@ -134,8 +135,7 @@ export const orderApi = {
 
   // ==================== ADMIN ENDPOINTS ====================
   getAllOrders: orderServiceInstance.getAllOrders.bind(orderServiceInstance),
-  getDisputedOrders:
-    orderServiceInstance.getDisputedOrders.bind(orderServiceInstance),
+  // REMOVED: getDisputedOrders - Use getAllDisputes from @/lib/api/disputes instead
   resolveDispute:
     orderServiceInstance.resolveDispute.bind(orderServiceInstance),
 

@@ -14,12 +14,25 @@
 
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { PORTFOLIO_ENDPOINTS } from './endpoints';
-import type {
-  PortfolioResponse,
-  BulkActionResult,
-  PortfolioStatistics,
-} from '@/types/portfolio';
+import type { PortfolioResponse } from '@/types/portfolio';
 import type { PageResponse } from '@/types/backend-aligned';
+
+// ================================================
+// ADMIN-SPECIFIC TYPES
+// ================================================
+
+export interface BulkActionResult {
+  successCount: number;
+  failureCount: number;
+  errors?: Array<{ id: string; error: string }>;
+}
+
+export interface PortfolioStatistics {
+  totalCount: number;
+  pendingCount: number;
+  approvedCount: number;
+  rejectedCount: number;
+}
 
 // ================================================
 // REQUEST TYPES
@@ -144,11 +157,11 @@ export const portfolioAdminApi = {
     portfolioIds: string[],
     reason: string
   ): Promise<BulkActionResult> {
-    const response = await apiClient.post(
+    const response: any = await apiClient.post(
       PORTFOLIO_ENDPOINTS.ADMIN_BULK_REJECT_PORTFOLIOS,
       { portfolioIds, reason }
     );
-    return response.data.data;
+    return response.data;
   },
 
   /**
@@ -157,10 +170,14 @@ export const portfolioAdminApi = {
    * @returns Portfolio statistics
    */
   async getStatistics(): Promise<PortfolioStatistics> {
-    const response = await apiClient.get(
-      PORTFOLIO_ENDPOINTS.ADMIN_PORTFOLIO_STATISTICS
-    );
-    return (response as any).data.data;
+    try {
+      const response: any = await apiClient.get(
+        PORTFOLIO_ENDPOINTS.ADMIN_PORTFOLIO_STATISTICS
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   },
 
   /**

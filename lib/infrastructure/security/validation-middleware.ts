@@ -26,15 +26,59 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import {
-  validateInput,
-  ValidationError,
-  ValidationException,
-} from './validation';
+import { z, ZodError } from 'zod';
 import { Logger } from '../monitoring/logger';
 
 const logger = new Logger({ level: 'info' });
+
+// ============================================================================
+// CUSTOM ERRORS
+// ============================================================================
+
+export class ValidationError extends Error {
+  constructor(
+    message: string,
+    public errors: Array<{ path: string; message: string }>
+  ) {
+    super(message);
+    this.name = 'ValidationError';
+  }
+}
+
+export class ValidationException extends Error {
+  constructor(
+    message: string,
+    public statusCode = 400
+  ) {
+    super(message);
+    this.name = 'ValidationException';
+  }
+}
+
+/**
+ * Validate input with Zod schema
+ */
+function validateInput<T>(
+  schema: z.ZodSchema<T>,
+  data: unknown
+):
+  | { success: true; data: T }
+  | { success: false; errors: Array<{ path: string; message: string }> } {
+  try {
+    const parsed = schema.parse(data);
+    return { success: true, data: parsed };
+  } catch (error) {
+    if (error instanceof ZodError) {
+      const zodError = error as any;
+      const errors = zodError.errors.map((err: z.ZodIssue) => ({
+        path: err.path.join('.'),
+        message: err.message,
+      }));
+      return { success: false, errors };
+    }
+    throw error;
+  }
+}
 
 // ============================================================================
 // TYPES
@@ -326,7 +370,7 @@ export function withValidation(
         logger.warn('Validation exception thrown', {
           url: request.url,
           method: request.method,
-          errors: errors.errors,
+          errors: (error as any).errors,
         });
 
         return NextResponse.json(

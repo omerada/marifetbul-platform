@@ -21,6 +21,9 @@ import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { UnifiedErrorBoundary } from '@/components/ui/UnifiedErrorBoundary';
 import { Loading } from '@/components/ui';
 
+// Ensure dynamic rendering for client-side hooks
+export const dynamic = 'force-dynamic';
+
 /**
  * Unified Comment Moderation Page
  *

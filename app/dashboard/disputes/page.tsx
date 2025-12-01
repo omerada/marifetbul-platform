@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * ================================================
  * USER DISPUTE DASHBOARD
  * ================================================
@@ -81,8 +81,8 @@ export default function UserDisputeDashboard() {
         'Failed to fetch disputes:',
         error instanceof Error ? error : new Error(String(error))
       );
-      toast.error('Veri Yüklenemedi', {
-        description: 'Ýtirazlar yüklenirken bir hata oluþtu.',
+      toast.error('Veri Yï¿½klenemedi', {
+        description: 'ï¿½tirazlar yï¿½klenirken bir hata oluï¿½tu.',
       });
     } finally {
       setIsLoading(false);
@@ -128,18 +128,18 @@ export default function UserDisputeDashboard() {
     label: string;
     count: number;
   }> = [
-    { value: 'all', label: 'Tümü', count: stats.total },
-    { value: 'OPEN', label: 'Açýk', count: stats.open },
-    { value: 'UNDER_REVIEW', label: 'Ýnceleniyor', count: stats.underReview },
-    { value: 'ESCALATED', label: 'Yükseltildi', count: stats.escalated },
-    { value: 'RESOLVED', label: 'Çözüldü', count: stats.resolved },
+    { value: 'all', label: 'Tï¿½mï¿½', count: stats.total },
+    { value: 'OPEN', label: 'Aï¿½ï¿½k', count: stats.open },
+    { value: 'UNDER_REVIEW', label: 'ï¿½nceleniyor', count: stats.underReview },
+    { value: 'ESCALATED', label: 'Yï¿½kseltildi', count: stats.escalated },
+    { value: 'RESOLVED', label: 'ï¿½ï¿½zï¿½ldï¿½', count: stats.resolved },
   ];
 
   // Loading state
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loading size="lg" text="Ýtirazlar yükleniyor..." />
+        <Loading size="lg" text="ï¿½tirazlar yï¿½kleniyor..." />
       </div>
     );
   }
@@ -156,10 +156,10 @@ export default function UserDisputeDashboard() {
             <div>
               <h1 className="flex items-center gap-3 text-2xl font-bold text-gray-900">
                 <Shield className="h-6 w-6 text-purple-600" />
-                Ýtirazlarým
+                ï¿½tirazlarï¿½m
               </h1>
               <p className="mt-1 text-gray-600">
-                Tüm itirazlarýnýzý görüntüleyin ve yönetin
+                Tï¿½m itirazlarï¿½nï¿½zï¿½ gï¿½rï¿½ntï¿½leyin ve yï¿½netin
               </p>
             </div>
           </div>
@@ -189,7 +189,7 @@ export default function UserDisputeDashboard() {
           <Card className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Açýk</p>
+                <p className="text-sm font-medium text-gray-600">Aï¿½ï¿½k</p>
                 <p className="mt-1 text-2xl font-bold text-blue-600">
                   {stats.open}
                 </p>
@@ -203,7 +203,7 @@ export default function UserDisputeDashboard() {
           <Card className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Ýnceleniyor</p>
+                <p className="text-sm font-medium text-gray-600">ï¿½nceleniyor</p>
                 <p className="mt-1 text-2xl font-bold text-yellow-600">
                   {stats.underReview}
                 </p>
@@ -217,7 +217,7 @@ export default function UserDisputeDashboard() {
           <Card className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Yükseltildi</p>
+                <p className="text-sm font-medium text-gray-600">Yï¿½kseltildi</p>
                 <p className="mt-1 text-2xl font-bold text-red-600">
                   {stats.escalated}
                 </p>
@@ -231,7 +231,7 @@ export default function UserDisputeDashboard() {
           <Card className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Çözüldü</p>
+                <p className="text-sm font-medium text-gray-600">ï¿½ï¿½zï¿½ldï¿½</p>
                 <p className="mt-1 text-2xl font-bold text-green-600">
                   {stats.resolved}
                 </p>
@@ -283,19 +283,19 @@ export default function UserDisputeDashboard() {
               </div>
               <h3 className="mt-4 text-lg font-medium text-gray-900">
                 {selectedFilter === 'all'
-                  ? 'Henüz itiraz yok'
-                  : `${filterOptions.find((f) => f.value === selectedFilter)?.label} itiraz bulunamadý`}
+                  ? 'Henï¿½z itiraz yok'
+                  : `${filterOptions.find((f) => f.value === selectedFilter)?.label} itiraz bulunamadï¿½`}
               </h3>
               <p className="mt-2 text-sm text-gray-600">
                 {selectedFilter === 'all'
-                  ? 'Sipariþlerinizle ilgili bir sorun yaþadýðýnýzda itiraz oluþturabilirsiniz.'
-                  : 'Bu kategoride görüntülenecek itiraz bulunmuyor.'}
+                  ? 'Sipariï¿½lerinizle ilgili bir sorun yaï¿½adï¿½ï¿½ï¿½nï¿½zda itiraz oluï¿½turabilirsiniz.'
+                  : 'Bu kategoride gï¿½rï¿½ntï¿½lenecek itiraz bulunmuyor.'}
               </p>
               {selectedFilter === 'all' && (
                 <Link href="/dashboard/orders">
                   <Button variant="primary" className="mt-6">
                     <Package className="mr-2 h-4 w-4" />
-                    Sipariþlerime Git
+                    Sipariï¿½lerime Git
                   </Button>
                 </Link>
               )}
@@ -315,7 +315,7 @@ export default function UserDisputeDashboard() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3">
                         <h3 className="text-lg font-semibold text-gray-900">
-                          Ýtiraz #{dispute.id.slice(0, 8)}
+                          ï¿½tiraz #{dispute.id.slice(0, 8)}
                         </h3>
                         <Badge className={disputeStatusColors[dispute.status]}>
                           {disputeStatusLabels[dispute.status]}
@@ -325,7 +325,7 @@ export default function UserDisputeDashboard() {
                       <div className="mt-2 flex items-center gap-4 text-sm text-gray-600">
                         <span className="flex items-center gap-1">
                           <Package className="h-4 w-4" />
-                          Sipariþ #{dispute.orderId.slice(0, 8)}
+                          Sipariï¿½ #{dispute.orderId.slice(0, 8)}
                         </span>
                         <span className="flex items-center gap-1">
                           <Flag className="h-4 w-4" />
@@ -348,11 +348,11 @@ export default function UserDisputeDashboard() {
                       {isDisputeResolved(dispute) && dispute.resolution && (
                         <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-3">
                           <p className="text-xs font-medium text-green-700">
-                            Çözüm: {dispute.resolution}
+                            ï¿½ï¿½zï¿½m: {dispute.resolution}
                           </p>
                           {dispute.resolvedAt && (
                             <p className="mt-1 text-xs text-green-600">
-                              {formatDate(dispute.resolvedAt)} tarihinde çözüldü
+                              {formatDate(dispute.resolvedAt)} tarihinde ï¿½ï¿½zï¿½ldï¿½
                             </p>
                           )}
                         </div>
@@ -379,7 +379,7 @@ export default function UserDisputeDashboard() {
                           onClick={(e) => e.stopPropagation()}
                         >
                           <Button variant="ghost" size="sm">
-                            Sipariþe Git
+                            Sipariï¿½e Git
                           </Button>
                         </Link>
                       )}
@@ -400,19 +400,19 @@ export default function UserDisputeDashboard() {
               </div>
               <div>
                 <h3 className="font-semibold text-blue-900">
-                  Ýtiraz Süreci Hakkýnda
+                  ï¿½tiraz Sï¿½reci Hakkï¿½nda
                 </h3>
                 <p className="mt-2 text-sm text-blue-800">
-                  Ýtirazlarýnýz yönetim ekibimiz tarafýndan 24-48 saat içinde
-                  incelenir. Süreci hýzlandýrmak için lütfen tüm gerekli
-                  bilgileri ve kanýtlarý ekleyin. Sorularýnýz için{' '}
+                  ï¿½tirazlarï¿½nï¿½z yï¿½netim ekibimiz tarafï¿½ndan 24-48 saat iï¿½inde
+                  incelenir. Sï¿½reci hï¿½zlandï¿½rmak iï¿½in lï¿½tfen tï¿½m gerekli
+                  bilgileri ve kanï¿½tlarï¿½ ekleyin. Sorularï¿½nï¿½z iï¿½in{' '}
                   <Link
                     href="/support"
                     className="font-medium underline hover:text-blue-900"
                   >
                     destek ekibimizle
                   </Link>{' '}
-                  iletiþime geçebilirsiniz.
+                  iletiï¿½ime geï¿½ebilirsiniz.
                 </p>
               </div>
             </div>

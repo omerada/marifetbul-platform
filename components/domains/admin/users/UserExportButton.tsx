@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 /**
  * ================================================
@@ -49,13 +49,13 @@ interface ExportColumn {
 }
 
 const EXPORT_COLUMNS: ExportColumn[] = [
-  { key: 'id', label: 'Kullanýcý ID', required: true },
+  { key: 'id', label: 'Kullanï¿½cï¿½ ID', required: true },
   { key: 'name', label: 'Ad Soyad', required: true },
   { key: 'email', label: 'E-posta', required: true },
   { key: 'userType', label: 'Rol' },
   { key: 'accountStatus', label: 'Durum' },
-  { key: 'verificationStatus', label: 'Doðrulama Durumu' },
-  { key: 'createdAt', label: 'Kayýt Tarihi' },
+  { key: 'verificationStatus', label: 'Doï¿½rulama Durumu' },
+  { key: 'createdAt', label: 'Kayï¿½t Tarihi' },
   { key: 'lastActiveAt', label: 'Son Aktivite' },
 ];
 
@@ -117,9 +117,9 @@ export function UserExportButton({
     const statusMap: Record<string, string> = {
       active: 'Aktif',
       inactive: 'Pasif',
-      suspended: 'Askýya Alýnmýþ',
-      banned: 'Yasaklanmýþ',
-      pending_verification: 'Doðrulama Bekliyor',
+      suspended: 'Askï¿½ya Alï¿½nmï¿½ï¿½',
+      banned: 'Yasaklanmï¿½ï¿½',
+      pending_verification: 'Doï¿½rulama Bekliyor',
     };
     return statusMap[status] || status;
   };
@@ -128,8 +128,8 @@ export function UserExportButton({
   const formatRole = (role: string): string => {
     const roleMap: Record<string, string> = {
       admin: 'Admin',
-      moderator: 'Moderatör',
-      employer: 'Ýþveren',
+      moderator: 'Moderatï¿½r',
+      employer: 'ï¿½ï¿½veren',
       freelancer: 'Freelancer',
     };
     return roleMap[role] || role;
@@ -140,8 +140,8 @@ export function UserExportButton({
     if (!status) return '-';
     const statusMap: Record<string, string> = {
       pending: 'Bekliyor',
-      verified: 'Doðrulanmýþ',
-      rejected: 'Reddedilmiþ',
+      verified: 'Doï¿½rulanmï¿½ï¿½',
+      rejected: 'Reddedilmiï¿½',
     };
     return statusMap[status] || status;
   };
@@ -179,8 +179,8 @@ export function UserExportButton({
 
       if (dataToExport.length === 0) {
         showError(
-          'Dýþa Aktarma Hatasý',
-          'Dýþa aktarýlacak kullanýcý bulunamadý'
+          'Dï¿½ï¿½a Aktarma Hatasï¿½',
+          'Dï¿½ï¿½a aktarï¿½lacak kullanï¿½cï¿½ bulunamadï¿½'
         );
         return;
       }
@@ -249,8 +249,8 @@ export function UserExportButton({
       URL.revokeObjectURL(url);
 
       showSuccess(
-        'Baþarýlý',
-        `${dataToExport.length} kullanýcý CSV dosyasýna aktarýldý`
+        'Baï¿½arï¿½lï¿½',
+        `${dataToExport.length} kullanï¿½cï¿½ CSV dosyasï¿½na aktarï¿½ldï¿½`
       );
 
       logger.info('Users exported to CSV:', {
@@ -266,7 +266,7 @@ export function UserExportButton({
         'Export failed:',
         error instanceof Error ? error : new Error(String(error))
       );
-      showError('Hata', 'Dosya oluþturulurken bir hata oluþtu');
+      showError('Hata', 'Dosya oluï¿½turulurken bir hata oluï¿½tu');
     } finally {
       setIsExporting(false);
     }
@@ -282,7 +282,7 @@ export function UserExportButton({
         className={className}
       >
         <Download className="mr-2 h-4 w-4" />
-        Dýþa Aktar
+        Dï¿½ï¿½a Aktar
         {hasSelection && (
           <Badge variant="secondary" className="ml-2">
             {selectedUsers.length}
@@ -296,7 +296,7 @@ export function UserExportButton({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Kullanýcýlarý Dýþa Aktar
+              Kullanï¿½cï¿½larï¿½ Dï¿½ï¿½a Aktar
             </DialogTitle>
           </DialogHeader>
 
@@ -304,23 +304,23 @@ export function UserExportButton({
             {/* Export Info */}
             <div className="bg-muted space-y-1 rounded-md p-3">
               <p className="text-sm">
-                <span className="font-medium">Dýþa aktarýlacak:</span>{' '}
+                <span className="font-medium">Dï¿½ï¿½a aktarï¿½lacak:</span>{' '}
                 {hasSelection ? (
                   <>
                     <span className="text-primary font-semibold">
                       {selectedUsers.length}
                     </span>{' '}
-                    seçili kullanýcý
+                    seï¿½ili kullanï¿½cï¿½
                   </>
                 ) : (
                   <>
                     <span className="text-primary font-semibold">
                       {users.length}
                     </span>{' '}
-                    kullanýcý
+                    kullanï¿½cï¿½
                     {filters &&
                       Object.keys(filters).length > 0 &&
-                      ' (filtrelenmiþ)'}
+                      ' (filtrelenmiï¿½)'}
                   </>
                 )}
               </p>
@@ -331,7 +331,7 @@ export function UserExportButton({
 
             {/* Column Selection */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Sütunlarý Seçin</label>
+              <label className="text-sm font-medium">Sï¿½tunlarï¿½ Seï¿½in</label>
               <div className="max-h-64 space-y-2 overflow-y-auto rounded-md border p-3">
                 {EXPORT_COLUMNS.map((column) => (
                   <div key={column.key} className="flex items-center space-x-2">
@@ -364,7 +364,7 @@ export function UserExportButton({
                 ))}
               </div>
               <p className="text-muted-foreground text-xs">
-                {selectedColumns.length} sütun seçildi
+                {selectedColumns.length} sï¿½tun seï¿½ildi
               </p>
             </div>
           </div>
@@ -375,7 +375,7 @@ export function UserExportButton({
               onClick={() => setShowColumnSelector(false)}
               disabled={isExporting}
             >
-              Ýptal
+              ï¿½ptal
             </Button>
             <Button
               onClick={handleExport}
@@ -384,12 +384,12 @@ export function UserExportButton({
               {isExporting ? (
                 <>
                   <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white" />
-                  Aktarýlýyor...
+                  Aktarï¿½lï¿½yor...
                 </>
               ) : (
                 <>
                   <Download className="mr-2 h-4 w-4" />
-                  CSV Ýndir
+                  CSV ï¿½ndir
                 </>
               )}
             </Button>

@@ -30,8 +30,8 @@ export {
   addSentryBreadcrumb,
   captureSentryError,
   captureSentryMessage,
-  startSentryTransaction,
-  createSentrySpan,
+  // startSentryTransaction - REMOVED (not exported from sentry module)
+  // createSentrySpan - REMOVED (not exported from sentry module)
 } from './sentry';
 
 // Google Analytics

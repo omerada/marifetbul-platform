@@ -29,21 +29,7 @@ export * from './forms';
 // SHARED COMPONENTS
 // ================================================
 // Cross-domain reusable components
-
-export * from './shared';
-
-// ================================================
-// PROVIDER COMPONENTS
-// ================================================
-// Context providers and state management
-
-export * from './providers';
-
-// ================================================
-// DOMAIN COMPONENTS - LAZY LOADED
-// ================================================
-// Business logic components - loaded on demand
-// Export specific components to avoid ArticleCard conflict
+// Specific exports to avoid conflicts
 
 export {
   InteractionButtons,
@@ -57,7 +43,6 @@ export {
   withMemo,
   getCachedComponent,
   preloadCriticalComponents,
-  Progress,
   PullToRefresh,
   PWAManager,
   SecurityAlert,
@@ -66,6 +51,20 @@ export {
   LocationPicker,
   MapView,
 } from './shared';
+
+// ================================================
+// PROVIDER COMPONENTS
+// ================================================
+// Context providers and state management
+
+export * from './providers';
+
+// ================================================
+// DOMAIN COMPONENTS - LAZY LOADED
+// ================================================
+// Business logic components - loaded on demand
+
+// Note: Additional shared components already exported above
 
 // ================================================
 // WALLET COMPONENTS

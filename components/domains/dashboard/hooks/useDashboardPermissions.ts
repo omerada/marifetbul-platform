@@ -15,6 +15,7 @@
 
 import { useMemo } from 'react';
 import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
+import { UserRole } from '@/types/backend-aligned';
 import {
   canAccessAdmin,
   canManageUsers,
@@ -123,10 +124,30 @@ export function useDashboardPermissions(): UseDashboardPermissionsReturn {
   const userContext = useMemo(() => {
     if (!isAuthenticated || !user) return null;
 
+    // Map frontend userType to backend UserRole enum
+    let role: UserRole;
+    const userTypeStr = user.userType as string;
+    switch (userTypeStr) {
+      case 'admin':
+        role = UserRole.ADMIN;
+        break;
+      case 'moderator':
+        role = UserRole.MODERATOR;
+        break;
+      case 'freelancer':
+        role = UserRole.FREELANCER;
+        break;
+      case 'employer':
+        role = UserRole.EMPLOYER;
+        break;
+      default:
+        role = UserRole.FREELANCER;
+    }
+
     return {
       id: user.id,
       email: user.email,
-      role: user.userType as 'ADMIN' | 'MODERATOR' | 'EMPLOYER' | 'FREELANCER',
+      role: role,
       name: user.name,
       username: user.username,
     };

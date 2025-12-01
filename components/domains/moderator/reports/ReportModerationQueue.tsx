@@ -16,16 +16,20 @@ import { Card } from '@/components/ui';
 import { Pagination } from '@/components/ui/Pagination';
 import { AlertCircle, CheckCircle, Flag, XCircle } from 'lucide-react';
 import { useReportModeration } from '@/hooks/business/moderation/useReportModeration';
-import type { ReportAction } from '@/hooks/business/moderation/useReportModeration';
+import type {
+  ReportAction,
+  ReportModerationFilters,
+} from '@/hooks/business/moderation/useReportModeration';
 import type { Report as BusinessReport } from '@/lib/api/moderator/reports';
-import type { ReportFilters as ReportFiltersType } from '@/types/business/report';
 import { ReportCard } from './ReportCard';
 import { ReportFilters } from './ReportFilters';
 import { ReportDetailModal } from './ReportDetailModal';
 
 export function ReportModerationQueue() {
   const [page, setPage] = useState(0);
-  const [activeFilters, setActiveFilters] = useState<ReportFiltersType>({});
+  const [activeFilters, setActiveFilters] = useState<ReportModerationFilters>(
+    {}
+  );
   const [detailReportId, setDetailReportId] = useState<string | null>(null);
 
   const {
@@ -165,7 +169,7 @@ export function ReportModerationQueue() {
       {/* Filters */}
       <ReportFilters
         onFilterChange={(filters) => {
-          setActiveFilters(filters);
+          setActiveFilters(filters as unknown as ReportModerationFilters);
           setPage(0);
         }}
       />

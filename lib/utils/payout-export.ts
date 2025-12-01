@@ -51,7 +51,7 @@ export function exportPayoutsToCSV(payouts: Payout[], filename?: string): void {
     payout.completedAt
       ? format(new Date(payout.completedAt), 'dd/MM/yyyy HH:mm', { locale: tr })
       : '-',
-    payout.notes || '-',
+    (payout as any).notes ?? '-',
   ]);
 
   // Create CSV content

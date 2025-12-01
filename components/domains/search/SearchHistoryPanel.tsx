@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 /**
  * ================================================
@@ -95,7 +95,7 @@ export function SearchHistoryPanel({
 
   const handleClearAll = () => {
     if (
-      window.confirm('Tüm arama geçmiþini silmek istediðinizden emin misiniz?')
+      window.confirm('Tï¿½m arama geï¿½miï¿½ini silmek istediï¿½inizden emin misiniz?')
     ) {
       clearSearchHistory();
       loadHistory();
@@ -119,7 +119,7 @@ export function SearchHistoryPanel({
     } catch (error) {
       logger.error(
         'Failed to export history', error instanceof Error ? error : new Error(String(error)));
-      alert('Dýþa aktarma baþarýsýz oldu.');
+      alert('Dï¿½ï¿½a aktarma baï¿½arï¿½sï¿½z oldu.');
     }
   };
 
@@ -134,14 +134,14 @@ export function SearchHistoryPanel({
         const success = importSearchHistory(content);
         if (success) {
           loadHistory();
-          alert('Arama geçmiþi baþarýyla içe aktarýldý.');
+          alert('Arama geï¿½miï¿½i baï¿½arï¿½yla iï¿½e aktarï¿½ldï¿½.');
         } else {
-          alert('Ýçe aktarma baþarýsýz oldu. Dosya formatýný kontrol edin.');
+          alert('ï¿½ï¿½e aktarma baï¿½arï¿½sï¿½z oldu. Dosya formatï¿½nï¿½ kontrol edin.');
         }
       } catch (error) {
         logger.error(
           'Import failed', error instanceof Error ? error : new Error(String(error)));
-        alert('Ýçe aktarma sýrasýnda hata oluþtu.');
+        alert('ï¿½ï¿½e aktarma sï¿½rasï¿½nda hata oluï¿½tu.');
       }
     };
     reader.readAsText(file);
@@ -156,19 +156,19 @@ export function SearchHistoryPanel({
     // Less than 1 hour
     if (diff < 3600000) {
       const minutes = Math.floor(diff / 60000);
-      return minutes === 0 ? 'Az önce' : `${minutes} dakika önce`;
+      return minutes === 0 ? 'Az ï¿½nce' : `${minutes} dakika ï¿½nce`;
     }
 
     // Less than 24 hours
     if (diff < 86400000) {
       const hours = Math.floor(diff / 3600000);
-      return `${hours} saat önce`;
+      return `${hours} saat ï¿½nce`;
     }
 
     // Less than 7 days
     if (diff < 604800000) {
       const days = Math.floor(diff / 86400000);
-      return `${days} gün önce`;
+      return `${days} gï¿½n ï¿½nce`;
     }
 
     // Format as date
@@ -180,14 +180,14 @@ export function SearchHistoryPanel({
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Arama Geçmiþi</h3>
+          <h3 className="text-lg font-semibold">Arama Geï¿½miï¿½i</h3>
           <div className="flex gap-2">
             <UnifiedButton
               variant="ghost"
               size="sm"
               onClick={handleExport}
               disabled={history.length === 0}
-              title="Dýþa Aktar"
+              title="Dï¿½ï¿½a Aktar"
             >
               <Download className="h-4 w-4" />
             </UnifiedButton>
@@ -207,7 +207,7 @@ export function SearchHistoryPanel({
                   ) as HTMLInputElement;
                   input?.click();
                 }}
-                title="Ýçe Aktar"
+                title="ï¿½ï¿½e Aktar"
               >
                 <Upload className="h-4 w-4" />
               </UnifiedButton>
@@ -217,7 +217,7 @@ export function SearchHistoryPanel({
               size="sm"
               onClick={handleClearAll}
               disabled={history.length === 0}
-              title="Tümünü Sil"
+              title="Tï¿½mï¿½nï¿½ Sil"
             >
               <Trash2 className="h-4 w-4" />
             </UnifiedButton>
@@ -240,7 +240,7 @@ export function SearchHistoryPanel({
             {stats.topQuery && (
               <div className="col-span-2">
                 <div className="text-muted-foreground text-sm">
-                  En Çok Aranan
+                  En ï¿½ok Aranan
                 </div>
                 <div className="mt-1 font-medium">{stats.topQuery}</div>
               </div>
@@ -253,7 +253,7 @@ export function SearchHistoryPanel({
           <div>
             <div className="mb-3 flex items-center gap-2">
               <TrendingUp className="text-primary h-4 w-4" />
-              <h4 className="font-medium">En Çok Arananlar</h4>
+              <h4 className="font-medium">En ï¿½ok Arananlar</h4>
             </div>
             <div className="space-y-2">
               {mostSearched.map((item, index) => (
@@ -270,7 +270,7 @@ export function SearchHistoryPanel({
                   </div>
                   {item.resultCount !== undefined && (
                     <Badge variant="outline" className="ml-2 shrink-0">
-                      {item.resultCount} sonuç
+                      {item.resultCount} sonuï¿½
                     </Badge>
                   )}
                 </button>
@@ -289,8 +289,8 @@ export function SearchHistoryPanel({
           {history.length === 0 ? (
             <div className="text-muted-foreground py-8 text-center">
               <Search className="mx-auto mb-3 h-12 w-12 opacity-50" />
-              <p>Henüz arama geçmiþi yok</p>
-              <p className="mt-1 text-sm">Aramalarýnýz burada görünecek</p>
+              <p>Henï¿½z arama geï¿½miï¿½i yok</p>
+              <p className="mt-1 text-sm">Aramalarï¿½nï¿½z burada gï¿½rï¿½necek</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -310,8 +310,8 @@ export function SearchHistoryPanel({
                         <span>{formatDate(item.timestamp)}</span>
                         {item.resultCount !== undefined && (
                           <>
-                            <span>•</span>
-                            <span>{item.resultCount} sonuç</span>
+                            <span>ï¿½</span>
+                            <span>{item.resultCount} sonuï¿½</span>
                           </>
                         )}
                       </div>

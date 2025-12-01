@@ -6,7 +6,7 @@
 // === PRIMARY EXPORTS ===
 // Main domain exports take precedence
 export * from './domains/auth';
-export * from './domains/notification';
+// export * from './domains/notification'; // REMOVED - use @/types/domains/notification instead
 export * from './domains/payment';
 export * from './domains/media';
 

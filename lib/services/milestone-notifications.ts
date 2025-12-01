@@ -226,10 +226,14 @@ export function notifyMilestoneOverdue(
 ): void {
   const { showToast = true, toastDuration = 8000, customMessage } = options;
 
-  logger.error('[MilestoneNotifications] Milestone overdue', {
-    milestoneId: data.milestoneId,
-    daysOverdue: daysOverdue,
-  });
+  logger.error(
+    '[MilestoneNotifications] Milestone overdue',
+    new Error('Milestone overdue'),
+    {
+      milestoneId: data.milestoneId,
+      daysOverdue: daysOverdue,
+    }
+  );
 
   if (!showToast) return;
 

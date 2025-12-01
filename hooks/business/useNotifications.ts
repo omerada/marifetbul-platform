@@ -14,7 +14,7 @@ import { getUnifiedNotificationHandler } from '@/lib/infrastructure/notification
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { useNotificationPreferences } from './useNotificationPreferences';
 import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
-import type { Notification } from '@/types/domains/notification';
+import type { NotificationResponse as Notification } from '@/lib/api/notifications';
 
 // Simple converter for notification API responses
 function convertToNotifications(data: unknown[]): Notification[] {
@@ -123,7 +123,7 @@ export function useNotifications() {
         });
 
         // Update recent notifications list (add to beginning)
-        setRecentNotifications((prev) => [
+        setRecentNotifications((prev: any) => [
           processedNotification,
           ...prev.slice(0, 4),
         ]);
@@ -153,9 +153,13 @@ export function useNotifications() {
         mutateCount();
       },
       onError: (error, notification) => {
-        logger.error('Notification processing error', error instanceof Error ? error : new Error(String(error)), {
-          notificationId: notification?.id,
-        });
+        logger.error(
+          'Notification processing error',
+          error instanceof Error ? error : new Error(String(error)),
+          {
+            notificationId: notification?.id,
+          }
+        );
       },
     });
 
@@ -167,7 +171,7 @@ export function useNotifications() {
           unifiedHandler.processNotification(
             notification,
             'websocket',
-            preferences || undefined
+            (preferences as any) || undefined
           );
         },
         // Sprint 6 - Story 6.1: Batch notification handler
@@ -179,11 +183,14 @@ export function useNotifications() {
           // Process batch through unified handler
           unifiedHandler.processBatchNotification(
             batch,
-            preferences || undefined
+            (preferences as any) || undefined
           );
         },
         onError: (error) => {
-          logger.error('useNotifications: WebSocket notification error', error instanceof Error ? error : new Error(String(error)));
+          logger.error(
+            'useNotifications: WebSocket notification error',
+            error instanceof Error ? error : new Error(String(error))
+          );
         },
       });
 
@@ -195,7 +202,10 @@ export function useNotifications() {
         unsubscribe();
       };
     } catch (error) {
-      logger.error('Failed to setup WebSocket subscription', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to setup WebSocket subscription',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }, [user, preferences, mutate, mutateCount]);
 
@@ -219,7 +229,10 @@ export function useNotifications() {
         mutate();
         mutateCount();
       } catch (error) {
-        logger.error('Failed to mark notification as read:', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'Failed to mark notification as read:',
+          error instanceof Error ? error : new Error(String(error))
+        );
         toast.error('Bildirim okundu olarak işaretlenemedi');
       }
     },
@@ -243,7 +256,10 @@ export function useNotifications() {
 
       toast.success(`${updatedCount} bildirim okundu olarak işaretlendi`);
     } catch (error) {
-      logger.error('Failed to mark all as read:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to mark all as read:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       toast.error('Bildirimler işaretlenemedi');
     }
   }, [mutate, mutateCount]);

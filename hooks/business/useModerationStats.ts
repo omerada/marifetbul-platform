@@ -62,11 +62,19 @@ export function useModerationStats(
         const data = await moderationApi.getStats();
 
         // Add backward compatibility fields for legacy components
-        const enhancedStats: ModerationStats = {
+        const enhancedStats: ModerationStats & {
+          flaggedComments?: number;
+          reviewsApprovedToday?: number;
+          reviewsRejectedToday?: number;
+          reportsResolvedToday?: number;
+          pendingSupportTickets?: number;
+          ticketsClosedToday?: number;
+          totalPendingItems?: number;
+          totalActionsToday?: number;
+          accuracyRate?: number;
+        } = {
           ...data,
-          // Legacy compatibility
-          flaggedComments: data.flaggedItems,
-          flaggedReviews: data.flaggedItems,
+          // Legacy compatibility (not in ModerationStats type)
           commentsApprovedToday: data.performance.actionsToday,
           commentsRejectedToday: 0, // Not tracked separately anymore
           reviewsApprovedToday: data.performance.actionsToday,
@@ -83,7 +91,10 @@ export function useModerationStats(
         logger.debug('Moderation stats fetched', {
           pendingReviews: enhancedStats.pendingReviews,
           pendingComments: enhancedStats.pendingComments,
-          totalPending: enhancedStats.totalPendingItems,
+          totalPending:
+            enhancedStats.pendingReviews +
+            enhancedStats.pendingComments +
+            enhancedStats.pendingReports,
         });
         return enhancedStats;
       } catch (err) {

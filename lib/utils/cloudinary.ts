@@ -71,10 +71,14 @@ export async function uploadImage(file: File): Promise<UploadResult> {
 
     // Check configuration
     if (!CLOUDINARY_CONFIG.cloudName || !CLOUDINARY_CONFIG.uploadPreset) {
-      logger.error('Cloudinary configuration missing', {
-        hasCloudName: !!CLOUDINARY_CONFIG.cloudName,
-        hasUploadPreset: !!CLOUDINARY_CONFIG.uploadPreset,
-      });
+      logger.error(
+        'Cloudinary configuration missing',
+        new Error('Cloudinary config missing'),
+        {
+          cloudName: CLOUDINARY_CONFIG.cloudName || 'missing',
+          hasUploadPreset: !!CLOUDINARY_CONFIG.uploadPreset,
+        }
+      );
       return {
         success: false,
         error:
@@ -135,10 +139,9 @@ export async function uploadImage(file: File): Promise<UploadResult> {
       publicId: data.public_id,
     };
   } catch (error) {
-    logger.error('Error deleting image', error as Error, {
+    logger.error('Error uploading image', error as Error, {
       service: 'cloudinary',
-      operation: 'delete',
-      publicId,
+      operation: 'upload',
     });
     return {
       success: false,

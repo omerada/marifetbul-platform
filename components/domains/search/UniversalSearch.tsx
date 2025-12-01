@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
 import {
@@ -38,7 +38,7 @@ interface UniversalSearchProps {
 
 export function UniversalSearch({
   onSearch,
-  placeholder = 'Ne arýyorsun?',
+  placeholder = 'Ne arï¿½yorsun?',
   className,
 }: UniversalSearchProps) {
   const [query, setQuery] = useState('');
@@ -54,11 +54,11 @@ export function UniversalSearch({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const trendingSearches = [
-    'Web tasarým',
-    'Logo yapýmý',
+    'Web tasarï¿½m',
+    'Logo yapï¿½mï¿½',
     'SEO',
     'Mobil uygulama',
-    'Ýçerik yazýmý',
+    'ï¿½ï¿½erik yazï¿½mï¿½',
     'Sosyal medya',
   ];
 
@@ -252,7 +252,7 @@ export function UniversalSearch({
             {isLoading && (
               <div className="p-4 text-center">
                 <div className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
-                <p className="mt-2 text-sm text-gray-500">Aranýyor...</p>
+                <p className="mt-2 text-sm text-gray-500">Aranï¿½yor...</p>
               </div>
             )}
 
@@ -306,7 +306,7 @@ export function UniversalSearch({
                 {/* Quick Suggestions */}
                 <div className="mb-4">
                   <h4 className="mb-2 text-sm font-medium text-gray-900">
-                    Öneriler
+                    ï¿½neriler
                   </h4>
                   <div className="space-y-1">
                     {suggestions.slice(0, 5).map((suggestion) => (
@@ -369,7 +369,7 @@ export function UniversalSearch({
                               className="w-full"
                               onClick={() => handleSearch(query, 'services')}
                             >
-                              Tüm hizmetleri gör (
+                              Tï¿½m hizmetleri gï¿½r (
                               {searchResults.services.length})
                             </Button>
                           )}
@@ -381,7 +381,7 @@ export function UniversalSearch({
                       <div>
                         <h4 className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-900">
                           <Briefcase className="h-4 w-4 text-blue-500" />
-                          Ýþ Ýlanlarý ({searchResults.jobs.length})
+                          ï¿½ï¿½ ï¿½lanlarï¿½ ({searchResults.jobs.length})
                         </h4>
                         <div className="space-y-1">
                           {searchResults.jobs.slice(0, 3).map((job) => (
@@ -407,7 +407,7 @@ export function UniversalSearch({
                               className="w-full"
                               onClick={() => handleSearch(query, 'jobs')}
                             >
-                              Tüm iþ ilanlarýný gör ({searchResults.jobs.length}
+                              Tï¿½m iï¿½ ilanlarï¿½nï¿½ gï¿½r ({searchResults.jobs.length}
                               )
                             </Button>
                           )}
@@ -455,10 +455,10 @@ export function UniversalSearch({
               <div className="p-4 text-center">
                 <Search className="mx-auto h-8 w-8 text-gray-400" />
                 <p className="mt-2 text-sm text-gray-500">
-                  <strong>&quot;{query}&quot;</strong> için sonuç bulunamadý
+                  <strong>&quot;{query}&quot;</strong> iï¿½in sonuï¿½ bulunamadï¿½
                 </p>
                 <p className="text-xs text-gray-400">
-                  Farklý kelimeler deneyin veya yazým hatasý kontrol edin
+                  Farklï¿½ kelimeler deneyin veya yazï¿½m hatasï¿½ kontrol edin
                 </p>
               </div>
             )}

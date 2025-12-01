@@ -184,7 +184,9 @@ export const useOrderStore = create<OrderStore>()(
 
           const data: OrdersResponse = await response.json();
 
-          logger.debug('Orders Store: Orders loaded', { count: data.data.length });
+          logger.debug('Orders Store: Orders loaded', {
+            count: data.data?.length ?? 0,
+          });
 
           set((state) => {
             state.orders = data.data || [];

@@ -324,16 +324,17 @@ export function errorHandlerMiddleware() {
       try {
         return await handler(ctx);
       } catch (error) {
-        logger.error('API Error', {
-          requestId: ctx.metadata.requestId,
-          errorMessage:
-            error instanceof Error ? error.message : 'Unknown error',
-          errorStack: error instanceof Error ? error.stack : undefined,
-          url: ctx.req.url,
-          method: ctx.req.method,
-          userAgent: ctx.metadata.userAgent,
-          ip: ctx.metadata.ip,
-        });
+        logger.error(
+          'API Error',
+          error instanceof Error ? error : new Error(String(error)),
+          {
+            requestId: ctx.metadata.requestId,
+            url: ctx.req.url,
+            method: ctx.req.method,
+            userAgent: ctx.metadata.userAgent,
+            ip: ctx.metadata.ip,
+          }
+        );
 
         const errorResponse: ApiErrorResponse = {
           error: {

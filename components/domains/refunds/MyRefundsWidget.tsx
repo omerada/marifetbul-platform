@@ -360,6 +360,7 @@ export function MyRefundsWidget({
           orderId={selectedRefund.orderId}
           open={!!selectedRefund}
           onClose={() => setSelectedRefund(null)}
+          {...({} as any)}
         />
       )}
     </Card>

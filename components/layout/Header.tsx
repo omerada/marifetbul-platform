@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -96,7 +96,7 @@ export function Header() {
           <div className="mx-8 hidden max-w-lg flex-1 md:block">
             <UniversalSearch
               onSearch={handleSearch}
-              placeholder="Hizmet, iþ veya beceri ara..."
+              placeholder="Hizmet, iï¿½ veya beceri ara..."
               className="w-full"
             />
           </div>
@@ -113,7 +113,7 @@ export function Header() {
                   href="/messages"
                   aria-label={
                     unreadCount > 0
-                      ? `Mesajlar (${unreadCount} okunmamýþ)`
+                      ? `Mesajlar (${unreadCount} okunmamï¿½ï¿½)`
                       : 'Mesajlar'
                   }
                   className="relative inline-flex items-center justify-center rounded-lg p-2 text-gray-600 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600"
@@ -122,7 +122,7 @@ export function Header() {
                   {unreadCount > 0 && (
                     <span
                       className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white"
-                      aria-label={`${unreadCount} okunmamýþ mesaj`}
+                      aria-label={`${unreadCount} okunmamï¿½ï¿½ mesaj`}
                     >
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
@@ -133,7 +133,7 @@ export function Header() {
                 <div className="relative">
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    aria-label="Kullanýcý menüsü"
+                    aria-label="Kullanï¿½cï¿½ menï¿½sï¿½"
                     aria-expanded={isUserMenuOpen}
                     aria-haspopup="true"
                     aria-controls="user-menu"
@@ -179,7 +179,7 @@ export function Header() {
                         className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                       >
                         <LogOut className="mr-3 h-4 w-4" aria-hidden="true" />
-                        Çýkýþ Yap
+                        ï¿½ï¿½kï¿½ï¿½ Yap
                       </button>
                     </div>
                   )}
@@ -193,7 +193,7 @@ export function Header() {
                   onClick={() => router.push('/login')}
                   className="text-gray-700 hover:bg-blue-50 hover:text-blue-600"
                 >
-                  Giriþ Yap
+                  Giriï¿½ Yap
                 </Button>
                 <Button
                   variant="primary"
@@ -201,7 +201,7 @@ export function Header() {
                   onClick={() => router.push('/register')}
                   className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
                 >
-                  Üye Ol
+                  ï¿½ye Ol
                 </Button>
               </div>
             )}
@@ -211,7 +211,7 @@ export function Header() {
           <div className="flex items-center md:hidden">
             <button
               onClick={toggleMobileMenu}
-              aria-label={isMobileMenuOpen ? 'Menüyü kapat' : 'Menüyü aç'}
+              aria-label={isMobileMenuOpen ? 'Menï¿½yï¿½ kapat' : 'Menï¿½yï¿½ aï¿½'}
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-menu"
               className="inline-flex items-center justify-center rounded-lg p-2 text-gray-600 transition-all duration-200 hover:bg-gray-50 hover:text-gray-900"
@@ -235,7 +235,7 @@ export function Header() {
             <div className="mb-4 px-2">
               <UniversalSearch
                 onSearch={handleSearch}
-                placeholder="Hizmet, iþ veya beceri ara..."
+                placeholder="Hizmet, iï¿½ veya beceri ara..."
                 className="w-full"
               />
             </div>
@@ -264,14 +264,14 @@ export function Header() {
                     className="block rounded-lg px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Giriþ Yap
+                    Giriï¿½ Yap
                   </Link>
                   <Link
                     href="/register"
                     className="block rounded-lg bg-blue-600 px-3 py-2 text-base font-medium text-white hover:bg-blue-700"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Üye Ol
+                    ï¿½ye Ol
                   </Link>
                 </>
               )}

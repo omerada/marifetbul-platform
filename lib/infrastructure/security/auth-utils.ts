@@ -191,7 +191,10 @@ export async function validateToken(
       username: data.user?.username,
     };
   } catch (error) {
-    logger.error('Token validation error', error instanceof Error ? error : new Error(String(error)));
+    logger.error(
+      'Token validation error',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return null;
   }
 }
@@ -213,9 +216,13 @@ export async function getUserFromRequest(
 
     return await validateToken(token);
   } catch (error) {
-    logger.error('Failed to extract user from request', error instanceof Error ? error : new Error(String(error)), {
-      url: request.url,
-    });
+    logger.error(
+      'Failed to extract user from request',
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        url: request.url,
+      }
+    );
     return null;
   }
 }
@@ -273,7 +280,7 @@ export function normalizeRole(role: string): UserRole {
   // Default to FREELANCER for unknown roles
   // (Backend doesn't have 'USER' role, FREELANCER is the default user type)
   logger.warn('Unknown role, defaulting to FREELANCER', { role });
-  return 'FREELANCER';
+  return 'FREELANCER' as UserRole;
 }
 
 /**

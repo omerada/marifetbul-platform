@@ -266,7 +266,7 @@ export const sellerDashboardApi = {
       size: size.toString(),
     });
 
-    const url = `${DASHBOARD_ENDPOINTS.FREELANCER_ACTIVITIES}?${params}`;
+    const url = `${DASHBOARD_ENDPOINTS.ACTIVITIES}?${params}`;
 
     const response = await apiClient.get<ApiResponse<ActivityDto[]>>(url);
 
