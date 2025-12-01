@@ -60,6 +60,9 @@ export interface ReportModerationFilters {
   size?: number;
 }
 
+// Alias for backward compatibility
+export type ReportFilters = ReportModerationFilters;
+
 export interface Report {
   id: string;
   type: ReportType;

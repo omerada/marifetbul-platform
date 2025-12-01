@@ -207,7 +207,7 @@ export const buyerDashboardApi = {
       size: size.toString(),
     });
 
-    const url = `${DASHBOARD_ENDPOINTS.EMPLOYER_ACTIVITIES}?${params}`;
+    const url = `${DASHBOARD_ENDPOINTS.ACTIVITIES}?${params}`;
 
     const response = await apiClient.get<ApiResponse<ActivityDto[]>>(url);
 

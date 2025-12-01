@@ -76,7 +76,7 @@ export async function initiateAccountDeletion(
     );
 
     logger.info('[AccountDeletion] Deletion initiated successfully');
-    return response.data;
+    return response;
   } catch (error) {
     logger.error(
       '[AccountDeletion] Failed to initiate deletion',
@@ -110,7 +110,7 @@ export async function verifyAccountDeletion(
     );
 
     logger.info('[AccountDeletion] Deletion verified successfully');
-    return response.data;
+    return response;
   } catch (error) {
     logger.error(
       '[AccountDeletion] Failed to verify deletion',
@@ -140,7 +140,7 @@ export async function cancelAccountDeletion(): Promise<{ success: boolean }> {
     );
 
     logger.info('[AccountDeletion] Deletion cancelled successfully');
-    return response.data;
+    return response;
   } catch (error) {
     logger.error(
       '[AccountDeletion] Failed to cancel deletion',
@@ -167,7 +167,7 @@ export async function getDeletionStatus(): Promise<DeletionStatus> {
       '/users/me/delete/status'
     );
 
-    return response.data;
+    return response;
   } catch (error) {
     logger.error(
       '[AccountDeletion] Failed to get deletion status',

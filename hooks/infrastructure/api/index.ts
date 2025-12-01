@@ -18,6 +18,7 @@ import {
 } from '../../../lib/shared/base';
 import { useEffect } from 'react';
 import { apiClient } from '../../../lib/infrastructure/api/client';
+import type { PaginatedResponse } from '@/types/infrastructure/api';
 
 // ================================================
 // TYPE DEFINITIONS
@@ -222,7 +223,7 @@ export function useUserSearch(
         hasNext: page < Math.ceil(response.total / limit),
         hasPrevious: page > 1,
       },
-    };
+    } as unknown as PaginatedResponse<User>;
   }, pageSize);
 }
 
@@ -584,7 +585,7 @@ export function useAdminUsers(
         hasNext: page < Math.ceil(response.total / limit),
         hasPrevious: page > 1,
       },
-    };
+    } as unknown as PaginatedResponse<User>;
   }, pageSize);
 }
 

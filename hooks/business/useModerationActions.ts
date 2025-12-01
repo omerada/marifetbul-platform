@@ -312,7 +312,10 @@ export function useModerationActions(): UseModerationActionsReturn {
         await moderationApi.suspendUser(request);
         updateActionState(ActionType.BAN);
         toast.success('Kullanıcı askıya alındı');
-        logger.info('User suspended:', { userId, suspensionType });
+        logger.info('User suspended:', {
+          userId: userId,
+          suspensionType: suspensionType,
+        });
       } catch (error) {
         stopProcessing();
         logger.error(

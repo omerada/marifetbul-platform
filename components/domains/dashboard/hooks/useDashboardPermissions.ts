@@ -3,7 +3,7 @@
  * USE DASHBOARD PERMISSIONS HOOK (UNIFIED)
  * ================================================
  * Sprint 1: Permission System Unification
- * 
+ *
  * Uses central permission system from lib/infrastructure/security/permissions.ts
  * No duplicate permission logic - single source of truth
  *
@@ -120,9 +120,9 @@ export function useDashboardPermissions(): UseDashboardPermissionsReturn {
   const { user, isAuthenticated } = useAuthStore();
 
   // Create UserContext for permission checks
-  const userContext = useMemo<UserContext | null>(() => {
+  const userContext = useMemo(() => {
     if (!isAuthenticated || !user) return null;
-    
+
     return {
       id: user.id,
       email: user.email,
@@ -164,7 +164,10 @@ export function useDashboardPermissions(): UseDashboardPermissionsReturn {
       canViewCharts: true, // All authenticated users
       canViewActivity: true, // All authenticated users
       canViewFinancials: hasPermission(userContext, PERMISSIONS.PAYMENT_VIEW),
-      canViewSystemHealth: hasPermission(userContext, PERMISSIONS.SYSTEM_HEALTH),
+      canViewSystemHealth: hasPermission(
+        userContext,
+        PERMISSIONS.SYSTEM_HEALTH
+      ),
       canViewAnalytics: hasPermission(userContext, PERMISSIONS.ANALYTICS_VIEW),
 
       // Action permissions
@@ -216,7 +219,10 @@ export function useDashboardPermissions(): UseDashboardPermissionsReturn {
 
         if (!isAuthenticated) {
           reason = 'You must be logged in to access this feature';
-        } else if (userContext?.role === 'FREELANCER' || userContext?.role === 'EMPLOYER') {
+        } else if (
+          userContext?.role === 'FREELANCER' ||
+          userContext?.role === 'EMPLOYER'
+        ) {
           if (
             feature === 'canManageUsers' ||
             feature === 'canModerateContent'

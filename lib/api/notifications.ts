@@ -218,7 +218,7 @@ export async function getNotifications(
   page: number = 0,
   size: number = 20
 ): Promise<PaginatedNotifications> {
-  logger.debug('notifications.api', { sizesize });
+  logger.debug('notifications.api', { size: size });
 
   const response = await apiClient.get<PaginatedNotifications>(
     `/v1/notifications?page=${page}&size=${size}`

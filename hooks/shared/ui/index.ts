@@ -501,7 +501,6 @@ const UIHooks = {
   useScrollPosition,
   useScrollDirection,
   useClipboard,
-  useFocusTrap,
   useVisibility,
   useKeyboardShortcut,
 };

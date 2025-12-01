@@ -324,9 +324,9 @@ export function withValidation(
       // Handle validation exceptions
       if (error instanceof ValidationException) {
         logger.warn('Validation exception thrown', {
-          urlrequesturl,
-          methodrequestmethod,
-          errorserrorerrors,
+          url: request.url,
+          method: request.method,
+          errors: errors.errors,
         });
 
         return NextResponse.json(

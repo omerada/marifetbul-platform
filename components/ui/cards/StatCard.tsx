@@ -286,7 +286,7 @@ export function StatCard({
             {badge && (
               <Badge
                 variant={
-                  (badge.variant === 'error'
+                  (badge.variant === 'destructive'
                     ? 'destructive'
                     : badge.variant) as
                     | 'default'
@@ -364,7 +364,9 @@ export function StatCard({
         {badge && (
           <Badge
             variant={
-              (badge.variant === 'error' ? 'destructive' : badge.variant) as
+              (badge.variant === 'destructive'
+                ? 'destructive'
+                : badge.variant) as
                 | 'default'
                 | 'success'
                 | 'warning'

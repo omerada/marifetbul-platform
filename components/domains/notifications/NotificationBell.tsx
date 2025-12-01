@@ -27,7 +27,7 @@ import { Badge } from '@/components/ui/Badge';
 import { useNotifications } from '@/hooks/business/useNotifications';
 import { NotificationListItem } from './NotificationListItem';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import type { Notification } from '@/types/domains/notification';
+import type { NotificationResponse as Notification } from '@/lib/api/notifications';
 
 export interface NotificationBellProps {
   className?: string;

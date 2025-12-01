@@ -367,8 +367,8 @@ export function useOrder(options: UseOrderOptions = {}) {
         options.onSuccess?.();
 
         logger.info('Dispute opened successfully', {
-          orderId,
-          reasonparamsreason,
+          orderId: orderId,
+          reason: params.reason,
         });
       } catch (error) {
         const errorMessage =

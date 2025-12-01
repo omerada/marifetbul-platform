@@ -122,8 +122,8 @@ export function useReviewNotifications({
       setUnreadCount(result.data.unreadCount);
 
       logger.info('useReviewNotifications: Notifications fetched', {
-        counttransformedNotificationslength,
-        unreadCountresultdataunreadCount,
+        count: transformedNotifications.length,
+        unreadCount: result.data.unreadCount,
       });
     } catch (err) {
       const errorMessage =

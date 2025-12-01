@@ -18,7 +18,7 @@ import {
   formatTimeAgo,
 } from './notificationHelpers';
 import { NotificationListItem } from './NotificationListItem';
-import type { Notification } from '@/types/domains/notification';
+import type { NotificationResponse as Notification } from '@/lib/api/notifications';
 
 /**
  * ================================================
@@ -409,7 +409,7 @@ export const generateBatchMessage = (
       // Extract unique conversation IDs from metadata
       const conversationIds = new Set(
         items
-          .map((item) => item.data?.conversationId || item.relatedEntityId)
+          .map((item) => item.metadata?.conversationId || item.relatedEntityId)
           .filter(Boolean)
       );
       const conversationCount = conversationIds.size;

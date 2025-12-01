@@ -90,8 +90,8 @@ export async function getBatchDetails(
 export async function getBatches(
   status?: PayoutBatchStatus
 ): Promise<PayoutBatchResponse[]> {
-  const params = status ? { status } : {};
-  return apiClient.get<PayoutBatchResponse[]>('/payouts/batch', { params });
+  const params = status ? { status: status } : undefined;
+  return apiClient.get<PayoutBatchResponse[]>('/payouts/batch', params);
 }
 
 /**
@@ -162,12 +162,10 @@ export async function cancelBatch(
   batchId: string,
   reason: string
 ): Promise<PayoutBatchResponse> {
+  const searchParams = new URLSearchParams({ reason }).toString();
   return apiClient.post<PayoutBatchResponse>(
-    `/payouts/batch/${batchId}/cancel`,
-    null,
-    {
-      params: { reason },
-    }
+    `/payouts/batch/${batchId}/cancel?${searchParams}`,
+    null
   );
 }
 

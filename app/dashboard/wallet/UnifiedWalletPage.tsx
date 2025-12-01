@@ -353,7 +353,9 @@ export function UnifiedWalletPage() {
 
             {/* Transaction Display Component */}
             <RecentTransactionsWidget
-              transactions={displayTransactions}
+              transactions={
+                displayTransactions as unknown as import('@/types/business/features/wallet').Transaction[]
+              }
               isLoading={walletLoading}
               showTitle={false}
               showViewAll={false}

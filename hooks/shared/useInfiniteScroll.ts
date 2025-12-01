@@ -126,8 +126,8 @@ export function useInfiniteScroll<T>({
       setHasMore(result.hasMore);
 
       logger.debug('useInfiniteScroll: Refreshed data', {
-        itemsLoadedresultdatalength,
-        hasMoreresulthasMore,
+        itemsLoaded: result.data.length,
+        hasMore: result.hasMore,
       });
     } catch (err) {
       const errorMessage =

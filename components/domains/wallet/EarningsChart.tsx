@@ -17,10 +17,8 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { TrendingUp, TrendingDown, Calendar } from 'lucide-react';
 import { useTransactions } from '@/hooks/business/wallet';
-import {
-  TransactionType,
-  formatCurrency,
-} from '@/types/business/features/wallet';
+import { TransactionType } from '@/types/business/features/wallet';
+import { formatCurrency } from '@/lib/domains/payment/utils';
 
 // ================================================
 // TYPES

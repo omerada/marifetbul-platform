@@ -248,6 +248,7 @@ export async function createBackendProxy(
       });
 
       if (enableDebugLogging) {
+        const hasCookies = response.headers.has('set-cookie');
         logger.debug('Preserving headers', {
           hasSetCookie: hasCookies,
           headerCount: Array.from(response.headers.keys()).length,

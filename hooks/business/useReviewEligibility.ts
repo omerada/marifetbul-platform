@@ -61,7 +61,10 @@ export function useReviewEligibility({
       // Backend directly returns boolean in data field
       setCanReview(data === true || data.data === true);
 
-      logger.debug('Review eligibility checked', { orderId, canReviewdatatruedatadatatrue,  });
+      logger.debug('Review eligibility checked', {
+        orderId: orderId,
+        canReview: data === true || data.data === true,
+      });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Bir hata oluştu';

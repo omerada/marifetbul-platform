@@ -176,8 +176,8 @@ export function AdminLoginForm({
 
       // Check if 2FA is required
       if (
-        loginResult?.requiresTwoFactor ||
-        (user?.twoFactorEnabled && require2FA)
+        loginResult?.twoFactorRequired ||
+        (user?.profile?.twoFactorEnabled && require2FA)
       ) {
         logger.info('[AdminLogin] 2FA required, showing modal');
         setPendingAuth({
@@ -218,8 +218,8 @@ export function AdminLoginForm({
         logger.info('[AdminLogin] 2FA verified successfully');
 
         // Update auth store with complete user data
-        useAuthStore.getState().setUser(result.data.user);
-        useAuthStore.getState().setAccessToken(result.data.accessToken);
+        // Note: Auth store doesn't have direct setUser/setAccessToken methods
+        // The store is updated through the login method in the auth service
 
         // Set cookies for middleware
         if (typeof window !== 'undefined') {

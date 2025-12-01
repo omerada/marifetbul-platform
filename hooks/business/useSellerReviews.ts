@@ -143,9 +143,9 @@ export function useSellerReviews({
         setTotalElements(result.data.totalElements);
 
         logger.info('useSellerReviews: Reviews fetched', {
-          sellerId,
-          page,
-          countresultdatacontentlength,
+          sellerId: sellerId,
+          page: page,
+          count: result.data.content.length,
         });
       } catch (err) {
         const errorMessage =
@@ -185,7 +185,7 @@ export function useSellerReviews({
 
       if (!response.ok) {
         logger.warn('useSellerReviews: Failed to fetch stats', {
-          statusresponsestatus,
+          status: response.status,
         });
         return;
       }
