@@ -30,7 +30,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/uiDialog';
+} from '@/components/ui/AlertDialog';
 import { Checkbox } from '@/components/ui/Checkbox';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import {

@@ -47,38 +47,11 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatPercentage } from '@/lib/shared/formatters';
+import type { RevenueComparisonDto } from '@/lib/api/admin-analytics';
 
 // ================================================
 // TYPES
 // ================================================
-
-// Local DTO for widget (presentation layer)
-export interface RevenueComparisonDto {
-  currentPeriod: {
-    label: string;
-    revenue: number;
-    transactions: number;
-    averageOrderValue: number;
-  };
-  previousPeriod: {
-    label: string;
-    revenue: number;
-    transactions: number;
-    averageOrderValue: number;
-  };
-  comparison: {
-    revenueChange: number;
-    revenueChangePercentage: number;
-    transactionsChange: number;
-    transactionsChangePercentage: number;
-    aovChange: number;
-    aovChangePercentage: number;
-  };
-  performance: {
-    status: 'EXCELLENT' | 'GOOD' | 'DECLINING' | 'CRITICAL';
-    message: string;
-  };
-}
 
 export interface RevenueComparisonWidgetProps {
   /** Revenue comparison data */
@@ -104,18 +77,18 @@ export interface RevenueComparisonWidgetProps {
 // ================================================
 
 /**
- * Get performance color classes
+ * Get performance color classes based on trend
  */
-function getPerformanceColor(status: string): string {
-  switch (status) {
-    case 'EXCELLENT':
+function getPerformanceColor(
+  trend: 'IMPROVING' | 'DECLINING' | 'STABLE'
+): string {
+  switch (trend) {
+    case 'IMPROVING':
       return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
-    case 'GOOD':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400';
     case 'DECLINING':
-      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
-    case 'CRITICAL':
       return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
+    case 'STABLE':
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400';
     default:
       return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400';
   }
@@ -263,9 +236,7 @@ export function RevenueComparisonWidget({
   const revenueIndicator = getTrendIndicator(
     comparison.revenueChangePercentage
   );
-  const transactionsIndicator = getTrendIndicator(
-    comparison.transactionsChangePercentage
-  );
+  const ordersIndicator = getTrendIndicator(comparison.ordersChangePercentage);
   const aovIndicator = getTrendIndicator(comparison.aovChangePercentage);
 
   return (
@@ -279,10 +250,14 @@ export function RevenueComparisonWidget({
           <Badge
             className={cn(
               'font-medium',
-              getPerformanceColor(performance.status)
+              getPerformanceColor(performance.trend)
             )}
           >
-            {performance.message}
+            {performance.trend === 'IMPROVING'
+              ? 'İyileşiyor'
+              : performance.trend === 'DECLINING'
+                ? 'Düşüşte'
+                : 'Stabil'}
           </Badge>
         </div>
       </CardHeader>
@@ -296,7 +271,11 @@ export function RevenueComparisonWidget({
               <div className="mb-3 flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 <span className="font-medium text-blue-900 dark:text-blue-100">
-                  {currentPeriod.label}
+                  {new Date(currentPeriod.startDate).toLocaleDateString(
+                    'tr-TR'
+                  )}{' '}
+                  -{' '}
+                  {new Date(currentPeriod.endDate).toLocaleDateString('tr-TR')}
                 </span>
                 <CheckCircle2 className="ml-auto h-4 w-4 text-blue-600 dark:text-blue-400" />
               </div>
@@ -311,7 +290,7 @@ export function RevenueComparisonWidget({
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-blue-700 dark:text-blue-300">
-                    {currentPeriod.transactions.toLocaleString('tr-TR')} işlem
+                    {currentPeriod.orders.toLocaleString('tr-TR')} sipariş
                   </span>
                   <span className="font-medium text-blue-900 dark:text-blue-100">
                     {formatCurrency(currentPeriod.averageOrderValue)} AOV
@@ -327,7 +306,11 @@ export function RevenueComparisonWidget({
               <div className="mb-3 flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-gray-600 dark:text-gray-400" />
                 <span className="font-medium text-gray-700 dark:text-gray-300">
-                  {previousPeriod.label}
+                  {new Date(previousPeriod.startDate).toLocaleDateString(
+                    'tr-TR'
+                  )}{' '}
+                  -{' '}
+                  {new Date(previousPeriod.endDate).toLocaleDateString('tr-TR')}
                 </span>
               </div>
               <div className="space-y-2">
@@ -341,7 +324,7 @@ export function RevenueComparisonWidget({
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600 dark:text-gray-400">
-                    {previousPeriod.transactions.toLocaleString('tr-TR')} işlem
+                    {previousPeriod.orders.toLocaleString('tr-TR')} sipariş
                   </span>
                   <span className="font-medium text-gray-900 dark:text-gray-100">
                     {formatCurrency(previousPeriod.averageOrderValue)} AOV
@@ -385,44 +368,35 @@ export function RevenueComparisonWidget({
             </div>
           </div>
 
-          {/* Transactions Change */}
+          {/* Orders Change */}
           <div
             className={cn(
               'flex items-center justify-between rounded-lg p-4',
-              transactionsIndicator.bgColor
+              ordersIndicator.bgColor
             )}
           >
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-white p-2 dark:bg-gray-800">
                 <ShoppingCart
-                  className={cn('h-5 w-5', transactionsIndicator.color)}
+                  className={cn('h-5 w-5', ordersIndicator.color)}
                 />
               </div>
               <div>
-                <p className="text-sm font-medium">İşlem Değişimi</p>
-                <p
-                  className={cn(
-                    'text-2xl font-bold',
-                    transactionsIndicator.color
-                  )}
-                >
-                  {Math.abs(comparison.transactionsChange).toLocaleString(
-                    'tr-TR'
-                  )}
+                <p className="text-sm font-medium">Sipariş Değişimi</p>
+                <p className={cn('text-2xl font-bold', ordersIndicator.color)}>
+                  {Math.abs(comparison.ordersChange).toLocaleString('tr-TR')}
                 </p>
               </div>
             </div>
             <div
               className={cn(
                 'flex items-center gap-1 font-bold',
-                transactionsIndicator.color
+                ordersIndicator.color
               )}
             >
-              {transactionsIndicator.icon}
+              {ordersIndicator.icon}
               <span>
-                {formatPercentage(
-                  comparison.transactionsChangePercentage / 100
-                )}
+                {formatPercentage(comparison.ordersChangePercentage / 100)}
               </span>
             </div>
           </div>

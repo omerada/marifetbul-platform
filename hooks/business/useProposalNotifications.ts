@@ -176,7 +176,10 @@ export function useProposalNotifications({
       setNotifications(transformedNotifications);
       setUnreadCount(result.data.unreadCount);
 
-      logger.info('useProposalNotifications: Notifications fetched', { counttransformedNotificationslength, unreadCountresultdataunreadCount,  });
+      logger.info('useProposalNotifications: Notifications fetched', {
+        count: transformedNotifications.length,
+        unreadCount: result.data.unreadCount,
+      });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Bir hata oluştu';
@@ -219,7 +222,9 @@ export function useProposalNotifications({
 
         setUnreadCount((prev) => Math.max(0, prev - 1));
 
-        logger.info('useProposalNotifications: Notification marked as read', { notificationId,  });
+        logger.info('useProposalNotifications: Notification marked as read', {
+          notificationId,
+        });
       } catch (err) {
         logger.error('useProposalNotifications: Error marking as read', {
           error: err,

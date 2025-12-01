@@ -116,9 +116,7 @@ export default function RootLayout({
                     <OrderNotificationProvider />
                     <PushPermissionModal />
                     <ToastManager />
-                    <div className="fixed top-4 right-4 z-50">
-                      <NotificationsBell />
-                    </div>
+                    {/* TODO: Add NotificationsBell component */}
                     {children}
                   </NotificationProvider>
                 </ToastProvider>

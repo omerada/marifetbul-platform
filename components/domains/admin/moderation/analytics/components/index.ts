@@ -6,8 +6,7 @@
 
 export { AnalyticsHeader } from './AnalyticsHeader';
 export { AnalyticsCards } from './AnalyticsCards';
-// TODO: Create TabNavigation component - temporarily commented out for build
-// export { TabNavigation } from './TabNavigation';
+export { TabNavigation } from './TabNavigation';
 export { OverviewTab } from './OverviewTab';
 export { ModeratorsTab } from './ModeratorsTab';
 export { AutomationTab } from './AutomationTab';

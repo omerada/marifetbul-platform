@@ -13,8 +13,8 @@ import {
   getStatusColor,
   getSeverityLabel,
   getStatusLabel,
-  formatDate,
 } from '../utils/moderationHelpers';
+import { formatDate } from '@/lib/shared/formatters';
 import type { ModerationItemCardProps } from '../types/moderationDashboardTypes';
 
 export function ModerationItemCard({

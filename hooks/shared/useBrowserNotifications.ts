@@ -162,7 +162,10 @@ export function useBrowserNotifications(
     const currentPermission = Notification.permission;
     setPermission(currentPermission as NotificationPermission);
 
-    logger.info('useBrowserNotifications', { permissioncurrentPermission, supportedtrue,  });
+    logger.info('useBrowserNotifications', {
+      permission: currentPermission,
+      supported: true,
+    });
 
     // Auto-request permission if enabled
     if (
@@ -172,7 +175,7 @@ export function useBrowserNotifications(
     ) {
       Notification.requestPermission().then((result) => {
         setPermission(result as NotificationPermission);
-        logger.info('useBrowserNotifications', { result,  });
+        logger.info('useBrowserNotifications', { result });
       });
     }
   }, [autoRequestPermission, enableInDev]);
@@ -222,11 +225,15 @@ export function useBrowserNotifications(
         const result = await Notification.requestPermission();
         setPermission(result as NotificationPermission);
 
-        logger.info('useBrowserNotifications', { result,  });
+        logger.info('useBrowserNotifications', { result });
 
         return result as NotificationPermission;
       } catch (error) {
-        logger.error('useBrowserNotifications: Failed to request permission', undefined, { error });
+        logger.error(
+          'useBrowserNotifications: Failed to request permission',
+          undefined,
+          { error }
+        );
         return 'denied';
       }
     }, [isSupported, permission]);
@@ -290,7 +297,7 @@ export function useBrowserNotifications(
         // Handle click
         notification.onclick = (event) => {
           event.preventDefault();
-          logger.info('useBrowserNotifications', { tagoptstag, dataoptsdata,  });
+          logger.info('useBrowserNotifications', { tagoptstag, dataoptsdata });
 
           // Focus window
           if (typeof window !== 'undefined') {
@@ -311,26 +318,34 @@ export function useBrowserNotifications(
 
         // Handle close
         notification.onclose = () => {
-          logger.debug('useBrowserNotifications', { tagoptstag,  });
+          logger.debug('useBrowserNotifications', { tagoptstag });
           activeNotificationsRef.current.delete(key);
           onNotificationClose?.();
         };
 
         // Handle error
         notification.onerror = (error) => {
-          logger.error('useBrowserNotifications: Notification error', undefined, {
-            error,
-            tag: opts.tag,
-          });
+          logger.error(
+            'useBrowserNotifications: Notification error',
+            undefined,
+            {
+              error,
+              tag: opts.tag,
+            }
+          );
           activeNotificationsRef.current.delete(key);
         };
 
-        logger.info('useBrowserNotifications', { titleoptstitle, tagoptstag,  });
+        logger.info('useBrowserNotifications', { titleoptstitle, tagoptstag });
       } catch (error) {
-        logger.error('useBrowserNotifications: Failed to show notification', undefined, {
-          error,
-          options: opts,
-        });
+        logger.error(
+          'useBrowserNotifications: Failed to show notification',
+          undefined,
+          {
+            error,
+            options: opts,
+          }
+        );
       }
     },
     [
@@ -356,7 +371,7 @@ export function useBrowserNotifications(
       if (notification) {
         notification.close();
         activeNotificationsRef.current.delete(tag);
-        logger.debug('useBrowserNotifications', { tag,  });
+        logger.debug('useBrowserNotifications', { tag });
       }
     } else {
       // Clear all

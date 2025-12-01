@@ -15,7 +15,7 @@ export { OrderForm } from './OrderForm';
 
 // Payment Components
 // PaymentHistory removed - was unused duplicate (Sprint Day 3)
-export { InvoiceCard } from './InvoiceCard';
+// InvoiceCard REMOVED - Component not found (Production cleanup)
 
 // Package Analytics (moved from components/dashboard)
 export { PackageAnalytics } from './PackageAnalytics';

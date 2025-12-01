@@ -89,7 +89,9 @@ export function UnifiedDashboard({
         toast.success(`��erik ba�ar�yla ${actionLabels[action]}`);
       } catch (error) {
         logger.error(
-          '[UnifiedDashboard] Moderation action failed', error instanceof Error ? error : new Error(String(error)), { itemId, action }
+          '[UnifiedDashboard] Moderation action failed',
+          error instanceof Error ? error : new Error(String(error)),
+          { itemId, action }
         );
 
         // Show error toast notification
@@ -154,15 +156,7 @@ export function UnifiedDashboard({
   const renderView = () => {
     switch (userRole) {
       case 'ADMIN':
-        return (
-          <AdminDashboardView
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            data={dashboardData as any}
-            isLoading={isLoading || isRefreshing}
-            error={dashboardError ? new Error(dashboardError.message) : null}
-            onRefresh={retry}
-          />
-        );
+        return <AdminDashboardView />;
       case 'MODERATOR':
         return (
           <ModeratorDashboardView

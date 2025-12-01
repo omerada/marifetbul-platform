@@ -44,7 +44,10 @@ export default function PrivacySettingsPage() {
       setError(null);
     } catch (err) {
       setError('Gizlilik ayarları yüklenemedi');
-      logger.error('Failed to load privacy settings', { error: err });
+      logger.error(
+        'Failed to load privacy settings',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
       setLoading(false);
     }
@@ -70,7 +73,10 @@ export default function PrivacySettingsPage() {
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError('Ayarlar kaydedilemedi');
-      logger.error('Failed to save privacy settings', { error: err });
+      logger.error(
+        'Failed to save privacy settings',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
       setSaving(false);
     }
@@ -93,7 +99,10 @@ export default function PrivacySettingsPage() {
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError('Ayarlar sıfırlanamadı');
-      logger.error('Failed to reset privacy settings', { error: err });
+      logger.error(
+        'Failed to reset privacy settings',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
       setSaving(false);
     }
@@ -118,7 +127,11 @@ export default function PrivacySettingsPage() {
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError('Preset uygulanamadı');
-      logger.error('Failed to apply privacy preset', { preset, error: err });
+      logger.error(
+        'Failed to apply privacy preset',
+        err instanceof Error ? err : new Error(String(err)),
+        { preset }
+      );
     } finally {
       setSaving(false);
     }

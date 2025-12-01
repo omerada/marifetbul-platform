@@ -224,6 +224,11 @@ export interface ModerationActivity {
 }
 
 /**
+ * Alias for backward compatibility
+ */
+export type ModeratorActivity = ModerationActivity;
+
+/**
  * Action types
  */
 export enum ActionType {

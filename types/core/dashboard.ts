@@ -49,6 +49,8 @@ export interface TrendIndicator {
   percentage: number;
   direction: TrendDirection;
   isPositive: boolean;
+  value?: number;
+  label?: string;
 }
 
 /**
@@ -66,7 +68,7 @@ export interface CacheMetadata {
 }
 
 /**
- * Activity item
+ * Activity item for timeline/feed
  */
 export interface ActivityItem {
   id: string;
@@ -76,6 +78,33 @@ export interface ActivityItem {
   timestamp: string;
   icon?: string;
   iconColor?: string;
+  status?:
+    | 'pending'
+    | 'completed'
+    | 'failed'
+    | 'cancelled'
+    | 'in_progress'
+    | 'approved'
+    | 'rejected';
+  link?: string;
+  user?: {
+    id: string;
+    name: string;
+    avatar?: string;
+  };
+  entity?: {
+    id: string;
+    type: string;
+    title: string;
+  };
+  metadata?: Record<string, unknown>;
+  actions?: Array<{
+    label: string;
+    onClick: () => void;
+    variant?: 'primary' | 'secondary' | 'danger' | 'outline';
+    icon?: any;
+    isLoading?: boolean;
+  }>;
 }
 
 /**
@@ -84,10 +113,22 @@ export interface ActivityItem {
 export interface QuickAction {
   id: string;
   label: string;
-  icon: string;
+  icon: string | any; // string for serialization, LucideIcon for client-side
   href?: string;
   onClick?: () => void;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'outline'
+    | 'default'
+    | 'success'
+    | 'warning'
+    | 'danger';
+  description?: string;
+  disabled?: boolean;
+  badge?: number;
+  iconColor?: string;
+  requiredPermission?: string;
 }
 
 /**
@@ -153,7 +194,59 @@ export interface FreelancerDashboard {
   recentJobs: Job[];
   recentOrders: Order[];
   recentProposals: ProposalResponse[];
-  earnings: Record<string, number>;
+  earnings: {
+    total: number;
+    pending: number;
+    available: number;
+    currency: string;
+    trend?: TrendIndicator;
+  };
+  orders?: {
+    active: number;
+    total: number;
+    completed?: number;
+    cancelled?: number;
+    totalSpent?: number;
+    views: number;
+    orders: number;
+  };
+  packages?: {
+    total: number;
+    active: number;
+    paused: number;
+    views: number;
+  };
+  ratings?: {
+    average: number;
+    count: number;
+    distribution: Record<number, number>;
+  };
+  messages?: {
+    unread: number;
+    pendingResponses: number;
+    averageResponseTime: number;
+    responseRate: number;
+  };
+  pendingActions?: {
+    ordersToAccept: number;
+    ordersToDeliver: number;
+    reviewsToGive: number;
+  };
+  performance?: {
+    conversionRate: number;
+    onTimeDeliveryRate: number;
+    averageDeliveryTime: number;
+    repeatCustomerRate?: number;
+  };
+  recentActivities?: ActivityItem[];
+  quickActions?: QuickAction[];
+  charts?: {
+    earningsChart?: ChartWidgetData;
+    ordersChart?: ChartWidgetData;
+    performanceChart?: ChartWidgetData;
+  };
+  period?: DashboardPeriod;
+  cache?: CacheMetadata;
   analytics: FreelancerAnalytics;
   recommendations: Recommendation[];
   notifications: EnhancedNotification[];
@@ -229,10 +322,33 @@ export interface EmployerDashboard {
   };
   activeJobs: Job[];
   recentJobs: Job[];
-  spending: Record<string, number> & {
-    trend?: number;
-    currency?: string;
+  spending: {
+    total: number;
+    thisMonth: number;
+    currency: string;
+    trend?: TrendIndicator;
   };
+  orders?: {
+    active: number;
+    completed: number;
+    cancelled: number;
+    totalSpent: number;
+    total?: number;
+    views?: number;
+    orders?: number;
+  };
+  favorites?: {
+    packages: number;
+    sellers: number;
+  };
+  recentActivities?: ActivityItem[];
+  quickActions?: QuickAction[];
+  charts?: {
+    spending?: ChartWidgetData;
+    orders?: ChartWidgetData;
+  };
+  period?: DashboardPeriod;
+  cache?: CacheMetadata;
   analytics: EmployerAnalytics;
   recommendations: Recommendation[];
   notifications: EnhancedNotification[];
@@ -253,6 +369,18 @@ export interface EmployerDashboard {
   pendingActions?: {
     ordersToApprove: number;
     reviewsToGive: number;
+  };
+  recentOrder?: {
+    id: string;
+    title: string;
+    packageTitle: string;
+    seller: string;
+    sellerName: string;
+    amount: number;
+    status: string;
+    orderNumber: string;
+    createdAt: string;
+    lastUpdate: string;
   };
   /** Sprint 1 - Story 1.4: Milestone data for dashboard widget */
   milestones?: {
@@ -288,14 +416,6 @@ export interface EmployerDashboard {
     timestamp: string;
     metadata?: Record<string, unknown>;
   }>;
-  recentOrder?: {
-    id: string;
-    title: string;
-    seller: string;
-    amount: number;
-    status: string;
-    createdAt: string;
-  };
 }
 
 // ==================== Admin Dashboard ====================

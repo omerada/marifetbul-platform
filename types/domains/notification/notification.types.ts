@@ -31,6 +31,8 @@ export type NotificationType =
   | 'PAYOUT_PROCESSING'
   | 'PAYOUT_COMPLETED'
   | 'PAYOUT_REJECTED'
+  | 'PORTFOLIO_APPROVED'
+  | 'PORTFOLIO_REJECTED'
   | 'SYSTEM';
 
 /**
@@ -57,17 +59,20 @@ export type NotificationStatus = 'UNREAD' | 'READ' | 'ARCHIVED' | 'DELETED';
 export interface Notification {
   id: string;
   userId: string;
+  username?: string;
   type: NotificationType;
   title: string;
   content: string;
+  message?: string; // Alias for content for backend compatibility
   isRead: boolean;
   createdAt: string;
   readAt?: string;
-  actionUrl?: string;
+  actionUrl?: string | null;
   priority: NotificationPriority;
   relatedEntityType?: string;
   relatedEntityId?: string;
   data?: Record<string, unknown>;
+  groupedCount?: number; // For grouped notifications
 }
 
 /**

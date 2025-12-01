@@ -136,7 +136,10 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
       const errorMessage =
         error instanceof Error ? error.message : 'Bilinmeyen bir hata oluştu';
 
-      logger.error('[Dashboard Store] Dashboard fetch error', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        '[Dashboard Store] Dashboard fetch error',
+        error instanceof Error ? error : new Error(String(error))
+      );
 
       set({
         error: {
@@ -160,8 +163,8 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
 
     if (normalizedUserType && normalizedUserType !== 'admin') {
       logger.debug('[Dashboard Store] Refreshing dashboard', {
-        roleuserrole,
-        userTypenormalizedUserType,
+        role: user?.role,
+        userType: normalizedUserType,
       });
 
       set({ isRefreshing: true, retryCount: retryCount + 1 });
@@ -197,9 +200,9 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
 
     if (normalizedUserType && normalizedUserType !== 'admin') {
       logger.debug('[Dashboard Store] Retry attempt', {
-        roleuserrole,
-        userTypenormalizedUserType,
-        attemptretryCount1,
+        role: user?.role,
+        userType: normalizedUserType,
+        attempt: retryCount + 1,
         maxRetries,
       });
 
@@ -282,7 +285,10 @@ const useDashboardStore = create<DashboardStore>((set, get) => ({
       const updatedData = updater(dashboardData);
       set({ dashboardData: updatedData });
     } catch (error) {
-      logger.error('[Dashboard Store] Optimistic update failed', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        '[Dashboard Store] Optimistic update failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   },
 }));

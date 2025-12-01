@@ -1,5 +1,9 @@
 // Job related types
 import { Employer, PaginationMeta } from './base';
+import type { ProposalResponse } from '../backend-aligned';
+
+// Re-export Proposal as Proposal for backward compatibility
+export type Proposal = ProposalResponse;
 
 export interface JobAttachment {
   id: string;

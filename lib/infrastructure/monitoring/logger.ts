@@ -297,6 +297,6 @@ export function measure<T>(
 // EXPORTS
 // ============================================================================
 
-export { Logger };
+export { Logger, logger };
 export type { LogLevel, LogContext, LoggerOptions };
 export default logger;

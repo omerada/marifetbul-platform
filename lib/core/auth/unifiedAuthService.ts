@@ -138,7 +138,7 @@ class UnifiedAuthService {
 
       if (response.success && response.data) {
         logger.info('Auth: Registration successful', {
-          userIdresponsedatauserid,
+          userId: response.data.user.id,
         });
       }
 
@@ -162,7 +162,7 @@ class UnifiedAuthService {
    */
   async login(request: LoginRequest): Promise<ApiResponse<AuthResponse>> {
     logger.info('Auth: Login attempt', {
-      usernameOrEmailrequestusernameOrEmail,
+      usernameOrEmail: request.usernameOrEmail,
     });
 
     try {
@@ -176,8 +176,8 @@ class UnifiedAuthService {
 
       if (response.success && response.data) {
         logger.info('Auth: Login successful', {
-          userIdresponsedatauserid,
-          rolesresponsedatauserroles,
+          userId: response.data.user.id,
+          roles: response.data.user.roles,
         });
 
         // Clear any cached user data
@@ -470,7 +470,9 @@ class UnifiedAuthService {
       );
 
       if (response.success && response.data) {
-        logger.debug('Auth: Current user fetched', { userIdresponsedataid });
+        logger.debug('Auth: Current user fetched', {
+          userId: response.data.id,
+        });
       }
 
       return response;

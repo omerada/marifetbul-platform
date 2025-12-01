@@ -84,7 +84,11 @@ export function unescapeHTML(html: string): string {
 // ================================================
 // Sprint 1: Use canonical formatters from @/lib/shared/formatters
 
-import { formatPercentage as canonicalFormatPercentage } from '@/lib/shared/formatters';
+import {
+  formatPercentage as canonicalFormatPercentage,
+  formatCurrency as canonicalFormatCurrency,
+  formatNumber as canonicalFormatNumber,
+} from '@/lib/shared/formatters';
 
 export function formatBytes(bytes: number, decimals = 2): string {
   if (bytes === 0) return '0 Bytes';
@@ -98,8 +102,10 @@ export function formatBytes(bytes: number, decimals = 2): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-// Re-export canonical formatter
+// Re-export canonical formatters
 export { canonicalFormatPercentage as formatPercentage };
+export { canonicalFormatCurrency as formatCurrency };
+export { canonicalFormatNumber as formatNumber };
 
 export function formatCompactNumber(num: number): string {
   return new Intl.NumberFormat('tr-TR', {
@@ -178,34 +184,6 @@ export function maskString(
   const maskedPart = maskChar.repeat(str.length - visibleChars);
 
   return maskedPart + visiblePart;
-}
-
-// ================================================
-// NUMBER FORMATTING
-// ================================================
-
-/**
- * Format number as percentage
- * @example formatPercentage(0.75) => "75%"
- * @example formatPercentage(0.123, 1) => "12.3%"
- */
-export function formatPercentage(value: number, decimals: number = 0): string {
-  return `${(value * 100).toFixed(decimals)}%`;
-}
-
-/**
- * Format large numbers in compact form
- * @example formatCompactNumber(1500) => "1.5K"
- * @example formatCompactNumber(2500000) => "2.5M"
- */
-export function formatCompactNumber(value: number): string {
-  if (value >= 1000000) {
-    return `${(value / 1000000).toFixed(1)}M`;
-  }
-  if (value >= 1000) {
-    return `${(value / 1000).toFixed(1)}K`;
-  }
-  return value.toString();
 }
 
 // ================================================

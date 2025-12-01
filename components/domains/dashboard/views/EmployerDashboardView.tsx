@@ -49,7 +49,8 @@ import {
 } from '@/components/domains/refunds';
 import { MilestoneProgressWidget } from '@/components/domains/milestones';
 import type { EmployerDashboard } from '../types/dashboard.types';
-import { formatCurrency, formatCompactNumber } from '../utils';
+import { formatCompactNumber } from '../utils';
+import { formatCurrency } from '@/lib/utils';
 
 // ============================================================================
 // TYPES
@@ -95,7 +96,7 @@ function prepareStatsCards(data: EmployerDashboard) {
       id: 'total-spending',
       title: 'Toplam Harcama',
       value: formatCurrency(data.spending.total, data.spending.currency),
-      subtitle: `Bu ay: ${formatCurrency(data.spending.thisMonth, data.spending.currency, false)}`,
+      subtitle: `Bu ay: ${formatCurrency(data.spending.thisMonth, data.spending.currency)}`,
       icon: DollarSign,
       iconColor: 'text-blue-600 dark:text-blue-400',
       trend: data.spending.trend,
@@ -103,24 +104,27 @@ function prepareStatsCards(data: EmployerDashboard) {
     {
       id: 'active-orders',
       title: 'Aktif Siparişler',
-      value: data.orders.active,
-      subtitle: `${data.orders.completed} tamamlandı`,
+      value: data.orders?.active ?? 0,
+      subtitle: `${data.orders?.completed ?? 0} tamamlandı`,
       icon: ShoppingCart,
       iconColor: 'text-green-600 dark:text-green-400',
     },
     {
       id: 'favorite-packages',
       title: 'Favori Paketler',
-      value: data.favorites.packages,
-      subtitle: `${data.favorites.sellers} satıcı`,
+      value: data.favorites?.packages ?? 0,
+      subtitle: `${data.favorites?.sellers ?? 0} satıcı`,
       icon: Heart,
       iconColor: 'text-red-600 dark:text-red-400',
     },
     {
       id: 'total-spent',
       title: 'Toplam Ödenen',
-      value: formatCurrency(data.orders.totalSpent, data.spending.currency),
-      subtitle: `${data.orders.completed + data.orders.cancelled} sipariş`,
+      value: formatCurrency(
+        data.orders?.totalSpent ?? 0,
+        data.spending.currency
+      ),
+      subtitle: `${(data.orders?.completed ?? 0) + (data.orders?.cancelled ?? 0)} sipariş`,
       icon: FileText,
       iconColor: 'text-purple-600 dark:text-purple-400',
     },
@@ -281,7 +285,7 @@ export const EmployerDashboardView = memo<EmployerDashboardViewProps>(
             <MyRefundsWidget
               maxItems={5}
               showViewAll
-              viewAllUrl="/dashboard/refunds"
+              viewAllLink="/dashboard/refunds"
             />
           </div>
         </DashboardSection>
@@ -294,7 +298,7 @@ export const EmployerDashboardView = memo<EmployerDashboardViewProps>(
           >
             <div className="grid gap-6 lg:grid-cols-2">
               {/* Spending Chart */}
-              {canViewFinancials && data.charts.spending && (
+              {canViewFinancials && data.charts?.spending && (
                 <ChartWidget
                   data={data.charts.spending}
                   isLoading={isLoading}
@@ -304,7 +308,7 @@ export const EmployerDashboardView = memo<EmployerDashboardViewProps>(
               )}
 
               {/* Orders Chart */}
-              {data.charts.orders && (
+              {data.charts?.orders && (
                 <ChartWidget
                   data={data.charts.orders}
                   isLoading={isLoading}
@@ -395,7 +399,8 @@ export const EmployerDashboardView = memo<EmployerDashboardViewProps>(
         )}
 
         {/* Favorites Section */}
-        {(data.favorites.packages > 0 || data.favorites.sellers > 0) && (
+        {((data.favorites?.packages ?? 0) > 0 ||
+          (data.favorites?.sellers ?? 0) > 0) && (
           <DashboardSection
             title="Favorilerim"
             subtitle="Favori paketler ve satıcılar"
@@ -409,7 +414,7 @@ export const EmployerDashboardView = memo<EmployerDashboardViewProps>(
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                      {formatCompactNumber(data.favorites.packages)}
+                      {formatCompactNumber(data.favorites?.packages ?? 0)}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       Favori Paketler
@@ -432,7 +437,7 @@ export const EmployerDashboardView = memo<EmployerDashboardViewProps>(
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                      {formatCompactNumber(data.favorites.sellers)}
+                      {formatCompactNumber(data.favorites?.sellers ?? 0)}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       Favori Satıcılar
@@ -478,7 +483,7 @@ export const EmployerDashboardView = memo<EmployerDashboardViewProps>(
                   <ShoppingCart className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                  {data.orders.active}
+                  {data.orders?.active ?? 0}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Aktif Siparişler
@@ -491,7 +496,7 @@ export const EmployerDashboardView = memo<EmployerDashboardViewProps>(
                   <ShoppingCart className="h-6 w-6 text-green-600 dark:text-green-400" />
                 </div>
                 <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                  {data.orders.completed}
+                  {data.orders?.completed ?? 0}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Tamamlanan
@@ -504,7 +509,7 @@ export const EmployerDashboardView = memo<EmployerDashboardViewProps>(
                   <ShoppingCart className="h-6 w-6 text-red-600 dark:text-red-400" />
                 </div>
                 <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                  {data.orders.cancelled}
+                  {data.orders?.cancelled ?? 0}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   İptal Edilen

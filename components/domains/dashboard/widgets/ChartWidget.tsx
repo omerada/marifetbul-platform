@@ -186,8 +186,8 @@ const LineChartComponent = memo(
     data: ChartWidgetProps['data'];
     config: ChartWidgetProps['data']['config'];
   }) => {
-    const chartData = data.series[0]?.data || [];
-    const height = config.height || DEFAULT_CONFIG.height;
+    const chartData = data.series?.[0]?.data || [];
+    const height = config?.height || DEFAULT_CONFIG.height;
 
     return (
       <ResponsiveContainer width="100%" height={height}>
@@ -205,7 +205,7 @@ const LineChartComponent = memo(
           <YAxis className="text-xs text-gray-600 dark:text-gray-400" />
           <Tooltip content={<CustomTooltip />} />
           {config?.showLegend !== false && <Legend />}
-          {data.series.map((series, index) => (
+          {data.series?.map((series, index) => (
             <Line
               key={series.name}
               type="monotone"
@@ -237,13 +237,13 @@ const BarChartComponent = memo(
     data: ChartWidgetProps['data'];
     config: ChartWidgetProps['data']['config'];
   }) => {
-    const chartData = data.series[0]?.data || [];
-    const height = config.height || DEFAULT_CONFIG.height;
+    const chartData = data.series?.[0]?.data || [];
+    const height = config?.height || DEFAULT_CONFIG.height;
 
     return (
       <ResponsiveContainer width="100%" height={height}>
         <BarChart data={chartData}>
-          {config.showGrid !== false && (
+          {config?.showGrid !== false && (
             <CartesianGrid
               strokeDasharray="3 3"
               className="stroke-gray-200 dark:stroke-gray-700"
@@ -255,8 +255,8 @@ const BarChartComponent = memo(
           />
           <YAxis className="text-xs text-gray-600 dark:text-gray-400" />
           <Tooltip content={<CustomTooltip />} />
-          {config.showLegend !== false && <Legend />}
-          {data.series.map((series, index) => (
+          {config?.showLegend !== false && <Legend />}
+          {data.series?.map((series, index) => (
             <Bar
               key={series.name}
               dataKey="value"
@@ -285,13 +285,13 @@ const AreaChartComponent = memo(
     data: ChartWidgetProps['data'];
     config: ChartWidgetProps['data']['config'];
   }) => {
-    const chartData = data.series[0]?.data || [];
-    const height = config.height || DEFAULT_CONFIG.height;
+    const chartData = data.series?.[0]?.data || [];
+    const height = config?.height || DEFAULT_CONFIG.height;
 
     return (
       <ResponsiveContainer width="100%" height={height}>
         <AreaChart data={chartData}>
-          {config.showGrid !== false && (
+          {config?.showGrid !== false && (
             <CartesianGrid
               strokeDasharray="3 3"
               className="stroke-gray-200 dark:stroke-gray-700"
@@ -303,8 +303,8 @@ const AreaChartComponent = memo(
           />
           <YAxis className="text-xs text-gray-600 dark:text-gray-400" />
           <Tooltip content={<CustomTooltip />} />
-          {config.showLegend !== false && <Legend />}
-          {data.series.map((series, index) => (
+          {config?.showLegend !== false && <Legend />}
+          {data.series?.map((series, index) => (
             <Area
               key={series.name}
               type="monotone"
@@ -339,8 +339,8 @@ const PieChartComponent = memo(
     config: ChartWidgetProps['data']['config'];
     isDonut?: boolean;
   }) => {
-    const chartData = data.series[0]?.data || [];
-    const height = config.height || DEFAULT_CONFIG.height;
+    const chartData = data.series?.[0]?.data || [];
+    const height = config?.height || DEFAULT_CONFIG.height;
 
     return (
       <ResponsiveContainer width="100%" height={height}>
@@ -360,14 +360,14 @@ const PieChartComponent = memo(
               <Cell
                 key={`cell-${index}`}
                 fill={
-                  data.series[0]?.color ||
+                  data.series?.[0]?.color ||
                   DEFAULT_COLORS[index % DEFAULT_COLORS.length]
                 }
               />
             ))}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
-          {config.showLegend !== false && <Legend />}
+          {config?.showLegend !== false && <Legend />}
         </PieChart>
       </ResponsiveContainer>
     );
@@ -421,7 +421,7 @@ export const ChartWidget = memo<ChartWidgetProps>(
     if (isLoading) {
       return (
         <div className={className}>
-          <ChartSkeleton height={data.config.height} />
+          <ChartSkeleton height={data.config?.height} />
         </div>
       );
     }
@@ -430,10 +430,7 @@ export const ChartWidget = memo<ChartWidgetProps>(
     if (error) {
       return (
         <div className={className}>
-          <SimpleErrorDisplay
-            error={error}
-            className="py-8"
-          />
+          <SimpleErrorDisplay error={error} className="py-8" />
         </div>
       );
     }
@@ -458,7 +455,7 @@ export const ChartWidget = memo<ChartWidgetProps>(
 
     // Get chart icon based on type
     const getChartIcon = () => {
-      switch (data.config.type) {
+      switch (data.config?.type) {
         case 'pie':
         case 'donut':
           return PieChartIcon;
@@ -480,7 +477,7 @@ export const ChartWidget = memo<ChartWidgetProps>(
               <div className="flex items-center gap-2">
                 <ChartIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  {data.title || data.config.title}
+                  {data.title || data.config?.title}
                 </h3>
               </div>
               {data.subtitle && (
@@ -497,23 +494,23 @@ export const ChartWidget = memo<ChartWidgetProps>(
 
         {/* Chart */}
         <div className="w-full">
-          {data.config.type === 'line' && (
+          {data.config?.type === 'line' && (
             <LineChartComponent data={data} config={data.config} />
           )}
-          {data.config.type === 'bar' && (
+          {data.config?.type === 'bar' && (
             <BarChartComponent data={data} config={data.config} />
           )}
-          {data.config.type === 'area' && (
+          {data.config?.type === 'area' && (
             <AreaChartComponent data={data} config={data.config} />
           )}
-          {data.config.type === 'pie' && (
+          {data.config?.type === 'pie' && (
             <PieChartComponent
               data={data}
               config={data.config}
               isDonut={false}
             />
           )}
-          {data.config.type === 'donut' && (
+          {data.config?.type === 'donut' && (
             <PieChartComponent
               data={data}
               config={data.config}
@@ -523,14 +520,14 @@ export const ChartWidget = memo<ChartWidgetProps>(
         </div>
 
         {/* Axis labels (optional) */}
-        {(data.config.xAxisLabel || data.config.yAxisLabel) && (
+        {(data.config?.xAxisLabel || data.config?.yAxisLabel) && (
           <div className="flex items-center justify-between px-4 text-xs text-gray-500 dark:text-gray-500">
-            {data.config.yAxisLabel && (
+            {data.config?.yAxisLabel && (
               <span className="origin-center -rotate-90">
                 {data.config.yAxisLabel}
               </span>
             )}
-            {data.config.xAxisLabel && <span>{data.config.xAxisLabel}</span>}
+            {data.config?.xAxisLabel && <span>{data.config.xAxisLabel}</span>}
           </div>
         )}
       </div>

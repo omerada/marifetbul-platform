@@ -18,21 +18,21 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/DropdownMenu'; 
+} from '@/components/ui/DropdownMenu';
 import {
   getStatusColor,
   getPriorityColor,
-  getTypeIconComponent, 
+  getTypeIconComponent,
   formatStatusLabel,
   formatPriorityLabel,
   getReporterFullName,
-  formatReason, 
+  formatReason,
   hasAutomatedFlags,
   getAutomatedFlagsCount,
 } from '../utils/moderationHelpers';
 import type { ModerationRowProps } from '../types/moderationTypes';
 import { truncateText } from '@/lib/utils';
-import { formatDate } from 'date-fns';
+import { formatDate } from '@/lib/shared/formatters';
 
 export function ModerationRow({
   item,
@@ -54,7 +54,10 @@ export function ModerationRow({
               {item.content?.title || 'Başlık bulunamadı'}
             </div>
             <div className="truncate text-sm text-gray-500">
-              {truncateText(item.content?.description || 'Açıklama bulunamadı')}
+              {truncateText(
+                item.content?.description || 'Açıklama bulunamadı',
+                100
+              )}
             </div>
             <div className="mt-1 flex items-center space-x-2">
               <Badge variant="secondary" size="sm">
@@ -106,7 +109,7 @@ export function ModerationRow({
       {/* Date */}
       <TableCell>
         <span className="text-sm text-gray-500">
-          {formatDate(item.createdAt)}
+          {formatDate(item.createdAt, 'SHORT')}
         </span>
       </TableCell>
 

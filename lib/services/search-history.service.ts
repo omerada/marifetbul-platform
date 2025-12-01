@@ -42,7 +42,9 @@ export function getSearchHistory(): SearchHistoryItem[] {
     return Array.isArray(history) ? history : [];
   } catch (error) {
     logger.error(
-      'Failed to get search history', error instanceof Error ? error : new Error(String(error)));
+      'Failed to get search history',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return [];
   }
 }
@@ -78,10 +80,12 @@ export function addToSearchHistory(
     ].slice(0, MAX_HISTORY_SIZE);
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newHistory));
-    logger.debug('Search history updated', { query, countnewHistorylength });
+    logger.debug('Search history updated', { query, count: newHistory.length });
   } catch (error) {
     logger.error(
-      'Failed to add to search history', error instanceof Error ? error : new Error(String(error)));
+      'Failed to add to search history',
+      error instanceof Error ? error : new Error(String(error))
+    );
   }
 }
 
@@ -101,7 +105,9 @@ export function removeFromSearchHistory(query: string): void {
     logger.debug('Search removed from history', { query });
   } catch (error) {
     logger.error(
-      'Failed to remove from search history', error instanceof Error ? error : new Error(String(error)));
+      'Failed to remove from search history',
+      error instanceof Error ? error : new Error(String(error))
+    );
   }
 }
 
@@ -116,7 +122,9 @@ export function clearSearchHistory(): void {
     logger.info('Search history cleared');
   } catch (error) {
     logger.error(
-      'Failed to clear search history', error instanceof Error ? error : new Error(String(error)));
+      'Failed to clear search history',
+      error instanceof Error ? error : new Error(String(error))
+    );
   }
 }
 
@@ -263,7 +271,9 @@ export function importSearchHistory(jsonData: string): boolean {
     return true;
   } catch (error) {
     logger.error(
-      'Failed to import search history', error instanceof Error ? error : new Error(String(error)));
+      'Failed to import search history',
+      error instanceof Error ? error : new Error(String(error))
+    );
     return false;
   }
 }

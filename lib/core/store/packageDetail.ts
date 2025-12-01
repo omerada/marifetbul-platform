@@ -97,7 +97,9 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
           }
         } catch (error) {
           logger.error(
-            'Package detail fetch error', error instanceof Error ? error : new Error(String(error)));
+            'Package detail fetch error',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set(
             { error: 'Paket detayları yüklenemedi', isLoading: false },
             false,
@@ -127,7 +129,9 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
           }
         } catch (error) {
           logger.error(
-            'Reviews fetch error', error instanceof Error ? error : new Error(String(error)));
+            'Reviews fetch error',
+            error instanceof Error ? error : new Error(String(error))
+          );
         }
       },
 
@@ -157,7 +161,9 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
           if (data.success) {
             set({ isOrdering: false }, false, 'packageDetail/orderSuccess');
 
-            logger.info('Order created successfully', { orderIddatadataid,  });
+            logger.info('Order created successfully', {
+              orderId: data.data.id,
+            });
             return data.data.id;
           } else {
             set(
@@ -172,7 +178,9 @@ export const usePackageDetailStore = create<PackageDetailStore>()(
           }
         } catch (error) {
           logger.error(
-            'Order creation error', error instanceof Error ? error : new Error(String(error)));
+            'Order creation error',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set(
             { error: 'Sipariş oluşturulamadı', isOrdering: false },
             false,

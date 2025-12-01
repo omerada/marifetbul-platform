@@ -32,7 +32,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/uiDialog';
+} from '@/components/ui/AlertDialog';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Avatar';
 import { SimpleErrorDisplay } from '@/components/ui/SimpleErrorDisplay';

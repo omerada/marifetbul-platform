@@ -115,24 +115,24 @@ function prepareStatsCards(data: FreelancerDashboard) {
     {
       id: 'active-orders',
       title: 'Aktif Siparişler',
-      value: data.orders.active,
-      subtitle: `${data.orders.completed} tamamlandı`,
+      value: data.orders?.active ?? 0,
+      subtitle: `${data.orders?.completed ?? 0} tamamlandı`,
       icon: ShoppingCart,
       iconColor: 'text-blue-600 dark:text-blue-400',
     },
     {
       id: 'packages',
       title: 'Paketler',
-      value: data.packages.active,
-      subtitle: `${data.packages.total} toplam paket`,
+      value: data.packages?.active ?? 0,
+      subtitle: `${data.packages?.total ?? 0} toplam paket`,
       icon: Package,
       iconColor: 'text-purple-600 dark:text-purple-400',
     },
     {
       id: 'rating',
       title: 'Ortalama Puan',
-      value: data.ratings.average.toFixed(1),
-      subtitle: `${data.ratings.count} değerlendirme`,
+      value: (data.ratings?.average ?? 0).toFixed(1),
+      subtitle: `${data.ratings?.count ?? 0} değerlendirme`,
       icon: Star,
       iconColor: 'text-yellow-600 dark:text-yellow-400',
     },
@@ -183,7 +183,7 @@ function prepareStatsCards(data: FreelancerDashboard) {
 
   // Add performance metrics if available (EPIC 1 Story 1.3)
   if (data.performance) {
-    if (data.performance.conversionRate > 0) {
+    if ((data.performance.conversionRate ?? 0) > 0) {
       cards.push({
         id: 'conversion-rate',
         title: 'Dönüşüm Oranı',
@@ -194,12 +194,12 @@ function prepareStatsCards(data: FreelancerDashboard) {
       });
     }
 
-    if (data.performance.onTimeDeliveryRate > 0) {
+    if ((data.performance.onTimeDeliveryRate ?? 0) > 0) {
       cards.push({
         id: 'on-time-delivery',
         title: 'Zamanında Teslimat',
-        value: `%${data.performance.onTimeDeliveryRate.toFixed(0)}`,
-        subtitle: `${data.performance.averageDeliveryTime.toFixed(1)}sa ortalama`,
+        value: `%${(data.performance.onTimeDeliveryRate ?? 0).toFixed(0)}`,
+        subtitle: `${(data.performance.averageDeliveryTime ?? 0).toFixed(1)}sa ortalama`,
         icon: Zap,
         iconColor: 'text-cyan-600 dark:text-cyan-400',
       });
@@ -340,7 +340,7 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
             <MyRefundsWidget
               maxItems={5}
               showViewAll
-              viewAllUrl="/dashboard/refunds"
+              viewAllLink="/dashboard/refunds"
             />
           </div>
         </DashboardSection>
@@ -353,9 +353,9 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
           >
             <div className="grid gap-6 lg:grid-cols-2">
               {/* Earnings Chart */}
-              {canViewFinancials && data.charts.earnings && (
+              {canViewFinancials && data.charts?.earningsChart && (
                 <ChartWidget
-                  data={data.charts.earnings}
+                  data={data.charts.earningsChart}
                   isLoading={isLoading}
                   error={error}
                   showHeader
@@ -363,9 +363,9 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
               )}
 
               {/* Orders Chart */}
-              {data.charts.orders && (
+              {data.charts?.ordersChart && (
                 <ChartWidget
-                  data={data.charts.orders}
+                  data={data.charts.ordersChart}
                   isLoading={isLoading}
                   error={error}
                   showHeader
@@ -374,10 +374,10 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
             </div>
 
             {/* Views Chart */}
-            {data.charts.views && (
+            {data.charts?.performanceChart && (
               <div className="mt-6">
                 <ChartWidget
-                  data={data.charts.views}
+                  data={data.charts.performanceChart}
                   isLoading={isLoading}
                   error={error}
                   showHeader
@@ -449,7 +449,7 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
         )}
 
         {/* Package Insights */}
-        {data.packages.views > 0 && (
+        {(data.packages?.views ?? 0) > 0 && (
           <DashboardSection
             title="Paket İstatistikleri"
             subtitle="Paket performansınız"
@@ -461,7 +461,7 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                    {formatCompactNumber(data.packages.views)}
+                    {formatCompactNumber(data.packages?.views ?? 0)}
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Toplam görüntülenme
@@ -475,7 +475,7 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
                     Toplam Paket
                   </p>
                   <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    {data.packages.total}
+                    {data.packages?.total ?? 0}
                   </p>
                 </div>
                 <div>
@@ -483,7 +483,7 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
                     Aktif
                   </p>
                   <p className="text-lg font-semibold text-green-600 dark:text-green-400">
-                    {data.packages.active}
+                    {data.packages?.active ?? 0}
                   </p>
                 </div>
                 <div>
@@ -491,7 +491,7 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
                     Duraklatılmış
                   </p>
                   <p className="text-lg font-semibold text-gray-600 dark:text-gray-400">
-                    {data.packages.paused}
+                    {data.packages?.paused ?? 0}
                   </p>
                 </div>
               </div>
@@ -500,7 +500,7 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
         )}
 
         {/* Rating Distribution */}
-        {data.ratings.count > 0 && (
+        {(data.ratings?.count ?? 0) > 0 && (
           <DashboardSection
             title="Değerlendirmeler"
             subtitle="Müşteri puanlarınız"
@@ -511,19 +511,20 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
                   <div className="flex items-center gap-2">
                     <Star className="h-6 w-6 fill-yellow-400 text-yellow-400" />
                     <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                      {data.ratings.average.toFixed(1)}
+                      {(data.ratings?.average ?? 0).toFixed(1)}
                     </span>
                   </div>
                   <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                    {data.ratings.count} değerlendirme
+                    {data.ratings?.count ?? 0} değerlendirme
                   </p>
                 </div>
 
                 {/* Rating bars */}
                 <div className="flex-1 space-y-2 pl-8">
                   {[5, 4, 3, 2, 1].map((rating) => {
-                    const count = data.ratings.distribution[rating] || 0;
-                    const percentage = (count / data.ratings.count) * 100;
+                    const count = data.ratings?.distribution?.[rating] ?? 0;
+                    const percentage =
+                      (count / (data.ratings?.count ?? 1)) * 100;
 
                     return (
                       <div key={rating} className="flex items-center gap-2">

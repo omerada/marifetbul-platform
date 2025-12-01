@@ -51,6 +51,27 @@ export interface RecentTransactionsWidgetProps {
    * @default true
    */
   showViewAll?: boolean;
+
+  /**
+   * External transactions data (optional - overrides fetch)
+   */
+  transactions?: unknown[];
+
+  /**
+   * External loading state
+   */
+  isLoading?: boolean;
+
+  /**
+   * Show widget title
+   * @default true
+   */
+  showTitle?: boolean;
+
+  /**
+   * Custom empty message
+   */
+  emptyMessage?: string;
 }
 
 // ================================================
@@ -105,12 +126,28 @@ function getTransactionLabel(type: TransactionType): string {
 
 export const RecentTransactionsWidget: React.FC<
   RecentTransactionsWidgetProps
-> = ({ limit = 5, className = '', showViewAll = true }) => {
+> = ({
+  limit = 5,
+  className = '',
+  showViewAll = true,
+  transactions: externalTransactions,
+  isLoading: externalLoading,
+  showTitle = true,
+  emptyMessage,
+}) => {
   // ==================== HOOKS ====================
 
-  const { transactions, isLoading, error } = useTransactions(true);
+  const {
+    transactions: fetchedTransactions,
+    isLoading: fetchLoading,
+    error,
+  } = useTransactions(!externalTransactions);
 
   // ==================== COMPUTED VALUES ====================
+
+  const transactions = externalTransactions || fetchedTransactions;
+  const isLoading =
+    externalLoading !== undefined ? externalLoading : fetchLoading;
 
   const recentTransactions = useMemo(
     () => transactions.slice(0, limit),

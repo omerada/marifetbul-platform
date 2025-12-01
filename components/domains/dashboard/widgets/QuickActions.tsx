@@ -105,7 +105,7 @@ function QuickActionButton({
   showDescription?: boolean;
 }) {
   const Icon = action.icon;
-  const variant = action.variant || 'default';
+  const variant = (action.variant || 'default') as keyof typeof variantColors;
 
   return (
     <button

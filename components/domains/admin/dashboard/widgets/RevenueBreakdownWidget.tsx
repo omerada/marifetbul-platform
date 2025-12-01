@@ -46,47 +46,11 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatPercentage } from '@/lib/shared/formatters';
+import type { RevenueBreakdownDto } from '@/lib/api/admin-analytics';
 
 // ================================================
 // TYPES
 // ================================================
-
-export interface RevenueBreakdownDto {
-  summary: {
-    grossRevenue: number;
-    netRevenue: number;
-    platformFee: number;
-    sellerEarnings: number;
-  };
-  growth: {
-    percentage: number;
-    trend: 'UP' | 'DOWN' | 'STABLE';
-    comparisonPeriod: string;
-  };
-  transactions: {
-    total: number;
-    successful: number;
-    pending: number;
-    failed: number;
-    refunded: number;
-  };
-  paymentMethods: Array<{
-    method: string;
-    count: number;
-    amount: number;
-    percentage: number;
-  }>;
-  platformFees: {
-    collected: number;
-    pending: number;
-    rate: number;
-  };
-  healthIndicators: {
-    successRate: number;
-    refundRate: number;
-    status: 'EXCELLENT' | 'GOOD' | 'WARNING' | 'CRITICAL';
-  };
-}
 
 export interface RevenueBreakdownWidgetProps {
   /** Revenue breakdown data */

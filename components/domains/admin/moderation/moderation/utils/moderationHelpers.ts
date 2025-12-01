@@ -22,14 +22,20 @@ import type { ModerationFilters } from '../types/moderationTypes';
  * Get Tailwind color classes for moderation status
  */
 export function getStatusColor(status: string): string {
-  return STATUS_COLORS[status] || 'bg-gray-100 text-gray-800';
+  return (
+    (STATUS_COLORS as Record<string, string>)[status] ||
+    'bg-gray-100 text-gray-800'
+  );
 }
 
 /**
  * Get Tailwind color classes for moderation priority
  */
 export function getPriorityColor(priority: string): string {
-  return PRIORITY_COLORS[priority] || 'bg-gray-100 text-gray-800';
+  return (
+    (PRIORITY_COLORS as Record<string, string>)[priority] ||
+    'bg-gray-100 text-gray-800'
+  );
 }
 
 /**

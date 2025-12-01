@@ -120,7 +120,11 @@ export function usePackageReviewsHook({
           setStats(response.stats);
         }
 
-        logger.info('usePackageReviewsHook: Reviews fetched', { packageId, page, totalresponsepaginationtotalElements,  });
+        logger.info('usePackageReviewsHook: Reviews fetched', {
+          packageId,
+          page,
+          total: response.pagination.totalElements,
+        });
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to fetch reviews';

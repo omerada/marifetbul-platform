@@ -264,7 +264,7 @@ export default function MyJobsPage() {
               <AlertCircle className="h-5 w-5" />
               <div>
                 <p className="font-semibold">Bir hata oluştu</p>
-                <p className="text-sm">{error}</p>
+                <p className="text-sm">{error.message || String(error)}</p>
               </div>
             </div>
           </Card>

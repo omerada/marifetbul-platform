@@ -5,6 +5,7 @@
 // Auth hooks migrated to unifiedAuthStore (authSelectors)
 // Import directly from: @/lib/core/store/domains/auth/unifiedAuthStore
 
+export { useAuth } from './core/useAuth';
 export { useAuthGuard } from './core/useAuthGuard';
 
 // Session management hooks (Sprint 1.2)

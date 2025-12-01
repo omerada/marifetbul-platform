@@ -35,11 +35,8 @@ export {
   RevenueForecastWidget,
   RevenueForecastContainer,
   type RevenueBreakdownWidgetProps,
-  type RevenueBreakdownDto,
   type RevenueComparisonWidgetProps,
-  type RevenueComparisonDto,
   type RevenueForecastWidgetProps,
-  type RevenueForecastDto,
 } from './widgets';
 
 // Category Analytics Components

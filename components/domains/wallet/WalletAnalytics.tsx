@@ -126,9 +126,13 @@ const TYPE_COLORS: Record<string, string> = {
   DEBIT: CHART_COLORS.danger,
   ESCROW_HOLD: CHART_COLORS.warning,
   ESCROW_RELEASE: CHART_COLORS.success,
+  MILESTONE_PAYMENT: CHART_COLORS.primary,
   PAYOUT: CHART_COLORS.primary,
   REFUND: CHART_COLORS.purple,
   FEE: CHART_COLORS.gray,
+  COMMISSION: CHART_COLORS.gray,
+  DEPOSIT: CHART_COLORS.success,
+  WITHDRAWAL: CHART_COLORS.primary,
 };
 
 const TYPE_LABELS: Record<TransactionType, string> = {
@@ -136,9 +140,13 @@ const TYPE_LABELS: Record<TransactionType, string> = {
   DEBIT: 'Gider',
   ESCROW_HOLD: 'Escrow',
   ESCROW_RELEASE: 'Serbest',
+  MILESTONE_PAYMENT: 'Milestone',
   PAYOUT: 'Çekim',
   REFUND: 'İade',
   FEE: 'Komisyon',
+  COMMISSION: 'Komisyon',
+  DEPOSIT: 'Yatırma',
+  WITHDRAWAL: 'Çekim',
 };
 
 // ============================================================================

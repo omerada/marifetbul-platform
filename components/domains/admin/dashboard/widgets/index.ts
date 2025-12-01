@@ -11,7 +11,6 @@
 // Revenue Breakdown Widgets
 export {
   RevenueBreakdownWidget,
-  type RevenueBreakdownDto,
   type RevenueBreakdownWidgetProps,
 } from './RevenueBreakdownWidget';
 
@@ -23,7 +22,6 @@ export {
 // Revenue Comparison Widgets
 export {
   RevenueComparisonWidget,
-  type RevenueComparisonDto,
   type RevenueComparisonWidgetProps,
 } from './RevenueComparisonWidget';
 
@@ -38,7 +36,6 @@ export {
 // Revenue Forecast Widgets
 export {
   RevenueForecastWidget,
-  type RevenueForecastDto,
   type RevenueForecastWidgetProps,
 } from './RevenueForecastWidget';
 

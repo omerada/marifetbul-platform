@@ -46,6 +46,7 @@ import { ApproveDeliveryModal } from './ApproveDeliveryModal';
 import { RequestRevisionModal } from './RequestRevisionModal';
 import { CancelOrderModal } from './CancelOrderModal';
 import { DisputeCreationModal } from '@/components/domains/disputes/DisputeCreationModal';
+import { UnifiedDeliveryModal } from './UnifiedDeliveryModal';
 
 // ================================================
 // TYPES
@@ -292,7 +293,7 @@ export function OrderActions({
       )}
 
       {showDeliveryModal && (
-        <DeliverySubmissionModal
+        <UnifiedDeliveryModal
           isOpen={showDeliveryModal}
           onClose={() => setShowDeliveryModal(false)}
           order={order as any}

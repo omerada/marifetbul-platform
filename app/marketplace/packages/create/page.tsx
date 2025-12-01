@@ -16,6 +16,7 @@ import {
   Checkbox,
 } from '@/components/ui';
 import { useToast } from '@/hooks';
+import { createPackage } from '@/lib/api/packages';
 import type { CreateOrderMilestoneRequest } from '@/types/business/features/milestone';
 import { Info, Package, Plus } from 'lucide-react';
 
@@ -412,9 +413,7 @@ export default function CreatePackagePage() {
                 <Checkbox
                   id="enableMilestones"
                   checked={enableMilestones}
-                  onCheckedChange={(checked) =>
-                    setEnableMilestones(checked === true)
-                  }
+                  onChange={(e) => setEnableMilestones(e.target.checked)}
                 />
                 <label
                   htmlFor="enableMilestones"

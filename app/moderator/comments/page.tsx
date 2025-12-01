@@ -38,10 +38,10 @@ export default function CommentModerationPage() {
   // Get initial status from URL (default: PENDING)
   const initialStatus =
     (searchParams?.get('status') as
-      | 'PENDING'
-      | 'APPROVED'
-      | 'REJECTED'
-      | 'SPAM') || 'PENDING';
+      | 'pending'
+      | 'approved'
+      | 'rejected'
+      | 'spam') || 'pending';
 
   // Loading state
   if (isLoading) {

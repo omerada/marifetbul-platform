@@ -61,7 +61,7 @@ export interface AdvancedFilterPanelProps {
   onLoadPreset?: (preset: FilterPreset) => void;
 }
 
-type StatusOption = 'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'SPAM';
+type StatusOption = 'ALL' | 'pending' | 'approved' | 'rejected' | 'spam';
 
 // ================================================
 // CONSTANTS
@@ -80,25 +80,25 @@ const STATUS_OPTIONS: Array<{
     color: 'gray',
   },
   {
-    value: 'PENDING',
+    value: 'pending',
     label: 'Bekleyen',
     icon: <Clock className="h-4 w-4" />,
     color: 'yellow',
   },
   {
-    value: 'APPROVED',
+    value: 'approved',
     label: 'Onaylı',
     icon: <CheckCircle className="h-4 w-4" />,
     color: 'green',
   },
   {
-    value: 'REJECTED',
+    value: 'rejected',
     label: 'Reddedilen',
     icon: <XCircle className="h-4 w-4" />,
     color: 'red',
   },
   {
-    value: 'SPAM',
+    value: 'spam',
     label: 'Spam',
     icon: <AlertTriangle className="h-4 w-4" />,
     color: 'orange',
@@ -109,20 +109,20 @@ const DEFAULT_PRESETS: FilterPreset[] = [
   {
     id: 'urgent',
     name: 'Acil İnceleme',
-    filters: { status: 'PENDING', hasReports: true },
+    filters: { status: 'pending', hasReports: true },
     icon: <Flag className="h-4 w-4" />,
   },
   {
     id: 'recent-pending',
     name: 'Son Bekleyenler',
-    filters: { status: 'PENDING' },
+    filters: { status: 'pending' },
     icon: <Clock className="h-4 w-4" />,
   },
   {
     id: 'today-approved',
     name: 'Bugün Onaylananlar',
     filters: {
-      status: 'APPROVED',
+      status: 'approved',
       startDate: new Date().toISOString().split('T')[0],
     },
     icon: <CheckCircle className="h-4 w-4" />,
@@ -165,7 +165,7 @@ export function AdvancedFilterPanel({
   // ================================================
 
   const hasActiveFilters =
-    filters.status !== 'ALL' ||
+    (filters.status !== undefined && (filters.status as string) !== 'ALL') ||
     filters.startDate ||
     filters.endDate ||
     filters.hasReports ||
@@ -173,7 +173,7 @@ export function AdvancedFilterPanel({
     filters.postId;
 
   const activeFilterCount = [
-    filters.status !== 'ALL',
+    filters.status !== undefined && (filters.status as string) !== 'ALL',
     filters.startDate,
     filters.endDate,
     filters.hasReports,
@@ -195,7 +195,7 @@ export function AdvancedFilterPanel({
   const handleStatusChange = (status: StatusOption) => {
     onFilterChange({
       ...filters,
-      status,
+      status: status === 'ALL' ? undefined : status,
     });
   };
 
@@ -226,7 +226,7 @@ export function AdvancedFilterPanel({
   const handlePostIdFilterApply = () => {
     onFilterChange({
       ...filters,
-      postId: postIdFilter ? parseInt(postIdFilter, 10) : undefined,
+      postId: postIdFilter || undefined,
     });
   };
 
@@ -266,13 +266,13 @@ export function AdvancedFilterPanel({
     switch (status) {
       case 'ALL':
         return stats.total;
-      case 'PENDING':
+      case 'pending':
         return stats.pending;
-      case 'APPROVED':
+      case 'approved':
         return stats.approved;
-      case 'REJECTED':
+      case 'rejected':
         return stats.rejected;
-      case 'SPAM':
+      case 'spam':
         return stats.spam;
       default:
         return 0;

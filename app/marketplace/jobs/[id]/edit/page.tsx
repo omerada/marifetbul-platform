@@ -28,10 +28,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/core/useAuth';
 import { useJob } from '@/hooks/business/jobs/useJob';
 import { JobEditForm } from '@/components/domains/jobs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Button } from '@/components/ui';
+import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { Skeleton } from '@/components/ui';
 import { ArrowLeft, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 
@@ -49,7 +49,10 @@ export default function JobEditPage() {
 
   // ==================== AUTHORIZATION CHECK ====================
 
-  const isOwner = user?.id === job?.employer?.id;
+  const isOwner =
+    user && 'id' in user && user.id && job?.employerId
+      ? user.id === job.employerId
+      : false;
   const canEdit = job && isOwner && job.status !== 'COMPLETED';
 
   // Check if job has accepted proposals

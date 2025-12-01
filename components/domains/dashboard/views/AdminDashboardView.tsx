@@ -53,7 +53,6 @@ import {
 
 // Types
 import type { AdminDashboard, StatCardData } from '../types/dashboard.types';
-import type { AdminDashboardBackendDTO } from '@/types/dto/dashboard';
 
 // Utils
 import { formatCompactNumber } from '../utils';
@@ -257,7 +256,7 @@ export const AdminDashboardView = memo<AdminDashboardViewProps>(
 
       try {
         // Map backend DTO structure to expected API response format
-        const apiResponse: AdminDashboardBackendDTO = {
+        const apiResponse: any = {
           stats: backendData.stats ?? {
             users: {
               total: 0,

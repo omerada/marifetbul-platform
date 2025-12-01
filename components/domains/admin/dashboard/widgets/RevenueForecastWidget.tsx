@@ -46,30 +46,11 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/shared/formatters';
+import type { RevenueForecastDto } from '@/lib/api/admin-analytics';
 
 // ================================================
 // TYPES
 // ================================================
-
-export interface RevenueForecastDto {
-  predicted: {
-    amount: number;
-    date: string;
-    period: string;
-  };
-  confidence: {
-    lower: number;
-    upper: number;
-    level: number;
-  };
-  trend: {
-    direction: 'UP' | 'DOWN' | 'STABLE';
-    strength: 'STRONG' | 'MODERATE' | 'WEAK';
-    confidence: number;
-  };
-  historicalAverage: number;
-  basedOnDays: number;
-}
 
 export interface RevenueForecastWidgetProps {
   /** Revenue forecast data */

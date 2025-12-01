@@ -21,7 +21,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import { Card } from '@/components/ui/Card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import {
@@ -34,6 +34,7 @@ import {
   AlertCircle,
   Flag,
   RefreshCcw,
+  CreditCard,
 } from 'lucide-react';
 import {
   OrderWorkflowStepper,
@@ -53,6 +54,7 @@ import { PaymentRetryHistory } from '@/components/domains/payments/PaymentRetryH
 import { PaymentRetryButton } from '@/components/domains/payments';
 import { formatCurrency, formatDate } from '@/lib/shared/formatters';
 import type { OrderResponse, MilestoneResponse } from '@/types/backend-aligned';
+import { PaymentMode } from '@/types/business/features/order';
 import { enrichOrder, type OrderWithComputed } from '@/types/backend-aligned';
 import type { OrderMilestone } from '@/types/business/features/milestone';
 import { useWebSocket, useAuth, useOrderUpdates } from '@/hooks';
@@ -181,7 +183,7 @@ export default function OrderDetailPage() {
       setOrder(enrichOrder(data));
 
       // Determine user role based on authenticated user ID
-      if (user) {
+      if (user && 'id' in user && user.id) {
         const isSeller = data.sellerId === user.id;
         setUserRole(isSeller ? 'seller' : 'buyer');
       } else {
@@ -625,7 +627,12 @@ export default function OrderDetailPage() {
             <>
               {/* Payment Mode Display - Show payment info for all payment modes */}
               <PaymentModeDisplay
-                paymentMode={order.paymentMode}
+                paymentMode={
+                  (order.paymentMode === 'ONLINE' ||
+                  order.paymentMode === 'ESCROW'
+                    ? 'ESCROW_PROTECTED'
+                    : order.paymentMode || 'ESCROW_PROTECTED') as PaymentMode
+                }
                 orderStatus={order.status}
                 paymentProofUrl={order.paymentProofUrl}
                 paymentConfirmedAt={order.paymentConfirmedAt}
@@ -666,18 +673,27 @@ export default function OrderDetailPage() {
               {order.paymentMode === 'MANUAL_IBAN' &&
                 order.status === 'PENDING_PAYMENT' &&
                 order.sellerIban && (
-                  <IBANDisplayCard
-                    iban={order.sellerIban}
-                    orderStatus={order.status}
-                    userRole={userRole}
-                    sellerName={
-                      order.seller?.fullName || order.seller?.username
-                    }
-                    orderAmount={order.financials.total}
-                    currency={order.financials.currency}
-                    orderNumber={order.orderNumber}
-                    isPaymentConfirmed={false}
-                  />
+                  <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-blue-900 dark:text-blue-100">
+                        <CreditCard className="h-5 w-5" />
+                        Ödeme Bilgileri
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <p className="text-sm text-blue-800 dark:text-blue-200">
+                          Satıcı:{' '}
+                          {order.seller?.fullName || order.seller?.username}
+                        </p>
+                        <div className="rounded-lg bg-white p-3 dark:bg-gray-800">
+                          <p className="font-mono text-sm font-medium">
+                            {order.sellerIban}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 )}
 
               {/* Manual Payment Confirmation - Show for seller when payment pending */}
@@ -1103,9 +1119,7 @@ export default function OrderDetailPage() {
                         onaylandığında ödeme otomatik serbest bırakılır.
                       </p>
                       <Link href={`/dashboard/orders/${order.id}/milestones`}>
-                        <Button variant="default" size="sm">
-                          Milestone Oluştur →
-                        </Button>
+                        <Button size="sm">Milestone Oluştur →</Button>
                       </Link>
                     </div>
                   </div>
@@ -1121,12 +1135,9 @@ export default function OrderDetailPage() {
           {activeTab === 'messages' && (
             <Card className="p-6">
               <OrderMessagingPanel
-                orderId={order.id}
+                order={order}
+                currentUserId={user?.id || ''}
                 userRole={userRole}
-                onNewMessage={() => {
-                  // Update unread count
-                  setUnreadMessagesCount(0);
-                }}
               />
             </Card>
           )}

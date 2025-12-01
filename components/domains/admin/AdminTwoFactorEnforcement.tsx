@@ -65,11 +65,7 @@ export function AdminTwoFactorEnforcement({
   const [isCheckingStatus, setIsCheckingStatus] = useState(true);
 
   // Determine if user is admin or moderator
-  const isAdminUser =
-    user?.role === 'ADMIN' ||
-    user?.role === 'MODERATOR' ||
-    user?.role === 'admin' ||
-    user?.role === 'moderator';
+  const isAdminUser = user?.role === 'ADMIN' || user?.role === 'MODERATOR';
 
   /**
    * Check 2FA status on mount
@@ -159,12 +155,7 @@ export function AdminTwoFactorEnforcement({
 
         {/* Mandatory 2FA Setup Modal */}
         <Dialog open={showSetupModal} onOpenChange={() => {}}>
-          <DialogContent
-            className="max-w-2xl"
-            hideCloseButton
-            onInteractOutside={(e) => e.preventDefault()}
-            onEscapeKeyDown={(e) => e.preventDefault()}
-          >
+          <DialogContent className="max-w-2xl">
             <div className="space-y-6">
               {/* Warning Alert */}
               <Alert

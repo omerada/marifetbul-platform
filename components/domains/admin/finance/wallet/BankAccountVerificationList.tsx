@@ -54,7 +54,7 @@ import {
   rejectBankAccount,
   type BankAccountResponse,
 } from '@/lib/api/bank-accounts';
-import { maskIBAN } from '@/lib/services/bank-info-service';
+import { displayIBAN } from '@/lib/utils/iban-validator';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
@@ -238,7 +238,7 @@ export const BankAccountVerificationList: React.FC<
               {/* Masked IBAN */}
               <div className="mb-2 flex items-center gap-2 font-mono text-sm text-gray-800">
                 <CreditCard className="h-4 w-4 text-gray-400" />
-                {maskIBAN(account.iban)}
+                {displayIBAN(account.iban)}
               </div>
 
               {/* Created Date */}
@@ -437,7 +437,7 @@ export const BankAccountVerificationList: React.FC<
                   <div className="flex justify-between font-mono">
                     <span className="font-medium text-gray-600">IBAN:</span>
                     <span className="text-gray-900">
-                      {maskIBAN(selectedAction.account.iban)}
+                      {displayIBAN(selectedAction.account.iban)}
                     </span>
                   </div>
                 </div>

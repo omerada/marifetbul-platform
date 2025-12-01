@@ -99,7 +99,7 @@ export class WebSocketService {
     }
 
     this.setState(WebSocketState.CONNECTING);
-    logger.info('WebSocketService', { urlthisconfigurl,  });
+    logger.info('WebSocketService', { url: this.config.url });
 
     try {
       // Create STOMP client with SockJS
@@ -133,7 +133,9 @@ export class WebSocketService {
       // Activate the client
       this.client.activate();
     } catch (error) {
-      logger.error('WebSocketService: Failed to create client', undefined, { error });
+      logger.error('WebSocketService: Failed to create client', undefined, {
+        error,
+      });
       this.setState(WebSocketState.ERROR);
       this.handleReconnect();
     }
@@ -199,7 +201,6 @@ export class WebSocketService {
       return destination;
     }
 
-
     const subscription = this.client.subscribe(
       destination,
       (message: IMessage) => {
@@ -262,7 +263,7 @@ export class WebSocketService {
       throw new Error('WebSocket not connected');
     }
 
-    logger.debug('WebSocketService', { body,  });
+    logger.debug('WebSocketService', { body });
 
     this.client.publish({
       destination,

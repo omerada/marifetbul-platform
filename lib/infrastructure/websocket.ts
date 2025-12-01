@@ -168,7 +168,10 @@ export class WebSocketManager {
           this.stopHeartbeat();
 
           if (this.options.debug) {
-            logger.debug('WebSocket: Disconnected', { codeeventcode, reasoneventreason,  });
+            logger.debug('WebSocket: Disconnected', {
+              code: event.code,
+              reason: event.reason,
+            });
           }
 
           // Emit connection event
@@ -190,7 +193,10 @@ export class WebSocketManager {
           this.isConnecting = false;
 
           if (this.options.debug) {
-            logger.error('WebSocket: Error', error instanceof Error ? error : new Error(String(error)));
+            logger.error(
+              'WebSocket: Error',
+              error instanceof Error ? error : new Error(String(error))
+            );
           }
 
           // Emit error event
@@ -255,7 +261,10 @@ export class WebSocketManager {
     } catch (error) {
       this.stats.errors++;
       if (this.options.debug) {
-        logger.error('WebSocket: Send failed', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'WebSocket: Send failed',
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
       return false;
     }
@@ -327,7 +336,10 @@ export class WebSocketManager {
           handler(payload);
         } catch (error) {
           if (this.options.debug) {
-            logger.error('WebSocket: Handler error', error instanceof Error ? error : new Error(String(error)));
+            logger.error(
+              'WebSocket: Handler error',
+              error instanceof Error ? error : new Error(String(error))
+            );
           }
         }
       });
@@ -343,7 +355,10 @@ export class WebSocketManager {
       this.stats.messagesReceived++;
 
       if (this.options.debug) {
-        logger.debug('WebSocket: Received', { typemessagetype, payloadmessagepayload,  });
+        logger.debug('WebSocket: Received', {
+          type: message.type,
+          payload: message.payload,
+        });
       }
 
       // Handle heartbeat/pong messages
@@ -360,7 +375,10 @@ export class WebSocketManager {
     } catch (error) {
       this.stats.errors++;
       if (this.options.debug) {
-        logger.error('WebSocket: Parse error', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'WebSocket: Parse error',
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
     }
   }
@@ -389,7 +407,10 @@ export class WebSocketManager {
 
     this.reconnectTimer = setTimeout(() => {
       this.connect().catch((error) => {
-        logger.error('WebSocket: Reconnection failed', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'WebSocket: Reconnection failed',
+          error instanceof Error ? error : new Error(String(error))
+        );
 
         if (this.reconnectAttempts < this.options.maxReconnectAttempts) {
           this.scheduleReconnect();
@@ -469,7 +490,10 @@ export async function initializeWebSocket(): Promise<WebSocketManager> {
     await wsManager.connect();
     return wsManager;
   } catch (error) {
-    logger.error('Failed to initialize WebSocket', error instanceof Error ? error : new Error(String(error)));
+    logger.error(
+      'Failed to initialize WebSocket',
+      error instanceof Error ? error : new Error(String(error))
+    );
     throw error;
   }
 }

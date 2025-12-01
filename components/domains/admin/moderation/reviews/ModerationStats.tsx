@@ -15,7 +15,7 @@
 import { useState, useEffect } from 'react';
 import {
   type PlatformReviewStats,
-  adminModerationApi,
+  moderationApi,
 } from '@/lib/api/admin/moderation';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import {
@@ -77,11 +77,14 @@ export default function ModerationStats({
     try {
       setLoading(true);
       setError(null);
-      const data = await adminModerationApi.getPlatformStats();
+      const data = await moderationApi.getPlatformStats();
       setStats(data);
     } catch (err) {
       setError('İstatistikler yüklenemedi');
-      logger.error('Failed to load moderation stats', { error: err });
+      logger.error(
+        'Failed to load moderation stats',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
       setLoading(false);
     }

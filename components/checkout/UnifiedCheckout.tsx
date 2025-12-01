@@ -581,9 +581,9 @@ export function UnifiedCheckout({
     setIsProcessing(true);
 
     try {
-      await confirmManualPayment({
-        orderId: order.id,
-        paymentMethod: 'MANUAL_TRANSFER',
+      await confirmManualPayment(order.id, {
+        paymentReference: 'MANUAL_TRANSFER',
+        notes: 'Manuel ödeme bildirimi',
       });
 
       setStep('success');

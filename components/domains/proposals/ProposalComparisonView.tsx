@@ -39,7 +39,7 @@ export const ProposalComparisonView = memo<ProposalComparisonViewProps>(
     const minBudget = Math.min(...budgets);
     const maxBudget = Math.max(...budgets);
 
-    const ratings = proposals.map((p) => p.freelancer.rating || 0);
+    const ratings = proposals.map((p) => p.freelancerRating || 0);
     const maxRating = Math.max(...ratings);
 
     const getComparisonIndicator = (
@@ -119,20 +119,17 @@ export const ProposalComparisonView = memo<ProposalComparisonViewProps>(
                         >
                           <div className="flex items-center">
                             <Avatar
-                              src={proposal.freelancer.avatar}
-                              alt={`${proposal.freelancer.firstName || ''} ${proposal.freelancer.lastName || ''}`}
+                              src={proposal.freelancerAvatar}
+                              alt={proposal.freelancerName}
                               className="mr-3 h-10 w-10"
                             >
                               <AvatarFallback>
-                                {proposal.freelancer.firstName?.charAt(0) ||
-                                  '?'}
-                                {proposal.freelancer.lastName?.charAt(0) || ''}
+                                {proposal.freelancerName?.charAt(0) || '?'}
                               </AvatarFallback>
                             </Avatar>
                             <div>
                               <div className="text-sm font-medium text-gray-900">
-                                {proposal.freelancer.firstName || ''}{' '}
-                                {proposal.freelancer.lastName || ''}
+                                {proposal.freelancerName}
                               </div>
                               <div className="text-xs text-gray-500">
                                 ID: {proposal.freelancerId.slice(0, 8)}
@@ -158,24 +155,23 @@ export const ProposalComparisonView = memo<ProposalComparisonViewProps>(
                               <Star className="mr-1 h-4 w-4 fill-current text-yellow-400" />
                               <span
                                 className={`text-sm font-semibold ${
-                                  proposal.freelancer.rating === maxRating
+                                  proposal.freelancerRating === maxRating
                                     ? 'text-green-600'
                                     : 'text-gray-900'
                                 }`}
                               >
-                                {proposal.freelancer.rating?.toFixed(1) ||
-                                  '0.0'}
+                                {proposal.freelancerRating?.toFixed(1) || '0.0'}
                               </span>
                             </div>
                             {getComparisonIndicator(
-                              proposal.freelancer.rating || 0,
+                              proposal.freelancerRating || 0,
                               0,
                               maxRating,
                               false
                             )}
                           </div>
                           <div className="mt-1 text-xs text-gray-500">
-                            {proposal.freelancer.reviewCount || 0} değerlendirme
+                            Değerlendirme
                           </div>
                         </td>
                       ))}
@@ -239,11 +235,7 @@ export const ProposalComparisonView = memo<ProposalComparisonViewProps>(
                           key={proposal.id}
                           className="px-6 py-4 whitespace-nowrap"
                         >
-                          <span className="text-sm text-gray-900">
-                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                            {(proposal.freelancer as any).completedProjects ||
-                              0}
-                          </span>
+                          <span className="text-sm text-gray-500">-</span>
                         </td>
                       ))}
                     </tr>
@@ -256,21 +248,30 @@ export const ProposalComparisonView = memo<ProposalComparisonViewProps>(
                       {proposals.map((proposal) => (
                         <td key={proposal.id} className="px-6 py-4">
                           <div className="flex max-w-xs flex-wrap gap-1">
-                            {proposal.freelancer.skills
-                              .slice(0, 4)
-                              .map((skill, idx) => (
-                                <Badge
-                                  key={idx}
-                                  variant="secondary"
-                                  className="text-xs"
-                                >
-                                  {skill}
-                                </Badge>
-                              ))}
-                            {proposal.freelancer.skills.length > 4 && (
-                              <Badge variant="outline" className="text-xs">
-                                +{proposal.freelancer.skills.length - 4}
-                              </Badge>
+                            {proposal.freelancerSkills &&
+                            proposal.freelancerSkills.length > 0 ? (
+                              <>
+                                {proposal.freelancerSkills
+                                  .slice(0, 4)
+                                  .map((skill, idx) => (
+                                    <Badge
+                                      key={idx}
+                                      variant="secondary"
+                                      className="text-xs"
+                                    >
+                                      {skill}
+                                    </Badge>
+                                  ))}
+                                {proposal.freelancerSkills.length > 4 && (
+                                  <Badge variant="outline" className="text-xs">
+                                    +{proposal.freelancerSkills.length - 4}
+                                  </Badge>
+                                )}
+                              </>
+                            ) : (
+                              <span className="text-sm text-gray-500">
+                                Yetenek belirtilmemiş
+                              </span>
                             )}
                           </div>
                         </td>

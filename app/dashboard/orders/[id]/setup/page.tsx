@@ -32,9 +32,10 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { Card, Button, Badge } from '@/components/ui';
+import { Dialog, DialogContent } from '@/components/ui/Dialog';
 import { CreateMilestoneForm } from '@/components/domains/milestones';
 import { orderApi } from '@/lib/api/orders';
-import type { OrderResponse } from '@/types/backend-aligned';
+import type { OrderResponse, OrderStatus } from '@/types/backend-aligned';
 import { formatCurrency } from '@/lib/shared/formatters';
 import { toast } from 'sonner';
 import logger from '@/lib/infrastructure/monitoring/logger';
@@ -60,8 +61,8 @@ export default function OrderSetupPage() {
       try {
         setIsLoading(true);
         setError(null);
-        const data = await orderApi.getOrderById(orderId);
-        setOrder(data);
+        const response = await orderApi.getOrderById(orderId);
+        setOrder(response.data);
       } catch (err) {
         const error =
           err instanceof Error ? err : new Error('Sipariş yüklenemedi');
@@ -78,10 +79,10 @@ export default function OrderSetupPage() {
   // Validate order status
   useEffect(() => {
     if (order) {
-      // If order already has milestones or is not PENDING, redirect to detail page
-      if (order.status !== 'PENDING' && order.status !== 'ACCEPTED') {
+      // If order already has milestones or is not PENDING_PAYMENT, redirect to detail page
+      if (order.status !== 'PENDING_PAYMENT' && order.status !== 'PAID') {
         logger.warn(
-          'Order not in PENDING/ACCEPTED status, redirecting to detail',
+          'Order not in PENDING_PAYMENT/PAID status, redirecting to detail',
           {
             orderId: order.id,
             status: order.status,
@@ -335,7 +336,6 @@ export default function OrderSetupPage() {
                 </div>
                 <Button
                   onClick={handleMilestonesSetup}
-                  variant="default"
                   className="w-full"
                   size="lg"
                 >
@@ -349,14 +349,20 @@ export default function OrderSetupPage() {
 
       {/* Milestone Creation Form (Modal) */}
       {showMilestoneWizard && order && (
-        <CreateMilestoneForm
-          orderId={order.id}
-          orderTotal={order.totalAmount}
-          currency={order.currency}
-          isOpen={showMilestoneWizard}
-          onClose={() => setShowMilestoneWizard(false)}
-          onSuccess={handleMilestonesCreated}
-        />
+        <Dialog
+          open={showMilestoneWizard}
+          onOpenChange={setShowMilestoneWizard}
+        >
+          <DialogContent className="max-w-4xl">
+            <CreateMilestoneForm
+              orderId={order.id}
+              orderTotal={order.totalAmount}
+              currency={order.currency}
+              onSuccess={handleMilestonesCreated}
+              onCancel={() => setShowMilestoneWizard(false)}
+            />
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );

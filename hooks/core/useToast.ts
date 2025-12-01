@@ -19,6 +19,8 @@ export interface Toast {
   type: ToastType;
   title: string;
   message?: string;
+  description?: string; // Alias for message (backward compatibility)
+  variant?: ToastType; // Alias for type (backward compatibility)
   duration?: number;
   action?: {
     label: string;
@@ -125,7 +127,8 @@ const toastManager = new ToastManager();
 
 export interface UseToastReturn {
   toasts: Toast[];
-  toast: typeof toastManager;
+  toast: (options: Omit<Toast, 'id'>) => string; // Callable function
+  toastManager: ToastManager; // Original instance if needed
   addToast: (toast: Omit<Toast, 'id'>) => string;
   removeToast: (id: string) => void;
   clearToasts: () => void;
@@ -196,7 +199,8 @@ export function useToast(): UseToastReturn {
   return useMemo(
     () => ({
       toasts,
-      toast: toastManager,
+      toast: addToast, // Make toast callable
+      toastManager, // Keep original instance available
       addToast,
       removeToast,
       clearToasts,

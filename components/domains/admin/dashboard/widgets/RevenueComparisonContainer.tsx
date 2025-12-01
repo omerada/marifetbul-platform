@@ -14,10 +14,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {
-  RevenueComparisonWidget,
-  type RevenueComparisonDto,
-} from './RevenueComparisonWidget';
+import { RevenueComparisonWidget } from './RevenueComparisonWidget';
+import type { RevenueComparisonDto } from '@/lib/api/admin-analytics';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================

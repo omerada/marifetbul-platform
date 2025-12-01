@@ -20,6 +20,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import {
   BankAccountVerificationTable,
   BankAccountStatistics,
@@ -32,6 +33,7 @@ import {
   verifyBankAccount,
   rejectBankAccount,
   getBankAccountStatistics,
+  type BankAccountResponse,
 } from '@/lib/api/bank-accounts';
 import {
   Building2,
@@ -58,19 +60,8 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 // TYPES
 // ================================================
 
-interface BankAccount {
-  id: string;
-  userId: string;
-  iban: string;
-  formattedIban?: string;
-  bankCode: string;
-  bankName: string;
-  accountHolder: string;
-  status: 'PENDING' | 'VERIFIED' | 'REJECTED';
-  createdAt: string;
-  verifiedAt?: string;
-  rejectionReason?: string;
-}
+// Use BankAccountResponse from backend API
+// Removed local BankAccount interface for backend alignment
 
 // ================================================
 // COMPONENT
@@ -78,18 +69,18 @@ interface BankAccount {
 
 export default function AdminBankAccountVerificationPage() {
   const { success, error: showError } = useToast();
+  const user = useAuthStore((state) => state.user);
 
   // State
-  const [accounts, setAccounts] = useState<BankAccount[]>([]);
+  const [accounts, setAccounts] = useState<BankAccountResponse[]>([]);
   const [stats, setStats] = useState<BankAccountStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
-  const [selectedAccount, setSelectedAccount] = useState<BankAccount | null>(
-    null
-  );
+  const [selectedAccount, setSelectedAccount] =
+    useState<BankAccountResponse | null>(null);
   const [showBulkModal, setShowBulkModal] = useState(false);
   const [bulkAccountIds, setBulkAccountIds] = useState<string[]>([]);
 
@@ -112,11 +103,15 @@ export default function AdminBankAccountVerificationPage() {
         setTotalElements(response.totalElements);
         setCurrentPage(response.number);
       } catch (error) {
-        logger.error('Failed to fetch pending bank accounts', error instanceof Error ? error : new Error(String(error)), {
-          component: 'AdminBankAccountVerificationPage',
-          action: 'fetchPendingAccounts',
-          page,
-        });
+        logger.error(
+          'Failed to fetch pending bank accounts',
+          error instanceof Error ? error : new Error(String(error)),
+          {
+            component: 'AdminBankAccountVerificationPage',
+            action: 'fetchPendingAccounts',
+            page,
+          }
+        );
         showError('Hata', 'Bekleyen hesaplar yüklenirken hata oluştu');
       } finally {
         setIsLoading(false);
@@ -130,10 +125,14 @@ export default function AdminBankAccountVerificationPage() {
       const response = await getBankAccountStatistics();
       setStats(response);
     } catch (error) {
-      logger.error('Failed to fetch bank account statistics', error instanceof Error ? error : new Error(String(error)), {
-        component: 'AdminBankAccountVerificationPage',
-        action: 'fetchStatistics',
-      });
+      logger.error(
+        'Failed to fetch bank account statistics',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'AdminBankAccountVerificationPage',
+          action: 'fetchStatistics',
+        }
+      );
     }
   }, []);
 
@@ -157,11 +156,15 @@ export default function AdminBankAccountVerificationPage() {
       success('Başarılı', 'Banka hesabı onaylandı');
       await refreshData();
     } catch (error) {
-      logger.error('Failed to verify bank account', error instanceof Error ? error : new Error(String(error)), {
-        component: 'AdminBankAccountVerificationPage',
-        action: 'handleVerify',
-        accountId,
-      });
+      logger.error(
+        'Failed to verify bank account',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'AdminBankAccountVerificationPage',
+          action: 'handleVerify',
+          accountId,
+        }
+      );
       showError('Hata', 'Hesap onaylanırken hata oluştu');
     }
   };
@@ -172,17 +175,21 @@ export default function AdminBankAccountVerificationPage() {
       success('Başarılı', 'Banka hesabı reddedildi');
       await refreshData();
     } catch (error) {
-      logger.error('Failed to reject bank account', error instanceof Error ? error : new Error(String(error)), {
-        component: 'AdminBankAccountVerificationPage',
-        action: 'handleReject',
-        accountId,
-        reason,
-      });
+      logger.error(
+        'Failed to reject bank account',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'AdminBankAccountVerificationPage',
+          action: 'handleReject',
+          accountId,
+          reason,
+        }
+      );
       showError('Hata', 'Hesap reddedilirken hata oluştu');
     }
   };
 
-  const handleViewDetails = (account: BankAccount) => {
+  const handleViewDetails = (account: BankAccountResponse) => {
     setSelectedAccount(account);
   };
 
@@ -422,7 +429,7 @@ export default function AdminBankAccountVerificationPage() {
                       IBAN
                     </label>
                     <div className="rounded-lg border border-gray-300 bg-gray-50 p-3 font-mono text-gray-900">
-                      {selectedAccount.formattedIban || selectedAccount.iban}
+                      {selectedAccount.maskedIban || selectedAccount.iban}
                     </div>
                   </div>
 

@@ -20,7 +20,7 @@ import { PayoutDashboard } from '@/components/domains/wallet';
 import { UnifiedPayoutHistory } from '@/components/domains/wallet';
 import { EscrowList, EscrowBalanceCard } from '@/components/domains/wallet';
 import { BankAccountList, BankAccountForm } from '@/components/domains/wallet';
-import { TransactionDisplay } from '@/components/domains/wallet/TransactionDisplay';
+import { RecentTransactionsWidget } from '@/components/domains/wallet';
 import { UnifiedTransactionFilters } from '@/components/domains/wallet';
 import { UpcomingAutoReleaseWidget } from '@/components/domains/wallet/widgets/UpcomingAutoReleaseWidget';
 import { ObjectReleaseModal } from '@/components/domains/wallet/ObjectReleaseModal';
@@ -352,16 +352,11 @@ export function UnifiedWalletPage() {
             </div>
 
             {/* Transaction Display Component */}
-            <TransactionDisplay
+            <RecentTransactionsWidget
               transactions={displayTransactions}
               isLoading={walletLoading}
-              viewMode="table"
-              allowViewModeChange={true}
-              showFilters={false}
-              showExport={true}
-              showRefresh={true}
-              showPagination={false}
-              onRefresh={refreshWallet}
+              showTitle={false}
+              showViewAll={false}
               emptyMessage="Henüz işlem geçmişiniz bulunmuyor"
             />
           </Card>
@@ -444,7 +439,7 @@ export function UnifiedWalletPage() {
                 toast({
                   title: 'Emanet Serbest Bırakma',
                   description: 'İşlem için onay bekleniyor...',
-                  variant: 'default',
+                  type: 'info',
                 });
               }}
               onDisputeRequest={(item) => {
@@ -456,7 +451,7 @@ export function UnifiedWalletPage() {
                   title: 'İtiraz Bildirimi',
                   description:
                     'Destek ekibimiz en kısa sürede iletişime geçecek',
-                  variant: 'default',
+                  type: 'info',
                 });
               }}
               onItemClick={(item) => {

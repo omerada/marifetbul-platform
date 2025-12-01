@@ -114,7 +114,11 @@ export function BulkActionToolbar({
         toast.error(`${response.failureCount} yorum onaylanamadı`, {
           description: 'Detaylar için loglara bakın',
         });
-        logger.error('Failed comment approvals:', response.failures);
+        logger.error(
+          'Failed comment approvals:',
+          new Error(`${response.failureCount} failures`),
+          { failures: response.failures }
+        );
       }
 
       onActionComplete();
@@ -151,7 +155,11 @@ export function BulkActionToolbar({
 
       if (response.failureCount > 0) {
         toast.error(`${response.failureCount} yorum reddedilemedi`);
-        logger.error('Failed comment rejections:', response.failures);
+        logger.error(
+          'Failed comment rejections',
+          new Error(`${response.failureCount} failures`),
+          { failures: response.failures }
+        );
       }
 
       setShowRejectDialog(false);
@@ -200,7 +208,11 @@ export function BulkActionToolbar({
 
       if (response.failureCount > 0) {
         toast.error(`${response.failureCount} yorum işaretlenemedi`);
-        logger.error('Failed spam marking:', response.failures);
+        logger.error(
+          'Failed spam marking',
+          new Error(`${response.failureCount} failures`),
+          { failures: response.failures }
+        );
       }
 
       onActionComplete();

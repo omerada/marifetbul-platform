@@ -89,7 +89,11 @@ export function useInfiniteScroll<T>({
       setPage(nextPage);
       setHasMore(result.hasMore);
 
-      logger.debug('useInfiniteScroll: Loaded page', { pagenextPage, itemsLoadedresultdatalength, hasMoreresulthasMore,  });
+      logger.debug('useInfiniteScroll: Loaded page', {
+        page: nextPage,
+        itemsLoaded: result.data.length,
+        hasMore: result.hasMore,
+      });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to load more data';
@@ -121,7 +125,10 @@ export function useInfiniteScroll<T>({
       setData(result.data);
       setHasMore(result.hasMore);
 
-      logger.debug('useInfiniteScroll: Refreshed data', { itemsLoadedresultdatalength, hasMoreresulthasMore,  });
+      logger.debug('useInfiniteScroll: Refreshed data', {
+        itemsLoadedresultdatalength,
+        hasMoreresulthasMore,
+      });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to refresh data';

@@ -67,7 +67,7 @@ export default function ReviewModerationPage() {
   }
 
   // Determine role for component
-  const role = isAdmin ? 'admin' : 'moderator';
+  const role = isAdmin ? 'ADMIN' : 'MODERATOR';
   const roleColor = isAdmin ? 'blue' : 'purple';
   const RoleIcon = isAdmin ? Shield : UserCheck;
 

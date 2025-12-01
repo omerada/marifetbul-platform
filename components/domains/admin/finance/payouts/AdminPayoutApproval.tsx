@@ -211,7 +211,11 @@ export function AdminPayoutApproval({
                     Ödeme Yöntemi
                   </div>
                   <div className="mt-0.5 text-sm">
-                    {payout.paymentMethodDetails || 'Bilgi yok'}
+                    {typeof payout.paymentMethodDetails === 'string'
+                      ? payout.paymentMethodDetails
+                      : payout.paymentMethodDetails
+                        ? JSON.stringify(payout.paymentMethodDetails)
+                        : 'Bilgi yok'}
                   </div>
                 </div>
               </div>

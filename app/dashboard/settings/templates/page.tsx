@@ -127,7 +127,10 @@ export default function TemplatesPage() {
         category: 'CUSTOM',
       });
     } catch (err) {
-      logger.error('Failed to create template', { error: err });
+      logger.error(
+        'Failed to create template',
+        err instanceof Error ? err : new Error(String(err))
+      );
     }
   };
 
@@ -144,10 +147,13 @@ export default function TemplatesPage() {
       setIsEditModalOpen(false);
       setSelectedTemplate(null);
     } catch (err) {
-      logger.error('Failed to update template', {
-        templateId: selectedTemplate.id,
-        error: err,
-      });
+      logger.error(
+        'Failed to update template',
+        err instanceof Error ? err : new Error(String(err)),
+        {
+          templateId: selectedTemplate.id,
+        }
+      );
     }
   };
 
@@ -159,10 +165,13 @@ export default function TemplatesPage() {
       setIsDeleteModalOpen(false);
       setSelectedTemplate(null);
     } catch (err) {
-      logger.error('Failed to delete template', {
-        templateId: selectedTemplate.id,
-        error: err,
-      });
+      logger.error(
+        'Failed to delete template',
+        err instanceof Error ? err : new Error(String(err)),
+        {
+          templateId: selectedTemplate.id,
+        }
+      );
     }
   };
 

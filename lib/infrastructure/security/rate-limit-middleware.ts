@@ -243,8 +243,8 @@ export function withRateLimit(
       // Check if should skip
       if (skip && (await skip(request))) {
         logger.debug('Rate limiting skipped', {
-          urlrequesturl,
-          methodrequestmethod,
+          url: request.url,
+          method: request.method,
         });
         return await handler(request, context);
       }
@@ -258,11 +258,11 @@ export function withRateLimit(
       if (!result.allowed) {
         logger.warn('Rate limit exceeded', {
           identifier,
-          urlrequesturl,
-          methodrequestmethod,
-          countresultcount,
-          limitresultlimit,
-          resetAfterresultresetAfter,
+          url: request.url,
+          method: request.method,
+          count: result.count,
+          limit: result.limit,
+          resetAfter: result.resetAfter,
         });
 
         // Call exceeded callback
@@ -300,10 +300,14 @@ export function withRateLimit(
       return includeHeaders ? addRateLimitHeaders(response, result) : response;
     } catch (error) {
       const err = error;
-      logger.error('Rate limit middleware error', err instanceof Error ? err : new Error(String(err)), {
-        url: request.url,
-        method: request.method,
-      });
+      logger.error(
+        'Rate limit middleware error',
+        err instanceof Error ? err : new Error(String(err)),
+        {
+          url: request.url,
+          method: request.method,
+        }
+      );
 
       // Re-throw to let error handlers deal with it
       throw error;

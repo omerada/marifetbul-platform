@@ -22,11 +22,11 @@ import type {
   UnifiedDashboardData,
   DashboardPeriod,
   ModerationItem,
-  ActivityItem,
-  QuickAction,
-  ChartWidgetData,
   CacheMetadata,
   TrendIndicator,
+  ChartWidgetData,
+  ActivityItem,
+  QuickAction,
 } from '@/types/core/dashboard';
 
 // Re-export for convenience
@@ -38,11 +38,11 @@ export type {
   UnifiedDashboardData,
   DashboardPeriod,
   ModerationItem,
-  ActivityItem,
-  QuickAction,
-  ChartWidgetData,
   CacheMetadata,
   TrendIndicator,
+  ChartWidgetData,
+  ActivityItem,
+  QuickAction,
 };
 
 // ============================================================================
@@ -213,22 +213,6 @@ export interface ChartConfig {
   responsive?: boolean;
 }
 
-/**
- * Chart widget data
- */
-export interface ChartWidgetData {
-  /** Unique identifier */
-  id: string;
-  /** Chart title */
-  title: string;
-  /** Chart subtitle */
-  subtitle?: string;
-  /** Chart series */
-  series: ChartSeries[];
-  /** Chart configuration */
-  config: ChartConfig;
-}
-
 // ============================================================================
 // ACTIVITY / TIMELINE TYPES
 // ============================================================================
@@ -262,43 +246,6 @@ export type ActivityStatus =
 /**
  * Single activity/event
  */
-export interface ActivityItem {
-  /** Unique identifier */
-  id: string;
-  /** Activity type */
-  type: ActivityType;
-  /** Activity title */
-  title: string;
-  /** Activity description */
-  description?: string;
-  /** Activity status */
-  status: ActivityStatus;
-  /** Icon component name (as string for serialization) */
-  icon?: string;
-  /** Icon color */
-  iconColor?: string;
-  /** Navigation link */
-  link?: string;
-  /** Timestamp (ISO string) */
-  timestamp: string;
-  /** User who performed the action */
-  user?: {
-    id: string;
-    name: string;
-    avatar?: string;
-  };
-  /** Related entity */
-  entity?: {
-    id: string;
-    type: string;
-    title: string;
-  };
-  /** Action buttons */
-  actions?: ActivityAction[];
-  /** Additional metadata */
-  metadata?: Record<string, unknown>;
-}
-
 /**
  * Activity action button
  */
@@ -338,31 +285,6 @@ export interface ActivityTimelineConfig {
 /**
  * Quick action button
  */
-export interface QuickAction {
-  /** Unique identifier */
-  id: string;
-  /** Action label */
-  label: string;
-  /** Action description */
-  description?: string;
-  /** Icon component (LucideIcon for client-side rendering) */
-  icon: LucideIcon;
-  /** Icon color */
-  iconColor?: string;
-  /** Action link (for navigation) */
-  href?: string;
-  /** Action handler (for buttons) */
-  onClick?: () => void;
-  /** Whether action is disabled */
-  disabled?: boolean;
-  /** Badge count */
-  badge?: number;
-  /** Action variant */
-  variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger';
-  /** Whether action requires permission */
-  requiredPermission?: string;
-}
-
 /**
  * Quick actions grid configuration
  */

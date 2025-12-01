@@ -258,12 +258,7 @@ export function SessionTimeoutWarning({
 
   return (
     <Dialog open={showWarning} onOpenChange={() => {}}>
-      <DialogContent
-        className="sm:max-w-md"
-        hideCloseButton
-        onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={(e) => e.preventDefault()}
-      >
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <div className="rounded-lg bg-yellow-100 p-2">

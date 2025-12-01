@@ -70,6 +70,9 @@ export type {
   ReportStatistics,
 } from './business/report';
 
+// Moderation types (Blog comments, etc.)
+export type { BlogCommentDto } from './business/moderation';
+
 // Admin Dashboard (Sprint 3.2)
 export * from './business/admin-dashboard';
 
@@ -239,9 +242,9 @@ export interface Order {
   timeline?: OrderTimeline[];
   milestones?: OrderTimeline[];
   title?: string;
-  description?: string; 
+  description?: string;
   amount?: number;
-  deliveryDate?: string; 
+  deliveryDate?: string;
   userId?: string;
   user?: User;
   subtotal?: number;

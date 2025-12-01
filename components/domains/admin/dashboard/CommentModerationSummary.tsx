@@ -215,9 +215,9 @@ export function CommentModerationSummary({
                 Son Yorumlar
               </h3>
             </div>
-            {data.pending > 0 && (
+            {stats.pending > 0 && (
               <span className="rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-600">
-                {data.pending} Bekliyor
+                {stats.pending} Bekliyor
               </span>
             )}
           </div>
@@ -272,8 +272,8 @@ export function CommentModerationSummary({
                     <p className="text-xs text-gray-500">
                       {new Date(comment.createdAt).toLocaleDateString('tr-TR')}
                     </p>
-                    {(comment.approved === null ||
-                      comment.approved === undefined) && (
+                    {(comment.approvedAt === null ||
+                      comment.approvedAt === undefined) && (
                       <Link
                         href={`/admin/moderation?commentId=${comment.id}`}
                         className="text-xs font-medium text-blue-600 hover:text-blue-700"
@@ -288,14 +288,14 @@ export function CommentModerationSummary({
           )}
         </div>
 
-        {showViewAllButton && data.total > maxRecentComments && (
+        {showViewAllButton && stats && comments.length > maxRecentComments && (
           <div className="border-t border-gray-200 px-6 py-4">
             <Link
               href="/admin/moderation"
               className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700"
             >
               <TrendingUp className="h-4 w-4" />
-              Tümünü Görüntüle ({data.total} yorum)
+              Tümünü Görüntüle ({comments.length} yorum)
             </Link>
           </div>
         )}

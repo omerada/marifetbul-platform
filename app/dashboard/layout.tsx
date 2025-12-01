@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  DashboardSidebar,
-  DashboardHeader,
-} from '@/components/domains/dashboard';
+import { DashboardSidebar } from '@/components/domains/dashboard';
 
 export default function DashboardLayout({
   children,
@@ -16,9 +13,6 @@ export default function DashboardLayout({
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Dashboard Header */}
-        <DashboardHeader />
-
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-7xl">{children}</div>

@@ -47,33 +47,26 @@ export interface ApiResponse<T = unknown> {
  * Used for endpoints that return Page<T> from backend
  *
  * @template T - Type of items in the content array
- * @version 1.0.0 - Backend-compatible
+ * @version 2.0.0 - Backend-compatible (aligned with backend-aligned.ts)
+ * @see types/backend-aligned.ts for the canonical definition
  */
 export interface PageResponse<T = unknown> {
   /** Array of items in current page */
   content: T[];
-  /** Current page number (0-indexed on backend, can be 0 or 1-indexed on frontend) */
-  page?: number; // For backend compatibility (renamed from pageNumber)
-  pageNumber?: number; // Spring Boot native field
+  /** Current page number (0-indexed, Spring Boot standard) */
+  page: number;
   /** Items per page */
-  size?: number; // For backend compatibility (renamed from pageSize)
-  pageSize?: number; // Spring Boot native field
+  size: number;
   /** Total number of items across all pages */
   totalElements: number;
   /** Total number of pages */
   totalPages: number;
-  /** Number of items in current page */
-  numberOfElements?: number;
-  /** Is this the first page? */
-  first?: boolean;
   /** Is this the last page? */
-  last?: boolean;
+  last: boolean;
+  /** Is this the first page? */
+  first: boolean;
   /** Is the content empty? */
-  empty?: boolean;
-  /** Has next page? */
-  hasNext?: boolean;
-  /** Has previous page? */
-  hasPrevious?: boolean;
+  empty: boolean;
 }
 
 /**

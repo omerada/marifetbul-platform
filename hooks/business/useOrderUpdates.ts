@@ -253,7 +253,7 @@ export function useOrderUpdates(
 
     logger.info('useOrderUpdates', {
       orderId,
-      topicsorderTopic,
+      topics: orderTopic,
       userQueueTopic,
     });
 

@@ -121,10 +121,14 @@ function groupActivitiesByDate(
  * Single Activity Item Component
  */
 function ActivityItemComponent({ activity }: { activity: ActivityItem }) {
-  const IconComponent = activity.icon || activityIcons[activity.type] || Clock;
+  const activityIconsTyped: Record<string, any> = activityIcons;
+  const activityColorsTyped: Record<string, string> = activityColors;
+
+  const IconComponent =
+    activity.icon || activityIconsTyped[activity.type] || Clock;
   const iconColor =
     activity.iconColor ||
-    activityColors[activity.type] ||
+    activityColorsTyped[activity.type] ||
     activityColors.system;
 
   return (

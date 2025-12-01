@@ -51,26 +51,26 @@ export function BulkRefundActions({
 
       // Show detailed success/failure toast
       if (response.failedCount === 0) {
-        toast.success('Toplu Onay Baþarýlý', {
-          description: `${response.approvedCount} iade talebi onaylandý. Toplam: ?${response.totalAmountApproved?.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}`,
+        toast.success('Toplu Onay Baï¿½arï¿½lï¿½', {
+          description: `${response.approvedCount} iade talebi onaylandï¿½. Toplam: ?${response.totalAmountApproved?.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}`,
           duration: 5000,
         });
       } else if (response.approvedCount > 0) {
-        toast.warning('Kýsmi Baþarý', {
-          description: `${response.approvedCount} onaylandý, ${response.failedCount} baþarýsýz oldu.`,
+        toast.warning('Kï¿½smi Baï¿½arï¿½', {
+          description: `${response.approvedCount} onaylandï¿½, ${response.failedCount} baï¿½arï¿½sï¿½z oldu.`,
           duration: 7000,
         });
       } else {
-        toast.error('Toplu Onay Baþarýsýz', {
-          description: `${response.failedCount} iade talebi onaylanamadý.`,
+        toast.error('Toplu Onay Baï¿½arï¿½sï¿½z', {
+          description: `${response.failedCount} iade talebi onaylanamadï¿½.`,
           duration: 7000,
         });
       }
 
       // Log detailed errors
       if (response.errors && response.errors.length > 0) {
-        logger.error('[BulkRefundActions] Bulk approval errors:', {
-          errors: response.errors,
+        logger.error('[BulkRefundActions] Bulk approval errors', undefined, {
+          errorDetails: response.errors.map(String),
           failedCount: response.failedCount,
         });
       }
@@ -78,10 +78,13 @@ export function BulkRefundActions({
       setNotes('');
       setShowNotesInput(false);
     } catch (error) {
-      logger.error('[BulkRefundActions] Bulk approve failed:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        '[BulkRefundActions] Bulk approve failed:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       toast.error('Hata', {
         description:
-          'Toplu onaylama sýrasýnda bir hata oluþtu. Lütfen tekrar deneyin.',
+          'Toplu onaylama sï¿½rasï¿½nda bir hata oluï¿½tu. Lï¿½tfen tekrar deneyin.',
       });
     } finally {
       setIsProcessing(false);
@@ -95,12 +98,12 @@ export function BulkRefundActions({
           <div className="flex items-center gap-2">
             <CheckCircle className="text-primary h-5 w-5" />
             <span className="font-medium">
-              {selectedCount} iade talebi seçildi
+              {selectedCount} iade talebi seï¿½ildi
             </span>
           </div>
           <Button variant="ghost" size="sm" onClick={onClearSelection}>
             <X className="mr-2 h-4 w-4" />
-            Seçimi Temizle
+            Seï¿½imi Temizle
           </Button>
         </div>
 
@@ -111,7 +114,7 @@ export function BulkRefundActions({
               id="bulkNotes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Toplu onay için bir not ekleyin..."
+              placeholder="Toplu onay iï¿½in bir not ekleyin..."
               rows={3}
             />
           </div>
@@ -125,7 +128,7 @@ export function BulkRefundActions({
                 disabled={isProcessing}
               >
                 <CheckCircle className="mr-2 h-4 w-4" />
-                Seçilenleri Onayla
+                Seï¿½ilenleri Onayla
               </Button>
               <Button
                 variant="outline"
@@ -139,7 +142,7 @@ export function BulkRefundActions({
             <>
               <Button onClick={handleBulkApprove} disabled={isProcessing}>
                 <CheckCircle className="mr-2 h-4 w-4" />
-                Onayý Tamamla
+                Onayï¿½ Tamamla
               </Button>
               <Button
                 variant="outline"
@@ -149,7 +152,7 @@ export function BulkRefundActions({
                 }}
                 disabled={isProcessing}
               >
-                Ýptal
+                ï¿½ptal
               </Button>
             </>
           )}

@@ -89,13 +89,14 @@ import {
   retryFailedBatches,
   cancelStuckBatches,
 } from '@/lib/api/admin/batch-payout-api';
-import { getAdminPayouts } from '@/lib/api/admin/payout-admin-api';
+import { payoutAdminApi } from '@/lib/api/admin/payout-admin-api';
 import type {
   Payout,
   PayoutBatchResponse,
   PayoutBatchStatus,
   BatchProcessingStats,
 } from '@/types/business/features/wallet';
+import { PayoutStatus } from '@/types/business/features/wallet';
 
 // ============================================================================
 // COMPONENT
@@ -136,8 +137,8 @@ export default function BatchPayoutManager({
   const fetchPendingPayouts = useCallback(async () => {
     try {
       setIsLoadingPayouts(true);
-      const response = await getAdminPayouts({
-        status: 'PENDING',
+      const response = await payoutAdminApi.getPayouts({
+        status: PayoutStatus.PENDING,
         page: 0,
         size: 100,
       });
@@ -145,9 +146,9 @@ export default function BatchPayoutManager({
     } catch (error) {
       logger.error('Error fetching payouts', error as Error);
       toast({
+        type: 'error',
         title: 'Hata',
         description: 'Para çekme talepleri yüklenemedi',
-        variant: 'destructive',
       });
     } finally {
       setIsLoadingPayouts(false);
@@ -185,6 +186,7 @@ export default function BatchPayoutManager({
 
       if (updated.status === 'COMPLETED' || updated.status === 'FAILED') {
         toast({
+          type: updated.status === 'COMPLETED' ? 'success' : 'error',
           title:
             updated.status === 'COMPLETED'
               ? 'Batch Tamamlandı'
@@ -193,7 +195,6 @@ export default function BatchPayoutManager({
             updated.status === 'COMPLETED'
               ? `${updated.successCount}/${updated.totalCount} ödeme başarıyla işlendi`
               : updated.errorMessage || 'Batch işleme hatası',
-          variant: updated.status === 'COMPLETED' ? 'default' : 'destructive',
         });
 
         await Promise.all([
@@ -263,9 +264,9 @@ export default function BatchPayoutManager({
   const handleCreateBatch = async (autoProcess: boolean = false) => {
     if (selectedPayouts.size === 0) {
       toast({
+        type: 'warning',
         title: 'Uyarı',
         description: 'Lütfen en az bir para çekme talebi seçin',
-        variant: 'destructive',
       });
       return;
     }
@@ -282,6 +283,7 @@ export default function BatchPayoutManager({
       setActiveBatch(result.batch);
 
       toast({
+        type: 'success',
         title: 'Başarılı',
         description: `Batch ${result.batch.batchNumber} oluşturuldu`,
       });
@@ -297,12 +299,12 @@ export default function BatchPayoutManager({
     } catch (error) {
       logger.error('Error creating batch', error as Error);
       toast({
+        type: 'error',
         title: 'Hata',
         description:
           error instanceof Error
             ? error.message
             : 'Batch oluşturulurken hata oluştu',
-        variant: 'destructive',
       });
     } finally {
       setIsProcessing(false);
@@ -315,6 +317,7 @@ export default function BatchPayoutManager({
       setActiveBatch(batch);
 
       toast({
+        type: 'info',
         title: 'İşleme Başladı',
         description: `Batch ${batch.batchNumber} işleniyor`,
       });
@@ -323,9 +326,9 @@ export default function BatchPayoutManager({
     } catch (error) {
       logger.error('Error processing batch', error as Error);
       toast({
+        type: 'error',
         title: 'Hata',
         description: 'Batch işlenirken hata oluştu',
-        variant: 'destructive',
       });
     }
   };
@@ -338,6 +341,7 @@ export default function BatchPayoutManager({
       await cancelBatch(batchId, reason);
 
       toast({
+        type: 'success',
         title: 'Batch İptal Edildi',
         description: `Batch ${batchNumber} iptal edildi`,
       });
@@ -349,9 +353,9 @@ export default function BatchPayoutManager({
     } catch (error) {
       logger.error('Error cancelling batch', error as Error);
       toast({
+        type: 'error',
         title: 'Hata',
         description: 'Batch iptal edilirken hata oluştu',
-        variant: 'destructive',
       });
     }
   };
@@ -361,15 +365,16 @@ export default function BatchPayoutManager({
       await downloadBatchExport(batchId, batchNumber);
 
       toast({
+        type: 'success',
         title: 'Export Başarılı',
         description: 'Batch verileri indirildi',
       });
     } catch (error) {
       logger.error('Error exporting batch', error as Error);
       toast({
+        type: 'error',
         title: 'Hata',
         description: 'Export işlemi başarısız',
-        variant: 'destructive',
       });
     }
   };
@@ -379,6 +384,7 @@ export default function BatchPayoutManager({
       const result = await retryFailedBatches();
 
       toast({
+        type: 'success',
         title: 'Başarılı',
         description: result.message,
       });
@@ -387,9 +393,9 @@ export default function BatchPayoutManager({
     } catch (error) {
       logger.error('Error retrying failed batches', error as Error);
       toast({
+        type: 'error',
         title: 'Hata',
         description: 'Retry işlemi başarısız',
-        variant: 'destructive',
       });
     }
   };
@@ -399,6 +405,7 @@ export default function BatchPayoutManager({
       const result = await cancelStuckBatches();
 
       toast({
+        type: 'success',
         title: 'Başarılı',
         description: result.message,
       });
@@ -407,9 +414,9 @@ export default function BatchPayoutManager({
     } catch (error) {
       logger.error('Error cancelling stuck batches', error as Error);
       toast({
+        type: 'error',
         title: 'Hata',
         description: 'İptal işlemi başarısız',
-        variant: 'destructive',
       });
     }
   };
@@ -697,7 +704,7 @@ export default function BatchPayoutManager({
                       <TableHead className="w-12">
                         <Checkbox
                           checked={selectedPayouts.size === payouts.length}
-                          onCheckedChange={toggleAll}
+                          onChange={toggleAll}
                         />
                       </TableHead>
                       <TableHead>Kullanıcı</TableHead>
@@ -713,16 +720,18 @@ export default function BatchPayoutManager({
                         <TableCell>
                           <Checkbox
                             checked={selectedPayouts.has(payout.id)}
-                            onCheckedChange={() => togglePayout(payout.id)}
+                            onChange={() => togglePayout(payout.id)}
                           />
                         </TableCell>
                         <TableCell className="font-medium">
                           {payout.userId}
                         </TableCell>
                         <TableCell>{formatCurrency(payout.amount)}</TableCell>
-                        <TableCell>{payout.bankAccountId || 'N/A'}</TableCell>
+                        <TableCell>
+                          {payout.bankAccountInfo?.iban || 'N/A'}
+                        </TableCell>
                         <TableCell className="font-mono text-sm">
-                          {payout.bankAccountId || 'N/A'}
+                          {payout.bankAccountInfo?.iban || 'N/A'}
                         </TableCell>
                         <TableCell>
                           {formatDate(payout.createdAt, 'SHORT')}
@@ -748,9 +757,10 @@ export default function BatchPayoutManager({
                       setBatchFilter(value as PayoutBatchStatus | 'ALL')
                     }
                   >
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Filtrele" />
-                    </SelectTrigger>
+                    <SelectTrigger
+                      className="w-[180px]"
+                      placeholder="Filtrele"
+                    />
                     <SelectContent>
                       <SelectItem value="ALL">Tümü</SelectItem>
                       <SelectItem value="PENDING">Bekliyor</SelectItem>

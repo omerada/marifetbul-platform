@@ -15,7 +15,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/uiDialog';
+} from '@/components/ui/AlertDialog';
 import { PlatformSettings } from '@/types';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import {
@@ -119,7 +119,10 @@ export function SystemSettings({ className }: SystemSettingsProps) {
     try {
       await updateSettings(formData as Partial<PlatformSettings>);
     } catch (error) {
-      logger.error('Failed to save settings:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to save settings:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   };
 
@@ -128,7 +131,10 @@ export function SystemSettings({ className }: SystemSettingsProps) {
       await resetSettings();
       setShowResetDialog(false);
     } catch (error) {
-      logger.error('Failed to reset settings:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to reset settings:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   };
 
@@ -249,7 +255,7 @@ export function SystemSettings({ className }: SystemSettingsProps) {
             >
               <option value="TRY">Turkish Lira (?)</option>
               <option value="USD">US Dollar ($)</option>
-              <option value="EUR">Euro (€)</option>
+              <option value="EUR">Euro (ï¿½)</option>
             </select>
           </div>
         );

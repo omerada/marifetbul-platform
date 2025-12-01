@@ -192,6 +192,18 @@ export function CardTitle({ className, children, ...props }: CardHeaderProps) {
   );
 }
 
+export function CardDescription({
+  className,
+  children,
+  ...props
+}: CardHeaderProps) {
+  return (
+    <p className={cn('text-muted-foreground text-sm', className)} {...props}>
+      {children}
+    </p>
+  );
+}
+
 export function CardHeader({ className, children, ...props }: CardHeaderProps) {
   return (
     <div className={cn('mb-4', className)} {...props}>

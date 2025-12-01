@@ -150,7 +150,13 @@ export default function JobProposalPage() {
           <h2 className="mb-2 text-2xl font-bold text-gray-900">
             İş ilanı bulunamadı
           </h2>
-          <p className="mb-4 text-gray-600">{jobError || 'Bir hata oluştu'}</p>
+          <p className="mb-4 text-gray-600">
+            {jobError
+              ? typeof jobError === 'string'
+                ? jobError
+                : jobError.message || String(jobError)
+              : 'Bir hata oluştu'}
+          </p>
           <Button onClick={() => router.push('/marketplace/jobs')}>
             İş İlanlarına Dön
           </Button>

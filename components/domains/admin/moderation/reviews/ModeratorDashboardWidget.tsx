@@ -136,7 +136,7 @@ export function ModeratorDashboardWidget({
 
             <UnifiedCommentQueue
               role="moderator"
-              initialStatus="PENDING"
+              initialStatus="pending"
               showStats={true}
               enableBulkActions={true}
               viewMode="compact"

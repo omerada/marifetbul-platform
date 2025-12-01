@@ -238,7 +238,10 @@ export function useWebSocket(
               const isOnline =
                 messageType === 'USER_ONLINE' || presence.status === 'ONLINE';
               messagingStore.updateUserStatus(presence.userId, isOnline);
-              logger.debug('useWebSocket', { userIdpresenceuserId, isOnline });
+              logger.debug('useWebSocket', {
+                userId: presence.userId,
+                isOnline,
+              });
             }
             break;
 
@@ -293,7 +296,7 @@ export function useWebSocket(
 
           case 'ORDER_UPDATE':
             // Order status update - could trigger notification
-            logger.info('useWebSocket', { wsMessagedata });
+            logger.info('useWebSocket', { data: wsMessage.data });
 
             // Integrate with order store
             if (wsMessage.data && enableStoreIntegration) {

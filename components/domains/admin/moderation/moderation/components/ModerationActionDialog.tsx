@@ -13,7 +13,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/uiDialog';
+} from '@/components/ui/AlertDialog';
 import type { ModerationActionDialogProps } from '../types/moderationTypes';
 
 export function ModerationActionDialog({

@@ -251,56 +251,50 @@ export function adaptFreelancerDashboard(
     recentActivities: adaptRecentActivities(apiResponse),
     quickActions: generateFreelancerQuickActions(apiResponse),
     charts: {
-      earnings: {
+      earningsChart: {
         id: 'earnings',
         title: 'Earnings Trend',
-        series: [
+        labels: apiResponse.trends.dailyRevenue.map((trend) => trend.date),
+        datasets: [
           {
-            name: 'Revenue',
-            data: apiResponse.trends.dailyRevenue.map((trend) => ({
-              label: trend.date,
-              value:
-                typeof trend.value === 'number'
-                  ? trend.value
-                  : parseFloat(String(trend.value)),
-            })),
+            label: 'Revenue',
+            data: apiResponse.trends.dailyRevenue.map((trend) =>
+              typeof trend.value === 'number'
+                ? trend.value
+                : parseFloat(String(trend.value))
+            ),
           },
         ],
-        config: { type: 'line' },
       },
-      orders: {
+      ordersChart: {
         id: 'orders',
         title: 'Orders Trend',
-        series: [
+        labels: apiResponse.trends.dailyOrders.map((trend) => trend.date),
+        datasets: [
           {
-            name: 'Orders',
-            data: apiResponse.trends.dailyOrders.map((trend) => ({
-              label: trend.date,
-              value:
-                typeof trend.value === 'number'
-                  ? trend.value
-                  : parseFloat(String(trend.value)),
-            })),
+            label: 'Orders',
+            data: apiResponse.trends.dailyOrders.map((trend) =>
+              typeof trend.value === 'number'
+                ? trend.value
+                : parseFloat(String(trend.value))
+            ),
           },
         ],
-        config: { type: 'bar' },
       },
-      views: {
+      performanceChart: {
         id: 'views',
         title: 'Package Views',
-        series: [
+        labels: apiResponse.trends.dailyViews.map((trend) => trend.date),
+        datasets: [
           {
-            name: 'Views',
-            data: apiResponse.trends.dailyViews.map((trend) => ({
-              label: trend.date,
-              value:
-                typeof trend.value === 'number'
-                  ? trend.value
-                  : parseFloat(String(trend.value)),
-            })),
+            label: 'Views',
+            data: apiResponse.trends.dailyViews.map((trend) =>
+              typeof trend.value === 'number'
+                ? trend.value
+                : parseFloat(String(trend.value))
+            ),
           },
         ],
-        config: { type: 'line' },
       },
     },
     period,
@@ -504,37 +498,52 @@ export function adaptEmployerDashboard(
 
   // Return unified EmployerDashboard type
   return {
+    overview: {
+      totalSpent: apiResponse.orderSummary?.totalSpent ?? 0,
+      jobsPosted: 0, // Not available in current API
+      activeJobs: apiResponse.orderSummary?.activeOrders ?? 0,
+      completedJobs: apiResponse.orderSummary?.completedOrders ?? 0,
+      avgTimeToHire: 0, // Not available
+      freelancerRetention: 0, // Not available
+    },
+    stats: {
+      activeJobs: apiResponse.orderSummary?.activeOrders ?? 0,
+      totalSpent: apiResponse.orderSummary?.totalSpent ?? 0,
+      savedFreelancers: favorites?.sellers ?? 0,
+      completedJobs: apiResponse.orderSummary?.completedOrders ?? 0,
+    },
+    activeJobs: [], // Jobs not available in buyer dashboard
+    recentJobs: [], // Jobs not available in buyer dashboard
     spending,
     orders,
     favorites,
     recentActivities,
     quickActions,
+    analytics: {} as any, // Not available in current API
+    recommendations: [], // Not available
+    notifications: [], // Not available
     charts: {
       spending: {
         id: 'spending',
         title: 'Harcama Trendi',
-        series: [
+        labels: spendingChartData.map((d) => d.label),
+        datasets: [
           {
-            name: 'Harcama',
-            data: spendingChartData,
+            label: 'Harcama',
+            data: spendingChartData.map((d) => d.value),
           },
         ],
-        config: {
-          type: 'line',
-        },
       },
       orders: {
         id: 'orders',
         title: 'Sipariş Dağılımı',
-        series: [
+        labels: ordersChartData.map((d) => d.label),
+        datasets: [
           {
-            name: 'Siparişler',
-            data: ordersChartData,
+            label: 'Siparişler',
+            data: ordersChartData.map((d) => d.value),
           },
         ],
-        config: {
-          type: 'bar',
-        },
       },
     },
     period,
@@ -845,55 +854,49 @@ export function adaptAdminDashboard(
       userGrowth: {
         id: 'user-growth',
         title: 'Kullanıcı Büyümesi',
-        series: [
+        labels: usersChartData.map((d) => d.label),
+        datasets: [
           {
-            name: 'Kullanıcılar',
-            data: usersChartData,
+            label: 'Kullanıcılar',
+            data: usersChartData.map((d) => d.value),
           },
         ],
-        config: { type: 'line' },
       },
       revenue: {
         id: 'revenue',
         title: 'Gelir Trendi',
-        series: [
+        labels: revenueChartData.map((d) => d.label),
+        datasets: [
           {
-            name: 'Gelir',
-            data: revenueChartData,
+            label: 'Gelir',
+            data: revenueChartData.map((d) => d.value),
           },
         ],
-        config: { type: 'bar' },
       },
       orders: {
         id: 'orders',
         title: 'Sipariş Trendi',
-        series: [
+        labels: ordersChartData.map((d) => d.label),
+        datasets: [
           {
-            name: 'Siparişler',
-            data: ordersChartData,
+            label: 'Siparişler',
+            data: ordersChartData.map((d) => d.value),
           },
         ],
-        config: { type: 'line' },
       },
       searchAnalytics: {
         id: 'search-analytics',
         title: 'Arama Analitiği',
-        series: [
+        labels: ['Toplam', 'Sonuçsuz'],
+        datasets: [
           {
-            name: 'Aramalar',
+            label: 'Aramalar',
             data: [
-              {
-                label: 'Toplam',
-                value: apiResponse.searchMetrics.totalSearches,
-              },
-              {
-                label: 'Sonuçsuz',
-                value: apiResponse.searchMetrics.zeroResultSearches,
-              },
+              apiResponse.searchMetrics.totalSearches,
+              apiResponse.searchMetrics.zeroResultSearches,
             ],
           },
         ],
-        config: { type: 'bar' },
       },
     },
     period,
@@ -1115,38 +1118,37 @@ export function adaptModeratorDashboard(
       actionsToday: {
         id: 'actions-today',
         title: 'Bugünkü İşlemler',
-        series: [
+        labels: actionsToday.map((d) => d.label),
+        datasets: [
           {
-            name: 'Actions',
-            data: actionsToday,
+            label: 'Actions',
+            data: actionsToday.map((d) => d.value),
           },
         ],
-        config: {
-          type: 'bar',
-          height: 300,
-        },
       },
       categoryBreakdown: {
         id: 'category-breakdown',
         title: 'Kategori Dağılımı',
-        series: [
+        labels: categoryBreakdown.map((d) => d.label),
+        datasets: [
           {
-            name: 'Pending Items',
-            data: categoryBreakdown,
+            label: 'Pending Items',
+            data: categoryBreakdown.map((d) => d.value),
           },
         ],
         config: {
-          type: 'donut',
+          type: 'doughnut',
           height: 300,
         },
       },
       moderationVolume: {
         id: 'moderation-volume',
         title: 'Moderasyon Hacmi',
-        series: [
+        labels: actionsToday.map((d) => d.label),
+        datasets: [
           {
-            name: 'Hacim',
-            data: actionsToday, // Reuse actionsToday data for now
+            label: 'Hacim',
+            data: actionsToday.map((d) => d.value),
           },
         ],
         config: {
@@ -1157,16 +1159,11 @@ export function adaptModeratorDashboard(
       responseTime: {
         id: 'response-time',
         title: 'Ortalama Yanıt Süresi',
-        series: [
+        labels: ['00:00', '06:00', '12:00', '18:00', '23:59'],
+        datasets: [
           {
-            name: 'Süre (dk)',
-            data: [
-              { label: '00:00', value: 0 },
-              { label: '06:00', value: 0 },
-              { label: '12:00', value: 0 },
-              { label: '18:00', value: 0 },
-              { label: '23:59', value: 0 },
-            ],
+            label: 'Süre (dk)',
+            data: [0, 0, 0, 0, 0],
           },
         ],
         config: {

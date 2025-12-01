@@ -24,6 +24,7 @@ import {
   type RefundFilters,
   type RefundDto,
   type PageResponse,
+  type BulkApprovalResponse,
   RefundStatus,
 } from '@/lib/api/admin/refund-admin-api';
 import { StatCard } from '@/components/ui';
@@ -78,12 +79,16 @@ export default function AdminRefundsPage() {
       setRefunds(response.content);
       setTotalPages(response.totalPages);
     } catch (error) {
-      logger.error('Failed to fetch admin refunds list', error instanceof Error ? error : new Error(String(error)), {
-        component: 'AdminRefundsPage',
-        action: 'fetch-refunds',
-        filters,
-        currentPage,
-      });
+      logger.error(
+        'Failed to fetch admin refunds list',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'AdminRefundsPage',
+          action: 'fetch-refunds',
+          filters,
+          currentPage,
+        }
+      );
       toast.error('İade talepleri yüklenemedi');
     } finally {
       setIsLoading(false);
@@ -100,10 +105,14 @@ export default function AdminRefundsPage() {
         totalAmountPending: statistics.pendingAmount,
       });
     } catch (error) {
-      logger.error('Failed to fetch refund statistics', error instanceof Error ? error : new Error(String(error)), {
-        component: 'AdminRefundsPage',
-        action: 'fetch-statistics',
-      });
+      logger.error(
+        'Failed to fetch refund statistics',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'AdminRefundsPage',
+          action: 'fetch-statistics',
+        }
+      );
     }
   };
 
@@ -128,12 +137,16 @@ export default function AdminRefundsPage() {
       fetchStatistics();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error('Failed to approve refund', error instanceof Error ? error : new Error(String(error)), {
-        refundId,
-        notes,
-        component: 'AdminRefundsPage',
-        action: 'approve-refund',
-      });
+      logger.error(
+        'Failed to approve refund',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          refundId,
+          notes,
+          component: 'AdminRefundsPage',
+          action: 'approve-refund',
+        }
+      );
       toast.error('İade talebi onaylanamadı');
     }
   };
@@ -153,21 +166,27 @@ export default function AdminRefundsPage() {
       fetchStatistics();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error('Failed to reject refund', error instanceof Error ? error : new Error(String(error)), {
-        refundId,
-        reason,
-        notes,
-        component: 'AdminRefundsPage',
-        action: 'reject-refund',
-      });
+      logger.error(
+        'Failed to reject refund',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          refundId,
+          reason,
+          notes,
+          component: 'AdminRefundsPage',
+          action: 'reject-refund',
+        }
+      );
       toast.error('İade talebi reddedilemedi');
     }
   };
 
-  const handleBulkApprove = async (notes?: string) => {
+  const handleBulkApprove = async (
+    notes?: string
+  ): Promise<BulkApprovalResponse> => {
     if (selectedRefundIds.size === 0) {
       toast.error('Lütfen en az bir iade talebi seçin');
-      return;
+      throw new Error('No refunds selected');
     }
 
     try {
@@ -184,12 +203,16 @@ export default function AdminRefundsPage() {
       // Return response for BulkRefundActions component to handle
       return response;
     } catch (error) {
-      logger.error('Failed to bulk approve refunds', error instanceof Error ? error : new Error(String(error)), {
-        selectedCount: selectedRefundIds.size,
-        notes,
-        component: 'AdminRefundsPage',
-        action: 'bulk-approve',
-      });
+      logger.error(
+        'Failed to bulk approve refunds',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          selectedCount: selectedRefundIds.size,
+          notes,
+          component: 'AdminRefundsPage',
+          action: 'bulk-approve',
+        }
+      );
       throw error; // Re-throw for component to handle
     }
   };
@@ -202,11 +225,15 @@ export default function AdminRefundsPage() {
       fetchStatistics();
       setIsDetailModalOpen(false);
     } catch (error) {
-      logger.error('Failed to process refund', error instanceof Error ? error : new Error(String(error)), {
-        refundId,
-        component: 'AdminRefundsPage',
-        action: 'process-refund',
-      });
+      logger.error(
+        'Failed to process refund',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          refundId,
+          component: 'AdminRefundsPage',
+          action: 'process-refund',
+        }
+      );
       toast.error('İade işleme alınamadı');
     }
   };

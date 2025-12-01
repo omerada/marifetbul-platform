@@ -44,8 +44,9 @@ import {
 } from '@/components/domains/orders';
 import { useWebSocket, useOrderState, useOrderStats } from '@/hooks';
 import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
-import { getOrders } from '@/lib/api/orders';
+import { getMyOrders } from '@/lib/api/orders';
 import type { Order } from '@/types/business/features/orders';
+import type { OrderStatus } from '@/types/backend-aligned';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================
@@ -93,21 +94,26 @@ export default function UnifiedOrderManagementPage() {
     isLoading: recentOrdersLoading,
     error: recentOrdersError,
     mutate: refreshRecentOrders,
-  } = useSWR<Order[]>(
+  } = useSWR(
     activeView === 'overview' ? 'recent-orders' : null,
     async () => {
-      const response = await getOrders({
+      const response = await getMyOrders({
         page: 0,
         size: 5,
         sort: 'createdAt,desc',
       });
-      return response.content;
+      return response.data.content;
     },
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: true,
     }
-  );
+  ) as {
+    data?: Order[];
+    isLoading: boolean;
+    error?: Error;
+    mutate: () => void;
+  };
 
   const recentOrders = recentOrdersData || [];
 
@@ -320,7 +326,7 @@ export default function UnifiedOrderManagementPage() {
               <RecentOrdersList
                 orders={recentOrders}
                 isLoading={recentOrdersLoading}
-                error={recentOrdersError}
+                error={recentOrdersError?.message}
                 maxItems={5}
                 userRole={userRole}
                 showViewAll={true}

@@ -68,6 +68,60 @@ export interface UserReport {
 }
 
 /**
+ * Generic Report type for moderation system
+ */
+export type ReportType =
+  | 'USER'
+  | 'CONTENT'
+  | 'REVIEW'
+  | 'COMMENT'
+  | 'PACKAGE'
+  | 'OTHER';
+export type ReportAction =
+  | 'WARN'
+  | 'SUSPEND'
+  | 'BAN'
+  | 'REMOVE_CONTENT'
+  | 'EDIT_CONTENT'
+  | 'NO_ACTION';
+
+export interface Report {
+  id: string;
+  type: ReportType;
+  contentType?: string;
+  contentId?: string;
+  reporter: {
+    id: string;
+    username?: string;
+    email?: string;
+  };
+  status: ReportStatus;
+  priority: ReportPriority;
+  reason: ReportReason | string;
+  description: string;
+  reporterId: string;
+  reporterUsername?: string;
+  reporterEmail?: string;
+  entityType?: string;
+  entityId?: string;
+  entityDescription?: string;
+  assignedModeratorId?: string;
+  assignedModeratorUsername?: string;
+  moderatorNotes?: string;
+  actionTaken?: ReportAction;
+  reporterNotified?: boolean;
+  entityOwnerNotified?: boolean;
+  createdAt: string;
+  updatedAt?: string;
+  resolvedAt?: string;
+  reviewedBy?: string;
+  reviewedByName?: string;
+  reviewedAt?: string;
+  resolution?: string;
+  resolutionNote?: string;
+}
+
+/**
  * Create report request
  */
 export interface CreateReportRequest {

@@ -20,10 +20,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {
-  RevenueBreakdownWidget,
-  type RevenueBreakdownDto,
-} from './RevenueBreakdownWidget';
+import { RevenueBreakdownWidget } from './RevenueBreakdownWidget';
+import type { RevenueBreakdownDto } from '@/lib/api/admin-analytics';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================

@@ -41,7 +41,7 @@ export interface CommentFilterBarProps {
   };
 }
 
-type StatusOption = 'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'SPAM';
+type StatusOption = 'ALL' | 'pending' | 'approved' | 'rejected' | 'spam';
 
 // ================================================
 // CONSTANTS
@@ -60,25 +60,25 @@ const STATUS_OPTIONS: Array<{
     color: 'gray',
   },
   {
-    value: 'PENDING',
+    value: 'pending',
     label: 'Bekleyen',
     icon: <Clock className="h-4 w-4" />,
     color: 'yellow',
   },
   {
-    value: 'APPROVED',
+    value: 'approved',
     label: 'Onaylı',
     icon: <CheckCircle className="h-4 w-4" />,
     color: 'green',
   },
   {
-    value: 'REJECTED',
+    value: 'rejected',
     label: 'Reddedilen',
     icon: <XCircle className="h-4 w-4" />,
     color: 'red',
   },
   {
-    value: 'SPAM',
+    value: 'spam',
     label: 'Spam',
     icon: <AlertTriangle className="h-4 w-4" />,
     color: 'orange',
@@ -100,13 +100,13 @@ export function CommentFilterBar({
   // ================================================
 
   const hasActiveFilters =
-    filters.status !== 'ALL' ||
+    (filters.status !== undefined && (filters.status as string) !== 'ALL') ||
     filters.startDate ||
     filters.endDate ||
     filters.hasReports;
 
   const activeFilterCount = [
-    filters.status !== 'ALL',
+    filters.status !== undefined && (filters.status as string) !== 'ALL',
     filters.startDate,
     filters.endDate,
     filters.hasReports,
@@ -119,7 +119,7 @@ export function CommentFilterBar({
   const handleStatusChange = (status: StatusOption) => {
     onFilterChange({
       ...filters,
-      status,
+      status: status === 'ALL' ? undefined : status,
     });
   };
 
@@ -160,13 +160,13 @@ export function CommentFilterBar({
     switch (status) {
       case 'ALL':
         return stats.total;
-      case 'PENDING':
+      case 'pending':
         return stats.pending;
-      case 'APPROVED':
+      case 'approved':
         return stats.approved;
-      case 'REJECTED':
+      case 'rejected':
         return stats.rejected;
-      case 'SPAM':
+      case 'spam':
         return stats.spam;
       default:
         return 0;

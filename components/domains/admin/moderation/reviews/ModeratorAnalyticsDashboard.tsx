@@ -51,13 +51,13 @@ import {
   getSLAStatusColor,
   getPerformanceTier,
   formatDuration,
-  formatPercentage,
   getWorkloadStatusColor,
   type ModerationAnalytics,
   type SLAMetrics,
   type WorkloadDistribution,
   type AnalyticsPeriod,
 } from '@/lib/api/moderation-analytics';
+import { formatPercentage } from '@/lib/shared/formatters';
 
 export interface ModeratorAnalyticsDashboardProps {
   className?: string;
@@ -231,11 +231,14 @@ export function ModeratorAnalyticsDashboard({
                   <TrendingDown className="h-4 w-4 text-green-600" />
                 )}
                 <span
-                  className={`text-sm ${overview.pendingChange > 0 ? 'text-red-600' : 'text-green-600'}`}
+                  className={`text-sm ${
+                    overview.pendingChange > 0
+                      ? 'text-red-600'
+                      : 'text-green-600'
+                  }`}
                 >
-                  {formatPercentage(Math.abs(overview.pendingChange), {
-                    showSign: true,
-                  })}
+                  {overview.pendingChange > 0 ? '+' : ''}
+                  {formatPercentage(Math.abs(overview.pendingChange))}
                 </span>
               </div>
             )}
@@ -278,11 +281,12 @@ export function ModeratorAnalyticsDashboard({
                   <TrendingDown className="h-4 w-4 text-green-600" />
                 )}
                 <span
-                  className={`text-sm ${overview.flagsChange > 0 ? 'text-red-600' : 'text-green-600'}`}
+                  className={`text-sm ${
+                    overview.flagsChange > 0 ? 'text-red-600' : 'text-green-600'
+                  }`}
                 >
-                  {formatPercentage(Math.abs(overview.flagsChange), {
-                    showSign: true,
-                  })}
+                  {overview.flagsChange > 0 ? '+' : ''}
+                  {formatPercentage(Math.abs(overview.flagsChange))}
                 </span>
               </div>
             )}
@@ -636,7 +640,7 @@ export function ModeratorAnalyticsDashboard({
                     <div className="text-right">
                       <div className="text-2xl font-bold text-green-600">
                         {formatPercentage(performer.approvalRate, {
-                          decimals: 0,
+                          maximumFractionDigits: 0,
                         })}
                       </div>
                       <div className="text-xs text-gray-600">onay oranı</div>

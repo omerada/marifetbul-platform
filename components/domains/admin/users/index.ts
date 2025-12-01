@@ -16,5 +16,5 @@ export { UserActivityTimeline } from './UserActivityTimeline';
 
 // User List Components
 export { UserTable } from './UserTable';
-export { BulkActions } from './BulkActions';
+export { default as BulkActions } from './BulkActions';
 export { UserExportButton } from './UserExportButton';

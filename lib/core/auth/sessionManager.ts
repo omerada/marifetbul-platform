@@ -251,7 +251,9 @@ class SessionManager {
       !this.state.warningShown
     ) {
       const remainingMinutes = Math.ceil(remainingTime / 60000);
-      logger.warn('SessionManager: Session timeout warning', { remainingMinutes,  });
+      logger.warn('SessionManager: Session timeout warning', {
+        remainingMinutes,
+      });
 
       this.state.warningShown = true;
 
@@ -323,7 +325,9 @@ class SessionManager {
       return;
     }
 
-    logger.info('SessionManager: Refreshing token', { attemptthisrefreshRetryCount1,  });
+    logger.info('SessionManager: Refreshing token', {
+      attempt: this.refreshRetryCount + 1,
+    });
 
     this.state.isRefreshing = true;
 
@@ -359,7 +363,9 @@ class SessionManager {
       if (this.refreshRetryCount < SESSION_CONFIG.MAX_REFRESH_RETRIES) {
         // Retry with exponential backoff
         const retryDelay = Math.pow(2, this.refreshRetryCount) * 1000;
-        logger.info('SessionManager: Retrying token refresh', { retryInretryDelay1000seconds,  });
+        logger.info('SessionManager: Retrying token refresh', {
+          retryIn: retryDelay / 1000 + ' seconds',
+        });
 
         setTimeout(() => {
           this.refreshToken();

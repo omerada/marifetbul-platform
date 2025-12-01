@@ -25,7 +25,7 @@ import {
 import {
   paymentMethodApi,
   PaymentMethodType,
-  type PaymentMethod,
+  type ApiPaymentMethod,
   type AddPaymentMethodRequest,
 } from '@/lib/api/payment-method';
 import {
@@ -53,7 +53,7 @@ function getPaymentMethodTypeName(type: PaymentMethodType): string {
 // ============================================================================
 
 export default function PaymentMethodsPage() {
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [paymentMethods, setPaymentMethods] = useState<ApiPaymentMethod[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -207,7 +207,7 @@ export default function PaymentMethodsPage() {
 // ============================================================================
 
 interface PaymentMethodCardProps {
-  method: PaymentMethod;
+  method: ApiPaymentMethod;
   onSetDefault: (id: string) => void;
   onDelete: (id: string) => void;
 }
@@ -401,7 +401,10 @@ function AddPaymentMethodModal({
       const errorMessage =
         err instanceof Error ? err.message : 'Ödeme yöntemi eklenemedi';
       setError(errorMessage);
-      logger.error('Failed to add payment method', { error: err });
+      logger.error(
+        'Failed to add payment method',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
       setLoading(false);
     }
