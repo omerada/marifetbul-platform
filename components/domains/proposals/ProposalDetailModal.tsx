@@ -259,9 +259,10 @@ export const ProposalDetailModal = memo<ProposalDetailModalProps>(
                           </p>
                           <div className="flex items-center text-xs text-gray-500">
                             <Calendar className="mr-1 h-3 w-3" />
-                            {/* @ts-ignore - toLocaleDateString overload issue */}
                             Teslim:{' '}
-                            {new Date(milestone.dueDate).toLocaleDateString()}
+                            {new Date(
+                              milestone.dueDate || ''
+                            ).toLocaleDateString()}
                           </div>
                         </div>
                       )

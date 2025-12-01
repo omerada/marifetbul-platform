@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * IYZICO PAYMENT CALLBACK PAGE
  * ================================================
@@ -18,6 +18,7 @@
 
 'use client';
 
+export const dynamic = 'force-dynamic';
 import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useIyzicoPayment } from '@/hooks/business/useIyzicoPayment';
@@ -29,6 +30,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
+import { Loading } from '@/components/ui';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 type CallbackStatus = 'processing' | 'success' | 'error' | 'timeout';
@@ -54,7 +56,7 @@ function CheckoutCallbackContent() {
         const orderId = searchParams.get('orderId');
 
         if (!paymentIntentId) {
-          throw new Error('Ödeme bilgisi bulunamadı');
+          throw new Error('Ã–deme bilgisi bulunamadÄ±');
         }
 
         logger.info('CheckoutCallback: Processing payment callback', {
@@ -91,21 +93,25 @@ function CheckoutCallbackContent() {
           return () => clearInterval(timer);
         } else {
           throw new Error(
-            result.error?.message || 'Ödeme doğrulaması başarısız'
+            result.error?.message || 'Ã–deme doÄŸrulamasÄ± baÅŸarÄ±sÄ±z'
           );
         }
       } catch (error) {
-        logger.error('CheckoutCallback: Payment confirmation failed', error instanceof Error ? error : new Error(String(error)), {
-          paymentIntentId: searchParams.get('paymentIntentId'),
-          orderId: searchParams.get('orderId'),
-          retryCount,
-        });
+        logger.error(
+          'CheckoutCallback: Payment confirmation failed',
+          error instanceof Error ? error : new Error(String(error)),
+          {
+            paymentIntentId: searchParams.get('paymentIntentId'),
+            orderId: searchParams.get('orderId'),
+            retryCount,
+          }
+        );
 
         setStatus('error');
         setErrorMessage(
           error instanceof Error
             ? error.message
-            : 'Ödeme doğrulama sırasında bir hata oluştu'
+            : 'Ã–deme doÄŸrulama sÄ±rasÄ±nda bir hata oluÅŸtu'
         );
       }
     };
@@ -143,12 +149,12 @@ function CheckoutCallbackContent() {
                 <Loader2 className="h-10 w-10 animate-spin text-white" />
               </div>
               <h1 className="mb-3 text-2xl font-bold text-gray-900">
-                Ödeme Doğrulanıyor
+                Ã–deme DoÄŸrulanÄ±yor
               </h1>
               <p className="mb-6 text-gray-600">
                 {retryCount > 0
                   ? 'Tekrar deneniyor...'
-                  : 'Ödemeniz işleniyor, lütfen bekleyin...'}
+                  : 'Ã–demeniz iÅŸleniyor, lÃ¼tfen bekleyin...'}
               </p>
 
               {/* Progress bar */}
@@ -173,13 +179,13 @@ function CheckoutCallbackContent() {
                 <CheckCircle className="h-10 w-10 text-white" />
               </div>
               <h1 className="mb-3 text-2xl font-bold text-gray-900">
-                Ödeme Başarılı! 🎉
+                Ã–deme BaÅŸarÄ±lÄ±! ğŸ‰
               </h1>
               <p className="mb-2 text-gray-600">
-                Ödemeniz başarıyla tamamlandı.
+                Ã–demeniz baÅŸarÄ±yla tamamlandÄ±.
               </p>
               <p className="text-sm text-gray-500">
-                {countdown} saniye içinde yönlendiriliyorsunuz...
+                {countdown} saniye iÃ§inde yÃ¶nlendiriliyorsunuz...
               </p>
 
               {/* Success animation */}
@@ -201,7 +207,7 @@ function CheckoutCallbackContent() {
                 <XCircle className="h-10 w-10 text-white" />
               </div>
               <h1 className="mb-3 text-2xl font-bold text-gray-900">
-                Ödeme Başarısız
+                Ã–deme BaÅŸarÄ±sÄ±z
               </h1>
               <p className="mb-6 text-gray-600">{errorMessage}</p>
 
@@ -223,7 +229,7 @@ function CheckoutCallbackContent() {
                   variant="outline"
                   className="w-full"
                 >
-                  İptal Et ve Geri Dön
+                  Ä°ptal Et ve Geri DÃ¶n
                 </Button>
               </div>
             </div>
@@ -236,11 +242,11 @@ function CheckoutCallbackContent() {
                 <AlertTriangle className="h-10 w-10 text-white" />
               </div>
               <h1 className="mb-3 text-2xl font-bold text-gray-900">
-                İşlem Zaman Aşımına Uğradı
+                Ä°ÅŸlem Zaman AÅŸÄ±mÄ±na UÄŸradÄ±
               </h1>
               <p className="mb-6 text-gray-600">
-                Ödeme doğrulanamadı. Lütfen sipariş durumunuzu kontrol edin veya
-                destek ekibiyle iletişime geçin.
+                Ã–deme doÄŸrulanamadÄ±. LÃ¼tfen sipariÅŸ durumunuzu kontrol edin
+                veya destek ekibiyle iletiÅŸime geÃ§in.
               </p>
 
               <Button
@@ -248,7 +254,7 @@ function CheckoutCallbackContent() {
                 variant="primary"
                 className="w-full"
               >
-                Siparişlerime Git
+                SipariÅŸlerime Git
               </Button>
             </div>
           )}
@@ -271,12 +277,12 @@ function CheckoutCallbackContent() {
               </div>
               <div>
                 <p className="text-sm font-medium text-blue-900">
-                  Güvenli Ödeme
+                  GÃ¼venli Ã–deme
                 </p>
                 <p className="mt-1 text-xs text-blue-700">
                   {status === 'processing'
-                    ? 'Bu sayfayı kapatmayın veya yenilemeyin.'
-                    : 'Ödeme işlemi Iyzico altyapısıyla güvenle gerçekleştirildi.'}
+                    ? 'Bu sayfayÄ± kapatmayÄ±n veya yenilemeyin.'
+                    : 'Ã–deme iÅŸlemi Iyzico altyapÄ±sÄ±yla gÃ¼venle gerÃ§ekleÅŸtirildi.'}
                 </p>
               </div>
             </div>

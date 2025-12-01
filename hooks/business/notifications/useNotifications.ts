@@ -239,6 +239,7 @@ export function useNotifications(
 
   // Check push notification support
   const pushSupported = useMemo(() => {
+    if (typeof window === 'undefined') return false;
     return 'Notification' in window && 'serviceWorker' in navigator;
   }, []);
 

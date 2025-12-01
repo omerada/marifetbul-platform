@@ -13,27 +13,32 @@
  * - Mark as read/unread
  */
 
-import { Metadata } from 'next';
+'use client';
+
+export const dynamic = 'force-dynamic';
+
 import { Suspense } from 'react';
+import { useRouter } from 'next/navigation';
 import { NotificationCenter } from '@/components/domains/notifications';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export const metadata: Metadata = {
-  title: 'Bildirimler | MarifetBul',
-  description: 'Tüm bildirimlerinizi görüntüleyin ve yönetin',
-};
+function NotificationCenterContent() {
+  const router = useRouter();
+  
+  return (
+    <NotificationCenter
+      className="w-full"
+      maxHeight="h-[calc(100vh-12rem)]"
+      onSettingsClick={() => router.push('/dashboard/settings/notifications')}
+    />
+  );
+}
 
 export default function DashboardNotificationsPage() {
   return (
     <div className="container mx-auto px-4 py-6">
       <Suspense fallback={<NotificationsSkeleton />}>
-        <NotificationCenter
-          className="w-full"
-          maxHeight="h-[calc(100vh-12rem)]"
-          onSettingsClick={() =>
-            (window.location.href = '/dashboard/settings/notifications')
-          }
-        />
+        <NotificationCenterContent />
       </Suspense>
     </div>
   );

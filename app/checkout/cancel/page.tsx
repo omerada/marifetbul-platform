@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * CHECKOUT CANCEL PAGE
  * ================================================
@@ -17,9 +17,11 @@
 
 'use client';
 
+export const dynamic = 'force-dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { Loading } from '@/components/ui';
 
 function CheckoutCancelContent() {
   const router = useRouter();
@@ -49,9 +51,9 @@ function CheckoutCancelContent() {
               </svg>
             </div>
             <h1 className="mb-2 text-3xl font-bold text-gray-900">
-              Ödeme İptal Edildi
+              Ã–deme Ä°ptal Edildi
             </h1>
-            <p className="text-gray-600">Ödeme işleminiz tamamlanmadı</p>
+            <p className="text-gray-600">Ã–deme iÅŸleminiz tamamlanmadÄ±</p>
           </div>
 
           {/* Info Card */}
@@ -60,18 +62,18 @@ function CheckoutCancelContent() {
               Ne Oldu?
             </h2>
             <p className="mb-4 text-gray-600">
-              Ödeme işlemini iptal ettiniz veya bir hata oluştu. Endişelenmeyin,
-              kartınızdan herhangi bir ücret çekilmedi.
+              Ã–deme iÅŸlemini iptal ettiniz veya bir hata oluÅŸtu.
+              EndiÅŸelenmeyin, kartÄ±nÄ±zdan herhangi bir Ã¼cret Ã§ekilmedi.
             </p>
 
             {orderId && (
               <div className="rounded-lg bg-gray-50 p-3">
                 <p className="text-sm text-gray-600">
-                  Sipariş ID:{' '}
+                  SipariÅŸ ID:{' '}
                   <span className="font-mono text-xs">{orderId}</span>
                 </p>
                 <p className="mt-1 text-xs text-gray-500">
-                  Bu sipariş otomatik olarak iptal edilecektir
+                  Bu sipariÅŸ otomatik olarak iptal edilecektir
                 </p>
               </div>
             )}
@@ -80,24 +82,24 @@ function CheckoutCancelContent() {
           {/* Common Reasons */}
           <div className="mb-6 rounded-lg bg-blue-50 p-6">
             <h3 className="mb-3 text-lg font-semibold text-blue-900">
-              Sık Karşılaşılan Sorunlar
+              SÄ±k KarÅŸÄ±laÅŸÄ±lan Sorunlar
             </h3>
             <ul className="space-y-2 text-sm text-blue-800">
               <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>Kart bilgileri hatalı girildi</span>
+                <span className="mr-2">â€¢</span>
+                <span>Kart bilgileri hatalÄ± girildi</span>
               </li>
               <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>Kartınızda yeterli bakiye bulunmuyor</span>
+                <span className="mr-2">â€¢</span>
+                <span>KartÄ±nÄ±zda yeterli bakiye bulunmuyor</span>
               </li>
               <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>Bankanız işlemi reddetti</span>
+                <span className="mr-2">â€¢</span>
+                <span>BankanÄ±z iÅŸlemi reddetti</span>
               </li>
               <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>İnternet bağlantısı kesildi</span>
+                <span className="mr-2">â€¢</span>
+                <span>Ä°nternet baÄŸlantÄ±sÄ± kesildi</span>
               </li>
             </ul>
           </div>
@@ -123,19 +125,19 @@ function CheckoutCancelContent() {
               href="/marketplace"
               className="rounded-lg border-2 border-gray-300 px-6 py-3 text-center font-medium text-gray-700 transition-colors hover:bg-gray-50"
             >
-              Marketplace&apos;e Dön
+              Marketplace&apos;e DÃ¶n
             </Link>
           </div>
 
           {/* Help Section */}
           <div className="mt-6 rounded-lg border border-gray-200 bg-white p-4 text-center">
             <p className="text-sm text-gray-600">
-              Yardıma mı ihtiyacınız var?{' '}
+              YardÄ±ma mÄ± ihtiyacÄ±nÄ±z var?{' '}
               <Link
                 href="/support"
                 className="font-medium text-indigo-600 hover:underline"
               >
-                Destek ekibimizle iletişime geçin
+                Destek ekibimizle iletiÅŸime geÃ§in
               </Link>
             </p>
           </div>

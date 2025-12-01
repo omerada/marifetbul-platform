@@ -1,5 +1,8 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
+import { Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { AppLayout } from '@/components/layout';
@@ -33,7 +36,7 @@ import Image from 'next/image';
  * - View count tracking
  * - Skills/tags display
  */
-export default function PortfolioPage() {
+function PortfolioPageContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const userId = params.id as string;
@@ -54,7 +57,10 @@ export default function PortfolioPage() {
   useEffect(() => {
     if (userId) {
       fetchUserPortfolios(userId).catch((error) =>
-        logger.error('Failed to fetch user portfolios', error instanceof Error ? error : new Error(String(error)))
+        logger.error(
+          'Failed to fetch user portfolios',
+          error instanceof Error ? error : new Error(String(error))
+        )
       );
     }
   }, [userId, fetchUserPortfolios]);
@@ -67,7 +73,12 @@ export default function PortfolioPage() {
           setViewModalOpen(true, null);
           setViewingAll(false);
         })
-        .catch((error) => logger.error('Failed to fetch portfolio', error instanceof Error ? error : new Error(String(error))));
+        .catch((error) =>
+          logger.error(
+            'Failed to fetch portfolio',
+            error instanceof Error ? error : new Error(String(error))
+          )
+        );
     }
   }, [selectedPortfolioId, fetchPortfolio, setViewModalOpen]);
 
@@ -536,5 +547,13 @@ function PortfolioDetailModal({
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PortfolioPage() {
+  return (
+    <Suspense fallback={<Loading size="lg" text="Yükleniyor..." />}>
+      <PortfolioPageContent />
+    </Suspense>
   );
 }

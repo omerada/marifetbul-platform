@@ -120,7 +120,7 @@ export function NotificationModal({
       markAsRead(notification.id);
     }
 
-    if (notification.actionUrl) {
+    if (notification.actionUrl && typeof window !== 'undefined') {
       window.open(notification.actionUrl, '_blank');
     }
   };

@@ -1,9 +1,11 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useMemo, useEffect, Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui';
+import { Button, Loading } from '@/components/ui';
 import { Input } from '@/components/ui';
 import Link from 'next/link';
 import {

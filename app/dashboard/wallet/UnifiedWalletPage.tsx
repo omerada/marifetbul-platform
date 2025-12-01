@@ -12,9 +12,11 @@
 
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+export const dynamic = 'force-dynamic';
+import { useState, useCallback, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
+import { Loading } from '@/components/ui';
 import { WalletDashboard } from '@/components/domains/wallet';
 import { PayoutDashboard } from '@/components/domains/wallet';
 import { UnifiedPayoutHistory } from '@/components/domains/wallet';
@@ -87,7 +89,7 @@ const TAB_CONFIG = {
 // COMPONENT
 // ============================================================================
 
-export function UnifiedWalletPage() {
+function UnifiedWalletContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { success: showSuccess, toast } = useToast();
@@ -525,4 +527,12 @@ export function UnifiedWalletPage() {
   );
 }
 
-export default UnifiedWalletPage;
+export default function UnifiedWalletPage() {
+  return (
+    <Suspense fallback={<Loading size="lg" text="Yükleniyor..." />}>
+      <UnifiedWalletContent />
+    </Suspense>
+  );
+}
+
+export { UnifiedWalletPage };

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * MODERATOR TICKETS PAGE
  * ================================================
@@ -13,8 +13,11 @@
 
 'use client';
 
+export const dynamic = 'force-dynamic';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ModeratorTicketQueue } from '@/components/domains/moderator/ModeratorTicketQueue';
+import { Loading } from '@/components/ui';
 
 /**
  * Moderator Tickets Page
@@ -26,7 +29,7 @@ import { ModeratorTicketQueue } from '@/components/domains/moderator/ModeratorTi
  * - Assign, resolve, close operations
  * - Bulk moderation support
  */
-export default function ModeratorTicketsPage() {
+function ModeratorTicketsContent() {
   const searchParams = useSearchParams();
 
   // Get initial status from URL (default: open)
@@ -41,7 +44,7 @@ export default function ModeratorTicketsPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Destek Talepleri</h1>
           <p className="mt-2 text-gray-600">
-            Kullanıcı destek taleplerini yönetin ve çözün
+            KullanÄ±cÄ± destek taleplerini yÃ¶netin ve Ã§Ã¶zÃ¼n
           </p>
         </div>
 
@@ -49,5 +52,13 @@ export default function ModeratorTicketsPage() {
         <ModeratorTicketQueue initialStatus={initialStatus} />
       </div>
     </div>
+  );
+}
+
+export default function ModeratorTicketsPage() {
+  return (
+    <Suspense fallback={<Loading size="lg" text="Yükleniyor..." />}>
+      <ModeratorTicketsContent />
+    </Suspense>
   );
 }

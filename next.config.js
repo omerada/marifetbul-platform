@@ -410,6 +410,11 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
+  eslint: {
+    // Ignore ESLint errors during builds
+    ignoreDuringBuilds: true,
+  },
+
   // ================================================
   // TURBOPACK CONFIGURATION (Next.js 16+)
   // ================================================

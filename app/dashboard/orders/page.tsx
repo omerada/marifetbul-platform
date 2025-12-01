@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * UNIFIED ORDER MANAGEMENT PAGE
  * ================================================
@@ -22,6 +22,8 @@
 
 'use client';
 
+export const dynamic = 'force-dynamic';
+import { Suspense } from 'react';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
@@ -33,6 +35,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Loading,
 } from '@/components/ui';
 import {
   OrderListFilters,
@@ -59,7 +62,7 @@ type OrderView = 'overview' | 'list';
 // COMPONENT
 // ================================================
 
-export default function UnifiedOrderManagementPage() {
+function UnifiedOrderManagementContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuthStore();
@@ -153,18 +156,21 @@ export default function UnifiedOrderManagementPage() {
 
         // Show notification
         const notificationTexts: Record<string, string> = {
-          NEW_ORDER: 'Yeni sipariş aldınız!',
-          ORDER_DELIVERED: 'Sipariş teslim edildi!',
-          ORDER_ACCEPTED: 'Sipariş kabul edildi!',
-          ORDER_STATUS_CHANGED: 'Sipariş durumu güncellendi',
+          NEW_ORDER: 'Yeni sipariÅŸ aldÄ±nÄ±z!',
+          ORDER_DELIVERED: 'SipariÅŸ teslim edildi!',
+          ORDER_ACCEPTED: 'SipariÅŸ kabul edildi!',
+          ORDER_STATUS_CHANGED: 'SipariÅŸ durumu gÃ¼ncellendi',
         };
 
-        toast.success(notificationTexts[update.type] || 'Sipariş güncellendi', {
-          description: update.data.orderNumber
-            ? `Sipariş #${update.data.orderNumber}`
-            : undefined,
-          duration: 3000,
-        });
+        toast.success(
+          notificationTexts[update.type] || 'SipariÅŸ gÃ¼ncellendi',
+          {
+            description: update.data.orderNumber
+              ? `SipariÅŸ #${update.data.orderNumber}`
+              : undefined,
+            duration: 3000,
+          }
+        );
       }
     });
 
@@ -281,11 +287,11 @@ export default function UnifiedOrderManagementPage() {
     <div className="container mx-auto max-w-7xl px-4 py-8">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="mb-2 text-3xl font-bold">Sipariş Yönetimi</h1>
+        <h1 className="mb-2 text-3xl font-bold">SipariÅŸ YÃ¶netimi</h1>
         <p className="text-muted-foreground">
           {userRole === 'buyer'
-            ? 'Verdiğiniz siparişleri görüntüleyin ve yönetin'
-            : 'Aldığınız siparişleri görüntüleyin ve yönetin'}
+            ? 'VerdiÄŸiniz sipariÅŸleri gÃ¶rÃ¼ntÃ¼leyin ve yÃ¶netin'
+            : 'AldÄ±ÄŸÄ±nÄ±z sipariÅŸleri gÃ¶rÃ¼ntÃ¼leyin ve yÃ¶netin'}
         </p>
       </div>
 
@@ -298,11 +304,11 @@ export default function UnifiedOrderManagementPage() {
         <TabsList className="mb-6 grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <LayoutGrid className="h-4 w-4" />
-            <span>Genel Bakış</span>
+            <span>Genel BakÄ±ÅŸ</span>
           </TabsTrigger>
           <TabsTrigger value="list" className="flex items-center gap-2">
             <List className="h-4 w-4" />
-            <span>Tüm Siparişler</span>
+            <span>TÃ¼m SipariÅŸler</span>
           </TabsTrigger>
         </TabsList>
 
@@ -381,16 +387,16 @@ export default function UnifiedOrderManagementPage() {
               <div className="py-16 text-center">
                 <Package2 className="text-muted-foreground mx-auto mb-4 h-16 w-16" />
                 <h3 className="mb-2 text-lg font-semibold">
-                  Henüz sipariş yok
+                  HenÃ¼z sipariÅŸ yok
                 </h3>
                 <p className="text-muted-foreground mb-6">
                   {userRole === 'buyer'
-                    ? 'Bir hizmet satın alarak ilk siparişinizi verin'
-                    : 'İlk siparişinizi bekleyiniz'}
+                    ? 'Bir hizmet satÄ±n alarak ilk sipariÅŸinizi verin'
+                    : 'Ä°lk sipariÅŸinizi bekleyiniz'}
                 </p>
                 {userRole === 'buyer' && (
                   <Button onClick={() => router.push('/marketplace')}>
-                    Paketlere Göz Atın
+                    Paketlere GÃ¶z AtÄ±n
                   </Button>
                 )}
               </div>
@@ -404,10 +410,10 @@ export default function UnifiedOrderManagementPage() {
                 <div className="py-16 text-center">
                   <Package2 className="text-muted-foreground mx-auto mb-4 h-16 w-16" />
                   <h3 className="mb-2 text-lg font-semibold">
-                    Sonuç bulunamadı
+                    SonuÃ§ bulunamadÄ±
                   </h3>
                   <p className="text-muted-foreground mb-6">
-                    Seçtiğiniz filtrelere uygun sipariş bulunamadı
+                    SeÃ§tiÄŸiniz filtrelere uygun sipariÅŸ bulunamadÄ±
                   </p>
                   <Button variant="outline" onClick={handleClearFilters}>
                     Filtreleri Temizle
@@ -432,7 +438,7 @@ export default function UnifiedOrderManagementPage() {
             {/* Results Count */}
             {!state.isLoading && !state.error && filteredOrders.length > 0 && (
               <div className="text-muted-foreground text-center text-sm">
-                {filteredOrders.length} sipariş gösteriliyor
+                {filteredOrders.length} sipariÅŸ gÃ¶steriliyor
                 {state.orders.length !== filteredOrders.length &&
                   ` (${state.orders.length} toplam)`}
               </div>
@@ -441,5 +447,13 @@ export default function UnifiedOrderManagementPage() {
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+export default function UnifiedOrderManagementPage() {
+  return (
+    <Suspense fallback={<Loading size="lg" text="Yükleniyor..." />}>
+      <UnifiedOrderManagementContent />
+    </Suspense>
   );
 }

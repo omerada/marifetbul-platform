@@ -1,5 +1,6 @@
-'use client';
+﻿'use client';
 
+export const dynamic = 'force-dynamic';
 import { HelpCenterLayout } from '@/components/domains/support';
 import { HelpSearchResults } from '@/components/domains/support';
 import { useSearchParams } from 'next/navigation';
@@ -11,7 +12,7 @@ function SearchContent() {
 
   return (
     <HelpCenterLayout
-      title={query ? `"${query}" için arama sonuçları` : 'Arama'}
+      title={query ? `"${query}" iÃ§in arama sonuÃ§larÄ±` : 'Arama'}
       showSearch={false}
     >
       <div className="container mx-auto px-4 py-8">

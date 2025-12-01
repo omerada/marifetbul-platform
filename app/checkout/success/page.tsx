@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * CHECKOUT SUCCESS PAGE
  * ================================================
@@ -18,6 +18,7 @@
 
 'use client';
 
+export const dynamic = 'force-dynamic';
 import { formatCurrency } from '@/lib/shared/formatters';
 
 import { useEffect, useState, Suspense } from 'react';
@@ -26,6 +27,7 @@ import Link from 'next/link';
 import { apiClient } from '@/lib/infrastructure/api/client';
 import { ORDER_ENDPOINTS } from '@/lib/api/endpoints';
 import { ReviewPromptCard } from '@/components/shared/ReviewPromptCard';
+import { Loading } from '@/components/ui';
 
 interface OrderDetails {
   id: string;
@@ -56,7 +58,7 @@ function CheckoutSuccessContent() {
   useEffect(() => {
     const loadOrderDetails = async () => {
       if (!orderId) {
-        setError('Sipariş bulunamadı');
+        setError('SipariÅŸ bulunamadÄ±');
         setIsLoading(false);
         return;
       }
@@ -68,7 +70,9 @@ function CheckoutSuccessContent() {
         setOrderDetails(order);
       } catch (err) {
         const errorMessage =
-          err instanceof Error ? err.message : 'Sipariş bilgileri yüklenemedi';
+          err instanceof Error
+            ? err.message
+            : 'SipariÅŸ bilgileri yÃ¼klenemedi';
         setError(errorMessage);
       } finally {
         setIsLoading(false);
@@ -94,14 +98,16 @@ function CheckoutSuccessContent() {
         <div className="mx-auto max-w-2xl text-center">
           <div className="rounded-lg border border-red-200 bg-red-50 p-6">
             <h2 className="mb-2 text-2xl font-bold text-red-800">
-              Bir Sorun Oluştu
+              Bir Sorun OluÅŸtu
             </h2>
-            <p className="mb-4 text-red-600">{error || 'Sipariş bulunamadı'}</p>
+            <p className="mb-4 text-red-600">
+              {error || 'SipariÅŸ bulunamadÄ±'}
+            </p>
             <button
               onClick={() => router.push('/dashboard')}
               className="rounded-lg bg-red-600 px-6 py-2 text-white transition-colors hover:bg-red-700"
             >
-              Dashboard&apos;a Dön
+              Dashboard&apos;a DÃ¶n
             </button>
           </div>
         </div>
@@ -131,22 +137,22 @@ function CheckoutSuccessContent() {
               </svg>
             </div>
             <h1 className="mb-2 text-3xl font-bold text-gray-900">
-              Ödeme Başarılı!
+              Ã–deme BaÅŸarÄ±lÄ±!
             </h1>
             <p className="text-gray-600">
-              Siparişiniz başarıyla oluşturuldu ve ödemeniz alındı
+              SipariÅŸiniz baÅŸarÄ±yla oluÅŸturuldu ve Ã¶demeniz alÄ±ndÄ±
             </p>
           </div>
 
           {/* Order Details Card */}
           <div className="mb-6 rounded-lg bg-white p-6 shadow-md">
             <h2 className="mb-4 text-xl font-semibold text-gray-900">
-              Sipariş Detayları
+              SipariÅŸ DetaylarÄ±
             </h2>
 
             <div className="space-y-3 border-b border-gray-200 pb-4">
               <div className="flex justify-between">
-                <span className="text-gray-600">Sipariş Numarası</span>
+                <span className="text-gray-600">SipariÅŸ NumarasÄ±</span>
                 <span className="font-medium text-gray-900">
                   #{orderDetails.orderNumber || orderDetails.id.slice(0, 8)}
                 </span>
@@ -158,7 +164,7 @@ function CheckoutSuccessContent() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Satıcı</span>
+                <span className="text-gray-600">SatÄ±cÄ±</span>
                 <span className="font-medium text-gray-900">
                   {orderDetails.sellerName}
                 </span>
@@ -181,7 +187,7 @@ function CheckoutSuccessContent() {
             <div className="pt-4">
               <div className="flex justify-between">
                 <span className="text-lg font-semibold text-gray-900">
-                  Toplam Ödenen
+                  Toplam Ã–denen
                 </span>
                 <span className="text-2xl font-bold text-indigo-600">
                   {formatCurrency(orderDetails.totalAmount, 'TRY')}
@@ -192,7 +198,7 @@ function CheckoutSuccessContent() {
             {paymentId && (
               <div className="mt-4 rounded-lg bg-gray-50 p-3">
                 <p className="text-sm text-gray-600">
-                  Ödeme ID:{' '}
+                  Ã–deme ID:{' '}
                   <span className="font-mono text-xs">{paymentId}</span>
                 </p>
               </div>
@@ -213,7 +219,7 @@ function CheckoutSuccessContent() {
                   clipRule="evenodd"
                 />
               </svg>
-              Sırada Ne Var?
+              SÄ±rada Ne Var?
             </h3>
             <ul className="space-y-2 text-blue-800">
               <li className="flex items-start">
@@ -229,7 +235,8 @@ function CheckoutSuccessContent() {
                   />
                 </svg>
                 <span>
-                  Satıcı siparişinizi 24 saat içinde inceleyecek ve başlatacak
+                  SatÄ±cÄ± sipariÅŸinizi 24 saat iÃ§inde inceleyecek ve
+                  baÅŸlatacak
                 </span>
               </li>
               <li className="flex items-start">
@@ -245,8 +252,8 @@ function CheckoutSuccessContent() {
                   />
                 </svg>
                 <span>
-                  Ödemeniz güvende tutulur, teslimat onayına kadar satıcıya
-                  aktarılmaz
+                  Ã–demeniz gÃ¼vende tutulur, teslimat onayÄ±na kadar satÄ±cÄ±ya
+                  aktarÄ±lmaz
                 </span>
               </li>
               <li className="flex items-start">
@@ -262,8 +269,8 @@ function CheckoutSuccessContent() {
                   />
                 </svg>
                 <span>
-                  Satıcıyla mesajlaşma sistemi üzerinden iletişime
-                  geçebilirsiniz
+                  SatÄ±cÄ±yla mesajlaÅŸma sistemi Ã¼zerinden iletiÅŸime
+                  geÃ§ebilirsiniz
                 </span>
               </li>
               <li className="flex items-start">
@@ -279,7 +286,7 @@ function CheckoutSuccessContent() {
                   />
                 </svg>
                 <span>
-                  Teslimat sonrası yorum ve değerlendirme yapabilirsiniz
+                  Teslimat sonrasÄ± yorum ve deÄŸerlendirme yapabilirsiniz
                 </span>
               </li>
             </ul>
@@ -291,13 +298,13 @@ function CheckoutSuccessContent() {
               href={`/dashboard/orders/${orderId}`}
               className="rounded-lg bg-indigo-600 px-6 py-3 text-center font-medium text-white transition-colors hover:bg-indigo-700"
             >
-              Siparişi Görüntüle
+              SipariÅŸi GÃ¶rÃ¼ntÃ¼le
             </Link>
             <Link
               href="/dashboard"
               className="rounded-lg border-2 border-indigo-600 px-6 py-3 text-center font-medium text-indigo-600 transition-colors hover:bg-indigo-50"
             >
-              Dashboard&apos;a Dön
+              Dashboard&apos;a DÃ¶n
             </Link>
           </div>
 
@@ -317,7 +324,7 @@ function CheckoutSuccessContent() {
                   d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                 />
               </svg>
-              Sipariş onay e-postası e-posta adresinize gönderildi
+              SipariÅŸ onay e-postasÄ± e-posta adresinize gÃ¶nderildi
             </p>
           </div>
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * UNIFIED COMMENT MODERATION PAGE
  * ================================================
@@ -23,7 +23,6 @@ import { Loading } from '@/components/ui';
 
 // Ensure dynamic rendering for client-side hooks
 export const dynamic = 'force-dynamic';
-
 /**
  * Unified Comment Moderation Page
  *
@@ -34,7 +33,9 @@ export const dynamic = 'force-dynamic';
  * - Consistent UX across roles
  * - SEO optimized
  */
-export default function CommentModerationPage() {
+import { Suspense } from 'react';
+
+function CommentModerationContent() {
   const { user, isLoading } = useAuthStore();
   const searchParams = useSearchParams();
 
@@ -50,7 +51,7 @@ export default function CommentModerationPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <Loading size="lg" text="Yükleniyor..." />
+        <Loading size="lg" text="YÃ¼kleniyor..." />
       </div>
     );
   }
@@ -64,9 +65,9 @@ export default function CommentModerationPage() {
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
           <Shield className="mx-auto mb-4 h-12 w-12 text-red-500" />
-          <h2 className="text-2xl font-bold text-gray-900">Yetkisiz Erişim</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Yetkisiz EriÅŸim</h2>
           <p className="mt-2 text-gray-600">
-            Bu sayfaya erişim yetkiniz bulunmamaktadır.
+            Bu sayfaya eriÅŸim yetkiniz bulunmamaktadÄ±r.
           </p>
         </div>
       </div>
@@ -99,7 +100,7 @@ export default function CommentModerationPage() {
                     <RoleIcon className={`h-5 w-5 text-${roleColor}-600`} />
                   </div>
                   <p className="mt-1 text-gray-600">
-                    Blog yorumlarını inceleyin, onaylayın veya reddedin
+                    Blog yorumlarÄ±nÄ± inceleyin, onaylayÄ±n veya reddedin
                   </p>
                 </div>
               </div>
@@ -108,7 +109,7 @@ export default function CommentModerationPage() {
               <div
                 className={`rounded-full bg-${roleColor}-100 px-4 py-2 text-sm font-medium text-${roleColor}-800`}
               >
-                {isAdmin ? 'Admin' : 'Moderatör'}
+                {isAdmin ? 'Admin' : 'ModeratÃ¶r'}
               </div>
             </div>
           </div>
@@ -126,5 +127,13 @@ export default function CommentModerationPage() {
         </div>
       </div>
     </UnifiedErrorBoundary>
+  );
+}
+
+export default function CommentModerationPage() {
+  return (
+    <Suspense fallback={<Loading size="lg" text="Yükleniyor..." />}>
+      <CommentModerationContent />
+    </Suspense>
   );
 }

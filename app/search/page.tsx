@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * INTEGRATED SEARCH PAGE WITH ADVANCED FILTERS
  * ================================================
@@ -17,6 +17,7 @@
 
 'use client';
 
+export const dynamic = 'force-dynamic';
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AppLayout } from '@/components/layout';
@@ -217,7 +218,7 @@ function SearchContent() {
   const tabs = [
     {
       key: 'all' as SearchTab,
-      label: 'Tümü',
+      label: 'TÃ¼mÃ¼',
       icon: Search,
       count: totalResults,
     },
@@ -229,7 +230,7 @@ function SearchContent() {
     },
     {
       key: 'jobs' as SearchTab,
-      label: 'İş İlanları',
+      label: 'Ä°ÅŸ Ä°lanlarÄ±',
       icon: Briefcase,
       count: 0,
     },
@@ -244,7 +245,7 @@ function SearchContent() {
   const quickFilters = [
     { label: 'Uzaktan', icon: MapPin, active: false },
     { label: '24 saat teslimat', icon: Clock, active: false },
-    { label: '4+ yıldız', icon: Star, active: false },
+    { label: '4+ yÄ±ldÄ±z', icon: Star, active: false },
     { label: 'Pro freelancer', icon: Users, active: false },
   ];
 
@@ -257,15 +258,15 @@ function SearchContent() {
             <div className="mx-auto max-w-3xl">
               <UniversalSearch
                 onSearch={handleSearch}
-                placeholder="Ne arıyorsun?"
+                placeholder="Ne arÄ±yorsun?"
                 className="mb-4"
               />
 
               {searchQuery && (
                 <div className="flex items-center justify-between text-sm text-gray-600">
                   <span>
-                    <strong>&quot;{searchQuery}&quot;</strong> için{' '}
-                    <strong>{totalResults.toLocaleString()}</strong> sonuç
+                    <strong>&quot;{searchQuery}&quot;</strong> iÃ§in{' '}
+                    <strong>{totalResults.toLocaleString()}</strong> sonuÃ§
                     bulundu
                   </span>
                 </div>
@@ -343,7 +344,9 @@ function SearchContent() {
             {/* Quick Filters */}
             {!isMobile && (
               <div className="flex items-center space-x-3 pb-4">
-                <span className="text-sm text-gray-500">Hızlı filtreler:</span>
+                <span className="text-sm text-gray-500">
+                  HÄ±zlÄ± filtreler:
+                </span>
                 {quickFilters.map((filter, index) => (
                   <button
                     key={index}
@@ -403,7 +406,7 @@ function SearchContent() {
                 {/* Loading State */}
                 {isLoading && (
                   <div className="flex justify-center py-12">
-                    <Loading size="lg" text="Aranıyor..." />
+                    <Loading size="lg" text="AranÄ±yor..." />
                   </div>
                 )}
 
@@ -441,21 +444,21 @@ function SearchContent() {
                   Ne aramak istiyorsun?
                 </h2>
                 <p className="text-gray-600">
-                  Popüler kategorileri keşfet veya arama yaparak başla
+                  PopÃ¼ler kategorileri keÅŸfet veya arama yaparak baÅŸla
                 </p>
               </div>
 
               {/* Popular Categories */}
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                 {[
-                  { name: 'Web Tasarım', count: '2.3k', icon: '🎨' },
-                  { name: 'Logo Yapımı', count: '1.8k', icon: '🎯' },
-                  { name: 'SEO', count: '967', icon: '📈' },
-                  { name: 'Mobil App', count: '1.2k', icon: '📱' },
-                  { name: 'İçerik Yazımı', count: '834', icon: '✍️' },
-                  { name: 'Sosyal Medya', count: '692', icon: '📸' },
-                  { name: 'Video Editör', count: '543', icon: '🎬' },
-                  { name: 'Çeviri', count: '421', icon: '🌍' },
+                  { name: 'Web TasarÄ±m', count: '2.3k', icon: 'ğŸ¨' },
+                  { name: 'Logo YapÄ±mÄ±', count: '1.8k', icon: 'ğŸ¯' },
+                  { name: 'SEO', count: '967', icon: 'ğŸ“ˆ' },
+                  { name: 'Mobil App', count: '1.2k', icon: 'ğŸ“±' },
+                  { name: 'Ä°Ã§erik YazÄ±mÄ±', count: '834', icon: 'âœï¸' },
+                  { name: 'Sosyal Medya', count: '692', icon: 'ğŸ“¸' },
+                  { name: 'Video EditÃ¶r', count: '543', icon: 'ğŸ¬' },
+                  { name: 'Ã‡eviri', count: '421', icon: 'ğŸŒ' },
                 ].map((category) => (
                   <button
                     key={category.name}
@@ -481,11 +484,11 @@ function SearchContent() {
                 <div className="flex flex-wrap justify-center gap-2">
                   {[
                     'React developer',
-                    'Logo tasarım',
+                    'Logo tasarÄ±m',
                     'WordPress',
                     'E-ticaret',
-                    'Instagram tasarım',
-                    'SEO uzmanı',
+                    'Instagram tasarÄ±m',
+                    'SEO uzmanÄ±',
                   ].map((trend) => (
                     <button
                       key={trend}
@@ -507,15 +510,7 @@ function SearchContent() {
 
 export default function SearchPage() {
   return (
-    <Suspense
-      fallback={
-        <AppLayout>
-          <div className="flex min-h-screen items-center justify-center">
-            <Loading size="lg" text="Arama sayfası yükleniyor..." />
-          </div>
-        </AppLayout>
-      }
-    >
+    <Suspense fallback={<Loading size="lg" text="Yükleniyor..." />}>
       <SearchContent />
     </Suspense>
   );

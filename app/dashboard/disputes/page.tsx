@@ -18,7 +18,7 @@
 
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import Link from 'next/link';
@@ -39,6 +39,9 @@ import { Button, Loading } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import { getMyDisputes } from '@/lib/api/disputes';
 import type { DisputeResponse } from '@/types/dispute';
+
+// Dynamic rendering for useSearchParams
+export const dynamic = 'force-dynamic';
 import {
   disputeStatusLabels,
   disputeReasonLabels,
@@ -60,7 +63,7 @@ type FilterStatus = 'all' | 'OPEN' | 'UNDER_REVIEW' | 'ESCALATED' | 'RESOLVED';
 // COMPONENT
 // ================================================
 
-export default function UserDisputeDashboard() {
+function DisputeDashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const statusFilter = (searchParams?.get('status') as FilterStatus) || 'all';
@@ -420,5 +423,13 @@ export default function UserDisputeDashboard() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function UserDisputeDashboard() {
+  return (
+    <Suspense fallback={<Loading size="lg" text="Yükleniyor..." />}>
+      <DisputeDashboardContent />
+    </Suspense>
   );
 }

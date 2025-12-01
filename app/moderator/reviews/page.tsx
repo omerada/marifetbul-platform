@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ================================================
  * UNIFIED REVIEW MODERATION PAGE
  * ================================================
@@ -14,6 +14,8 @@
 
 'use client';
 
+export const dynamic = 'force-dynamic';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Shield, UserCheck } from 'lucide-react';
 import { UnifiedReviewQueue } from '@/components/domains/moderation/shared';
@@ -32,7 +34,7 @@ import { Loading } from '@/components/ui';
  * - Consistent UX across roles
  * - SEO optimized
  */
-export default function ReviewModerationPage() {
+function ReviewModerationContent() {
   const { user, isLoading } = useAuthStore();
   const searchParams = useSearchParams();
 
@@ -44,7 +46,7 @@ export default function ReviewModerationPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <Loading size="lg" text="Yükleniyor..." />
+        <Loading size="lg" text="YÃ¼kleniyor..." />
       </div>
     );
   }
@@ -58,9 +60,9 @@ export default function ReviewModerationPage() {
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
           <Shield className="mx-auto mb-4 h-12 w-12 text-red-500" />
-          <h2 className="text-2xl font-bold text-gray-900">Yetkisiz Erişim</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Yetkisiz EriÅŸim</h2>
           <p className="mt-2 text-gray-600">
-            Bu sayfaya erişim yetkiniz bulunmamaktadır.
+            Bu sayfaya eriÅŸim yetkiniz bulunmamaktadÄ±r.
           </p>
         </div>
       </div>
@@ -86,12 +88,12 @@ export default function ReviewModerationPage() {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  İnceleme Moderasyonu
+                  Ä°nceleme Moderasyonu
                 </h1>
                 <p className="mt-1 text-gray-600">
                   {isAdmin
-                    ? 'İncelemeleri yönetin, onaylayın veya reddedin'
-                    : 'İncelemeleri yönetin, onaylayın, reddedin veya yükseltin'}
+                    ? 'Ä°ncelemeleri yÃ¶netin, onaylayÄ±n veya reddedin'
+                    : 'Ä°ncelemeleri yÃ¶netin, onaylayÄ±n, reddedin veya yÃ¼kseltin'}
                 </p>
               </div>
             </div>
@@ -100,7 +102,7 @@ export default function ReviewModerationPage() {
             <div
               className={`rounded-full bg-${roleColor}-100 px-4 py-2 text-sm font-medium text-${roleColor}-800`}
             >
-              {isAdmin ? 'Admin' : 'Moderatör'}
+              {isAdmin ? 'Admin' : 'ModeratÃ¶r'}
             </div>
           </div>
 
@@ -115,5 +117,13 @@ export default function ReviewModerationPage() {
         </div>
       </div>
     </UnifiedErrorBoundary>
+  );
+}
+
+export default function ReviewModerationPage() {
+  return (
+    <Suspense fallback={<Loading size="lg" text="Yükleniyor..." />}>
+      <ReviewModerationContent />
+    </Suspense>
   );
 }
