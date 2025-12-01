@@ -477,7 +477,14 @@ class UnifiedAuthService {
 
       return response;
     } catch (error) {
-      logger.error('Auth: Failed to fetch current user', error as Error);
+      // 401 errors are expected for unauthenticated users
+      const isAuthError =
+        error instanceof Error && error.name === 'AuthenticationError';
+      if (isAuthError) {
+        logger.debug('Auth: User not authenticated');
+      } else {
+        logger.error('Auth: Failed to fetch current user', error as Error);
+      }
       throw this.handleAuthError(error);
     }
   }

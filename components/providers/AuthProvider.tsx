@@ -10,8 +10,9 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const { isAuthenticated, checkAuthStatus } = useAuthStore();
+  const { isAuthenticated, user, checkAuthStatus } = useAuthStore();
   const [isMounted, setIsMounted] = useState(false);
+  const [hasChecked, setHasChecked] = useState(false);
   const pathname = usePathname();
 
   // Prevent hydration mismatch and rehydrate store
@@ -24,26 +25,42 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     // Only check auth status if:
     // 1. Component is mounted
-    // 2. User is already authenticated (has token in localStorage)
-    // 3. Not on login/register pages
-    if (!isMounted) return;
+    // 2. Haven't checked yet (prevent infinite loop)
+    // 3. User is authenticated in store (has persisted state)
+    // 4. Not on auth pages (login/register)
+    if (!isMounted || hasChecked) return;
 
     const isAuthPage =
       pathname?.includes('/login') || pathname?.includes('/register');
 
-    // Only verify auth status if already authenticated, don't refresh on auth pages
-    if (isAuthenticated && !isAuthPage) {
-      logger.debug(
-        '[AuthProvider] Checking auth status for authenticated user'
-      );
+    // Skip auth check on auth pages
+    if (isAuthPage) {
+      logger.debug('[AuthProvider] Skipping auth check on auth page', {
+        pathname,
+      });
+      setHasChecked(true);
+      return;
+    }
+
+    // Only verify auth if user is authenticated in store (has persisted session)
+    if (isAuthenticated && user) {
+      logger.debug('[AuthProvider] Verifying persisted session');
+      setHasChecked(true);
+
       checkAuthStatus().catch((error) => {
-        logger.error('[AuthProvider] Auth status check failed:', error instanceof Error ? error : new Error(String(error)));
-        // Don't logout on auth pages - let them try to login
+        logger.warn(
+          '[AuthProvider] Session verification failed:',
+          error instanceof Error ? error.message : String(error)
+        );
+        // Session is invalid, user will be logged out by the store
       });
     } else {
-      logger.debug('[AuthProvider] Skipping auth check', { isMounted, isAuthenticated, isAuthPage, pathname,  });
+      logger.debug('[AuthProvider] No persisted session to verify');
+      setHasChecked(true);
     }
-  }, [isMounted, isAuthenticated, pathname, checkAuthStatus]);
+    // checkAuthStatus is stable from zustand, no need to include in deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMounted, isAuthenticated, user, pathname]);
 
   return <>{children}</>;
 }

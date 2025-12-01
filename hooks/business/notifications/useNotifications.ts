@@ -35,6 +35,7 @@ import {
   type UpdateNotificationPreferencesRequest,
 } from '@/lib/api/notifications';
 import { useToast } from '@/hooks/core/useToast';
+import { authSelectors } from '@/lib/core/auth';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ==================== TYPES ====================
@@ -170,6 +171,11 @@ export function useNotifications(
     autoMarkAsRead = false,
   } = options || {};
 
+  // ==================== AUTHENTICATION ====================
+
+  const isAuthenticated = authSelectors.useIsAuthenticated();
+  const user = authSelectors.useUser();
+
   // ==================== STATE ====================
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -186,37 +192,40 @@ export function useNotifications(
 
   // ==================== SWR DATA FETCHING ====================
 
-  // Fetch notifications with pagination
+  // Fetch notifications with pagination - ONLY if authenticated
   const {
     data: notificationsData,
     error: notificationsError,
     isLoading: notificationsLoading,
     mutate: mutateNotifications,
   } = useSWR<PaginatedNotifications>(
-    autoLoad ? CACHE_KEYS.notifications(currentPage, filters) : null,
+    autoLoad && isAuthenticated
+      ? CACHE_KEYS.notifications(currentPage, filters)
+      : null,
     async () => {
       const response = await getNotifications(currentPage - 1, pageSize);
       return response;
     }
   );
 
-  // Fetch unread count
+  // Fetch unread count - ONLY if authenticated
   const { data: unreadCount = 0, mutate: mutateUnreadCount } = useSWR<number>(
-    CACHE_KEYS.unreadCount,
+    isAuthenticated ? CACHE_KEYS.unreadCount : null,
     () => getUnreadCount(),
     {
       refreshInterval: 30000, // Refresh every 30s
     }
   );
 
-  // Fetch preferences
+  // Fetch preferences - ONLY if authenticated
   const {
     data: preferences,
     error: preferencesError,
     isLoading: preferencesLoading,
     mutate: mutatePreferences,
-  } = useSWR<NotificationPreferencesResponse>(CACHE_KEYS.preferences, () =>
-    getNotificationPreferences()
+  } = useSWR<NotificationPreferencesResponse>(
+    isAuthenticated ? CACHE_KEYS.preferences : null,
+    () => getNotificationPreferences()
   );
 
   // ==================== COMPUTED STATE ====================
@@ -317,7 +326,12 @@ export function useNotifications(
   // ==================== WEBSOCKET REAL-TIME ====================
 
   useEffect(() => {
-    if (!enableRealtime) return;
+    if (!enableRealtime || !isAuthenticated || !user) {
+      logger.warn('Skipping WebSocket subscription - no user ID', {
+        hasUser: !!user,
+      });
+      return;
+    }
 
     const ws = getWebSocketService();
 
@@ -389,6 +403,8 @@ export function useNotifications(
     };
   }, [
     enableRealtime,
+    isAuthenticated,
+    user,
     enableToast,
     enableSound,
     autoMarkAsRead,

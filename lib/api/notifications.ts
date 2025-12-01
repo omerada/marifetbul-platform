@@ -221,7 +221,7 @@ export async function getNotifications(
   logger.debug('notifications.api', { size: size });
 
   const response = await apiClient.get<PaginatedNotifications>(
-    `/v1/notifications?page=${page}&size=${size}`
+    `/notifications?page=${page}&size=${size}`
   );
 
   return paginatedNotificationsSchema.parse(response);
@@ -241,7 +241,7 @@ export async function getUnreadNotifications(
   logger.debug('notifications.api', { size });
 
   const response = await apiClient.get<PaginatedNotifications>(
-    `/v1/notifications/unread?page=${page}&size=${size}`
+    `/notifications/unread?page=${page}&size=${size}`
   );
 
   return paginatedNotificationsSchema.parse(response);
@@ -261,7 +261,7 @@ export async function getRecentNotifications(
   });
 
   const response = await apiClient.get<NotificationResponse[]>(
-    `/v1/notifications/recent?limit=${limit}`
+    `/notifications/recent?limit=${limit}`
   );
 
   return z.array(notificationResponseSchema).parse(response);
@@ -277,7 +277,7 @@ export async function getNotificationById(
   notificationId: string
 ): Promise<NotificationResponse> {
   const response = await apiClient.get<NotificationResponse>(
-    `/v1/notifications/${notificationId}`
+    `/notifications/${notificationId}`
   );
 
   return notificationResponseSchema.parse(response);
@@ -299,7 +299,7 @@ export async function getNotificationsByType(
   logger.debug('notifications.api', { page });
 
   const response = await apiClient.get<PaginatedNotifications>(
-    `/v1/notifications/type/${type}?page=${page}&size=${size}`
+    `/notifications/type/${type}?page=${page}&size=${size}`
   );
 
   return paginatedNotificationsSchema.parse(response);
@@ -316,7 +316,7 @@ export async function getNotificationCounts(): Promise<NotificationCountResponse
   });
 
   const response = await apiClient.get<NotificationCountResponse>(
-    '/v1/notifications/count'
+    '/notifications/count'
   );
 
   return notificationCountResponseSchema.parse(response);
@@ -330,9 +330,7 @@ export async function getNotificationCounts(): Promise<NotificationCountResponse
 export async function getUnreadCount(): Promise<number> {
   logger.debug('Fetching unread count', { component: 'notifications.api' });
 
-  const response = await apiClient.get<number>(
-    '/v1/notifications/unread-count'
-  );
+  const response = await apiClient.get<number>('/notifications/unread-count');
 
   return z.number().parse(response);
 }
@@ -347,7 +345,7 @@ export async function hasUnreadNotifications(): Promise<boolean> {
     component: 'notifications.api',
   });
 
-  const response = await apiClient.get<boolean>('/v1/notifications/has-unread');
+  const response = await apiClient.get<boolean>('/notifications/has-unread');
 
   return z.boolean().parse(response);
 }
@@ -363,7 +361,7 @@ export async function markAsRead(notificationId: string): Promise<void> {
     component: 'notifications.api',
   });
 
-  await apiClient.put(`/v1/notifications/${notificationId}/read`);
+  await apiClient.put(`/notifications/${notificationId}/read`);
 }
 
 /**
@@ -377,7 +375,7 @@ export async function markAsUnread(notificationId: string): Promise<void> {
     component: 'notifications.api',
   });
 
-  await apiClient.put(`/v1/notifications/${notificationId}/unread`);
+  await apiClient.put(`/notifications/${notificationId}/unread`);
 }
 
 /**
@@ -391,9 +389,7 @@ export async function markAllAsRead(): Promise<number> {
     component: 'notifications.api',
   });
 
-  const response = await apiClient.put<number>(
-    '/v1/notifications/mark-all-read'
-  );
+  const response = await apiClient.put<number>('/notifications/mark-all-read');
 
   return z.number().parse(response);
 }
@@ -413,7 +409,7 @@ export async function markAllAsReadByType(
   });
 
   const response = await apiClient.put<number>(
-    `/v1/notifications/mark-all-read/type/${type}`
+    `/notifications/mark-all-read/type/${type}`
   );
 
   return z.number().parse(response);
@@ -428,7 +424,7 @@ export async function markAllAsReadByType(
 export async function deleteNotification(
   notificationId: string
 ): Promise<void> {
-  await apiClient.delete(`/v1/notifications/${notificationId}`);
+  await apiClient.delete(`/notifications/${notificationId}`);
 }
 
 /**
@@ -445,7 +441,7 @@ export async function createNotification(
   });
 
   const response = await apiClient.post<NotificationResponse>(
-    '/v1/notifications',
+    '/notifications',
     request
   );
 
@@ -465,7 +461,7 @@ export async function getNotificationPreferences(): Promise<NotificationPreferen
   });
 
   const response = await apiClient.get<NotificationPreferencesResponse>(
-    '/v1/notifications/preferences'
+    '/notifications/preferences'
   );
 
   return notificationPreferencesResponseSchema.parse(response);
@@ -485,7 +481,7 @@ export async function updateNotificationPreferences(
   });
 
   const response = await apiClient.put<NotificationPreferencesResponse>(
-    '/v1/notifications/preferences',
+    '/notifications/preferences',
     request
   );
 
@@ -503,7 +499,7 @@ export async function resetNotificationPreferences(): Promise<NotificationPrefer
   });
 
   const response = await apiClient.post<NotificationPreferencesResponse>(
-    '/v1/notifications/preferences/reset'
+    '/notifications/preferences/reset'
   );
 
   return notificationPreferencesResponseSchema.parse(response);
@@ -527,9 +523,7 @@ export async function setDoNotDisturb(
   if (startTime) params.append('startTime', startTime);
   if (endTime) params.append('endTime', endTime);
 
-  await apiClient.post(
-    `/v1/notifications/preferences/dnd?${params.toString()}`
-  );
+  await apiClient.post(`/notifications/preferences/dnd?${params.toString()}`);
 }
 
 // ==================== GROUPING & THREADING (Sprint 6 - Story 6.6) ====================
@@ -544,7 +538,7 @@ export async function getNotificationThread(
   threadId: string
 ): Promise<NotificationResponse[]> {
   const response = await apiClient.get<NotificationResponse[]>(
-    `/v1/notifications/thread/${threadId}`
+    `/notifications/thread/${threadId}`
   );
 
   return z.array(notificationResponseSchema).parse(response);
@@ -564,7 +558,7 @@ export async function expandGroupedNotification(
   });
 
   const response = await apiClient.get<NotificationResponse[]>(
-    `/v1/notifications/${notificationId}/expand`
+    `/notifications/${notificationId}/expand`
   );
 
   return z.array(notificationResponseSchema).parse(response);
@@ -584,7 +578,7 @@ export async function groupNotifications(
   });
 
   await apiClient.post(
-    `/v1/notifications/group?lookbackMinutes=${lookbackMinutes}`
+    `/notifications/group?lookbackMinutes=${lookbackMinutes}`
   );
 }
 

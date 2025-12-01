@@ -52,6 +52,14 @@ if (process.env.NODE_ENV === 'production' && false) {
 
 const nextConfig = {
   // ================================================
+  // INTERNATIONALIZATION
+  // ================================================
+  i18n: {
+    locales: ['tr'],
+    defaultLocale: 'tr',
+  },
+
+  // ================================================
   // PRODUCTION OPTIMIZATIONS
   // ================================================
   poweredByHeader: false,

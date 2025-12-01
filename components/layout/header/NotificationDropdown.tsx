@@ -4,14 +4,22 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Bell, CheckCheck, ExternalLink } from 'lucide-react';
 import { useNotifications } from '@/hooks';
+import { authSelectors } from '@/lib/core/auth';
 import { NotificationType } from '@/lib/api/notifications';
 import type { NotificationResponse as Notification } from '@/lib/api/notifications';
 
 export function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const isAuthenticated = authSelectors.useIsAuthenticated();
+
   const { notifications, unreadCount, markAsRead, markAllAsRead, isLoading } =
-    useNotifications();
+    useNotifications({ autoLoad: isAuthenticated });
+
+  // Don't render if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
 
   // Dropdown dışına tıklayınca kapat
   useEffect(() => {

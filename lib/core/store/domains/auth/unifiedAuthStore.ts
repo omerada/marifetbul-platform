@@ -401,11 +401,8 @@ export const useUnifiedAuthStore = create<UnifiedAuthStore>()(
               logger.debug('AuthStore: Auth state refreshed');
             }
           } catch (error) {
-            logger.error(
-              'AuthStore: Failed to refresh auth state',
-              error as Error
-            );
-            // Don't throw - silent refresh failure
+            // Silent failure for unauthenticated users - this is normal
+            logger.debug('AuthStore: Refresh skipped - user not authenticated');
           }
         },
 
@@ -519,6 +516,8 @@ export const authSelectors = {
       error: state.error,
     })),
 
+  // ⚠️ DEPRECATED: DO NOT USE - Causes infinite re-renders
+  // Use individual action selectors below instead
   useActions: () =>
     useUnifiedAuthStore((state) => ({
       login: state.login,
@@ -529,6 +528,15 @@ export const authSelectors = {
       clearError: state.clearError,
       extendSession: state.extendSession,
     })),
+
+  // ✅ RECOMMENDED: Individual action selectors (stable references)
+  useLogin: () => useUnifiedAuthStore((state) => state.login),
+  useRegister: () => useUnifiedAuthStore((state) => state.register),
+  useLogout: () => useUnifiedAuthStore((state) => state.logout),
+  useUpdateProfile: () => useUnifiedAuthStore((state) => state.updateProfile),
+  useRefreshAuth: () => useUnifiedAuthStore((state) => state.refreshAuth),
+  useClearError: () => useUnifiedAuthStore((state) => state.clearError),
+  useExtendSession: () => useUnifiedAuthStore((state) => state.extendSession),
 };
 
 // ============================================================================

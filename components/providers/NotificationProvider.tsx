@@ -113,6 +113,9 @@ export function NotificationProvider({
       return;
     }
 
+    // Mark as initialized early to prevent re-runs
+    isInitializedRef.current = true;
+
     // Auto-subscribe if enabled and permission granted
     if (autoSubscribe && state.permission === 'granted') {
       handleSubscribe();
@@ -121,19 +124,18 @@ export function NotificationProvider({
     // Setup foreground message listener
     setupForegroundListener();
 
-    isInitializedRef.current = true;
-
     // Cleanup on unmount
     return () => {
       if (unsubscribeRef.current) {
         unsubscribeRef.current();
         unsubscribeRef.current = null;
       }
+      isInitializedRef.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isAuthenticated,
-    user,
+    user?.id, // Only depend on user ID, not entire user object
     state.isSupported,
     state.permission,
     autoSubscribe,

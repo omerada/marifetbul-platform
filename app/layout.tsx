@@ -9,7 +9,6 @@ import { MonitoringProvider } from '@/components/providers/MonitoringProvider';
 import { OrderNotificationProvider } from '@/components/providers/OrderNotificationProvider';
 import { NotificationProvider } from '@/components/providers/NotificationProvider';
 import { PushPermissionModal } from '@/components/notifications';
-import { NotificationBell } from '@/components/domains/notifications';
 import { SessionTimeoutWarning } from '@/components/domains/auth';
 import { ToastManager } from '@/components/shared/ToastManager';
 import { CookieConsentBanner } from '@/components/shared/CookieConsentBanner';
@@ -18,8 +17,9 @@ import { SkipToContent } from '@/components/shared/accessibility';
 import './globals.css';
 
 const inter = Inter({
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
   variable: '--font-inter',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -95,6 +95,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr" className="h-full" data-scroll-behavior="smooth">
+      <head>
+        <meta charSet="UTF-8" />
+      </head>
       <SEOHead />
       <body
         className={`${inter.variable} h-full bg-gray-50 font-sans antialiased`}

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import useSWR from 'swr';
 import { toast } from 'sonner';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import {
   getNotificationPreferences,
   updateNotificationPreferences,
@@ -18,9 +19,12 @@ import {
 export function useNotificationPreferences() {
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // Fetch preferences with SWR
+  // Only fetch if user is authenticated
+  const { user } = useAuthStore();
+
+  // Fetch preferences with SWR - only if authenticated
   const { data, error, isLoading, mutate } = useSWR<NotificationPreferences>(
-    '/notifications/preferences',
+    user ? '/notifications/preferences' : null,
     getNotificationPreferences,
     {
       revalidateOnFocus: false,

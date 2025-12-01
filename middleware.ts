@@ -113,6 +113,13 @@ export async function middleware(request: NextRequest) {
     return addSecurityHeaders(response);
   }
 
+  // ✅ CRITICAL FIX: Check public routes FIRST before protected routes
+  // This prevents "/" from being treated as protected
+  if (isPublicRoute(pathname)) {
+    const response = NextResponse.next();
+    return addSecurityHeaders(response);
+  }
+
   // Admin route protection
   if (isAdminRoute(pathname)) {
     if (!token) {
@@ -209,12 +216,6 @@ export async function middleware(request: NextRequest) {
   // If accessing auth routes with valid token, redirect to dashboard
   if (isAuthRoute(pathname) && token) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-
-  // Allow access to public routes
-  if (isPublicRoute(pathname)) {
-    const response = NextResponse.next();
-    return addSecurityHeaders(response);
   }
 
   // For any other route, continue

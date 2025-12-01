@@ -25,6 +25,7 @@ import {
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { useNotifications } from '@/hooks/business/useNotifications';
+import { authSelectors } from '@/lib/core/auth';
 import { NotificationListItem } from './NotificationListItem';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import type { NotificationResponse as Notification } from '@/lib/api/notifications';
@@ -41,12 +42,23 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   showRecentCount = 5,
 }) => {
   const router = useRouter();
+  const isAuthenticated = authSelectors.useIsAuthenticated();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const { notifications, unreadCount, isLoading, markAsRead, markAllAsRead } =
-    useNotifications();
+  // Always call hooks before any conditional returns
+  const { state, actions } = useNotifications({
+    autoLoad: isAuthenticated, // Only auto-load when authenticated
+  });
+
+  const { notifications, unreadCount, isLoading } = state;
+  const { markAsRead, markAllAsRead } = actions;
+
+  // Don't render if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
 
   // Close dropdown when clicking outside
   useEffect(() => {

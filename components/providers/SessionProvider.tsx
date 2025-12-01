@@ -21,10 +21,11 @@
 
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { authSelectors } from '@/lib/core/auth';
+import { useUnifiedAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { sessionManager } from '@/lib/core/auth/sessionManager';
 import { useSession } from '@/hooks/core/useSession';
 import { SessionTimeoutModal } from '@/components/shared/SessionTimeoutModal';
@@ -70,7 +71,17 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
 }) => {
   const router = useRouter();
   const isAuthenticated = authSelectors.useIsAuthenticated();
-  const { logout } = authSelectors.useActions();
+
+  // ⚠️ CRITICAL FIX: Use direct store access instead of useActions selector
+  // useActions creates new object on every render, causing infinite loop
+  const logoutRef = useRef(useUnifiedAuthStore.getState().logout);
+  const routerRef = useRef(router);
+
+  // Update refs when values change (but don't trigger re-renders)
+  useEffect(() => {
+    routerRef.current = router;
+    logoutRef.current = useUnifiedAuthStore.getState().logout;
+  }, [router]);
 
   const { isSessionActive, remainingMinutes, remainingSeconds, extendSession } =
     useSession();
@@ -92,18 +103,18 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
       logger.info('SessionProvider: User initiated logout from timeout modal');
       setShowTimeoutModal(false);
 
-      await logout();
+      await logoutRef.current();
 
       toast.info('Çıkış yapıldı', {
         description: 'Oturumunuz güvenli bir şekilde sonlandırıldı.',
       });
 
-      router.push('/login');
+      routerRef.current.push('/login');
     } catch (error) {
       logger.error('SessionProvider: Logout failed', error as Error);
       toast.error('Çıkış yapılırken bir hata oluştu');
     }
-  }, [logout, router]);
+  }, []);
 
   /**
    * Handle session extension
@@ -129,7 +140,7 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
    * Handle session expiry (auto-logout)
    */
   const handleSessionExpired = useCallback(async () => {
-    logger.warn('SessionProvider: Session expired, forcing logout');
+    logger.warn('SessionProvider: Session expired, initiating logout');
 
     setShowTimeoutModal(false);
 
@@ -138,9 +149,15 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
       duration: 5000,
     });
 
-    await logout();
-    router.push('/login?reason=session_expired');
-  }, [logout, router]);
+    try {
+      await logoutRef.current();
+    } catch (error) {
+      logger.error('SessionProvider: Logout on expiry failed', error as Error);
+    }
+
+    // Redirect after logout completes
+    routerRef.current.push('/login?reason=session_expired');
+  }, []);
 
   // ============================================================================
   // SESSION INITIALIZATION
@@ -150,21 +167,25 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
    * Initialize session manager callbacks when user logs in
    */
   useEffect(() => {
-    if (!isAuthenticated || !isSessionActive) return;
+    // Only run if authenticated and session is active
+    if (!isAuthenticated || !isSessionActive) {
+      return;
+    }
 
-    logger.debug('SessionProvider: Initializing session callbacks');
+    logger.debug('SessionProvider: Initializing session monitoring');
 
-    // Note: sessionManager is already initialized by unifiedAuthStore
-    // We just need to monitor state and show UI
+    let hasExpired = false;
 
     // Check for expiry periodically
     const checkInterval = setInterval(() => {
       const state = sessionManager.getState();
 
-      if (!state.isActive) {
+      if (!state.isActive && !hasExpired) {
+        hasExpired = true;
+        logger.warn('SessionProvider: Session detected as expired');
         handleSessionExpired();
       }
-    }, 5000); // Check every 5 seconds
+    }, 10000); // Check every 10 seconds (less aggressive)
 
     return () => {
       clearInterval(checkInterval);
@@ -184,7 +205,7 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
     }
 
     // 5 minute warning - Show modal
-    if (remainingMinutes === 4 && !hasShown5MinWarning) {
+    if (remainingMinutes <= 4 && remainingMinutes > 3 && !hasShown5MinWarning) {
       logger.info('SessionProvider: 5 minute warning triggered');
       setHasShown5MinWarning(true);
       setShowTimeoutModal(true);
@@ -196,7 +217,7 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
     }
 
     // 2 minute warning
-    if (remainingMinutes === 1 && !hasShown2MinWarning) {
+    if (remainingMinutes <= 1 && remainingMinutes > 0 && !hasShown2MinWarning) {
       logger.info('SessionProvider: 2 minute warning triggered');
       setHasShown2MinWarning(true);
 
@@ -210,6 +231,7 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
     if (
       remainingMinutes === 0 &&
       remainingSeconds !== null &&
+      remainingSeconds <= 60 &&
       remainingSeconds > 30 &&
       !hasShown1MinWarning
     ) {
@@ -225,7 +247,6 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
     isAuthenticated,
     isSessionActive,
     remainingMinutes,
-    remainingSeconds,
     hasShown5MinWarning,
     hasShown2MinWarning,
     hasShown1MinWarning,
@@ -244,7 +265,7 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
     <>
       {children}
 
-      {/* Session Timeout Modal */}
+      {/* Session Timeout Modal - Only show when authenticated */}
       {isSessionActive && remainingSeconds !== null && (
         <SessionTimeoutModal
           isOpen={showTimeoutModal}

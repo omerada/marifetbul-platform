@@ -30,6 +30,13 @@ async function fetchRecentNotifications(): Promise<Notification[]> {
 }
 
 /**
+ * Hook options
+ */
+interface UseNotificationsOptions {
+  autoLoad?: boolean;
+}
+
+/**
  * Custom hook for notifications with real-time WebSocket updates
  *
  * Features:
@@ -41,10 +48,12 @@ async function fetchRecentNotifications(): Promise<Notification[]> {
  *
  * @example
  * ```tsx
- * const { notifications, unreadCount, markNotificationAsRead, refetch } = useNotifications();
+ * const { notifications, unreadCount, markNotificationAsRead, refetch } = useNotifications({ autoLoad: true });
  * ```
  */
-export function useNotifications() {
+export function useNotifications(options: UseNotificationsOptions = {}) {
+  const { autoLoad = true } = options;
+
   const [unreadCount, setUnreadCount] = useState(0);
   const [recentNotifications, setRecentNotifications] = useState<
     Notification[]
@@ -56,9 +65,9 @@ export function useNotifications() {
   // Get notification preferences for sound/vibration
   const { preferences } = useNotificationPreferences();
 
-  // Fetch recent notifications (latest 5)
+  // Fetch recent notifications (latest 5) - only if autoLoad is true
   const { data: notifications, mutate } = useSWR<Notification[]>(
-    '/api/notifications/recent',
+    autoLoad && user ? '/api/notifications/recent' : null,
     fetchRecentNotifications,
     {
       refreshInterval: 30000, // Refresh every 30 seconds
@@ -66,9 +75,9 @@ export function useNotifications() {
     }
   );
 
-  // Fetch unread count
+  // Fetch unread count - only if autoLoad is true
   const { data: count, mutate: mutateCount } = useSWR<number>(
-    '/api/notifications/unread-count',
+    autoLoad && user ? '/api/notifications/unread-count' : null,
     getUnreadCount,
     {
       refreshInterval: 30000,
@@ -93,7 +102,7 @@ export function useNotifications() {
   // Sprint 6 - Story 6.5: Using UnifiedNotificationHandler to prevent duplicates
   useEffect(() => {
     if (!user?.id) {
-      logger.warn('Skipping WebSocket subscription - no user ID', {
+      logger.debug('Skipping WebSocket subscription - no user ID', {
         hasUser: !!user,
       });
       return;

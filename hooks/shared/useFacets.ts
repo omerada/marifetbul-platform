@@ -137,9 +137,6 @@ export function useFacets(options: UseFacetsOptions = {}): UseFacetsReturn {
       const errorMessage =
         err instanceof Error ? err.message : 'Faset verileri yüklenemedi';
       setError(errorMessage);
-      if (process.env.NODE_ENV === 'development') {
-        console.error('[useFacets] Failed to fetch facets:', err);
-      }
     } finally {
       setIsLoading(false);
     }

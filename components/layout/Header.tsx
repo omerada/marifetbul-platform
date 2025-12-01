@@ -23,12 +23,8 @@ export function Header() {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const { user, isAuthenticated, logout, refreshAuth } = useAuthStore();
+  const { user, isAuthenticated, logout } = useAuthStore();
   const unreadCount = useUnreadCount()?.data?.total || 0;
-
-  useEffect(() => {
-    refreshAuth();
-  }, [refreshAuth]);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);

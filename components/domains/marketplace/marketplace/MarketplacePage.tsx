@@ -106,10 +106,6 @@ export function MarketplacePage() {
   const handleAdvancedFilterChange = useCallback(
     async (newFilters: FilterState) => {
       try {
-        logger.debug('Advanced filters changed:', {
-          filters: newFilters,
-        } as any);
-
         // Update filters state with new advanced filters
         updateFilters(newFilters);
 
@@ -126,7 +122,7 @@ export function MarketplacePage() {
         );
       }
     },
-    [mode, applyJobFilters, applyPackageFilters, updateFilters]
+    [mode, applyJobFilters, applyPackageFilters]
   );
 
   // Handle filter chip removal

@@ -73,7 +73,7 @@ interface UseSessionReturn {
  * ```
  */
 export function useSession(): UseSessionReturn {
-  const [sessionState, setSessionState] = useState<SessionState>(
+  const [sessionState, setSessionState] = useState<SessionState>(() =>
     sessionManager.getState()
   );
   const [remainingTime, setRemainingTime] = useState<number | null>(null);
@@ -82,13 +82,31 @@ export function useSession(): UseSessionReturn {
   useEffect(() => {
     const updateRemainingTime = () => {
       const state = sessionManager.getState();
-      setSessionState(state);
 
+      // Only update session state if critical values changed
+      setSessionState((prev) => {
+        if (
+          prev.isActive !== state.isActive ||
+          prev.tokenExpiry !== state.tokenExpiry
+        ) {
+          return state;
+        }
+        return prev;
+      });
+
+      // Update remaining time independently
       if (state.tokenExpiry) {
         const remaining = state.tokenExpiry - Date.now();
-        setRemainingTime(remaining > 0 ? remaining : 0);
+        const newRemaining = remaining > 0 ? remaining : 0;
+        setRemainingTime((prev) => {
+          // Only update if difference is > 500ms to reduce re-renders
+          if (prev === null || Math.abs(prev - newRemaining) > 500) {
+            return newRemaining;
+          }
+          return prev;
+        });
       } else {
-        setRemainingTime(null);
+        setRemainingTime((prev) => (prev !== null ? null : prev));
       }
     };
 

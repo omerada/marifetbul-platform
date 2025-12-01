@@ -157,11 +157,23 @@ class ApiClient {
 
             return retryData;
           } else {
-            // Refresh failed, redirect to login
-            apiLogger.error('Token refresh failed, redirecting to login');
-            if (typeof window !== 'undefined') {
+            // Refresh failed
+            apiLogger.error('Token refresh failed');
+
+            // Only redirect to login if the user was authenticated
+            // Check if we actually had a valid session before (refresh endpoint returned 401)
+            // For non-authenticated users, just throw error without redirect
+            const hadAuthCookie = document.cookie
+              .split(';')
+              .some((c) => c.trim().startsWith('auth_token='));
+
+            if (typeof window !== 'undefined' && hadAuthCookie) {
+              apiLogger.info('User had valid session, redirecting to login');
               window.location.href = '/login?session=expired';
+            } else {
+              apiLogger.debug('No auth cookie found, not redirecting');
             }
+
             throw transformError({
               status: 401,
               message: 'Session expired. Please login again.',
