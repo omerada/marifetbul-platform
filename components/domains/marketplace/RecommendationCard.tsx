@@ -490,7 +490,7 @@ export const RecommendationList: React.FC<RecommendationListProps> = ({
 
   const handleView = useCallback((item: Freelancer | Job | ServicePackage) => {
     // Navigate to item detail page
-    logger.debug('Viewing item:', item);
+    logger.debug('Viewing item:', { item } as any);
   }, []);
 
   const displayedRecommendations = recommendations.slice(0, limit);

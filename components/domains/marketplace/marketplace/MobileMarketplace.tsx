@@ -8,7 +8,7 @@ import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { useMarketplace } from '@/hooks';
 import { Loading } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import { EmptyState, JobCard, PackageCard } from '.';
+import type { JobResponse, ServicePackage } from '@/types/backend-aligned';
 
 interface MobileMarketplaceProps {
   mode: 'jobs' | 'packages';
@@ -296,23 +296,38 @@ export function MobileMarketplace({
       {/* Content */}
       <div className="p-3 sm:p-4">
         {!currentData || currentData.length === 0 ? (
-          <EmptyState
-            mode={mode}
-            title={
-              mode === 'jobs'
+          <div className="py-12 text-center">
+            <p className="text-muted-foreground text-lg font-medium">
+              {mode === 'jobs'
                 ? 'İş ilanı bulunamadı'
-                : 'Hizmet paketi bulunamadı'
-            }
-            description="Arama kriterlerinizi değiştirerek tekrar deneyin."
-          />
+                : 'Hizmet paketi bulunamadı'}
+            </p>
+            <p className="text-muted-foreground mt-2 text-sm">
+              Arama kriterlerinizi değiştirerek tekrar deneyin.
+            </p>
+          </div>
         ) : (
           <div className="space-y-4">
             {mode === 'jobs'
               ? jobs.map((job) => (
-                  <JobCard key={job.id} job={job} layout="list" />
+                  <Card key={job.id}>
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold">{job.title}</h3>
+                      <p className="mt-1 text-sm text-gray-600">
+                        {job.description?.substring(0, 100)}...
+                      </p>
+                    </CardContent>
+                  </Card>
                 ))
               : packages.map((pkg) => (
-                  <PackageCard key={pkg.id} package={pkg} layout="list" />
+                  <Card key={pkg.id}>
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold">{pkg.title}</h3>
+                      <p className="mt-1 text-sm text-gray-600">
+                        {pkg.description?.substring(0, 100)}...
+                      </p>
+                    </CardContent>
+                  </Card>
                 ))}
           </div>
         )}

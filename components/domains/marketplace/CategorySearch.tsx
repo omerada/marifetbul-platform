@@ -146,7 +146,7 @@ const CategorySearch: React.FC<CategorySearchProps> = ({
         try {
           setRecentSearches(JSON.parse(saved).slice(0, 5));
         } catch (e) {
-          logger.error('Error loading search history:', e);
+          logger.error('Error loading search history:', e as Error);
         }
       }
     }

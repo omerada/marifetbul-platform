@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ================================================
  * REVENUE FORECAST WIDGET - PRODUCTION READY
  * ================================================
@@ -86,14 +86,14 @@ function getTrendIndicator(direction: 'UP' | 'DOWN' | 'STABLE') {
         icon: <TrendingUp className="h-5 w-5" />,
         color: 'text-green-600 dark:text-green-400',
         bgColor: 'bg-green-100 dark:bg-green-900/30',
-        label: 'Yükseliş',
+        label: 'Y�kseli�',
       };
     case 'DOWN':
       return {
         icon: <TrendingDown className="h-5 w-5" />,
         color: 'text-red-600 dark:text-red-400',
         bgColor: 'bg-red-100 dark:bg-red-900/30',
-        label: 'Düşüş',
+        label: 'D����',
       };
     default:
       return {
@@ -127,11 +127,11 @@ function getStrengthColor(strength: string): string {
 function getStrengthLabel(strength: string): string {
   switch (strength) {
     case 'STRONG':
-      return 'Güçlü';
+      return 'G��l�';
     case 'MODERATE':
       return 'Orta';
     case 'WEAK':
-      return 'Zayıf';
+      return 'Zay�f';
     default:
       return 'Bilinmiyor';
   }
@@ -219,7 +219,7 @@ export function RevenueForecastWidget({
           <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
           <div className="flex-1">
             <p className="font-medium text-red-900 dark:text-red-100">
-              Tahmin yüklenirken hata
+              Tahmin y�klenirken hata
             </p>
             <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
           </div>
@@ -245,7 +245,9 @@ export function RevenueForecastWidget({
   const trendIndicator = getTrendIndicator(trend.direction);
   const confidencePercentage = confidence.level * 100;
   const variance =
-    ((predicted.amount - historicalAverage) / historicalAverage) * 100;
+    ((predicted.revenue - historicalAverage.dailyRevenue * basedOnDays) /
+      (historicalAverage.dailyRevenue * basedOnDays)) *
+    100;
 
   return (
     <Card className={cn('transition-shadow hover:shadow-md', className)}>
@@ -279,14 +281,16 @@ export function RevenueForecastWidget({
               Tahmin Edilen Gelir
             </p>
             <p className="text-3xl font-bold">
-              {formatCurrency(predicted.amount)}
+              {formatCurrency(predicted.revenue)}
             </p>
             <div className="mt-1 flex items-center gap-2 text-sm">
               <span className={trendIndicator.color}>
                 {trendIndicator.label}
               </span>
               <span className="text-muted-foreground">•</span>
-              <span className="text-muted-foreground">{predicted.period}</span>
+              <span className="text-muted-foreground">
+                {data.forecastPeriod}
+              </span>
             </div>
           </div>
         </div>
@@ -296,7 +300,7 @@ export function RevenueForecastWidget({
           <CardContent className="p-4">
             <div className="mb-2 flex items-center justify-between">
               <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                Güven Aralığı
+                G�ven Aral���
               </span>
               <Badge
                 variant="secondary"
@@ -322,7 +326,7 @@ export function RevenueForecastWidget({
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-blue-700 dark:text-blue-300">
-                  Üst Limit
+                  �st Limit
                 </span>
                 <span className="font-bold text-blue-900 dark:text-blue-100">
                   {formatCurrency(confidence.upper)}
@@ -344,7 +348,7 @@ export function RevenueForecastWidget({
                 </span>
               </div>
               <p className="text-2xl font-bold">
-                {formatCurrency(historicalAverage)}
+                {formatCurrency(historicalAverage.dailyRevenue * basedOnDays)}
               </p>
               <p className="text-muted-foreground mt-1 text-xs">
                 Son {basedOnDays} gün
@@ -391,29 +395,29 @@ export function RevenueForecastWidget({
               <div className="mb-2 flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                 <span className="text-muted-foreground text-sm font-medium">
-                  Trend Güveni
+                  Trend G�veni
                 </span>
               </div>
               <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">
-                %{(trend.confidence * 100).toFixed(0)}
+                %{(trend.reliability * 100).toFixed(0)}
               </p>
               <p className="text-muted-foreground mt-1 text-xs">
-                Model güvenilirliği
+                Model g�venilirli�i
               </p>
             </CardContent>
           </Card>
         </div>
 
         {/* Warning if low confidence */}
-        {trend.confidence < 0.7 && (
+        {trend.reliability < 0.7 && (
           <div className="flex items-center gap-3 rounded-lg bg-yellow-50 p-4 dark:bg-yellow-900/20">
             <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
             <div className="flex-1">
               <p className="font-medium text-yellow-900 dark:text-yellow-100">
-                Düşük Güven Seviyesi
+                D���k G�ven Seviyesi
               </p>
               <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                Tahmin, sınırlı veri nedeniyle daha az güvenilir olabilir.
+                Tahmin, s�n�rl� veri nedeniyle daha az g�venilir olabilir.
               </p>
             </div>
           </div>

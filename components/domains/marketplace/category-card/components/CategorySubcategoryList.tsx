@@ -6,7 +6,7 @@
 
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
-import { formatPrice } from '../utils/categoryCardHelpers';
+import { formatCurrency } from '@/lib/shared/formatters';
 import type { CategorySubcategoryListProps } from '../types/categoryCardTypes';
 
 export function CategorySubcategoryList({
@@ -83,7 +83,7 @@ export function CategorySubcategoryList({
                         Toplam: {subcategory.popularServices.length} hizmet türü
                       </span>
                       <span className="text-gray-500">
-                        Ort. fiyat: {formatPrice(subcategory.averagePrice)}
+                        Ort. fiyat: {formatCurrency(subcategory.averagePrice)}
                       </span>
                     </div>
                   </div>

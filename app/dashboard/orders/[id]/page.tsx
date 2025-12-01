@@ -183,8 +183,12 @@ export default function OrderDetailPage() {
       setOrder(enrichOrder(data));
 
       // Determine user role based on authenticated user ID
-      if (user && 'id' in user && user.id) {
-        const isSeller = data.sellerId === user.id;
+      const userId =
+        user && 'id' in user && typeof user.id === 'string'
+          ? (user.id as string)
+          : null;
+      if (userId) {
+        const isSeller = data.sellerId === userId;
         setUserRole(isSeller ? 'seller' : 'buyer');
       } else {
         // Fallback: determine role from URL path
@@ -1136,7 +1140,11 @@ export default function OrderDetailPage() {
             <Card className="p-6">
               <OrderMessagingPanel
                 order={order}
-                currentUserId={user?.id || ''}
+                currentUserId={
+                  (user && 'id' in user && typeof user.id === 'string'
+                    ? (user.id as string)
+                    : '') || ''
+                }
                 userRole={userRole}
               />
             </Card>

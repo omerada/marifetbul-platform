@@ -4,7 +4,7 @@
  * Direct services list when no subcategories exist
  */
 
-import { formatPrice } from '../utils/categoryCardHelpers';
+import { formatCurrency } from '@/lib/shared/formatters';
 import type { CategoryServiceListProps } from '../types/categoryCardTypes';
 
 export function CategoryServiceList({
@@ -38,8 +38,8 @@ export function CategoryServiceList({
         <div className="flex items-center justify-between text-xs text-gray-600">
           <span className="font-medium">Toplam: {totalCount} hizmet türü</span>
           <span>
-            Fiyat aralığı: {formatPrice(priceRange.min)} -{' '}
-            {formatPrice(priceRange.max)}
+            Fiyat aralığı: {formatCurrency(priceRange.min)} -{' '}
+            {formatCurrency(priceRange.max)}
           </span>
         </div>
       </div>

@@ -130,7 +130,7 @@ export function JobCloseModal({
           <Button
             variant="destructive"
             onClick={handleClose}
-            isLoading={isClosing}
+            loading={isClosing}
             disabled={isClosing || !reason.trim()}
           >
             İlanı Kapat
@@ -216,7 +216,7 @@ export function JobReopenModal({
           <Button
             variant="primary"
             onClick={handleReopen}
-            isLoading={isReopening}
+            loading={isReopening}
             disabled={isReopening}
           >
             Yeniden Aç

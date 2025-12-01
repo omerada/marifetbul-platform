@@ -379,9 +379,9 @@ export function UnifiedReviewQueue({
               showFullDetails
               onApprove={handleApprove}
               onReject={handleReject}
-              onEscalate={role === 'MODERATOR' ? handleEscalate : undefined}
-              onDelete={role === 'ADMIN' ? handleDelete : undefined}
-              onResolveFlag={role === 'ADMIN' ? handleResolveFlag : undefined}
+              onEscalate={role === 'moderator' ? handleEscalate : undefined}
+              onDelete={role === 'admin' ? handleDelete : undefined}
+              onResolveFlag={role === 'admin' ? handleResolveFlag : undefined}
               onUpdated={() => {
                 setViewingReview(null);
                 refetch();

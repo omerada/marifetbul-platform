@@ -6,7 +6,7 @@
 
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui';
-import { formatPrice } from '../utils/categoryCardHelpers';
+import { formatCurrency } from '@/lib/shared/formatters';
 import type { CategoryExpandedContentProps } from '../types/categoryCardTypes';
 
 export function CategoryExpandedContent({
@@ -87,11 +87,11 @@ export function CategoryExpandedContent({
           </h4>
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <span className="font-medium text-gray-900">
-              {formatPrice(category.priceRange.min)}
+              {formatCurrency(category.priceRange.min)}
             </span>
             <span>-</span>
             <span className="font-medium text-gray-900">
-              {formatPrice(category.priceRange.max)}
+              {formatCurrency(category.priceRange.max)}
             </span>
           </div>
         </div>

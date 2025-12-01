@@ -68,12 +68,16 @@ const variantColors = {
     'border-gray-200 hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800',
   primary:
     'border-blue-200 bg-blue-50 hover:border-blue-300 hover:bg-blue-100 dark:border-blue-900/50 dark:bg-blue-900/20 dark:hover:bg-blue-900/30',
+  secondary:
+    'border-purple-200 bg-purple-50 hover:border-purple-300 hover:bg-purple-100 dark:border-purple-900/50 dark:bg-purple-900/20 dark:hover:bg-purple-900/30',
   success:
     'border-green-200 bg-green-50 hover:border-green-300 hover:bg-green-100 dark:border-green-900/50 dark:bg-green-900/20 dark:hover:bg-green-900/30',
   warning:
     'border-yellow-200 bg-yellow-50 hover:border-yellow-300 hover:bg-yellow-100 dark:border-yellow-900/50 dark:bg-yellow-900/20 dark:hover:bg-yellow-900/30',
   danger:
     'border-red-200 bg-red-50 hover:border-red-300 hover:bg-red-100 dark:border-red-900/50 dark:bg-red-900/20 dark:hover:bg-red-900/30',
+  outline:
+    'border-gray-300 hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800',
 };
 
 /**
@@ -84,12 +88,16 @@ const iconBackgroundColors = {
     'bg-gray-100 text-gray-600 group-hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300',
   primary:
     'bg-blue-100 text-blue-600 group-hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-400',
+  secondary:
+    'bg-purple-100 text-purple-600 group-hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-400',
   success:
     'bg-green-100 text-green-600 group-hover:bg-green-200 dark:bg-green-900/50 dark:text-green-400',
   warning:
     'bg-yellow-100 text-yellow-600 group-hover:bg-yellow-200 dark:bg-yellow-900/50 dark:text-yellow-400',
   danger:
     'bg-red-100 text-red-600 group-hover:bg-red-200 dark:bg-red-900/50 dark:text-red-400',
+  outline:
+    'bg-gray-50 text-gray-600 group-hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400',
 };
 
 /**

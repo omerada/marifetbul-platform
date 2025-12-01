@@ -279,7 +279,7 @@ export function RevenueBreakdownWidget({
                 )}
               >
                 {getTrendIcon(growth.trend)}
-                <span>{formatPercentage(growth.percentage / 100)}</span>
+                <span>{formatPercentage(growth.growthRate)}</span>
               </div>
             </div>
             <div className="rounded-full bg-blue-100 p-3 dark:bg-blue-900/30">
@@ -297,7 +297,7 @@ export function RevenueBreakdownWidget({
                 {formatCurrency(summary.netRevenue)}
               </p>
               <p className="text-muted-foreground mt-2 text-xs">
-                {growth.comparisonPeriod}
+                {data.period}
               </p>
             </div>
             <div className="rounded-full bg-green-100 p-3 dark:bg-green-900/30">
@@ -317,7 +317,7 @@ export function RevenueBreakdownWidget({
                 {formatCurrency(summary.platformFee)}
               </p>
               <p className="text-muted-foreground mt-2 text-xs">
-                %{platformFees.rate} oran
+                {formatPercentage(platformFees.averageFeeRate)} oran
               </p>
             </div>
             <div className="rounded-full bg-purple-100 p-3 dark:bg-purple-900/30">
@@ -334,11 +334,9 @@ export function RevenueBreakdownWidget({
               <p className="text-2xl font-bold">
                 {formatCurrency(summary.sellerEarnings)}
               </p>
-              <Badge
-                className={cn('mt-2', getHealthColor(healthIndicators.status))}
-              >
-                {getHealthLabel(healthIndicators.status)}
-              </Badge>
+              <p className="text-muted-foreground mt-2 text-xs">
+                İade Oranı: {formatPercentage(healthIndicators.refundRate)}
+              </p>
             </div>
             <div className="rounded-full bg-orange-100 p-3 dark:bg-orange-900/30">
               <DollarSign className="h-5 w-5 text-orange-600 dark:text-orange-400" />
@@ -361,45 +359,28 @@ export function RevenueBreakdownWidget({
             <div className="flex items-center justify-between rounded-lg bg-green-50 p-3 dark:bg-green-900/20">
               <span className="flex items-center gap-2 text-sm font-medium">
                 <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
-                Başarılı
+                Siparişler
               </span>
               <span className="font-bold">
-                {transactions.successful.toLocaleString('tr-TR')}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between rounded-lg bg-yellow-50 p-3 dark:bg-yellow-900/20">
-              <span className="flex items-center gap-2 text-sm font-medium">
-                <RefreshCw className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
-                Beklemede
-              </span>
-              <span className="font-bold">
-                {transactions.pending.toLocaleString('tr-TR')}
+                {transactions.orderCount.toLocaleString('tr-TR')}
               </span>
             </div>
 
             <div className="flex items-center justify-between rounded-lg bg-red-50 p-3 dark:bg-red-900/20">
               <span className="flex items-center gap-2 text-sm font-medium">
                 <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
-                Başarısız
+                İadeler
               </span>
               <span className="font-bold">
-                {transactions.failed.toLocaleString('tr-TR')}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-900/20">
-              <span className="text-sm font-medium">İade Edilen</span>
-              <span className="font-bold">
-                {transactions.refunded.toLocaleString('tr-TR')}
+                {transactions.refundCount.toLocaleString('tr-TR')}
               </span>
             </div>
 
             <div className="border-t pt-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Toplam İşlem</span>
+                <span className="text-sm font-medium">Ortalama Sipariş</span>
                 <span className="text-lg font-bold">
-                  {transactions.total.toLocaleString('tr-TR')}
+                  {formatCurrency(transactions.averageOrderValue)}
                 </span>
               </div>
             </div>
@@ -415,27 +396,32 @@ export function RevenueBreakdownWidget({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {paymentMethods.map((method, index) => (
+            {[
+              { method: 'Kredi Kartı', ...paymentMethods.creditCard },
+              { method: 'Cüzdan', ...paymentMethods.wallet },
+            ].map((methodData, index) => (
               <div key={index} className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">{method.method}</span>
+                  <span className="text-sm font-medium">
+                    {methodData.method}
+                  </span>
                   <span className="text-sm font-bold">
-                    {formatCurrency(method.amount)}
+                    {formatCurrency(methodData.amount)}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-2 flex-1 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                     <div
                       className="h-full bg-blue-600 dark:bg-blue-400"
-                      style={{ width: `${method.percentage}%` }}
+                      style={{ width: `${methodData.percentage}%` }}
                     />
                   </div>
                   <span className="text-muted-foreground text-xs">
-                    {method.percentage.toFixed(1)}%
+                    {methodData.percentage.toFixed(1)}%
                   </span>
                 </div>
                 <div className="text-muted-foreground text-xs">
-                  {method.count.toLocaleString('tr-TR')} işlem
+                  {methodData.count.toLocaleString('tr-TR')} işlem
                 </div>
               </div>
             ))}
@@ -454,24 +440,22 @@ export function RevenueBreakdownWidget({
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-900/20">
-              <p className="text-muted-foreground text-sm">Başarı Oranı</p>
-              <p className="text-2xl font-bold">
-                {healthIndicators.successRate.toFixed(1)}%
-              </p>
-            </div>
-            <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-900/20">
               <p className="text-muted-foreground text-sm">İade Oranı</p>
               <p className="text-2xl font-bold">
-                {healthIndicators.refundRate.toFixed(1)}%
+                {formatPercentage(healthIndicators.refundRate)}
               </p>
             </div>
             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-900/20">
-              <p className="text-muted-foreground text-sm">Durum</p>
-              <Badge
-                className={cn('mt-1', getHealthColor(healthIndicators.status))}
-              >
-                {getHealthLabel(healthIndicators.status)}
-              </Badge>
+              <p className="text-muted-foreground text-sm">Ort. İşlem Boyutu</p>
+              <p className="text-2xl font-bold">
+                {formatCurrency(healthIndicators.averageTransactionSize)}
+              </p>
+            </div>
+            <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-900/20">
+              <p className="text-muted-foreground text-sm">Gelir Yoğunluğu</p>
+              <p className="text-2xl font-bold">
+                {formatPercentage(healthIndicators.revenueConcentration)}
+              </p>
             </div>
           </div>
         </CardContent>

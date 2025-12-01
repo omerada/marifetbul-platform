@@ -42,13 +42,13 @@ interface AcceptProposalModalProps {
  * ACCEPT PROPOSAL MODAL - Dual Payment System
  * ================================================
  * Modal for accepting a job proposal with payment mode selection
- * 
+ *
  * Features:
  * - Payment mode selection (ESCROW_PROTECTED vs MANUAL_IBAN)
  * - Fee calculation and comparison
  * - Seller IBAN validation
  * - Clear acceptance confirmation
- * 
+ *
  * @version 1.0.0 - Dual Payment System
  * @author MarifetBul Development Team
  */
@@ -64,7 +64,9 @@ export function AcceptProposalModal({
     PaymentMode.ESCROW_PROTECTED
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [sellerHasIban, setSellerHasIban] = useState(initialSellerHasIban ?? false);
+  const [sellerHasIban, setSellerHasIban] = useState(
+    initialSellerHasIban ?? false
+  );
   const [isLoadingPaymentStatus, setIsLoadingPaymentStatus] = useState(
     initialSellerHasIban === undefined
   );
@@ -115,28 +117,28 @@ export function AcceptProposalModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center text-xl">
             <CheckCircle className="mr-2 h-6 w-6 text-green-600" />
             Teklifi Kabul Et
           </DialogTitle>
           <DialogDescription>
-            {proposal.freelancerName} adlý freelancer&apos;ýn teklifini kabul
-            etmek için ödeme yöntemini seçin.
+            {proposal.freelancerName} adlï¿½ freelancer&apos;ï¿½n teklifini kabul
+            etmek iï¿½in ï¿½deme yï¿½ntemini seï¿½in.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Proposal Summary */}
           <div className="rounded-lg border bg-gray-50 p-4">
-            <h3 className="mb-2 font-medium text-gray-900">Teklif Özeti</h3>
+            <h3 className="mb-2 font-medium text-gray-900">Teklif ï¿½zeti</h3>
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Freelancer:</span>
               <span className="font-semibold">{proposal.freelancerName}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-600">Teklif Tutarý:</span>
+              <span className="text-gray-600">Teklif Tutarï¿½:</span>
               <span className="text-lg font-bold text-green-600">
                 ?{proposal.proposedBudget.toLocaleString('tr-TR')}
               </span>
@@ -146,7 +148,7 @@ export function AcceptProposalModal({
           {/* Payment Mode Selection */}
           <div>
             <h3 className="mb-3 font-medium text-gray-900">
-              Ödeme Yöntemi Seçin
+              ï¿½deme Yï¿½ntemi Seï¿½in
             </h3>
             <PaymentModeSelector
               value={paymentMode}
@@ -163,9 +165,9 @@ export function AcceptProposalModal({
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              <strong>Önemli:</strong> Teklifi kabul ettikten sonra sipariþ
-              oluþturulacak ve seçtiðiniz ödeme yöntemine göre iþlem
-              baþlatýlacaktýr. Ödeme yöntemi daha sonra deðiþtirilemez.
+              <strong>ï¿½nemli:</strong> Teklifi kabul ettikten sonra sipariï¿½
+              oluï¿½turulacak ve seï¿½tiï¿½iniz ï¿½deme yï¿½ntemine gï¿½re iï¿½lem
+              baï¿½latï¿½lacaktï¿½r. ï¿½deme yï¿½ntemi daha sonra deï¿½iï¿½tirilemez.
             </AlertDescription>
           </Alert>
         </div>
@@ -176,7 +178,7 @@ export function AcceptProposalModal({
             onClick={handleClose}
             disabled={isSubmitting}
           >
-            Ýptal
+            ï¿½ptal
           </Button>
           <Button
             onClick={handleAccept}
@@ -185,7 +187,7 @@ export function AcceptProposalModal({
               isLoading ||
               (paymentMode === PaymentMode.MANUAL_IBAN && !sellerHasIban)
             }
-            isLoading={isSubmitting}
+            loading={isSubmitting}
           >
             {isSubmitting ? 'Kabul Ediliyor...' : 'Teklifi Kabul Et'}
           </Button>

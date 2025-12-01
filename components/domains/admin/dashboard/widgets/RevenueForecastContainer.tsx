@@ -14,10 +14,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {
-  RevenueForecastWidget,
-  type RevenueForecastDto,
-} from './RevenueForecastWidget';
+import { RevenueForecastWidget } from './RevenueForecastWidget';
+import type { RevenueForecastDto } from '@/lib/api/admin-analytics';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
 // ================================================

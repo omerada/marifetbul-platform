@@ -41,6 +41,7 @@ const trendColorClasses = {
   up: 'text-green-600 dark:text-green-400',
   down: 'text-red-600 dark:text-red-400',
   neutral: 'text-gray-600 dark:text-gray-400',
+  stable: 'text-gray-600 dark:text-gray-400',
 };
 
 /**

@@ -457,7 +457,7 @@ export const ChartWidget = memo<ChartWidgetProps>(
     const getChartIcon = () => {
       switch (data.config?.type) {
         case 'pie':
-        case 'donut':
+        case 'doughnut':
           return PieChartIcon;
         case 'bar':
           return BarChart3;
@@ -510,7 +510,7 @@ export const ChartWidget = memo<ChartWidgetProps>(
               isDonut={false}
             />
           )}
-          {data.config?.type === 'donut' && (
+          {data.config?.type === 'doughnut' && (
             <PieChartComponent
               data={data}
               config={data.config}

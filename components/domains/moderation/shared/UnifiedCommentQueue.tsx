@@ -29,7 +29,7 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 import { toast } from 'sonner';
 import { useCommentModeration } from '@/hooks/business/moderation';
 import { UnifiedCommentModerationCard } from './UnifiedCommentModerationCard';
-import type { UserRole } from './UnifiedCommentModerationCard';
+import type { UserRole } from '@/types/business/moderation';
 import type { CommentModerationStatus } from '@/hooks/business/moderation';
 
 // ============================================================================
@@ -50,7 +50,7 @@ export interface UnifiedCommentQueueProps {
 
 export function UnifiedCommentQueue({
   role = 'admin',
-  initialStatus = 'PENDING',
+  initialStatus = 'pending',
   showStats = true,
   enableBulkActions = true,
   viewMode = 'card',
@@ -73,9 +73,8 @@ export function UnifiedCommentQueue({
   // COMPUTED VALUES
   // ================================================
 
-  const data = moderation.data;
-  const comments = data?.comments || [];
-  const selectedCount = moderation.selectedComments.size;
+  const comments = moderation.comments || [];
+  const selectedCount = moderation.selectedComments.length;
   const hasSelection = selectedCount > 0;
 
   // ================================================
@@ -84,27 +83,26 @@ export function UnifiedCommentQueue({
 
   const handleStatusChange = (status: CommentModerationStatus) => {
     setActiveStatus(status);
-    moderation.updateFilter('status', status === 'ALL' ? undefined : status);
-    moderation.deselectAll();
+    moderation.clearSelection();
+    moderation.refresh();
     logger.info('Comment status filter changed', { status });
   };
 
   const handleSearch = () => {
-    moderation.updateFilter('search', searchQuery || undefined);
+    moderation.refresh();
     logger.info('Comment search executed', { query: searchQuery });
   };
 
   const handleRefresh = () => {
-    moderation.deselectAll();
-    // Trigger re-fetch by changing filters
-    moderation.setFilters({ ...moderation.filters });
-    toast.success('Yenilendiğonner');
+    moderation.clearSelection();
+    moderation.refresh();
+    toast.success('Yenilendi');
     logger.info('Comment queue refreshed');
   };
 
   const handleSelectAll = () => {
     if (hasSelection) {
-      moderation.deselectAll();
+      moderation.clearSelection();
     } else {
       moderation.selectAll();
     }
@@ -121,14 +119,16 @@ export function UnifiedCommentQueue({
     if (!confirmed) return;
 
     try {
-      const selectedIds = Array.from(moderation.selectedComments);
-      await moderation.bulkApprove(selectedIds);
+      await moderation.bulkApprove(moderation.selectedComments);
       toast.success(`${count} yorum onaylandı`);
-      moderation.deselectAll();
+      moderation.clearSelection();
       logger.info('Bulk comments approved', { count });
     } catch (error) {
       toast.error('Toplu onaylama başarısız oldu');
-      logger.error('Bulk approve comments failed', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Bulk approve comments failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   };
 
@@ -143,14 +143,19 @@ export function UnifiedCommentQueue({
     if (!confirmed) return;
 
     try {
-      const selectedIds = Array.from(moderation.selectedComments);
-      await moderation.bulkReject(selectedIds);
+      await moderation.bulkReject(
+        moderation.selectedComments,
+        'Bulk rejection'
+      );
       toast.success(`${count} yorum reddedildi`);
-      moderation.deselectAll();
+      moderation.clearSelection();
       logger.info('Bulk comments rejected', { count });
     } catch (error) {
       toast.error('Toplu reddetme başarısız oldu');
-      logger.error('Bulk reject comments failed', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Bulk reject comments failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   };
 
@@ -165,14 +170,16 @@ export function UnifiedCommentQueue({
     if (!confirmed) return;
 
     try {
-      const selectedIds = Array.from(moderation.selectedComments);
-      await moderation.bulkMarkAsSpam(selectedIds);
+      await moderation.bulkMarkAsSpam(moderation.selectedComments);
       toast.success(`${count} yorum spam olarak işaretlendi`);
-      moderation.deselectAll();
+      moderation.clearSelection();
       logger.info('Bulk comments marked as spam', { count });
     } catch (error) {
       toast.error('Toplu spam işaretleme başarısız oldu');
-      logger.error('Bulk mark spam failed', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Bulk mark spam failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   };
 
@@ -183,78 +190,83 @@ export function UnifiedCommentQueue({
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      {showStats && data && (
+      {showStats && moderation.stats && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {/* Pending */}
           <button
-            onClick={() => handleStatusChange('PENDING')}
+            onClick={() => handleStatusChange('pending')}
             className={`rounded-lg border p-4 text-left transition-all hover:shadow-md ${
-              activeStatus === 'PENDING'
+              activeStatus === 'pending'
                 ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-500'
                 : 'border-gray-200 bg-white hover:border-blue-300'
             }`}
           >
             <p className="text-sm font-medium text-gray-600">Bekleyen</p>
             <p className="mt-1 text-2xl font-bold text-gray-900">
-              {data.pending}
+              {moderation.stats?.pending}
             </p>
           </button>
 
           {/* Approved */}
           <button
-            onClick={() => handleStatusChange('APPROVED')}
+            onClick={() => handleStatusChange('approved')}
             className={`rounded-lg border p-4 text-left transition-all hover:shadow-md ${
-              activeStatus === 'APPROVED'
+              activeStatus === 'approved'
                 ? 'border-green-500 bg-green-50 ring-2 ring-green-500'
                 : 'border-gray-200 bg-white hover:border-green-300'
             }`}
           >
             <p className="text-sm font-medium text-gray-600">Onaylanan</p>
             <p className="mt-1 text-2xl font-bold text-gray-900">
-              {data.approved}
+              {moderation.stats?.approved}
             </p>
           </button>
 
           {/* Rejected */}
           <button
-            onClick={() => handleStatusChange('REJECTED')}
+            onClick={() => handleStatusChange('rejected')}
             className={`rounded-lg border p-4 text-left transition-all hover:shadow-md ${
-              activeStatus === 'REJECTED'
+              activeStatus === 'rejected'
                 ? 'border-red-500 bg-red-50 ring-2 ring-red-500'
                 : 'border-gray-200 bg-white hover:border-red-300'
             }`}
           >
             <p className="text-sm font-medium text-gray-600">Reddedilen</p>
             <p className="mt-1 text-2xl font-bold text-gray-900">
-              {data.rejected}
+              {moderation.stats?.rejected}
             </p>
           </button>
 
           {/* Spam */}
           <button
-            onClick={() => handleStatusChange('SPAM')}
+            onClick={() => handleStatusChange('spam')}
             className={`rounded-lg border p-4 text-left transition-all hover:shadow-md ${
-              activeStatus === 'SPAM'
+              activeStatus === 'spam'
                 ? 'border-orange-500 bg-orange-50 ring-2 ring-orange-500'
                 : 'border-gray-200 bg-white hover:border-orange-300'
             }`}
           >
             <p className="text-sm font-medium text-gray-600">Spam</p>
-            <p className="mt-1 text-2xl font-bold text-gray-900">{data.spam}</p>
+            <p className="mt-1 text-2xl font-bold text-gray-900">
+              {moderation.stats?.spam}
+            </p>
           </button>
 
           {/* Total */}
           <button
-            onClick={() => handleStatusChange('ALL')}
+            onClick={() => handleStatusChange('all')}
             className={`rounded-lg border p-4 text-left transition-all hover:shadow-md ${
-              activeStatus === 'ALL'
+              activeStatus === 'all'
                 ? 'border-gray-500 bg-gray-50 ring-2 ring-gray-500'
                 : 'border-gray-200 bg-white hover:border-gray-300'
             }`}
           >
             <p className="text-sm font-medium text-gray-600">Toplam</p>
             <p className="mt-1 text-2xl font-bold text-gray-900">
-              {data.total}
+              {(moderation.stats?.pending || 0) +
+                (moderation.stats?.approved || 0) +
+                (moderation.stats?.rejected || 0) +
+                (moderation.stats?.spam || 0)}
             </p>
           </button>
         </div>
@@ -285,10 +297,10 @@ export function UnifiedCommentQueue({
           variant="outline"
           size="sm"
           onClick={handleRefresh}
-          disabled={moderation.loading}
+          disabled={moderation.isLoading}
         >
           <RefreshCw
-            className={`h-4 w-4 ${moderation.loading ? 'animate-spin' : ''}`}
+            className={`h-4 w-4 ${moderation.isLoading ? 'animate-spin' : ''}`}
           />
         </UnifiedButton>
 
@@ -341,7 +353,7 @@ export function UnifiedCommentQueue({
 
       {/* Comments List */}
       <div className="space-y-4">
-        {moderation.loading && comments.length === 0 ? (
+        {moderation.isLoading && comments.length === 0 ? (
           <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
             <RefreshCw className="mx-auto h-8 w-8 animate-spin text-gray-400" />
             <p className="mt-2 text-gray-600">Yorumlar yükleniyor...</p>
@@ -360,27 +372,28 @@ export function UnifiedCommentQueue({
           comments.map((comment) => (
             <UnifiedCommentModerationCard
               key={comment.id}
-              comment={comment}
+              comment={comment as any}
               viewMode={viewMode}
               role={role}
-              selected={moderation.isSelected(String(comment.id))}
+              selected={moderation.selectedComments.includes(
+                Number(comment.id)
+              )}
               onSelect={(id) => {
-                if (moderation.isSelected(String(id))) {
-                  moderation.deselectComment(String(id));
-                } else {
-                  moderation.selectComment(String(id));
-                }
+                moderation.toggleSelection(Number(id));
               }}
               onApprove={async (id) => {
-                const success = await moderation.approveComment(String(id));
+                const success = await moderation.approveComment(Number(id));
                 return success;
               }}
-              onReject={async (id) => {
-                const success = await moderation.rejectComment(String(id));
+              onReject={async (id, reason) => {
+                const success = await moderation.rejectComment(
+                  Number(id),
+                  reason || 'Rejected'
+                );
                 return success;
               }}
               onMarkSpam={async (id) => {
-                const success = await moderation.markAsSpam(String(id));
+                const success = await moderation.markAsSpam(Number(id));
                 return success;
               }}
               onEscalate={
@@ -399,35 +412,44 @@ export function UnifiedCommentQueue({
               }
               onUpdated={() => {
                 // Refresh the list
-                moderation.setFilters({ ...moderation.filters });
+                moderation.refresh();
               }}
-              showActions={activeStatus === 'PENDING'}
+              showActions={activeStatus === 'pending'}
             />
           ))
         )}
       </div>
 
       {/* Pagination */}
-      {moderation.totalPages > 1 && (
+      {moderation.pagination && moderation.pagination.totalPages > 1 && (
         <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4">
           <p className="text-sm text-gray-600">
-            Sayfa {moderation.page} / {moderation.totalPages}
+            Sayfa {moderation.pagination.page} /{' '}
+            {moderation.pagination.totalPages}
           </p>
           <div className="flex gap-2">
             <UnifiedButton
               variant="outline"
               size="sm"
-              onClick={() => moderation.setPage(moderation.page - 1)}
-              disabled={moderation.page === 1 || moderation.loading}
+              onClick={() =>
+                moderation.fetchComments(moderation.pagination!.page - 1)
+              }
+              disabled={
+                moderation.pagination?.page === 1 || moderation.isLoading
+              }
             >
               Önceki
             </UnifiedButton>
             <UnifiedButton
               variant="outline"
               size="sm"
-              onClick={() => moderation.setPage(moderation.page + 1)}
+              onClick={() =>
+                moderation.fetchComments(moderation.pagination!.page + 1)
+              }
               disabled={
-                moderation.page >= moderation.totalPages || moderation.loading
+                (moderation.pagination?.page || 0) >=
+                  (moderation.pagination?.totalPages || 0) ||
+                moderation.isLoading
               }
             >
               Sonraki

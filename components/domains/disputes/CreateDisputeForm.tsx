@@ -31,9 +31,7 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 
 const disputeFormSchema = z.object({
   orderId: z.string().uuid('Geçersiz sipariş ID'),
-  reason: z.nativeEnum(DisputeReason, {
-    required_error: 'İtiraz nedeni seçiniz',
-  }),
+  reason: z.nativeEnum(DisputeReason),
   description: z
     .string()
     .min(50, 'Açıklama en az 50 karakter olmalıdır')
@@ -143,10 +141,14 @@ export function CreateDisputeForm({
 
       toast.success(`${newUrls.length} dosya yüklendi`);
     } catch (error) {
-      logger.error('File upload failed', error instanceof Error ? error : new Error(String(error)), {
-        component: 'CreateDisputeForm',
-        action: 'handleFileUpload',
-      });
+      logger.error(
+        'File upload failed',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'CreateDisputeForm',
+          action: 'handleFileUpload',
+        }
+      );
       toast.error('Dosya yükleme başarısız oldu');
     } finally {
       setIsUploading(false);
@@ -200,11 +202,15 @@ export function CreateDisputeForm({
 
       onSuccess?.(response.id);
     } catch (error) {
-      logger.error('Failed to create dispute', error instanceof Error ? error : new Error(String(error)), {
-        component: 'CreateDisputeForm',
-        action: 'onSubmit',
-        orderId: data.orderId,
-      });
+      logger.error(
+        'Failed to create dispute',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          component: 'CreateDisputeForm',
+          action: 'onSubmit',
+          orderId: data.orderId,
+        }
+      );
 
       const errorMessage =
         error instanceof Error

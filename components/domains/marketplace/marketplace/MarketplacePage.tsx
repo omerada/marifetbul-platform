@@ -106,7 +106,9 @@ export function MarketplacePage() {
   const handleAdvancedFilterChange = useCallback(
     async (newFilters: FilterState) => {
       try {
-        logger.debug('Advanced filters changed:', newFilters);
+        logger.debug('Advanced filters changed:', {
+          filters: newFilters,
+        } as any);
 
         // Update filters state with new advanced filters
         updateFilters(newFilters);
@@ -118,7 +120,10 @@ export function MarketplacePage() {
           await applyPackageFilters();
         }
       } catch (error) {
-        logger.error('Error applying advanced filters:', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'Error applying advanced filters:',
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
     },
     [mode, applyJobFilters, applyPackageFilters, updateFilters]
@@ -191,7 +196,10 @@ export function MarketplacePage() {
         await applyPackageFilters();
       }
     } catch (error) {
-      logger.error('Error clearing filters:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Error clearing filters:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }, [mode, applyJobFilters, applyPackageFilters]);
 
@@ -203,17 +211,15 @@ export function MarketplacePage() {
         await applyPackageFilters();
       }
     } catch (error) {
-      logger.error('Error showing all items:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Error showing all items:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }, [mode, applyJobFilters, applyPackageFilters]);
 
   if (error) {
-    return (
-      <SimpleErrorDisplay
-        error={error}
-        onRetry={handleRefresh}
-      />
-    );
+    return <SimpleErrorDisplay error={error} onRetry={handleRefresh} />;
   }
 
   // Mobile view
@@ -232,16 +238,16 @@ export function MarketplacePage() {
       tabIndex={-1}
       className="min-h-screen bg-gradient-to-b from-white to-gray-50/50"
     >
-      {/* Hero Section - Yeni Modern Minimal Tasarým */}
+      {/* Hero Section - Yeni Modern Minimal Tasarï¿½m */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700">
         {/* Modern Pattern Overlay */}
         <div className="absolute inset-0 bg-[url('/patterns/grid.svg')] opacity-10" />
         <div className="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent" />
 
         <div className="relative container mx-auto px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-          {/* Üst Kýsým - Mode Toggle & Quick Stats */}
+          {/* ï¿½st Kï¿½sï¿½m - Mode Toggle & Quick Stats */}
           <div className="mb-12 flex flex-col items-center gap-6">
-            {/* Mode Toggle - Kompakt Tasarým */}
+            {/* Mode Toggle - Kompakt Tasarï¿½m */}
             <div className="inline-flex items-center gap-2 rounded-full bg-white/15 p-1 ring-1 ring-white/30 backdrop-blur-xl">
               <button
                 onClick={() => handleModeChange('jobs')}
@@ -253,7 +259,7 @@ export function MarketplacePage() {
                 )}
               >
                 <Briefcase className="h-4 w-4" />
-                <span>Ýþ Ýlanlarý</span>
+                <span>ï¿½ï¿½ ï¿½lanlarï¿½</span>
                 <span
                   className={cn(
                     'ml-1 rounded-full px-2 py-0.5 text-xs font-bold',
@@ -309,14 +315,14 @@ export function MarketplacePage() {
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-400/20 backdrop-blur-sm">
                   <CheckCircle className="h-4 w-4 text-green-300" />
                 </div>
-                <span className="font-medium">98% Baþarý</span>
+                <span className="font-medium">98% Baï¿½arï¿½</span>
               </div>
             </div>
           </div>
 
-          {/* Ana Ýçerik - Merkezi & Temiz */}
+          {/* Ana ï¿½ï¿½erik - Merkezi & Temiz */}
           <div className="mx-auto max-w-4xl text-center">
-            {/* Baþlýk - Sabit Yükseklik */}
+            {/* Baï¿½lï¿½k - Sabit Yï¿½kseklik */}
             <div className="mb-8 space-y-4">
               <div className="flex min-h-[200px] items-center justify-center lg:min-h-[240px]">
                 <h1 className="text-5xl leading-tight font-bold text-white lg:text-6xl xl:text-7xl">
@@ -325,7 +331,7 @@ export function MarketplacePage() {
                       <span className="block">Yeteneklerinize Uygun</span>
                       <span className="relative inline-block">
                         <span className="relative z-10 bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
-                          Ýþler
+                          ï¿½ï¿½ler
                         </span>
                         <span className="absolute inset-0 bg-gradient-to-r from-yellow-400/50 to-orange-400/50 blur-2xl" />
                       </span>
@@ -345,12 +351,12 @@ export function MarketplacePage() {
               </div>
               <p className="mx-auto max-w-2xl text-xl leading-relaxed text-blue-100 lg:text-2xl">
                 {mode === 'jobs'
-                  ? 'Binlerce iþ fýrsatý arasýndan sizin için en uygun olaný bulun ve hemen baþvurun'
-                  : 'Ýhtiyacýnýza özel hazýr hizmet paketleri ile iþlerinizi kolaylaþtýrýn'}
+                  ? 'Binlerce iï¿½ fï¿½rsatï¿½ arasï¿½ndan sizin iï¿½in en uygun olanï¿½ bulun ve hemen baï¿½vurun'
+                  : 'ï¿½htiyacï¿½nï¿½za ï¿½zel hazï¿½r hizmet paketleri ile iï¿½lerinizi kolaylaï¿½tï¿½rï¿½n'}
               </p>
             </div>
 
-            {/* CTA & Özellikler */}
+            {/* CTA & ï¿½zellikler */}
             <div className="flex flex-col items-center gap-6">
               {/* Action Buttons */}
               <div className="flex flex-wrap justify-center gap-4">
@@ -360,7 +366,7 @@ export function MarketplacePage() {
                     className="gap-2 rounded-xl bg-white px-8 py-4 text-lg font-semibold text-blue-700 shadow-xl hover:bg-blue-50"
                   >
                     <Target className="h-5 w-5" />
-                    Kategorileri Keþfet
+                    Kategorileri Keï¿½fet
                   </Button>
                 </Link>
                 <Button
@@ -375,15 +381,15 @@ export function MarketplacePage() {
                   }}
                 >
                   <Zap className="h-5 w-5" />
-                  Hemen Baþla
+                  Hemen Baï¿½la
                 </Button>
               </div>
 
-              {/* Özellik Badges - Minimal */}
+              {/* ï¿½zellik Badges - Minimal */}
               <div className="flex flex-wrap justify-center gap-3">
                 {[
-                  { icon: Shield, text: 'Güvenli Ödeme' },
-                  { icon: Zap, text: 'Hýzlý Ýþlem' },
+                  { icon: Shield, text: 'Gï¿½venli ï¿½deme' },
+                  { icon: Zap, text: 'Hï¿½zlï¿½ ï¿½ï¿½lem' },
                   { icon: MessageCircle, text: '7/24 Destek' },
                 ].map((feature, idx) => (
                   <div
@@ -400,7 +406,7 @@ export function MarketplacePage() {
         </div>
       </section>
 
-      {/* Ana Ýçerik Bölümü */}
+      {/* Ana ï¿½ï¿½erik Bï¿½lï¿½mï¿½ */}
       <section
         className="container mx-auto px-4 py-12 sm:px-6 lg:px-8"
         data-search-section
@@ -420,10 +426,10 @@ export function MarketplacePage() {
           />
         </div>
 
-        {/* Kontrol Barý - Ana sayfa temasý */}
+        {/* Kontrol Barï¿½ - Ana sayfa temasï¿½ */}
         <div className="mb-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200/60">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            {/* Sol - Baþlýk & Sayý */}
+            {/* Sol - Baï¿½lï¿½k & Sayï¿½ */}
             <div className="flex items-center gap-4">
               <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 ring-1 ring-blue-200/60">
                 {mode === 'jobs' ? (
@@ -434,20 +440,20 @@ export function MarketplacePage() {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900 lg:text-2xl">
-                  {mode === 'jobs' ? 'Ýþ Ýlanlarý' : 'Hizmet Paketleri'}
+                  {mode === 'jobs' ? 'ï¿½ï¿½ ï¿½lanlarï¿½' : 'Hizmet Paketleri'}
                 </h2>
                 <p className="text-sm text-gray-600">
                   <span className="font-semibold text-blue-600">
                     {currentTotal}
                   </span>{' '}
-                  sonuç bulundu
+                  sonuï¿½ bulundu
                 </p>
               </div>
             </div>
 
-            {/* Sað - Kontroller */}
+            {/* Saï¿½ - Kontroller */}
             <div className="flex flex-wrap items-center gap-3">
-              {/* Görünüm Modu */}
+              {/* Gï¿½rï¿½nï¿½m Modu */}
               <div className="flex items-center gap-1 rounded-lg bg-gray-50 p-1 ring-1 ring-gray-200/60">
                 <button
                   onClick={() => handleViewModeChange()}
@@ -457,7 +463,7 @@ export function MarketplacePage() {
                       ? 'bg-white text-blue-600 shadow-sm ring-1 ring-blue-200/60'
                       : 'text-gray-500 hover:text-gray-700'
                   )}
-                  title="Grid görünümü"
+                  title="Grid gï¿½rï¿½nï¿½mï¿½"
                 >
                   <Grid3X3 className="h-4 w-4" />
                 </button>
@@ -469,7 +475,7 @@ export function MarketplacePage() {
                       ? 'bg-white text-blue-600 shadow-sm ring-1 ring-blue-200/60'
                       : 'text-gray-500 hover:text-gray-700'
                   )}
-                  title="Liste görünümü"
+                  title="Liste gï¿½rï¿½nï¿½mï¿½"
                 >
                   <List className="h-4 w-4" />
                 </button>
@@ -515,7 +521,7 @@ export function MarketplacePage() {
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
-          {/* Filtre Kenar Çubuðu */}
+          {/* Filtre Kenar ï¿½ubuï¿½u */}
           {showFilters && (
             <div className="lg:col-span-1">
               <div className="sticky top-6 space-y-4">
@@ -545,7 +551,7 @@ export function MarketplacePage() {
                             onClick={() => setUseAdvancedFilters(true)}
                             className="text-xs text-blue-600 hover:text-blue-700"
                           >
-                            Geliþmiþ Filtreler
+                            Geliï¿½miï¿½ Filtreler
                           </button>
                         </div>
                       </div>
@@ -580,7 +586,7 @@ export function MarketplacePage() {
             </div>
           )}
 
-          {/* Ana Ýçerik */}
+          {/* Ana ï¿½ï¿½erik */}
           <div className={cn(showFilters ? 'lg:col-span-3' : 'lg:col-span-4')}>
             {/* Sprint 4: Filter Chips - Active filters display */}
             {hasActiveFilters && (
@@ -603,7 +609,7 @@ export function MarketplacePage() {
                     <button
                       onClick={clearAdvancedFilters}
                       className="rounded-lg p-2 text-red-600 transition-colors hover:bg-red-50"
-                      title="Tüm filtreleri temizle"
+                      title="Tï¿½m filtreleri temizle"
                     >
                       <X className="h-5 w-5" />
                     </button>

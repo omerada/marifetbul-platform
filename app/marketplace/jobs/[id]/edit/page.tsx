@@ -49,10 +49,11 @@ export default function JobEditPage() {
 
   // ==================== AUTHORIZATION CHECK ====================
 
-  const isOwner =
-    user && 'id' in user && user.id && job?.employerId
-      ? user.id === job.employerId
-      : false;
+  const userId =
+    user && 'id' in user && typeof user.id === 'string'
+      ? (user.id as string)
+      : null;
+  const isOwner = userId && job?.employerId ? userId === job.employerId : false;
   const canEdit = job && isOwner && job.status !== 'COMPLETED';
 
   // Check if job has accepted proposals

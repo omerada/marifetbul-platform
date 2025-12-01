@@ -212,10 +212,10 @@ const ActivityItem = memo(function ActivityItem({
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Type assertion for targetType since backend returns string
-  const targetType = activity.targetType as TargetType;
+  const targetType = activity.itemType as TargetType;
 
   // Get target URL for linking (memoized)
-  const targetUrl = getTargetUrl(targetType, activity.targetId);
+  const targetUrl = getTargetUrl(targetType, activity.itemId);
 
   // Toggle expanded state with useCallback
   const toggleExpanded = useCallback(() => {
@@ -237,11 +237,11 @@ const ActivityItem = memo(function ActivityItem({
         <div
           className={cn(
             'relative flex h-10 w-10 items-center justify-center rounded-full',
-            getActionColor(activity.actionType)
+            getActionColor(activity.action)
           )}
           aria-hidden="true"
         >
-          {getActionIcon(activity.actionType)}
+          {getActionIcon(activity.action)}
         </div>
 
         {/* Content */}

@@ -78,25 +78,23 @@ export const ProposalCard = memo<ProposalCardProps>(function ProposalCard({
       <div className="mb-4 flex items-start justify-between">
         <div className="flex items-center">
           <Avatar
-            src={proposal.freelancer?.avatar}
-            alt={`${proposal.freelancer?.firstName || ''} ${proposal.freelancer?.lastName || ''}`}
+            src={proposal.freelancerAvatar}
+            alt={proposal.freelancerName}
             className="mr-3 h-10 w-10"
           >
             <AvatarFallback>
-              {proposal.freelancer?.firstName?.charAt(0) || '?'}
-              {proposal.freelancer?.lastName?.charAt(0) || '?'}
+              {proposal.freelancerName?.charAt(0) || '?'}
             </AvatarFallback>
           </Avatar>
           <div>
             <h4 className="font-semibold text-gray-900">
-              {proposal.freelancer?.firstName || 'İsimsiz'}{' '}
-              {proposal.freelancer?.lastName || ''}
+              {proposal.freelancerName || 'İsimsiz'}
             </h4>
             <div className="flex items-center text-sm text-gray-600">
               <Star className="mr-1 h-4 w-4 text-yellow-400" />
-              <span>{proposal.freelancer?.rating || 0}</span>
+              <span>{proposal.freelancerRating || 0}</span>
               <span className="mx-1">•</span>
-              <span>{proposal.freelancer?.reviewCount || 0} değerlendirme</span>
+              <span>0 değerlendirme</span>
             </div>
           </div>
         </div>
@@ -157,11 +155,11 @@ export const ProposalCard = memo<ProposalCardProps>(function ProposalCard({
       )}
 
       {/* Actions */}
-      {proposal.status === 'pending' && (
+      {proposal.status === 'PENDING' && (
         <div className="flex items-center justify-between border-t pt-4">
           <MessageButton
             recipientId={proposal.freelancerId}
-            recipientName={`${proposal.freelancer?.firstName || ''} ${proposal.freelancer?.lastName || ''}`}
+            recipientName={proposal.freelancerName || 'İsimsiz'}
             context={{
               type: 'PROPOSAL',
               id: proposal.id,
@@ -191,7 +189,7 @@ export const ProposalCard = memo<ProposalCardProps>(function ProposalCard({
         </div>
       )}
 
-      {proposal.status === 'accepted' && (
+      {proposal.status === 'ACCEPTED' && (
         <div className="flex items-center justify-between border-t pt-4">
           <div className="flex items-center text-green-600">
             <CheckCircle className="mr-2 h-4 w-4" />
@@ -199,7 +197,7 @@ export const ProposalCard = memo<ProposalCardProps>(function ProposalCard({
           </div>
           <MessageButton
             recipientId={proposal.freelancerId}
-            recipientName={`${proposal.freelancer?.firstName || ''} ${proposal.freelancer?.lastName || ''}`}
+            recipientName={proposal.freelancerName || 'İsimsiz'}
             context={{
               type: 'PROPOSAL',
               id: proposal.id,
@@ -219,7 +217,7 @@ export const ProposalCard = memo<ProposalCardProps>(function ProposalCard({
         </div>
       )}
 
-      {proposal.status === 'rejected' && (
+      {proposal.status === 'REJECTED' && (
         <div className="flex items-center border-t pt-4 text-red-600">
           <X className="mr-2 h-4 w-4" />
           <span className="font-medium">Bu teklif reddedildi</span>

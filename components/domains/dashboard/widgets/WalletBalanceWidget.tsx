@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * ================================================
@@ -37,7 +37,7 @@ import {
   WifiOff,
 } from 'lucide-react';
 import { useSellerSnapshot, useBuyerSnapshot } from '@/hooks/business';
-import { useAuthState } from '@/hooks/business';
+import { useAuth } from '@/hooks/core/useAuth';
 import { useWebSocketWallet } from '@/hooks/business/wallet';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import { Button } from '@/components/ui';
@@ -103,7 +103,7 @@ function WalletBalanceWidgetError({ onRetry }: { onRetry: () => void }) {
       <CardContent className="flex flex-col items-center justify-center p-8">
         <Wallet className="mb-4 h-12 w-12 text-gray-400" />
         <p className="mb-2 text-sm text-gray-600">
-          Cüzdan verileri yüklenemedi
+          C�zdan verileri y�klenemedi
         </p>
         <Button variant="ghost" size="sm" onClick={onRetry}>
           Tekrar Dene
@@ -176,7 +176,7 @@ function SellerWalletBalance({
   className = '',
 }: WalletBalanceWidgetProps) {
   const router = useRouter();
-  const { user } = useAuthState();
+  const { user } = useAuth();
   const { data, isLoading, error, refresh } = useSellerSnapshot();
 
   // ========================================================================
@@ -206,7 +206,7 @@ function SellerWalletBalance({
         refresh();
 
         // Optional: Show toast notification
-        toast.success('Bakiye güncellendi', {
+        toast.success('Bakiye g�ncellendi', {
           description: `Yeni bakiye: ${formatCurrency(balance.availableBalance, 'TRY')}`,
           duration: 3000,
         });
@@ -224,7 +224,7 @@ function SellerWalletBalance({
 
         // Show notification based on transaction type
         const isIncoming = transaction.type === 'CREDIT';
-        toast.info(isIncoming ? 'Yeni Para Girişi' : 'Para Çıkışı', {
+        toast.info(isIncoming ? 'Yeni Para Giri�i' : 'Para ��k���', {
           description: `${formatCurrency(transaction.amount, 'TRY')} - ${transaction.description}`,
           duration: 5000,
         });
@@ -262,7 +262,7 @@ function SellerWalletBalance({
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Kullanılabilir Bakiye</p>
+              <p className="text-sm text-gray-600">Kullan�labilir Bakiye</p>
               <p className="text-2xl font-bold text-green-600">
                 {formatCurrency(data.availableBalance, 'TRY')}
               </p>
@@ -274,7 +274,7 @@ function SellerWalletBalance({
               className="ml-4"
             >
               <Download className="mr-2 h-4 w-4" />
-              Çek
+              �ek
             </Button>
           </div>
         </CardContent>
@@ -296,7 +296,7 @@ function SellerWalletBalance({
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Wallet className="h-6 w-6 text-green-600" />
-              <span className="text-gray-900">Cüzdan Bakiyesi</span>
+              <span className="text-gray-900">C�zdan Bakiyesi</span>
             </div>
 
             {/* WebSocket Connection Status */}
@@ -309,17 +309,17 @@ function SellerWalletBalance({
               {isConnected ? (
                 <>
                   <Wifi className="h-3 w-3" />
-                  <span>Canlı</span>
+                  <span>Canl�</span>
                 </>
               ) : isConnecting ? (
                 <>
                   <Wifi className="h-3 w-3 animate-pulse" />
-                  <span>Bağlanıyor</span>
+                  <span>Ba�lan�yor</span>
                 </>
               ) : (
                 <>
                   <WifiOff className="h-3 w-3" />
-                  <span>Çevrimdışı</span>
+                  <span>�evrimd���</span>
                 </>
               )}
             </Badge>
@@ -332,7 +332,7 @@ function SellerWalletBalance({
             {/* Main Balance Cards */}
             <div className="grid gap-4 md:grid-cols-2">
               <BalanceCard
-                label="Kullanılabilir Bakiye"
+                label="Kullan�labilir Bakiye"
                 amount={data.availableBalance}
                 icon={DollarSign}
                 iconColor="bg-green-600"
@@ -359,7 +359,7 @@ function SellerWalletBalance({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-blue-900">
-                    Toplam Kazanç
+                    Toplam Kazan�
                   </p>
                   <p className="text-xl font-bold text-blue-600">
                     {formatCurrency(data.totalEarnings, 'TRY')}
@@ -384,7 +384,7 @@ function SellerWalletBalance({
                   disabled={data.availableBalance <= 0}
                 >
                   <Download className="mr-2 h-4 w-4" />
-                  Para Çek
+                  Para �ek
                 </Button>
                 <Button
                   onClick={handleViewTransactions}
@@ -392,7 +392,7 @@ function SellerWalletBalance({
                   variant="outline"
                 >
                   <Eye className="mr-2 h-4 w-4" />
-                  İşlem Geçmişi
+                  ��lem Ge�mi�i
                 </Button>
               </div>
             )}
@@ -402,9 +402,9 @@ function SellerWalletBalance({
               <Alert>
                 <Clock className="h-4 w-4" />
                 <AlertDescription className="text-sm">
-                  {formatCurrency(data.pendingBalance, 'TRY')} tutarında
-                  bekleyen bakiyeniz var. Siparişleriniz tamamlandıkça
-                  kullanılabilir hale gelecek.
+                  {formatCurrency(data.pendingBalance, 'TRY')} tutar�nda
+                  bekleyen bakiyeniz var. Sipari�leriniz tamamland�k�a
+                  kullan�labilir hale gelecek.
                 </AlertDescription>
               </Alert>
             )}
@@ -425,7 +425,7 @@ function BuyerWalletBalance({
   className = '',
 }: WalletBalanceWidgetProps) {
   const router = useRouter();
-  const { user } = useAuthState();
+  const { user } = useAuth();
   const { data, isLoading, error, refresh } = useBuyerSnapshot();
 
   // ========================================================================
@@ -455,7 +455,7 @@ function BuyerWalletBalance({
         refresh();
 
         // Show toast notification
-        toast.success('Bakiye güncellendi', {
+        toast.success('Bakiye g�ncellendi', {
           description: `Yeni bakiye: ${formatCurrency(balance.availableBalance, 'TRY')}`,
           duration: 3000,
         });
@@ -473,7 +473,7 @@ function BuyerWalletBalance({
 
         // Show notification
         const isIncoming = transaction.type === 'CREDIT';
-        toast.info(isIncoming ? 'Yeni Para Girişi' : 'Para Çıkışı', {
+        toast.info(isIncoming ? 'Yeni Para Giri�i' : 'Para ��k���', {
           description: `${formatCurrency(transaction.amount, 'TRY')} - ${transaction.description}`,
           duration: 5000,
         });
@@ -511,7 +511,7 @@ function BuyerWalletBalance({
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Cüzdan Bakiyesi</p>
+              <p className="text-sm text-gray-600">C�zdan Bakiyesi</p>
               <p className="text-2xl font-bold text-blue-600">
                 {formatCurrency(data.walletBalance || 0, 'TRY')}
               </p>
@@ -523,7 +523,7 @@ function BuyerWalletBalance({
               className="ml-4"
             >
               <DollarSign className="mr-2 h-4 w-4" />
-              Yükle
+              Y�kle
             </Button>
           </div>
         </CardContent>
@@ -545,7 +545,7 @@ function BuyerWalletBalance({
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Wallet className="h-6 w-6 text-blue-600" />
-              <span className="text-gray-900">Cüzdan & Harcamalar</span>
+              <span className="text-gray-900">C�zdan & Harcamalar</span>
             </div>
 
             {/* WebSocket Connection Status */}
@@ -558,17 +558,17 @@ function BuyerWalletBalance({
               {isConnected ? (
                 <>
                   <Wifi className="h-3 w-3" />
-                  <span>Canlı</span>
+                  <span>Canl�</span>
                 </>
               ) : isConnecting ? (
                 <>
                   <Wifi className="h-3 w-3 animate-pulse" />
-                  <span>Bağlanıyor</span>
+                  <span>Ba�lan�yor</span>
                 </>
               ) : (
                 <>
                   <WifiOff className="h-3 w-3" />
-                  <span>Çevrimdışı</span>
+                  <span>�evrimd���</span>
                 </>
               )}
             </Badge>
@@ -580,7 +580,7 @@ function BuyerWalletBalance({
             {/* Wallet Balance */}
             {/* Wallet Balance */}
             <BalanceCard
-              label="Cüzdan Bakiyesi"
+              label="C�zdan Bakiyesi"
               amount={data.walletBalance || 0}
               icon={Wallet}
               iconColor="bg-blue-600"
@@ -614,7 +614,7 @@ function BuyerWalletBalance({
                   variant="primary"
                 >
                   <DollarSign className="mr-2 h-4 w-4" />
-                  Bakiye Yükle
+                  Bakiye Y�kle
                 </Button>
                 <Button
                   onClick={handleViewTransactions}
@@ -622,7 +622,7 @@ function BuyerWalletBalance({
                   variant="outline"
                 >
                   <Eye className="mr-2 h-4 w-4" />
-                  İşlem Geçmişi
+                  ��lem Ge�mi�i
                 </Button>
               </div>
             )}
@@ -654,18 +654,18 @@ function BuyerWalletBalance({
  * ```
  */
 export function WalletBalanceWidget(props: WalletBalanceWidgetProps) {
-  const { user } = useAuthState();
+  const { user } = useAuth();
 
   if (!user) {
     return null;
   }
 
   // Render based on user type
-  if (user.userType === 'freelancer') {
+  if (user && 'userType' in user && user.userType === 'freelancer') {
     return <SellerWalletBalance {...props} />;
   }
 
-  if (user.userType === 'employer') {
+  if (user && 'userType' in user && user.userType === 'employer') {
     return <BuyerWalletBalance {...props} />;
   }
 

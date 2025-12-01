@@ -160,13 +160,14 @@ export function DisputeMessaging({
 
       try {
         // Upload to dispute evidence
-        const result = await uploadEvidence(disputeId, {
+        const success = await uploadEvidence(disputeId, {
           file: attachmentFile,
           description: 'Message attachment',
         });
 
-        if (result) {
-          attachmentUrl = result.url || '';
+        if (success) {
+          // Note: Evidence upload doesn't return URL directly
+          // We'll use the file name and let backend handle storage
           attachmentName = attachmentFile.name;
           attachmentType = attachmentFile.type;
         } else {

@@ -332,7 +332,7 @@ export const FavoritesManager: React.FC<FavoritesManagerProps> = ({
   // Event handlers
   const handleViewFavorite = useCallback(
     (item: Freelancer | Job | ServicePackage) => {
-      logger.debug('Viewing favorite:', item);
+      logger.debug('Viewing favorite:', { item } as any);
     },
     []
   );

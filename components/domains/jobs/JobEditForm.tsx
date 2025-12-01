@@ -55,8 +55,7 @@ export function JobEditForm({ job, onSuccess, onCancel }: JobEditFormProps) {
       const updateData = {
         title: data.title,
         description: data.description,
-        categoryId: data.categoryId,
-        subcategoryId: data.subcategoryId,
+        category: data.category,
         budgetType: data.budgetType,
         budgetMin: data.budgetMin,
         budgetMax: data.budgetMax,
@@ -99,8 +98,8 @@ export function JobEditForm({ job, onSuccess, onCancel }: JobEditFormProps) {
   const defaultValues: Partial<JobPostingFormData> = {
     title: job.title,
     description: job.description,
-    categoryId: job.category?.id || '',
-    subcategoryId: job.subcategory?.id,
+    category: job.category as any, // Backend returns CategoryResponse, form expects enum
+    // Note: Backend doesn't send subcategoryId, using category only
     budgetType: job.budgetType,
     budgetMin: job.budgetMin,
     budgetMax: job.budgetMax,

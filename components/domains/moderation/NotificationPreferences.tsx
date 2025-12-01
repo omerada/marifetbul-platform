@@ -99,9 +99,13 @@ export function NotificationPreferences({
           return { ...DEFAULT_PREFERENCES, ...parsed, ...initialPreferences };
         }
       } catch (error) {
-        logger.error('NotificationPreferences: Failed to load preferences', undefined, {
-          error,
-        });
+        logger.error(
+          'NotificationPreferences: Failed to load preferences',
+          undefined,
+          {
+            error,
+          }
+        );
       }
 
       return { ...DEFAULT_PREFERENCES, ...initialPreferences };
@@ -129,11 +133,15 @@ export function NotificationPreferences({
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
-        logger.debug('NotificationPreferences', { preferences,  });
+        logger.debug('NotificationPreferences', { preferences });
       } catch (error) {
-        logger.error('NotificationPreferences: Failed to save preferences', undefined, {
-          error,
-        });
+        logger.error(
+          'NotificationPreferences: Failed to save preferences',
+          undefined,
+          {
+            error,
+          }
+        );
       }
     }
 
@@ -166,17 +174,20 @@ export function NotificationPreferences({
           ...prev,
           enableBrowser: true,
         }));
-        logger.info(
-          'NotificationPreferences',
-          'Browser permission granted and enabled'
-        );
+        logger.info('NotificationPreferences', {
+          message: 'Browser permission granted and enabled',
+        });
       } else {
-        logger.warn('NotificationPreferences', { result,  });
+        logger.warn('NotificationPreferences', { result });
       }
     } catch (error) {
-      logger.error('NotificationPreferences: Failed to request permission', undefined, {
-        error,
-      });
+      logger.error(
+        'NotificationPreferences: Failed to request permission',
+        undefined,
+        {
+          error,
+        }
+      );
     }
   };
 
@@ -192,16 +203,22 @@ export function NotificationPreferences({
     try {
       await onSave(preferences);
       setSaveSuccess(true);
-      logger.info('NotificationPreferences', 'Preferences saved to backend');
+      logger.info('NotificationPreferences', {
+        message: 'Preferences saved to backend',
+      });
 
       // Hide success message after 3 seconds
       setTimeout(() => {
         setSaveSuccess(false);
       }, 3000);
     } catch (error) {
-      logger.error('NotificationPreferences: Failed to save preferences', undefined, {
-        error,
-      });
+      logger.error(
+        'NotificationPreferences: Failed to save preferences',
+        undefined,
+        {
+          error,
+        }
+      );
     } finally {
       setSaving(false);
     }

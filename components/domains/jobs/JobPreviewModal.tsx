@@ -185,7 +185,7 @@ export function JobPreviewModal({
           <Button
             variant="primary"
             onClick={onConfirm}
-            isLoading={isPublishing}
+            loading={isPublishing}
             disabled={isPublishing}
           >
             {mode === 'create' ? 'Yayınla' : 'Güncelle'}
