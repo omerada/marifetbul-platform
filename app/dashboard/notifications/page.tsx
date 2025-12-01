@@ -24,7 +24,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 function NotificationCenterContent() {
   const router = useRouter();
-  
+
   return (
     <NotificationCenter
       className="w-full"
