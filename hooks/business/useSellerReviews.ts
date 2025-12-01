@@ -142,13 +142,17 @@ export function useSellerReviews({
         setTotalPages(result.data.totalPages);
         setTotalElements(result.data.totalElements);
 
-        logger.info('useSellerReviews: Reviews fetched', { sellerId, page, countresultdatacontentlength,  });
+        logger.info('useSellerReviews: Reviews fetched', {
+          sellerId,
+          page,
+          countresultdatacontentlength,
+        });
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Bir hata oluştu';
         setError(errorMessage);
-        logger.error('useSellerReviews: Error fetching reviews', {
-          error: err,
+        logger.error('useSellerReviews: Error fetching reviews', err as Error, {
+          hook: 'useSellerReviews',
           sellerId,
         });
       } finally {
@@ -180,7 +184,9 @@ export function useSellerReviews({
       );
 
       if (!response.ok) {
-        logger.warn('useSellerReviews: Failed to fetch stats', { statusresponsestatus,  });
+        logger.warn('useSellerReviews: Failed to fetch stats', {
+          statusresponsestatus,
+        });
         return;
       }
 
@@ -191,8 +197,8 @@ export function useSellerReviews({
         logger.info('useSellerReviews: Stats fetched', { sellerId });
       }
     } catch (err) {
-      logger.error('useSellerReviews: Error fetching stats', {
-        error: err,
+      logger.error('useSellerReviews: Error fetching stats', err as Error, {
+        hook: 'useSellerReviews',
         sellerId,
       });
     }

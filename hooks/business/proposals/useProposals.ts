@@ -171,9 +171,12 @@ export function useProposals(
         return newProposal as unknown as ProposalResponse;
       } catch (error) {
         const err = error;
-        logger.error('Failed to create proposal', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Failed to create proposal',
+          err instanceof Error ? err : new Error(String(err))
+        );
         toast.error('Teklif gönderilemedi', {
-          description: err.message || 'Lütfen tekrar deneyin',
+          description: (err as Error).message || 'Lütfen tekrar deneyin',
         });
         return null;
       } finally {
@@ -206,9 +209,12 @@ export function useProposals(
         return updatedProposal as unknown as ProposalResponse;
       } catch (error) {
         const err = error;
-        logger.error('Failed to update proposal', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Failed to update proposal',
+          err instanceof Error ? err : new Error(String(err))
+        );
         toast.error('Teklif güncellenemedi', {
-          description: err.message || 'Lütfen tekrar deneyin',
+          description: (err as Error).message || 'Lütfen tekrar deneyin',
         });
         return null;
       } finally {
@@ -238,9 +244,12 @@ export function useProposals(
         return true;
       } catch (error) {
         const err = error;
-        logger.error('Failed to withdraw proposal', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Failed to withdraw proposal',
+          err instanceof Error ? err : new Error(String(err))
+        );
         toast.error('Teklif geri çekilemedi', {
-          description: err.message || 'Lütfen tekrar deneyin',
+          description: (err as Error).message || 'Lütfen tekrar deneyin',
         });
         return false;
       } finally {
@@ -270,9 +279,12 @@ export function useProposals(
         return true;
       } catch (error) {
         const err = error;
-        logger.error('Failed to delete proposal', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Failed to delete proposal',
+          err instanceof Error ? err : new Error(String(err))
+        );
         toast.error('Teklif silinemedi', {
-          description: err.message || 'Lütfen tekrar deneyin',
+          description: (err as Error).message || 'Lütfen tekrar deneyin',
         });
         return false;
       } finally {
@@ -307,9 +319,12 @@ export function useProposals(
         return acceptedProposal as unknown as ProposalResponse;
       } catch (error) {
         const err = error;
-        logger.error('Failed to accept proposal', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Failed to accept proposal',
+          err instanceof Error ? err : new Error(String(err))
+        );
         toast.error('Teklif kabul edilemedi', {
-          description: err.message || 'Lütfen tekrar deneyin',
+          description: (err as Error).message || 'Lütfen tekrar deneyin',
         });
         return null;
       } finally {
@@ -344,9 +359,12 @@ export function useProposals(
         return rejectedProposal as unknown as ProposalResponse;
       } catch (error) {
         const err = error;
-        logger.error('Failed to reject proposal', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Failed to reject proposal',
+          err instanceof Error ? err : new Error(String(err))
+        );
         toast.error('Teklif reddedilemedi', {
-          description: err.message || 'Lütfen tekrar deneyin',
+          description: (err as Error).message || 'Lütfen tekrar deneyin',
         });
         return null;
       } finally {
@@ -376,9 +394,12 @@ export function useProposals(
         return shortlistedProposal as unknown as ProposalResponse;
       } catch (error) {
         const err = error;
-        logger.error('Failed to shortlist proposal', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Failed to shortlist proposal',
+          err instanceof Error ? err : new Error(String(err))
+        );
         toast.error('Teklif kısa listeye eklenemedi', {
-          description: err.message || 'Lütfen tekrar deneyin',
+          description: (err as Error).message || 'Lütfen tekrar deneyin',
         });
         return null;
       } finally {
@@ -399,7 +420,10 @@ export function useProposals(
 
   useEffect(() => {
     if (error) {
-      logger.error('Proposals fetch error', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Proposals fetch error',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }, [error]);
 

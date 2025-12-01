@@ -223,7 +223,11 @@ export class SecureStorage {
     try {
       localStorage.setItem(this.PREFIX + key, JSON.stringify(data));
     } catch (error) {
-      logger.warn('Secure storage failed', error);
+      logger.warn('Secure storage failed', {
+        module: 'security',
+        key,
+        error: error as Error,
+      });
     }
   }
 

@@ -223,8 +223,8 @@ export function UnifiedDeliveryModal({
                 : `marifetbul/order-deliveries/${orderId}`,
             metadata: {
               mode,
-              orderId,
-              milestoneId,
+              orderId: orderId || 'unknown',
+              milestoneId: milestoneId || 'unknown',
               uploadedAt: new Date().toISOString(),
             },
           })

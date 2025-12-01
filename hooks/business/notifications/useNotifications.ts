@@ -19,7 +19,7 @@
 
 import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import useSWR from 'swr';
-import type { NotificationFilters } from '@/types/domains/notification/notification.types';
+import type { NotificationFilters } from '@/lib/api/notifications';
 import { getWebSocketService } from '@/lib/infrastructure/websocket/WebSocketService';
 import {
   getNotifications,

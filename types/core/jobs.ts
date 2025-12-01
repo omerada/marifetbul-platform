@@ -1,9 +1,12 @@
 // Job related types
 import { Employer, PaginationMeta } from './base';
-import type { ProposalResponse } from '../backend-aligned';
+import type { ProposalResponse, JobResponse } from '../backend-aligned';
 
 // Re-export Proposal as Proposal for backward compatibility
 export type Proposal = ProposalResponse;
+
+// Re-export JobResponse as Job for backward compatibility
+export type Job = JobResponse;
 
 export interface JobAttachment {
   id: string;
@@ -12,7 +15,11 @@ export interface JobAttachment {
   type: string;
 }
 
-export interface Job {
+/**
+ * @deprecated Use Job (JobResponse) instead
+ * Legacy Job interface - kept for backward compatibility
+ */
+export interface LegacyJob {
   id: string;
   title: string;
   description: string;

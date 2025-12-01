@@ -205,6 +205,7 @@ export function MultiStepRegisterForm() {
         lastName: data.lastName,
         email: data.email,
         password: data.password,
+        username: data.email.split('@')[0], // Generate username from email
         userType: data.userType,
       });
 

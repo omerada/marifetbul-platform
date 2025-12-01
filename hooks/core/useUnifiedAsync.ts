@@ -101,17 +101,16 @@ export function useAsyncOperation<TData, TParams = void>(
 
         return result;
       } catch (error) {
-        const errorObj =
-          error;
+        const errorObj = error;
 
         updateState({
-          error: errorObj,
+          error: errorObj as Error,
           isLoading: false,
           isSuccess: false,
         });
 
-        onError?.(errorObj, params as TParams);
-        onSettled?.(null, errorObj, params as TParams);
+        onError?.(errorObj as Error, params as TParams);
+        onSettled?.(null, errorObj as Error, params as TParams);
 
         throw errorObj;
       }

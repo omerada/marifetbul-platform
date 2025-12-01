@@ -38,7 +38,10 @@ export function subscribeToNotifications(
 
     if (!ws) {
       const error = new Error('WebSocket service not initialized');
-      logger.error('NotificationWebSocket', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'NotificationWebSocket',
+        error instanceof Error ? error : new Error(String(error))
+      );
       callbacks.onError?.(error);
       throw error;
     }
@@ -126,7 +129,7 @@ export function subscribeToNotifications(
     };
   } catch (error) {
     logger.error('NotificationWebSocket: Failed to subscribe', error as Error);
-    callbacks.onError?.(error);
+    callbacks.onError?.(error as Error);
     throw error;
   }
 }
@@ -145,7 +148,10 @@ export function subscribeToBroadcastNotifications(
 
     if (!ws) {
       const error = new Error('WebSocket service not initialized');
-      logger.error('NotificationWebSocket', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'NotificationWebSocket',
+        error instanceof Error ? error : new Error(String(error))
+      );
       callbacks.onError?.(error);
       throw error;
     }
@@ -187,7 +193,7 @@ export function subscribeToBroadcastNotifications(
           'NotificationWebSocket: Error processing broadcast',
           error as Error
         );
-        callbacks.onError?.(error);
+        callbacks.onError?.(error as Error);
       }
     });
 
@@ -204,7 +210,7 @@ export function subscribeToBroadcastNotifications(
       'NotificationWebSocket: Failed to subscribe to broadcast',
       error as Error
     );
-    callbacks.onError?.(error);
+    callbacks.onError?.(error as Error);
     throw error;
   }
 }

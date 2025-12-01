@@ -30,7 +30,9 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
       return initialValue;
     } catch (error) {
       logger.error(
-        'Error reading localStorage', error instanceof Error ? error : new Error(String(error)));
+        'Error reading localStorage',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return initialValue;
     }
   });
@@ -46,7 +48,9 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
         }
       } catch (error) {
         logger.error(
-          'Error setting localStorage', error instanceof Error ? error : new Error(String(error)));
+          'Error setting localStorage',
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
     },
     [key, storedValue]
@@ -103,7 +107,7 @@ export const useAsyncOperation = <T, Args extends unknown[] = []>(
         const errorMessage =
           err instanceof Error ? err.message : 'An error occurred';
         setError(errorMessage);
-        throw err;
+        throw err as Error;
       } finally {
         setLoading(false);
       }
@@ -238,7 +242,7 @@ export const useAsyncState = <T>(initialData: T | null = null) => {
       const errorMessage =
         err instanceof Error ? err.message : 'An error occurred';
       setError(errorMessage);
-      throw err;
+      throw err as Error;
     } finally {
       setLoading(false);
     }
@@ -309,7 +313,9 @@ export abstract class BaseService {
       return await fn();
     } catch (error) {
       logger.error(
-        `${operation} failed`, error instanceof Error ? error : new Error(String(error)));
+        `${operation} failed`,
+        error instanceof Error ? error : new Error(String(error))
+      );
       throw error;
     }
   }

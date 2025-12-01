@@ -67,15 +67,12 @@ function getTypeLabel(type: TransactionType): string {
   const labels: Record<TransactionType, string> = {
     CREDIT: 'Ödeme Alındı',
     DEBIT: 'Ödeme Gönderildi',
-    ESCROW_HOLD: 'Escrow Beklemede',
+    ESCROW_HOLD: 'Escrow Beklemde',
     ESCROW_RELEASE: 'Escrow Serbest',
     MILESTONE_PAYMENT: 'Milestone Ödemesi',
     PAYOUT: 'Para Çekim',
     REFUND: 'İade',
     FEE: 'Komisyon',
-    COMMISSION: 'Komisyon',
-    DEPOSIT: 'Para Yatırma',
-    WITHDRAWAL: 'Para Çekme',
   };
   return labels[type] || String(type);
 }

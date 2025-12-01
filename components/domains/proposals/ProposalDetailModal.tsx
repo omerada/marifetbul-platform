@@ -15,7 +15,7 @@ import {
   Eye,
   AlertCircle,
 } from 'lucide-react';
-import type { Proposal } from '@/types/core/jobs';
+import type { Proposal, ProposalStatus } from '@/types/core/jobs';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
 import { FreelancerPreviewCard } from './FreelancerPreviewCard';
@@ -118,11 +118,11 @@ export const ProposalDetailModal = memo<ProposalDetailModalProps>(
                 <div className="ml-4 flex items-center space-x-3">
                   <Badge
                     variant={
-                      proposal.status === 'accepted'
+                      proposal.status === 'ACCEPTED'
                         ? 'success'
-                        : proposal.status === 'rejected'
+                        : proposal.status === 'REJECTED'
                           ? 'destructive'
-                          : proposal.status === 'pending'
+                          : proposal.status === 'PENDING'
                             ? 'warning'
                             : 'secondary'
                     }
@@ -373,7 +373,7 @@ export const ProposalDetailModal = memo<ProposalDetailModalProps>(
                   )}
 
                   {/* Status Changes */}
-                  {proposal.status === 'accepted' && (
+                  {proposal.status === 'ACCEPTED' && (
                     <div className="flex items-start">
                       <div className="mr-3 rounded-full bg-green-100 p-2">
                         <CheckCircle2 className="h-4 w-4 text-green-600" />
@@ -389,7 +389,7 @@ export const ProposalDetailModal = memo<ProposalDetailModalProps>(
                     </div>
                   )}
 
-                  {proposal.status === 'rejected' && (
+                  {proposal.status === 'REJECTED' && (
                     <div className="flex items-start">
                       <div className="mr-3 rounded-full bg-red-100 p-2">
                         <XCircle className="h-4 w-4 text-red-600" />
@@ -405,7 +405,7 @@ export const ProposalDetailModal = memo<ProposalDetailModalProps>(
                     </div>
                   )}
 
-                  {proposal.status === 'withdrawn' && (
+                  {proposal.status === 'WITHDRAWN' && (
                     <div className="flex items-start">
                       <div className="mr-3 rounded-full bg-gray-100 p-2">
                         <AlertCircle className="h-4 w-4 text-gray-600" />
@@ -451,7 +451,7 @@ export const ProposalDetailModal = memo<ProposalDetailModalProps>(
             </div>
 
             {/* Footer Actions */}
-            {proposal.status === 'pending' && (
+            {proposal.status === 'PENDING' && (
               <div className="border-t bg-gray-50 px-6 py-4">
                 {!showAcceptConfirm && !showRejectConfirm && (
                   <div className="flex space-x-3">

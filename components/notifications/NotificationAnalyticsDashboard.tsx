@@ -1,7 +1,13 @@
 ﻿'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { Mail, Bell, Eye, Clock } from 'lucide-react';
 import {

@@ -129,10 +129,14 @@ export function usePackageReviewsHook({
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to fetch reviews';
         setError(errorMessage);
-        logger.error('usePackageReviewsHook: Error fetching reviews', {
-          error: err,
-          packageId,
-        });
+        logger.error(
+          'usePackageReviewsHook: Error fetching reviews',
+          err as Error,
+          {
+            hook: 'usePackageReviewsHook',
+            packageId,
+          }
+        );
       } finally {
         setLoading(false);
       }

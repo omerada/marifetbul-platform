@@ -144,7 +144,9 @@ export class WebSocketManager {
           this.stats.lastConnectedAt = new Date().toISOString();
 
           if (this.options.debug) {
-            logger.debug('WebSocket: Connected to', this.options.url);
+            logger.debug('WebSocket: Connected to ' + this.options.url, {
+              component: 'WebSocket',
+            });
           }
 
           if (this.options.enableHeartbeat) {

@@ -194,19 +194,28 @@ export function useReadReceipts(
   const markAsRead = useCallback(
     async (messageId: string) => {
       if (isMarkingRef.current) {
-        logger.warn('useReadReceipts', 'Mark as read already in progress');
+        logger.warn('Mark as read already in progress', {
+          hook: 'useReadReceipts',
+        });
         return;
       }
 
       isMarkingRef.current = true;
 
       try {
-        logger.debug('useReadReceipts', { messageId, conversationId });
+        logger.debug('Marking message as read', {
+          hook: 'useReadReceipts',
+          messageId,
+          conversationId,
+        });
 
         // Call API (backend will broadcast WebSocket event)
         await markMessageAsRead(messageId);
 
-        logger.info('useReadReceipts', { messageId });
+        logger.info('Message marked as read', {
+          hook: 'useReadReceipts',
+          messageId,
+        });
       } catch (err) {
         logger.error(
           'useReadReceipts: Failed to mark message as read',
@@ -229,19 +238,25 @@ export function useReadReceipts(
    */
   const markAllAsRead = useCallback(async () => {
     if (isMarkingRef.current) {
-      logger.warn('useReadReceipts', 'Mark all as read already in progress');
+      logger.warn('Mark all as read already in progress', {
+        hook: 'useReadReceipts',
+      });
       return;
     }
 
     isMarkingRef.current = true;
 
     try {
-      logger.debug('useReadReceipts', { conversationId });
+      logger.debug('Marking all messages as read', {
+        hook: 'useReadReceipts',
+        conversationId,
+      });
 
       // Call API (backend will broadcast WebSocket events for each message)
       const result = await markConversationAsRead(conversationId);
 
-      logger.info('useReadReceipts', {
+      logger.info('All messages marked as read', {
+        hook: 'useReadReceipts',
         conversationId,
         count: result.count || 0,
       });

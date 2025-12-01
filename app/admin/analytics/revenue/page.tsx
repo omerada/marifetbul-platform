@@ -103,11 +103,12 @@ export default function AdminRevenueAnalyticsPage() {
     }
   };
 
-  // Generate mock chart data from breakdown
+  // Generate chart data from breakdown
   const chartData = data
     ? [
         {
           date: 'Bugün',
+          value: data.summary.netRevenue, // Use netRevenue as the primary value
           grossRevenue: data.summary.grossRevenue,
           netRevenue: data.summary.netRevenue,
           platformFee: data.summary.platformFee,
@@ -232,9 +233,7 @@ export default function AdminRevenueAnalyticsPage() {
       {data && <RevenueBreakdownWidget data={data} isLoading={isLoading} />}
 
       {/* Revenue Chart */}
-      {chartData.length > 0 && (
-        <RevenueChart data={chartData} isLoading={isLoading} />
-      )}
+      {chartData.length > 0 && <RevenueChart data={chartData} />}
 
       {/* Loading State */}
       {isLoading && !data && (

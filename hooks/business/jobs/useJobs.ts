@@ -159,7 +159,7 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
           err instanceof Error ? err : new Error(String(err))
         );
         toast.error('İlan oluşturulamadı', {
-          description: err.message || 'Lütfen tekrar deneyin',
+          description: (err as Error).message || 'Lütfen tekrar deneyin',
         });
         return null;
       } finally {
@@ -197,7 +197,7 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
           err instanceof Error ? err : new Error(String(err))
         );
         toast.error('İlan güncellenemedi', {
-          description: err.message || 'Lütfen tekrar deneyin',
+          description: (err as Error).message || 'Lütfen tekrar deneyin',
         });
         return null;
       } finally {
@@ -232,7 +232,7 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
           err instanceof Error ? err : new Error(String(err))
         );
         toast.error('İlan silinemedi', {
-          description: err.message || 'Lütfen tekrar deneyin',
+          description: (err as Error).message || 'Lütfen tekrar deneyin',
         });
         return false;
       } finally {
@@ -269,7 +269,7 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
           err instanceof Error ? err : new Error(String(err))
         );
         toast.error('İlan yayınlanamadı', {
-          description: err.message || 'Lütfen tekrar deneyin',
+          description: (err as Error).message || 'Lütfen tekrar deneyin',
         });
         return null;
       } finally {
@@ -306,7 +306,7 @@ export function useJobs(initialFilters: JobFilters = {}): UseJobsReturn {
           err instanceof Error ? err : new Error(String(err))
         );
         toast.error('İlan kapatılamadı', {
-          description: err.message || 'Lütfen tekrar deneyin',
+          description: (err as Error).message || 'Lütfen tekrar deneyin',
         });
         return null;
       } finally {

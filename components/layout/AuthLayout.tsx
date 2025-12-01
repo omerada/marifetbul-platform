@@ -6,6 +6,7 @@ import { authSelectors } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { Card, CardContent } from '@/components/ui';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Loader2, AlertTriangle, RefreshCw, ShieldX } from 'lucide-react';
+import { UserRole } from '@/types/backend-aligned';
 
 // ================================================
 // TYPES
@@ -24,7 +25,7 @@ export interface AuthLayoutWrapperProps {
 export interface ProtectedRouteProps {
   children: ReactNode;
   /** Required user role for access */
-  requiredRole?: 'freelancer' | 'employer' | 'admin';
+  requiredRole?: UserRole;
   /** Redirect URL if user doesn't have required role */
   unauthorizedRedirect?: string;
   /** Show unauthorized message instead of redirect */
@@ -260,9 +261,9 @@ export function ProtectedRoute({
 
         // Redirect based on user role
         const roleRedirects: Record<string, string> = {
-          freelancer: '/dashboard',
-          client: '/dashboard',
-          admin: '/admin',
+          FREELANCER: '/dashboard',
+          EMPLOYER: '/dashboard',
+          ADMIN: '/admin',
         };
 
         const redirectPath = user?.role
@@ -364,13 +365,16 @@ export function useAuthRedirect() {
   const redirectToDashboard = () => {
     if (!user) return;
 
-    const roleRedirects: Record<string, string> = {
-      freelancer: '/dashboard',
-      client: '/dashboard',
-      admin: '/admin',
+    const roleRedirects: Record<UserRole, string> = {
+      [UserRole.FREELANCER]: '/dashboard',
+      [UserRole.EMPLOYER]: '/dashboard',
+      [UserRole.ADMIN]: '/admin',
+      [UserRole.MODERATOR]: '/admin',
     };
 
-    const redirectPath = roleRedirects[user?.role || ''] || '/dashboard';
+    const redirectPath = user?.role
+      ? roleRedirects[user.role] || '/dashboard'
+      : '/dashboard';
     router.push(redirectPath);
   };
 

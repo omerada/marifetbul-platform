@@ -130,7 +130,10 @@ export const useEnhancedPerformance = (options: UsePerformanceOptions = {}) => {
         resourceObserver.observe({ type: 'resource', buffered: true });
         cleanupFunctions.push(() => resourceObserver.disconnect());
       } catch (error) {
-        logger.warn('Performance Observer not fully supported:', error);
+        logger.warn('Performance Observer not fully supported:', {
+          hook: 'useEnhancedPerformanceUnified',
+          error: error as Error,
+        });
       }
     }
 

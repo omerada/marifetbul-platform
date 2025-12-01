@@ -119,7 +119,10 @@ export function useMessageNotifications(options: UseNotificationOptions = {}) {
         return false;
       }
     } catch (error) {
-      logger.error('Error requesting notification permission:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Error requesting notification permission:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return false;
     }
   }, [updatePermissionState]);
@@ -198,7 +201,10 @@ export function useMessageNotifications(options: UseNotificationOptions = {}) {
           browserNotification.close();
         }, 5000);
       } catch (error) {
-        logger.error('Error showing browser notification:', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'Error showing browser notification:',
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
     },
     [enableBrowserNotifications, permission.granted, onNotificationClick]
@@ -209,7 +215,10 @@ export function useMessageNotifications(options: UseNotificationOptions = {}) {
    */
   const handleNotification = useCallback(
     (notification: MessageNotification) => {
-      logger.debug('Received notification:', notification);
+      logger.debug('Received notification', {
+        component: 'useMessageNotifications',
+        notification,
+      });
 
       // Add to notifications list
       setNotifications((prev) => [notification, ...prev.slice(0, 9)]);

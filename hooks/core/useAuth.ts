@@ -4,7 +4,18 @@
  * Currently returns minimal auth state to satisfy build requirements
  */
 
-export function useAuth() {
+import type { UserResponse } from '@/types/backend-aligned';
+
+export interface AuthState {
+  user: UserResponse | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (credentials: { email: string; password: string }) => Promise<void>;
+  logout: () => Promise<void>;
+  register: (data: any) => Promise<void>;
+}
+
+export function useAuth(): AuthState {
   return {
     user: null,
     isAuthenticated: false,

@@ -108,9 +108,8 @@ export class ProposalErrorBoundary extends Component<
    */
   override componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log error to console and logger
-    logger.error('Proposal component error caught by boundary:', {
-      error: error.message,
-      stack: error.stack,
+    logger.error('Proposal component error caught by boundary', error, {
+      component: 'ProposalErrorBoundary',
       componentStack: errorInfo.componentStack,
     });
 

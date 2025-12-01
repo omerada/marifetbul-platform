@@ -278,7 +278,10 @@ export function usePagePerformance() {
         setMetrics(newMetrics);
         setIsLoading(false);
       } catch (error) {
-        logger.warn('Performance measurement failed:', error);
+        logger.warn('Performance measurement failed:', {
+          component: 'EnhancedSEO',
+          error: error as Error,
+        });
         setIsLoading(false);
       }
     };

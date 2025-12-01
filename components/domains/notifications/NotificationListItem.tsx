@@ -3,7 +3,7 @@
 import React from 'react';
 import { UnifiedButton as Button } from '@/components/ui/UnifiedButton';
 import { Badge } from '@/components/ui/Badge';
-import { Notification } from '@/types/domains/notification';
+import type { NotificationResponse as Notification } from '@/lib/api/notifications';
 import {
   Check,
   Archive,

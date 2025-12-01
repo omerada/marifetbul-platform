@@ -65,8 +65,8 @@ export async function logModerationActivity(
 
     return response;
   } catch (error) {
-    logger.error('Failed to log moderation activity', {
-      error,
+    logger.error('Failed to log moderation activity', error as Error, {
+      api: 'ModerationActivity',
       activity,
     });
     // Don't throw - activity logging should not break main flow

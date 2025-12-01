@@ -155,10 +155,10 @@ class ErrorReportingService {
         }
       );
     } else if (logLevel === 'warn') {
-      logger.warn(
-        `[${report.level.toUpperCase()}] ${report.message}`,
-        errorObj
-      );
+      logger.warn(`[${report.level.toUpperCase()}] ${report.message}`, {
+        component: 'ErrorReporting',
+        error: errorObj,
+      });
     } else {
       logger.info('Error report', {
         id: report.id,
@@ -187,18 +187,18 @@ class ErrorReportingService {
       });
 
       if (!response.ok) {
-        logger.warn(
-          'Failed to send error report',
-          new Error(`Status: ${response.status}`)
-        );
+        logger.warn('Failed to send error report', {
+          component: 'ErrorReporting',
+          error: new Error(`Status: ${response.status}`),
+        });
       }
     } catch (err) {
       // Silently fail - don't create infinite error loops
       if (this.config.enableConsoleLogging) {
-        logger.warn(
-          'Error reporting service failed',
-          err instanceof Error ? err : new Error(String(err))
-        );
+        logger.warn('Error reporting service failed', {
+          component: 'ErrorReporting',
+          error: err instanceof Error ? err : new Error(String(err)),
+        });
       }
     }
   }

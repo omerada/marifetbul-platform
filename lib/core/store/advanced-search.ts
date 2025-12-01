@@ -361,10 +361,10 @@ export const useAdvancedSearchStore = create<AdvancedSearchStore>()(
                 );
               }
             } catch (error) {
-              logger.warn(
-                'Failed to save recent searches to localStorage',
-                error
-              );
+              logger.warn('Failed to save recent searches to localStorage', {
+                store: 'advancedSearch',
+                error: error as Error,
+              });
             }
 
             return { recentSearches: updatedRecent };
@@ -418,9 +418,9 @@ if (typeof window !== 'undefined') {
       }
     }
   } catch (error) {
-    logger.warn(
-      'Failed to load recent searches from localStorage',
-      error
-    );
+    logger.warn('Failed to load recent searches from localStorage', {
+      store: 'advancedSearch',
+      error: error as Error,
+    });
   }
 }

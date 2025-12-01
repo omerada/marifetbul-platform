@@ -25,7 +25,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { useTransactions } from '@/hooks/business/wallet';
-import { TransactionType } from '@/types/business/features/wallet';
+import { TransactionType, Transaction } from '@/types/business/features/wallet';
 import { formatCurrency, formatRelativeTime } from '@/lib/shared/formatters';
 import { MilestoneTransactionBadge } from './MilestoneTransactionBadge';
 import Link from 'next/link';
@@ -55,7 +55,7 @@ export interface RecentTransactionsWidgetProps {
   /**
    * External transactions data (optional - overrides fetch)
    */
-  transactions?: unknown[];
+  transactions?: Transaction[];
 
   /**
    * External loading state

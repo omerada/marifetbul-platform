@@ -124,7 +124,10 @@ export function OrderRevisionList({
       const response = await orderApi.getOrderRevisions(orderId);
       setRevisions(response.data || []);
 
-      logger.info('Revisions loaded:', response.data?.length || 0);
+      logger.info('Revisions loaded', {
+        component: 'OrderRevisionList',
+        count: response.data?.length || 0,
+      });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Revizyonlar yüklenemedi';

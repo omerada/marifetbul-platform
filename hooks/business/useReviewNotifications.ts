@@ -121,14 +121,21 @@ export function useReviewNotifications({
       setNotifications(transformedNotifications);
       setUnreadCount(result.data.unreadCount);
 
-      logger.info('useReviewNotifications: Notifications fetched', { counttransformedNotificationslength, unreadCountresultdataunreadCount,  });
+      logger.info('useReviewNotifications: Notifications fetched', {
+        counttransformedNotificationslength,
+        unreadCountresultdataunreadCount,
+      });
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Bir hata oluştu';
       setError(errorMessage);
-      logger.error('useReviewNotifications: Error fetching notifications', {
-        error: err,
-      });
+      logger.error(
+        'useReviewNotifications: Error fetching notifications',
+        err as Error,
+        {
+          hook: 'useReviewNotifications',
+        }
+      );
     } finally {
       setLoading(false);
     }
@@ -163,12 +170,18 @@ export function useReviewNotifications({
 
       setUnreadCount((prev) => Math.max(0, prev - 1));
 
-      logger.info('useReviewNotifications: Notification marked as read', { notificationId,  });
-    } catch (err) {
-      logger.error('useReviewNotifications: Error marking as read', {
-        error: err,
+      logger.info('useReviewNotifications: Notification marked as read', {
         notificationId,
       });
+    } catch (err) {
+      logger.error(
+        'useReviewNotifications: Error marking as read',
+        err as Error,
+        {
+          hook: 'useReviewNotifications',
+          notificationId,
+        }
+      );
     }
   }, []);
 
@@ -200,9 +213,13 @@ export function useReviewNotifications({
 
       logger.info('useReviewNotifications: All notifications marked as read');
     } catch (err) {
-      logger.error('useReviewNotifications: Error marking all as read', {
-        error: err,
-      });
+      logger.error(
+        'useReviewNotifications: Error marking all as read',
+        err as Error,
+        {
+          hook: 'useReviewNotifications',
+        }
+      );
     }
   }, []);
 

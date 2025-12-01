@@ -17,7 +17,7 @@ import { Pagination } from '@/components/ui/Pagination';
 import { AlertCircle, CheckCircle, Flag, XCircle } from 'lucide-react';
 import { useReportModeration } from '@/hooks/business/moderation/useReportModeration';
 import type { ReportAction } from '@/hooks/business/moderation/useReportModeration';
-import type { ReportFilters as ReportFiltersType } from '@/types/business/report';
+import type { ReportFilters as ReportFiltersType, Report as BusinessReport } from '@/lib/api/moderator/reports';
 import { ReportCard } from './ReportCard';
 import { ReportFilters } from './ReportFilters';
 import { ReportDetailModal } from './ReportDetailModal';
@@ -183,7 +183,7 @@ export function ReportModerationQueue() {
           {reports.map((report) => (
             <ReportCard
               key={report.id}
-              report={report}
+              report={report as unknown as BusinessReport}
               onViewDetails={() => setDetailReportId(report.id)}
               onAssignToSelf={() => handleAssignToSelf(report.id)}
             />
@@ -205,7 +205,7 @@ export function ReportModerationQueue() {
       {/* Detail Modal */}
       {detailReport && (
         <ReportDetailModal
-          report={detailReport}
+          report={detailReport as unknown as BusinessReport}
           isOpen={!!detailReportId}
           onClose={() => setDetailReportId(null)}
           onResolve={handleResolve}

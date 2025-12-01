@@ -645,11 +645,7 @@ export function handleApiError(
   };
 
   if (transformedError.status >= 500) {
-    apiLogger.error(
-      transformedError.message,
-      error,
-      logContext
-    );
+    apiLogger.error(transformedError.message, error as Error, logContext);
 
     // Capture in Sentry for server errors
     if (error instanceof Error) {

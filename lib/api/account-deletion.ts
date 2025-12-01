@@ -78,7 +78,11 @@ export async function initiateAccountDeletion(
     logger.info('[AccountDeletion] Deletion initiated successfully');
     return response.data;
   } catch (error) {
-    logger.error('[AccountDeletion] Failed to initiate deletion', { error });
+    logger.error(
+      '[AccountDeletion] Failed to initiate deletion',
+      error as Error,
+      { api: 'AccountDeletion', operation: 'initiate' }
+    );
     throw error;
   }
 }
@@ -108,7 +112,11 @@ export async function verifyAccountDeletion(
     logger.info('[AccountDeletion] Deletion verified successfully');
     return response.data;
   } catch (error) {
-    logger.error('[AccountDeletion] Failed to verify deletion', { error });
+    logger.error(
+      '[AccountDeletion] Failed to verify deletion',
+      error as Error,
+      { api: 'AccountDeletion', operation: 'verify' }
+    );
     throw error;
   }
 }
@@ -134,7 +142,11 @@ export async function cancelAccountDeletion(): Promise<{ success: boolean }> {
     logger.info('[AccountDeletion] Deletion cancelled successfully');
     return response.data;
   } catch (error) {
-    logger.error('[AccountDeletion] Failed to cancel deletion', { error });
+    logger.error(
+      '[AccountDeletion] Failed to cancel deletion',
+      error as Error,
+      { api: 'AccountDeletion', operation: 'cancel' }
+    );
     throw error;
   }
 }
@@ -157,7 +169,11 @@ export async function getDeletionStatus(): Promise<DeletionStatus> {
 
     return response.data;
   } catch (error) {
-    logger.error('[AccountDeletion] Failed to get deletion status', { error });
+    logger.error(
+      '[AccountDeletion] Failed to get deletion status',
+      error as Error,
+      { api: 'AccountDeletion', operation: 'getStatus' }
+    );
     // Return safe default instead of throwing
     return {
       hasPendingRequest: false,

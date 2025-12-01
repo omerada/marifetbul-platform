@@ -5,7 +5,6 @@
 // ================================================
 // Unified hooks for all API interactions using consistent patterns
 
- 
 /* eslint-disable react-hooks/exhaustive-deps */
 // @ts-nocheck - Geçici olarak tip kontrollerini atla
 
@@ -174,7 +173,7 @@ export function useUserProfile(userId: string): {
   return {
     data: operation.data,
     isLoading: operation.loading,
-    error: operation.error,
+    error: operation.error ? new Error(operation.error) : null,
     refetch: operation.execute,
   };
 }
@@ -214,8 +213,15 @@ export function useUserSearch(
       queryParams
     );
     return {
-      items: response.users,
-      total: response.total,
+      data: response.users,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(response.total / limit),
+        pageSize: limit,
+        total: response.total,
+        hasNext: page < Math.ceil(response.total / limit),
+        hasPrevious: page > 1,
+      },
     };
   }, pageSize);
 }
@@ -244,7 +250,7 @@ export function useJob(jobId: string): {
   return {
     data: operation.data,
     isLoading: operation.loading,
-    error: operation.error,
+    error: operation.error ? new Error(operation.error) : null,
     refetch: operation.execute,
   };
 }
@@ -274,8 +280,15 @@ export function useJobsSearch(
       queryParams
     );
     return {
-      items: response.jobs,
-      total: response.total,
+      data: response.jobs,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(response.total / limit),
+        pageSize: limit,
+        total: response.total,
+        hasNext: page < Math.ceil(response.total / limit),
+        hasPrevious: page > 1,
+      },
     };
   }, pageSize);
 }
@@ -329,7 +342,7 @@ export function usePackage(packageId: string): {
   return {
     data: operation.data,
     isLoading: operation.loading,
-    error: operation.error,
+    error: operation.error ? new Error(operation.error) : null,
     refetch: operation.execute,
   };
 }
@@ -359,8 +372,15 @@ export function usePackagesSearch(
       total: number;
     }>('/packages', queryParams);
     return {
-      items: response.packages,
-      total: response.total,
+      data: response.packages,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(response.total / limit),
+        pageSize: limit,
+        total: response.total,
+        hasNext: page < Math.ceil(response.total / limit),
+        hasPrevious: page > 1,
+      },
     };
   }, pageSize);
 }
@@ -453,8 +473,15 @@ export function useConversationMessages(
       total: number;
     }>(`/messages/conversations/${conversationId}/messages`, queryParams);
     return {
-      items: response.messages,
-      total: response.total,
+      data: response.messages,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(response.total / limit),
+        pageSize: limit,
+        total: response.total,
+        hasNext: page < Math.ceil(response.total / limit),
+        hasPrevious: page > 1,
+      },
     };
   }, pageSize);
 }
@@ -548,8 +575,15 @@ export function useAdminUsers(
       queryParams
     );
     return {
-      items: response.users,
-      total: response.total,
+      data: response.users,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(response.total / limit),
+        pageSize: limit,
+        total: response.total,
+        hasNext: page < Math.ceil(response.total / limit),
+        hasPrevious: page > 1,
+      },
     };
   }, pageSize);
 }

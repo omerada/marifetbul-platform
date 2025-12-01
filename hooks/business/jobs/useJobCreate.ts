@@ -224,7 +224,7 @@ export function useJobCreate({
           toast({
             title: 'Çok fazla dosya',
             description: `En fazla ${MAX_IMAGES} görsel yükleyebilirsiniz`,
-            variant: 'destructive',
+            type: 'destructive',
           });
           return;
         }
@@ -235,7 +235,7 @@ export function useJobCreate({
             toast({
               title: 'Dosya çok büyük',
               description: `${file.name} dosyası çok büyük. Maksimum 10MB olmalıdır.`,
-              variant: 'destructive',
+              type: 'destructive',
             });
             return;
           }
@@ -278,6 +278,7 @@ export function useJobCreate({
         toast({
           title: 'Görseller yüklendi',
           description: `${files.length} görsel başarıyla yüklendi`,
+          type: 'success',
         });
 
         logger.info('[useJobCreate] Images uploaded', {
@@ -288,7 +289,7 @@ export function useJobCreate({
         toast({
           title: 'Yükleme hatası',
           description: 'Görseller yüklenirken bir hata oluştu',
-          variant: 'destructive',
+          type: 'destructive',
         });
       } finally {
         setIsUploadingImages(false);
@@ -326,7 +327,7 @@ export function useJobCreate({
         toast({
           title: 'Beceri mevcut',
           description: 'Bu beceri zaten eklenmiş',
-          variant: 'destructive',
+          type: 'destructive',
         });
         return;
       }
@@ -335,7 +336,7 @@ export function useJobCreate({
         toast({
           title: 'Çok fazla beceri',
           description: 'En fazla 15 beceri ekleyebilirsiniz',
-          variant: 'destructive',
+          type: 'destructive',
         });
         return;
       }
@@ -373,7 +374,7 @@ export function useJobCreate({
         toast({
           title: 'Çok fazla gereksinim',
           description: 'En fazla 10 gereksinim ekleyebilirsiniz',
-          variant: 'destructive',
+          type: 'destructive',
         });
         return;
       }
@@ -436,7 +437,7 @@ export function useJobCreate({
       const validation = jobDraftSchema.safeParse(draft);
       if (!validation.success) {
         logger.warn('[useJobCreate] Invalid draft, clearing', {
-          errors: validation.error.errors,
+          errors: validation.error.issues,
         });
         clearDraft();
         return;
@@ -469,6 +470,7 @@ export function useJobCreate({
       toast({
         title: 'Taslak yüklendi',
         description: 'Kaydettiğiniz taslak geri yüklendi',
+        type: 'success',
       });
 
       logger.info('[useJobCreate] Draft loaded');
@@ -524,6 +526,7 @@ export function useJobCreate({
       toast({
         title: 'İş ilanı oluşturuldu',
         description: 'İlanınız başarıyla yayınlandı',
+        type: 'success',
       });
 
       // Callback
@@ -537,14 +540,17 @@ export function useJobCreate({
       }
     } catch (err) {
       const error = err as Error;
-      logger.error('[useJobCreate] Job creation failed', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        '[useJobCreate] Job creation failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
 
       setError(error.message || 'İş ilanı oluşturulurken bir hata oluştu');
 
       toast({
         title: 'Hata',
         description: error.message || 'İş ilanı oluşturulamadı',
-        variant: 'destructive',
+        type: 'destructive',
       });
 
       onError?.(error);

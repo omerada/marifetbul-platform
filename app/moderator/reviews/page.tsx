@@ -19,6 +19,7 @@ import { Shield, UserCheck } from 'lucide-react';
 import { UnifiedReviewQueue } from '@/components/domains/moderation/shared';
 import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { UnifiedErrorBoundary } from '@/components/ui/UnifiedErrorBoundary';
+import { UserRole } from '@/types/backend-aligned';
 import { Loading } from '@/components/ui';
 
 /**
@@ -67,7 +68,7 @@ export default function ReviewModerationPage() {
   }
 
   // Determine role for component
-  const role = isAdmin ? 'ADMIN' : 'MODERATOR';
+  const role = isAdmin ? UserRole.ADMIN : UserRole.MODERATOR;
   const roleColor = isAdmin ? 'blue' : 'purple';
   const RoleIcon = isAdmin ? Shield : UserCheck;
 

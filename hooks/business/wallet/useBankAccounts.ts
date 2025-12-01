@@ -22,7 +22,7 @@
 import { useState } from 'react';
 import useSWR from 'swr';
 import { apiClient } from '@/lib/infrastructure/api/client/apiClient';
-import type { ApiResponse } from '@/lib/infrastructure/api/types';
+import type { ApiResponse } from '@/types/backend-aligned';
 import { toast } from 'sonner';
 
 /**

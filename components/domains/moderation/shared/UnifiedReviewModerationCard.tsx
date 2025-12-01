@@ -42,7 +42,8 @@ import {
 import { UnifiedButton, Badge } from '@/components/ui';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import type { Review as ReviewResponse } from '@/types/business/review';
-import type { ViewMode, UserRole } from '@/types/business/moderation';
+import type { ViewMode } from '@/types/business/moderation';
+import { UserRole } from '@/types/backend-aligned';
 
 // ============================================================================
 // TYPES
@@ -75,7 +76,7 @@ export interface UnifiedReviewModerationCardProps {
 
 export function UnifiedReviewModerationCard({
   review,
-  role = 'moderator',
+  role = UserRole.MODERATOR,
   viewMode = 'card',
   showFullDetails = false,
   selectable = false,
@@ -428,7 +429,7 @@ export function UnifiedReviewModerationCard({
                     Reddet
                   </UnifiedButton>
 
-                  {role === 'moderator' && onEscalate && (
+                  {role === UserRole.MODERATOR && onEscalate && (
                     <UnifiedButton
                       variant="warning"
                       size="sm"
@@ -619,7 +620,7 @@ export function UnifiedReviewModerationCard({
                     Reddet
                   </UnifiedButton>
 
-                  {role === 'moderator' && onEscalate && (
+                  {role === UserRole.MODERATOR && onEscalate && (
                     <UnifiedButton
                       variant="warning"
                       onClick={() => setShowEscalateDialog(true)}
@@ -632,19 +633,21 @@ export function UnifiedReviewModerationCard({
                 </>
               )}
 
-              {review.flaggedCount > 0 && onResolveFlag && role === 'admin' && (
-                <UnifiedButton
-                  variant="warning"
-                  onClick={handleResolveFlag}
-                  disabled={loading}
-                >
-                  <Flag className="mr-2 h-4 w-4" />
-                  Bayrağı Çözümle
-                </UnifiedButton>
-              )}
+              {review.flaggedCount > 0 &&
+                onResolveFlag &&
+                role === UserRole.ADMIN && (
+                  <UnifiedButton
+                    variant="warning"
+                    onClick={handleResolveFlag}
+                    disabled={loading}
+                  >
+                    <Flag className="mr-2 h-4 w-4" />
+                    Bayrağı Çözümle
+                  </UnifiedButton>
+                )}
             </div>
 
-            {role === 'admin' && onDelete && (
+            {role === UserRole.ADMIN && onDelete && (
               <UnifiedButton
                 variant="ghost"
                 onClick={() => setShowDeleteDialog(true)}

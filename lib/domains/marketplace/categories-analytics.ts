@@ -98,7 +98,10 @@ export class CategoryAnalytics {
 
     // In a real app, you would send this to your analytics service
     if (process.env.NODE_ENV === 'development') {
-      logger.debug('📊 Analytics Event:', analyticsEvent);
+      logger.debug('📉 Analytics Event', {
+        component: 'CategoriesAnalytics',
+        analyticsEvent,
+      });
     }
 
     // Send to analytics services (Google Analytics, Mixpanel, etc.)
@@ -155,7 +158,9 @@ export class CategoryAnalytics {
         body: JSON.stringify(event),
       }).catch((error) =>
         logger.error(
-          'Analytics endpoint failed', error instanceof Error ? error : new Error(String(error)))
+          'Analytics endpoint failed',
+          error instanceof Error ? error : new Error(String(error))
+        )
       );
     }
   }

@@ -8,7 +8,10 @@ import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { useMarketplace } from '@/hooks';
 import { Loading } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import type { JobResponse, ServicePackage } from '@/types/backend-aligned';
+import type {
+  JobResponse,
+  PackageSummaryResponse,
+} from '@/types/backend-aligned';
 
 interface MobileMarketplaceProps {
   mode: 'jobs' | 'packages';

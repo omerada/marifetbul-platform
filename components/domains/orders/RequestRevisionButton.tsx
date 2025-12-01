@@ -88,9 +88,8 @@ export function RequestRevisionButton({
       toast.error('İşlem başarısız', {
         description: errorMessage,
       });
-      logger.error('Failed to request order revision', {
+      logger.error('Failed to request revision', new Error(errorMessage), {
         orderId,
-        error: errorMessage,
       });
     } finally {
       setIsSubmitting(false);

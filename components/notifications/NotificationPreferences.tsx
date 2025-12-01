@@ -145,10 +145,9 @@ export default function NotificationPreferences() {
       setDigestFrequency(data.emailDigestFrequency ?? 'DAILY');
       setDigestHour(data.digestDeliveryHour ?? 9);
 
-      logger.debug(
-        'NotificationPreferences',
-        'Preferences fetched successfully'
-      );
+      logger.debug('Preferences fetched successfully', {
+        component: 'NotificationPreferences',
+      });
     } catch (err) {
       logger.error(
         'NotificationPreferences: Failed to fetch preferences',
@@ -197,10 +196,9 @@ export default function NotificationPreferences() {
       setSuccessMessage('Tercihler kaydedildi.');
       setTimeout(() => setSuccessMessage(null), 3000);
 
-      logger.info(
-        'NotificationPreferences',
-        'Preferences updated successfully'
-      );
+      logger.info('Preferences updated successfully', {
+        component: 'NotificationPreferences',
+      });
     } catch (err) {
       logger.error(
         'NotificationPreferences: Failed to update preferences',
@@ -245,7 +243,9 @@ export default function NotificationPreferences() {
       setSuccessMessage('Tercihler varsayılan ayarlara sıfırlandı.');
       setTimeout(() => setSuccessMessage(null), 3000);
 
-      logger.info('NotificationPreferences', 'Preferences reset to defaults');
+      logger.info('Preferences reset to defaults', {
+        component: 'NotificationPreferences',
+      });
     } catch (err) {
       logger.error(
         'NotificationPreferences: Failed to reset preferences',
@@ -282,10 +282,10 @@ export default function NotificationPreferences() {
       );
       setTimeout(() => setSuccessMessage(null), 3000);
 
-      logger.info(
-        'NotificationPreferences',
-        `DND ${newEnabled ? 'enabled' : 'disabled'}`
-      );
+      logger.info(`DND ${newEnabled ? 'enabled' : 'disabled'}`, {
+        component: 'NotificationPreferences',
+        enabled: newEnabled,
+      });
     } catch (err) {
       logger.error('NotificationPreferences: Failed to toggle DND', undefined, {
         err,
@@ -310,7 +310,9 @@ export default function NotificationPreferences() {
       );
       setTimeout(() => setSuccessMessage(null), 3000);
 
-      logger.info('NotificationPreferences', 'DND times updated');
+      logger.info('DND times updated', {
+        component: 'NotificationPreferences',
+      });
     } catch (err) {
       logger.error(
         'NotificationPreferences: Failed to update DND times',

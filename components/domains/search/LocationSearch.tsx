@@ -143,10 +143,10 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({
   const handleUseCurrentLocation = useCallback(async () => {
     try {
       if (!getCurrentPosition) {
-        logger.warn(
-          'getCurrentPosition not available',
-          new Error('Geolocation API unavailable')
-        );
+        logger.warn('getCurrentPosition not available', {
+          component: 'LocationSearch',
+          error: new Error('Geolocation API unavailable'),
+        });
         return;
       }
 

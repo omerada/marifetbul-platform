@@ -132,10 +132,10 @@ export function useCommission(
         const response = await getCommissionsBySeller(user.id, page, size);
 
         setCommissions(response.content);
-        setCurrentPage(response.pageNumber);
+        setCurrentPage(response.page);
         setTotalPages(response.totalPages);
         setTotalElements(response.totalElements);
-        setHasNext(response.hasNext);
+        setHasNext(!response.last);
 
         logger.info('Commissions loaded successfully', {
           count: response.content.length,

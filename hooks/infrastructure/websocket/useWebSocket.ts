@@ -377,12 +377,12 @@ export function useWebSocket(
       typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
 
     if (!token) {
-      logger.warn('useWebSocket', 'Cannot connect: no token');
+      logger.warn('Cannot connect: no token', { component: 'useWebSocket' });
       return;
     }
 
     if (!isAuthenticated || !user) {
-      logger.warn('useWebSocket', 'User not authenticated');
+      logger.warn('User not authenticated', { component: 'useWebSocket' });
       return;
     }
 
@@ -403,7 +403,7 @@ export function useWebSocket(
         // Set event handlers
         serviceRef.current.setEventHandlers({
           onConnect: () => {
-            logger.info('useWebSocket', 'WebSocket connected');
+            logger.info('WebSocket connected', { component: 'useWebSocket' });
             setState(WebSocketState.CONNECTED);
             setError(null);
 
@@ -415,38 +415,39 @@ export function useWebSocket(
                   `/user/queue/messages`,
                   handleMessage
                 );
-                logger.info(
-                  'useWebSocket',
-                  'Subscribed to personal message queue'
-                );
+                logger.info('Subscribed to personal message queue', {
+                  component: 'useWebSocket',
+                });
 
                 // Subscribe to personal order updates
                 serviceRef.current.subscribe(
                   `/user/queue/orders`,
                   handleMessage
                 );
-                logger.info(
-                  'useWebSocket',
-                  'Subscribed to order updates queue'
-                );
+                logger.info('Subscribed to order updates queue', {
+                  component: 'useWebSocket',
+                });
 
                 // Subscribe to notifications
                 serviceRef.current.subscribe(
                   `/user/queue/notifications`,
                   handleMessage
                 );
-                logger.info(
-                  'useWebSocket',
-                  'Subscribed to notifications queue'
-                );
+                logger.info('Subscribed to notifications queue', {
+                  component: 'useWebSocket',
+                });
 
                 // Subscribe to typing indicators for active conversations
                 serviceRef.current.subscribe(`/topic/typing`, handleMessage);
-                logger.info('useWebSocket', 'Subscribed to typing indicators');
+                logger.info('Subscribed to typing indicators', {
+                  component: 'useWebSocket',
+                });
 
                 // Subscribe to user presence updates
                 serviceRef.current.subscribe(`/topic/presence`, handleMessage);
-                logger.info('useWebSocket', 'Subscribed to user presence');
+                logger.info('Subscribed to user presence', {
+                  component: 'useWebSocket',
+                });
               } catch (err) {
                 logger.error(
                   'useWebSocket: Failed to subscribe to default topics',
@@ -459,7 +460,9 @@ export function useWebSocket(
             onConnect?.();
           },
           onDisconnect: () => {
-            logger.info('useWebSocket', 'WebSocket disconnected');
+            logger.info('WebSocket disconnected', {
+              component: 'useWebSocket',
+            });
             setState(WebSocketState.DISCONNECTED);
             onDisconnect?.();
           },
@@ -501,7 +504,7 @@ export function useWebSocket(
 
   const disconnect = useCallback(() => {
     if (serviceRef.current) {
-      logger.info('useWebSocket', 'Disconnecting WebSocket');
+      logger.info('Disconnecting WebSocket', { component: 'useWebSocket' });
       serviceRef.current.disconnect();
     }
   }, []);

@@ -62,6 +62,7 @@ export function OrderModal({
       // Create order via API
       const response = await orderApi.createPackageOrder({
         packageId: pkg.id,
+        paymentMode: 'ESCROW_PROTECTED',
         amount: currentTier.price,
         tier: selectedTier,
         requirements: requirements || undefined,
@@ -73,7 +74,10 @@ export function OrderModal({
       // Navigate to checkout with order ID
       router.push(`/checkout/${response.data.id}`);
     } catch (err) {
-      logger.error('Failed to create order:', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Failed to create order:',
+        err instanceof Error ? err : new Error(String(err))
+      );
       const errorMessage =
         err instanceof Error ? err.message : 'Sipariş oluşturulamadı';
       setError(errorMessage);

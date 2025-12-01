@@ -222,7 +222,7 @@ export function ReviewForm({
             images.map((file) => reviewApi.uploadImage(savedReview.id, file))
           );
         } catch (uploadError) {
-          logger.error('Image upload failed:', uploadError);
+          logger.error('Image upload failed:', uploadError as Error);
           setError('Değerlendirme kaydedildi ancak resimler yüklenemedi');
         } finally {
           setUploadingImages(false);
@@ -234,7 +234,10 @@ export function ReviewForm({
 
       onSuccess?.(savedReview);
     } catch (err) {
-      logger.error('Review submission failed:', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Review submission failed:',
+        err instanceof Error ? err : new Error(String(err))
+      );
       setError(
         err instanceof Error
           ? err.message

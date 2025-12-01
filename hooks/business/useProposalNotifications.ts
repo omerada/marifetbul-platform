@@ -184,9 +184,13 @@ export function useProposalNotifications({
       const errorMessage =
         err instanceof Error ? err.message : 'Bir hata oluştu';
       setError(errorMessage);
-      logger.error('useProposalNotifications: Error fetching notifications', {
-        error: err,
-      });
+      logger.error(
+        'useProposalNotifications: Error fetching notifications',
+        err as Error,
+        {
+          hook: 'useProposalNotifications',
+        }
+      );
     } finally {
       setLoading(false);
     }
@@ -226,10 +230,14 @@ export function useProposalNotifications({
           notificationId,
         });
       } catch (err) {
-        logger.error('useProposalNotifications: Error marking as read', {
-          error: err,
-          notificationId,
-        });
+        logger.error(
+          'useProposalNotifications: Error marking as read',
+          err as Error,
+          {
+            hook: 'useProposalNotifications',
+            notificationId,
+          }
+        );
         // Revert optimistic update on error
         await fetchNotifications();
       }
@@ -265,9 +273,13 @@ export function useProposalNotifications({
 
       logger.info('useProposalNotifications: All notifications marked as read');
     } catch (err) {
-      logger.error('useProposalNotifications: Error marking all as read', {
-        error: err,
-      });
+      logger.error(
+        'useProposalNotifications: Error marking all as read',
+        err as Error,
+        {
+          hook: 'useProposalNotifications',
+        }
+      );
       // Revert on error
       await fetchNotifications();
     }

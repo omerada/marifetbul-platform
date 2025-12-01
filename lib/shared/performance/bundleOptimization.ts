@@ -148,10 +148,10 @@ export const initializeBundleOptimization = () => {
           const loadTime = navigation.loadEventEnd - navigation.loadEventStart;
 
           if (loadTime > 3000) {
-            logger.warn(
-              'Slow page load detected',
-              new Error(`Load time: ${loadTime}ms`)
-            );
+            logger.warn('Slow page load detected', {
+              component: 'BundleOptimization',
+              error: new Error(`Load time: ${loadTime}ms`),
+            });
           }
         }, 0);
       });

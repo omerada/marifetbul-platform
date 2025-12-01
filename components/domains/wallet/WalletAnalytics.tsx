@@ -144,9 +144,6 @@ const TYPE_LABELS: Record<TransactionType, string> = {
   PAYOUT: 'Çekim',
   REFUND: 'İade',
   FEE: 'Komisyon',
-  COMMISSION: 'Komisyon',
-  DEPOSIT: 'Yatırma',
-  WITHDRAWAL: 'Çekim',
 };
 
 // ============================================================================

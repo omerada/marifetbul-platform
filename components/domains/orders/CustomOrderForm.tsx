@@ -33,25 +33,25 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 const customOrderSchema = z.object({
   title: z
     .string()
-    .min(5, 'Baþlýk en az 5 karakter olmalýdýr')
-    .max(200, 'Baþlýk en fazla 200 karakter olabilir'),
+    .min(5, 'Baï¿½lï¿½k en az 5 karakter olmalï¿½dï¿½r')
+    .max(200, 'Baï¿½lï¿½k en fazla 200 karakter olabilir'),
   description: z
     .string()
-    .min(20, 'Açýklama en az 20 karakter olmalýdýr')
-    .max(5000, 'Açýklama en fazla 5000 karakter olabilir'),
+    .min(20, 'Aï¿½ï¿½klama en az 20 karakter olmalï¿½dï¿½r')
+    .max(5000, 'Aï¿½ï¿½klama en fazla 5000 karakter olabilir'),
   requirements: z
     .string()
-    .min(10, 'Gereksinimler en az 10 karakter olmalýdýr')
+    .min(10, 'Gereksinimler en az 10 karakter olmalï¿½dï¿½r')
     .max(5000, 'Gereksinimler en fazla 5000 karakter olabilir'),
   amount: z
     .number()
-    .min(100, 'Tutar en az 100 TRY olmalýdýr')
+    .min(100, 'Tutar en az 100 TRY olmalï¿½dï¿½r')
     .max(1000000, 'Tutar en fazla 1,000,000 TRY olabilir'),
   deadline: z.string().min(1, 'Teslim tarihi gereklidir'),
   contactInfo: z
     .string()
-    .min(5, 'Ýletiþim bilgisi gereklidir')
-    .max(100, 'Ýletiþim bilgisi çok uzun'),
+    .min(5, 'ï¿½letiï¿½im bilgisi gereklidir')
+    .max(100, 'ï¿½letiï¿½im bilgisi ï¿½ok uzun'),
   paymentMode: z.nativeEnum(PaymentMode),
 });
 
@@ -125,9 +125,15 @@ export function CustomOrderForm({
       try {
         const status = await getSellerPaymentStatus(seller.id);
         setSellerHasIban(status.hasValidIban);
-        logger.debug('Seller payment status fetched for custom order:', status);
+        logger.debug('Seller payment status fetched for custom order', {
+          component: 'CustomOrderForm',
+          status,
+        });
       } catch (error) {
-        logger.error('Failed to fetch seller payment status:', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'Failed to fetch seller payment status:',
+          error instanceof Error ? error : new Error(String(error))
+        );
         setSellerHasIban(false);
       } finally {
         setIsLoadingPaymentStatus(false);
@@ -158,7 +164,7 @@ export function CustomOrderForm({
           )}
           <div>
             <h3 className="font-semibold text-gray-900">
-              Sipariþ Oluþturuyorsunuz
+              Sipariï¿½ Oluï¿½turuyorsunuz
             </h3>
             <p className="text-sm text-gray-600">
               Freelancer: <span className="font-medium">{seller.name}</span>
@@ -170,13 +176,13 @@ export function CustomOrderForm({
       {/* Order Title */}
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-700">
-          Sipariþ Baþlýðý
+          Sipariï¿½ Baï¿½lï¿½ï¿½ï¿½
           <span className="text-red-500">*</span>
         </label>
         <Input
           {...register('title')}
           type="text"
-          placeholder="Örn: Modern Logo Tasarýmý"
+          placeholder="ï¿½rn: Modern Logo Tasarï¿½mï¿½"
           className="w-full"
           disabled={isSubmitting}
         />
@@ -193,7 +199,7 @@ export function CustomOrderForm({
       {/* Order Description */}
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-700">
-          Açýklama
+          Aï¿½ï¿½klama
           <span className="text-red-500">*</span>
         </label>
         <textarea
@@ -201,7 +207,7 @@ export function CustomOrderForm({
           rows={5}
           disabled={isSubmitting}
           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          placeholder="Projenizi detaylý olarak açýklayýn..."
+          placeholder="Projenizi detaylï¿½ olarak aï¿½ï¿½klayï¿½n..."
         />
         <div className="mt-1 flex justify-between text-sm">
           {errors.description && (
@@ -224,7 +230,7 @@ export function CustomOrderForm({
           rows={4}
           disabled={isSubmitting}
           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          placeholder="Teknik gereksinimler, dosya formatlarý, teslim edilecekler vb."
+          placeholder="Teknik gereksinimler, dosya formatlarï¿½, teslim edilecekler vb."
         />
         <div className="mt-1 flex justify-between text-sm">
           {errors.requirements && (
@@ -241,11 +247,11 @@ export function CustomOrderForm({
         {/* Amount */}
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-700">
-            Sipariþ Tutarý (TRY)
+            Sipariï¿½ Tutarï¿½ (TRY)
             <span className="text-red-500">*</span>
           </label>
           <div className="relative">
-            <DollarSign className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <DollarSign className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <Input
               {...register('amount', { valueAsNumber: true })}
               type="number"
@@ -269,7 +275,7 @@ export function CustomOrderForm({
             <span className="text-red-500">*</span>
           </label>
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <Calendar className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <Input
               {...register('deadline')}
               type="date"
@@ -289,13 +295,13 @@ export function CustomOrderForm({
       {/* Contact Info */}
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-700">
-          Ýletiþim Bilgisi
+          ï¿½letiï¿½im Bilgisi
           <span className="text-red-500">*</span>
         </label>
         <Input
           {...register('contactInfo')}
           type="text"
-          placeholder="Telefon numarasý veya e-posta"
+          placeholder="Telefon numarasï¿½ veya e-posta"
           className="w-full"
           disabled={isSubmitting}
         />
@@ -309,12 +315,12 @@ export function CustomOrderForm({
       {/* Payment Mode Selection */}
       <div>
         <label className="mb-3 block text-sm font-medium text-gray-700">
-          Ödeme Yöntemi
+          ï¿½deme Yï¿½ntemi
           <span className="text-red-500">*</span>
         </label>
         <PaymentModeSelector
           value={watch('paymentMode')}
-          onChange={(mode) => setValue('paymentMode', mode)}
+          onChange={(mode: PaymentMode) => setValue('paymentMode', mode)}
           amount={amount}
           sellerHasIban={sellerHasIban}
           disabled={isLoadingPaymentStatus || isSubmitting}
@@ -329,10 +335,10 @@ export function CustomOrderForm({
       {/* Order Summary */}
       {amount > 0 && (
         <Card className="border-blue-200 bg-blue-50 p-4">
-          <h4 className="mb-3 font-medium text-blue-900">Sipariþ Özeti</h4>
+          <h4 className="mb-3 font-medium text-blue-900">Sipariï¿½ ï¿½zeti</h4>
           <div className="space-y-2 text-sm text-blue-800">
             <div className="flex justify-between">
-              <span>Sipariþ Tutarý:</span>
+              <span>Sipariï¿½ Tutarï¿½:</span>
               <span className="font-medium">
                 ?{amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
               </span>
@@ -340,15 +346,17 @@ export function CustomOrderForm({
             <div className="flex justify-between">
               <span>Platform Komisyonu (5%):</span>
               <span className="font-medium">
-                ?{platformFee.toLocaleString('tr-TR', {
+                ?
+                {platformFee.toLocaleString('tr-TR', {
                   minimumFractionDigits: 2,
                 })}
               </span>
             </div>
             <div className="flex justify-between border-t border-blue-200 pt-2 font-semibold">
-              <span>Freelancer Alacaðý:</span>
+              <span>Freelancer Alacaï¿½ï¿½:</span>
               <span className="text-green-700">
-                ?{sellerAmount.toLocaleString('tr-TR', {
+                ?
+                {sellerAmount.toLocaleString('tr-TR', {
                   minimumFractionDigits: 2,
                 })}
               </span>
@@ -366,18 +374,18 @@ export function CustomOrderForm({
           disabled={isSubmitting}
         >
           <X className="mr-2 h-4 w-4" />
-          Ýptal
+          ï¿½ptal
         </Button>
         <Button type="submit" disabled={isSubmitting || isLoadingPaymentStatus}>
           {isSubmitting ? (
             <>
               <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              Oluþturuluyor...
+              Oluï¿½turuluyor...
             </>
           ) : (
             <>
               <Send className="mr-2 h-4 w-4" />
-              Sipariþ Oluþtur
+              Sipariï¿½ Oluï¿½tur
             </>
           )}
         </Button>
@@ -387,22 +395,20 @@ export function CustomOrderForm({
       <Card className="border-yellow-200 bg-yellow-50 p-4">
         <h4 className="mb-2 flex items-center font-medium text-yellow-900">
           <FileText className="mr-2 h-5 w-5" />
-          Önemli Bilgiler
+          ï¿½nemli Bilgiler
         </h4>
         <ul className="space-y-1 text-sm text-yellow-800">
-          <li>• Sipariþ oluþturduktan sonra ödeme yapmanýz gerekecektir</li>
+          <li>ï¿½ Sipariï¿½ oluï¿½turduktan sonra ï¿½deme yapmanï¿½z gerekecektir</li>
           <li>
-            • Escrow korumalý ödemede paranýz güvende tutulur, freelancer iþi
-            tamamladýktan sonra ödeme yapýlýr
+            ï¿½ Escrow korumalï¿½ ï¿½demede paranï¿½z gï¿½vende tutulur, freelancer iï¿½i
+            tamamladï¿½ktan sonra ï¿½deme yapï¿½lï¿½r
           </li>
           <li>
-            • Manuel IBAN ödemesinde doðrudan freelancer'ýn hesabýna ödeme
-            yaparsýnýz
+            ï¿½ Manuel IBAN ï¿½demesinde doï¿½rudan freelancer'ï¿½n hesabï¿½na ï¿½deme
+            yaparsï¿½nï¿½z
           </li>
-          <li>
-            • Tüm detaylarý net bir þekilde belirttiðinizden emin olun
-          </li>
-          <li>• Platform komisyonu otomatik olarak hesaplanýr (%5)</li>
+          <li>ï¿½ Tï¿½m detaylarï¿½ net bir ï¿½ekilde belirttiï¿½inizden emin olun</li>
+          <li>ï¿½ Platform komisyonu otomatik olarak hesaplanï¿½r (%5)</li>
         </ul>
       </Card>
     </form>

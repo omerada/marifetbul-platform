@@ -139,7 +139,10 @@ export function formatPhoneNumber(phone: string): string {
     // Fallback to original phone string on any unexpected error
     // (This mimics the previous behavior which returned the input)
     // eslint-disable-next-line no-console
-    console.error('[FormatUtils] canonical formatPhoneNumber failed:', err);
+    console.error(
+      '[FormatUtils] canonical formatPhoneNumber failed:',
+      err as Error
+    );
     return phone;
   }
 }

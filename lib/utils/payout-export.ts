@@ -45,9 +45,9 @@ export function exportPayoutsToCSV(payouts: Payout[], filename?: string): void {
     format(new Date(payout.requestedAt), 'dd/MM/yyyy HH:mm', { locale: tr }),
     payout.amount.toFixed(2),
     getPayoutStatusText(payout.status),
-    payout.bankAccount?.bankName || '-',
-    maskIBAN(payout.bankAccount?.iban || ''),
-    payout.transactionId || '-',
+    payout.bankAccountInfo?.bankName || '-',
+    maskIBAN(payout.bankAccountInfo?.iban || ''),
+    payout.iyzicoPayoutId || payout.id || '-',
     payout.completedAt
       ? format(new Date(payout.completedAt), 'dd/MM/yyyy HH:mm', { locale: tr })
       : '-',
@@ -94,7 +94,7 @@ export function exportPayoutsToPDF(payouts: Payout[], filename?: string): void {
   const printWindow = window.open('', '_blank');
 
   if (!printWindow) {
-    alert('Popup blocker aktif. Lütfen popup\'ları etkinleştirin.');
+    alert("Popup blocker aktif. Lütfen popup'ları etkinleştirin.");
     return;
   }
 
@@ -240,9 +240,9 @@ function generatePayoutsPrintHTML(payouts: Payout[]): string {
                   ${getPayoutStatusText(payout.status)}
                 </span>
               </td>
-              <td>${payout.bankAccount?.bankName || '-'}</td>
-              <td>${maskIBAN(payout.bankAccount?.iban || '')}</td>
-              <td>${payout.transactionId || '-'}</td>
+              <td>${payout.bankAccountInfo?.bankName || '-'}</td>
+              <td>${maskIBAN(payout.bankAccountInfo?.iban || '')}</td>
+              <td>${payout.iyzicoPayoutId || payout.id || '-'}</td>
             </tr>
           `
             )

@@ -118,7 +118,7 @@ export function usePagination<T>(
         });
       } catch (error) {
         updateState({
-          error: error,
+          error: error as Error,
           isLoading: false,
         });
       }
@@ -304,7 +304,11 @@ export function useLocalStorage<T>(
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
-      logger.warn(`Error reading localStorage key "${key}":`, error);
+      logger.warn(`Error reading localStorage key "${key}":`, {
+        hook: 'useLocalStorage',
+        key,
+        error: error as Error,
+      });
       return initialValue;
     }
   });
@@ -323,7 +327,11 @@ export function useLocalStorage<T>(
           window.localStorage.setItem(key, JSON.stringify(valueToStore));
         }
       } catch (error) {
-        logger.warn(`Error setting localStorage key "${key}":`, error);
+        logger.warn(`Error setting localStorage key "${key}":`, {
+          hook: 'useLocalStorage',
+          key,
+          error: error as Error,
+        });
       }
     },
     [key, storedValue]
@@ -337,7 +345,11 @@ export function useLocalStorage<T>(
         window.localStorage.removeItem(key);
       }
     } catch (error) {
-      logger.warn(`Error removing localStorage key "${key}":`, error);
+      logger.warn(`Error removing localStorage key "${key}":`, {
+        hook: 'useLocalStorage',
+        key,
+        error: error as Error,
+      });
     }
   }, [key, initialValue]);
 

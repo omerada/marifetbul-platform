@@ -1,6 +1,7 @@
 'use client';
 
 import type { Job, ServicePackage } from '@/types';
+import type { PackageSummary } from '@/types/business/features/package';
 import type { ViewPreferences } from '@/lib/core/validations/marketplace';
 import { JobCard } from '@/components/domains/jobs';
 import { PackageCard } from '@/components/packages/public/PackageCard';
@@ -81,13 +82,16 @@ export function MarketplaceList({
     <div className={`grid ${gridCols} gap-6`}>
       {mode === 'jobs'
         ? (data as Job[]).map((job) => (
-            <JobCard key={job.id} job={job} layout={viewPreferences.layout} />
+            <JobCard
+              key={job.id}
+              job={job as any}
+              layout={viewPreferences.layout}
+            />
           ))
         : (data as ServicePackage[]).map((pkg) => (
             <PackageCard
               key={pkg.id}
-              package={pkg}
-              layout={viewPreferences.layout}
+              package={pkg as unknown as PackageSummary}
             />
           ))}
     </div>

@@ -39,11 +39,11 @@ import type {
 function convertUserResponseToUser(userResponse: UserResponse): User {
   // Map backend UserRole to frontend userType
   const userType: 'freelancer' | 'employer' | 'admin' =
-    userResponse.accountType === 'FREELANCER'
+    userResponse.role === 'FREELANCER'
       ? 'freelancer'
-      : userResponse.accountType === 'EMPLOYER'
+      : userResponse.role === 'EMPLOYER'
         ? 'employer'
-        : userResponse.roles.includes('ADMIN')
+        : userResponse.role === 'ADMIN'
           ? 'admin'
           : 'freelancer';
 
@@ -55,19 +55,17 @@ function convertUserResponseToUser(userResponse: UserResponse): User {
     lastName: userResponse.lastName,
     fullName: userResponse.fullName,
     name: userResponse.fullName,
-    avatar: userResponse.avatar,
-    avatarUrl: userResponse.avatar,
+    avatar: userResponse.avatarUrl,
+    avatarUrl: userResponse.avatarUrl,
     userType,
-    role: userResponse.roles[0] as
+    role: userResponse.role as
       | 'FREELANCER'
       | 'EMPLOYER'
       | 'ADMIN'
       | 'MODERATOR',
     createdAt: userResponse.createdAt,
-    updatedAt: userResponse.updatedAt,
-    verificationStatus: userResponse.isEmailVerified
-      ? 'verified'
-      : 'unverified',
+    updatedAt: userResponse.createdAt,
+    verificationStatus: userResponse.emailVerified ? 'verified' : 'unverified',
     accountStatus: 'active', // Backend doesn't provide this yet
   };
 }

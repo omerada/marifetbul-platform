@@ -256,7 +256,10 @@ export function PackageCreationWizard({
       // Redirect to packages list
       router.push('/marketplace/packages?success=true');
     } catch (error) {
-      logger.error('Package creation error', { error, packageId });
+      logger.error('Package creation error', error as Error, {
+        component: 'PackageCreationWizard',
+        packageId,
+      });
       setSubmitError(
         error instanceof Error
           ? error.message
@@ -293,7 +296,9 @@ export function PackageCreationWizard({
       await packageApi.createPackage(requestData);
       router.push('/marketplace/packages?draft=true');
     } catch (error) {
-      logger.error('Draft save error', { error });
+      logger.error('Draft save error', error as Error, {
+        component: 'PackageCreationWizard',
+      });
       setSubmitError('Taslak kaydedilirken hata oluştu');
     } finally {
       setIsSubmitting(false);

@@ -177,7 +177,7 @@ class UnifiedAuthService {
       if (response.success && response.data) {
         logger.info('Auth: Login successful', {
           userId: response.data.user.id,
-          roles: response.data.user.roles,
+          role: response.data.user.role,
         });
 
         // Clear any cached user data

@@ -282,7 +282,10 @@ class AuthService {
    * Can be used to redirect to login or refresh token
    */
   async handleAuthError(error: unknown): Promise<void> {
-    logger.error('Authentication error', { error });
+    logger.error('Authentication error', error as Error, {
+      service: 'AuthService',
+      operation: 'handleAuthError',
+    });
 
     // Clear cache
     this.clearAuthCache();
@@ -292,7 +295,10 @@ class AuthService {
       await this.refreshToken();
     } catch (refreshError) {
       // If refresh fails, user needs to login again
-      logger.error('Token refresh failed', { error: refreshError });
+      logger.error('Token refresh failed', refreshError as Error, {
+        service: 'AuthService',
+        operation: 'refreshToken',
+      });
 
       // Redirect to login (if running in browser)
       if (typeof window !== 'undefined') {

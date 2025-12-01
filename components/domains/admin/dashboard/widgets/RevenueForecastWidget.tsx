@@ -108,32 +108,30 @@ function getTrendIndicator(direction: 'UP' | 'DOWN' | 'STABLE') {
 /**
  * Get strength badge color
  */
-function getStrengthColor(strength: string): string {
-  switch (strength) {
-    case 'STRONG':
-      return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
-    case 'MODERATE':
-      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
-    case 'WEAK':
-      return 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400';
-    default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400';
+function getStrengthColor(strength: number): string {
+  if (strength >= 0.7) {
+    return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
+  } else if (strength >= 0.4) {
+    return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
+  } else if (strength >= 0.2) {
+    return 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400';
+  } else {
+    return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400';
   }
 }
 
 /**
  * Get strength label
  */
-function getStrengthLabel(strength: string): string {
-  switch (strength) {
-    case 'STRONG':
-      return 'G��l�';
-    case 'MODERATE':
-      return 'Orta';
-    case 'WEAK':
-      return 'Zay�f';
-    default:
-      return 'Bilinmiyor';
+function getStrengthLabel(strength: number): string {
+  if (strength >= 0.7) {
+    return 'Güçlü';
+  } else if (strength >= 0.4) {
+    return 'Orta';
+  } else if (strength >= 0.2) {
+    return 'Zayıf';
+  } else {
+    return 'Çok Zayıf';
   }
 }
 

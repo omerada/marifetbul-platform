@@ -40,15 +40,17 @@ export default function WebSocketTestPage() {
     autoConnect: true,
     onConnect: () => {
       addLog('✅ WebSocket connected');
-      logger.info('WebSocketTest', 'Connected successfully');
+      logger.info('Connected successfully', { component: 'WebSocketTest' });
     },
     onDisconnect: () => {
       addLog('❌ WebSocket disconnected');
-      logger.info('WebSocketTest', 'Disconnected');
+      logger.info('Disconnected', { component: 'WebSocketTest' });
     },
     onError: (err) => {
       addLog(`⚠️ Error: ${err.message}`);
-      logger.error('WebSocketTest: Connection error', undefined, { error: err });
+      logger.error('WebSocketTest: Connection error', undefined, {
+        error: err,
+      });
     },
   });
 

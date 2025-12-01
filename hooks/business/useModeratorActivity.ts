@@ -79,10 +79,13 @@ export function useModeratorActivity(
     async () => {
       try {
         const data = await moderationApi.getRecentActivities(page, pageSize);
-        logger.debug('Moderator activities fetched:', data.activities.length);
+        logger.debug('Moderator activities fetched:', data.content.length);
         return data;
       } catch (err) {
-        logger.error('Failed to fetch moderator activities:', err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          'Failed to fetch moderator activities:',
+          err instanceof Error ? err : new Error(String(err))
+        );
         throw err;
       }
     },
@@ -93,7 +96,7 @@ export function useModeratorActivity(
     }
   );
 
-  const activities = useMemo(() => response?.activities || [], [response]);
+  const activities = useMemo(() => response?.content || [], [response]);
 
   // Filter activities based on filters
   const filteredActivities = useMemo(() => {
@@ -102,7 +105,7 @@ export function useModeratorActivity(
     // Filter by action type
     if (filters.actionType && filters.actionType !== 'ALL') {
       result = result.filter(
-        (activity) => activity.actionType === filters.actionType
+        (activity) => activity.action === filters.actionType
       );
     }
 
@@ -151,7 +154,7 @@ export function useModeratorActivity(
     };
 
     filteredActivities.forEach((activity) => {
-      switch (activity.actionType) {
+      switch (activity.action) {
         case 'APPROVE':
         case 'BULK_APPROVE':
           stats.approveCount++;

@@ -49,10 +49,12 @@ console.log(
 export function setSentryUser(user: SentryUser): void {
   if (!SENTRY_ENABLED) return;
 
-  logger.debug('Setting Sentry user context', {
-    userId: user.id,
-    email: user.email,
-  });
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Sentry] Setting user context', {
+      userId: user.id,
+      email: user.email,
+    });
+  }
 
   Sentry.setUser({
     id: user.id,
@@ -67,7 +69,9 @@ export function setSentryUser(user: SentryUser): void {
 export function clearSentryUser(): void {
   if (!SENTRY_ENABLED) return;
 
-  logger.debug('Clearing Sentry user context');
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Sentry] Clearing user context');
+  }
   Sentry.setUser(null);
 }
 
@@ -80,7 +84,9 @@ export function setSentryContext(
 ): void {
   if (!SENTRY_ENABLED) return;
 
-  logger.debug('Adding Sentry context', { key, context });
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Sentry] Adding context', { key, context });
+  }
   Sentry.setContext(key, context);
 }
 
@@ -90,7 +96,9 @@ export function setSentryContext(
 export function setSentryTag(key: string, value: string): void {
   if (!SENTRY_ENABLED) return;
 
-  logger.debug('Adding Sentry tag', { key, value });
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Sentry] Adding tag', { key, value });
+  }
   Sentry.setTag(key, value);
 }
 
@@ -105,7 +113,9 @@ export function addSentryBreadcrumb(breadcrumb: {
 }): void {
   if (!SENTRY_ENABLED) return;
 
-  logger.debug('Adding Sentry breadcrumb', breadcrumb);
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Sentry] Adding breadcrumb', breadcrumb);
+  }
   Sentry.addBreadcrumb({
     message: breadcrumb.message,
     category: breadcrumb.category,
@@ -122,11 +132,13 @@ export function captureSentryError(
   context?: Record<string, unknown>
 ): void {
   if (!SENTRY_ENABLED) {
-    logger.error('Error captured (Sentry disabled)', error, context);
+    console.error('[Sentry] Error captured (Sentry disabled)', error, context);
     return;
   }
 
-  logger.error('Capturing error to Sentry', error, context);
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Sentry] Capturing error', error, context);
+  }
   Sentry.captureException(error, { extra: context });
 }
 
@@ -139,20 +151,18 @@ export function captureSentryMessage(
   context?: Record<string, unknown>
 ): void {
   if (!SENTRY_ENABLED) {
-    const logLevel = level === 'warning' ? 'warn' : level;
-    if (logLevel === 'error') {
-      logger[logLevel](message, undefined, context);
+    const consoleMethod =
+      level === 'warning' ? 'warn' : level === 'debug' ? 'log' : level;
+    if (level === 'error') {
+      console[consoleMethod]('[Sentry] Message (disabled):', message, context);
     } else {
-      logger[logLevel](message, context);
+      console[consoleMethod]('[Sentry] Message (disabled):', message, context);
     }
     return;
   }
 
-  const logLevel = level === 'warning' ? 'warn' : level;
-  if (logLevel === 'error') {
-    logger[logLevel](`Sentry message: ${message}`, undefined, context);
-  } else {
-    logger[logLevel](`Sentry message: ${message}`, context);
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Sentry] Capturing message:', message, context);
   }
 
   Sentry.captureMessage(message, {
@@ -172,7 +182,9 @@ export function withSentrySpan<T>(
 ): T {
   if (!SENTRY_ENABLED) return callback();
 
-  logger.debug('Starting Sentry span', { name, op });
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Sentry] Starting span', { name, op });
+  }
   return Sentry.startSpan({ name, op }, callback);
 }
 
@@ -186,7 +198,9 @@ export async function withSentrySpanAsync<T>(
 ): Promise<T> {
   if (!SENTRY_ENABLED) return callback();
 
-  logger.debug('Starting Sentry async span', { name, op });
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Sentry] Starting async span', { name, op });
+  }
   return Sentry.startSpan({ name, op }, callback);
 }
 

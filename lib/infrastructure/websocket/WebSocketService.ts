@@ -94,7 +94,9 @@ export class WebSocketService {
       this.state === WebSocketState.CONNECTED ||
       this.state === WebSocketState.CONNECTING
     ) {
-      logger.warn('WebSocketService', 'Already connected or connecting');
+      logger.warn('Already connected or connecting', {
+        component: 'WebSocketService',
+      });
       return;
     }
 
@@ -120,7 +122,7 @@ export class WebSocketService {
 
         // Debug logging
         debug: this.config.debug
-          ? (str) => logger.debug('STOMP', str)
+          ? (str) => logger.debug(str, { component: 'STOMP' })
           : undefined,
 
         // Connection callbacks
@@ -145,7 +147,7 @@ export class WebSocketService {
    * Disconnect from WebSocket server
    */
   disconnect(): void {
-    logger.info('WebSocketService', 'Disconnecting...');
+    logger.info('Disconnecting...', { component: 'WebSocketService' });
 
     // Clear reconnect timer
     if (this.reconnectTimer) {
@@ -197,7 +199,9 @@ export class WebSocketService {
 
     // Check if already subscribed
     if (this.subscriptions.has(destination)) {
-      logger.warn('WebSocketService', `Already subscribed to ${destination}`);
+      logger.warn(`Already subscribed to ${destination}`, {
+        component: 'WebSocketService',
+      });
       return destination;
     }
 
@@ -238,10 +242,9 @@ export class WebSocketService {
    * Unsubscribe from all topics
    */
   unsubscribeAll(): void {
-    logger.info(
-      'WebSocketService',
-      `Unsubscribing from ${this.subscriptions.size} topics`
-    );
+    logger.info(`Unsubscribing from ${this.subscriptions.size} topics`, {
+      component: 'WebSocketService',
+    });
 
     this.subscriptions.forEach((subscription) => {
       subscription.unsubscribe();
@@ -300,7 +303,9 @@ export class WebSocketService {
   }
 
   private onDisconnect(): void {
-    logger.info('WebSocketService', 'Disconnected from WebSocket');
+    logger.info('Disconnected from WebSocket', {
+      component: 'WebSocketService',
+    });
     this.setState(WebSocketState.DISCONNECTED);
 
     // Clear all subscriptions
@@ -344,7 +349,10 @@ export class WebSocketService {
       this.config.maxReconnectAttempts > 0 &&
       this.reconnectAttempts >= this.config.maxReconnectAttempts
     ) {
-      logger.error('WebSocketService', 'Max reconnect attempts reached');
+      logger.error(
+        'WebSocketService',
+        new Error('Max reconnect attempts reached')
+      );
       this.setState(WebSocketState.ERROR);
       return;
     }
@@ -363,8 +371,8 @@ export class WebSocketService {
     const actualDelay = exponentialDelay + jitter;
 
     logger.info(
-      'WebSocketService',
-      `Reconnecting in ${Math.round(actualDelay)}ms... (attempt ${this.reconnectAttempts}/${this.config.maxReconnectAttempts || '∞'})`
+      `Reconnecting in ${Math.round(actualDelay)}ms... (attempt ${this.reconnectAttempts}/${this.config.maxReconnectAttempts || '∞'})`,
+      { component: 'WebSocketService' }
     );
 
     if (this.eventHandlers.onReconnecting) {
@@ -387,10 +395,9 @@ export class WebSocketService {
     this.state = newState;
 
     if (oldState !== newState) {
-      logger.info(
-        'WebSocketService',
-        `State changed: ${oldState} → ${newState}`
-      );
+      logger.info(`State changed: ${oldState} → ${newState}`, {
+        component: 'WebSocketService',
+      });
 
       if (this.eventHandlers.onStateChange) {
         this.eventHandlers.onStateChange(newState);

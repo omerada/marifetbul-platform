@@ -65,9 +65,8 @@ export function AcceptOrderButton({
       toast.error('İşlem başarısız', {
         description: errorMessage,
       });
-      logger.error('Failed to accept order delivery', {
+      logger.error('Failed to accept order delivery', new Error(errorMessage), {
         orderId,
-        error: errorMessage,
       });
     } finally {
       setIsSubmitting(false);

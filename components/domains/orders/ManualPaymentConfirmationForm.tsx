@@ -107,7 +107,8 @@ export function ManualPaymentConfirmationForm({
       });
 
       toast.success('Ödeme Onaylandı', {
-        description: 'Manuel ödeme başarıyla onaylandı. Sipariş durumu güncellendi.',
+        description:
+          'Manuel ödeme başarıyla onaylandı. Sipariş durumu güncellendi.',
         duration: 5000,
       });
 
@@ -123,8 +124,9 @@ export function ManualPaymentConfirmationForm({
         onSuccess(data);
       }
     } catch (error) {
-      const err = error instanceof Error ? error : new Error('Ödeme onaylanamadı');
-      
+      const err =
+        error instanceof Error ? error : new Error('Ödeme onaylanamadı');
+
       toast.error('Hata', {
         description: err.message || 'Ödeme onaylanırken bir hata oluştu',
       });
@@ -143,7 +145,9 @@ export function ManualPaymentConfirmationForm({
   };
 
   return (
-    <Card className={cn('border-2 border-green-200 bg-green-50 p-6', className)}>
+    <Card
+      className={cn('border-2 border-green-200 bg-green-50 p-6', className)}
+    >
       {/* Header */}
       <div className="mb-4 flex items-start gap-3">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-200">
@@ -154,7 +158,8 @@ export function ManualPaymentConfirmationForm({
             Ödeme Onaylama
           </h3>
           <p className="text-sm text-green-700">
-            {buyerName ? `${buyerName} tarafından` : 'Alıcı tarafından'} yapılan ödemeyi onaylayın
+            {buyerName ? `${buyerName} tarafından` : 'Alıcı tarafından'} yapılan
+            ödemeyi onaylayın
           </p>
         </div>
         <Badge variant="success" size="md">
@@ -221,7 +226,7 @@ export function ManualPaymentConfirmationForm({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             disabled={isSubmitting}
-            className="mt-1 min-h-[80px] w-full rounded-md border border-gray-300 p-2 text-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="mt-1 min-h-[80px] w-full rounded-md border border-gray-300 p-2 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none"
             maxLength={500}
           />
           <p className="mt-1 text-xs text-green-700">
@@ -239,7 +244,9 @@ export function ManualPaymentConfirmationForm({
                 <li>Ödemeyi aldığınızdan emin olunuz</li>
                 <li>Tutar ve sipariş numarasını kontrol ediniz</li>
                 <li>Onayladıktan sonra sipariş başlatılacaktır</li>
-                <li>Yanlış onaylama durumunda destek ekibi ile iletişime geçiniz</li>
+                <li>
+                  Yanlış onaylama durumunda destek ekibi ile iletişime geçiniz
+                </li>
               </ul>
             </div>
           </div>
@@ -255,13 +262,20 @@ export function ManualPaymentConfirmationForm({
                   Ödemeyi Onaylamak Üzeresiniz
                 </p>
                 <p className="mt-1 text-sm text-green-800">
-                  <strong>{new Intl.NumberFormat('tr-TR', {
-                    style: 'currency',
-                    currency: currency,
-                  }).format(orderAmount)}</strong> tutarındaki ödemeyi aldığınızı ve onayladığınızı belirtiyorsunuz.
+                  <strong>
+                    {new Intl.NumberFormat('tr-TR', {
+                      style: 'currency',
+                      currency: currency,
+                    }).format(orderAmount)}
+                  </strong>{' '}
+                  tutarındaki ödemeyi aldığınızı ve onayladığınızı
+                  belirtiyorsunuz.
                 </p>
                 <p className="mt-2 text-xs text-green-700">
-                  Referans: <span className="font-mono font-semibold">{paymentReference}</span>
+                  Referans:{' '}
+                  <span className="font-mono font-semibold">
+                    {paymentReference}
+                  </span>
                 </p>
               </div>
             </div>
@@ -273,7 +287,7 @@ export function ManualPaymentConfirmationForm({
           {!showConfirmation ? (
             <Button
               type="submit"
-              variant="default"
+              variant="secondary"
               size="lg"
               disabled={!isValid || isSubmitting}
               className="flex-1 bg-green-600 hover:bg-green-700"
@@ -295,7 +309,7 @@ export function ManualPaymentConfirmationForm({
               </Button>
               <Button
                 type="submit"
-                variant="default"
+                variant="secondary"
                 size="lg"
                 disabled={isSubmitting}
                 className="flex-1 bg-green-600 hover:bg-green-700"
@@ -322,9 +336,9 @@ export function ManualPaymentConfirmationForm({
         <div className="flex items-start gap-2">
           <FileText className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-700" />
           <p className="text-xs text-green-800">
-            <strong>İpucu:</strong> Ödeme onayladıktan sonra sipariş durumu "Ödendi" olarak
-            güncellenir ve işe başlayabilirsiniz. Herhangi bir sorun yaşarsanız destek ekibi
-            ile iletişime geçiniz.
+            <strong>İpucu:</strong> Ödeme onayladıktan sonra sipariş durumu
+            "Ödendi" olarak güncellenir ve işe başlayabilirsiniz. Herhangi bir
+            sorun yaşarsanız destek ekibi ile iletişime geçiniz.
           </p>
         </div>
       </div>

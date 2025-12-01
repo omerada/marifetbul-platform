@@ -237,11 +237,11 @@ const ActivityItem = memo(function ActivityItem({
         <div
           className={cn(
             'relative flex h-10 w-10 items-center justify-center rounded-full',
-            getActionColor(activity.action)
+            getActionColor(activity.action as ActionType)
           )}
           aria-hidden="true"
         >
-          {getActionIcon(activity.action)}
+          {getActionIcon(activity.action as ActionType)}
         </div>
 
         {/* Content */}
@@ -249,7 +249,7 @@ const ActivityItem = memo(function ActivityItem({
           <Card
             className="p-4"
             role="article"
-            aria-labelledby={`activity-${activity.activityId}-desc`}
+            aria-labelledby={`activity-${activity.id}-desc`}
           >
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
@@ -262,12 +262,12 @@ const ActivityItem = memo(function ActivityItem({
                   <Badge
                     className={cn(
                       'inline-flex items-center gap-1',
-                      getActionColor(activity.actionType)
+                      getActionColor(activity.action as ActionType)
                     )}
-                    aria-label={`İşlem: ${getActionLabel(activity.actionType)}`}
+                    aria-label={`İşlem: ${getActionLabel(activity.action as ActionType)}`}
                   >
-                    {getActionIcon(activity.actionType)}
-                    {getActionLabel(activity.actionType)}
+                    {getActionIcon(activity.action as ActionType)}
+                    {getActionLabel(activity.action as ActionType)}
                   </Badge>
                   <Badge
                     className={cn(
@@ -283,10 +283,11 @@ const ActivityItem = memo(function ActivityItem({
 
                 {/* Description */}
                 <p
-                  id={`activity-${activity.activityId}-desc`}
+                  id={`activity-${activity.id}-desc`}
                   className="text-foreground mb-1 text-sm"
                 >
-                  {activity.description}
+                  {activity.reason ||
+                    `${activity.action} action on ${activity.itemType}`}
                 </p>
 
                 {/* Meta info */}
@@ -304,16 +305,12 @@ const ActivityItem = memo(function ActivityItem({
                       {formatRelativeTime(activity.timestamp)}
                     </time>
                   </span>
-                  {activity.affectedUserName && (
-                    <span className="inline-flex items-center gap-1">
-                      <User className="h-3 w-3" aria-hidden="true" />
-                      <span
-                        aria-label={`Etkilenen kullanıcı: ${activity.affectedUserName}`}
-                      >
-                        {activity.affectedUserName}
-                      </span>
+                  <span className="inline-flex items-center gap-1">
+                    <User className="h-3 w-3" aria-hidden="true" />
+                    <span aria-label={`Moderatör: ${activity.moderatorName}`}>
+                      {activity.moderatorName}
                     </span>
-                  )}
+                  </span>
                 </div>
 
                 {/* Expandable reason */}
@@ -419,7 +416,7 @@ export const ModeratorActivityTimeline = memo(
       isLoading,
       error,
       refresh: refreshData,
-    } = useRecentActivities(page, limit, refreshInterval);
+    } = useRecentActivities(page, limit, false, refreshInterval);
 
     // Handle refresh button click with useCallback
     const handleRefresh = useCallback(() => {
@@ -579,7 +576,7 @@ export const ModeratorActivityTimeline = memo(
             aria-label="Moderasyon aktivite zaman çizelgesi"
           >
             {activities.map((activity: ModeratorActivity, idx: number) => (
-              <li key={activity.activityId}>
+              <li key={activity.id}>
                 <ActivityItem
                   activity={activity}
                   isLast={idx === activities.length - 1}

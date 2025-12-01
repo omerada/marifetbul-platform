@@ -30,7 +30,8 @@ import { UnifiedReviewModerationCard } from './UnifiedReviewModerationCard';
 import { useReviewModeration } from '@/hooks/business/moderation/useReviewModeration';
 import * as adminModerationApi from '@/lib/api/moderation';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import { ReviewResponse, UserRole } from '@/types/backend-aligned';
+import { UserRole } from '@/types/backend-aligned';
+import type { Review as ReviewResponse } from '@/types/business/review';
 
 // ============================================================================
 // TYPES
@@ -49,7 +50,7 @@ interface UnifiedReviewQueueProps {
 // ============================================================================
 
 export function UnifiedReviewQueue({
-  role = 'MODERATOR',
+  role = UserRole.MODERATOR,
   initialStatus = 'pending',
   showStats = true,
   enableBulkActions = true,
@@ -163,7 +164,8 @@ export function UnifiedReviewQueue({
     if (role !== 'ADMIN') return false;
 
     try {
-      await adminModerationApi.deleteReview(reviewId);
+      // Use reject instead of delete as backend doesn't expose delete endpoint
+      await adminModerationApi.rejectReview(reviewId);
       refetch();
       if (viewingReview?.id === reviewId) {
         setViewingReview(null);
@@ -179,7 +181,8 @@ export function UnifiedReviewQueue({
     if (role !== 'ADMIN') return false;
 
     try {
-      await adminModerationApi.resolveFlag(reviewId, 'Flag resolved by admin');
+      // Approve the review to resolve the flag
+      await adminModerationApi.approveReview(reviewId);
       refetch();
       return true;
     } catch (error) {
@@ -379,9 +382,9 @@ export function UnifiedReviewQueue({
               showFullDetails
               onApprove={handleApprove}
               onReject={handleReject}
-              onEscalate={role === 'moderator' ? handleEscalate : undefined}
-              onDelete={role === 'admin' ? handleDelete : undefined}
-              onResolveFlag={role === 'admin' ? handleResolveFlag : undefined}
+              onEscalate={role === 'MODERATOR' ? handleEscalate : undefined}
+              onDelete={role === 'ADMIN' ? handleDelete : undefined}
+              onResolveFlag={role === 'ADMIN' ? handleResolveFlag : undefined}
               onUpdated={() => {
                 setViewingReview(null);
                 refetch();

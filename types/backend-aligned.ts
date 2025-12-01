@@ -543,30 +543,46 @@ export interface RefreshTokenRequest {
  *
  * @see marifetbul-backend/src/main/java/com/marifetbul/api/domain/user/entity/UserRole.java
  */
-export type UserRole =
-  | 'FREELANCER' // Service provider
-  | 'EMPLOYER' // Service buyer
-  | 'ADMIN' // Full system access
-  | 'MODERATOR'; // Content moderation access
+export enum UserRole {
+  FREELANCER = 'FREELANCER', // Service provider
+  EMPLOYER = 'EMPLOYER', // Service buyer
+  ADMIN = 'ADMIN', // Full system access
+  MODERATOR = 'MODERATOR', // Content moderation access
+}
 
+/**
+ * User Status (matches UserStatus.java enum)
+ * Backend: com.marifetbul.api.domain.user.entity.UserStatus
+ */
+export type UserStatus =
+  | 'ACTIVE'
+  | 'INACTIVE'
+  | 'SUSPENDED'
+  | 'BANNED'
+  | 'DELETED';
+
+/**
+ * User Response (matches UserResponse.java EXACTLY)
+ * Backend DTO: com.marifetbul.api.domain.user.dto.UserResponse
+ */
 export interface UserResponse {
   id: string; // UUID
-  username: string;
   email: string;
+  username: string;
   firstName: string;
   lastName: string;
   fullName: string;
-  avatar?: string;
-  roles: UserRole[];
-  accountType: 'FREELANCER' | 'EMPLOYER' | 'BOTH';
-  isEmailVerified: boolean;
-  isProfileCompleted: boolean;
-  rating?: number;
-  reviewCount?: number;
-  totalOrders?: number;
-  memberSince: string;
-  createdAt: string;
-  updatedAt: string;
+  avatarUrl?: string;
+  iban?: string; // For manual payment workflow
+  role: UserRole;
+  status: UserStatus;
+  emailVerified: boolean;
+  phoneVerified: boolean;
+  createdAt: string; // LocalDateTime as ISO string
+  // Follow statistics (added for follow feature)
+  followerCount?: number;
+  followingCount?: number;
+  isFollowedByCurrentUser?: boolean;
 }
 
 // ================================================

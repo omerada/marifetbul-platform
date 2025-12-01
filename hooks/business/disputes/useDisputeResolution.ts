@@ -27,14 +27,19 @@ export function useDisputeResolution() {
 
     try {
       const result = await resolveDispute(disputeId, resolution);
-      logger.info('Dispute resolved', { disputeId, resolutionType: resolution.resolutionType,  });
+      logger.info('Dispute resolved', {
+        disputeId,
+        resolutionType: resolution.resolutionType,
+      });
       toast.success('İtiraz başarıyla çözümlendi');
       return result;
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'İtiraz çözümlenemedi';
       setError(errorMessage);
-      logger.error('Failed to resolve dispute', { error: err });
+      logger.error('Failed to resolve dispute', err as Error, {
+        hook: 'useDisputeResolution',
+      });
       toast.error(errorMessage);
       return null;
     } finally {

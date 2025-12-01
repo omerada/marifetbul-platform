@@ -10,14 +10,16 @@
  */
 
 import type { Order } from '../business/features/order';
-import type { Job } from '../business/features/marketplace';
-import type { ProposalResponse } from '../backend-aligned';
+import type { JobResponse, ProposalResponse } from '../backend-aligned';
 import type { EnhancedNotification } from '../domains/notification/notification.types';
 import type {
   FreelancerAnalytics,
   EmployerAnalytics,
 } from '../business/features/analytics';
 import type { Recommendation } from '../business/features/recommendations';
+
+// Type alias for backward compatibility
+type Job = JobResponse;
 
 // ============================================================================
 // COMMON DASHBOARD TYPES
@@ -284,23 +286,6 @@ export interface FreelancerDashboard {
       }>;
     };
   };
-  orders?: {
-    active: number;
-    completed: number;
-    pending: number;
-    totalRevenue: number;
-  };
-  packages?: {
-    active: number;
-    total: number;
-    views: number;
-    orders: number;
-  };
-  charts?: {
-    earningsChart?: ChartWidgetData;
-    ordersChart?: ChartWidgetData;
-    performanceChart?: ChartWidgetData;
-  };
 }
 
 // ==================== Employer Dashboard ====================
@@ -343,25 +328,11 @@ export interface EmployerDashboard {
   };
   recentActivities?: ActivityItem[];
   quickActions?: QuickAction[];
-  charts?: {
-    spending?: ChartWidgetData;
-    orders?: ChartWidgetData;
-  };
   period?: DashboardPeriod;
   cache?: CacheMetadata;
   analytics: EmployerAnalytics;
   recommendations: Recommendation[];
   notifications: EnhancedNotification[];
-  orders?: {
-    active: number;
-    completed: number;
-    cancelled: number;
-    totalSpent: number;
-  };
-  favorites?: {
-    packages: number;
-    sellers: number;
-  };
   messages?: {
     unread: number;
     activeConversations: number;
@@ -409,13 +380,7 @@ export interface EmployerDashboard {
     spending?: ChartWidgetData; // Alias for spendingChart
     orders?: ChartWidgetData; // Order trends chart
   };
-  recentActivities?: Array<{
-    id: string;
-    type: string;
-    description: string;
-    timestamp: string;
-    metadata?: Record<string, unknown>;
-  }>;
+  activities?: ActivityItem[];
 }
 
 // ==================== Admin Dashboard ====================

@@ -66,7 +66,7 @@ export function useModerationDashboard(
       // Fetch all data in parallel
       const [statsData, pendingData, activitiesData] = await Promise.all([
         moderationApi.getStats(),
-        moderationApi.getPendingItems(1, 10),
+        moderationApi.getPendingReviews(1, 10),
         moderationApi.getRecentActivities(1, 20),
       ]);
 
@@ -77,7 +77,10 @@ export function useModerationDashboard(
       const errorMessage =
         err instanceof Error ? err.message : 'Veri yüklenirken hata oluştu';
       setError(errorMessage);
-      logger.error('Moderation dashboard error:', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Moderation dashboard error:',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);

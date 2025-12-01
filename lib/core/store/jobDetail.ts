@@ -2,7 +2,10 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { JobDetail } from '@/types';
-import type { ProposalResponse as Proposal } from '@/types/backend-aligned';
+import type {
+  ProposalResponse as Proposal,
+  ProposalStatus,
+} from '@/types/backend-aligned';
 import { ProposalFormData } from '@/lib/core/validations/details';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
@@ -117,7 +120,10 @@ export const useJobDetailStore = create<JobDetailStore>()(
             throw new Error(data.error || 'İş ilanı yüklenemedi');
           }
         } catch (error) {
-          logger.error('Job detail fetch error', error instanceof Error ? error : new Error(String(error)));
+          logger.error(
+            'Job detail fetch error',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set((state) => {
             state.error =
               error instanceof Error ? error.message : 'İş ilanı yüklenemedi';
@@ -147,7 +153,10 @@ export const useJobDetailStore = create<JobDetailStore>()(
             throw new Error(data.error || 'Teklifler yüklenemedi');
           }
         } catch (error) {
-          logger.error('Proposals fetch error', error instanceof Error ? error : new Error(String(error)));
+          logger.error(
+            'Proposals fetch error',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set((state) => {
             state.error =
               error instanceof Error ? error.message : 'Teklifler yüklenemedi';
@@ -198,7 +207,10 @@ export const useJobDetailStore = create<JobDetailStore>()(
             throw new Error(data.error || 'Teklif gönderilemedi');
           }
         } catch (error) {
-          logger.error('Proposal submission error', error instanceof Error ? error : new Error(String(error)));
+          logger.error(
+            'Proposal submission error',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set((state) => {
             state.error =
               error instanceof Error ? error.message : 'Teklif gönderilemedi';
@@ -220,7 +232,7 @@ export const useJobDetailStore = create<JobDetailStore>()(
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ status, note }),
+            body: JSON.stringify({ status: status.toUpperCase(), note }),
           });
 
           if (!response.ok) {
@@ -239,7 +251,7 @@ export const useJobDetailStore = create<JobDetailStore>()(
               if (proposalIndex !== -1) {
                 state.proposals[proposalIndex] = {
                   ...state.proposals[proposalIndex],
-                  status,
+                  status: status.toUpperCase() as ProposalStatus,
                   updatedAt: data.data.updatedAt,
                 };
               }
@@ -248,7 +260,10 @@ export const useJobDetailStore = create<JobDetailStore>()(
             throw new Error(data.error || 'Teklif durumu güncellenemedi');
           }
         } catch (error) {
-          logger.error('Proposal status update error', error instanceof Error ? error : new Error(String(error)));
+          logger.error(
+            'Proposal status update error',
+            error instanceof Error ? error : new Error(String(error))
+          );
           set((state) => {
             state.error =
               error instanceof Error

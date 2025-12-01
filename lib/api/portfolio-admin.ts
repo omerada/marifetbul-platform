@@ -16,10 +16,10 @@ import { apiClient } from '@/lib/infrastructure/api/client';
 import { PORTFOLIO_ENDPOINTS } from './endpoints';
 import type {
   PortfolioResponse,
-  PageResponse,
   BulkActionResult,
   PortfolioStatistics,
-} from '@/types/business/features/portfolio';
+} from '@/types/portfolio';
+import type { PageResponse } from '@/types/backend-aligned';
 
 // ================================================
 // REQUEST TYPES
@@ -61,11 +61,9 @@ export const portfolioAdminApi = {
   ): Promise<PageResponse<PortfolioResponse>> {
     const response = await apiClient.get(
       PORTFOLIO_ENDPOINTS.ADMIN_PENDING_PORTFOLIOS,
-      {
-        params: { page, size, sortBy, sortDir },
-      }
+      { page: page.toString(), size: size.toString(), sortBy, sortDir }
     );
-    return response.data.data;
+    return (response as any).data.data;
   },
 
   /**
@@ -83,9 +81,9 @@ export const portfolioAdminApi = {
   ): Promise<PageResponse<PortfolioResponse>> {
     const response = await apiClient.get(
       PORTFOLIO_ENDPOINTS.ADMIN_PORTFOLIOS_BY_STATUS(status),
-      { params: { page, size } }
+      { page: page.toString(), size: size.toString() }
     );
-    return response.data.data;
+    return (response as any).data.data;
   },
 
   /**
@@ -98,7 +96,7 @@ export const portfolioAdminApi = {
     const response = await apiClient.post(
       PORTFOLIO_ENDPOINTS.ADMIN_APPROVE_PORTFOLIO(portfolioId)
     );
-    return response.data.data;
+    return (response as any).data.data;
   },
 
   /**
@@ -116,11 +114,11 @@ export const portfolioAdminApi = {
       PORTFOLIO_ENDPOINTS.ADMIN_REJECT_PORTFOLIO(portfolioId),
       request
     );
-    return response.data.data;
+    return (response as any).data.data;
   },
 
   /**
-   * Bulk approve portfolios
+   * Bulk action on portfolios
    *
    * @param portfolioIds List of portfolio IDs
    * @returns Bulk action result
@@ -132,7 +130,7 @@ export const portfolioAdminApi = {
       PORTFOLIO_ENDPOINTS.ADMIN_BULK_APPROVE_PORTFOLIOS,
       { portfolioIds }
     );
-    return response.data.data;
+    return (response as any).data.data;
   },
 
   /**
@@ -162,7 +160,7 @@ export const portfolioAdminApi = {
     const response = await apiClient.get(
       PORTFOLIO_ENDPOINTS.ADMIN_PORTFOLIO_STATISTICS
     );
-    return response.data.data;
+    return (response as any).data.data;
   },
 
   /**
@@ -185,16 +183,14 @@ export const portfolioAdminApi = {
     const response = await apiClient.get(
       PORTFOLIO_ENDPOINTS.ADMIN_SEARCH_PORTFOLIOS,
       {
-        params: {
-          searchQuery,
-          userId,
-          status,
-          page,
-          size,
-        },
+        searchQuery: searchQuery || '',
+        userId: userId || '',
+        status: status || '',
+        page: page.toString(),
+        size: size.toString(),
       }
     );
-    return response.data.data;
+    return (response as any).data.data;
   },
 };
 

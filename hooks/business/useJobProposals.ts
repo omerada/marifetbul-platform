@@ -219,7 +219,10 @@ export function useJobProposals({
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to fetch proposal data';
       setError(errorMessage);
-      logger.error('Failed to fetch job proposal data', { error: err });
+      logger.error('Failed to fetch job proposal data', err as Error, {
+        hook: 'useJobProposals',
+        operation: 'fetchData',
+      });
     } finally {
       setLoading(false);
     }

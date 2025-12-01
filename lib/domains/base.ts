@@ -83,10 +83,12 @@ export abstract class BaseService {
         };
       } catch (error) {
         lastError = error;
-        logger.warn(
-          `Operation ${operationName} failed (attempt ${attempt})`,
-          error
-        );
+        logger.warn(`Operation ${operationName} failed (attempt ${attempt})`, {
+          domain: 'base',
+          operationName,
+          attempt,
+          error: error as Error,
+        });
 
         if (attempt < (this.config.retryAttempts || 3)) {
           await this.delay(this.config.retryDelay || 1000);
@@ -165,11 +167,12 @@ export abstract class BaseService {
 
   protected logError(operation: string, error: unknown): void {
     logger.error(
-      `[${this.constructor.name}] ${operation} failed`, error instanceof Error ? error : new Error(String(error)));
+      `[${this.constructor.name}] ${operation} failed`,
+      error instanceof Error ? error : new Error(String(error))
+    );
   }
 
-  protected logInfo(operation: string, message: string): void {
-  }
+  protected logInfo(operation: string, message: string): void {}
 
   protected validateRequired(
     data: Record<string, unknown>,

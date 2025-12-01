@@ -98,7 +98,10 @@ export class UnifiedErrorBoundary extends Component<
     // Log error to console in development
     if (process.env.NODE_ENV === 'development') {
       console.group('🚨 Error Boundary Caught Error');
-      logger.error('Error:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Error:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       logger.error('Error Info:', errorInfo);
       logger.error('Event ID:', eventId);
       console.groupEnd();
@@ -164,7 +167,7 @@ export class UnifiedErrorBoundary extends Component<
         body: JSON.stringify(errorData),
       });
     } catch (reportingError) {
-      logger.error('Failed to report error:', reportingError);
+      logger.error('Failed to report error:', reportingError as Error);
     }
   };
 

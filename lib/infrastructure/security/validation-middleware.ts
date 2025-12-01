@@ -332,9 +332,9 @@ export function withValidation(
         return NextResponse.json(
           {
             error: 'Validation Error',
-            message: error.message,
+            message: (error as any).message,
             code: 'VALIDATION_FAILED',
-            errors: error.errors,
+            errors: (error as any).errors,
           },
           { status: statusCode }
         );

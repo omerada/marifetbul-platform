@@ -140,7 +140,9 @@ export function useMessagePagination(
    */
   const load = useCallback(async () => {
     if (isLoadingRef.current) {
-      logger.warn('useMessagePagination', 'Load already in progress');
+      logger.warn('Load already in progress', {
+        hook: 'useMessagePagination',
+      });
       return;
     }
 
@@ -149,14 +151,16 @@ export function useMessagePagination(
     setError(null);
 
     try {
-      logger.debug('useMessagePagination', {
+      logger.debug('Loading initial messages', {
+        hook: 'useMessagePagination',
         conversationId,
         size: initialSize,
       });
 
       const response = await getMessages(conversationId, 0, initialSize);
 
-      logger.info('useMessagePagination', {
+      logger.info('Initial messages loaded', {
+        hook: 'useMessagePagination',
         conversationId,
         count: response.content.length,
         totalElements: response.totalElements,
@@ -203,12 +207,16 @@ export function useMessagePagination(
    */
   const loadMore = useCallback(async () => {
     if (isLoadingRef.current) {
-      logger.warn('useMessagePagination', 'Load more already in progress');
+      logger.warn('Load more already in progress', {
+        hook: 'useMessagePagination',
+      });
       return;
     }
 
     if (!pagination.hasMore) {
-      logger.debug('useMessagePagination', 'No more messages to load');
+      logger.debug('No more messages to load', {
+        hook: 'useMessagePagination',
+      });
       return;
     }
 
@@ -219,7 +227,8 @@ export function useMessagePagination(
     try {
       const nextPage = pagination.page + 1;
 
-      logger.debug('useMessagePagination', {
+      logger.debug('Loading more messages', {
+        hook: 'useMessagePagination',
         conversationId,
         page: nextPage,
         size: pagination.size,
@@ -231,7 +240,8 @@ export function useMessagePagination(
         pagination.size
       );
 
-      logger.info('useMessagePagination', {
+      logger.info('More messages loaded', {
+        hook: 'useMessagePagination',
         conversationId,
         page: nextPage,
         count: response.content.length,

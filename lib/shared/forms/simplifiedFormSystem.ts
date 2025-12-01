@@ -127,7 +127,9 @@ export function useForm(config: FormConfig) {
         await config.onSubmit(state.values);
       } catch (error) {
         logger.error(
-          'Form submission error', error instanceof Error ? error : new Error(String(error)));
+          'Form submission error',
+          error instanceof Error ? error : new Error(String(error))
+        );
       } finally {
         setState((prev) => ({ ...prev, isSubmitting: false }));
       }
@@ -284,10 +286,11 @@ export const formHelpers = {
     try {
       localStorage.setItem(`form_${formId}`, JSON.stringify(data));
     } catch (error) {
-      logger.warn(
-        'Form data could not be saved to localStorage',
-        error
-      );
+      logger.warn('Form data could not be saved to localStorage', {
+        module: 'forms',
+        formId,
+        error: error as Error,
+      });
     }
   },
 
@@ -297,10 +300,11 @@ export const formHelpers = {
       const saved = localStorage.getItem(`form_${formId}`);
       return saved ? JSON.parse(saved) : null;
     } catch (error) {
-      logger.warn(
-        'Form data could not be loaded from localStorage',
-        error
-      );
+      logger.warn('Form data could not be loaded from localStorage', {
+        module: 'forms',
+        formId,
+        error: error as Error,
+      });
       return null;
     }
   },
@@ -310,10 +314,11 @@ export const formHelpers = {
     try {
       localStorage.removeItem(`form_${formId}`);
     } catch (error) {
-      logger.warn(
-        'Form data could not be cleared from localStorage',
-        error
-      );
+      logger.warn('Form data could not be cleared from localStorage', {
+        module: 'forms',
+        formId,
+        error: error as Error,
+      });
     }
   },
 };

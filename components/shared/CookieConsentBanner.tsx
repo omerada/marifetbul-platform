@@ -106,7 +106,10 @@ function saveConsent(consent: CookieConsent): void {
       timestamp: new Date().toISOString(),
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    logger.info('[CookieConsent] Consent saved', consent);
+    logger.info('[CookieConsent] Consent saved', {
+      component: 'CookieConsentBanner',
+      consent,
+    });
   } catch (error) {
     logger.error('[CookieConsent] Failed to save consent', error as Error);
   }
@@ -214,7 +217,10 @@ export function CookieConsentBanner({
       onConsentChange(consent);
     }
 
-    logger.info('[CookieConsent] User saved custom preferences', consent);
+    logger.info('[CookieConsent] User saved custom preferences', {
+      component: 'CookieConsentBanner',
+      consent,
+    });
   };
 
   /**

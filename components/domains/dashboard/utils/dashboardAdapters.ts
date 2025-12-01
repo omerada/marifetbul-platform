@@ -27,7 +27,7 @@ import type {
   QuickAction,
 } from '../types/dashboard.types';
 
-import type { Job } from '@/types/core/jobs';
+import type { JobResponse } from '@/types/backend-aligned';
 
 import {
   type AdminDashboardApiResponse,
@@ -338,6 +338,9 @@ export function adaptFreelancerDashboard(
       generatedAt: apiResponse.generatedAt,
       cacheKey: `seller-dashboard-${apiResponse.periodDays}`,
     },
+    analytics: {} as any, // Not available in current API
+    recommendations: [], // Not available
+    notifications: [], // Not available
   };
 }
 
@@ -536,19 +539,23 @@ export function adaptEmployerDashboard(
     overview: {
       totalSpent: apiResponse.orderSummary?.totalSpent ?? 0,
       jobsPosted: 0, // Not available in current API
-      activeJobs: apiResponse.orderSummary?.activeOrders ?? 0,
+      activeJobs: Array.isArray(apiResponse.orderSummary?.activeOrders)
+        ? apiResponse.orderSummary.activeOrders.length
+        : (apiResponse.orderSummary?.inProgressOrders ?? 0),
       completedJobs: apiResponse.orderSummary?.completedOrders ?? 0,
       avgTimeToHire: 0, // Not available
       freelancerRetention: 0, // Not available
     },
     stats: {
-      activeJobs: apiResponse.orderSummary?.activeOrders ?? 0,
+      activeJobs: Array.isArray(apiResponse.orderSummary?.activeOrders)
+        ? apiResponse.orderSummary.activeOrders.length
+        : (apiResponse.orderSummary?.inProgressOrders ?? 0),
       totalSpent: apiResponse.orderSummary?.totalSpent ?? 0,
       savedFreelancers: favorites?.sellers ?? 0,
       completedJobs: apiResponse.orderSummary?.completedOrders ?? 0,
     },
-    activeJobs: [] as Job[], // Jobs not available in buyer dashboard
-    recentJobs: [] as Job[], // Jobs not available in buyer dashboard
+    activeJobs: [] as JobResponse[], // Jobs not available in buyer dashboard
+    recentJobs: [] as JobResponse[], // Jobs not available in buyer dashboard
     spending,
     orders,
     favorites,
@@ -557,7 +564,20 @@ export function adaptEmployerDashboard(
     analytics: {} as any, // Not available in current API
     recommendations: [], // Not available
     notifications: [], // Not available
-    recentOrder: apiResponse.orderSummary.recentOrders?.[0] || null,
+    recentOrder: apiResponse.orderSummary.recentOrders?.[0]
+      ? {
+          id: apiResponse.orderSummary.recentOrders[0].orderId,
+          title: apiResponse.orderSummary.recentOrders[0].packageTitle,
+          packageTitle: apiResponse.orderSummary.recentOrders[0].packageTitle,
+          seller: apiResponse.orderSummary.recentOrders[0].sellerName,
+          sellerName: apiResponse.orderSummary.recentOrders[0].sellerName,
+          amount: apiResponse.orderSummary.recentOrders[0].amount,
+          status: apiResponse.orderSummary.recentOrders[0].status,
+          orderNumber: apiResponse.orderSummary.recentOrders[0].orderId,
+          createdAt: apiResponse.orderSummary.recentOrders[0].orderDate,
+          lastUpdate: apiResponse.orderSummary.recentOrders[0].orderDate,
+        }
+      : undefined,
     charts: {
       spending: {
         id: 'spending',

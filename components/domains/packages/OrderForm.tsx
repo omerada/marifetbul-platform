@@ -17,14 +17,14 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 const orderSchema = z.object({
   requirements: z
     .string()
-    .min(20, 'Gereksinimler en az 20 karakter olmalýdýr')
+    .min(20, 'Gereksinimler en az 20 karakter olmalï¿½dï¿½r')
     .max(1000, 'Gereksinimler en fazla 1000 karakter olabilir'),
   deadline: z.string().optional(),
   additionalServices: z.array(z.string()).optional(),
   contactInfo: z
     .string()
-    .min(5, 'Ýletiþim bilgisi gereklidir')
-    .max(100, 'Ýletiþim bilgisi çok uzun'),
+    .min(5, 'ï¿½letiï¿½im bilgisi gereklidir')
+    .max(100, 'ï¿½letiï¿½im bilgisi ï¿½ok uzun'),
   paymentMode: z.nativeEnum(PaymentMode),
 });
 
@@ -40,7 +40,7 @@ const additionalServiceOptions = [
   { id: 'express', name: 'Ekspres Teslimat (24 saat)', price: 200 },
   { id: 'extra-revision', name: 'Ekstra Revizyon (+3 kez)', price: 150 },
   { id: 'source-files', name: 'Kaynak Dosyalar', price: 100 },
-  { id: 'commercial-license', name: 'Ticari Kullaným Lisansý', price: 300 },
+  { id: 'commercial-license', name: 'Ticari Kullanï¿½m Lisansï¿½', price: 300 },
 ];
 
 export function OrderForm({
@@ -50,7 +50,9 @@ export function OrderForm({
 }: OrderFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
-  const [paymentMode, setPaymentMode] = useState<PaymentMode>(PaymentMode.ESCROW_PROTECTED);
+  const [paymentMode, setPaymentMode] = useState<PaymentMode>(
+    PaymentMode.ESCROW_PROTECTED
+  );
   const [sellerHasIban, setSellerHasIban] = useState(false);
   const [isLoadingPaymentStatus, setIsLoadingPaymentStatus] = useState(true);
 
@@ -62,10 +64,15 @@ export function OrderForm({
       try {
         const status = await getSellerPaymentStatus(servicePackage.seller.id);
         setSellerHasIban(status.hasValidIban);
-        logger.debug('Seller payment status fetched:', status);
+        logger.debug('Seller payment status fetched', {
+          component: 'OrderForm',
+          status,
+        });
       } catch (error) {
         logger.error(
-          'Failed to fetch seller payment status:', error instanceof Error ? error : new Error(String(error)));
+          'Failed to fetch seller payment status:',
+          error instanceof Error ? error : new Error(String(error))
+        );
         // Default to false if fetch fails
         setSellerHasIban(false);
       } finally {
@@ -128,7 +135,9 @@ export function OrderForm({
       onSubmit(data);
     } catch (error) {
       logger.error(
-        'Error submitting order:', error instanceof Error ? error : new Error(String(error)));
+        'Error submitting order:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -155,7 +164,7 @@ export function OrderForm({
           {...register('requirements')}
           rows={5}
           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          placeholder="Projeniz hakkýnda detaylý bilgi verin, beklentilerinizi açýklayýn..."
+          placeholder="Projeniz hakkï¿½nda detaylï¿½ bilgi verin, beklentilerinizi aï¿½ï¿½klayï¿½n..."
         />
         <div className="mt-1 flex justify-between text-sm">
           {errors.requirements && (
@@ -170,7 +179,7 @@ export function OrderForm({
       {/* Deadline */}
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-700">
-          Özel Teslim Tarihi
+          ï¿½zel Teslim Tarihi
         </label>
         <div className="relative">
           <Calendar className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
@@ -188,14 +197,14 @@ export function OrderForm({
           />
         </div>
         <p className="mt-1 text-xs text-gray-500">
-          Normal teslimat süresi: {servicePackage.deliveryTime} gün
+          Normal teslimat sï¿½resi: {servicePackage.deliveryTime} gï¿½n
         </p>
       </div>
 
       {/* Contact Info */}
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-700">
-          Ýletiþim Bilgisi *
+          ï¿½letiï¿½im Bilgisi *
         </label>
         <Input
           {...register('contactInfo')}
@@ -203,7 +212,7 @@ export function OrderForm({
           error={errors.contactInfo?.message}
         />
         <p className="mt-1 text-xs text-gray-500">
-          Freelancer&apos;ýn sizinle iletiþim kurmasý için
+          Freelancer&apos;ï¿½n sizinle iletiï¿½im kurmasï¿½ iï¿½in
         </p>
       </div>
 
@@ -248,7 +257,7 @@ export function OrderForm({
 
       {/* Order Summary */}
       <Card className="border-gray-200 bg-gray-50 p-4">
-        <h4 className="mb-3 font-medium text-gray-900">Sipariþ Özeti</h4>
+        <h4 className="mb-3 font-medium text-gray-900">Sipariï¿½ ï¿½zeti</h4>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-gray-600">Hizmet Bedeli:</span>
@@ -305,7 +314,7 @@ export function OrderForm({
       {/* Payment Mode Selector */}
       <PaymentModeSelector
         value={paymentMode}
-        onChange={(mode) => {
+        onChange={(mode: PaymentMode) => {
           setPaymentMode(mode);
           setValue('paymentMode', mode);
         }}
@@ -319,14 +328,14 @@ export function OrderForm({
       {/* Terms */}
       <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
         <div className="text-sm text-blue-800">
-          <p className="mb-2 font-medium">Önemli Bilgiler:</p>
+          <p className="mb-2 font-medium">ï¿½nemli Bilgiler:</p>
           <ul className="space-y-1 text-xs">
             <li>
-              • Ödeme, proje tamamlandýktan sonra freelancer&apos;a aktarýlýr
+              ï¿½ ï¿½deme, proje tamamlandï¿½ktan sonra freelancer&apos;a aktarï¿½lï¿½r
             </li>
-            <li>• 7 gün para iade garantisi mevcuttur</li>
-            <li>• Tüm iletiþim platform üzerinden yapýlmalýdýr</li>
-            <li>• Proje iptal edilirse ücret iade edilir</li>
+            <li>ï¿½ 7 gï¿½n para iade garantisi mevcuttur</li>
+            <li>ï¿½ Tï¿½m iletiï¿½im platform ï¿½zerinden yapï¿½lmalï¿½dï¿½r</li>
+            <li>ï¿½ Proje iptal edilirse ï¿½cret iade edilir</li>
           </ul>
         </div>
       </div>
@@ -337,12 +346,12 @@ export function OrderForm({
           {isSubmitting ? (
             <>
               <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-              Ýþleniyor...
+              ï¿½ï¿½leniyor...
             </>
           ) : (
             <>
               <ShoppingCart className="mr-2 h-4 w-4" />
-              Ödemeye Geç (?{grandTotal.toLocaleString('tr-TR')})
+              ï¿½demeye Geï¿½ (?{grandTotal.toLocaleString('tr-TR')})
             </>
           )}
         </Button>
@@ -352,7 +361,7 @@ export function OrderForm({
           onClick={onCancel}
           disabled={isSubmitting}
         >
-          Ýptal
+          ï¿½ptal
         </Button>
       </div>
     </form>

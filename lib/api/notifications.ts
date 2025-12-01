@@ -256,10 +256,9 @@ export async function getUnreadNotifications(
 export async function getRecentNotifications(
   limit: number = 5
 ): Promise<NotificationResponse[]> {
-  logger.debug(
-    'notifications.api',
-    `Fetching recent notifications: limit=${limit}`
-  );
+  logger.debug(`Fetching recent notifications: limit=${limit}`, {
+    component: 'notifications.api',
+  });
 
   const response = await apiClient.get<NotificationResponse[]>(
     `/v1/notifications/recent?limit=${limit}`
@@ -312,7 +311,9 @@ export async function getNotificationsByType(
  * @endpoint GET /api/v1/notifications/count
  */
 export async function getNotificationCounts(): Promise<NotificationCountResponse> {
-  logger.debug('notifications.api', 'Fetching notification counts');
+  logger.debug('Fetching notification counts', {
+    component: 'notifications.api',
+  });
 
   const response = await apiClient.get<NotificationCountResponse>(
     '/v1/notifications/count'
@@ -327,7 +328,7 @@ export async function getNotificationCounts(): Promise<NotificationCountResponse
  * @endpoint GET /api/v1/notifications/unread-count
  */
 export async function getUnreadCount(): Promise<number> {
-  logger.debug('notifications.api', 'Fetching unread count');
+  logger.debug('Fetching unread count', { component: 'notifications.api' });
 
   const response = await apiClient.get<number>(
     '/v1/notifications/unread-count'
@@ -342,7 +343,9 @@ export async function getUnreadCount(): Promise<number> {
  * @endpoint GET /api/v1/notifications/has-unread
  */
 export async function hasUnreadNotifications(): Promise<boolean> {
-  logger.debug('notifications.api', 'Checking has unread notifications');
+  logger.debug('Checking has unread notifications', {
+    component: 'notifications.api',
+  });
 
   const response = await apiClient.get<boolean>('/v1/notifications/has-unread');
 
@@ -356,10 +359,9 @@ export async function hasUnreadNotifications(): Promise<boolean> {
  * @param notificationId - Notification UUID
  */
 export async function markAsRead(notificationId: string): Promise<void> {
-  logger.info(
-    'notifications.api',
-    `Marking notification as read: ${notificationId}`
-  );
+  logger.info(`Marking notification as read: ${notificationId}`, {
+    component: 'notifications.api',
+  });
 
   await apiClient.put(`/v1/notifications/${notificationId}/read`);
 }
@@ -371,10 +373,9 @@ export async function markAsRead(notificationId: string): Promise<void> {
  * @param notificationId - Notification UUID
  */
 export async function markAsUnread(notificationId: string): Promise<void> {
-  logger.info(
-    'notifications.api',
-    `Marking notification as unread: ${notificationId}`
-  );
+  logger.info(`Marking notification as unread: ${notificationId}`, {
+    component: 'notifications.api',
+  });
 
   await apiClient.put(`/v1/notifications/${notificationId}/unread`);
 }
@@ -386,7 +387,9 @@ export async function markAsUnread(notificationId: string): Promise<void> {
  * @returns Number of notifications marked as read
  */
 export async function markAllAsRead(): Promise<number> {
-  logger.info('notifications.api', 'Marking all notifications as read');
+  logger.info('Marking all notifications as read', {
+    component: 'notifications.api',
+  });
 
   const response = await apiClient.put<number>(
     '/v1/notifications/mark-all-read'
@@ -405,10 +408,9 @@ export async function markAllAsRead(): Promise<number> {
 export async function markAllAsReadByType(
   type: NotificationType
 ): Promise<number> {
-  logger.info(
-    'notifications.api',
-    `Marking all notifications of type ${type} as read`
-  );
+  logger.info(`Marking all notifications of type ${type} as read`, {
+    component: 'notifications.api',
+  });
 
   const response = await apiClient.put<number>(
     `/v1/notifications/mark-all-read/type/${type}`
@@ -438,10 +440,9 @@ export async function deleteNotification(
 export async function createNotification(
   request: CreateNotificationRequest
 ): Promise<NotificationResponse> {
-  logger.info(
-    'notifications.api',
-    `Creating notification for user: ${request.userId}`
-  );
+  logger.info(`Creating notification for user: ${request.userId}`, {
+    component: 'notifications.api',
+  });
 
   const response = await apiClient.post<NotificationResponse>(
     '/v1/notifications',
@@ -459,7 +460,9 @@ export async function createNotification(
  * @endpoint GET /api/v1/notifications/preferences
  */
 export async function getNotificationPreferences(): Promise<NotificationPreferencesResponse> {
-  logger.debug('notifications.api', 'Fetching notification preferences');
+  logger.debug('Fetching notification preferences', {
+    component: 'notifications.api',
+  });
 
   const response = await apiClient.get<NotificationPreferencesResponse>(
     '/v1/notifications/preferences'
@@ -477,7 +480,9 @@ export async function getNotificationPreferences(): Promise<NotificationPreferen
 export async function updateNotificationPreferences(
   request: UpdateNotificationPreferencesRequest
 ): Promise<NotificationPreferencesResponse> {
-  logger.info('notifications.api', 'Updating notification preferences');
+  logger.info('Updating notification preferences', {
+    component: 'notifications.api',
+  });
 
   const response = await apiClient.put<NotificationPreferencesResponse>(
     '/v1/notifications/preferences',
@@ -493,10 +498,9 @@ export async function updateNotificationPreferences(
  * @endpoint POST /api/v1/notifications/preferences/reset
  */
 export async function resetNotificationPreferences(): Promise<NotificationPreferencesResponse> {
-  logger.info(
-    'notifications.api',
-    'Resetting notification preferences to defaults'
-  );
+  logger.info('Resetting notification preferences to defaults', {
+    component: 'notifications.api',
+  });
 
   const response = await apiClient.post<NotificationPreferencesResponse>(
     '/v1/notifications/preferences/reset'
@@ -555,10 +559,9 @@ export async function getNotificationThread(
 export async function expandGroupedNotification(
   notificationId: string
 ): Promise<NotificationResponse[]> {
-  logger.debug(
-    'notifications.api',
-    `Expanding grouped notification: ${notificationId}`
-  );
+  logger.debug(`Expanding grouped notification: ${notificationId}`, {
+    component: 'notifications.api',
+  });
 
   const response = await apiClient.get<NotificationResponse[]>(
     `/v1/notifications/${notificationId}/expand`
@@ -576,10 +579,9 @@ export async function expandGroupedNotification(
 export async function groupNotifications(
   lookbackMinutes: number = 60
 ): Promise<void> {
-  logger.info(
-    'notifications.api',
-    `Grouping notifications (${lookbackMinutes} min)`
-  );
+  logger.info(`Grouping notifications (${lookbackMinutes} min)`, {
+    component: 'notifications.api',
+  });
 
   await apiClient.post(
     `/v1/notifications/group?lookbackMinutes=${lookbackMinutes}`

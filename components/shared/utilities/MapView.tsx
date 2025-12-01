@@ -2,7 +2,7 @@
 
 /**
  * Map View Component
- * Harita görünümü bileþeni
+ * Harita gï¿½rï¿½nï¿½mï¿½ bileï¿½eni
  */
 
 'use client';
@@ -89,14 +89,17 @@ export const MapView: React.FC<MapViewProps> = ({
   // Production note: This component requires a real map library (Google Maps, Mapbox GL JS, or Leaflet).
   // Until integrated, the component renders a placeholder with controls. No mock data is used.
   const fitToCoordinates = useCallback((coordinates: unknown) => {
-    logger.debug(
-      'Fitting to coordinates (awaiting map library integration):',
-      coordinates
-    );
+    logger.debug('Fitting to coordinates (awaiting map library integration):', {
+      component: 'MapView',
+      coordinates,
+    });
   }, []);
 
   const setBounds = useCallback((bounds: unknown) => {
-    logger.debug('Setting bounds (awaiting map library integration):', bounds);
+    logger.debug('Setting bounds (awaiting map library integration):', {
+      component: 'MapView',
+      bounds,
+    });
   }, []);
 
   // Handle marker click
@@ -186,7 +189,10 @@ export const MapView: React.FC<MapViewProps> = ({
         setMapZoom(15);
       }
     } catch (error) {
-      logger.error('Failed to get current location:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to get current location:',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }, [getCurrentPosition, unifiedLocation.currentPosition]);
 
@@ -272,7 +278,7 @@ export const MapView: React.FC<MapViewProps> = ({
               const x = e.clientX - rect.left;
               const y = e.clientY - rect.top;
 
-              // Approximate coordinates conversion — real map library will handle projection accurately.
+              // Approximate coordinates conversion ï¿½ real map library will handle projection accurately.
               const lat =
                 mapCenter.lat +
                 (0.5 - y / rect.height) * 0.01 * Math.pow(2, 15 - mapZoom);
@@ -374,7 +380,7 @@ export const MapView: React.FC<MapViewProps> = ({
                 setMapLayer(mapLayer === 'roadmap' ? 'satellite' : 'roadmap')
               }
               className="h-10 w-10 p-0"
-              title="Katman deðiþtir"
+              title="Katman deï¿½iï¿½tir"
             >
               <Layers className="h-4 w-4" />
             </Button>
@@ -406,7 +412,7 @@ export const MapView: React.FC<MapViewProps> = ({
             size="sm"
             onClick={handleResetView}
             className="h-10 w-10 p-0"
-            title="Görünümü sýfýrla"
+            title="Gï¿½rï¿½nï¿½mï¿½ sï¿½fï¿½rla"
           >
             <RotateCcw className="h-4 w-4" />
           </Button>
@@ -450,7 +456,7 @@ export const MapView: React.FC<MapViewProps> = ({
                 onClick={() => setSelectedMarker(null)}
                 className="h-6 w-6 flex-shrink-0 p-0"
               >
-                ×
+                ï¿½
               </Button>
             </div>
           </Card>

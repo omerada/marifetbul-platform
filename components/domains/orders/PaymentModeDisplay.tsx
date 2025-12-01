@@ -115,7 +115,7 @@ const getPaymentStatusInfo = (
   sellerConfirmed?: boolean
 ): {
   label: string;
-  variant: 'success' | 'warning' | 'error' | 'info' | 'default';
+  variant: 'success' | 'warning' | 'destructive' | 'secondary' | 'default';
   icon: React.ElementType;
 } => {
   if (orderStatus === 'PENDING_PAYMENT') {
@@ -161,7 +161,7 @@ const getPaymentStatusInfo = (
   if (orderStatus === 'CANCELLED') {
     return {
       label: 'İptal Edildi',
-      variant: 'error',
+      variant: 'destructive',
       icon: AlertCircle,
     };
   }
@@ -252,12 +252,12 @@ export const PaymentModeDisplay: React.FC<PaymentModeDisplayProps> = ({
       <div className="space-y-3">
         {/* Escrow Payment Info */}
         {paymentMode === 'ESCROW_PROTECTED' && (
-          <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
+          <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
             <div className="flex items-start gap-2">
-              <CreditCard className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <CreditCard className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600" />
               <div className="text-sm text-blue-900">
-                <p className="font-medium mb-1">Platform Güvenceli Ödeme</p>
-                <ul className="list-disc list-inside space-y-1 text-blue-800 text-xs">
+                <p className="mb-1 font-medium">Platform Güvenceli Ödeme</p>
+                <ul className="list-inside list-disc space-y-1 text-xs text-blue-800">
                   <li>Ödeme iyzico üzerinden güvenli şekilde alındı</li>
                   <li>Tutar platform escrow hesabında tutuluyor</li>
                   <li>Sipariş tamamlandığında satıcıya aktarılacak</li>
@@ -272,7 +272,7 @@ export const PaymentModeDisplay: React.FC<PaymentModeDisplayProps> = ({
         {paymentMode === 'MANUAL_IBAN' && (
           <div className="space-y-3">
             {/* Confirmation Status */}
-            <div className="rounded-lg bg-gray-50 border border-gray-200 p-4">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
               <p className="mb-3 text-sm font-medium text-gray-700">
                 Onay Durumu:
               </p>
@@ -343,7 +343,7 @@ export const PaymentModeDisplay: React.FC<PaymentModeDisplayProps> = ({
 
             {/* Payment Proof */}
             {paymentProofUrl && (
-              <div className="rounded-lg bg-green-50 border border-green-200 p-4">
+              <div className="rounded-lg border border-green-200 bg-green-50 p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Check className="h-5 w-5 text-green-600" />
@@ -362,7 +362,7 @@ export const PaymentModeDisplay: React.FC<PaymentModeDisplayProps> = ({
                         setShowProofModal(true);
                         onViewProof?.();
                       }}
-                      className="inline-flex items-center gap-1 rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                      className="inline-flex items-center gap-1 rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-none"
                     >
                       <Eye className="h-3 w-3" />
                       Görüntüle
@@ -370,7 +370,7 @@ export const PaymentModeDisplay: React.FC<PaymentModeDisplayProps> = ({
                     <a
                       href={paymentProofUrl}
                       download
-                      className="inline-flex items-center gap-1 rounded-lg border border-green-600 bg-white px-3 py-1.5 text-xs font-medium text-green-600 transition-colors hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                      className="inline-flex items-center gap-1 rounded-lg border border-green-600 bg-white px-3 py-1.5 text-xs font-medium text-green-600 transition-colors hover:bg-green-50 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-none"
                     >
                       <Download className="h-3 w-3" />
                       İndir
@@ -382,12 +382,12 @@ export const PaymentModeDisplay: React.FC<PaymentModeDisplayProps> = ({
 
             {/* No Proof Yet */}
             {!paymentProofUrl && orderStatus === 'PENDING_PAYMENT' && (
-              <div className="rounded-lg bg-amber-50 border border-amber-200 p-4">
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" />
                   <div className="text-sm text-amber-900">
-                    <p className="font-medium mb-1">Ödeme Kanıtı Bekleniyor</p>
-                    <p className="text-amber-800 text-xs">
+                    <p className="mb-1 font-medium">Ödeme Kanıtı Bekleniyor</p>
+                    <p className="text-xs text-amber-800">
                       {userRole === 'buyer'
                         ? 'Ödeme yaptıktan sonra dekontunuzu yükleyiniz.'
                         : 'Alıcının ödeme kanıtı yüklemesi bekleniyor.'}
@@ -433,7 +433,7 @@ export const PaymentModeDisplay: React.FC<PaymentModeDisplayProps> = ({
                 </h3>
                 <button
                   onClick={() => setShowProofModal(false)}
-                  className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 >
                   <svg
                     className="h-5 w-5"
@@ -469,7 +469,7 @@ export const PaymentModeDisplay: React.FC<PaymentModeDisplayProps> = ({
                   <a
                     href={paymentProofUrl}
                     download
-                    className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
                   >
                     <Download className="h-4 w-4" />
                     İndir

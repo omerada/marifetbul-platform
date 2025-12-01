@@ -51,11 +51,10 @@ export class PortfolioErrorBoundary extends Component<
 
   override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error to console
-    logger.error(
-      'Portfolio Error Boundary caught an error:',
-      error,
-      errorInfo
-    );
+    logger.error('Portfolio Error Boundary caught an error:', error, {
+      component: 'PortfolioErrorBoundary',
+      errorInfo,
+    });
 
     // Call custom error handler if provided
     if (this.props.onError) {
@@ -212,7 +211,7 @@ export class CompactErrorBoundary extends Component<
     logger.error(
       `Error in ${this.props.componentName || 'component'}:`,
       error,
-      errorInfo
+      { component: 'PortfolioErrorBoundary', errorInfo }
     );
   }
 

@@ -84,7 +84,10 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
         const isSeller = servicePackage?.freelancer?.id === user.id;
         setCanReview(isAuthenticated && !isSeller);
       } catch (error) {
-        logger.debug('Error checking review eligibility:', error);
+        logger.debug('Error checking review eligibility', {
+          component: 'ServiceDetail',
+          error: error as Error,
+        });
         setCanReview(false);
       }
     }
@@ -152,7 +155,10 @@ export function ServiceDetail({ packageId, className }: ServiceDetailProps) {
           url: window.location.href,
         });
       } catch (err) {
-        logger.debug('Error sharing:', err);
+        logger.debug('Error sharing', {
+          component: 'ServiceDetail',
+          error: err as Error,
+        });
       }
     } else {
       navigator.clipboard.writeText(window.location.href);

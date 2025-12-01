@@ -77,7 +77,11 @@ export async function fetchPackageAnalytics(
 
     return response;
   } catch (error) {
-    logger.error('Failed to fetch package analytics', { error, days });
+    logger.error('Failed to fetch package analytics', error as Error, {
+      api: 'PackageAnalytics',
+      operation: 'fetch',
+      days,
+    });
     throw error;
   }
 }
@@ -112,11 +116,15 @@ export async function fetchPackageAnalyticsByDateRange(
 
     return response;
   } catch (error) {
-    logger.error('Failed to fetch package analytics by date range', {
-      error,
-      startDate,
-      endDate,
-    });
+    logger.error(
+      'Failed to fetch package analytics by date range',
+      error as Error,
+      {
+        api: 'PackageAnalytics',
+        startDate,
+        endDate,
+      }
+    );
     throw error;
   }
 }

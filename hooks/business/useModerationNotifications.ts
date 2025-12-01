@@ -154,10 +154,14 @@ export function useModerationNotifications(
     autoConnect: enabled,
     enableStoreIntegration: true,
     onConnect: () => {
-      logger.info('useModerationNotifications', 'WebSocket connected');
+      logger.info('WebSocket connected', {
+        component: 'useModerationNotifications',
+      });
     },
     onDisconnect: () => {
-      logger.info('useModerationNotifications', 'WebSocket disconnected');
+      logger.info('WebSocket disconnected', {
+        component: 'useModerationNotifications',
+      });
     },
     onError: (error) => {
       logger.error('useModerationNotifications: WebSocket error', undefined, {
@@ -449,20 +453,18 @@ export function useModerationNotifications(
   useEffect(() => {
     if (!enabled || !isConnected) return;
 
-    logger.info(
-      'useModerationNotifications',
-      'Subscribing to moderation events'
-    );
+    logger.info('Subscribing to moderation events', {
+      component: 'useModerationNotifications',
+    });
 
     // Subscribe to moderation topic
     // Backend sends to: /topic/moderation or /user/queue/moderation
     subscribe('/topic/moderation', handleModerationMessage);
 
     return () => {
-      logger.info(
-        'useModerationNotifications',
-        'Unsubscribing from moderation events'
-      );
+      logger.info('Unsubscribing from moderation events', {
+        component: 'useModerationNotifications',
+      });
       unsubscribe('/topic/moderation');
     };
   }, [enabled, isConnected, subscribe, unsubscribe, handleModerationMessage]);
@@ -470,7 +472,9 @@ export function useModerationNotifications(
   // ==================== MANUAL REFRESH ====================
 
   const refresh = useCallback(() => {
-    logger.debug('useModerationNotifications', 'Manual refresh triggered');
+    logger.debug('Manual refresh triggered', {
+      component: 'useModerationNotifications',
+    });
     onRefreshNeeded?.();
   }, [onRefreshNeeded]);
 

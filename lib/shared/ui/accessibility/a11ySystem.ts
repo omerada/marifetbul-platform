@@ -750,10 +750,10 @@ export class AccessibilityManager {
     this.metrics.colorContrastViolations = violations.length;
 
     if (violations.length > 0) {
-      logger.warn(
-        `Found ${violations.length} color contrast violations`,
-        new Error(`Violations: ${JSON.stringify(violations)}`)
-      );
+      logger.warn(`Found ${violations.length} color contrast violations`, {
+        component: 'A11ySystem',
+        error: new Error(`Violations: ${JSON.stringify(violations)}`),
+      });
     }
 
     this.metrics.lastChecked = new Date();

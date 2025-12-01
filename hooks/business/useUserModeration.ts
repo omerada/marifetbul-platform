@@ -137,7 +137,10 @@ export function useUserModeration(): UseUserModerationResult {
         return warning;
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Uyarı verilemedi';
-        logger.error('Failed to issue warning', { error: err });
+        logger.error('Failed to issue warning', err as Error, {
+          hook: 'useUserModeration',
+          operation: 'issueWarning',
+        });
         setError(message);
         errorToast('Hata', message);
         return null;
@@ -163,7 +166,10 @@ export function useUserModeration(): UseUserModerationResult {
       } catch (err) {
         const message =
           err instanceof Error ? err.message : 'Uyarılar getirilemedi';
-        logger.error('Failed to fetch user warnings', { error: err });
+        logger.error('Failed to fetch user warnings', err as Error, {
+          hook: 'useUserModeration',
+          operation: 'fetchUserWarnings',
+        });
         setError(message);
         return [];
       } finally {
@@ -188,7 +194,10 @@ export function useUserModeration(): UseUserModerationResult {
       } catch (err) {
         const message =
           err instanceof Error ? err.message : 'Aktif uyarılar getirilemedi';
-        logger.error('Failed to fetch active warnings', { error: err });
+        logger.error('Failed to fetch active warnings', err as Error, {
+          hook: 'useUserModeration',
+          operation: 'fetchActiveWarnings',
+        });
         setError(message);
         return [];
       } finally {
@@ -216,7 +225,10 @@ export function useUserModeration(): UseUserModerationResult {
       } catch (err) {
         const message =
           err instanceof Error ? err.message : 'Uyarı iptal edilemedi';
-        logger.error('Failed to revoke warning', { error: err });
+        logger.error('Failed to revoke warning', err as Error, {
+          hook: 'useUserModeration',
+          operation: 'revokeWarning',
+        });
         setError(message);
         errorToast('Hata', message);
         return false;
@@ -257,7 +269,10 @@ export function useUserModeration(): UseUserModerationResult {
       } catch (err) {
         const message =
           err instanceof Error ? err.message : 'Hesap askıya alınamadı';
-        logger.error('Failed to suspend user', { error: err });
+        logger.error('Failed to suspend user', err as Error, {
+          hook: 'useUserModeration',
+          operation: 'suspendUser',
+        });
         setError(message);
         errorToast('Hata', message);
         return null;
@@ -285,7 +300,10 @@ export function useUserModeration(): UseUserModerationResult {
           err instanceof Error
             ? err.message
             : 'Askıya alma kayıtları getirilemedi';
-        logger.error('Failed to fetch user suspensions', { error: err });
+        logger.error('Failed to fetch user suspensions', err as Error, {
+          hook: 'useUserModeration',
+          operation: 'fetchUserSuspensions',
+        });
         setError(message);
         return [];
       } finally {
@@ -310,7 +328,10 @@ export function useUserModeration(): UseUserModerationResult {
       } catch (err) {
         const message =
           err instanceof Error ? err.message : 'Durum kontrol edilemedi';
-        logger.error('Failed to check suspension status', { error: err });
+        logger.error('Failed to check suspension status', err as Error, {
+          hook: 'useUserModeration',
+          operation: 'checkSuspensionStatus',
+        });
         setError(message);
         return null;
       } finally {
@@ -338,7 +359,10 @@ export function useUserModeration(): UseUserModerationResult {
       } catch (err) {
         const message =
           err instanceof Error ? err.message : 'Askı kaldırılamadı';
-        logger.error('Failed to lift suspension', { error: err });
+        logger.error('Failed to lift suspension', err as Error, {
+          hook: 'useUserModeration',
+          operation: 'liftSuspension',
+        });
         setError(message);
         errorToast('Hata', message);
         return false;
@@ -382,7 +406,10 @@ export function useUserModeration(): UseUserModerationResult {
       } catch (err) {
         const message =
           err instanceof Error ? err.message : 'İtiraz işlenemedi';
-        logger.error('Failed to decide appeal', { error: err });
+        logger.error('Failed to decide appeal', err as Error, {
+          hook: 'useUserModeration',
+          operation: 'decideAppeal',
+        });
         setError(message);
         errorToast('Hata', message);
         return false;
@@ -412,7 +439,10 @@ export function useUserModeration(): UseUserModerationResult {
       } catch (err) {
         const message =
           err instanceof Error ? err.message : 'Özet getirilemedi';
-        logger.error('Failed to fetch moderation summary', { error: err });
+        logger.error('Failed to fetch moderation summary', err as Error, {
+          hook: 'useUserModeration',
+          operation: 'fetchModerationSummary',
+        });
         setError(message);
         return null;
       } finally {

@@ -151,7 +151,9 @@ export function useBrowserNotifications(
   useEffect(() => {
     // Check if Notification API is supported
     if (typeof window === 'undefined' || !('Notification' in window)) {
-      logger.warn('useBrowserNotifications', 'Notification API not supported');
+      logger.warn('Notification API not supported', {
+        component: 'useBrowserNotifications',
+      });
       setIsSupported(false);
       return;
     }
@@ -201,23 +203,23 @@ export function useBrowserNotifications(
   const requestPermission =
     useCallback(async (): Promise<NotificationPermission> => {
       if (!isSupported) {
-        logger.warn(
-          'useBrowserNotifications',
-          'Cannot request permission: API not supported'
-        );
+        logger.warn('Cannot request permission: API not supported', {
+          component: 'useBrowserNotifications',
+        });
         return 'denied';
       }
 
       if (permission === 'granted') {
-        logger.debug('useBrowserNotifications', 'Permission already granted');
+        logger.debug('Permission already granted', {
+          component: 'useBrowserNotifications',
+        });
         return 'granted';
       }
 
       if (permission === 'denied') {
-        logger.warn(
-          'useBrowserNotifications',
-          'Permission already denied by user'
-        );
+        logger.warn('Permission already denied by user', {
+          component: 'useBrowserNotifications',
+        });
         return 'denied';
       }
 
@@ -247,10 +249,9 @@ export function useBrowserNotifications(
     async (opts: BrowserNotificationOptions): Promise<void> => {
       // Check support
       if (!isSupported) {
-        logger.warn(
-          'useBrowserNotifications',
-          'Cannot show notification: API not supported'
-        );
+        logger.warn('Cannot show notification: API not supported', {
+          component: 'useBrowserNotifications',
+        });
         return;
       }
 
@@ -297,7 +298,10 @@ export function useBrowserNotifications(
         // Handle click
         notification.onclick = (event) => {
           event.preventDefault();
-          logger.info('useBrowserNotifications', { tagoptstag, dataoptsdata });
+          logger.info('Browser notification clicked', {
+            tag: opts.tag,
+            data: opts.data,
+          });
 
           // Focus window
           if (typeof window !== 'undefined') {
@@ -318,7 +322,7 @@ export function useBrowserNotifications(
 
         // Handle close
         notification.onclose = () => {
-          logger.debug('useBrowserNotifications', { tagoptstag });
+          logger.debug('Browser notification closed', { tag: opts.tag });
           activeNotificationsRef.current.delete(key);
           onNotificationClose?.();
         };
@@ -336,7 +340,10 @@ export function useBrowserNotifications(
           activeNotificationsRef.current.delete(key);
         };
 
-        logger.info('useBrowserNotifications', { titleoptstitle, tagoptstag });
+        logger.info('Browser notification shown', {
+          title: opts.title,
+          tag: opts.tag,
+        });
       } catch (error) {
         logger.error(
           'useBrowserNotifications: Failed to show notification',
@@ -379,7 +386,9 @@ export function useBrowserNotifications(
         notification.close();
         activeNotificationsRef.current.delete(key);
       });
-      logger.debug('useBrowserNotifications', 'All notifications cleared');
+      logger.debug('All notifications cleared', {
+        component: 'useBrowserNotifications',
+      });
     }
   }, []);
 

@@ -13,7 +13,7 @@
 'use client';
 
 import useSWR from 'swr';
-import { walletApiClient } from '@/lib/api/clients/wallet.client';
+import { walletClient as walletApiClient } from '@/lib/api/clients/wallet.client';
 import type { EscrowDetail } from '@/components/domains/wallet/EscrowBalanceCard';
 import logger from '@/lib/infrastructure/monitoring/logger';
 
@@ -42,7 +42,7 @@ interface EscrowDetailsResponse {
   }>;
 }
 
-interface UseEscrowDetailsReturn {
+export interface UseEscrowDetailsReturn {
   /** Escrow details data */
   escrowDetails: EscrowDetail[];
   /** Total locked amount */

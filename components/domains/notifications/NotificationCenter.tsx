@@ -41,7 +41,7 @@ import {
 } from './notificationHelpers';
 import { deleteNotification } from '@/lib/api/notifications';
 import logger from '@/lib/infrastructure/monitoring/logger';
-import type { Notification } from '@/types/domains/notification';
+import type { NotificationResponse as Notification } from '@/lib/api/notifications';
 
 // ================================================
 // TYPE DEFINITIONS
@@ -192,14 +192,16 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
         toast({
           title: 'Bildirim silindi',
           description: 'Bildirim başarıyla silindi.',
-          variant: 'success',
+          type: 'success',
         });
 
         logger.info('NotificationCenter: Notification deleted', {
           id: deletedId,
         });
       } catch (error) {
-        logger.error('NotificationCenter: Delete failed', { error });
+        logger.error('NotificationCenter: Delete failed', error as Error, {
+          component: 'NotificationCenter',
+        });
 
         // Rollback: Restore original state
         await refetch();
@@ -208,7 +210,7 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
           title: 'Hata',
           description:
             'Bildirim silinirken bir hata oluştu. Lütfen tekrar deneyin.',
-          variant: 'destructive',
+          type: 'destructive',
         });
         throw error; // Re-throw to keep modal open
       } finally {
@@ -232,7 +234,7 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
         toast({
           title: 'Bildirimler silindi',
           description: `${selectedNotifications.length} bildirim başarıyla silindi.`,
-          variant: 'success',
+          type: 'success',
         });
 
         logger.info('NotificationCenter: Bulk delete completed', {
@@ -241,7 +243,9 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
 
         setSelectedNotifications([]);
       } catch (error) {
-        logger.error('NotificationCenter: Bulk delete failed', { error });
+        logger.error('NotificationCenter: Bulk delete failed', error as Error, {
+          component: 'NotificationCenter',
+        });
 
         // Rollback
         await refetch();
@@ -250,7 +254,7 @@ export const NotificationCenter = React.memo<NotificationCenterProps>(
           title: 'Hata',
           description:
             'Bildirimler silinirken bir hata oluştu. Lütfen tekrar deneyin.',
-          variant: 'destructive',
+          type: 'destructive',
         });
       }
     };

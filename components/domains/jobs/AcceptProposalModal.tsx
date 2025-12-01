@@ -148,15 +148,11 @@ export function AcceptProposalModal({
           {/* Payment Mode Selection */}
           <div>
             <h3 className="mb-3 font-medium text-gray-900">
-              �deme Y�ntemi Se�in
+              Ödeme Yöntemi Seçin
             </h3>
             <PaymentModeSelector
-              value={paymentMode}
-              onChange={setPaymentMode}
-              orderAmount={proposal.proposedBudget}
-              platformFeePercentage={5}
-              sellerHasIban={sellerHasIban}
-              sellerName={proposal.freelancerName}
+              selectedMode={paymentMode}
+              onModeChange={(mode) => setPaymentMode(mode as any)}
               disabled={isLoadingPaymentStatus}
             />
           </div>

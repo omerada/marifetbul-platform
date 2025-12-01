@@ -110,7 +110,10 @@ export function useModerationActions(): UseModerationActionsReturn {
         await moderationApi.approveComment(commentId);
         updateActionState(ActionType.APPROVE);
         toast.success('Yorum onaylandı');
-        logger.info('Comment approved:', commentId);
+        logger.info('Comment approved', {
+          component: 'useModerationActions',
+          commentId,
+        });
       } catch (error) {
         stopProcessing();
         logger.error(
@@ -152,7 +155,10 @@ export function useModerationActions(): UseModerationActionsReturn {
         await moderationApi.markCommentAsSpam(commentId);
         updateActionState(ActionType.SPAM);
         toast.success('Yorum spam olarak işaretlendi');
-        logger.info('Comment marked as spam:', commentId);
+        logger.info('Comment marked as spam', {
+          component: 'useModerationActions',
+          commentId,
+        });
       } catch (error) {
         stopProcessing();
         logger.error(
@@ -177,7 +183,10 @@ export function useModerationActions(): UseModerationActionsReturn {
         await moderationApi.approveReview(reviewId);
         updateActionState(ActionType.APPROVE);
         toast.success('Değerlendirme onaylandı');
-        logger.info('Review approved:', reviewId);
+        logger.info('Review approved', {
+          component: 'useModerationActions',
+          reviewId,
+        });
       } catch (error) {
         stopProcessing();
         logger.error(
@@ -269,7 +278,10 @@ export function useModerationActions(): UseModerationActionsReturn {
         await moderationApi.issueWarning({ userId, reason, details });
         updateActionState(ActionType.WARN);
         toast.success('Kullanıcıya uyarı verildi');
-        logger.info('Warning issued to user:', userId);
+        logger.info('Warning issued to user', {
+          component: 'useModerationActions',
+          userId,
+        });
       } catch (error) {
         stopProcessing();
         logger.error(

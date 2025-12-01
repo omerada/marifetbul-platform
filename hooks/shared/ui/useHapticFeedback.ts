@@ -94,7 +94,10 @@ export function useHapticFeedback() {
           }
         }
       } catch (error) {
-        logger.warn('Haptic feedback not available:', error);
+        logger.warn('Haptic feedback not available:', {
+          hook: 'useHapticFeedback',
+          error: error as Error,
+        });
       }
     },
     []

@@ -250,7 +250,10 @@ export class ErrorMonitor {
         }),
       });
     } catch (sendError) {
-      logger.error('Failed to send error to remote service', sendError);
+      logger.error(
+        'Failed to send error to remote service',
+        sendError as Error
+      );
     }
   }
 

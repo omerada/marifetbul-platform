@@ -61,11 +61,15 @@ export async function fetchPopularSearches(
 
     return response;
   } catch (error) {
-    logger.error('[PopularSearches] Failed to fetch popular searches', {
-      error,
-      limit,
-      days,
-    });
+    logger.error(
+      '[PopularSearches] Failed to fetch popular searches',
+      error as Error,
+      {
+        api: 'PopularSearches',
+        limit,
+        days,
+      }
+    );
 
     // Return empty array on error - graceful degradation
     // Frontend will handle empty state
@@ -110,12 +114,16 @@ export async function fetchPopularSearchesWithCache(
 
     return response;
   } catch (error) {
-    logger.error('[PopularSearches] Failed to fetch with cache', {
-      error,
-      limit,
-      days,
-      forceRefresh,
-    });
+    logger.error(
+      '[PopularSearches] Failed to fetch with cache',
+      error as Error,
+      {
+        api: 'PopularSearches',
+        limit,
+        days,
+        forceRefresh,
+      }
+    );
     return [];
   }
 }

@@ -105,11 +105,15 @@ export async function uploadImage(file: File): Promise<UploadResult> {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      logger.error('Cloudinary upload failed', {
-        status: response.status,
-        statusText: response.statusText,
-        error: errorData,
-      });
+      logger.error(
+        'Cloudinary upload failed',
+        new Error(errorData.message || 'Upload failed'),
+        {
+          status: response.status,
+          statusText: response.statusText,
+          errorData,
+        }
+      );
       return {
         success: false,
         error: `Upload failed: ${response.statusText}`,
@@ -131,7 +135,11 @@ export async function uploadImage(file: File): Promise<UploadResult> {
       publicId: data.public_id,
     };
   } catch (error) {
-    logger.error('Error uploading image', { error });
+    logger.error('Error deleting image', error as Error, {
+      service: 'cloudinary',
+      operation: 'delete',
+      publicId,
+    });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
@@ -172,10 +180,14 @@ export async function deleteImage(publicId: string): Promise<boolean> {
     );
 
     if (!response.ok) {
-      logger.error('Server returned error for image deletion', {
-        status: response.status,
-        publicId,
-      });
+      logger.error(
+        'Server returned error for image deletion',
+        new Error('Image deletion failed'),
+        {
+          status: response.status,
+          publicId,
+        }
+      );
       return false;
     }
 
@@ -183,7 +195,11 @@ export async function deleteImage(publicId: string): Promise<boolean> {
     logger.info('Image deleted successfully', { publicId, result });
     return true;
   } catch (error) {
-    logger.error('Error deleting image', { error, publicId });
+    logger.error('Error deleting image', error as Error, {
+      service: 'cloudinary',
+      operation: 'delete',
+      publicId,
+    });
     return false;
   }
 }
@@ -237,7 +253,11 @@ export function getOptimizedUrl(
 
     return `${urlParts[0]}/upload/${transformationString}/${urlParts[1]}`;
   } catch (error) {
-    logger.error('Error generating optimized URL', { error, url });
+    logger.error('Error generating optimized URL', error as Error, {
+      service: 'cloudinary',
+      operation: 'optimize',
+      url,
+    });
     return url;
   }
 }
@@ -269,7 +289,11 @@ export function extractPublicId(url: string): string | null {
 
     return publicId;
   } catch (error) {
-    logger.error('Error extracting public ID', { error, url });
+    logger.error('Error extracting public ID', error as Error, {
+      service: 'cloudinary',
+      operation: 'extract-public-id',
+      url,
+    });
     return null;
   }
 }

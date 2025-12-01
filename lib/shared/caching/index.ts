@@ -255,10 +255,11 @@ export class MemoryCache<T> implements ICache<T> {
         this.cacheStats = data.stats || { hits: 0, misses: 0 };
       }
     } catch (error) {
-      logger.warn(
-        'Failed to load cache from localStorage',
-        error
-      );
+      logger.warn('Failed to load cache from localStorage', {
+        module: 'caching',
+        namespace: this.config.namespace,
+        error: error as Error,
+      });
     }
   }
 
@@ -277,10 +278,11 @@ export class MemoryCache<T> implements ICache<T> {
         JSON.stringify(data)
       );
     } catch (error) {
-      logger.warn(
-        'Failed to save cache to localStorage',
-        error
-      );
+      logger.warn('Failed to save cache to localStorage', {
+        module: 'caching',
+        namespace: this.config.namespace,
+        error: error as Error,
+      });
     }
   }
 
@@ -290,10 +292,11 @@ export class MemoryCache<T> implements ICache<T> {
     try {
       localStorage.removeItem(`cache:${this.config.namespace}`);
     } catch (error) {
-      logger.warn(
-        'Failed to clear cache from localStorage',
-        error
-      );
+      logger.warn('Failed to clear cache from localStorage', {
+        module: 'caching',
+        namespace: this.config.namespace,
+        error: error as Error,
+      });
     }
   }
 }

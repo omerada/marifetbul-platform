@@ -145,7 +145,9 @@ export default function PaymentTestPage() {
           );
         }}
         onError={(error) => {
-          logger.error('Test payment error', { error });
+          logger.error('Test payment error', error as Error, {
+            component: 'ManualPaymentTest',
+          });
           toast.error(`Payment error: ${error}`);
         }}
       />

@@ -184,7 +184,7 @@ export const useOrderStore = create<OrderStore>()(
 
           const data: OrdersResponse = await response.json();
 
-          logger.debug('Orders Store: Orders loaded', { countdatadatalength,  });
+          logger.debug('Orders Store: Orders loaded', { countdatadatalength });
 
           set((state) => {
             state.orders = data.data || [];
@@ -192,7 +192,10 @@ export const useOrderStore = create<OrderStore>()(
             state.isLoadingOrders = false;
           });
         } catch (error) {
-          logger.error('Orders Store: Load orders error', { error });
+          logger.error('Orders Store: Load orders error', error as Error, {
+            store: 'OrdersStore',
+            operation: 'loadOrders',
+          });
           set((state) => {
             // Set empty data instead of keeping old data on error
             state.orders = [];
@@ -694,7 +697,9 @@ export const useOrderStore = create<OrderStore>()(
           });
         } catch (error) {
           logger.error(
-            'Error updating milestone', error instanceof Error ? error : new Error(String(error)));
+            'Error updating milestone',
+            error instanceof Error ? error : new Error(String(error))
+          );
           throw error;
         }
       },

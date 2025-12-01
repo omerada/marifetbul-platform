@@ -66,7 +66,7 @@ export interface Notification {
   message?: string; // Alias for content for backend compatibility
   isRead: boolean;
   createdAt: string;
-  readAt?: string;
+  readAt?: string | null; // Backend can return null
   actionUrl?: string | null;
   priority: NotificationPriority;
   relatedEntityType?: string;
