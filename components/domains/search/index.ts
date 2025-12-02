@@ -11,8 +11,7 @@ export { UniversalSearch } from './UniversalSearch';
 export { LocationSearch } from './LocationSearch';
 export { EnhancedSearchResults } from './EnhancedSearchResults';
 export type { EnhancedSearchResultsProps } from './EnhancedSearchResults';
-export { NoResultsState } from './NoResultsState';
-export type { NoResultsStateProps } from './NoResultsState';
+// REMOVED: NoResultsState (deprecated since 2025-11-26 - replaced by ZeroResultsState)
 export { ZeroResultsState } from './ZeroResultsState';
 export type { ZeroResultsStateProps } from './ZeroResultsState';
 

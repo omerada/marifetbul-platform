@@ -1,13 +1,10 @@
 // Admin panel types
 import { User } from '../../core/base';
 import { PaginationMeta } from '../../shared/api';
+import { UserRole } from '../backend-aligned';
 
-export type UserRole =
-  | 'freelancer'
-  | 'employer'
-  | 'admin'
-  | 'super_admin'
-  | 'moderator';
+// Re-export canonical UserRole from backend-aligned
+export type { UserRole };
 
 // User Analytics interface for store compatibility
 export interface UserAnalytics {

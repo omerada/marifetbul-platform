@@ -52,7 +52,9 @@ export type {
 /**
  * User role types supported by the dashboard
  */
-export type UserRole = 'ADMIN' | 'MODERATOR' | 'FREELANCER' | 'EMPLOYER';
+// Use canonical UserRole from backend-aligned
+import { UserRole } from '@/types/backend-aligned';
+export type { UserRole };
 
 /**
  * Dashboard view mode based on user role

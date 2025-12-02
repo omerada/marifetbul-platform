@@ -29,7 +29,7 @@ import logger from '@/lib/infrastructure/monitoring/logger';
 import { toast } from 'sonner';
 import { useCommentModeration } from '@/hooks/business/moderation';
 import { UnifiedCommentModerationCard } from './UnifiedCommentModerationCard';
-import type { UserRole } from '@/types/business/moderation';
+import { UserRole } from '@/types/backend-aligned';
 import type { CommentModerationStatus } from '@/hooks/business/moderation';
 
 // ============================================================================
@@ -37,7 +37,7 @@ import type { CommentModerationStatus } from '@/hooks/business/moderation';
 // ============================================================================
 
 export interface UnifiedCommentQueueProps {
-  role?: UserRole;
+  role?: UserRole.ADMIN | UserRole.MODERATOR;
   initialStatus?: CommentModerationStatus;
   showStats?: boolean;
   enableBulkActions?: boolean;
@@ -49,7 +49,7 @@ export interface UnifiedCommentQueueProps {
 // ============================================================================
 
 export function UnifiedCommentQueue({
-  role = 'admin',
+  role = UserRole.ADMIN,
   initialStatus = 'pending',
   showStats = true,
   enableBulkActions = true,
@@ -397,7 +397,7 @@ export function UnifiedCommentQueue({
                 return success;
               }}
               onEscalate={
-                role === 'moderator'
+                role === UserRole.MODERATOR
                   ? async (id, reason, priority) => {
                       // Escalate to admin logic
                       logger.info('Comment escalated', {

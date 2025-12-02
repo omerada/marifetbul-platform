@@ -5,6 +5,7 @@
 
 'use client';
 
+import { memo } from 'react';
 import { Card } from '@/components/ui';
 import { Badge } from '@/components/ui/Badge';
 import {
@@ -34,7 +35,11 @@ export interface JobCardProps {
   showActions?: boolean;
 }
 
-export function JobCard({ job, onClick, showActions = false }: JobCardProps) {
+export const JobCard = memo(function JobCard({
+  job,
+  onClick,
+  showActions = false,
+}: JobCardProps) {
   const deadlineDays = getDaysUntilDeadline(job);
   const isApproaching = isDeadlineApproaching(job);
   const isPassed = isDeadlinePassed(job);
@@ -190,4 +195,6 @@ export function JobCard({ job, onClick, showActions = false }: JobCardProps) {
       </div>
     </Card>
   );
-}
+});
+
+JobCard.displayName = 'JobCard';

@@ -34,12 +34,14 @@ import {
   ArrowUpCircle,
 } from 'lucide-react';
 import { Badge, UnifiedButton, Card, Avatar, Checkbox } from '@/components/ui';
+import { CommentEscalationModal } from './CommentEscalationModal';
 import logger from '@/lib/infrastructure/monitoring/logger';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import type { BlogComment } from '@/types/blog';
 import type { BlogCommentResponse } from '@/types/backend-aligned';
-import type { ViewMode, UserRole } from '@/types/business/moderation';
+import { UserRole } from '@/types/backend-aligned';
+import type { ViewMode } from '@/types/business/moderation';
 
 // ============================================================================
 // TYPES
@@ -54,7 +56,7 @@ type CommentData = BlogComment | BlogCommentResponse;
 export interface UnifiedCommentModerationCardProps {
   comment: CommentData;
   viewMode?: ViewMode;
-  role?: UserRole;
+  role?: UserRole.ADMIN | UserRole.MODERATOR;
 
   // Selection
   selected?: boolean;
@@ -107,9 +109,7 @@ export function UnifiedCommentModerationCard({
   const [isExpanded, setIsExpanded] = useState(viewMode === 'detailed');
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
-  const [showEscalateDialog, setShowEscalateDialog] = useState(false);
-  const [escalateReason, setEscalateReason] = useState('');
-  const [escalatePriority, setEscalatePriority] = useState<Priority>('MEDIUM');
+  const [showEscalateModal, setShowEscalateModal] = useState(false);
 
   // ================================================
   // COMPUTED VALUES
@@ -252,41 +252,36 @@ export function UnifiedCommentModerationCard({
     }
   };
 
-  const handleEscalate = async () => {
-    if (!escalateReason.trim() || escalateReason.length < 10) {
-      setError('Lütfen en az 10 karakter yükseltme nedeni giriniz');
-      return;
-    }
-
+  const handleEscalate = async (
+    id: string | number,
+    reason: string,
+    priority: Priority
+  ): Promise<boolean> => {
     try {
       setLoading(true);
       setError(null);
 
       if (onEscalate) {
-        const success = await onEscalate(
-          commentId,
-          escalateReason,
-          escalatePriority
-        );
+        const success = await onEscalate(id, reason, priority);
         if (success) {
           logger.info('Comment escalated', {
-            commentId,
-            reason: escalateReason,
-            priority: escalatePriority,
+            commentId: id,
+            reason,
+            priority,
           });
-          setShowEscalateDialog(false);
-          setEscalateReason('');
-          setEscalatePriority('MEDIUM');
           onUpdated?.();
+          return true;
         }
       }
+      return false;
     } catch (err) {
       setError('Yorum yükseltilemedi');
       logger.error(
         'Failed to escalate comment',
         err instanceof Error ? err : new Error(String(err)),
-        { commentId }
+        { commentId: id }
       );
+      return false;
     } finally {
       setLoading(false);
     }
@@ -356,11 +351,11 @@ export function UnifiedCommentModerationCard({
         </UnifiedButton>
 
         {/* Escalate Button - Moderator Only */}
-        {role === 'moderator' && onEscalate && (
+        {role === UserRole.MODERATOR && onEscalate && (
           <UnifiedButton
             variant="outline"
             size="sm"
-            onClick={() => setShowEscalateDialog(true)}
+            onClick={() => setShowEscalateModal(true)}
             disabled={loading}
           >
             <ArrowUpCircle className="mr-1 h-4 w-4" />
@@ -558,55 +553,17 @@ export function UnifiedCommentModerationCard({
           </div>
         )}
 
-        {/* Escalate Dialog - Moderator Only */}
-        {showEscalateDialog && role === 'moderator' && (
-          <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
-            <h4 className="mb-2 font-semibold">Yöneticiye Yükselt</h4>
-            <textarea
-              value={escalateReason}
-              onChange={(e) => setEscalateReason(e.target.value)}
-              placeholder="Yükseltme nedenini açıklayın... (en az 10 karakter)"
-              className="mb-2 w-full rounded-md border p-2"
-              rows={3}
-            />
-            <div className="mb-3">
-              <label className="mb-1 block text-sm font-medium">Öncelik</label>
-              <select
-                value={escalatePriority}
-                onChange={(e) =>
-                  setEscalatePriority(e.target.value as Priority)
-                }
-                className="w-full rounded-md border p-2"
-              >
-                <option value="LOW">Düşük</option>
-                <option value="MEDIUM">Orta</option>
-                <option value="HIGH">Yüksek</option>
-                <option value="URGENT">Acil</option>
-              </select>
-            </div>
-            <div className="flex gap-2">
-              <UnifiedButton
-                variant="primary"
-                size="sm"
-                onClick={handleEscalate}
-                disabled={loading || escalateReason.length < 10}
-              >
-                Yükselt
-              </UnifiedButton>
-              <UnifiedButton
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setShowEscalateDialog(false);
-                  setEscalateReason('');
-                  setEscalatePriority('MEDIUM');
-                }}
-              >
-                İptal
-              </UnifiedButton>
-            </div>
-          </div>
-        )}
+        {/* Escalation Modal - Clean Production-Ready Component */}
+        <CommentEscalationModal
+          commentId={typeof commentId === 'number' ? commentId : undefined}
+          commentContent={content}
+          isOpen={showEscalateModal}
+          onClose={() => setShowEscalateModal(false)}
+          onSuccess={() => {
+            setShowEscalateModal(false);
+            onUpdated?.();
+          }}
+        />
       </div>
     </Card>
   );

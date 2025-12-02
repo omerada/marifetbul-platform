@@ -145,6 +145,8 @@ export const freelancerDashboardNavigation: NavigationItem[] = [
  * Moderator Tools Navigation
  * Note: Main moderator dashboard is at /dashboard (UnifiedDashboard)
  * These are moderator-specific tools and actions
+ *
+ * Updated Sprint 2: Added Flagged Comments link
  */
 export const moderatorToolsNavigation: NavigationItem[] = [
   {
@@ -156,6 +158,11 @@ export const moderatorToolsNavigation: NavigationItem[] = [
     href: '/moderator/comments',
     label: 'Yorumlar',
     icon: MessageCircle,
+  },
+  {
+    href: '/moderator/flagged-comments',
+    label: 'Flagged Yorumlar',
+    icon: Shield,
   },
   {
     href: '/moderator/reviews',

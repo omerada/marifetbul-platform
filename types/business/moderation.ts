@@ -91,9 +91,10 @@ export type ViewMode = 'compact' | 'card' | 'detailed';
 
 /**
  * User roles for moderation interface
- * Determines action availability and UI behavior
+ * Uses canonical UserRole from backend-aligned (ADMIN | MODERATOR)
+ * Helper type for moderation-specific contexts
  */
-export type UserRole = 'admin' | 'moderator';
+export type ModeratorRole = 'ADMIN' | 'MODERATOR';
 
 /**
  * SPRINT 1 - STORY 2: Moderation Queue Item

@@ -88,11 +88,23 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       description: 'Kalite & Değerlendirme',
     },
     {
-      name: 'İçerik',
+      name: 'İçerik Denetimi',
       href: '/admin/moderation',
       icon: Shield,
-      current: pathname === '/admin/moderation',
+      current: pathname?.startsWith('/admin/moderation'),
       description: 'İçerik denetimi',
+      children: [
+        {
+          name: 'Dashboard',
+          href: '/admin/moderation/dashboard',
+          description: 'Moderasyon özeti',
+        },
+        {
+          name: 'Flagged Yorumlar',
+          href: '/admin/moderation/flagged-comments',
+          description: 'Raporlanan yorumlar',
+        },
+      ],
     },
     {
       name: 'Güvenlik',
@@ -185,45 +197,73 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   const Icon = item.icon;
                   const isActive = item.current;
                   return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      onClick={() => setSidebarOpen(false)}
-                      className={cn(
-                        'group flex items-center rounded-xl px-3 py-3 text-sm font-medium transition-colors',
-                        isActive
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-700 hover:bg-gray-100'
-                      )}
-                    >
-                      <Icon
+                    <div key={item.name}>
+                      <Link
+                        href={item.href}
+                        onClick={() => setSidebarOpen(false)}
                         className={cn(
-                          'mr-3 h-5 w-5 transition-colors',
-                          isActive ? 'text-white' : 'text-gray-500'
+                          'group flex items-center rounded-xl px-3 py-3 text-sm font-medium transition-colors',
+                          isActive
+                            ? 'bg-blue-600 text-white'
+                            : 'text-gray-700 hover:bg-gray-100'
                         )}
-                      />
-                      <div className="flex-1">
-                        <div
+                      >
+                        <Icon
                           className={cn(
-                            'font-medium',
-                            isActive ? 'text-white' : 'text-gray-900'
+                            'mr-3 h-5 w-5 transition-colors',
+                            isActive ? 'text-white' : 'text-gray-500'
                           )}
-                        >
-                          {item.name}
+                        />
+                        <div className="flex-1">
+                          <div
+                            className={cn(
+                              'font-medium',
+                              isActive ? 'text-white' : 'text-gray-900'
+                            )}
+                          >
+                            {item.name}
+                          </div>
+                          <div
+                            className={cn(
+                              'mt-0.5 text-xs',
+                              isActive ? 'text-blue-100' : 'text-gray-500'
+                            )}
+                          >
+                            {item.description}
+                          </div>
                         </div>
-                        <div
-                          className={cn(
-                            'mt-0.5 text-xs',
-                            isActive ? 'text-blue-100' : 'text-gray-500'
+                        {isActive && (
+                          <ChevronRight className="h-4 w-4 text-blue-100" />
+                        )}
+                      </Link>
+
+                      {/* Submenu for İçerik Denetimi */}
+                      {item.children && isActive && (
+                        <div className="mt-1 ml-11 space-y-1">
+                          {item.children.map(
+                            (child: {
+                              name: string;
+                              href: string;
+                              description: string;
+                            }) => (
+                              <Link
+                                key={child.href}
+                                href={child.href}
+                                onClick={() => setSidebarOpen(false)}
+                                className={cn(
+                                  'block rounded-lg px-3 py-2 text-xs font-medium transition-colors',
+                                  pathname === child.href
+                                    ? 'bg-blue-50 text-blue-700'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                )}
+                              >
+                                {child.name}
+                              </Link>
+                            )
                           )}
-                        >
-                          {item.description}
                         </div>
-                      </div>
-                      {isActive && (
-                        <ChevronRight className="h-4 w-4 text-blue-100" />
                       )}
-                    </Link>
+                    </div>
                   );
                 })}
               </nav>

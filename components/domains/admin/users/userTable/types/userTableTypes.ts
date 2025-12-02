@@ -5,10 +5,14 @@
  */
 
 import { ReactNode } from 'react';
+import { UserRole } from '@/types/backend-aligned';
 
 // ============================================================================
 // Core User Types
 // ============================================================================
+
+// Re-export canonical UserRole from backend-aligned (ADMIN, MODERATOR, FREELANCER, EMPLOYER)
+export type { UserRole };
 
 export type UserStatus =
   | 'active'
@@ -16,8 +20,6 @@ export type UserStatus =
   | 'suspended'
   | 'banned'
   | 'pending_verification';
-
-export type UserRole = 'admin' | 'moderator' | 'employer' | 'freelancer';
 
 export type UserActionType =
   | 'activate'

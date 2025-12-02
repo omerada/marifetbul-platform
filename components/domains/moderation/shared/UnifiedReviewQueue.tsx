@@ -289,7 +289,7 @@ export function UnifiedReviewQueue({
               <Check className="mr-1 h-4 w-4" />
               Tümünü Onayla
             </UnifiedButton>
-            {role === 'MODERATOR' && (
+            {role === UserRole.MODERATOR && (
               <UnifiedButton
                 variant="warning"
                 size="sm"
@@ -352,9 +352,13 @@ export function UnifiedReviewQueue({
               onSelect={toggleSelection}
               onApprove={handleApprove}
               onReject={handleReject}
-              onEscalate={role === 'MODERATOR' ? handleEscalate : undefined}
-              onDelete={role === 'ADMIN' ? handleDelete : undefined}
-              onResolveFlag={role === 'ADMIN' ? handleResolveFlag : undefined}
+              onEscalate={
+                role === UserRole.MODERATOR ? handleEscalate : undefined
+              }
+              onDelete={role === UserRole.ADMIN ? handleDelete : undefined}
+              onResolveFlag={
+                role === UserRole.ADMIN ? handleResolveFlag : undefined
+              }
               onViewDetails={(r) => setViewingReview(r as any)}
               onUpdated={refetch}
             />
@@ -382,9 +386,13 @@ export function UnifiedReviewQueue({
               showFullDetails
               onApprove={handleApprove}
               onReject={handleReject}
-              onEscalate={role === 'MODERATOR' ? handleEscalate : undefined}
-              onDelete={role === 'ADMIN' ? handleDelete : undefined}
-              onResolveFlag={role === 'ADMIN' ? handleResolveFlag : undefined}
+              onEscalate={
+                role === UserRole.MODERATOR ? handleEscalate : undefined
+              }
+              onDelete={role === UserRole.ADMIN ? handleDelete : undefined}
+              onResolveFlag={
+                role === UserRole.ADMIN ? handleResolveFlag : undefined
+              }
               onUpdated={() => {
                 setViewingReview(null);
                 refetch();
