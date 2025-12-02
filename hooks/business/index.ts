@@ -497,11 +497,7 @@ export function usePerformanceMonitor() {
 // ================================================
 
 // Re-export specific business hooks
-export {
-  useProfile,
-  useAvatarUpload,
-  useProfileValidation,
-} from './useProfile';
+export { useProfile, useAvatarUpload } from './useProfile';
 export { useDashboard } from './useDashboard';
 export { useDashboardStats } from './dashboard/useDashboardStats';
 export {

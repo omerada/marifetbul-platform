@@ -33,6 +33,7 @@ import { Button } from '@/components/ui';
 import { OTPInput } from '@/components/shared/OTPInput';
 import { cn } from '@/lib/utils';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import { phoneVerificationService } from '@/lib/api/phone-verification';
 
 export interface PhoneVerificationModalProps {
   /** Modal open state */
@@ -140,20 +141,19 @@ export function PhoneVerificationModal({
       setIsLoading(true);
       setError('');
 
-      // TODO: Replace with actual API call
-      // await phoneVerificationService.sendOTP({ phoneNumber: phone });
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Real API call
+      const response = await phoneVerificationService.sendOTP({
+        phoneNumber: phone,
+      });
 
       logger.info('[PhoneVerification] OTP sent successfully', { phone });
 
       toast.success('Doğrulama kodu gönderildi', {
-        description: `${formatPhoneNumber(phone)} numarasına 6 haneli kod gönderildi.`,
+        description: `${response.phoneNumber} numarasına 6 haneli kod gönderildi.`,
       });
 
       setStep('otp-verify');
-      setResendCountdown(60); // 60 seconds cooldown
+      setResendCountdown(response.expiresIn || 60);
       setAttemptCount((prev) => prev + 1);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'OTP gönderilemedi';
@@ -182,20 +182,20 @@ export function PhoneVerificationModal({
         setIsLoading(true);
         setError('');
 
-        // TODO: Replace with actual API call
-        // await phoneVerificationService.verifyOTP({ phoneNumber: phone, code });
+        // Real API call
+        const response = await phoneVerificationService.verifyOTP({
+          phoneNumber: phone,
+          code,
+        });
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
-        // Simulate validation (in production, backend validates)
-        if (code === '123456') {
+        if (response.verified) {
           logger.info('[PhoneVerification] OTP verified successfully', {
             phone,
           });
 
           toast.success('Telefon doğrulandı!', {
-            description: 'Telefon numaranız başarıyla doğrulandı.',
+            description:
+              response.message || 'Telefon numaranız başarıyla doğrulandı.',
           });
 
           setStep('success');

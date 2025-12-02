@@ -22,37 +22,6 @@ export interface JobAttachment {
   type: string;
 }
 
-/**
- * @deprecated Use Job (JobResponse) instead
- * Legacy Job interface - kept for backward compatibility
- */
-export interface LegacyJob {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  subcategory: string;
-  budget: {
-    type: 'fixed' | 'hourly';
-    amount: number;
-    maxAmount?: number;
-  };
-  timeline: string;
-  duration?: string;
-  skills: string[];
-  experienceLevel: 'beginner' | 'intermediate' | 'expert';
-  location?: string;
-  isRemote: boolean;
-  status: 'open' | 'in_progress' | 'completed' | 'cancelled';
-  employerId: string;
-  employer: Employer;
-  proposalsCount: number;
-  createdAt: string;
-  updatedAt: string;
-  deadline?: string;
-  attachments?: string[];
-}
-
 export interface JobDetail extends Omit<Job, 'attachments'> {
   requirements: string[];
   attachments: JobAttachment[];

@@ -17,7 +17,6 @@
 
 'use client';
 
-import { memo } from 'react';
 import Link from 'next/link';
 import { Calendar, Clock, DollarSign, Package, User } from 'lucide-react';
 import { Button } from '@/components/ui';
@@ -92,7 +91,7 @@ function getStatusLabel(
 // COMPONENT
 // ================================================
 
-export const OrderCard = memo(function OrderCard({ order, userRole, onClick }: OrderCardProps) {
+export function OrderCard({ order, userRole, onClick }: OrderCardProps) {
   // Type-safe property access using type assertions
   type OrderWithExtras = typeof order & {
     packageTitle?: string;
@@ -291,6 +290,6 @@ export function OrderCardSkeleton() {
       </div>
     </div>
   );
-});
+}
 
 OrderCard.displayName = 'OrderCard';

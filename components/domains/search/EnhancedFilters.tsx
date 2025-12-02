@@ -10,12 +10,12 @@ import { Filter, X, MapPin, DollarSign, Clock, Star, Zap } from 'lucide-react';
 import { Card, Button, Badge } from '@/components/ui';
 import { JobFilters as JobFiltersComponent } from '@/components/domains/jobs';
 import { PackageFiltersComponent } from '@/components/shared/filters';
-import type { JobFilters as BackendJobFilters } from '@/lib/api/jobs';
-import { JobFilters as LegacyJobFilters, PackageFilters } from '@/types';
+import type { JobFilters } from '@/lib/api/jobs';
+import type { PackageFilters } from '@/types';
 
 interface JobFilterHook {
-  filters: LegacyJobFilters;
-  updateFilters: (filters: LegacyJobFilters) => void;
+  filters: JobFilters;
+  updateFilters: (filters: JobFilters) => void;
   clearFilters: () => void;
   hasActiveFilters: boolean;
 }
@@ -90,10 +90,8 @@ export function EnhancedFilters({
 
           {activeTab === 'jobs' ? (
             <JobFiltersComponent
-              filters={jobFilters.filters as unknown as BackendJobFilters}
-              onFilterChange={(filters) =>
-                jobFilters.updateFilters(filters as unknown as LegacyJobFilters)
-              }
+              filters={jobFilters.filters}
+              onFilterChange={jobFilters.updateFilters}
             />
           ) : (
             <PackageFiltersComponent

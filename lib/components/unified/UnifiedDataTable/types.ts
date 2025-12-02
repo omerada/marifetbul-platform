@@ -269,9 +269,6 @@ export interface BulkAction<T = any> {
   /** Action variant (color scheme) */
   variant?: 'default' | 'danger' | 'warning' | 'success';
 
-  /** Is this a dangerous action? (red button) - deprecated, use variant */
-  danger?: boolean;
-
   /** Disable action conditionally */
   disabled?: (selectedIds: string[], selectedRows: T[]) => boolean;
 
@@ -305,14 +302,8 @@ export interface RowAction<T = any> {
   /** Action variant (color scheme) */
   variant?: 'default' | 'danger' | 'warning' | 'success';
 
-  /** Is this a dangerous action? - deprecated, use variant */
-  danger?: boolean;
-
   /** Show action conditionally */
   show?: (row: T) => boolean;
-
-  /** Hide action conditionally - deprecated, use show */
-  hidden?: (row: T) => boolean;
 
   /** Disable action conditionally */
   disabled?: (row: T) => boolean;

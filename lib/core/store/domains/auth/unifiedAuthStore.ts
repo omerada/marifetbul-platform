@@ -516,20 +516,7 @@ export const authSelectors = {
       error: state.error,
     })),
 
-  // ⚠️ DEPRECATED: DO NOT USE - Causes infinite re-renders
-  // Use individual action selectors below instead
-  useActions: () =>
-    useUnifiedAuthStore((state) => ({
-      login: state.login,
-      register: state.register,
-      logout: state.logout,
-      updateProfile: state.updateProfile,
-      refreshAuth: state.refreshAuth,
-      clearError: state.clearError,
-      extendSession: state.extendSession,
-    })),
-
-  // ✅ RECOMMENDED: Individual action selectors (stable references)
+  // Individual action selectors (stable references)
   useLogin: () => useUnifiedAuthStore((state) => state.login),
   useRegister: () => useUnifiedAuthStore((state) => state.register),
   useLogout: () => useUnifiedAuthStore((state) => state.logout),

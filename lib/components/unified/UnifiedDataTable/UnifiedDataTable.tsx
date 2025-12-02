@@ -300,23 +300,26 @@ export function UnifiedDataTable<T>({
           <span className="text-sm font-medium">
             {selectedIds.length} öğe seçildi
           </span>
-          {bulkActions?.map((action, index) => (
-            <button
-              key={index}
-              onClick={() => action.onClick(selectedIds, selectedRows)}
-              disabled={action.disabled?.(selectedIds, selectedRows)}
-              className={cn(
-                'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-                action.danger
-                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
-                  : 'bg-primary text-primary-foreground hover:bg-primary/90',
-                'disabled:pointer-events-none disabled:opacity-50'
-              )}
-            >
-              {action.icon && <action.icon className="mr-2 inline h-4 w-4" />}
-              {action.label}
-            </button>
-          ))}
+          {bulkActions?.map((action, index) => {
+            const variant = action.variant || 'default';
+            return (
+              <button
+                key={index}
+                onClick={() => action.onClick(selectedIds, selectedRows)}
+                disabled={action.disabled?.(selectedIds, selectedRows)}
+                className={cn(
+                  'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+                  variant === 'danger'
+                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                    : 'bg-primary text-primary-foreground hover:bg-primary/90',
+                  'disabled:pointer-events-none disabled:opacity-50'
+                )}
+              >
+                {action.icon && <action.icon className="mr-2 inline h-4 w-4" />}
+                {action.label}
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -446,25 +449,18 @@ export function UnifiedDataTable<T>({
                                 if (action.show && !action.show(row)) {
                                   return false;
                                 }
-                                // Check deprecated 'hidden' condition
-                                if (action.hidden && action.hidden(row)) {
-                                  return false;
-                                }
                                 return true;
                               })
                               .map((action, actionIndex) => {
                                 const isDisabled = action.disabled?.(row);
-                                const variant =
-                                  action.variant ||
-                                  (action.danger ? 'danger' : 'default');
+                                const variant = action.variant || 'default';
                                 const Icon = action.icon;
 
                                 // Check if separator needed (before danger actions)
                                 const isDanger = variant === 'danger';
                                 const prevAction = rowActions[actionIndex - 1];
                                 const prevIsDanger =
-                                  prevAction?.variant === 'danger' ||
-                                  prevAction?.danger;
+                                  prevAction?.variant === 'danger';
                                 const showSeparator =
                                   isDanger && !prevIsDanger && actionIndex > 0;
 

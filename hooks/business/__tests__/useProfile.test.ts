@@ -9,11 +9,8 @@
  */
 
 import { renderHook } from '@testing-library/react';
-import {
-  useProfile,
-  useAvatarUpload,
-  useProfileValidation,
-} from '../useProfile';
+import { useProfile, useAvatarUpload } from '../useProfile';
+import { useProfileCompletion } from '../profile/useProfileCompletion';
 import { Freelancer, Employer } from '@/types';
 
 // Mock logger
@@ -258,7 +255,7 @@ describe('useAvatarUpload Hook', () => {
   });
 });
 
-describe('useProfileValidation Hook', () => {
+describe('useProfileCompletion Hook', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -286,11 +283,11 @@ describe('useProfileValidation Hook', () => {
         currentProfile: completeProfile,
       });
 
-      const { result } = renderHook(() => useProfileValidation());
+      const { result } = renderHook(() => useProfileCompletion());
 
-      expect(result.current.completeness).toBe(100);
-      expect(result.current.isComplete).toBe(true);
-      expect(result.current.missingFields).toHaveLength(0);
+      expect(result.current.completion?.completionPercentage).toBe(100);
+      expect(result.current.completion?.isComplete).toBe(true);
+      expect(result.current.completion?.missingFields).toHaveLength(0);
     });
 
     it('should identify missing fields for incomplete freelancer profile', () => {
@@ -308,13 +305,19 @@ describe('useProfileValidation Hook', () => {
         currentProfile: incompleteProfile,
       });
 
-      const { result } = renderHook(() => useProfileValidation());
+      const { result } = renderHook(() => useProfileCompletion());
 
-      expect(result.current.completeness).toBeLessThan(90);
-      expect(result.current.isComplete).toBe(false);
-      expect(result.current.missingFields).toContain('Biyografi');
-      expect(result.current.missingFields).toContain('Profil Fotoğrafı');
-      expect(result.current.missingFields).toContain('Başlık/Uzmanlık');
+      expect(result.current.completion?.completionPercentage ?? 0).toBeLessThan(
+        90
+      );
+      expect(result.current.completion?.isComplete).toBe(false);
+      expect(result.current.completion?.missingFields).toContain('Biyografi');
+      expect(result.current.completion?.missingFields).toContain(
+        'Profil Fotoğrafı'
+      );
+      expect(result.current.completion?.missingFields).toContain(
+        'Başlık/Uzmanlık'
+      );
     });
   });
 
@@ -340,11 +343,11 @@ describe('useProfileValidation Hook', () => {
         currentProfile: completeProfile,
       });
 
-      const { result } = renderHook(() => useProfileValidation());
+      const { result } = renderHook(() => useProfileCompletion());
 
-      expect(result.current.completeness).toBe(100);
-      expect(result.current.isComplete).toBe(true);
-      expect(result.current.missingFields).toHaveLength(0);
+      expect(result.current.completion?.completionPercentage).toBe(100);
+      expect(result.current.completion?.isComplete).toBe(true);
+      expect(result.current.completion?.missingFields).toHaveLength(0);
     });
 
     it('should identify missing fields for incomplete employer profile', () => {
@@ -362,13 +365,15 @@ describe('useProfileValidation Hook', () => {
         currentProfile: incompleteProfile,
       });
 
-      const { result } = renderHook(() => useProfileValidation());
+      const { result } = renderHook(() => useProfileCompletion());
 
-      expect(result.current.completeness).toBeLessThan(90);
-      expect(result.current.isComplete).toBe(false);
-      expect(result.current.missingFields).toContain('Biyografi');
-      expect(result.current.missingFields).toContain('Şirket Adı');
-      expect(result.current.missingFields).toContain('Sektör');
+      expect(result.current.completion?.completionPercentage ?? 0).toBeLessThan(
+        90
+      );
+      expect(result.current.completion?.isComplete).toBe(false);
+      expect(result.current.completion?.missingFields).toContain('Biyografi');
+      expect(result.current.completion?.missingFields).toContain('Şirket Adı');
+      expect(result.current.completion?.missingFields).toContain('Sektör');
     });
   });
 
@@ -378,11 +383,11 @@ describe('useProfileValidation Hook', () => {
         currentProfile: null,
       });
 
-      const { result } = renderHook(() => useProfileValidation());
+      const { result } = renderHook(() => useProfileCompletion());
 
-      expect(result.current.completeness).toBe(0);
-      expect(result.current.isComplete).toBe(false);
-      expect(result.current.missingFields).toHaveLength(0);
+      expect(result.current.completion?.completionPercentage ?? 0).toBe(0);
+      expect(result.current.completion?.isComplete).toBe(false);
+      expect(result.current.completion?.missingFields ?? []).toHaveLength(0);
     });
 
     it('should handle profile with empty skills array', () => {
@@ -407,9 +412,9 @@ describe('useProfileValidation Hook', () => {
         currentProfile: profileWithEmptySkills,
       });
 
-      const { result } = renderHook(() => useProfileValidation());
+      const { result } = renderHook(() => useProfileCompletion());
 
-      expect(result.current.missingFields).toContain('Beceriler');
+      expect(result.current.completion?.missingFields).toContain('Beceriler');
     });
   });
 });

@@ -43,7 +43,7 @@ export { usePackageDetail } from './business/usePackageDetail';
 export { usePackageOrder } from './business/usePackageOrder';
 export { usePayment } from './business/usePayment';
 export { useMarketplace } from './business/useMarketplace';
-export { useProfile, useProfileValidation } from './business/useProfile';
+export { useProfile } from './business/useProfile';
 export { useProfileEdit } from './business/useProfileEdit';
 export { useProposalForm } from './business/useProposalForm';
 export { useDashboard } from './business/useDashboard';
