@@ -88,10 +88,10 @@ export const STATUS_DOT_COLORS: Record<UserStatus, string> = {
 };
 
 export const ROLE_COLORS: Record<UserRole, string> = {
-  admin: 'bg-purple-100 text-purple-800',
-  moderator: 'bg-blue-100 text-blue-800',
-  employer: 'bg-indigo-100 text-indigo-800',
-  freelancer: 'bg-emerald-100 text-emerald-800',
+  [UserRole.ADMIN]: 'bg-purple-100 text-purple-800',
+  [UserRole.MODERATOR]: 'bg-blue-100 text-blue-800',
+  [UserRole.EMPLOYER]: 'bg-indigo-100 text-indigo-800',
+  [UserRole.FREELANCER]: 'bg-emerald-100 text-emerald-800',
 };
 
 // ============================================================================

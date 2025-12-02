@@ -44,10 +44,9 @@ export type {
 
 // Avatar Components
 export { AvatarUpload } from './AvatarUpload';
-// TODO: Create AvatarGallery component - temporarily commented out for build
-// export { AvatarGallery } from './AvatarGallery';
-// TODO: Create AvatarModal component - temporarily commented out for build
-// export { AvatarModal } from './AvatarModal';
+// Avatar components available in:
+// - components/ui/Avatar.tsx (base avatar component)
+// - User avatar display handled by UserAvatar component
 
 // Portfolio Components
 export { PortfolioGallery } from './PortfolioGallery';

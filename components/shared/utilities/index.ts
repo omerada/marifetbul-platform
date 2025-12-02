@@ -3,9 +3,7 @@
 // ================================================
 // General utility components used across the application
 
-// Progress & Loading - Use @/components/ui/Progress instead
-// TODO: Remove this export after updating all imports
-// export { Progress } from './Progress';
+// Note: Progress component available in @/components/ui/Progress
 
 // Pull to Refresh
 export { PullToRefresh } from './PullToRefresh';

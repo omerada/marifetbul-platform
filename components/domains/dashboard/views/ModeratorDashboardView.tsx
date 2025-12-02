@@ -58,6 +58,7 @@ import type {
 
 // Utils
 import { formatCompactNumber } from '../utils';
+import { UserRole } from '@/types/backend-aligned';
 
 // ============================================================================
 // TYPES
@@ -314,7 +315,7 @@ export const ModeratorDashboardView = memo<ModeratorDashboardViewProps>(
           <DashboardHeader
             title="Moderator Dashboard"
             subtitle="Loading moderation data..."
-            role="MODERATOR"
+            role={UserRole.MODERATOR}
           />
           <div className="animate-pulse space-y-6">
             <div className="bg-muted h-32 rounded-lg" />
@@ -331,7 +332,7 @@ export const ModeratorDashboardView = memo<ModeratorDashboardViewProps>(
           <DashboardHeader
             title="Moderator Dashboard"
             subtitle="Error loading dashboard"
-            role="MODERATOR"
+            role={UserRole.MODERATOR}
           />
           <div className="bg-destructive/10 border-destructive rounded-lg border p-4">
             <p className="text-destructive">{error.message}</p>
@@ -349,7 +350,7 @@ export const ModeratorDashboardView = memo<ModeratorDashboardViewProps>(
         <DashboardHeader
           title="Moderator Dashboard"
           subtitle={`Moderation overview for last ${data.period.days} days`}
-          role="MODERATOR"
+          role={UserRole.MODERATOR}
         />
 
         {/* Moderation Statistics */}
@@ -445,7 +446,7 @@ export const ModeratorDashboardView = memo<ModeratorDashboardViewProps>(
                   onMarkSpam={(id) => onModerate?.(id, 'spam')}
                   showSelection={item.status === 'pending'}
                   showActions={item.status === 'pending'}
-                  userRole="MODERATOR"
+                  userRole={UserRole.MODERATOR}
                 />
               ))}
             </div>
@@ -473,7 +474,7 @@ export const ModeratorDashboardView = memo<ModeratorDashboardViewProps>(
           onBulkReject={handleBulkReject}
           onBulkMarkSpam={handleBulkMarkSpam}
           isLoading={isLoading}
-          userRole="MODERATOR"
+          userRole={UserRole.MODERATOR}
         />
 
         {/* Quick Actions */}

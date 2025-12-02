@@ -189,10 +189,10 @@ export function getStatusDisplayText(status: UserStatus): string {
  */
 export function getRoleDisplayText(role: UserRole): string {
   const roleMap: Record<UserRole, string> = {
-    admin: 'Admin',
-    moderator: 'Moderatör',
-    employer: 'İşveren',
-    freelancer: 'Serbest Çalışan',
+    [UserRole.ADMIN]: 'Admin',
+    [UserRole.MODERATOR]: 'Moderatör',
+    [UserRole.EMPLOYER]: 'İşveren',
+    [UserRole.FREELANCER]: 'Serbest Çalışan',
   };
   return roleMap[role] || role;
 }

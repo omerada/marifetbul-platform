@@ -12,7 +12,7 @@ import { UserRole } from '@/types/backend-aligned';
 // ============================================================================
 
 // Re-export canonical UserRole from backend-aligned (ADMIN, MODERATOR, FREELANCER, EMPLOYER)
-export type { UserRole };
+export { UserRole };
 
 export type UserStatus =
   | 'active'

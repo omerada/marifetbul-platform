@@ -23,6 +23,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || 'https://marifetbul.com'
+  ),
   title: {
     default: "MarifetBul - Türkiye'nin Freelance Platformu",
     template: '%s | MarifetBul',
@@ -119,7 +122,6 @@ export default function RootLayout({
                     <OrderNotificationProvider />
                     <PushPermissionModal />
                     <ToastManager />
-                    {/* TODO: Add NotificationsBell component */}
                     {children}
                   </NotificationProvider>
                 </ToastProvider>

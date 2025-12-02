@@ -57,6 +57,7 @@ import { MilestoneProgressWidget } from '@/components/domains/milestones';
 import type { FreelancerDashboard } from '../types/dashboard.types';
 import { formatCompactNumber } from '../utils';
 import { formatCurrency } from '@/lib/shared/formatters';
+import { UserRole } from '@/types/backend-aligned';
 
 // ============================================================================
 // TYPES
@@ -281,7 +282,7 @@ export const FreelancerDashboardView = memo<FreelancerDashboardViewProps>(
       <div className={`space-y-6 ${className}`}>
         {/* Header */}
         <DashboardHeader
-          role="FREELANCER"
+          role={UserRole.FREELANCER}
           title="Freelancer Dashboard"
           subtitle="Kazançlarınız, siparişleriniz ve performans metrikleriniz"
           actions={

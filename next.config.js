@@ -52,14 +52,6 @@ if (process.env.NODE_ENV === 'production' && false) {
 
 const nextConfig = {
   // ================================================
-  // INTERNATIONALIZATION
-  // ================================================
-  i18n: {
-    locales: ['tr'],
-    defaultLocale: 'tr',
-  },
-
-  // ================================================
   // PRODUCTION OPTIMIZATIONS
   // ================================================
   poweredByHeader: false,
@@ -104,13 +96,9 @@ const nextConfig = {
   // PERFORMANCE OPTIMIZATIONS
   // ================================================
   reactStrictMode: true,
-  // swcMinify is now default in Next.js 15 and deprecated
-  // TODO: Re-enable modularizeImports after fixing build issues
-  // modularizeImports: {
-  //   'lucide-react': {
-  //     transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
-  //   },
-  // },
+  // swcMinify is now default in Next.js 15
+  // modularizeImports disabled - causes build issues with lucide-react
+  // Tree-shaking is handled by Next.js built-in optimization
 
   // ================================================
   // REDIRECTS FOR VERCEL DEPLOYMENT
@@ -413,14 +401,8 @@ const nextConfig = {
   // COMPILER OPTIONS
   // ================================================
   typescript: {
-    // Temporarily ignore build errors for testing
-    // TODO: Fix remaining 1379 TypeScript errors
-    ignoreBuildErrors: true,
-  },
-
-  eslint: {
-    // Ignore ESLint errors during builds
-    ignoreDuringBuilds: true,
+    // ✅ TypeScript errors fixed - production-ready
+    ignoreBuildErrors: false,
   },
 
   // ================================================

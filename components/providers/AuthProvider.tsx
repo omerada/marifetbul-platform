@@ -48,10 +48,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setHasChecked(true);
 
       checkAuthStatus().catch((error) => {
-        logger.warn(
-          '[AuthProvider] Session verification failed:',
-          error instanceof Error ? error.message : String(error)
-        );
+        logger.warn('[AuthProvider] Session verification failed', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         // Session is invalid, user will be logged out by the store
       });
     } else {

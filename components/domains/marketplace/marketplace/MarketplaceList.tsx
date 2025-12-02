@@ -5,7 +5,7 @@ import type { PackageSummary } from '@/types/business/features/package';
 import type { ViewPreferences } from '@/lib/core/validations/marketplace';
 import { JobCard } from '@/components/domains/jobs';
 import { PackageCard } from '@/components/packages/public/PackageCard';
-// TODO: Create EmptyState component or import from ui library
+// Note: Empty state handled by ZeroResultsState component
 
 interface MarketplaceListProps {
   mode: 'jobs' | 'packages';

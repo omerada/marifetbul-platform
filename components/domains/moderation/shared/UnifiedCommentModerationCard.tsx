@@ -88,7 +88,7 @@ export interface UnifiedCommentModerationCardProps {
 export function UnifiedCommentModerationCard({
   comment,
   viewMode = 'card',
-  role = 'admin',
+  role = UserRole.ADMIN,
   selected = false,
   onSelect,
   onApprove,

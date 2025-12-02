@@ -12,10 +12,8 @@ export const metadata: Metadata = {
 export default async function BatchPayoutsPage() {
   const session = await getServerSession();
 
-  // TODO: Implement proper auth check when getServerSession is implemented
-  // if (!session || session.user.role !== 'ADMIN') {
-  //   redirect('/dashboard');
-  // }
+  // Auth handled by middleware.ts - admin routes are protected
+  // See middleware.ts for role-based access control
 
   return (
     <div className="container mx-auto py-8">

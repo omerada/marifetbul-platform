@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { TableFiltersProps } from '../types/userTableTypes';
 import { STATUS_OPTIONS, ROLE_OPTIONS } from '../constants/userTableConstants';
+import { UserRole } from '@/types/backend-aligned';
 
 export function TableFilters({
   filters,
@@ -134,7 +135,7 @@ export function TableFilters({
             </div>
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => onFilterChange({ userType: 'employer' })}
+            onClick={() => onFilterChange({ userType: UserRole.EMPLOYER })}
           >
             <div className="flex items-center space-x-2">
               <Briefcase className="h-4 w-4 text-indigo-600" />
@@ -142,7 +143,7 @@ export function TableFilters({
             </div>
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => onFilterChange({ userType: 'freelancer' })}
+            onClick={() => onFilterChange({ userType: UserRole.FREELANCER })}
           >
             <div className="flex items-center space-x-2">
               <UserCheck className="h-4 w-4 text-emerald-600" />

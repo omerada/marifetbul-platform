@@ -9,6 +9,7 @@ import type {
   UserActionRequest,
   BulkUserActionRequest,
 } from '@/types';
+import { UserRole } from '@/types/backend-aligned';
 
 // Request tracking to prevent duplicate calls
 let lastFetchRequest: string | null = null;
@@ -364,9 +365,10 @@ export const useAdminUserSelectors = () => {
     verifiedUsers: store.users.filter(
       (user) => user.verificationStatus === 'verified'
     ).length,
-    freelancers: store.users.filter((user) => user.userType === 'freelancer')
-      .length,
-    employers: store.users.filter((user) => user.userType === 'employer')
+    freelancers: store.users.filter(
+      (user) => user.userType === UserRole.FREELANCER
+    ).length,
+    employers: store.users.filter((user) => user.userType === UserRole.EMPLOYER)
       .length,
 
     // State selectors

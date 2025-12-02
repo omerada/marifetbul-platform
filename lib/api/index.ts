@@ -107,13 +107,8 @@ export * from './jobs';
 // Export Proposal API (already exists)
 export * from './proposals';
 
-// Export Blog Moderation API
-// TODO: Create blog-moderation module
-// export * from './blog-moderation';
-
-// Export Review Moderation API
-// TODO: Create review-moderation module
-// export * from './review-moderation';
+// Note: Blog and review moderation handled via UnifiedCommentQueue
+// Uses lib/api/moderation.ts for unified comment moderation
 
 // Export Moderation Activity API
 export { default as moderationActivityAPI } from './moderation-activity';

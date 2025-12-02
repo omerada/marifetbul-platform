@@ -53,6 +53,7 @@ import {
 
 // Types
 import type { AdminDashboard, StatCardData } from '../types/dashboard.types';
+import { UserRole } from '@/types/backend-aligned';
 
 // Utils
 import { formatCompactNumber } from '../utils';
@@ -391,7 +392,7 @@ export const AdminDashboardView = memo<AdminDashboardViewProps>(
           <DashboardHeader
             title="Admin Dashboard"
             subtitle="Loading platform statistics..."
-            role="ADMIN"
+            role={UserRole.ADMIN}
           />
           <div className="animate-pulse space-y-6">
             <div className="bg-muted h-32 rounded-lg" />
@@ -408,7 +409,7 @@ export const AdminDashboardView = memo<AdminDashboardViewProps>(
           <DashboardHeader
             title="Admin Dashboard"
             subtitle="Error loading dashboard"
-            role="ADMIN"
+            role={UserRole.ADMIN}
           />
           <div className="bg-destructive/10 border-destructive rounded-lg border p-4">
             <p className="text-destructive">{error}</p>
@@ -427,7 +428,7 @@ export const AdminDashboardView = memo<AdminDashboardViewProps>(
         <DashboardHeader
           title="Admin Dashboard"
           subtitle={`Platform overview for last ${data.period.days} days`}
-          role="ADMIN"
+          role={UserRole.ADMIN}
         />
 
         {/* Platform Statistics */}

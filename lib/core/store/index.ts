@@ -12,9 +12,8 @@ export {
   useAuthStore,
 } from './domains/auth/unifiedAuthStore';
 
-// Notification store - optimized notifications
-// TODO: Create notification store module
-// export { useNotificationStore } from './notification';
+// Note: Notification state managed via hooks/business/useNotifications.ts
+// and components/providers/NotificationProvider.tsx
 
 // === FEATURE STORES ===
 // Feature-specific state management

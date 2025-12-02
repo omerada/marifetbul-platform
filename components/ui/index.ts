@@ -38,9 +38,8 @@ export {
   useLoadingState,
 } from './UnifiedLoadingSystem';
 
-// Error System - Production Ready
+// Error System - Unified Error Boundary
 export {
-  UnifiedErrorBoundary as ErrorBoundary,
   UnifiedErrorBoundary,
   useErrorHandler,
   withErrorBoundary,
@@ -49,17 +48,13 @@ export {
 } from './UnifiedErrorBoundary';
 export { SimpleErrorDisplay } from './SimpleErrorDisplay';
 
-// New Error Boundary System - Sprint EPIC 4
-// TODO: Create ErrorBoundary.tsx file with PageErrorBoundary, SectionErrorBoundary, ComponentErrorBoundary
-// Temporarily commented out for build - use UnifiedErrorBoundary instead
-// export {
-//   ErrorBoundary as ReactErrorBoundary,
-//   PageErrorBoundary,
-//   SectionErrorBoundary,
-//   ComponentErrorBoundary,
-//   withErrorBoundary as withReactErrorBoundary,
-// } from './ErrorBoundary';
-// export type { ErrorBoundaryProps } from './ErrorBoundary';
+// Error Boundary System - Production Ready ✅
+export {
+  default as ErrorBoundary,
+  PageErrorBoundary,
+  SectionErrorBoundary,
+  ComponentErrorBoundary,
+} from './ErrorBoundary';
 
 // Form Components
 export { Input } from './Input';

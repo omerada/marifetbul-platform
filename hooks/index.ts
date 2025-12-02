@@ -142,8 +142,7 @@ export type {
 
 // Sprint 2: Order hooks
 export { useOrderStats } from './business/orders/useOrderStats';
-// TODO: Create useOrders hook - temporarily commented out for build
-// export { useOrders } from './business/orders/useOrders';
+// Note: Order data fetching via useOrder, useOrderState, useOrderUpdates hooks
 export { useOrderNotifications } from './business/useOrderNotifications';
 
 // Admin hooks

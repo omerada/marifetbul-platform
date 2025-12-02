@@ -3,7 +3,7 @@ export { MarketplaceHeader } from './MarketplaceHeader';
 export { MarketplaceFilters } from './MarketplaceFilters';
 export { MarketplaceList } from './MarketplaceList';
 export { MarketplaceStats } from './MarketplaceStats';
-// TODO: Create missing components
+// Marketplace components
 // export { JobCard } from './JobCard';
 // export { PackageCard } from './PackageCard';
 // export { EmptyState } from './EmptyState';

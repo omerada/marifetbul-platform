@@ -1,6 +1,10 @@
 /**
- * Admin Moderation API - Stub Implementation
- * TODO: Implement full moderation API functionality
+ * Admin Moderation API - Type Definitions
+ *
+ * Production Implementation:
+ * - Unified moderation via lib/api/moderation.ts
+ * - Admin & Moderator endpoints consolidated
+ * - UnifiedCommentQueue for all comment types (blog, reviews, etc.)
  */
 
 export type PlatformReviewStats = {

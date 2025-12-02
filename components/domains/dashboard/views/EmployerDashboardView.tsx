@@ -51,6 +51,7 @@ import { MilestoneProgressWidget } from '@/components/domains/milestones';
 import type { EmployerDashboard } from '../types/dashboard.types';
 import { formatCompactNumber } from '../utils';
 import { formatCurrency } from '@/lib/utils';
+import { UserRole } from '@/types/backend-aligned';
 
 // ============================================================================
 // TYPES
@@ -234,7 +235,7 @@ export const EmployerDashboardView = memo<EmployerDashboardViewProps>(
       <div className={`space-y-6 ${className}`}>
         {/* Header */}
         <DashboardHeader
-          role="EMPLOYER"
+          role={UserRole.EMPLOYER}
           title="Employer Dashboard"
           subtitle="Harcamalarınız, siparişleriniz ve favorileriniz"
           actions={

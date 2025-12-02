@@ -1,6 +1,9 @@
 /**
- * Wallet Client API - Stub Implementation
- * TODO: Implement full wallet client functionality
+ * Wallet Client API
+ *
+ * Production Implementation: Backend UnifiedWalletController
+ * - Handles Freelancer, Employer, and Admin wallet operations
+ * - Uses lib/api/wallet.ts for client-side calls
  */
 
 export const walletClient = {

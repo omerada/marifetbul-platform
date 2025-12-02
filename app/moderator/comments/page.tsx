@@ -20,6 +20,7 @@ import { UnifiedCommentQueue } from '@/components/domains/moderation/shared';
 import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 import { UnifiedErrorBoundary } from '@/components/ui/UnifiedErrorBoundary';
 import { Loading } from '@/components/ui';
+import { UserRole } from '@/types/backend-aligned';
 
 // Ensure dynamic rendering for client-side hooks
 export const dynamic = 'force-dynamic';
@@ -57,8 +58,8 @@ function CommentModerationContent() {
   }
 
   // Check authorization
-  const isAdmin = user?.role === 'ADMIN';
-  const isModerator = user?.role === 'MODERATOR';
+  const isAdmin = user?.role === UserRole.ADMIN;
+  const isModerator = user?.role === UserRole.MODERATOR;
 
   if (!isAdmin && !isModerator) {
     return (
@@ -75,7 +76,9 @@ function CommentModerationContent() {
   }
 
   // Determine role for component
-  const role = isAdmin ? 'admin' : 'moderator';
+  const role: UserRole.ADMIN | UserRole.MODERATOR = isAdmin
+    ? UserRole.ADMIN
+    : UserRole.MODERATOR;
   const roleColor = isAdmin ? 'blue' : 'purple';
   const RoleIcon = isAdmin ? Shield : UserCheck;
 

@@ -48,12 +48,16 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Always call hooks before any conditional returns
-  const { state, actions } = useNotifications({
+  const {
+    notifications,
+    unreadCount,
+    isLoading,
+    markAsRead,
+    markAllAsRead,
+    refetch,
+  } = useNotifications({
     autoLoad: isAuthenticated, // Only auto-load when authenticated
   });
-
-  const { notifications, unreadCount, isLoading } = state;
-  const { markAsRead, markAllAsRead } = actions;
 
   // Don't render if not authenticated
   if (!isAuthenticated) {
@@ -248,7 +252,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
               ) : (
                 // Notification Items
                 <div className="space-y-1 p-2">
-                  {recentNotifications.map((notification) => (
+                  {recentNotifications.map((notification: Notification) => (
                     <NotificationListItem
                       key={notification.id}
                       notification={notification}

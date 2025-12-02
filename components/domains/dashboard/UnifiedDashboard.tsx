@@ -24,7 +24,8 @@ import {
   AdminDashboardView,
   ModeratorDashboardView,
 } from './views';
-import type { UserRole, ModeratorDashboard } from './types/dashboard.types';
+import { UserRole } from './types/dashboard.types';
+import type { ModeratorDashboard } from './types/dashboard.types';
 import { RefreshCw, AlertCircle } from 'lucide-react';
 
 export interface UnifiedDashboardProps {
@@ -50,7 +51,7 @@ export function UnifiedDashboard({
   const userRole: UserRole = useMemo(() => {
     if (propRole) return propRole;
     if (user?.role) return user.role as UserRole;
-    return 'FREELANCER';
+    return UserRole.FREELANCER;
   }, [propRole, user?.role]);
 
   // SPRINT 1 - Task 1.3: Moderation Action Handler

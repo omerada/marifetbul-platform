@@ -1,10 +1,10 @@
 // Admin panel types
 import { User } from '../../core/base';
 import { PaginationMeta } from '../../shared/api';
-import { UserRole } from '../backend-aligned';
+import { UserRole } from '@/types/backend-aligned';
 
 // Re-export canonical UserRole from backend-aligned
-export type { UserRole };
+export { UserRole };
 
 // User Analytics interface for store compatibility
 export interface UserAnalytics {
@@ -139,7 +139,8 @@ export interface AdminUserStore {
   clearError: () => void; // Added missing method
 }
 
-export interface AdminUserData extends Omit<AdminUser, 'verificationStatus'> {
+export interface AdminUserData
+  extends Omit<AdminUser, 'verificationStatus' | 'userType'> {
   statistics: {
     actionsPerformed: number;
     usersModerated: number;
@@ -149,9 +150,9 @@ export interface AdminUserData extends Omit<AdminUser, 'verificationStatus'> {
   // Additional fields from main index.ts for compatibility
   email: string;
   name: string;
-  userType: 'freelancer' | 'employer';
+  userType: UserRole; // Override User.userType ('freelancer' | 'employer' | 'admin') with UserRole enum
   accountStatus: 'active' | 'suspended' | 'banned';
-  verificationStatus: 'pending' | 'verified' | 'rejected'; // Aligned with userTable types (override)
+  verificationStatus: 'pending' | 'verified' | 'rejected'; // Override AdminUser.verificationStatus
   createdAt: string;
   lastLoginAt?: string;
   lastActiveAt?: string;

@@ -54,7 +54,7 @@ export type {
  */
 // Use canonical UserRole from backend-aligned
 import { UserRole } from '@/types/backend-aligned';
-export type { UserRole };
+export { UserRole };
 
 /**
  * Dashboard view mode based on user role

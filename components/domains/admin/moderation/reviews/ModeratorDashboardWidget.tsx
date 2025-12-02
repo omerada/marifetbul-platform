@@ -29,6 +29,7 @@ import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
 import { LayoutDashboard, Filter, Flag, Shield, BarChart3 } from 'lucide-react';
 import { UnifiedCommentQueue } from '@/components/domains/moderation/shared';
+import { UserRole } from '@/types/backend-aligned';
 import { AdvancedFilterPanel } from './AdvancedFilterPanel';
 import { FlagStatisticsPanel } from './FlagStatisticsPanel';
 import { AutoModerationRulesPanel } from './AutoModerationRulesPanel';
@@ -135,7 +136,7 @@ export function ModeratorDashboardWidget({
             </div>
 
             <UnifiedCommentQueue
-              role="moderator"
+              role={UserRole.MODERATOR}
               initialStatus="pending"
               showStats={true}
               enableBulkActions={true}

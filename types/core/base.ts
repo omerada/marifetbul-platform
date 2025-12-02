@@ -1,11 +1,11 @@
 // Core base types for the entire application
 import type { Coordinates } from '../shared/location';
-import type { UserRole } from '../backend-aligned';
+import { UserRole } from '../backend-aligned';
 
 // Re-export Coordinates for convenience
 export type { Coordinates };
 // Re-export UserRole from backend-aligned (single source of truth)
-export type { UserRole };
+export { UserRole };
 
 export interface User {
   id: string;

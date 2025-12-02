@@ -1,10 +1,16 @@
 /**
- * useAuth Hook - Stub Implementation
- * TODO: Implement full auth context hook
- * Currently returns minimal auth state to satisfy build requirements
+ * useAuth Hook - Re-export from production infrastructure
+ *
+ * Production Implementation:
+ * - Use @/lib/core/store/domains/auth/unifiedAuthStore for client-side auth
+ * - Use middleware.ts for server-side route protection
+ * - Use @/lib/infrastructure/security/auth-utils for auth utilities
+ *
+ * @deprecated Use useAuthStore() from @/lib/core/store/domains/auth/unifiedAuthStore
  */
 
 import type { UserResponse } from '@/types/backend-aligned';
+import { useAuthStore } from '@/lib/core/store/domains/auth/unifiedAuthStore';
 
 export interface AuthState {
   user: UserResponse | null;

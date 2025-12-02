@@ -34,8 +34,6 @@ export { AuthService, UserService } from './api/authService';
 
 // Other Services
 export { MessagingService } from './messaging.service';
-// TODO: Create notification.service.ts - temporarily commented out for build
-// export { NotificationService } from './notification.service';
 
 // Service Types
 export type {
@@ -46,8 +44,7 @@ export type {
 } from './messaging.service';
 
 // Note: PaymentService removed - Use lib/api/payment.ts instead (production-ready)
-
-// TODO: Create notification.service.ts types - temporarily commented out for build
+// Note: NotificationService - Use lib/api/notifications.ts and push notification hooks
 // export type {
 //   CreateNotificationRequest,
 //   NotificationFilters,

@@ -24,6 +24,7 @@ import { Upload, X, AlertCircle, FileText, Loader2 } from 'lucide-react';
 import { raiseDispute } from '@/lib/api/disputes';
 import { DisputeReason, disputeReasonLabels } from '@/types/dispute';
 import logger from '@/lib/infrastructure/monitoring/logger';
+import { fileUploadService } from '@/lib/services/file-upload.service';
 
 // ============================================================================
 // VALIDATION SCHEMA
@@ -105,8 +106,7 @@ export function CreateDisputeForm({
     setIsUploading(true);
 
     try {
-      // TODO: Implement actual file upload to Cloudinary
-      // For now, using placeholder URLs
+      // Upload files to Cloudinary using file upload service
       const newUrls: string[] = [];
 
       for (let i = 0; i < files.length; i++) {
@@ -130,9 +130,30 @@ export function CreateDisputeForm({
           continue;
         }
 
-        // Simulate upload (replace with actual Cloudinary upload)
-        const placeholderUrl = `https://placeholder.com/${file.name}`;
-        newUrls.push(placeholderUrl);
+        try {
+          // Upload to Cloudinary
+          const uploadResult = await fileUploadService.uploadFile(file, {
+            backend: 'cloudinary',
+            folder: 'disputes/evidence',
+            onProgress: (progress) => {
+              // Could show individual file progress if needed
+              logger.debug('Upload progress', {
+                fileName: file.name,
+                progress: progress.progress,
+              });
+            },
+          });
+
+          newUrls.push(uploadResult.fileUrl);
+        } catch (uploadError) {
+          logger.error(
+            `Failed to upload ${file.name}`,
+            uploadError instanceof Error
+              ? uploadError
+              : new Error(String(uploadError))
+          );
+          toast.error(`${file.name} yüklenemedi`);
+        }
       }
 
       const updatedUrls = [...uploadedFiles, ...newUrls];
