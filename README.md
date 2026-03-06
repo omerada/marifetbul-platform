@@ -17,7 +17,8 @@
   <a href="#özellikler">Özellikler</a> •
   <a href="#mimari">Mimari</a> •
   <a href="#api-entegrasyonu">API</a> •
-  <a href="#katkıda-bulunma">Katkıda Bulunma</a>
+  <a href="#katkıda-bulunma">Katkıda Bulunma</a> •
+  <a href="#açık-kaynak-yönetişim">Yönetişim</a>
 </p>
 
 ---
@@ -60,6 +61,16 @@ MarifetBul, Türkiye pazarına yönelik uçtan uca bir freelance platformudur. P
 - **Depolama:** Cloudinary + AWS S3
 - **Dayanıklılık:** Resilience4j (circuit breaker, retry, bulkhead)
 - **Monitoring:** Sentry, Prometheus, OpenTelemetry
+
+## Açık Kaynak Yönetişim
+
+Bu proje profesyonel açık kaynak standartlarıyla yönetilmektedir:
+
+- Lisans: [`LICENSE`](LICENSE)
+- Katkı Rehberi: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- Güvenlik Politikası: [`SECURITY.md`](SECURITY.md)
+- Davranış Kuralları: [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)
+- Issue/PR Şablonları: [`.github/`](.github)
 
 ---
 
