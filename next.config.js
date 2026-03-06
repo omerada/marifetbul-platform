@@ -7,8 +7,11 @@ const { withSentryConfig } = require('@sentry/nextjs');
 // PRODUCTION SAFETY VALIDATION
 // ================================================
 // Validate production environment configuration during build
-// TEMPORARILY DISABLED for development build testing
-if (process.env.NODE_ENV === 'production' && false) {
+// ENABLE for production deployments, DISABLE for local development
+if (
+  process.env.NODE_ENV === 'production' &&
+  process.env.ENABLE_PROD_CHECKS === 'true'
+) {
   console.log('🔒 Running production safety checks...');
 
   // Critical validations

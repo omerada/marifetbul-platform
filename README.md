@@ -1,653 +1,430 @@
-# 🚀 MarifetBul - Türkiye'nin Freelance Platformu
+<p align="center">
+  <img src="public/icons/icon-192x192.png" alt="MarifetBul Logo" width="80" height="80" />
+</p>
 
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![Next.js](https://img.shields.io/badge/Next.js-16.0.0-black.svg)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19.0.0-blue.svg)](https://reactjs.org/)
-[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7.3-blue.svg)](https://www.typescriptlang.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org/)
-[![Redis](https://img.shields.io/badge/Redis-7-red.svg)](https://redis.io/)
-[![Production](https://img.shields.io/badge/Status-Production--Ready-success.svg)](PRODUCTION_STATUS.md)
-[![License](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
+<h1 align="center">MarifetBul</h1>
 
-Modern, ölçeklenebilir ve güvenli freelance platformu. Spring Boot backend + Next.js frontend ile geliştirilmiş **production-ready** web uygulaması.
+<p align="center">
+  <strong>Türkiye'nin Açık Kaynak Freelance Platformu</strong>
+</p>
 
-> 📊 **Production Status:** [PRODUCTION_STATUS.md](./PRODUCTION_STATUS.md) - Detaylı sistem durumu raporu
+<p align="center">
+  Freelancer'lar ve işverenler arasında güvenli, şeffaf ve düşük komisyonlu bir köprü kuran modern freelance pazaryeri.
+</p>
 
----
-
-## 📋 İçindekiler
-
-- [Özellikler](#-özellikler)
-- [Teknoloji Stack](#-teknoloji-stack)
-- [Proje Yapısı](#-proje-yapısı)
-- [Kurulum](#-kurulum)
-- [Kullanım](#-kullanım)
-- [API Dokümantasyonu](#-api-dokümantasyonu)
-- [Deployment](#-deployment)
-- [Katkıda Bulunma](#-katkıda-bulunma)
-- [Lisans](#-lisans)
+<p align="center">
+  <a href="#kurulum">Kurulum</a> •
+  <a href="#özellikler">Özellikler</a> •
+  <a href="#mimari">Mimari</a> •
+  <a href="#api-entegrasyonu">API</a> •
+  <a href="#katkıda-bulunma">Katkıda Bulunma</a>
+</p>
 
 ---
 
-## ✨ Özellikler
+## Genel Bakış
 
-### 🎯 Core Features
+MarifetBul, Türkiye pazarına yönelik uçtan uca bir freelance platformudur. Proje iki ana bileşenden oluşur:
 
-- ✅ **Kullanıcı Yönetimi**: JWT tabanlı güvenli authentication & authorization
-- ✅ **Paket/Hizmet Listeme**: Freelancer'ların hizmetlerini sergilemesi
-- ✅ **İş İlanları**: Employer'ların proje ilanları oluşturması
-- ✅ **Teklif Sistemi**: Freelancer'ların işlere teklif vermesi
-- ✅ **Mesajlaşma**: Real-time mesajlaşma sistemi
-- ✅ **Ödeme Sistemi**: Iyzico entegrasyonu ile güvenli ödemeler
-- ✅ **Review & Rating**: İki yönlü değerlendirme sistemi
-- ✅ **Media Upload**: Cloudinary ile görsel yükleme ve optimizasyon
-- ✅ **Analytics Dashboard**: Paket ve kullanıcı istatistikleri
-- ✅ **Blog Sistemi**: SEO-friendly blog platformu
-- ✅ **Destek Sistemi**: Ticket-based support management
-- ✅ **PDF Rapor Export**: Admin raporlarını profesyonel PDF formatında dışa aktarma (iText 8)
+| Bileşen      | Teknoloji                            | Dizin                                        |
+| ------------ | ------------------------------------ | -------------------------------------------- |
+| **Frontend** | Next.js 16, React 19, TypeScript     | `/` (kök dizin)                              |
+| **Backend**  | Spring Boot 3.4, Java 17, PostgreSQL | [`/marifetbul-backend`](marifetbul-backend/) |
 
-### 🔐 Security
+## Teknoloji Yığını
 
-- JWT authentication with refresh tokens
-- CSRF protection
+### Frontend
+
+- **Framework:** Next.js 16 (App Router) + React 19
+- **Dil:** TypeScript 5.7 (strict mode)
+- **Stil:** Tailwind CSS 4.1 + Framer Motion
+- **State Yönetimi:** Zustand 5 + SWR + React Query
+- **Form:** React Hook Form + Zod 4
+- **Gerçek Zamanlı:** STOMP WebSocket (@stomp/stompjs)
+- **Bildirim:** Firebase Cloud Messaging
+- **Görsel CDN:** Cloudinary
+- **Monitoring:** Sentry, Google Analytics
+- **Test:** Jest + Playwright
+
+### Backend
+
+- **Framework:** Spring Boot 3.4.1 + Java 17
+- **Veritabanı:** PostgreSQL 16 + Flyway migrasyonları
+- **Cache:** Redis 7
+- **Arama:** Elasticsearch 8.16
+- **Güvenlik:** Spring Security 6 + JWT (HS512)
+- **Ödeme:** Iyzico
+- **E-posta:** SendGrid + Thymeleaf şablonları
+- **Push:** Firebase Admin SDK
+- **SMS:** Netgsm
+- **Depolama:** Cloudinary + AWS S3
+- **Dayanıklılık:** Resilience4j (circuit breaker, retry, bulkhead)
+- **Monitoring:** Sentry, Prometheus, OpenTelemetry
+
+---
+
+## Özellikler
+
+### Pazaryeri
+
+- İş ilanı oluşturma ve paket hizmet sunma
+- Gelişmiş arama ve filtreleme (Elasticsearch destekli)
+- Kategori bazlı keşif
+- Favori listeleri ve klasörleme
+
+### Sipariş Yönetimi
+
+- Milestone bazlı sipariş akışı
+- Escrow (güvenli ödeme) ve Manuel IBAN ödeme desteği
+- Teslimat, revizyon ve onay süreçleri
+- Otomatik sipariş tamamlama
+
+### Ödeme Sistemi
+
+- Iyzico ile güvenli kredi kartı ödemesi
+- Cüzdan sistemi (bakiye, escrow, çekim)
+- Komisyon hesaplama ve iade yönetimi
+
+### İletişim
+
+- Gerçek zamanlı WebSocket mesajlaşma
+- Yazıyor göstergesi ve okundu bilgisi
+- Mesaj tepkileri ve dosya paylaşımı
+- Push bildirimler (web + mobil)
+
+### Kullanıcı Sistemi
+
+- Rol bazlı erişim: Alıcı, Satıcı, Moderatör, Admin
+- İki faktörlü kimlik doğrulama (2FA)
+- Profil ve portföy yönetimi
+- Takip sistemi
+
+### Yönetim Paneli
+
+- Admin kontrol paneli (analitik, moderasyon, kullanıcı yönetimi)
+- Moderasyon araçları (içerik, yorum, inceleme)
+- Blog yönetimi (yazı, kategori, etiket)
+- Destek bilet sistemi
+- Raporlama ve PDF/CSV dışa aktarma
+
+### Güvenlik
+
+- JWT tabanlı kimlik doğrulama (httpOnly cookie)
+- CSRF koruması
+- XSS sanitizasyonu (DOMPurify)
 - Rate limiting
-- Input validation & sanitization
-- SQL injection prevention
-- XSS protection
-- Secure password hashing (BCrypt)
-
-### 🚀 Performance
-
-- Redis caching (user sessions, API responses)
-- Elasticsearch full-text search
-- Database query optimization
-- API response caching
-- Lazy loading & code splitting
-- Image optimization
-
-### 📊 Monitoring & Analytics
-
-- Sentry error tracking
-- Prometheus metrics
-- Grafana dashboards
-- Actuator health checks
-- Custom business metrics
+- CSP, HSTS, X-Frame-Options güvenlik başlıkları
+- Hassas veri maskeleme
 
 ---
 
-## 🛠️ Teknoloji Stack
+## Kurulum
 
-### Backend (Spring Boot)
+### Önkoşullar
 
-```
-├── Spring Boot 3.4.1          # Core framework
-├── Spring Security            # Authentication & authorization
-├── Spring Data JPA            # Database ORM
-├── PostgreSQL 16              # Primary database
-├── Redis 7                    # Caching & sessions
-├── Elasticsearch 8            # Full-text search
-├── Flyway                     # Database migrations
-├── JWT (jjwt 0.12.6)         # Token authentication
-├── MapStruct 1.6.3           # DTO mapping
-├── Lombok 1.18.36            # Code generation
-├── iText 8.0.5               # PDF generation
-├── Iyzico SDK                 # Payment processing
-├── SendGrid                   # Email service
-├── AWS S3                     # File storage
-└── Sentry                     # Error tracking
-```
+- **Node.js** 20+
+- **Java** 17+
+- **Docker** ve Docker Compose
+- **Maven** 3.8+
 
-### Frontend (Next.js)
-
-```
-├── Next.js 15.1.6            # React framework
-├── React 19.0.0              # UI library
-├── TypeScript 5.7.3          # Type safety
-├── Tailwind CSS 4.1.1        # Styling
-├── React Hook Form 7.54.2    # Form management
-├── Zod 4.1.5                 # Schema validation
-├── SWR 2.3.6                 # Data fetching
-├── Zustand 5.0.8             # State management
-├── Framer Motion 12.23.22    # Animations
-└── Lucide React 0.469.0      # Icons
-```
-
-### DevOps & Infrastructure
-
-```
-├── Docker & Docker Compose   # Containerization
-├── Nginx                      # Reverse proxy
-├── Prometheus                 # Metrics
-├── Grafana                    # Monitoring dashboards
-├── GitHub Actions (CI/CD)    # Automation
-└── Vercel (Frontend hosting) # Deployment
-```
-
----
-
-## 📁 Proje Yapısı
-
-```
-marifeto/
-├── marifetbul-backend/              # Spring Boot Backend
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/marifetbul/api/
-│   │   │   │   ├── common/          # Common utilities
-│   │   │   │   ├── config/          # Spring configurations
-│   │   │   │   ├── domain/          # Business logic (DDD)
-│   │   │   │   │   ├── auth/        # Authentication
-│   │   │   │   │   ├── user/        # User management
-│   │   │   │   │   ├── packages/    # Services/Packages
-│   │   │   │   │   ├── job/         # Job postings
-│   │   │   │   │   ├── proposal/    # Proposals/Bids
-│   │   │   │   │   ├── order/       # Orders
-│   │   │   │   │   ├── payment/     # Payments
-│   │   │   │   │   ├── message/     # Messaging
-│   │   │   │   │   ├── review/      # Reviews
-│   │   │   │   │   ├── blog/        # Blog system
-│   │   │   │   │   └── support/     # Support tickets
-│   │   │   │   ├── infrastructure/  # External services
-│   │   │   │   ├── presentation/    # API DTOs
-│   │   │   │   └── security/        # Security config
-│   │   │   └── resources/
-│   │   │       ├── application.yml
-│   │   │       ├── application-dev.yml
-│   │   │       ├── application-prod.yml
-│   │   │       └── db/migration/    # Flyway migrations
-│   │   └── test/                    # Unit & integration tests
-│   ├── docker/                      # Docker configurations
-│   ├── k8s/                         # Kubernetes manifests
-│   ├── pom.xml                      # Maven dependencies
-│   └── Dockerfile.prod              # Production build
-│
-├── app/                             # Next.js pages (App Router)
-│   ├── (auth)/                      # Auth pages
-│   ├── admin/                       # Admin panel
-│   ├── api/                         # API routes
-│   ├── blog/                        # Blog pages
-│   ├── dashboard/                   # User dashboards
-│   ├── marketplace/                 # Marketplace pages
-│   ├── profile/                     # User profiles
-│   └── ...
-│
-├── components/                      # React components
-│   ├── domains/                     # Domain-specific components
-│   ├── layout/                      # Layout components
-│   ├── shared/                      # Shared/common components
-│   └── ui/                          # UI primitives
-│
-├── lib/                             # Utilities & services
-│   ├── api/                         # API client
-│   ├── domains/                     # Domain services
-│   ├── infrastructure/              # Infrastructure services
-│   └── shared/                      # Shared utilities
-│
-├── public/                          # Static assets
-├── scripts/                         # Development scripts
-├── docs/                            # Documentation
-├── PRODUCTION-DEPLOYMENT.md         # Deployment guide
-└── package.json                     # NPM dependencies
-```
-
----
-
-## 🚀 Kurulum
-
-### Ön Gereksinimler
-
-- **Java 17+** ([Download](https://adoptium.net/))
-- **Node.js 18.17+** ([Download](https://nodejs.org/))
-- **PostgreSQL 15+** ([Download](https://www.postgresql.org/download/))
-- **Redis 7+** ([Download](https://redis.io/download))
-- **Docker** (Opsiyonel) ([Download](https://www.docker.com/))
-
-### 1. Repository'yi Klonlayın
+### 1. Depoyu Klonlayın
 
 ```bash
-git clone https://github.com/omerada/marifet.git
-cd marifeto
+git clone https://github.com/your-username/marifetbul.git
+cd marifetbul
 ```
 
-### 2. Backend Setup
-
-#### Option A: Docker ile (Önerilen)
+### 2. Backend'i Başlatın
 
 ```bash
 cd marifetbul-backend
-docker-compose up -d
+
+# Altyapı servislerini başlatın (PostgreSQL, Redis, Elasticsearch)
+docker compose up -d
+
+# Yapılandırma
+cp .env.example .env
+# .env dosyasını kendi değerlerinizle düzenleyin
+
+# Uygulamayı çalıştırın
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-Bu komut PostgreSQL, Redis ve Elasticsearch'ü otomatik başlatır.
+Backend `http://localhost:8080` adresinde başlar.
 
-#### Option B: Manuel Kurulum
-
-**Database Oluşturma:**
-
-```sql
-CREATE DATABASE marifetbul_dev;
-CREATE USER marifetbul WITH ENCRYPTED PASSWORD 'postgres';
-GRANT ALL PRIVILEGES ON DATABASE marifetbul_dev TO marifetbul;
-```
-
-**Redis Başlatma:**
+### 3. Frontend'i Başlatın
 
 ```bash
-redis-server --requirepass redis123
-```
+# Kök dizine dönün
+cd ..
 
-**Backend Çalıştırma:**
-
-```bash
-cd marifetbul-backend
-./mvnw spring-boot:run
-```
-
-Backend şimdi `http://localhost:8080` adresinde çalışıyor.
-
-### 3. Frontend Setup
-
-**Environment Variables:**
-
-```bash
-# .env.local oluşturun (development için)
-cp .env.local.example .env.local
-
-# Gerekli değişkenleri düzenleyin:
-NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# Cloudinary (Image Upload - Required)
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
-NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=marifetbul_packages
-
-# Iyzico (Payment - Required for production)
-NEXT_PUBLIC_IYZICO_API_KEY=your-api-key
-IYZICO_SECRET_KEY=your-secret-key
-IYZICO_BASE_URL=https://sandbox-api.iyzipay.com
-
-# Firebase Push Notifications (Optional)
-NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
-NEXT_PUBLIC_FIREBASE_VAPID_KEY=your-vapid-key
-```
-
-> 📚 **Cloudinary Kurulumu:** [CLOUDINARY_SETUP_GUIDE.md](./docs/CLOUDINARY_SETUP_GUIDE.md) - Detaylı kurulum rehberi
->
-> 🔔 **Push Notification Kurulumu:** [PUSH_NOTIFICATIONS_SETUP.md](./docs/PUSH_NOTIFICATIONS_SETUP.md) - Firebase FCM kurulum rehberi
-
-**Dependencies ve Server:**
-
-```bash
-# Dependencies yükleme
+# Bağımlılıkları yükleyin
 npm install
 
-# Development server başlatma
+# Ortam değişkenlerini yapılandırın
+cp .env.example .env.local
+```
+
+`.env.local` dosyasını düzenleyin:
+
+```env
+NODE_ENV=development
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
+NEXT_PUBLIC_ENABLE_DEBUG=true
+NEXT_PUBLIC_ENABLE_ANALYTICS=false
+NEXT_PUBLIC_ENABLE_SENTRY=false
+```
+
+```bash
+# Geliştirme sunucusunu başlatın
 npm run dev
 ```
 
-Frontend şimdi `http://localhost:3000` adresinde çalışıyor.
+Frontend `http://localhost:3000` adresinde açılır.
 
-### 4. Test Kullanıcıları ile Giriş 🔐
+### 4. Doğrulama
 
-Backend başlatıldığında otomatik olarak test kullanıcıları oluşturulur:
-
-**Freelancer:**
-
-```
-Email: freelancer@test.com
-Password: Test123!
-```
-
-**Employer:**
-
-```
-Email: employer@test.com
-Password: Test123!
-```
-
-**Admin:**
-
-```
-Email: admin@marifetbul.com
-Password: Admin123!
-```
-
-> 📚 **Detaylı bilgi için:** [TEST_USERS.md](./TEST_USERS.md) - Tüm test kullanıcıları ve kullanım örnekleri
+| Servis        | URL                                   | Beklenen           |
+| ------------- | ------------------------------------- | ------------------ |
+| Frontend      | http://localhost:3000                 | Ana sayfa          |
+| Backend API   | http://localhost:8080/actuator/health | `{"status":"UP"}`  |
+| Swagger UI    | http://localhost:8080/swagger-ui.html | API dokümantasyonu |
+| PostgreSQL    | localhost:5432                        |                    |
+| Redis         | localhost:6379                        |                    |
+| Elasticsearch | http://localhost:9200                 |                    |
 
 ---
 
-## 🔧 Kullanım
+## Mimari
 
-### Development Mode
-
-**Backend:**
-
-```bash
-cd marifetbul-backend
-./mvnw spring-boot:run
-```
-
-**Frontend:**
-
-```bash
-npm run dev
-```
-
-### Production Build
-
-**Backend:**
-
-```bash
-cd marifetbul-backend
-./mvnw clean package -DskipTests
-java -jar target/marifetbul-api.jar
-```
-
-**Frontend:**
-
-```bash
-npm run build
-npm start
-```
-
-### Docker ile Full Stack
-
-```bash
-cd marifetbul-backend
-docker-compose -f docker-compose.prod.yml up -d
-```
-
----
-
-## 📚 API Dokümantasyonu
-
-### Swagger UI (Development)
-
-Backend çalıştıktan sonra:
+### Frontend Dizin Yapısı
 
 ```
-http://localhost:8080/swagger-ui.html
+├── app/                        # Next.js App Router sayfaları
+│   ├── (auth)/                 # Kimlik doğrulama (giriş, kayıt)
+│   ├── admin/                  # Admin paneli
+│   ├── api/                    # API proxy route'ları
+│   ├── dashboard/              # Kullanıcı paneli
+│   ├── marketplace/            # Pazaryeri sayfaları
+│   ├── messages/               # Mesajlaşma
+│   └── ...
+├── components/
+│   ├── domains/                # Alan bazlı bileşenler
+│   ├── shared/                 # Paylaşılan bileşenler
+│   ├── ui/                     # UI temel bileşenleri (button, card, ...)
+│   └── providers/              # Context sağlayıcıları
+├── hooks/                      # Özel React hook'ları
+├── lib/
+│   ├── api/                    # 50+ API istemci modülü
+│   ├── core/store/             # 40+ Zustand mağazası
+│   ├── infrastructure/         # Altyapı servisleri
+│   │   ├── security/           # Auth, guard'lar, izinler
+│   │   ├── websocket/          # WebSocket istemcisi
+│   │   └── monitoring/         # Yapılandırılmış logger
+│   ├── domains/                # İş mantığı katmanı
+│   └── validation/             # Zod doğrulama şemaları
+├── types/                      # TypeScript tip tanımları
+└── middleware.ts                # Route koruması + güvenlik başlıkları
 ```
 
-### OpenAPI Spec
+### Backend Dizin Yapısı
 
 ```
-http://localhost:8080/api-docs
-```
-
-### Postman Collection
-
-Postman koleksiyonu `/docs/postman/` klasöründe bulunmaktadır.
-
-### 🔑 Önemli API Endpoint'leri
-
-#### Authentication & User Management
-
-```http
-# Authentication
-POST   /api/v1/auth/register           # Kullanıcı kaydı
-POST   /api/v1/auth/login              # Giriş yapma
-POST   /api/v1/auth/logout             # Çıkış yapma
-POST   /api/v1/auth/refresh            # Token yenileme
-GET    /api/v1/auth/me                 # Mevcut kullanıcı bilgisi
-PUT    /api/v1/auth/profile            # Profil güncelleme
-PUT    /api/v1/auth/password           # Şifre değiştirme
-
-# Password Reset
-POST   /api/v1/auth/password/reset-request  # Şifre sıfırlama talebi
-POST   /api/v1/auth/password/reset          # Şifre sıfırlama
-
-# Email Verification
-POST   /api/v1/auth/verify-email            # Email doğrulama
-POST   /api/v1/auth/resend-verification     # Doğrulama email'i tekrar gönder
-
-# User Management
-GET    /api/v1/users/{id}              # Kullanıcı detayı
-GET    /api/v1/users/{id}/profile      # Kullanıcı profil özeti
-GET    /api/v1/users/search            # Kullanıcı arama
-POST   /api/v1/users/{id}/follow       # Kullanıcı takip et
-GET    /api/v1/users/{id}/followers    # Takipçiler
-GET    /api/v1/users/{id}/following    # Takip edilenler
-```
-
-#### Packages (Services)
-
-```http
-GET    /api/v1/packages                # Paket listesi (pagination)
-GET    /api/v1/packages/{packageId}    # Paket detayı (UUID)
-GET    /api/v1/packages/slug/{slug}    # Paket detayı (slug)
-POST   /api/v1/packages                # Yeni paket oluştur
-PUT    /api/v1/packages/{id}           # Paket güncelle
-DELETE /api/v1/packages/{id}           # Paket sil
-GET    /api/v1/packages/search         # Paket arama
-```
-
-#### Jobs & Proposals
-
-```http
-GET    /api/v1/jobs                    # İş ilanları listesi
-GET    /api/v1/jobs/{id}               # İlan detayı
-POST   /api/v1/jobs                    # İlan oluştur
-PUT    /api/v1/jobs/{id}               # İlan güncelle
-POST   /api/v1/jobs/{id}/proposals     # İlana teklif ver
-GET    /api/v1/proposals/my            # Tekliflerim
-```
-
-#### Messaging
-
-```http
-GET    /api/v1/conversations           # Konuşma listesi
-GET    /api/v1/conversations/{id}      # Konuşma detayı
-POST   /api/v1/conversations           # Yeni konuşma başlat
-GET    /api/v1/messages                # Mesaj gönder
-```
-
-#### Admin Reports & Analytics
-
-```http
-# Report Generation
-GET    /api/v1/admin/reports/export/pdf    # PDF rapor dışa aktarma
-GET    /api/v1/admin/reports/export/csv    # CSV rapor dışa aktarma
-
-# Example: Revenue Report PDF Export
-GET /api/v1/admin/reports/export/pdf?reportType=REVENUE&startDate=2025-01-01&endDate=2025-01-31&groupBy=DAILY
-
-# Report Types: REVENUE, ORDERS, USERS, REFUNDS
-# Group By: DAILY, WEEKLY, MONTHLY
-
-# Response: Binary PDF file with professional formatting
-# - MarifetBul branding
-# - Turkish language support
-# - Summary statistics
-# - Detailed data tables
-# - Generation metadata
-```
-
-### 📊 Response Format
-
-GET /api/v1/messages/{conversationId} # Mesajlar
-
-````
-
-#### Categories & Blog
-
-```http
-GET    /api/v1/categories              # Kategori listesi
-GET    /api/v1/blog/posts              # Blog yazıları
-GET    /api/v1/blog/posts/{slug}       # Blog yazı detayı
-````
-
-### 📊 Response Format
-
-Tüm API yanıtları standardize edilmiş `ApiResponse<T>` formatındadır:
-
-```json
-{
-  "success": true,
-  "message": "İşlem başarılı",
-  "data": { ... },
-  "timestamp": "2025-10-15T10:30:00Z",
-  "path": "/api/v1/packages"
-}
-```
-
-### 🚨 Error Response Format
-
-```json
-{
-  "success": false,
-  "message": "Hata mesajı",
-  "errors": [
-    {
-      "field": "email",
-      "message": "Geçerli bir email adresi giriniz"
-    }
-  ],
-  "timestamp": "2025-10-15T10:30:00Z",
-  "path": "/api/v1/auth/register"
-}
-```
-
-### 📄 Pagination Response
-
-```json
-{
-  "success": true,
-  "data": {
-    "content": [...],
-    "pageNumber": 0,
-    "pageSize": 10,
-    "totalElements": 100,
-    "totalPages": 10,
-    "first": true,
-    "last": false,
-    "hasNext": true,
-    "hasPrevious": false
-  }
-}
+marifetbul-backend/src/main/java/com/marifetbul/api/
+├── config/                     # Spring yapılandırma sınıfları
+├── security/                   # JWT, UserPrincipal, filtreler
+├── domain/                     # Domain-Driven Design katmanları
+│   ├── auth/                   # Kimlik doğrulama servisleri
+│   ├── job/                    # İş ilanları
+│   ├── packages/               # Hizmet paketleri
+│   ├── proposal/               # Teklifler
+│   ├── order/                  # Sipariş yönetimi
+│   ├── payment/                # Ödeme, cüzdan, iade, komisyon
+│   ├── message/                # Mesajlaşma
+│   ├── notification/           # Bildirim sistemi (multi-channel)
+│   ├── review/                 # Değerlendirmeler
+│   ├── dispute/                # Anlaşmazlık çözümü
+│   ├── blog/                   # Blog sistemi
+│   ├── moderation/             # İçerik moderasyonu
+│   ├── analytics/              # Analitik
+│   └── ...
+├── infrastructure/             # Altyapı entegrasyonları
+│   ├── payment/iyzico/         # Iyzico ödeme
+│   ├── email/                  # SendGrid e-posta
+│   ├── push/                   # Firebase push bildirimleri
+│   ├── search/                 # Elasticsearch
+│   ├── websocket/              # STOMP WebSocket sunucusu
+│   ├── storage/                # Dosya depolama (Cloudinary, S3)
+│   └── security/               # Rate limiting, XSS koruması
+└── presentation/rest/v1/       # REST API controller'ları
 ```
 
 ---
 
-## 🌐 Deployment
+## API Entegrasyonu
 
-Detaylı deployment rehberi için: [PRODUCTION-DEPLOYMENT.md](./PRODUCTION-DEPLOYMENT.md)
+Tüm API endpoint'leri `/api/v1` prefix'i altında sunulur.
 
-### Quick Deploy - Vercel (Frontend)
+### Kimlik Doğrulama
+
+```
+POST   /api/v1/auth/register          # Kayıt
+POST   /api/v1/auth/login             # Giriş (JWT cookie döner)
+POST   /api/v1/auth/refresh           # Token yenileme
+POST   /api/v1/auth/logout            # Çıkış
+```
+
+### Temel Endpoint'ler
+
+```
+# İş İlanları
+GET    /api/v1/jobs                    # Listele
+POST   /api/v1/jobs                    # Oluştur
+
+# Paketler
+GET    /api/v1/packages                # Listele
+POST   /api/v1/packages                # Oluştur
+
+# Teklifler
+POST   /api/v1/proposals               # Teklif ver
+PUT    /api/v1/proposals/:id/accept    # Kabul et
+
+# Siparişler
+POST   /api/v1/orders/package          # Paket siparişi
+POST   /api/v1/orders/job              # İş siparişi
+PUT    /api/v1/orders/:id/deliver      # Teslimat
+
+# Ödeme & Cüzdan
+POST   /api/v1/payments                # Ödeme başlat
+GET    /api/v1/wallet                  # Cüzdan bilgisi
+
+# Mesajlar
+GET    /api/v1/conversations           # Konuşmalar
+POST   /api/v1/messages                # Mesaj gönder
+
+# WebSocket
+WS     /ws                             # STOMP bağlantısı
+```
+
+Backend çalışırken detaylı API dokümantasyonu Swagger UI üzerinden erişilebilir: `http://localhost:8080/swagger-ui.html`
+
+---
+
+## Ortam Değişkenleri
+
+### Frontend
+
+Tüm ortam değişkenleri [`.env.example`](.env.example) dosyasında tanımlıdır.
+
+| Değişken                            | Açıklama                | Zorunlu            |
+| ----------------------------------- | ----------------------- | ------------------ |
+| `NEXT_PUBLIC_API_URL`               | Backend API URL'i       | Evet               |
+| `NEXT_PUBLIC_APP_URL`               | Frontend URL'i          | Evet               |
+| `NEXT_PUBLIC_IYZICO_API_KEY`        | Iyzico API anahtarı     | Evet               |
+| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | Cloudinary bulut adı    | Evet               |
+| `NEXT_PUBLIC_FIREBASE_*`            | Firebase yapılandırması | Push bildirim için |
+| `NEXT_PUBLIC_SENTRY_DSN`            | Sentry DSN              | Hata izleme için   |
+| `NEXT_PUBLIC_GA_TRACKING_ID`        | Google Analytics ID     | Analitik için      |
+
+### Backend
+
+Backend ortam değişkenleri için [`marifetbul-backend/README.md`](marifetbul-backend/README.md) dosyasına bakın.
+
+---
+
+## Scriptler
+
+### Frontend
+
+| Komut                | Açıklama                 |
+| -------------------- | ------------------------ |
+| `npm run dev`        | Geliştirme sunucusu      |
+| `npm run build`      | Üretim derlemesi         |
+| `npm run start`      | Üretim sunucusu          |
+| `npm run lint`       | ESLint kontrolü          |
+| `npm run lint:fix`   | ESLint otomatik düzeltme |
+| `npm run type-check` | TypeScript tip kontrolü  |
+| `npm run test`       | Jest birim testleri      |
+| `npm run test:e2e`   | Playwright E2E testleri  |
+| `npm run format`     | Prettier kod formatlama  |
+
+### Backend
+
+| Komut                                                   | Açıklama           |
+| ------------------------------------------------------- | ------------------ |
+| `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev` | Geliştirme         |
+| `./mvnw test`                                           | Testler            |
+| `./mvnw package -DskipTests`                            | Derleme            |
+| `docker compose up -d`                                  | Altyapı servisleri |
+
+---
+
+## Dağıtım
+
+### Frontend — Vercel
 
 ```bash
 vercel --prod
 ```
 
-### Quick Deploy - Docker (Full Stack)
+`vercel.json` dosyası yapılandırılmıştır. Vercel dashboard'dan ortam değişkenlerini tanımlayın.
+
+### Backend — Docker
 
 ```bash
 cd marifetbul-backend
-docker-compose -f docker-compose.prod.yml up -d
+docker build -f Dockerfile.prod -t marifetbul-api:latest .
+docker compose -f docker-compose.prod.yml up -d
 ```
+
+### Kubernetes
+
+Manifest dosyaları `marifetbul-backend/k8s/` dizinindedir. HPA, Ingress ve PersistentVolume yapılandırmaları hazırdır.
 
 ---
 
-## 🧪 Testing
-
-### Backend Tests
+## Test
 
 ```bash
-cd marifetbul-backend
-./mvnw test
-```
+# Frontend birim testleri
+npm run test
 
-**Coverage Report:**
+# Frontend E2E testleri
+npm run test:e2e
 
-```bash
-./mvnw test jacoco:report
-open target/site/jacoco/index.html
-```
-
-### Frontend Tests
-
-```bash
-npm test
-```
-
-**Coverage:**
-
-```bash
-npm run test:ci
+# Backend testleri
+cd marifetbul-backend && ./mvnw test
 ```
 
 ---
 
-## 📈 Monitoring
+## Katkıda Bulunma
 
-### Health Checks
+Katkılarınızı bekliyoruz! Lütfen şu adımları izleyin:
 
-- **Backend Health:** `http://localhost:8080/actuator/health`
-- **Database:** `http://localhost:8080/actuator/health/db`
-- **Redis:** `http://localhost:8080/actuator/health/redis`
+1. Projeyi fork'layın
+2. Feature branch oluşturun (`git checkout -b feature/yeni-ozellik`)
+3. Değişikliklerinizi commit edin (`git commit -m 'feat: yeni özellik ekle'`)
+4. Branch'inizi push edin (`git push origin feature/yeni-ozellik`)
+5. Pull Request açın
 
-### Metrics
+### Geliştirme Kuralları
 
-- **Prometheus:** `http://localhost:8080/actuator/prometheus`
-- **Grafana:** `http://localhost:3000` (Docker setup)
-
-### Admin Panel
-
-**Development:**
-
-- **URL:** `http://localhost:3000/admin/login`
-- **Test Credentials:** admin@marifetbul.com / Admin123!
-- ⚠️ Development helper visible only in NODE_ENV=development
-
-**Production:**
-
-- ⚠️ **CRITICAL**: Change default admin password immediately after first login
-- Enable 2FA for all admin accounts
-- See [ADMIN_SECURITY_GUIDE.md](./docs/ADMIN_SECURITY_GUIDE.md) for complete security setup
+- TypeScript strict mode kullanın
+- `console.log` yerine yapılandırılmış `logger` kullanın
+- API yanıtlarını Zod ile doğrulayın
+- Yeni bileşenler için testler yazın
+- [Conventional Commits](https://www.conventionalcommits.org/) formatını kullanın
 
 ---
 
-## 🤝 Katkıda Bulunma
+## Lisans
 
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
-### Coding Standards
-
-- Backend: [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html)
-- Frontend: ESLint + Prettier (configured)
+Bu proje [MIT Lisansı](LICENSE) ile lisanslanmıştır.
 
 ---
 
-## 📝 Lisans
-
-Bu proje özel lisans altında korunmaktadır. Tüm hakları saklıdır.
-
-Copyright © 2025 MarifetBul
-
----
-
-## 👥 İletişim
-
-- **Email:** dev@marifetbul.com
-- **Website:** https://www.marifetbul.com
-- **GitHub:** https://github.com/omerada/marifet
-
----
-
-## 🙏 Teşekkürler
-
-Bu projeyi mümkün kılan tüm açık kaynak katkıcılarına teşekkürler!
-
----
-
-**Built with ❤️ by MarifetBul Development Team**
+<p align="center">
+  Türkiye'de ❤️ ile geliştirildi
+</p>
